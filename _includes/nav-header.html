@@ -1,0 +1,40 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="https://namastesalesforce.com/wp-content/uploads/2024/04/1.png.webp" alt="Namaste Salesforce">
+      </a>
+      <button class="button navbar-burger" aria-label="Menu" aria-expanded="false" id="navbarBurger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div class="navbar-menu" id="navbarMenu">
+      <div class="navbar-start">
+        <div class="navbar-item">
+          {% for item in site.navigation_header %}
+            {% if item.url contains '://' %}
+              {% assign url = item.url %}
+            {% else %}
+              {% assign url = item.url | relative_url %}
+            {% endif %}
+            <a class="navbar-item {% if item.url == page.url %} is-primary{% endif %}" href="{{ url }}">
+              {{ item.title }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <button class="button is-primary">
+            <span class="icon">
+              <i class="fas fa-search"></i>
+            </span>
+            <span>Search</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

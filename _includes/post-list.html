@@ -1,0 +1,40 @@
+{% if paginator.posts %}
+  <section class="section typeset">
+    <ul class="columns is-multiline">
+      {% for post in paginator.posts %}
+        <li class="column is-4">
+          <article class="card">
+            <div class="card-content">
+              <h2 class="title is-4"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+              {% include post-meta.html %}
+              <div class="content">
+                <p>{{ post.excerpt | markdownify | truncatewords: 30 }}</p>
+                <p><a href="{{ post.url }}">Read more</a></p>
+              </div>
+            </div>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+    {% include post-pagination.html %}
+  </section>
+{% else %}
+  <section class="section typeset">
+    <ul class="columns is-multiline">
+      {% for post in site.posts %}
+        <li class="column is-4">
+          <article class="card">
+            <div class="card-content">
+              <h2 class="title is-4"><a href="{{ post.url }}">{{ post.title }}</a></h2>
+              {% include post-meta.html %}
+              <div class="content">
+                <p>{{ post.excerpt | markdownify | truncatewords: 30 }}</p>
+                <p><a href="{{ post.url }}">Read more</a></p>
+              </div>
+            </div>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}
