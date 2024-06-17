@@ -1,13 +1,14 @@
 ---
-title: History of the Alembic
+title: Introduction to Python Programming -2
 categories:
-- History
-- External sources
-feature_text: |
-  The History of the Alembic tool
-aside : true
+  - Training La
+description: |
+  Learn the basics of Python programming language in this introductory video tutorial.
+video_id: rPbPDgBdqTk
+thumbnail: "https://img.youtube.com/vi/rPbPDgBdqTk/maxresdefault.jpg"
+icon: "fab fa-python"
+lesson_number: 2
 ---
-
 Dioscorides' ambix (described in his De materia medica) is a helmet-shaped lid for gathering condensed mercury. For Athenaeus (~ 225 C.E.) it is a bottle or flask. For later chemists it denotes various parts of crude distillation devices.
 
 <!-- more -->

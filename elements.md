@@ -3,10 +3,44 @@ title: Elements
 feature_text: |
   A demo of Markdown and HTML includes
 feature_image: "https://picsum.photos/2560/600?image=873"
-excerpt: "A demo of Markdown and HTML includes"
+description: "A demo of Markdown and HTML includes"
 aside: true
 sidebar_type: right  # Optional, defaults to 'right' if aside is true
 ---
+
+<!-- _includes/lessons.html -->
+{% assign posts = site.posts | where_exp: "post", "post.categories contains 'Training Videos'" %}
+
+<section class="">
+  <div>
+    <h2 class="title is-4 mb-5">All Lessons</h2>
+    <div class="columns is-multiline">
+      {% for post in posts %}
+      <div class="column is-12">
+        <div class="">
+          <div class="columns is-vcentered">
+            <div class="column is-4">
+              <a href="{{ post.url }}">
+                <img src="{{ post.thumbnail }}" alt="{{ post.title }}" class="image is-rounded" loading="lazy">
+              </a>
+            </div>
+            <div class="column">
+              <div class="content">
+                <p class="has-text-weight-semibold">Lesson {{ post.lesson_number }}</p>
+                <h3 class="title is-5"><a href="{{ post.url }}">{{ post.title }}</a></h3>
+                <p>{{ post.description }}</p>
+                <p class="has-text-grey-dark">{{ post.duration }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
 
 # Heading 1
 
