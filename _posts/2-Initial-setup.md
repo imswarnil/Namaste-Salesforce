@@ -1,13 +1,13 @@
 ---
-title: Introduction to Python Programming
+title: Initial Set up
 categories:
   - Training Videos
 description: |
-  Learn the basics of Python programming language in this introductory video tutorial.
-video_id: rPbPDgBdqTk
+  Create a free account to access Tableau CRM and build your first dataset. Learn how to import data and access common data fields like accounts and opportunities. See how recipes help you to refine your data and reveal insights.
+video_id: 0UrasqsdHXU
 thumbnail: "https://img.youtube.com/vi/rPbPDgBdqTk/maxresdefault.jpg"
-icon: "fab fa-python"
-lesson_number: 1
+icon: "fab fa-salesforce"
+lesson_number: 2
 ---
 
 In this video, you will get an overview of Python programming, including basic syntax, data types, and control structures.
