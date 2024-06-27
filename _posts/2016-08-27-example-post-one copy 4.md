@@ -1,20 +1,13 @@
 ---
-title: Introduction to Python Programming
+title: Basic Terms
 categories:
   - Training Videos
 description: |
-  Learn the basics of Python programming language in this introductory video tutorial.
-video_id: rPbPDgBdqTk
+  Learn Tableau CRM basic terms at data layer, designer layer and intelligence layer, and get to know what can drive your analytics adoption.
+video_id: aPwndqsmaGk
 thumbnail: "https://img.youtube.com/vi/rPbPDgBdqTk/maxresdefault.jpg"
-icon: "fab fa-python"
+icon: "fab fa-salesforce"
 lesson_number: 1
 ---
 
-In this video, you will get an overview of Python programming, including basic syntax, data types, and control structures.
-
-<!-- more -->
-
-Continue your journey into Python programming with this informative video.
-
-_Originally from [Introduction to Python Programming](https://www.youtube.com/watch?v=abc123xyz)_
-
+Some Data
