@@ -1,151 +1,134 @@
 ---
-layout: default
+layout: base
 ---
 
-<section class="section">
-  <div class="container">
-    <div class="columns">
-      <!-- Sidebar for Course Content -->
-      <div class="column is-one-quarter is-hidden-mobile">
-        <div class="box">
-          <div class="is-flex is-justify-content-space-between">
-            <span class="has-text-weight-medium has-text-grey-dark">Course Content</span>
-            <button class="button is-small is-pulled-right" onclick="window.location.href='/training'">
-              <span class="icon is-small"><i class="fas fa-times"></i></span>
-            </button>
-          </div>
-          <div class="content">
-            <div class="block">
-              <div class="is-flex is-align-items-center">
-                <div class="has-text-weight-medium">{{ site.data.course_navigation.course_name }}</div>
-                <div class="ml-auto pl-5">0/{{ site.data.course_navigation.sections | size }}</div>
-              </div>
-              <div>
-                <ul>
-                  {% for section in site.data.course_navigation.sections %}
-                    <li>
-                      <a class="has-dropdown is-hoverable">
-                        <i class="{{ section.icon }}"></i> {{ section.section }}
-                      </a>
-                      <ul>
-                        {% for lesson in section.lessons %}
-                          <li>
-                            <a href="{{ lesson.link }}">
-                              <i class="{{ lesson.icon }}"></i> {{ lesson.title }}
-                            </a>
-                          </li>
-                        {% endfor %}
-                      </ul>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+{% include site-header.html %}
 
-      <!-- Main Content Area -->
-      <div class="column">
-        <div class="box">
-          <div class="is-flex is-align-items-center is-justify-content-space-between">
-            <button class="button is-light is-hidden-touch" onclick="window.history.back()">
-              <span class="icon"><i class="fas fa-arrow-left"></i></span>
-            </button>
-            <div class="ml-3 has-text-weight-medium">{{ site.data.course_navigation.course_name }}</div>
-            <div class="ml-auto is-flex is-hidden-touch">
-              <div class="mr-5">
-                <span>Your Progress: 0/{{ site.data.course_navigation.sections | size }} (0%)</span>
-              </div>
-              <button class="button is-primary is-small">
-                <span class="icon is-small"><i class="fas fa-check-circle"></i></span>
-                <span>Mark as Complete</span>
-              </button>
-              <button class="button is-light">
-                <span class="icon is-small"><i class="fas fa-times"></i></span>
-              </button>
-            </div>
-            <button class="button is-light is-hidden-desktop" onclick="document.getElementById('course-sidebar').classList.toggle('is-active')">
-              <span class="icon"><i class="fas fa-bars"></i></span>
-            </button>
+<div class="section columns is-centered">
+  <div class="column is-2">
+    <div class="menu">
+      <p class="menu-label">
+        Course Content
+        <button class="button is-small is-pulled-right is-hidden-desktop" onclick="document.getElementById('course-sidebar').classList.toggle('is-hidden-mobile')">
+          <span class="icon is-small"><i class="fas fa-bars"></i></span>
+        </button>
+      </p>
+      <div id="course-sidebar" class="content">
+        <div class="block">
+          <div class="is-flex is-align-items-center">
+            <div class="has-text-weight-medium">{{ site.data.course_navigation.name }}</div>
           </div>
-
-          <!-- Content Tabs -->
-          <div class="tabs is-centered">
-            <ul>
-              <li class="is-active">
-                <a href="#" data-target="course-overview" class="tab-link is-active">
-                  <span class="icon is-small"><i class="fas fa-file-alt"></i></span>
-                  <span>Overview</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" data-target="course-comments" class="tab-link">
-                  <span class="icon is-small"><i class="fas fa-comments"></i></span>
-                  <span>Comments</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Tab Content -->
-          <div id="course-overview" class="box tab-content is-active">
-            <div class="content">
-              <div class="columns is-centered">
-                <div class="column is-two-thirds">
-                  <div class="title is-5 has-text-weight-medium">About Lesson</div>
-                  <div class="content">{{ content }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="course-comments" class="box tab-content is-hidden">
-            <div class="content">
-              <div class="title is-5 has-text-weight-medium">Join the conversation</div>
-              <form class="box" method="post">
-                <div class="field">
-                  <figure class="image is-48x48">
-                    <img src="https://namastesalesforce.com/wp-content/litespeed/avatar/25fe46c993efce870036b2cb94df4064.jpg?ver=1718713637" alt="Avatar">
-                  </figure>
-                </div>
-                <div class="field">
-                  <textarea class="textarea" placeholder="Write your comment here…" name="comment"></textarea>
-                  <input type="hidden" name="comment_post_ID" value="{{ page.id }}">
-                  <input type="hidden" name="comment_parent" value="0">
-                </div>
-                <div class="field">
-                  <button type="submit" class="button is-primary is-small">Submit</button>
-                </div>
-              </form>
-              <div class="content"></div>
-              <div class="buttons is-right"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Course Progress -->
-        <div class="box">
-          <div class="is-flex is-justify-content-space-between">
-            <span class="has-text-weight-medium has-text-grey-dark">Course Progress</span>
-          </div>
-          <div class="content">
-            <div class="block">
-              <div class="is-flex is-align-items-center">
-                <div class="has-text-weight-medium">Your Progress</div>
-                <div class="ml-auto pl-5">0%</div>
-              </div>
-              <progress class="progress is-primary" value="0" max="100">0%</progress>
-            </div>
-            <div class="is-half">
-              <a href="#" class="button is-light is-fullwidth">Back to Course</a>
-            </div>
+          <div>
+            <ol class="menu-list">
+              {% for section in site.data.course_navigation.sections %}
+                <li>
+                  <a>
+                    <i class="{{ section.icon }}"></i>
+                    <span>{{ section.section }}</span>
+                  </a>
+                  <ul>
+                    {% for lesson in section.lessons %}
+                      <li>
+                        <a href="{{ lesson.link }}">
+                          <i class="{{ lesson.icon }}"></i> {{ lesson.title }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </li>
+              {% endfor %}
+            </ol>
           </div>
         </div>
       </div>
     </div>
+    <a href="/training" class="button is-light is-fullwidth mt-5">Back to Training Page</a>
   </div>
-</section>
+  <div class="column is-7 ml-3">
+    <div class="">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul class="mb-3">
+          <li><a href="/training">Training </a></li>
+          <li class="is-active"><a href="#" aria-current="page">{{ page.title }}</a></li>
+        </ul>
+      </nav>
+        <h1 class="title is-2 mb-2">{{ page.title }}</h1>
+        <h2 class="subtitle is-5 mb-5">{{ page.description }}</h2>
+        <figure class="image is-16by9">
+          <iframe class="has-ratio" width="640" height="360" src="https://www.youtube.com/embed/{{ page.video_id }}?start={{ page.start_time }}&end={{ page.end_time }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </figure>
+        <div class="content">
+          {{ content }}
+        </div>
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <button class="button is-primary">Previous</button>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <button class="button is-primary">Next</button>
+            </div>
+          </div>
+        </nav>
+      </div>
+  </div>
+  <div class="column is-3">
+    <div class="box">
+      <h3 class="title is-5">Support Our Course</h3>
+      <p>If you find this course helpful, consider supporting us:</p>
+      
+      <!-- Ad Section -->
+      <div class="box has-background-light mb-4">
+        <h4 class="subtitle is-6">Advertisement</h4>
+        <div class="content">
+          <!-- Ad content (e.g., AdSense code) goes here -->
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-xxxxxxxxxx"
+               data-ad-slot="xxxxxxxxxx"
+               data-ad-format="auto"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+        </div>
+      </div>
+  
+      <!-- Call-to-Action for Premium Content -->
+      <div class="box has-background-primary has-text-white mb-4">
+        <h4 class="subtitle is-6">Unlock Premium Content</h4>
+        <p>Get access to exclusive content and advanced lessons.</p>
+        <a href="/premium" class="button is-light is-fullwidth">Go Premium</a>
+      </div>
+  
+      <!-- Related Resources -->
+      <div class="box mb-4">
+        <h4 class="subtitle is-6">Related Resources</h4>
+        <ul>
+          <li><a href="#">Advanced CRM Techniques</a></li>
+          <li><a href="#">CRM Best Practices</a></li>
+          <li><a href="#">Salesforce Integration</a></li>
+        </ul>
+      </div>
+  
+      <!-- Donation Button -->
+      <div class="box has-background-light mb-4">
+        <h4 class="subtitle is-6">Donate</h4>
+        <p>Your donations help us keep this course free.</p>
+        <a href="/donate" class="button is-primary is-fullwidth">Donate Now</a>
+      </div>
+  
+      <!-- Contact Information -->
+      <div class="box">
+        <h4 class="subtitle is-6">Contact Us</h4>
+        <p>If you have any questions or feedback, feel free to reach out.</p>
+        <a href="/contact" class="button is-link is-fullwidth">Contact Us</a>
+      </div>
+    </div>
+  </div>
+  
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
