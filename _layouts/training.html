@@ -7,11 +7,16 @@ layout: default
     <div class="columns">
       <div class="column is-one-quarter">
         <aside class="menu">
-          <p class="menu-label">Course Navigation</p>
+          <p class="menu-label">{{ site.training.name }}</p>
+          <button class="button is-small is-pulled-right" onclick="window.location.href='/training'">
+            <span class="icon is-small"><i class="fas fa-times"></i></span>
+          </button>
           <ul class="menu-list">
-            {% for section in site.data.course_navigation %}
+            {% for section in site.data.course_navigation.sections %}
               <li>
-                <a><i class="{{ section.icon }}"></i> {{ section.section }}</a>
+                <a class="has-dropdown is-hoverable">
+                  <i class="{{ section.icon }}"></i> {{ section.section }}
+                </a>
                 <ul>
                   {% for lesson in section.lessons %}
                     <li>
@@ -34,3 +39,15 @@ layout: default
     </div>
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const burger = document.querySelector('.navbar-burger');
+    const menu = document.querySelector('.navbar-menu');
+
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('is-active');
+      menu.classList.toggle('is-active');
+    });
+  });
+</script>
