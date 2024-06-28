@@ -1,7 +1,7 @@
 ---
 title: Basic Terms
 categories:
-  - Training Videos
+  - Getting Started
 description: |
   Learn Tableau CRM basic terms at data layer, designer layer and intelligence layer, and get to know what can drive your analytics adoption.
 video_id: aPwndqsmaGk
