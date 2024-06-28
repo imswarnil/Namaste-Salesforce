@@ -1,109 +1,176 @@
-<!DOCTYPE html>
-<html lang="{{ site.lang | default: 'en-US' }}">
-<head>
-  <!-- General meta -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% if page.indexing == false %}
-  <meta name="robots" content="noindex">
-  {% endif %}
-  {% if page.collectionpage %}
-  {% assign collectiondata = site.collections | where: "label", page.collectionpage | first %}
-  <title>{{ collectiondata.title }} - {{ site.title }}</title>
-  <meta property="og:title" content="{{ collectiondata.title }}">
-  <meta name="description" content="{{ collectiondata.description }}">
-  <meta property="og:description" content="{{ collectiondata.description }}">
-  {% else %}
-  {% seo %}
-  {% endif %}
-  {% if site.fonts.preconnect_urls %}
-  {% for url in site.fonts.preconnect_urls %}
-  <link rel="preconnect" href="{{ url }}" crossorigin />
-  {% endfor %}
-  {% endif %}
+---
+layout: default
+---
 
-  <link rel="manifest" href="{{ "/manifest.json" | relative_url }}">
-  <meta name="theme-color" content="{{ site.manifest.theme_color | default: '#242e2b' }}"/>
-  <link rel="stylesheet" href="{{ "/assets/styles.css" | relative_url }}">
-  <link rel="stylesheet" href="{{ site.url }}/assets/style.css">
-  {% if site.favicons or site.avatarurl %}{% include site-favicons.html %}{% endif %}
-  {% if site.google_analytics %}{% include site-analytics.html %}{% endif %}
-  {% include site-fonts.html %}
-  {% include site-before-start.html %}
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1291242080282540" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body class="layout-{{ page.layout | default: 'default' }}{% if page.title %} {{ page.title | slugify }}{% endif %}">
-
-  <!-- Mobile Navbar -->
-  <nav class="navbar is-primary is-fixed-top" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-        {{ site.title }}
-      </a>
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-    <div id="navbarMenu" class="navbar-menu">
-      <div class="navbar-start">
-        <a class="navbar-item" href="/training">
-          Training
-        </a>
-      </div>
-    </div>
-  </nav>
-
-  <section class="section">
-    <div class="container">
-      <div class="columns">
-        <div class="column is-one-quarter">
-          <aside class="menu">
-            <p class="menu-label">{{ site.training.name }}</p>
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <!-- Sidebar for Course Content -->
+      <div class="column is-one-quarter is-hidden-mobile">
+        <div class="box">
+          <div class="is-flex is-justify-content-space-between">
+            <span class="has-text-weight-medium has-text-grey-dark">Course Content</span>
             <button class="button is-small is-pulled-right" onclick="window.location.href='/training'">
               <span class="icon is-small"><i class="fas fa-times"></i></span>
             </button>
-            <ul class="menu-list">
-              {% for section in site.data.course_navigation.sections %}
-                <li>
-                  <a class="has-dropdown is-hoverable">
-                    <i class="{{ section.icon }}"></i> {{ section.section }}
-                  </a>
-                  <ul>
-                    {% for lesson in section.lessons %}
-                      <li>
-                        <a href="{{ lesson.link }}">
-                          <i class="{{ lesson.icon }}"></i> {{ lesson.title }}
-                        </a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </li>
-              {% endfor %}
-            </ul>
-          </aside>
-        </div>
-        <div class="column">
+          </div>
           <div class="content">
-            {{ content }}
+            <div class="block">
+              <div class="is-flex is-align-items-center">
+                <div class="has-text-weight-medium">{{ site.data.course_navigation.course_name }}</div>
+                <div class="ml-auto pl-5">0/{{ site.data.course_navigation.sections | size }}</div>
+              </div>
+              <div>
+                <ul>
+                  {% for section in site.data.course_navigation.sections %}
+                    <li>
+                      <a class="has-dropdown is-hoverable">
+                        <i class="{{ section.icon }}"></i> {{ section.section }}
+                      </a>
+                      <ul>
+                        {% for lesson in section.lessons %}
+                          <li>
+                            <a href="{{ lesson.link }}">
+                              <i class="{{ lesson.icon }}"></i> {{ lesson.title }}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="column">
+        <div class="box">
+          <div class="is-flex is-align-items-center is-justify-content-space-between">
+            <button class="button is-light is-hidden-touch" onclick="window.history.back()">
+              <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            </button>
+            <div class="ml-3 has-text-weight-medium">{{ site.data.course_navigation.course_name }}</div>
+            <div class="ml-auto is-flex is-hidden-touch">
+              <div class="mr-5">
+                <span>Your Progress: 0/{{ site.data.course_navigation.sections | size }} (0%)</span>
+              </div>
+              <button class="button is-primary is-small">
+                <span class="icon is-small"><i class="fas fa-check-circle"></i></span>
+                <span>Mark as Complete</span>
+              </button>
+              <button class="button is-light">
+                <span class="icon is-small"><i class="fas fa-times"></i></span>
+              </button>
+            </div>
+            <button class="button is-light is-hidden-desktop" onclick="document.getElementById('course-sidebar').classList.toggle('is-active')">
+              <span class="icon"><i class="fas fa-bars"></i></span>
+            </button>
+          </div>
+
+          <!-- Content Tabs -->
+          <div class="tabs is-centered">
+            <ul>
+              <li class="is-active">
+                <a href="#" data-target="course-overview" class="tab-link is-active">
+                  <span class="icon is-small"><i class="fas fa-file-alt"></i></span>
+                  <span>Overview</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" data-target="course-comments" class="tab-link">
+                  <span class="icon is-small"><i class="fas fa-comments"></i></span>
+                  <span>Comments</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Tab Content -->
+          <div id="course-overview" class="box tab-content is-active">
+            <div class="content">
+              <div class="columns is-centered">
+                <div class="column is-two-thirds">
+                  <div class="title is-5 has-text-weight-medium">About Lesson</div>
+                  <div class="content">{{ content }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="course-comments" class="box tab-content is-hidden">
+            <div class="content">
+              <div class="title is-5 has-text-weight-medium">Join the conversation</div>
+              <form class="box" method="post">
+                <div class="field">
+                  <figure class="image is-48x48">
+                    <img src="https://namastesalesforce.com/wp-content/litespeed/avatar/25fe46c993efce870036b2cb94df4064.jpg?ver=1718713637" alt="Avatar">
+                  </figure>
+                </div>
+                <div class="field">
+                  <textarea class="textarea" placeholder="Write your comment here…" name="comment"></textarea>
+                  <input type="hidden" name="comment_post_ID" value="{{ page.id }}">
+                  <input type="hidden" name="comment_parent" value="0">
+                </div>
+                <div class="field">
+                  <button type="submit" class="button is-primary is-small">Submit</button>
+                </div>
+              </form>
+              <div class="content"></div>
+              <div class="buttons is-right"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course Progress -->
+        <div class="box">
+          <div class="is-flex is-justify-content-space-between">
+            <span class="has-text-weight-medium has-text-grey-dark">Course Progress</span>
+          </div>
+          <div class="content">
+            <div class="block">
+              <div class="is-flex is-align-items-center">
+                <div class="has-text-weight-medium">Your Progress</div>
+                <div class="ml-auto pl-5">0%</div>
+              </div>
+              <progress class="progress is-primary" value="0" max="100">0%</progress>
+            </div>
+            <div class="is-half">
+              <a href="#" class="button is-light is-fullwidth">Back to Course</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const burger = document.querySelector('.navbar-burger');
-      const menu = document.querySelector('.navbar-menu');
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
 
-      burger.addEventListener('click', () => {
-        burger.classList.toggle('is-active');
-        menu.classList.toggle('is-active');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', event => {
+        event.preventDefault();
+        const target = tab.getAttribute('data-target');
+
+        tabs.forEach(t => t.classList.remove('is-active'));
+        tabContents.forEach(tc => tc.classList.remove('is-active', 'is-hidden'));
+
+        tab.classList.add('is-active');
+        document.getElementById(target).classList.add('is-active');
       });
     });
-  </script>
-</body>
-</html>
+
+    const burger = document.querySelector('.navbar-burger');
+    const menu = document.querySelector('.navbar-menu');
+
+    burger.addEventListener('click', () => {
+      burger.classList.toggle('is-active');
+      menu.classList.toggle('is-active');
+    });
+  });
+</script>
