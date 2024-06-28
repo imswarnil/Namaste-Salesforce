@@ -5,31 +5,48 @@ description: "Welcome to the CRM Analytics Academy Training"
 permalink: /training
 ---
 
-# Welcome to the CRM Analytics Academy Training
-
-This is the home page for the training collection. Navigate through the course using the menu on the left.
+<div class="hero is-primary">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Welcome to the CRM Analytics Academy Training
+      </h1>
+      <h2 class="subtitle">
+        {{ page.description }}
+      </h2>
+    </div>
+  </div>
+</div>
 
 <div class="container">
-  <div class="columns">
-    <!-- Sidebar for Course Content -->
-    <div class="column is-one-quarter is-hidden-mobile">
-      <div class="box">
-        <div class="is-flex is-justify-content-space-between">
-          <span class="has-text-weight-medium has-text-grey-dark">Course Content</span>
-        </div>
-        <div class="content">
-          <div class="block">
-            <div class="is-flex is-align-items-center">
-              <div class="has-text-weight-medium">{{ site.data.course_navigation.course_name }}</div>
-              <div class="ml-auto pl-5">0/{{ site.data.course_navigation.sections | size }}</div>
-            </div>
-            <div>
+  <section class="section">
+    <div class="columns">
+      <div class="column is-three-quarters">
+        <div class="box">
+          <h2 class="title is-4">{{ site.data.course_navigation.course_name }}</h2>
+          <p>{{ site.data.course_navigation.course_description }}</p>
+          <figure class="image is-16by9">
+            <img src="{{ site.data.course_navigation.course_image }}" alt="Course Image">
+          </figure>
+          <!-- Tabs -->
+          <div class="tabs is-centered mt-5">
+            <ul>
+              <li class="is-active"><a href="#course-info">Course Info</a></li>
+              <li><a href="#course-reviews">Reviews</a></li>
+              <li><a href="#course-qa">Q&A</a></li>
+              <li><a href="#course-announcements">Announcements</a></li>
+            </ul>
+          </div>
+          <!-- Course Info -->
+          <div id="course-info" class="content">
+            <h3 class="title is-5">About Course</h3>
+            <p>{{ site.data.course_navigation.course_description }}</p>
+            <h4 class="title is-6">Course Content</h4>
+            <div class="content">
               <ul>
                 {% for section in site.data.course_navigation.sections %}
                   <li>
-                    <a class="has-dropdown is-hoverable">
-                      <i class="{{ section.icon }}"></i> {{ section.section }}
-                    </a>
+                    <strong>{{ section.section }}</strong>
                     <ul>
                       {% for lesson in section.lessons %}
                         <li>
@@ -44,126 +61,108 @@ This is the home page for the training collection. Navigate through the course u
               </ul>
             </div>
           </div>
+          <!-- Reviews -->
+          <div id="course-reviews" class="content is-hidden">
+            <h3 class="title is-5">Reviews</h3>
+            <!-- Add your reviews content here -->
+          </div>
+          <!-- Q&A -->
+          <div id="course-qa" class="content is-hidden">
+            <h3 class="title is-5">Q&A</h3>
+            <!-- Add your Q&A content here -->
+          </div>
+          <!-- Announcements -->
+          <div id="course-announcements" class="content is-hidden">
+            <h3 class="title is-5">Announcements</h3>
+            <!-- Add your announcements content here -->
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Main Content Area -->
-    <div class="column">
-      <div class="box">
-        <div class="is-flex is-align-items-center is-justify-content-space-between">
-          <button class="button is-light is-hidden-touch" onclick="window.history.back()">
-            <span class="icon"><i class="fas fa-arrow-left"></i></span>
-          </button>
-          <div class="ml-3 has-text-weight-medium">{{ site.data.course_navigation.course_name }}</div>
-          <div class="ml-auto is-flex is-hidden-touch">
-            <div class="mr-5">
-              <span>Your Progress: 0/{{ site.data.course_navigation.sections | size }} (0%)</span>
-            </div>
-            <button class="button is-primary is-small">
-              <span class="icon is-small"><i class="fas fa-check-circle"></i></span>
-              <span>Mark as Complete</span>
-            </button>
-            <button class="button is-light">
-              <span class="icon is-small"><i class="fas fa-times"></i></span>
-            </button>
-          </div>
-          <button class="button is-light is-hidden-desktop" onclick="document.getElementById('course-sidebar').classList.toggle('is-active')">
-            <span class="icon"><i class="fas fa-bars"></i></span>
-          </button>
+      <div class="column">
+        <div class="box">
+          <h3 class="title is-5">Course Progress</h3>
+          <progress class="progress is-primary" value="0" max="100">0%</progress>
+          <p class="mt-2">Complete all lessons to mark this course as complete.</p>
+          <button class="button is-primary is-fullwidth">Start Learning</button>
         </div>
-        <!-- Content Tabs -->
-        <div class="tabs is-centered">
+        <div class="box">
+          <h3 class="title is-5">Course Details</h3>
           <ul>
-            <li class="is-active">
-              <a href="#" data-target="course-overview" class="tab-link is-active">
-                <span class="icon is-small"><i class="fas fa-file-alt"></i></span>
-                <span>Overview</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" data-target="course-comments" class="tab-link">
-                <span class="icon is-small"><i class="fas fa-comments"></i></span>
-                <span>Comments</span>
-              </a>
-            </li>
+            <li><strong>Level:</strong> Beginner</li>
+            <li><strong>Enrolled:</strong> 7 Total Enrolled</li>
+            <li><strong>Duration:</strong> 1 Hour</li>
+            <li><strong>Last Updated:</strong> May 15, 2024</li>
           </ul>
         </div>
-        <!-- Tab Content -->
-        <div id="course-overview" class="box tab-content is-active">
-          <div class="content">
-            <div class="columns is-centered">
-              <div class="column is-two-thirds">
-                <div class="title is-5 has-text-weight-medium">About Course</div>
-                <div class="content">
-                  <p>{{ page.description }}</p>
-                </div>
-              </div>
+        <div class="box">
+          <h3 class="title is-5">Author</h3>
+          <div class="media">
+            <div class="media-left">
+              <figure class="image is-48x48">
+                <img src="https://namastesalesforce.com/wp-content/litespeed/avatar/25fe46c993efce870036b2cb94df4064.jpg?ver=1718713637" alt="Author Image">
+              </figure>
+            </div>
+            <div class="media-content">
+              <p class="title is-6">Admin</p>
+              <p class="subtitle is-7">Development</p>
             </div>
           </div>
         </div>
-        <div id="course-comments" class="box tab-content is-hidden">
-          <div class="content">
-            <div class="title is-5 has-text-weight-medium">Join the conversation</div>
-            <form class="box" method="post">
-              <div class="field">
-                <figure class="image is-48x48">
-                  <img src="https://namastesalesforce.com/wp-content/litespeed/avatar/25fe46c993efce870036b2cb94df4064.jpg?ver=1718713637" alt="Avatar">
-                </figure>
-              </div>
-              <div class="field">
-                <textarea class="textarea" placeholder="Write your comment here…" name="comment"></textarea>
-                <input type="hidden" name="comment_post_ID" value="{{ page.id }}">
-                <input type="hidden" name="comment_parent" value="0">
-              </div>
-              <div class="field">
-                <button type="submit" class="button is-primary is-small">Submit</button>
-              </div>
-            </form>
-            <div class="content"></div>
-            <div class="buttons is-right"></div>
-          </div>
+        <div class="box">
+          <h3 class="title is-5">Material Includes</h3>
+          <ul>
+            <li>Video Lectures</li>
+            <li>Hands-on Exercises</li>
+            <li>Course Notes</li>
+            <li>Community Access</li>
+            <li>Certificate of Completion</li>
+          </ul>
         </div>
-      </div>
-      <!-- Course Progress -->
-      <div class="box">
-        <div class="is-flex is-justify-content-space-between">
-          <span class="has-text-weight-medium has-text-grey-dark">Course Progress</span>
+        <div class="box">
+          <h3 class="title is-5">Requirements</h3>
+          <ul>
+            <li>Basic Understanding of Salesforce</li>
+            <li>Access to Salesforce Org</li>
+            <li>Desire to Learn</li>
+          </ul>
         </div>
-        <div class="content">
-          <div class="block">
-            <div class="is-flex is-align-items-center">
-              <div class="has-text-weight-medium">Your Progress</div>
-              <div class="ml-auto pl-5">0%</div>
-            </div>
-            <progress class="progress is-primary" value="0" max="100">0%</progress>
-          </div>
-          <div class="is-half">
-            <a href="#" class="button is-light is-fullwidth">Back to Course</a>
-          </div>
+        <div class="box">
+          <h3 class="title is-5">Tags</h3>
+          <span class="tag is-primary">apex</span>
+          <span class="tag is-primary">basics</span>
+          <span class="tag is-primary">developer</span>
+        </div>
+        <div class="box">
+          <h3 class="title is-5">Audience</h3>
+          <ul>
+            <li>Aspiring Salesforce Developers</li>
+            <li>New Programmers</li>
+            <li>Salesforce Admins</li>
+            <li>IT Professionals</li>
+            <li>Tech Enthusiasts</li>
+          </ul>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
+    const tabs = document.querySelectorAll('.tabs ul li a');
+    const contents = document.querySelectorAll('.tab-content');
+
     tabs.forEach(tab => {
       tab.addEventListener('click', event => {
         event.preventDefault();
-        const target = tab.getAttribute('data-target');
-        tabs.forEach(t => t.classList.remove('is-active'));
-        tabContents.forEach(tc => tc.classList.remove('is-active', 'is-hidden'));
-        tab.classList.add('is-active');
-        document.getElementById(target).classList.add('is-active');
+        const target = tab.getAttribute('href').substring(1);
+
+        tabs.forEach(t => t.parentElement.classList.remove('is-active'));
+        contents.forEach(content => content.classList.add('is-hidden'));
+
+        tab.parentElement.classList.add('is-active');
+        document.getElementById(target).classList.remove('is-hidden');
       });
-    });
-    const burger = document.querySelector('.navbar-burger');
-    const menu = document.querySelector('.navbar-menu');
-    burger.addEventListener('click', () => {
-      burger.classList.toggle('is-active');
-      menu.classList.toggle('is-active');
     });
   });
 </script>
+
