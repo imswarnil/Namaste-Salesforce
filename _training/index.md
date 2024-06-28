@@ -3,13 +3,14 @@ layout: page
 title: "Training Home"
 description: "Welcome to the CRM Analytics Academy Training"
 permalink: /training
+aside : false
 ---
 
-<div class="hero is-primary">
+<div class="hero is-lights">
   <div class="hero-body">
     <div class="container">
       <h1 class="title">
-        Welcome to the CRM Analytics Academy Training
+           {{ page.description }}
       </h1>
       <h2 class="subtitle">
         {{ page.description }}
