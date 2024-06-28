@@ -10,6 +10,7 @@ lesson_type: Video
 icon: "fab fa-salesforce"
 lesson_number: 1
 layout: training
+permalink : /test
 ---
 
 # Basic Terms
