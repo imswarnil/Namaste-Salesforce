@@ -5,45 +5,15 @@ description: "Welcome to the CRM Analytics Academy Training"
 permalink: /training
 aside: false
 ---
-
-  <style>
-        .card {
-            position: relative;
-            overflow: hidden;
-        }
-        .card-image img {
-            width: 100%;
-            height: auto;
-        }
-        .card-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            color: white;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        .pagination-box {
-            justify-content: space-between;
-            align-items: center;
-        }
-        .hero {
-            background-color: #f5f5f5;
-        }
-        .hero .title, .hero .subtitle {
-            color: #333;
-        }
-    </style>
-  <section class="hero">
+<section class="hero">
         <div class="hero-body">
             <div class="container">
                 <h1 class="title">{{ page.description }}</h1>
                 <h2 class="subtitle">{{ page.description }}</h2>
             </div>
         </div>
-    </section>
-    <div class="container">
+</section>
+<div class="container">
         <section class="section">
             <div class="columns">
                 <div class="column is-three-quarters">
