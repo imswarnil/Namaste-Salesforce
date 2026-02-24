@@ -1,76 +1,348 @@
 {{!< default}}
 {{!-- The tag above means: insert everything in this file
 into the {body} of the default.hbs template --}}
-<div class="site-header-content outer{{#match @custom.header_style "Left aligned"}} left-aligned{{/match}}{{#unless @custom.show_publication_cover}}{{#match @custom.header_style "Hidden"}} no-content{{/match}}{{/unless}}">
 
-    {{#if @custom.show_publication_cover}}
-        {{!-- VIDEO COVER (replaces cover image) --}}
-        <div class="site-header-cover site-header-cover--video" aria-hidden="true">
-            <iframe
-                src="https://www.youtube.com/embed/TUXh42V_ng4?start=1&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=TUXh42V_ng4"
-                title="{{@site.title}} cover video"
-                frameborder="0"
-                allow="autoplay; encrypted-media; picture-in-picture"
-                allowfullscreen
-            ></iframe>
+
+<section class="ns-hero ns-hero--video">
+
+    {{!-- Background video layer --}}
+    <div class="ns-hero__bg" aria-hidden="true">
+        <iframe
+            class="ns-hero__bg-iframe"
+            src="https://www.youtube.com/embed/TUXh42V_ng4?start=1&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=TUXh42V_ng4"
+            title="Namaste Salesforce background video"
+            frameborder="0"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+        ></iframe>
+        <div class="ns-hero__scrim"></div>
+    </div>
+
+    <div class="outer">
+        <div class="inner ns-hero__inner">
+
+            {{!-- LEFT: Copy --}}
+            <div class="ns-hero__copy">
+                <div class="ns-badge">
+                    <span class="ns-dot"></span>
+                    <span>Namaste Salesforce • LMS + Blog</span>
+                </div>
+
+                <h1 class="ns-hero__title">
+                    Learn Salesforce the builder way.
+                    <span class="ns-hero__soft">Ship dashboards. Build projects.</span>
+                </h1>
+
+                <p class="ns-hero__subtitle">
+                    Courses + lessons for CRMA, LWC, setup, configuration, and certifications — designed to be finished, not bookmarked.
+                </p>
+
+                <div class="ns-hero__actions">
+                    <a class="ns-btn ns-btn--primary" href="/courses/">Explore Courses</a>
+                    <a class="ns-btn ns-btn--ghost" href="/lessons/">Browse Lessons</a>
+                    <a class="ns-btn ns-btn--ghost" href="/blog/">Read Blog</a>
+                </div>
+
+                <div class="ns-hero__meta">
+                    <span class="ns-pill">CRMA</span>
+                    <span class="ns-pill">LWC</span>
+                    <span class="ns-pill">Setup</span>
+                    <span class="ns-pill">Projects</span>
+                </div>
+            </div>
+
+            {{!-- RIGHT: Logo + floating cards --}}
+            <div class="ns-hero__orbit">
+
+                <div class="ns-orbit">
+                    <div class="ns-orbit__core">
+                        <a class="ns-orbit__brand" href="{{@site.url}}" aria-label="{{@site.title}}">
+                            {{#if @site.logo}}
+                                <img class="ns-orbit__logo" src="{{@site.logo}}" alt="{{@site.title}}">
+                            {{else}}
+                                <span class="ns-orbit__text">{{@site.title}}</span>
+                            {{/if}}
+                        </a>
+                    </div>
+
+                    {{!-- Floating cards around logo --}}
+                    <a class="ns-float ns-float--a" href="/courses/" aria-label="Training">
+                        <span class="ns-float__kicker">Training</span>
+                        <span class="ns-float__title">Start Here</span>
+                    </a>
+
+                    <a class="ns-float ns-float--b" href="/courses/" aria-label="Learn LWC">
+                        <span class="ns-float__kicker">Learn</span>
+                        <span class="ns-float__title">LWC</span>
+                    </a>
+
+                    <a class="ns-float ns-float--c" href="/courses/" aria-label="Code">
+                        <span class="ns-float__kicker">Hands-on</span>
+                        <span class="ns-float__title">Code</span>
+                    </a>
+
+                    <a class="ns-float ns-float--d" href="/courses/" aria-label="Layouts">
+                        <span class="ns-float__kicker">UI</span>
+                        <span class="ns-float__title">Layouts</span>
+                    </a>
+
+                    <a class="ns-float ns-float--e" href="/courses/" aria-label="Configuration">
+                        <span class="ns-float__kicker">Admin</span>
+                        <span class="ns-float__title">Config</span>
+                    </a>
+
+                    <a class="ns-float ns-float--f" href="/courses/" aria-label="Setup">
+                        <span class="ns-float__kicker">Core</span>
+                        <span class="ns-float__title">Setup</span>
+                    </a>
+
+                    <a class="ns-float ns-float--g" href="/courses/" aria-label="Certification">
+                        <span class="ns-float__kicker">Prep</span>
+                        <span class="ns-float__title">Cert</span>
+                    </a>
+
+                    <a class="ns-float ns-float--h" href="/courses/" aria-label="Build Projects">
+                        <span class="ns-float__kicker">Build</span>
+                        <span class="ns-float__title">Projects</span>
+                    </a>
+                </div>
+
+                <div class="ns-orbit__foot">
+                    <a class="ns-hero__yt" href="https://www.youtube.com/watch?v=TUXh42V_ng4" target="_blank" rel="noopener">
+                        Watch intro on YouTube →
+                    </a>
+                </div>
+
+            </div>
+
         </div>
-    {{/if}}
-
-    {{#match @custom.header_style "!=" "Hidden"}}
-        <div class="site-header-inner inner">
-            {{#match @custom.navigation_layout "Logo on cover"}}
-                {{#if @site.logo}}
-                    <img class="site-logo" src="{{@site.logo}}" alt="{{@site.title}}">
-                {{else}}
-                    <h1 class="site-title">{{@site.title}}</h1>
-                {{/if}}
-            {{/match}}
-            {{#if @site.description}}
-                <p class="site-description">{{@site.description}}</p>
-            {{/if}}
-        </div>
-    {{/match}}
-
-    <style>
-        /* Video cover replacement for Casper site-header-cover */
-.site-header-cover--video {
-    position: absolute;
-    top: 0; right: 0; bottom: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-}
-
-.site-header-cover--video iframe {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 177.78vh;  /* 16:9 cover trick */
-    height: 100vh;
-    min-width: 100%;
-    min-height: 100%;
-    transform: translate(-50%, -50%);
-    pointer-events: none; /* important: keep header clickable */
-    border: 0;
-}
-
-/* Optional overlay so text stays readable (like image cover fade) */
-.has-cover .site-header-content::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,.35);
-    z-index: 0;
-}
-
-.site-header-inner {
+    </div>
+</section>
+<style>
+    /* =========================
+   Hero video background
+   ========================= */
+.ns-hero.ns-hero--video {
     position: relative;
-    z-index: 100; /* ensure above overlay + video */
+    padding: max(9vmin, 64px) 0;
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
 }
-    </style>
 
-</div>
+.ns-hero__bg { position: absolute; inset: 0; overflow: hidden; background: #000; z-index: 0; }
+.ns-hero__bg-iframe{
+    position:absolute; top:50%; left:50%;
+    width:177.78vh; height:100vh; min-width:100%; min-height:100%;
+    transform:translate(-50%,-50%);
+    border:0; pointer-events:none;
+}
+.ns-hero__scrim{
+    position:absolute; inset:0; z-index:1;
+    background:
+      radial-gradient(ellipse at top left, rgba(0,0,0,.70) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.65) 100%),
+      linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.62));
+}
+
+.ns-hero__inner{
+    position: relative;
+    z-index: 2;
+    display:grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: max(4vmin, 28px);
+    align-items:center;
+}
+
+/* Left copy */
+.ns-badge{
+    display:inline-flex; align-items:center; gap:10px;
+    height:34px; padding:0 14px;
+    border-radius:999px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(255,255,255,.45);
+    font-weight:800; font-size:1.3rem;
+    color:#15171A;
+    backdrop-filter: blur(6px);
+}
+.ns-dot{ width:10px; height:10px; border-radius:999px; background: var(--ghost-accent-color); }
+
+.ns-hero__title{
+    margin:16px 0 10px;
+    font-size: clamp(3.4rem, 5.4vw, 6.2rem);
+    font-weight:900; letter-spacing:-0.02em; line-height:1.02;
+    color: rgba(255,255,255,.96);
+    text-shadow: 0 6px 30px rgba(0,0,0,.45);
+}
+.ns-hero__soft{ display:inline-block; font-weight:800; opacity:.88; }
+
+.ns-hero__subtitle{
+    margin:0;
+    max-width:72ch;
+    font-size:2.05rem;
+    line-height:1.45;
+    color: rgba(255,255,255,.85);
+}
+
+.ns-hero__actions{ margin-top:18px; display:flex; flex-wrap:wrap; gap:12px; }
+
+.ns-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    height:44px; padding:0 18px;
+    border-radius:48px;
+    border:1px solid transparent;
+    font-size:1.6rem; font-weight:700;
+    text-decoration:none;
+    transition: transform .15s ease, opacity .15s ease;
+}
+.ns-btn:hover{ transform: translateY(-1px); opacity:.95; text-decoration:none; }
+.ns-btn--primary{ background: var(--ghost-accent-color); color:#fff; }
+.ns-btn--ghost{
+    background: rgba(255,255,255,.92);
+    color:#15171A;
+    border-color: rgba(255,255,255,.45);
+    backdrop-filter: blur(6px);
+}
+
+.ns-hero__meta{ margin-top:16px; display:flex; flex-wrap:wrap; gap:10px; }
+.ns-pill{
+    display:inline-flex; align-items:center;
+    height:32px; padding:0 12px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.35);
+    background: rgba(0,0,0,.20);
+    color: rgba(255,255,255,.82);
+    font-size:1.3rem; font-weight:700;
+    backdrop-filter: blur(6px);
+}
+
+/* =========================
+   Right: Orbit layout
+   ========================= */
+.ns-hero__orbit{ min-height: 420px; }
+.ns-orbit{
+    position: relative;
+    width: min(520px, 100%);
+    height: 420px;
+    margin-left: auto;
+}
+
+.ns-orbit__core{
+    position:absolute;
+    inset: 0;
+    display:grid;
+    place-items:center;
+}
+
+.ns-orbit__brand{
+    display:grid;
+    place-items:center;
+    width: 170px;
+    height: 170px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(255,255,255,.45);
+    box-shadow: 0 18px 50px rgba(0,0,0,.25);
+    backdrop-filter: blur(10px);
+    text-decoration:none;
+    color:#15171A;
+}
+.ns-orbit__logo{ max-height: 86px; max-width: 120px; }
+.ns-orbit__text{ font-weight: 900; font-size: 1.6rem; text-align:center; padding: 0 14px; }
+
+.ns-float{
+    position:absolute;
+    display:block;
+    width: 160px;
+    padding: 12px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(255,255,255,.45);
+    box-shadow: 0 14px 40px rgba(0,0,0,.20);
+    backdrop-filter: blur(10px);
+    text-decoration:none;
+    color:#15171A;
+    transition: transform .15s ease, opacity .15s ease;
+}
+.ns-float:hover{ transform: translateY(-3px); text-decoration:none; }
+
+.ns-float__kicker{
+    display:block;
+    font-size:1.2rem;
+    font-weight:900;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    color: rgba(0,0,0,.55);
+}
+.ns-float__title{
+    display:block;
+    margin-top: 4px;
+    font-size:1.7rem;
+    font-weight:900;
+    line-height:1.15;
+}
+
+/* Positions around the logo */
+.ns-float--a{ top: 14px; left: 50%; transform: translateX(-50%); }
+.ns-float--b{ top: 72px; right: 0; }
+.ns-float--c{ top: 190px; right: 10px; }
+.ns-float--d{ bottom: 24px; right: 70px; }
+.ns-float--e{ bottom: 24px; left: 70px; }
+.ns-float--f{ top: 190px; left: 10px; }
+.ns-float--g{ top: 72px; left: 0; }
+.ns-float--h{ bottom: 120px; left: 50%; transform: translateX(-50%); }
+
+/* Float animation (subtle) */
+@keyframes ns-floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.ns-float--a{ animation: ns-floaty 6s ease-in-out infinite; }
+.ns-float--b{ animation: ns-floaty 7s ease-in-out infinite; }
+.ns-float--c{ animation: ns-floaty 6.5s ease-in-out infinite; }
+.ns-float--d{ animation: ns-floaty 7.2s ease-in-out infinite; }
+.ns-float--e{ animation: ns-floaty 6.8s ease-in-out infinite; }
+.ns-float--f{ animation: ns-floaty 7.4s ease-in-out infinite; }
+.ns-float--g{ animation: ns-floaty 6.9s ease-in-out infinite; }
+.ns-float--h{ animation: ns-floaty 7.1s ease-in-out infinite; }
+
+/* Keep the two positioned cards centered horizontally */
+.ns-float--a{ transform: translateX(-50%); }
+.ns-float--h{ transform: translateX(-50%); }
+
+.ns-orbit__foot{
+    margin-top: 10px;
+    text-align: right;
+}
+.ns-hero__yt{
+    color: rgba(255,255,255,.85);
+    font-weight: 800;
+    text-decoration: none;
+}
+.ns-hero__yt:hover{ text-decoration: underline; }
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 991px){
+    .ns-hero__inner{ grid-template-columns: 1fr; }
+    .ns-hero__orbit{ min-height: auto; }
+    .ns-orbit{ width: 100%; height: auto; margin: 24px 0 0; }
+    .ns-orbit__core{ position: static; margin-bottom: 16px; }
+    .ns-float{
+        position: static;
+        width: 100%;
+        max-width: 520px;
+        margin: 10px auto 0;
+        animation: none;
+        transform: none;
+    }
+    .ns-orbit__foot{ text-align: left; }
+}
+
+@media (max-width: 767px){
+    .ns-hero__actions{ flex-direction: column; }
+    .ns-btn{ width: 100%; }
+}
+</style>
 
 
 {{!-- Home Hero (full width, uses existing outer/inner + your variables) --}}
