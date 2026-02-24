@@ -37,6 +37,190 @@ into the {body} of the default.hbs template --}}
 
 </div>
 
+{{!< default}}
+
+{{!-- Home Hero (full width, uses existing outer/inner + your variables) --}}
+<section class="ns-home-hero">
+    <div class="outer">
+        <div class="inner ns-home-hero__inner">
+
+            <div class="ns-home-hero__copy">
+                <div class="ns-badge">
+                    <span class="ns-dot"></span>
+                    <span>Namaste Salesforce • LMS + Blog</span>
+                </div>
+
+                <h1 class="ns-home-hero__title">
+                    Learn Salesforce Analytics like a builder.
+                    <span class="ns-home-hero__title-soft">Not a button-clicker.</span>
+                </h1>
+
+                <p class="ns-home-hero__subtitle">
+                    Courses, lessons, and practical dashboards — built for people who actually ship.
+                </p>
+
+                <div class="ns-home-hero__actions">
+                    <a class="ns-btn ns-btn--primary" href="/courses/">Explore Courses</a>
+                    <a class="ns-btn ns-btn--ghost" href="/blog/">Read Blog</a>
+                    {{#unless @member}}
+                        <a class="ns-btn ns-btn--ghost" href="/subscribe/">Subscribe</a>
+                    {{/unless}}
+                </div>
+
+                <div class="ns-home-hero__meta">
+                    <span class="ns-pill">CRMA</span>
+                    <span class="ns-pill">Dashboards</span>
+                    <span class="ns-pill">SAQL / Bindings</span>
+                    <span class="ns-pill">Projects</span>
+                </div>
+            </div>
+
+            <div class="ns-home-hero__panel">
+                <div class="ns-panel">
+                    <div class="ns-panel__head">
+                        <strong>Start here</strong>
+                        <span class="ns-muted">Quick picks</span>
+                    </div>
+
+                    {{!-- Latest course --}}
+                    {{#get "posts" filter="tag:hash-courses-col" limit="1" order="published_at desc"}}
+                        {{#foreach posts}}
+                            <a class="ns-mini-card" href="{{url}}">
+                                <div class="ns-mini-card__title">{{title}}</div>
+                                <div class="ns-mini-card__meta">
+                                    <span>Course</span>
+                                    <span class="ns-sep">•</span>
+                                    <span>{{reading_time minute="1 min" minutes="% min"}}</span>
+                                </div>
+                            </a>
+                        {{else}}
+                            <div class="ns-note">Add courses tagged <strong>#courses-col</strong>.</div>
+                        {{/foreach}}
+                    {{/get}}
+
+                    {{!-- Latest lesson --}}
+                    {{#get "posts" filter="tag:hash-lessons-col" limit="1" order="published_at desc"}}
+                        {{#foreach posts}}
+                            <a class="ns-mini-card" href="{{url}}">
+                                <div class="ns-mini-card__title">{{title}}</div>
+                                <div class="ns-mini-card__meta">
+                                    <span>Lesson</span>
+                                    <span class="ns-sep">•</span>
+                                    <span>{{reading_time minute="1 min" minutes="% min"}}</span>
+                                </div>
+                            </a>
+                        {{else}}
+                            <div class="ns-note">Add lessons tagged <strong>#lessons-col</strong>.</div>
+                        {{/foreach}}
+                    {{/get}}
+
+                    <div class="ns-panel__actions">
+                        <a class="ns-btn ns-btn--primary" href="/courses/">Go to Courses</a>
+                        <a class="ns-btn ns-btn--ghost" href="/lessons/">Browse Lessons</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{!-- Courses section --}}
+<section class="ns-section ns-section--wash">
+    <div class="outer">
+        <div class="inner">
+            <header class="ns-section__head">
+                <h2 class="ns-section__title">Featured Courses</h2>
+                <p class="ns-section__sub">Structured learning paths — short lessons, real outcomes.</p>
+                <a class="ns-link" href="/courses/">View all courses →</a>
+            </header>
+
+            {{#get "posts" filter="tag:hash-courses-col" limit="6" order="published_at desc"}}
+                {{#if posts}}
+                    <div class="ns-grid ns-grid--3">
+                        {{#foreach posts}}
+                            <article class="ns-card">
+                                <a class="ns-card__link" href="{{url}}">
+                                    {{#if feature_image}}
+                                        <div class="ns-card__media">
+                                            <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
+                                        </div>
+                                    {{/if}}
+                                    <div class="ns-card__body">
+                                        <h3 class="ns-card__title">{{title}}</h3>
+                                        <p class="ns-card__excerpt">{{excerpt words="18"}}</p>
+                                        <div class="ns-card__meta">
+                                            <span>Course</span>
+                                            <span class="ns-sep">•</span>
+                                            <span>{{reading_time minute="1 min" minutes="% min"}}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </article>
+                        {{/foreach}}
+                    </div>
+                {{else}}
+                    <div class="ns-note">No courses found. Tag posts with <strong>#courses-col</strong>.</div>
+                {{/if}}
+            {{/get}}
+        </div>
+    </div>
+</section>
+
+{{!-- Latest Lessons section --}}
+<section class="ns-section">
+    <div class="outer">
+        <div class="inner">
+            <header class="ns-section__head">
+                <h2 class="ns-section__title">Latest Lessons</h2>
+                <p class="ns-section__sub">Fresh drops you can finish in one sitting.</p>
+                <a class="ns-link" href="/lessons/">View all lessons →</a>
+            </header>
+
+            {{#get "posts" filter="tag:hash-lessons-col" limit="10" order="published_at desc"}}
+                {{#if posts}}
+                    <div class="ns-list">
+                        {{#foreach posts}}
+                            <a class="ns-list__item" href="{{url}}">
+                                <span class="ns-list__title">{{title}}</span>
+                                <span class="ns-list__meta">
+                                    {{reading_time minute="1 min" minutes="% min"}}
+                                    <span class="ns-sep">•</span>
+                                    {{date format="MMM D, YYYY"}}
+                                </span>
+                                <span class="ns-list__arrow" aria-hidden="true">→</span>
+                            </a>
+                        {{/foreach}}
+                    </div>
+                {{else}}
+                    <div class="ns-note">No lessons found. Tag posts with <strong>#lessons-col</strong>.</div>
+                {{/if}}
+            {{/get}}
+        </div>
+    </div>
+</section>
+
+{{!-- Blog section (uses your existing post-feed + post-card) --}}
+<section class="ns-section ns-section--border-top">
+    <div class="outer">
+        <div class="inner">
+            <header class="ns-section__head">
+                <h2 class="ns-section__title">Latest Blog Posts</h2>
+                <p class="ns-section__sub">Notes, guides, breakdowns, and “what I wish someone told me”.</p>
+                <a class="ns-link" href="/blog/">Go to blog →</a>
+            </header>
+
+            <div class="post-feed">
+                {{#get "posts" filter="tag:hash-blog-col" limit="9" order="published_at desc"}}
+                    {{#foreach posts}}
+                        {{> "post-card"}}
+                    {{/foreach}}
+                {{/get}}
+            </div>
+
+        </div>
+    </div>
+</section>
 {{!-- The main content area --}}
 <main id="site-main" class="site-main outer">
 <div class="inner posts">
