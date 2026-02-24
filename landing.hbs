@@ -1,23 +1,19 @@
 {{!< default}}
 {{!-- The tag above means: insert everything in this file
 into the {body} of the default.hbs template --}}
-
 <div class="site-header-content outer{{#match @custom.header_style "Left aligned"}} left-aligned{{/match}}{{#unless @custom.show_publication_cover}}{{#match @custom.header_style "Hidden"}} no-content{{/match}}{{/unless}}">
 
     {{#if @custom.show_publication_cover}}
-        {{#if @site.cover_image}}
-            {{!-- This is a responsive image, it loads different sizes depending on device
-            https://medium.freecodecamp.org/a-guide-to-responsive-images-with-ready-to-use-templates-c400bd65c433 --}}
-            <img class="site-header-cover"
-                srcset="{{img_url @site.cover_image size="s"}} 300w,
-                        {{img_url @site.cover_image size="m"}} 600w,
-                        {{img_url @site.cover_image size="l"}} 1000w,
-                        {{img_url @site.cover_image size="xl"}} 2000w"
-                sizes="100vw"
-                src="{{img_url @site.cover_image size="xl"}}"
-                alt="{{@site.title}}"
-            />
-        {{/if}}
+        {{!-- VIDEO COVER (replaces cover image) --}}
+        <div class="site-header-cover site-header-cover--video" aria-hidden="true">
+            <iframe
+                src="https://www.youtube.com/embed/TUXh42V_ng4?start=1&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=TUXh42V_ng4"
+                title="{{@site.title}} cover video"
+                frameborder="0"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowfullscreen
+            ></iframe>
+        </div>
     {{/if}}
 
     {{#match @custom.header_style "!=" "Hidden"}}
@@ -35,9 +31,47 @@ into the {body} of the default.hbs template --}}
         </div>
     {{/match}}
 
+    <style>
+        /* Video cover replacement for Casper site-header-cover */
+.site-header-cover--video {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+.site-header-cover--video iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 177.78vh;  /* 16:9 cover trick */
+    height: 100vh;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* important: keep header clickable */
+    border: 0;
+}
+
+/* Optional overlay so text stays readable (like image cover fade) */
+.has-cover .site-header-content::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    z-index: 0;
+}
+
+.site-header-inner {
+    position: relative;
+    z-index: 100; /* ensure above overlay + video */
+}
+    </style>
+
 </div>
 
-{{!< default}}
 
 {{!-- Home Hero (full width, uses existing outer/inner + your variables) --}}
 <section class="ns-home-hero">
