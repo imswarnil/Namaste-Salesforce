@@ -1,10 +1,80 @@
-  {{!-- The global footer at the very bottom of the screen --}}
-    <footer class="site-footer outer">
-        <div class="inner">
-            <section class="copyright"><a href="{{@site.url}}">{{@site.title}}</a> &copy; {{date format="YYYY"}}</section>
-            <nav class="site-footer-nav">
-                {{navigation type="secondary"}}
-            </nav>
-            <div class="gh-powered-by"><a href="https://ghost.org/" target="_blank" rel="noopener">Powered by Ghost</a></div>
+<footer class="footer">
+    <div class="container is-fluid">
+
+        <div class="columns is-multiline is-variable is-5">
+
+            <div class="column is-12-mobile is-6-tablet is-4-desktop">
+                <h3 class="title is-5 mb-3">
+                    <a href="{{@site.url}}">{{@site.title}}</a>
+                </h3>
+
+                {{#if @site.description}}
+                    <p class="content">{{@site.description}}</p>
+                {{else}}
+                    <p class="content">Useful content, clean ideas, and less digital nonsense.</p>
+                {{/if}}
+
+                {{#if @site.members_enabled}}
+                    <div class="buttons">
+                        <a href="#/portal/signup" data-portal="signup" class="button is-primary is-small">
+                            Subscribe
+                        </a>
+                        <a href="#/portal/signin" data-portal="signin" class="button is-light is-small">
+                            Sign in
+                        </a>
+                    </div>
+                {{/if}}
+            </div>
+
+            <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                <h4 class="title is-6 mb-3">Quick Links</h4>
+                <div class="content">
+                    {{navigation type="secondary"}}
+                </div>
+            </div>
+
+            <div class="column is-12-mobile is-12-tablet is-5-desktop">
+                <h4 class="title is-6 mb-3">Latest Posts</h4>
+
+                {{#get "posts" limit="3"}}
+                    {{#if posts}}
+                        <div class="content">
+                            <ul>
+                                {{#foreach posts}}
+                                    <li>
+                                        <a href="{{url}}">{{title}}</a><br>
+                                        <small>{{date format="DD MMM YYYY"}}</small>
+                                    </li>
+                                {{/foreach}}
+                            </ul>
+                        </div>
+                    {{else}}
+                        <p>No posts yet.</p>
+                    {{/if}}
+                {{/get}}
+            </div>
+
         </div>
-    </footer>
+
+        <hr>
+
+        <div class="level is-mobile is-flex-wrap-wrap">
+            <div class="level-left">
+                <div class="level-item">
+                    <p class="is-size-7">
+                        <a href="{{@site.url}}">{{@site.title}}</a> &copy; {{date format="YYYY"}}
+                    </p>
+                </div>
+            </div>
+
+            <div class="level-right">
+                <div class="level-item">
+                    <p class="is-size-7">
+                        <a href="https://ghost.org/" target="_blank" rel="noopener">Powered by Ghost</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</footer>
