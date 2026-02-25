@@ -1,47 +1,16 @@
-<article class="section">
-    <div class="container is-max-widescreen">
-        <div class="columns is-variable is-6">
-            <aside class="column is-3-desktop">
-                <div class="box">
-                    <p class="title is-6">Lesson</p>
 
-                    {{#if primary_tag}}
-                        <p class="mb-3">
-                            <a href="{{primary_tag.url}}" class="tag is-primary is-light">{{primary_tag.name}}</a>
-                        </p>
-                    {{/if}}
-
-                    <p><strong>Updated:</strong> {{date format="DD MMM YYYY"}}</p>
-                    <p><strong>Read time:</strong> {{reading_time}}</p>
-
-                    <hr>
-
-                    <a href="/lessons/" class="button is-light is-fullwidth">
-                        All lessons
-                    </a>
-                </div>
-            </aside>
-
-            <div class="column is-9-desktop">
-                <div class="content">
-
-                    <h1 class="title is-2">{{title}}</h1>
-
-                    {{#if custom_excerpt}}
-                        <p class="subtitle is-5">{{custom_excerpt}}</p>
-                    {{/if}}
-
-                    {{#if feature_image}}
-                        <figure class="image mb-5">
-                            <img src="{{img_url feature_image size="xl"}}" alt="{{title}}">
-                        </figure>
-                    {{/if}}
-
-                    <div class="content gh-content">
-                        {{content}}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</article>
+{{#foreach tags visibility="public" limit="1"}}
+    {{#get "posts"
+        filter="tags:hash-courses-col+tags:{{slug}}"
+        limit="1"
+        include="tags"
+        order="published_at asc"
+        as |course_posts|
+    }}
+        {{#if course_posts.[0]}}
+            {{> "lesson" indexPage=course_posts.[0] post=../.. filterTagPrefix="hash-lessons-col"}}
+        {{else}}
+            {{> "lesson" post=../..}}
+        {{/if}}
+    {{/get}}
+{{/foreach}}

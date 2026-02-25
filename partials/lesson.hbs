@@ -1,0 +1,307 @@
+
+    <div class="container py-3">
+
+        <div class="columns is-variable is-6">
+
+            {{!-- LEFT SIDEBAR: Course outline --}}
+            {{#if indexPage}}
+                <aside class="column is-12-mobile is-4-tablet is-3-desktop">
+                    <div class="box">
+                        <p class="title is-5 mb-2">{{indexPage.title}}</p>
+
+                        {{#if indexPage.custom_excerpt}}
+                            <p class="has-text-grey mb-4">{{indexPage.custom_excerpt}}</p>
+                        {{/if}}
+
+                        <div class="buttons">
+                            <a href="{{indexPage.url}}" class="button is-light is-fullwidth">
+                                <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                                <span>Back to course</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="menu">
+                        <p class="menu-label">Course lessons</p>
+
+                        {{#has tag="#groups-disabled" in=indexPage}}
+                            {{#with post}}
+                                {{#get "posts"
+                                    filter="primary_tag:{{primary_tag.slug}}+tags:hash-lessons-col"
+                                    include="tags"
+                                    order="published_at asc"
+                                    limit="100"
+                                    as |lesson_posts|
+                                }}
+                                    <ul class="menu-list">
+                                        {{#foreach lesson_posts}}
+                                            <li>
+                                                <a href="{{url}}" data-sx-sidebar-lesson>
+                                                    <span>{{title}}</span>
+
+                                                    {{#foreach tags visibility="all"}}
+                                                        {{#match slug "~^" "hash-lesson-duration-"}}
+                                                            <small class="is-pulled-right">{{#if description}}{{description}}{{else}}{{name}}{{/if}}</small>
+                                                        {{/match}}
+                                                    {{/foreach}}
+                                                </a>
+                                            </li>
+                                        {{/foreach}}
+                                    </ul>
+                                {{/get}}
+                            {{/with}}
+                        {{else}}
+
+                            {{#each indexPage.tags}}
+                                {{#match slug "~^" "hash-group-"}}
+                                    <p class="menu-label mt-4">
+                                        {{#if description}}{{description}}{{else}}{{name}}{{/if}}
+                                    </p>
+
+                                    {{#with ../post}}
+                                        {{#get "posts"
+                                            filter="primary_tag:{{primary_tag.slug}}+tags:hash-lessons-col+tags:{{../../slug}}"
+                                            include="tags"
+                                            order="published_at asc"
+                                            limit="100"
+                                            as |group_lessons|
+                                        }}
+                                            <ul class="menu-list">
+                                                {{#foreach group_lessons}}
+                                                    <li>
+                                                        <a href="{{url}}" data-sx-sidebar-lesson>
+                                                            <span>{{title}}</span>
+
+                                                            {{#foreach tags visibility="all"}}
+                                                                {{#match slug "~^" "hash-lesson-duration-"}}
+                                                                    <small class="is-pulled-right">{{#if description}}{{description}}{{else}}{{name}}{{/if}}</small>
+                                                                {{/match}}
+                                                            {{/foreach}}
+                                                        </a>
+                                                    </li>
+                                                {{/foreach}}
+                                            </ul>
+                                        {{/get}}
+                                    {{/with}}
+                                {{/match}}
+                            {{/each}}
+
+                        {{/has}}
+                    </div>
+                </aside>
+            {{/if}}
+
+            {{!-- MAIN CONTENT --}}
+            <div class="column is-12-mobile {{#if indexPage}}is-8-tablet is-6-desktop{{else}}is-10-desktop is-offset-1-desktop{{/if}}">
+                {{#with post}}
+                    <article class="content is-medium gh-content">
+
+                        {{!-- Breadcrumbs --}}
+                        <nav class="breadcrumb is-small mb-4" aria-label="breadcrumbs">
+                            <ul>
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/courses/">Courses</a></li>
+
+                                {{#if ../indexPage}}
+                                    <li><a href="{{../indexPage.url}}">{{../indexPage.title}}</a></li>
+                                {{/if}}
+
+                                <li class="is-active">
+                                    <a href="{{url}}" aria-current="page">{{title}}</a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        {{!-- Group badge --}}
+                        <div class="tags mb-4">
+                            {{#foreach tags visibility="all"}}
+                                {{#match slug "~^" "hash-group-"}}
+                                    <span class="tag is-light">
+                                        {{#if description}}{{description}}{{else}}{{name}}{{/if}}
+                                    </span>
+                                {{/match}}
+                            {{/foreach}}
+
+                            <span class="tag is-primary is-light">Lesson</span>
+                        </div>
+
+                        {{!-- Title --}}
+                        <h1 class="title is-2">{{title}}</h1>
+
+                        {{#if custom_excerpt}}
+                            <p class="subtitle is-5">{{custom_excerpt}}</p>
+                        {{/if}}
+
+                        {{!-- Lesson meta --}}
+                        <div class="tags mb-5">
+                            {{#foreach tags visibility="all"}}
+                                {{#match slug "~^" "hash-lesson-duration-"}}
+                                    <span class="tag is-warning is-light">
+                                        <span class="icon is-small"><i class="ph ph-clock"></i></span>
+                                        <span>{{#if description}}{{description}}{{else}}{{name}}{{/if}}</span>
+                                    </span>
+                                {{/match}}
+                            {{/foreach}}
+
+                            <span class="tag is-light">
+                                <span class="icon is-small"><i class="ph ph-calendar"></i></span>
+                                <span>Updated {{date updated_at format="DD MMM YYYY"}}</span>
+                            </span>
+                        </div>
+
+                        {{!-- Feature image --}}
+                        {{#if feature_image}}
+                            <figure class="image mb-5">
+                                <img src="{{img_url feature_image size="xl"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
+                            </figure>
+
+                            {{#if feature_image_caption}}
+                                <p class="has-text-grey is-size-7 mb-5">{{feature_image_caption}}</p>
+                            {{/if}}
+                        {{/if}}
+
+                        {{!-- Content --}}
+                        {{content}}
+
+                        <hr>
+
+                        {{!-- Bottom meta --}}
+                        <div class="level is-mobile is-flex-wrap-wrap">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <p class="is-size-7 has-text-grey">
+                                        Published {{date published_at format="DD MMM YYYY"}}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <a
+                                        href="https://twitter.com/intent/tweet?text={{encode title}}&amp;url={{url absolute="true"}}"
+                                        target="_blank"
+                                        rel="noopener"
+                                        class="button is-light is-small"
+                                    >
+                                        <span class="icon"><i class="ph ph-share-network"></i></span>
+                                        <span>Share</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                {{/with}}
+            </div>
+
+            {{!-- RIGHT SIDEBAR --}}
+            <aside class="column is-12-mobile {{#if indexPage}}is-12-tablet is-3-desktop{{else}}is-12-tablet is-2-desktop{{/if}}">
+                <div class="box">
+                    {{#if indexPage}}
+                        <p class="title is-6 mb-3">Lesson tools</p>
+
+                        <div class="buttons">
+                            <a href="{{indexPage.url}}" class="button is-light is-fullwidth">
+                                <span class="icon"><i class="ph ph-house"></i></span>
+                                <span>Course Home</span>
+                            </a>
+                        </div>
+                    {{else}}
+                        <p class="title is-6 mb-3">Lesson tools</p>
+                    {{/if}}
+
+                    <div class="content">
+                        <ul>
+                            {{#with post}}
+                                {{#foreach tags visibility="all"}}
+                                    {{#match slug "~^" "hash-lesson-duration-"}}
+                                        <li>
+                                            <strong>Duration:</strong>
+                                            {{#if description}}{{description}}{{else}}{{name}}{{/if}}
+                                        </li>
+                                    {{/match}}
+                                {{/foreach}}
+
+                                <li><strong>Updated:</strong> {{date updated_at format="DD MMM YYYY"}}</li>
+                            {{/with}}
+                        </ul>
+                    </div>
+
+                    <hr>
+
+                    <p class="title is-6 mb-3">Navigation</p>
+
+                    <div class="buttons">
+                        <a href="#" id="sx-prev-link" class="button is-light is-fullwidth is-hidden">
+                            <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                            <span id="sx-prev-text">Previous</span>
+                        </a>
+
+                        <a href="#" id="sx-next-link" class="button is-primary is-fullwidth is-hidden">
+                            <span id="sx-next-text">Next</span>
+                            <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                        </a>
+                    </div>
+                </div>
+
+                {{#if indexPage}}
+                    <div class="box">
+                        <p class="title is-6 mb-3">About this course</p>
+
+                        <p class="mb-4">{{indexPage.title}}</p>
+
+                        {{#if indexPage.custom_excerpt}}
+                            <p class="has-text-grey is-size-7 mb-4">{{indexPage.custom_excerpt}}</p>
+                        {{/if}}
+
+                        <a href="{{indexPage.url}}" class="button is-primary is-light is-fullwidth">
+                            View Full Curriculum
+                        </a>
+                    </div>
+                {{/if}}
+            </aside>
+
+        </div>
+    </div>
+
+
+<script>
+(() => {
+    const lessonLinks = Array.from(document.querySelectorAll('[data-sx-sidebar-lesson]'));
+    const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+
+    const prevLink = document.getElementById('sx-prev-link');
+    const nextLink = document.getElementById('sx-next-link');
+    const prevText = document.getElementById('sx-prev-text');
+    const nextText = document.getElementById('sx-next-text');
+
+    if (!lessonLinks.length) return;
+
+    let currentIndex = -1;
+
+    lessonLinks.forEach((link, index) => {
+        const linkPath = new URL(link.href, window.location.origin).pathname.replace(/\/+$/, '') || '/';
+
+        if (linkPath === currentPath) {
+            currentIndex = index;
+            link.classList.add('is-active');
+        }
+    });
+
+    if (currentIndex === -1) return;
+
+    const prev = lessonLinks[currentIndex - 1];
+    const next = lessonLinks[currentIndex + 1];
+
+    if (prev && prevLink && prevText) {
+        prevLink.href = prev.href;
+        prevText.textContent = prev.textContent.trim();
+        prevLink.classList.remove('is-hidden');
+    }
+
+    if (next && nextLink && nextText) {
+        nextLink.href = next.href;
+        nextText.textContent = next.textContent.trim();
+        nextLink.classList.remove('is-hidden');
+    }
+})();
+</script>

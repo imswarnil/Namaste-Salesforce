@@ -1,52 +1,19 @@
+@use "variables" as v;
+
 /* ==========================================================================
    ghost.scss
    Ghost / Koenig editor support layer
-   Built to sit on top of your Bulma + SLDS-inspired theme
+   Uses the same design tokens from variables.scss
    ========================================================================== */
 
-/* ==========================================================================
-   0) GHOST FONT SUPPORT + CONTENT TOKENS
-   Ghost injects --gh-font-heading and --gh-font-body via {{ghost_head}}
-   The theme must USE them with fallbacks
-   ========================================================================== */
-
-:root {
-  --gh-content-width: 48rem;
-  --gh-wide-width: 72rem;
-  --gh-full-gutter: 1rem;
-  --gh-card-gap: 1rem;
-
-  /* Theme fallbacks for Ghost custom font settings */
-  --theme-font-body:
-    "Salesforce Sans",
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-
-  --theme-font-heading:
-    "Salesforce Sans",
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-}
-
+/* Ghost custom font support (required by gscan / Ghost font settings) */
 body,
 button,
 input,
 optgroup,
 select,
 textarea {
-  font-family: var(--gh-font-body, var(--theme-font-body));
+  font-family: var(--gh-font-body, #{v.$font-stack});
 }
 
 h1,
@@ -57,7 +24,7 @@ h5,
 h6,
 .title,
 .subtitle {
-  font-family: var(--gh-font-heading, var(--theme-font-heading));
+  font-family: var(--gh-font-heading, #{v.$font-stack});
 }
 
 /* ==========================================================================
@@ -118,7 +85,6 @@ h6,
 
 /* ==========================================================================
    2) REQUIRED KOENIG WIDTH HANDLING
-   Required for gscan compatibility and proper wide/full card rendering
    ========================================================================== */
 
 .gh-content .kg-width-wide,
@@ -618,7 +584,6 @@ h6,
 
 /* ==========================================================================
    13) SIGNUP CARD
-   Ghost specifically calls out kg-content-wide / split layouts here
    ========================================================================== */
 
 .gh-content .kg-signup-card {

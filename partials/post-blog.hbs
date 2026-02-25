@@ -1,62 +1,281 @@
-<article class="section">
-    <div class="container is-max-desktop">
-        <div class="columns is-variable is-6">
+<main class="section pt-5 pb-6">
+    <div class="container is-max-widescreen">
+        <div class="columns is-variable is-8">
+            
+            {{!-- ==========================================
+                  LEFT COLUMN: CONTENT, TITLE, IMAGE
+            ========================================== --}}
             <div class="column is-8-desktop">
-                <div class="content">
+                
+                {{!-- AD 1: Top Leaderboard --}}
+                <div class="box has-background-white-bis is-shadowless border mb-5 is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 90px; width: 100%;">
+                    <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Top Leaderboard Ad (728x90)</span>
+                </div>
 
+                {{!-- Post Meta & Tags --}}
+                <div class="is-flex is-align-items-center is-flex-wrap-wrap mb-4">
                     {{#if primary_tag}}
-                        <div class="mb-4">
-                            <a href="{{primary_tag.url}}" class="tag is-link is-light">{{primary_tag.name}}</a>
-                        </div>
+                        <a href="{{primary_tag.url}}" class="tag is-primary is-light is-medium is-rounded has-text-weight-bold mr-4 mb-2">
+                            {{primary_tag.name}}
+                        </a>
                     {{/if}}
-
-                    <h1 class="title is-2">{{title}}</h1>
-
-                    <p class="subtitle is-6">
-                        <span>{{authors separator=", "}}</span>
-                        <span> • </span>
-                        <span>{{date format="DD MMM YYYY"}}</span>
-                        <span> • </span>
+                    <div class="is-flex is-align-items-center has-text-grey is-size-7 mr-4 mb-2">
+                        <span class="icon is-small mr-1"><i class="ph ph-calendar-blank"></i></span>
+                        <span>{{date format="MMMM DD, YYYY"}}</span>
+                    </div>
+                    <div class="is-flex is-align-items-center has-text-grey is-size-7 mb-2">
+                        <span class="icon is-small mr-1"><i class="ph ph-clock"></i></span>
                         <span>{{reading_time}}</span>
-                    </p>
-
-                    {{#if custom_excerpt}}
-                        <p class="is-size-5 has-text-grey">{{custom_excerpt}}</p>
-                    {{/if}}
-
-                    {{#if feature_image}}
-                        <figure class="image mb-5">
-                            <img src="{{img_url feature_image size="xl"}}" alt="{{title}}">
-                        </figure>
-                    {{/if}}
-
-                    <div class="content gh-content">
-                        {{content}}
                     </div>
                 </div>
+
+                {{!-- Post Title --}}
+                <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark mb-4" style="line-height: 1.2; letter-spacing: -0.02em;">
+                    {{title}}
+                </h1>
+
+                {{#if custom_excerpt}}
+                    <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-2 mb-5" style="line-height: 1.5;">
+                        {{custom_excerpt}}
+                    </p>
+                {{/if}}
+
+                {{!-- Post Author --}}
+                <div class="is-flex is-align-items-center mt-4 mb-5">
+                    {{#foreach authors}}
+                        <a href="{{url}}" class="is-flex is-align-items-center mr-5">
+                            {{#if profile_image}}
+                                <figure class="image is-48x48 mr-3">
+                                    <img class="is-rounded" src="{{img_url profile_image size="xs"}}" alt="{{name}}">
+                                </figure>
+                            {{else}}
+                                <div class="image is-48x48 mr-3 is-flex is-align-items-center is-justify-content-center has-background-grey-lighter is-rounded">
+                                    <i class="ph-fill ph-user has-text-grey is-size-4"></i>
+                                </div>
+                            {{/if}}
+                            <div>
+                                <p class="has-text-weight-bold has-text-dark is-size-6 m-0">{{name}}</p>
+                                <p class="is-size-7 has-text-grey m-0">@{{slug}}</p>
+                            </div>
+                        </a>
+                    {{/foreach}}
+                </div>
+
+                {{!-- Feature Image --}}
+                {{#if feature_image}}
+                    <figure class="image is-16by9 box p-0 is-clipped is-shadowless mb-5" style="background-color: transparent; border-radius: 12px; border: 1px solid #ededed;">
+                        <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" style="object-fit: cover;">
+                    </figure>
+                    {{#if feature_image_caption}}
+                        <p class="help has-text-centered has-text-grey mb-6">{{feature_image_caption}}</p>
+                    {{/if}}
+                {{/if}}
+
+                {{!-- AD 2: Below Hero Image / Before Content --}}
+                <div class="box has-background-white-bis is-shadowless border mb-6 is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 250px; width: 100%;">
+                    <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> In-Content Ad (300x250 or Responsive)</span>
+                </div>
+
+                {{!-- MOBILE TOC (Hidden on Desktop) --}}
+                <div class="box is-hidden-desktop mb-6 has-background-white-ter is-shadowless" style="border: 1px solid #ededed;">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center is-clickable" id="mobile-toc-toggle">
+                        <h3 class="title is-6 mb-0 is-flex is-align-items-center has-text-dark">
+                            <span class="icon has-text-primary mr-2"><i class="ph-fill ph-list-dashes is-size-5"></i></span>
+                            <span class="has-text-weight-bold">{{t "Table of Contents"}}</span>
+                        </h3>
+                        <span class="icon has-text-grey"><i class="ph ph-caret-down" id="mobile-toc-icon"></i></span>
+                    </div>
+                    <div id="mobile-toc-menu" class="menu mt-4 is-hidden">
+                        <ul class="menu-list js-toc-list"></ul>
+                    </div>
+                </div>
+
+                {{!-- Post Content --}}
+                <div class="content is-medium gh-content js-post-content mb-6">
+                    {{content}}
+                </div>
+
+                {{!-- AD 3: Bottom of Content --}}
+                <div class="box has-background-white-bis is-shadowless border mt-6 mb-6 is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 90px; width: 100%;">
+                    <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Bottom Content Ad (728x90)</span>
+                </div>
+
+                {{!-- Share & Tags --}}
+                <div class="level is-mobile pt-5 mb-6" style="border-top: 1px solid #ededed;">
+                    <div class="level-left is-flex-wrap-wrap">
+                        {{#foreach tags}}
+                            <a href="{{url}}" class="tag is-light is-medium is-rounded mr-2 mb-2">{{name}}</a>
+                        {{/foreach}}
+                    </div>
+                    <div class="level-right">
+                        <div class="buttons m-0">
+                            <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" class="button is-white is-rounded has-text-info">
+                                <span class="icon"><i class="ph-fill ph-twitter-logo"></i></span>
+                            </a>
+                            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{url absolute='true'}}&title={{encode title}}" target="_blank" class="button is-white is-rounded has-text-link">
+                                <span class="icon"><i class="ph-fill ph-linkedin-logo"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <aside class="column is-4-desktop">
-                <div class="box">
-                    <p class="title is-6">Post info</p>
-                    <p><strong>Published:</strong> {{date format="DD MMM YYYY"}}</p>
-                    <p><strong>Reading time:</strong> {{reading_time}}</p>
-
-                    {{#if primary_tag}}
-                        <p class="mt-3"><strong>Category:</strong></p>
-                        <a href="{{primary_tag.url}}" class="tag is-light">{{primary_tag.name}}</a>
-                    {{/if}}
-
-                    {{#if tags}}
-                        <p class="mt-4 mb-2"><strong>Tags:</strong></p>
-                        <div class="tags">
-                            {{#foreach tags}}
-                                <a href="{{url}}" class="tag">{{name}}</a>
-                            {{/foreach}}
+            {{!-- ==========================================
+                  RIGHT COLUMN: SIDEBAR & ADS
+            ========================================== --}}
+            <div class="column is-4-desktop is-hidden-touch">
+                
+                {{!-- Non-Sticky Sidebar Area (Scrolls away) --}}
+                
+                {{!-- Newsletter Widget --}}
+                <div class="box has-background-primary is-shadowless p-5 mb-5" style="border-radius: 12px;">
+                    <h3 class="title is-5 has-text-white mb-2">{{t "Join the Community"}}</h3>
+                    <p class="is-size-7 mb-4 has-text-white" style="opacity: 0.9;">{{t "Get weekly tips and exclusive tutorials."}}</p>
+                    <form data-members-form="subscribe">
+                        <div class="field">
+                            <div class="control is-expanded mb-2">
+                                <input data-members-email class="input is-rounded is-small" type="email" placeholder="Email address" required>
+                            </div>
+                            <div class="control">
+                                <button class="button is-dark is-rounded is-small is-fullwidth has-text-weight-bold" type="submit">
+                                    {{t "Subscribe"}}
+                                </button>
+                            </div>
                         </div>
-                    {{/if}}
+                        <p data-members-success class="help is-success has-text-white mt-2">{{t "Success! Check your inbox."}}</p>
+                    </form>
                 </div>
-            </aside>
+
+                {{!-- AD 4: Sidebar Top Rectangle --}}
+                <div class="box has-background-white-bis is-shadowless border mb-5 is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 250px; width: 100%;">
+                    <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Sidebar Top Ad (300x250)</span>
+                </div>
+
+                {{!-- Sticky Sidebar Area --}}
+                <aside style="position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto; padding-right: 4px;">
+                    
+                    {{!-- Desktop TOC Widget --}}
+                    <div class="box mb-5 is-shadowless" style="border: 1px solid #ededed; border-radius: 12px;">
+                        <h3 class="title is-6 mb-4 is-flex is-align-items-center has-text-dark">
+                            <span class="icon has-text-primary mr-2"><i class="ph-fill ph-list-bullets"></i></span>
+                            <span class="has-text-weight-bold">{{t "Table of Contents"}}</span>
+                        </h3>
+                        <div class="menu">
+                            <ul class="menu-list js-toc-list has-text-weight-medium">
+                                </ul>
+                        </div>
+                    </div>
+
+                    {{!-- AD 5: Sticky Sidebar Rail Ad 1 (Half Page) --}}
+                    <div class="box has-background-white-bis is-shadowless border mb-5 is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 600px; width: 100%;">
+                        <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Sticky Rail Ad (300x600)</span>
+                    </div>
+
+                    {{!-- AD 6: Sticky Sidebar Small Square (Fills space at the bottom of TOC) --}}
+                    <div class="box has-background-white-bis is-shadowless border mb-2 is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 250px; width: 100%;">
+                        <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Sticky Square Ad (300x250)</span>
+                    </div>
+
+                </aside>
+            </div>
+
         </div>
     </div>
-</article>
+</main>
+
+{{!-- ==========================================
+      AD 7: STICKY ANCHOR / POPUP (BOTTOM)
+========================================== --}}
+<div id="sticky-anchor-ad" class="is-hidden-mobile has-background-white box p-2 is-shadowless is-flex is-align-items-center is-justify-content-center" style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 100; border: 1px solid #ddd; border-bottom: none; border-radius: 8px 8px 0 0; width: 728px; box-shadow: 0 -4px 15px rgba(0,0,0,0.1);">
+    
+    {{!-- Close Button for Anchor Ad --}}
+    <button class="delete is-small" aria-label="close" onclick="document.getElementById('sticky-anchor-ad').style.display='none';" style="position: absolute; top: -10px; right: -10px; background: #333;"></button>
+    
+    <div class="has-background-white-bis is-flex is-align-items-center is-justify-content-center" style="width: 728px; height: 90px; border: 1px dashed #ccc;">
+        <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Bottom Anchor / Popup Ad (728x90)</span>
+    </div>
+</div>
+
+{{!-- ==========================================
+      TABLE OF CONTENTS SCRIPT
+========================================== --}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const content = document.querySelector('.js-post-content');
+        const tocLists = document.querySelectorAll('.js-toc-list');
+        const headings = content ? content.querySelectorAll('h2, h3') : [];
+        
+        // Hide TOC widgets if no headings exist
+        if (headings.length === 0) {
+            document.querySelectorAll('.js-toc-list').forEach(list => {
+                const box = list.closest('.box');
+                if(box) box.classList.add('is-hidden');
+            });
+            return;
+        }
+
+        // Build HTML for TOC
+        let tocHTML = '';
+        headings.forEach((heading, index) => {
+            if (!heading.id) heading.id = `heading-${index}`;
+            const isSub = heading.tagName.toLowerCase() === 'h3';
+            
+            // Indent H3s and make them smaller via Bulma classes
+            const paddingClass = isSub ? 'pl-4 is-size-7 has-text-grey' : 'is-size-6 has-text-dark';
+            
+            tocHTML += `<li><a href="#${heading.id}" class="toc-link ${paddingClass} py-2" data-target="${heading.id}">${heading.innerText}</a></li>`;
+        });
+
+        // Inject into Desktop & Mobile lists
+        tocLists.forEach(list => list.innerHTML = tocHTML);
+
+        // ScrollSpy (Highlights current section in Desktop TOC)
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    tocLinks.forEach(link => {
+                        link.classList.remove('has-background-primary-light', 'has-text-primary', 'has-text-weight-bold');
+                    });
+                    const activeLinks = document.querySelectorAll(`.toc-link[data-target="${entry.target.id}"]`);
+                    activeLinks.forEach(active => {
+                        active.classList.add('has-background-primary-light', 'has-text-primary', 'has-text-weight-bold');
+                    });
+                }
+            });
+        }, { rootMargin: "0px 0px -70% 0px", threshold: 0.1 });
+
+        headings.forEach(heading => observer.observe(heading));
+
+        // Smooth Scrolling
+        tocLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetElement = document.getElementById(this.getAttribute('data-target'));
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, 
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Mobile TOC Toggle Action
+        const mobileToggle = document.getElementById('mobile-toc-toggle');
+        const mobileMenu = document.getElementById('mobile-toc-menu');
+        const mobileIcon = document.getElementById('mobile-toc-icon');
+
+        if(mobileToggle && mobileMenu) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.toggle('is-hidden');
+                if(mobileMenu.classList.contains('is-hidden')) {
+                    mobileIcon.classList.replace('ph-caret-up', 'ph-caret-down');
+                } else {
+                    mobileIcon.classList.replace('ph-caret-down', 'ph-caret-up');
+                }
+            });
+        }
+    });
+</script>

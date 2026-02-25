@@ -1,77 +1,123 @@
 <footer class="footer">
     <div class="container is-fluid">
 
-        <div class="columns is-multiline is-variable is-5">
+        <div class="box">
+            <div class="columns is-variable is-6 is-vcentered is-multiline">
 
-            <div class="column is-12-mobile is-6-tablet is-4-desktop">
-                <h3 class="title is-5 mb-3">
-                    <a href="{{@site.url}}">{{@site.title}}</a>
-                </h3>
+                {{!-- Brand / LMS intro --}}
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <h3 class="title is-5 mb-3">
+                        <a href="{{@site.url}}">{{@site.title}}</a>
+                    </h3>
 
-                {{#if @site.description}}
-                    <p class="content">{{@site.description}}</p>
-                {{else}}
-                    <p class="content">Useful content, clean ideas, and less digital nonsense.</p>
-                {{/if}}
-
-                {{#if @site.members_enabled}}
-                    <div class="buttons">
-                        <a href="#/portal/signup" data-portal="signup" class="button is-primary is-small">
-                            Subscribe
-                        </a>
-                        <a href="#/portal/signin" data-portal="signin" class="button is-light is-small">
-                            Sign in
-                        </a>
-                    </div>
-                {{/if}}
-            </div>
-
-            <div class="column is-12-mobile is-6-tablet is-3-desktop">
-                <h4 class="title is-6 mb-3">Quick Links</h4>
-                <div class="content">
-                    {{navigation type="secondary"}}
-                </div>
-            </div>
-
-            <div class="column is-12-mobile is-12-tablet is-5-desktop">
-                <h4 class="title is-6 mb-3">Latest Posts</h4>
-
-                {{#get "posts" limit="3"}}
-                    {{#if posts}}
-                        <div class="content">
-                            <ul>
-                                {{#foreach posts}}
-                                    <li>
-                                        <a href="{{url}}">{{title}}</a><br>
-                                        <small>{{date format="DD MMM YYYY"}}</small>
-                                    </li>
-                                {{/foreach}}
-                            </ul>
-                        </div>
+                    {{#if @site.description}}
+                        <p class="content mb-3">{{@site.description}}</p>
                     {{else}}
-                        <p>No posts yet.</p>
+                        <p class="content mb-3">
+                            Practical learning paths, clean docs, and real-world lessons for serious builders.
+                        </p>
                     {{/if}}
-                {{/get}}
-            </div>
 
-        </div>
-
-        <hr>
-
-        <div class="level is-mobile is-flex-wrap-wrap">
-            <div class="level-left">
-                <div class="level-item">
-                    <p class="is-size-7">
-                        <a href="{{@site.url}}">{{@site.title}}</a> &copy; {{date format="YYYY"}}
-                    </p>
+                    <div class="tags">
+                        <span class="tag is-light">LMS</span>
+                        <span class="tag is-light">Courses</span>
+                        <span class="tag is-light">Docs</span>
+                    </div>
                 </div>
+
+                {{!-- Learning / Publishing schedule --}}
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <p class="title is-6 mb-3">Learning Schedule</p>
+
+                    <div class="content">
+                        <ul>
+                            <li><strong>New lessons:</strong> Weekly</li>
+                            <li><strong>Docs updates:</strong> Ongoing</li>
+                            <li><strong>Blog posts:</strong> Regular</li>
+                            <li><strong>Video releases:</strong> Planned schedule</li>
+                        </ul>
+                    </div>
+                </div>
+
+                {{!-- Location + legal --}}
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <p class="title is-6 mb-3">Info</p>
+
+                    <div class="content">
+                        <p class="mb-2"><strong>Based in:</strong> Bangalore, India</p>
+
+                        <ul>
+                            <li><a href="/privacy/">Privacy Policy</a></li>
+                            <li><a href="/terms/">Terms of Use</a></li>
+                            <li><a href="/contact/">Contact</a></li>
+                            <li><a href="/rss/">RSS Feed</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                {{!-- Newsletter --}}
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <p class="title is-6 mb-3">Newsletter</p>
+
+                    {{#if @site.members_enabled}}
+                        <form data-members-form="subscribe">
+                            <div class="field">
+                                <div class="control">
+                                    <input
+                                        class="input"
+                                        type="email"
+                                        data-members-email
+                                        placeholder="Enter your email"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <button class="button is-primary is-fullwidth" type="submit">
+                                        Subscribe
+                                    </button>
+                                </div>
+                            </div>
+
+                            <p class="help is-success" data-members-success>
+                                Check your inbox and confirm your subscription.
+                            </p>
+
+                            <p class="help is-danger" data-members-error>
+                                Please enter a valid email address.
+                            </p>
+                        </form>
+                    {{else}}
+                        <div class="buttons">
+                            <a href="/newsletter/" class="button is-primary is-fullwidth">View Newsletter</a>
+                        </div>
+                    {{/if}}
+                </div>
+
             </div>
 
-            <div class="level-right">
-                <div class="level-item">
-                    <p class="is-size-7">
-                        <a href="https://ghost.org/" target="_blank" rel="noopener">Powered by Ghost</a>
-                    </p>
+            <hr>
+
+            {{!-- Bottom strip --}}
+            <div class="level is-mobile is-flex-wrap-wrap">
+                <div class="level-left">
+                    <div class="level-item">
+                        <p class="is-size-7">
+                            <a href="{{@site.url}}">{{@site.title}}</a> &copy; {{date format="YYYY"}}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="level-right">
+                    <div class="level-item">
+                        <p class="is-size-7">
+                            Made with <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a> +
+                            <a href="https://bulma.io/" target="_blank" rel="noopener">Bulma</a> by
+                            <a href="https://imswarnil.com" target="_blank" rel="noopener">Swarnil</a> • Proudly open source
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
