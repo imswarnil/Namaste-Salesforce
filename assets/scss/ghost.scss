@@ -4,11 +4,60 @@
    Built to sit on top of your Bulma + SLDS-inspired theme
    ========================================================================== */
 
+/* ==========================================================================
+   0) GHOST FONT SUPPORT + CONTENT TOKENS
+   Ghost injects --gh-font-heading and --gh-font-body via {{ghost_head}}
+   The theme must USE them with fallbacks
+   ========================================================================== */
+
 :root {
   --gh-content-width: 48rem;
   --gh-wide-width: 72rem;
   --gh-full-gutter: 1rem;
   --gh-card-gap: 1rem;
+
+  /* Theme fallbacks for Ghost custom font settings */
+  --theme-font-body:
+    "Salesforce Sans",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  --theme-font-heading:
+    "Salesforce Sans",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+body,
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: var(--gh-font-body, var(--theme-font-body));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.title,
+.subtitle {
+  font-family: var(--gh-font-heading, var(--theme-font-heading));
 }
 
 /* ==========================================================================
@@ -17,6 +66,7 @@
 
 .gh-content {
   max-width: var(--gh-content-width);
+  width: 100%;
   margin-inline: auto;
   min-width: 0;
 }
@@ -289,7 +339,54 @@
 }
 
 /* ==========================================================================
-   7) CALLOUT CARD
+   7) BUTTON CARD
+   ========================================================================== */
+
+.gh-content .kg-button-card,
+.gh-content .kg-button-card.kg-align-center,
+.gh-content .kg-button-card.kg-align-left,
+.gh-content .kg-button-card.kg-align-right {
+  width: 100%;
+}
+
+.gh-content .kg-button-card.kg-align-center {
+  text-align: center;
+}
+
+.gh-content .kg-button-card.kg-align-left {
+  text-align: left;
+}
+
+.gh-content .kg-button-card.kg-align-right {
+  text-align: right;
+}
+
+.gh-content .kg-btn,
+.gh-content .kg-button-card a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.625rem 1.125rem;
+  border-radius: var(--theme-radius);
+  background: var(--theme-brand);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 0;
+  box-shadow: var(--theme-shadow);
+}
+
+.gh-content .kg-btn:hover,
+.gh-content .kg-btn:focus,
+.gh-content .kg-button-card a:hover,
+.gh-content .kg-button-card a:focus {
+  background: var(--theme-brand-hover);
+  color: #fff;
+}
+
+/* ==========================================================================
+   8) CALLOUT CARD
    ========================================================================== */
 
 .gh-content .kg-callout-card {
@@ -315,7 +412,7 @@
 }
 
 /* ==========================================================================
-   8) TOGGLE CARD
+   9) TOGGLE CARD
    ========================================================================== */
 
 .gh-content .kg-toggle-card {
@@ -345,7 +442,7 @@
 }
 
 /* ==========================================================================
-   9) FILE CARD
+   10) FILE CARD
    ========================================================================== */
 
 .gh-content .kg-file-card {
@@ -389,7 +486,7 @@
 }
 
 /* ==========================================================================
-   10) AUDIO CARD
+   11) AUDIO CARD
    ========================================================================== */
 
 .gh-content .kg-audio-card {
@@ -444,7 +541,7 @@
 }
 
 /* ==========================================================================
-   11) HEADER CARD
+   12) HEADER CARD
    ========================================================================== */
 
 .gh-content .kg-header-card {
@@ -520,7 +617,7 @@
 }
 
 /* ==========================================================================
-   12) SIGNUP CARD
+   13) SIGNUP CARD
    Ghost specifically calls out kg-content-wide / split layouts here
    ========================================================================== */
 
@@ -662,7 +759,7 @@
 }
 
 /* ==========================================================================
-   13) PRODUCT CARD (optional but useful)
+   14) PRODUCT CARD
    ========================================================================== */
 
 .gh-content .kg-product-card {
@@ -677,8 +774,8 @@
   border-radius: var(--theme-radius);
 }
 
-.gh-content .kg-product-card h4,
-.gh-content .kg-product-card h3 {
+.gh-content .kg-product-card h3,
+.gh-content .kg-product-card h4 {
   color: var(--theme-text-strong);
 }
 
@@ -687,7 +784,20 @@
 }
 
 /* ==========================================================================
-   14) GHOST-SPECIFIC POST UTILITIES
+   15) BLOCKQUOTE ALT
+   ========================================================================== */
+
+.gh-content .kg-blockquote-alt {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--theme-brand);
+  border-radius: var(--theme-radius);
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text);
+}
+
+/* ==========================================================================
+   16) GHOST-SPECIFIC POST UTILITIES
    ========================================================================== */
 
 .post-template .gh-content,
@@ -700,11 +810,12 @@
 }
 
 .gh-content .kg-card .button,
+.gh-content .kg-btn,
 .gh-content .kg-signup-card-button,
 .gh-content .kg-header-card-button {
   font-family: inherit;
 }
 
-.gh-content .kg-card a:not(.button):not(.kg-header-card-button):not(.kg-signup-card-button) {
+.gh-content .kg-card a:not(.button):not(.kg-btn):not(.kg-header-card-button):not(.kg-signup-card-button) {
   word-break: break-word;
 }
