@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="{{@site.locale}}"{{#match @custom.color_scheme "Dark"}} class="has-background-black-bis has-text-light"{{else match @custom.color_scheme "Auto"}} class="auto-color"{{/match}}>
-{{> "head"}}
+<html lang="{{@site.locale}}">
+<head>
+    {{> "head"}}
+</head>
 
 <body class="{{body_class}}">
-    <div class="has-background-light">
-        {{!-- Header partial should use Bulma navbar markup --}}
-            {{> "header"}}
+    <div class="has-background-light" style="min-height: 100vh; display: flex; flex-direction: column;">
+        {{!-- Header partial using Bulma navbar markup --}}
+        {{> "header"}}
 
         {{!-- Main content --}}
-        <main>
-                {{{body}}}
+        <main style="flex-grow: 1;">
+            {{{body}}}
         </main>
 
-        {{!-- Footer partial should use Bulma footer/content markup --}}
+        {{!-- Footer partial using Bulma footer/content markup --}}
         <div class="section pt-0">
             {{> "footer"}}
         </div>
-
     </div>
 
     {{#is "post, page"}}
@@ -30,7 +31,6 @@
         crossorigin="anonymous">
     </script>
     <script src="{{asset "built/casper.js"}}"></script>
-
 
     {{ghost_foot}}
 </body>
