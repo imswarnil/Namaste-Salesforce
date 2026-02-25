@@ -3,45 +3,52 @@
 {{!-- The tag above means: insert everything in this file
 into the {body} tag of the default.hbs template --}}
 
-
 {{#post}}
 {{!-- Everything inside the #post block pulls data from the page --}}
 
-<main id="site-main" class="site-main">
-<article class="article {{post_class}}">
+<main>
+    <article class="{{post_class}}">
 
-    {{#match @page.show_title_and_feature_image}}
-        <header class="article-header gh-canvas">
+        {{!-- 1. PAGE HEADER & FEATURE IMAGE --}}
+        {{#match @page.show_title_and_feature_image}}
+            <header class="section pb-4">
+                <div class="container is-max-desktop">
+                    
+                    <h1 class="title is-1 is-size-2-mobile has-text-weight-bold mb-5" style="line-height: 1.2;">
+                        {{title}}
+                    </h1>
 
-            <h1 class="article-title">{{title}}</h1>
-
-            {{#if feature_image}}
-                <figure class="article-image">
-                    {{!-- This is a responsive image, it loads different sizes depending on device
-                    https://medium.freecodecamp.org/a-guide-to-responsive-images-with-ready-to-use-templates-c400bd65c433 --}}
-                    <img
-                        srcset="{{img_url feature_image size="s"}} 300w,
-                                {{img_url feature_image size="m"}} 600w,
-                                {{img_url feature_image size="l"}} 1000w,
-                                {{img_url feature_image size="xl"}} 2000w"
-                        sizes="(min-width: 1400px) 1400px, 92vw"
-                        src="{{img_url feature_image size="xl"}}"
-                        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-                    />
-                    {{#if feature_image_caption}}
-                        <figcaption>{{feature_image_caption}}</figcaption>
+                    {{#if feature_image}}
+                        <figure class="image mt-5">
+                            <img
+                                srcset="{{img_url feature_image size="s"}} 300w,
+                                        {{img_url feature_image size="m"}} 600w,
+                                        {{img_url feature_image size="l"}} 1000w,
+                                        {{img_url feature_image size="xl"}} 2000w"
+                                sizes="(min-width: 1400px) 1400px, 92vw"
+                                src="{{img_url feature_image size="xl"}}"
+                                alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                                style="border-radius: 0.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"
+                            />
+                            {{#if feature_image_caption}}
+                                <figcaption class="has-text-centered is-size-7 has-text-grey mt-3">
+                                    {{feature_image_caption}}
+                                </figcaption>
+                            {{/if}}
+                        </figure>
                     {{/if}}
-                </figure>
-            {{/if}}
 
-        </header>
-    {{/match}}
+                </div>
+            </header>
+        {{/match}}
 
-    <section class="gh-content gh-canvas">
-        {{content}}
-    </section>
+        {{!-- 2. PAGE CONTENT --}}
+        <section class="section pt-4">
+            <div class="container is-max-desktop content is-medium gh-content">
+                {{content}}
+            </div>
+        </section>
 
-</article>
+    </article>
 </main>
-
 {{/post}}

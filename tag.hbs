@@ -1,55 +1,74 @@
 {{!< default}}
 {{!-- The tag above means - insert everything in this file into the {body} of the default.hbs template --}}
 
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
-    <div class="post-feed">
+<main>
+    {{!-- 1. TAG HEADER (Using Bulma Hero) --}}
+    {{#tag}}
+    <section class="hero is-small has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
+        <div class="hero-body py-6">
+            <div class="container is-max-widescreen">
+                <div class="columns is-vcentered">
+                    
+                    {{!-- Tag Text Content --}}
+                    <div class="column">
+                        <div class="is-flex is-align-items-center mb-3">
+                            <span class="tag is-primary is-light is-medium has-text-weight-bold is-rounded">
+                                <i class="ph-fill ph-tag mr-2"></i> Category
+                            </span>
+                        </div>
+                        <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark">
+                            {{name}}
+                        </h1>
+                        <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-4" style="line-height: 1.5; max-width: 800px;">
+                            {{#if description}}
+                                {{description}}
+                            {{else}}
+                                A collection of {{plural ../pagination.total empty='0 posts' singular='% post' plural='% posts'}}
+                            {{/if}}
+                        </p>
+                    </div>
 
-        {{#tag}}
-        <section class="post-card post-card-large">
-
-            {{#if feature_image}}
-            <div class="post-card-image-link">
-                {{!-- This is a responsive image, it loads different sizes depending on device
-                https://medium.freecodecamp.org/a-guide-to-responsive-images-with-ready-to-use-templates-c400bd65c433 --}}
-                <img class="post-card-image"
-                    srcset="{{img_url feature_image size="s"}} 300w,
-                            {{img_url feature_image size="m"}} 600w,
-                            {{img_url feature_image size="l"}} 1000w,
-                            {{img_url feature_image size="xl"}} 2000w"
-                    sizes="(max-width: 1000px) 400px, 800px"
-                    src="{{img_url feature_image size="m"}}"
-                    alt="{{title}}"
-                />
-            </div>
-            {{/if}}
-
-            <div class="post-card-content">
-            <div class="post-card-content-link">
-                <header class="post-card-header">
-                    <h2 class="post-card-title">{{name}}</h2>
-                </header>
-                <div class="post-card-excerpt">
-                    {{#if description}}
-                        {{description}}
-                    {{else}}
-                        A collection of {{plural ../pagination.total empty='zero posts' singular='% post' plural='% posts'}}
+                    {{!-- Tag Feature Image --}}
+                    {{#if feature_image}}
+                    <div class="column is-5-desktop is-6-tablet">
+                        <figure class="image is-16by9">
+                            <img 
+                                srcset="{{img_url feature_image size="s"}} 300w,
+                                        {{img_url feature_image size="m"}} 600w,
+                                        {{img_url feature_image size="l"}} 1000w"
+                                sizes="(max-width: 1000px) 400px, 800px"
+                                src="{{img_url feature_image size="m"}}"
+                                alt="{{name}}"
+                                style="border-radius: 0.5rem; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"
+                                loading="eager"
+                            />
+                        </figure>
+                    </div>
                     {{/if}}
+
                 </div>
             </div>
+        </div>
+    </section>
+    {{/tag}}
+
+    {{!-- 2. POSTS GRID --}}
+    <section class="section pt-0">
+        <div class="container is-max-widescreen">
+            
+            <div class="columns is-multiline">
+                {{#foreach posts}}
+                    <div class="column is-4-desktop is-6-tablet">
+                        {{> "post-card"}}
+                    </div>
+                {{/foreach}}
             </div>
 
-        </section>
-        {{/tag}}
-
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
-
-    </div>
-
-    {{pagination}}
-    
-</div>
+            {{!-- 3. PAGINATION --}}
+            <div class="is-flex is-justify-content-center mt-6">
+                {{pagination}}
+            </div>
+            
+        </div>
+    </section>
 </main>

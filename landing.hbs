@@ -1,544 +1,581 @@
 {{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
 
+<section class="hero is-medium" style="position: relative; overflow: hidden; min-height: 38rem;">
+    <video
+        autoplay
+        muted
+        loop
+        playsinline
+        poster="{{@site.cover_image}}"
+        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"
+    >
+        <source src="{{asset "images/hero-bg.mp4"}}" type="video/mp4">
+    </video>
 
-<section class="ns-hero ns-hero--video">
+    <div
+        style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(1, 118, 211, 0.88) 0%, rgba(3, 45, 96, 0.92) 60%, rgba(24, 24, 24, 0.75) 100%);"
+    ></div>
 
-    {{!-- Background video layer --}}
-    <div class="ns-hero__bg" aria-hidden="true">
-        <iframe
-            class="ns-hero__bg-iframe"
-            src="https://www.youtube.com/embed/TUXh42V_ng4?start=1&autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=TUXh42V_ng4"
-            title="Namaste Salesforce background video"
-            frameborder="0"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen
-        ></iframe>
-        <div class="ns-hero__scrim"></div>
-    </div>
+    <div class="hero-body" style="position: relative; z-index: 1;">
+        <div class="container is-fluid">
+            <div class="columns is-vcentered is-variable is-8">
+                <div class="column is-7-desktop is-8-widescreen">
+                    <div class="tags mb-5">
+                        <span class="tag is-warning is-light">
+                            <span class="icon"><i class="ph ph-lightning"></i></span>
+                            <span>Hands-on Salesforce learning platform</span>
+                        </span>
+                    </div>
 
-    <div class="outer">
-        <div class="inner ns-hero__inner">
+                    <h1 class="title is-1 has-text-white mb-4" style="line-height: 1.1;">
+                        {{@site.title}}
+                    </h1>
 
-            {{!-- LEFT: Copy --}}
-            <div class="ns-hero__copy">
-                <div class="ns-badge">
-                    <span class="ns-dot"></span>
-                    <span>Namaste Salesforce • LMS + Blog</span>
-                </div>
+                    <p class="subtitle is-4 has-text-white-bis mb-5" style="max-width: 46rem;">
+                        {{#if @site.description}}
+                            {{@site.description}}
+                        {{else}}
+                            Master Salesforce administration, development, analytics, and architecture with practical, real-world lessons.
+                        {{/if}}
+                    </p>
 
-                <h1 class="ns-hero__title">
-                    Learn Salesforce the builder way.
-                    <span class="ns-hero__soft">Ship dashboards. Build projects.</span>
-                </h1>
-
-                <p class="ns-hero__subtitle">
-                    Courses + lessons for CRMA, LWC, setup, configuration, and certifications — designed to be finished, not bookmarked.
-                </p>
-
-                <div class="ns-hero__actions">
-                    <a class="ns-btn ns-btn--primary" href="/courses/">Explore Courses</a>
-                    <a class="ns-btn ns-btn--ghost" href="/lessons/">Browse Lessons</a>
-                    <a class="ns-btn ns-btn--ghost" href="/blog/">Read Blog</a>
-                </div>
-
-                <div class="ns-hero__meta">
-                    <span class="ns-pill">CRMA</span>
-                    <span class="ns-pill">LWC</span>
-                    <span class="ns-pill">Setup</span>
-                    <span class="ns-pill">Projects</span>
-                </div>
-            </div>
-
-            {{!-- RIGHT: Logo + floating cards --}}
-            <div class="ns-hero__orbit">
-
-                <div class="ns-orbit">
-                    <div class="ns-orbit__core">
-                        <a class="ns-orbit__brand" href="{{@site.url}}" aria-label="{{@site.title}}">
-                            {{#if @site.logo}}
-                                <img class="ns-orbit__logo" src="{{@site.logo}}" alt="{{@site.title}}">
-                            {{else}}
-                                <span class="ns-orbit__text">{{@site.title}}</span>
-                            {{/if}}
+                    <div class="buttons are-medium mb-5" style="display: flex; gap: 0.75rem; flex-wrap: nowrap; overflow-x: auto;">
+                        <a href="/courses/" class="button is-light">
+                            <span class="icon"><i class="ph ph-book-open"></i></span>
+                            <span>Explore Courses</span>
                         </a>
-                    </div>
 
-                    {{!-- Floating cards around logo --}}
-                    <a class="ns-float ns-float--a" href="/courses/" aria-label="Training">
-                        <span class="ns-float__kicker">Training</span>
-                        <span class="ns-float__title">Start Here</span>
-                    </a>
+                        <a href="/docs/" class="button is-primary is-outlined is-inverted">
+                            <span class="icon"><i class="ph ph-files"></i></span>
+                            <span>Browse Docs</span>
+                        </a>
 
-                    <a class="ns-float ns-float--b" href="/courses/" aria-label="Learn LWC">
-                        <span class="ns-float__kicker">Learn</span>
-                        <span class="ns-float__title">LWC</span>
-                    </a>
+                        <a href="/blog/" class="button is-primary is-outlined is-inverted">
+                            <span class="icon"><i class="ph ph-note-pencil"></i></span>
+                            <span>Read Tutorials</span>
+                        </a>
 
-                    <a class="ns-float ns-float--c" href="/courses/" aria-label="Code">
-                        <span class="ns-float__kicker">Hands-on</span>
-                        <span class="ns-float__title">Code</span>
-                    </a>
-
-                    <a class="ns-float ns-float--d" href="/courses/" aria-label="Layouts">
-                        <span class="ns-float__kicker">UI</span>
-                        <span class="ns-float__title">Layouts</span>
-                    </a>
-
-                    <a class="ns-float ns-float--e" href="/courses/" aria-label="Configuration">
-                        <span class="ns-float__kicker">Admin</span>
-                        <span class="ns-float__title">Config</span>
-                    </a>
-
-                    <a class="ns-float ns-float--f" href="/courses/" aria-label="Setup">
-                        <span class="ns-float__kicker">Core</span>
-                        <span class="ns-float__title">Setup</span>
-                    </a>
-
-                    <a class="ns-float ns-float--g" href="/courses/" aria-label="Certification">
-                        <span class="ns-float__kicker">Prep</span>
-                        <span class="ns-float__title">Cert</span>
-                    </a>
-
-                    <a class="ns-float ns-float--h" href="/courses/" aria-label="Build Projects">
-                        <span class="ns-float__kicker">Build</span>
-                        <span class="ns-float__title">Projects</span>
-                    </a>
-                </div>
-
-                <div class="ns-orbit__foot">
-                    <a class="ns-hero__yt" href="https://www.youtube.com/watch?v=TUXh42V_ng4" target="_blank" rel="noopener">
-                        Watch intro on YouTube →
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-</section>
-<style>
-    /* =========================
-   Hero video background
-   ========================= */
-.ns-hero.ns-hero--video {
-    position: relative;
-    padding: max(9vmin, 64px) 0;
-    border-bottom: 1px solid var(--color-border);
-    overflow: hidden;
-}
-
-.ns-hero__bg { position: absolute; inset: 0; overflow: hidden; background: #000; z-index: 0; }
-.ns-hero__bg-iframe{
-    position:absolute; top:50%; left:50%;
-    width:177.78vh; height:100vh; min-width:100%; min-height:100%;
-    transform:translate(-50%,-50%);
-    border:0; pointer-events:none;
-}
-.ns-hero__scrim{
-    position:absolute; inset:0; z-index:1;
-    background:
-      radial-gradient(ellipse at top left, rgba(0,0,0,.70) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.65) 100%),
-      linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.62));
-}
-
-.ns-hero__inner{
-    position: relative;
-    z-index: 2;
-    display:grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: max(4vmin, 28px);
-    align-items:center;
-}
-
-/* Left copy */
-.ns-badge{
-    display:inline-flex; align-items:center; gap:10px;
-    height:34px; padding:0 14px;
-    border-radius:999px;
-    background: rgba(255,255,255,.92);
-    border: 1px solid rgba(255,255,255,.45);
-    font-weight:800; font-size:1.3rem;
-    color:#15171A;
-    backdrop-filter: blur(6px);
-}
-.ns-dot{ width:10px; height:10px; border-radius:999px; background: var(--ghost-accent-color); }
-
-.ns-hero__title{
-    margin:16px 0 10px;
-    font-size: clamp(3.4rem, 5.4vw, 6.2rem);
-    font-weight:900; letter-spacing:-0.02em; line-height:1.02;
-    color: rgba(255,255,255,.96);
-    text-shadow: 0 6px 30px rgba(0,0,0,.45);
-}
-.ns-hero__soft{ display:inline-block; font-weight:800; opacity:.88; }
-
-.ns-hero__subtitle{
-    margin:0;
-    max-width:72ch;
-    font-size:2.05rem;
-    line-height:1.45;
-    color: rgba(255,255,255,.85);
-}
-
-.ns-hero__actions{ margin-top:18px; display:flex; flex-wrap:wrap; gap:12px; }
-
-.ns-btn{
-    display:inline-flex; align-items:center; justify-content:center;
-    height:44px; padding:0 18px;
-    border-radius:48px;
-    border:1px solid transparent;
-    font-size:1.6rem; font-weight:700;
-    text-decoration:none;
-    transition: transform .15s ease, opacity .15s ease;
-}
-.ns-btn:hover{ transform: translateY(-1px); opacity:.95; text-decoration:none; }
-.ns-btn--primary{ background: var(--ghost-accent-color); color:#fff; }
-.ns-btn--ghost{
-    background: rgba(255,255,255,.92);
-    color:#15171A;
-    border-color: rgba(255,255,255,.45);
-    backdrop-filter: blur(6px);
-}
-
-.ns-hero__meta{ margin-top:16px; display:flex; flex-wrap:wrap; gap:10px; }
-.ns-pill{
-    display:inline-flex; align-items:center;
-    height:32px; padding:0 12px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.35);
-    background: rgba(0,0,0,.20);
-    color: rgba(255,255,255,.82);
-    font-size:1.3rem; font-weight:700;
-    backdrop-filter: blur(6px);
-}
-
-/* =========================
-   Right: Orbit layout
-   ========================= */
-.ns-hero__orbit{ min-height: 420px; }
-.ns-orbit{
-    position: relative;
-    width: min(520px, 100%);
-    height: 420px;
-    margin-left: auto;
-}
-
-.ns-orbit__core{
-    position:absolute;
-    inset: 0;
-    display:grid;
-    place-items:center;
-}
-
-.ns-orbit__brand{
-    display:grid;
-    place-items:center;
-    width: 170px;
-    height: 170px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.92);
-    border: 1px solid rgba(255,255,255,.45);
-    box-shadow: 0 18px 50px rgba(0,0,0,.25);
-    backdrop-filter: blur(10px);
-    text-decoration:none;
-    color:#15171A;
-}
-.ns-orbit__logo{ max-height: 86px; max-width: 120px; }
-.ns-orbit__text{ font-weight: 900; font-size: 1.6rem; text-align:center; padding: 0 14px; }
-
-.ns-float{
-    position:absolute;
-    display:block;
-    width: 160px;
-    padding: 12px 12px;
-    border-radius: 12px;
-    background: rgba(255,255,255,.92);
-    border: 1px solid rgba(255,255,255,.45);
-    box-shadow: 0 14px 40px rgba(0,0,0,.20);
-    backdrop-filter: blur(10px);
-    text-decoration:none;
-    color:#15171A;
-    transition: transform .15s ease, opacity .15s ease;
-}
-.ns-float:hover{ transform: translateY(-3px); text-decoration:none; }
-
-.ns-float__kicker{
-    display:block;
-    font-size:1.2rem;
-    font-weight:900;
-    letter-spacing:.02em;
-    text-transform:uppercase;
-    color: rgba(0,0,0,.55);
-}
-.ns-float__title{
-    display:block;
-    margin-top: 4px;
-    font-size:1.7rem;
-    font-weight:900;
-    line-height:1.15;
-}
-
-/* Positions around the logo */
-.ns-float--a{ top: 14px; left: 50%; transform: translateX(-50%); }
-.ns-float--b{ top: 72px; right: 0; }
-.ns-float--c{ top: 190px; right: 10px; }
-.ns-float--d{ bottom: 24px; right: 70px; }
-.ns-float--e{ bottom: 24px; left: 70px; }
-.ns-float--f{ top: 190px; left: 10px; }
-.ns-float--g{ top: 72px; left: 0; }
-.ns-float--h{ bottom: 120px; left: 50%; transform: translateX(-50%); }
-
-/* Float animation (subtle) */
-@keyframes ns-floaty {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-.ns-float--a{ animation: ns-floaty 6s ease-in-out infinite; }
-.ns-float--b{ animation: ns-floaty 7s ease-in-out infinite; }
-.ns-float--c{ animation: ns-floaty 6.5s ease-in-out infinite; }
-.ns-float--d{ animation: ns-floaty 7.2s ease-in-out infinite; }
-.ns-float--e{ animation: ns-floaty 6.8s ease-in-out infinite; }
-.ns-float--f{ animation: ns-floaty 7.4s ease-in-out infinite; }
-.ns-float--g{ animation: ns-floaty 6.9s ease-in-out infinite; }
-.ns-float--h{ animation: ns-floaty 7.1s ease-in-out infinite; }
-
-/* Keep the two positioned cards centered horizontally */
-.ns-float--a{ transform: translateX(-50%); }
-.ns-float--h{ transform: translateX(-50%); }
-
-.ns-orbit__foot{
-    margin-top: 10px;
-    text-align: right;
-}
-.ns-hero__yt{
-    color: rgba(255,255,255,.85);
-    font-weight: 800;
-    text-decoration: none;
-}
-.ns-hero__yt:hover{ text-decoration: underline; }
-
-/* =========================
-   Responsive
-   ========================= */
-@media (max-width: 991px){
-    .ns-hero__inner{ grid-template-columns: 1fr; }
-    .ns-hero__orbit{ min-height: auto; }
-    .ns-orbit{ width: 100%; height: auto; margin: 24px 0 0; }
-    .ns-orbit__core{ position: static; margin-bottom: 16px; }
-    .ns-float{
-        position: static;
-        width: 100%;
-        max-width: 520px;
-        margin: 10px auto 0;
-        animation: none;
-        transform: none;
-    }
-    .ns-orbit__foot{ text-align: left; }
-}
-
-@media (max-width: 767px){
-    .ns-hero__actions{ flex-direction: column; }
-    .ns-btn{ width: 100%; }
-}
-</style>
-
-
-{{!-- Home Hero (full width, uses existing outer/inner + your variables) --}}
-<section class="ns-home-hero">
-    <div class="outer">
-        <div class="inner ns-home-hero__inner">
-
-            <div class="ns-home-hero__copy">
-                <div class="ns-badge">
-                    <span class="ns-dot"></span>
-                    <span>Namaste Salesforce • LMS + Blog</span>
-                </div>
-
-                <h1 class="ns-home-hero__title">
-                    Learn Salesforce Analytics like a builder.
-                    <span class="ns-home-hero__title-soft">Not a button-clicker.</span>
-                </h1>
-
-                <p class="ns-home-hero__subtitle">
-                    Courses, lessons, and practical dashboards — built for people who actually ship.
-                </p>
-
-                <div class="ns-home-hero__actions">
-                    <a class="ns-btn ns-btn--primary" href="/courses/">Explore Courses</a>
-                    <a class="ns-btn ns-btn--ghost" href="/blog/">Read Blog</a>
-                    {{#unless @member}}
-                        <a class="ns-btn ns-btn--ghost" href="/subscribe/">Subscribe</a>
-                    {{/unless}}
-                </div>
-
-                <div class="ns-home-hero__meta">
-                    <span class="ns-pill">CRMA</span>
-                    <span class="ns-pill">Dashboards</span>
-                    <span class="ns-pill">SAQL / Bindings</span>
-                    <span class="ns-pill">Projects</span>
-                </div>
-            </div>
-
-            <div class="ns-home-hero__panel">
-                <div class="ns-panel">
-                    <div class="ns-panel__head">
-                        <strong>Start here</strong>
-                        <span class="ns-muted">Quick picks</span>
-                    </div>
-
-                    {{!-- Latest course --}}
-                    {{#get "posts" filter="tag:hash-courses-col" limit="1" order="published_at desc"}}
-                        {{#foreach posts}}
-                            <a class="ns-mini-card" href="{{url}}">
-                                <div class="ns-mini-card__title">{{title}}</div>
-                                <div class="ns-mini-card__meta">
-                                    <span>Course</span>
-                                    <span class="ns-sep">•</span>
-                                    <span>{{reading_time minute="1 min" minutes="% min"}}</span>
-                                </div>
+                        {{#if @site.members_enabled}}
+                            <a href="#/portal/signup" data-portal="signup" class="button is-warning">
+                                <span class="icon"><i class="ph ph-sparkle"></i></span>
+                                <span>Start Free</span>
                             </a>
-                        {{else}}
-                            <div class="ns-note">Add courses tagged <strong>#courses-col</strong>.</div>
-                        {{/foreach}}
-                    {{/get}}
+                        {{/if}}
+                    </div>
 
-                    {{!-- Latest lesson --}}
-                    {{#get "posts" filter="tag:hash-lessons-col" limit="1" order="published_at desc"}}
-                        {{#foreach posts}}
-                            <a class="ns-mini-card" href="{{url}}">
-                                <div class="ns-mini-card__title">{{title}}</div>
-                                <div class="ns-mini-card__meta">
-                                    <span>Lesson</span>
-                                    <span class="ns-sep">•</span>
-                                    <span>{{reading_time minute="1 min" minutes="% min"}}</span>
-                                </div>
+                    <div class="level is-mobile" style="max-width: 40rem;">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Tracks</p>
+                                <p class="title is-4 has-text-white">3+</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Courses</p>
+                                <p class="title is-4 has-text-white">20+</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Guides</p>
+                                <p class="title is-4 has-text-white">100+</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Community</p>
+                                <p class="title is-4 has-text-white">Growing</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-5-desktop is-4-widescreen">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <span class="icon is-large has-text-warning">
+                                    <i class="ph ph-certificate is-size-2"></i>
+                                </span>
+                            </div>
+                            <div class="media-content">
+                                <p class="heading">Featured learning path</p>
+                                <p class="title is-5">Salesforce Developer Path</p>
+                                <p class="subtitle is-6">LWC, Apex, SOQL, integrations, and real builds.</p>
+                            </div>
+                        </article>
+
+                        <progress class="progress is-success mb-4" value="72" max="100">72%</progress>
+
+                        <div class="content mb-4">
+                            <ul>
+                                <li>Beginner to advanced progression</li>
+                                <li>Project-based lessons</li>
+                                <li>Certification-oriented roadmap</li>
+                            </ul>
+                        </div>
+
+                        <div class="buttons">
+                            <a href="/courses/" class="button is-primary is-fullwidth">
+                                <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                                <span>View Path</span>
                             </a>
-                        {{else}}
-                            <div class="ns-note">Add lessons tagged <strong>#lessons-col</strong>.</div>
-                        {{/foreach}}
-                    {{/get}}
-
-                    <div class="ns-panel__actions">
-                        <a class="ns-btn ns-btn--primary" href="/courses/">Go to Courses</a>
-                        <a class="ns-btn ns-btn--ghost" href="/lessons/">Browse Lessons</a>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
 
-{{!-- Courses section --}}
-<section class="ns-section ns-section--wash">
-    <div class="outer">
-        <div class="inner">
-            <header class="ns-section__head">
-                <h2 class="ns-section__title">Featured Courses</h2>
-                <p class="ns-section__sub">Structured learning paths — short lessons, real outcomes.</p>
-                <a class="ns-link" href="/courses/">View all courses →</a>
-            </header>
+<section class="section">
+    <div class="container is-fluid">
+        <div class="columns is-multiline is-variable is-4">
+            <div class="column is-6-mobile is-3-desktop">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-link mb-3"><i class="ph ph-book-open-text is-size-3"></i></span>
+                    <p class="heading">Structured Curriculum</p>
+                    <p class="title is-5">Step-by-step learning</p>
+                </div>
+            </div>
 
-            {{#get "posts" filter="tag:hash-courses-col" limit="6" order="published_at desc"}}
-                {{#if posts}}
-                    <div class="ns-grid ns-grid--3">
-                        {{#foreach posts}}
-                            <article class="ns-card">
-                                <a class="ns-card__link" href="{{url}}">
-                                    {{#if feature_image}}
-                                        <div class="ns-card__media">
+            <div class="column is-6-mobile is-3-desktop">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-warning mb-3"><i class="ph ph-code is-size-3"></i></span>
+                    <p class="heading">Hands-on Projects</p>
+                    <p class="title is-5">Build while learning</p>
+                </div>
+            </div>
+
+            <div class="column is-6-mobile is-3-desktop">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-primary mb-3"><i class="ph ph-exam is-size-3"></i></span>
+                    <p class="heading">Certification Prep</p>
+                    <p class="title is-5">Career-focused training</p>
+                </div>
+            </div>
+
+            <div class="column is-6-mobile is-3-desktop">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-success mb-3"><i class="ph ph-users-three is-size-3"></i></span>
+                    <p class="heading">Community Support</p>
+                    <p class="title is-5">Learn together</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-fluid">
+        <div class="has-text-centered mb-6">
+            <h2 class="title is-2">Choose your career path</h2>
+            <p class="subtitle is-5">Pick the Salesforce route that matches your goal.</p>
+        </div>
+
+        <div class="columns is-variable is-5">
+            <div class="column is-4">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <span class="icon is-large has-text-warning mb-4">
+                            <i class="ph ph-gear-six is-size-1"></i>
+                        </span>
+                        <h3 class="title is-4">Salesforce Admin</h3>
+                        <p class="content">Security, flows, reports, automation, setup, and day-to-day platform ownership.</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/courses/" class="card-footer-item">View Admin Path</a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-4">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <span class="icon is-large has-text-link mb-4">
+                            <i class="ph ph-code is-size-1"></i>
+                        </span>
+                        <h3 class="title is-4">Salesforce Developer</h3>
+                        <p class="content">Apex, LWC, APIs, triggers, testing, packaging, and scalable custom app builds.</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/courses/" class="card-footer-item">View Developer Path</a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-4">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <span class="icon is-large has-text-primary mb-4">
+                            <i class="ph ph-tree-structure is-size-1"></i>
+                        </span>
+                        <h3 class="title is-4">Salesforce Architect</h3>
+                        <p class="content">Solution design, integrations, data strategy, governance, and enterprise scale thinking.</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/courses/" class="card-footer-item">View Architect Path</a>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-fluid">
+        <div class="level mb-6">
+            <div class="level-left">
+                <div class="level-item">
+                    <div>
+                        <h2 class="title is-2">Featured Courses</h2>
+                        <p class="subtitle is-5">Practical courses built for real outcomes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="level-right is-hidden-mobile">
+                <div class="level-item">
+                    <a href="/courses/" class="button is-light">
+                        <span>View All Courses</span>
+                        <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {{#get "posts" filter="tag:hash-courses-col" limit="4" include="tags,authors"}}
+            <div class="columns is-multiline is-variable is-5">
+                {{#foreach posts}}
+                    <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                        <article class="card is-fullheight">
+                            {{#if feature_image}}
+                                <div class="card-image">
+                                    <figure class="image is-16by9">
+                                        <a href="{{url}}">
                                             <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
+                                        </a>
+                                    </figure>
+                                </div>
+                            {{/if}}
+
+                            <div class="card-content">
+                                {{#if primary_tag}}
+                                    <div class="mb-3">
+                                        <a href="{{primary_tag.url}}" class="tag is-light">{{primary_tag.name}}</a>
+                                    </div>
+                                {{/if}}
+
+                                <h3 class="title is-5">
+                                    <a href="{{url}}">{{title}}</a>
+                                </h3>
+
+                                <p class="content">
+                                    {{#if custom_excerpt}}
+                                        {{custom_excerpt}}
+                                    {{else}}
+                                        {{excerpt words="18"}}
+                                    {{/if}}
+                                </p>
+
+                                <p class="is-size-7 has-text-grey">
+                                    {{#if primary_author}}{{primary_author.name}}{{else}}{{@site.title}}{{/if}} • {{reading_time}}
+                                </p>
+                            </div>
+
+                            <footer class="card-footer">
+                                <a href="{{url}}" class="card-footer-item">View Course</a>
+                            </footer>
+                        </article>
+                    </div>
+                {{else}}
+                    <div class="column is-12">
+                        <div class="notification is-light">
+                            No courses found yet. Add posts tagged with <strong>#courses-col</strong>.
+                        </div>
+                    </div>
+                {{/foreach}}
+            </div>
+        {{/get}}
+
+        <div class="has-text-centered is-hidden-tablet mt-5">
+            <a href="/courses/" class="button is-primary is-fullwidth">View All Courses</a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-fluid">
+        <div class="columns is-vcentered is-variable is-8">
+            <div class="column is-6">
+                <h2 class="title is-2 mb-5">Why learn with {{@site.title}}?</h2>
+
+                <article class="media mb-5">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-link">
+                            <i class="ph ph-chalkboard-teacher is-size-3"></i>
+                        </span>
+                    </div>
+                    <div class="media-content">
+                        <h4 class="title is-5 mb-2">Expert-led guidance</h4>
+                        <p>Learn from people who build in Salesforce, not just people who repeat docs with dramatic confidence.</p>
+                    </div>
+                </article>
+
+                <article class="media mb-5">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-warning">
+                            <i class="ph ph-laptop is-size-3"></i>
+                        </span>
+                    </div>
+                    <div class="media-content">
+                        <h4 class="title is-5 mb-2">100% practical learning</h4>
+                        <p>Every course is designed around implementation, exercises, and project-based outcomes.</p>
+                    </div>
+                </article>
+
+                <article class="media">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-primary">
+                            <i class="ph ph-users-three is-size-3"></i>
+                        </span>
+                    </div>
+                    <div class="media-content">
+                        <h4 class="title is-5 mb-2">Community and momentum</h4>
+                        <p>Stay consistent with a growing ecosystem of learners, builders, and future architects.</p>
+                    </div>
+                </article>
+            </div>
+
+            <div class="column is-6">
+                <div class="columns is-multiline is-variable is-4">
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="ph ph-video-camera is-size-3"></i></span>
+                            <p class="title is-5">Video Lessons</p>
+                            <p class="is-size-7 has-text-grey">Clear walkthroughs and guided builds.</p>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-success mb-3"><i class="ph ph-files is-size-3"></i></span>
+                            <p class="title is-5">Docs & Notes</p>
+                            <p class="is-size-7 has-text-grey">Supporting references and written guides.</p>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-warning mb-3"><i class="ph ph-briefcase is-size-3"></i></span>
+                            <p class="title is-5">Career Ready</p>
+                            <p class="is-size-7 has-text-grey">Skills with portfolio and job value.</p>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-primary mb-3"><i class="ph ph-lifebuoy is-size-3"></i></span>
+                            <p class="title is-5">Supportive</p>
+                            <p class="is-size-7 has-text-grey">Less confusion, more clarity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container is-fluid">
+        <div class="columns is-variable is-6">
+            <div class="column is-8">
+                <div class="level mb-5">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <div>
+                                <h2 class="title is-2">Latest from the blog</h2>
+                                <p class="subtitle is-5">Fresh tutorials, breakdowns, and explainers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="level-right is-hidden-mobile">
+                        <div class="level-item">
+                            <a href="/blog/" class="button is-light">Visit Blog</a>
+                        </div>
+                    </div>
+                </div>
+
+                {{#get "posts" filter="tag:hash-blog-col" limit="3" include="tags,authors"}}
+                    <div class="columns is-multiline is-variable is-5">
+                        {{#foreach posts}}
+                            <div class="column is-12-tablet is-4-desktop">
+                                <article class="card is-fullheight">
+                                    {{#if feature_image}}
+                                        <div class="card-image">
+                                            <figure class="image is-16by9">
+                                                <a href="{{url}}">
+                                                    <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
+                                                </a>
+                                            </figure>
                                         </div>
                                     {{/if}}
-                                    <div class="ns-card__body">
-                                        <h3 class="ns-card__title">{{title}}</h3>
-                                        <p class="ns-card__excerpt">{{excerpt words="18"}}</p>
-                                        <div class="ns-card__meta">
-                                            <span>Course</span>
-                                            <span class="ns-sep">•</span>
-                                            <span>{{reading_time minute="1 min" minutes="% min"}}</span>
-                                        </div>
+
+                                    <div class="card-content">
+                                        {{#if primary_tag}}
+                                            <div class="mb-3">
+                                                <a href="{{primary_tag.url}}" class="tag is-light">{{primary_tag.name}}</a>
+                                            </div>
+                                        {{/if}}
+
+                                        <h3 class="title is-5">
+                                            <a href="{{url}}">{{title}}</a>
+                                        </h3>
+
+                                        <p class="content">
+                                            {{#if custom_excerpt}}
+                                                {{custom_excerpt}}
+                                            {{else}}
+                                                {{excerpt words="16"}}
+                                            {{/if}}
+                                        </p>
+
+                                        <p class="is-size-7 has-text-grey">
+                                            {{date format="DD MMM YYYY"}} • {{reading_time}}
+                                        </p>
                                     </div>
-                                </a>
-                            </article>
+
+                                    <footer class="card-footer">
+                                        <a href="{{url}}" class="card-footer-item">Read Article</a>
+                                    </footer>
+                                </article>
+                            </div>
+                        {{else}}
+                            <div class="column is-12">
+                                <div class="notification is-light">No blog posts yet.</div>
+                            </div>
                         {{/foreach}}
                     </div>
-                {{else}}
-                    <div class="ns-note">No courses found. Tag posts with <strong>#courses-col</strong>.</div>
-                {{/if}}
-            {{/get}}
-        </div>
-    </div>
-</section>
-
-{{!-- Latest Lessons section --}}
-<section class="ns-section">
-    <div class="outer">
-        <div class="inner">
-            <header class="ns-section__head">
-                <h2 class="ns-section__title">Latest Lessons</h2>
-                <p class="ns-section__sub">Fresh drops you can finish in one sitting.</p>
-                <a class="ns-link" href="/lessons/">View all lessons →</a>
-            </header>
-
-            {{#get "posts" filter="tag:hash-lessons-col" limit="10" order="published_at desc"}}
-                {{#if posts}}
-                    <div class="ns-list">
-                        {{#foreach posts}}
-                            <a class="ns-list__item" href="{{url}}">
-                                <span class="ns-list__title">{{title}}</span>
-                                <span class="ns-list__meta">
-                                    {{reading_time minute="1 min" minutes="% min"}}
-                                    <span class="ns-sep">•</span>
-                                    {{date format="MMM D, YYYY"}}
-                                </span>
-                                <span class="ns-list__arrow" aria-hidden="true">→</span>
-                            </a>
-                        {{/foreach}}
-                    </div>
-                {{else}}
-                    <div class="ns-note">No lessons found. Tag posts with <strong>#lessons-col</strong>.</div>
-                {{/if}}
-            {{/get}}
-        </div>
-    </div>
-</section>
-
-{{!-- Blog section (uses your existing post-feed + post-card) --}}
-<section class="ns-section ns-section--border-top">
-    <div class="outer">
-        <div class="inner">
-            <header class="ns-section__head">
-                <h2 class="ns-section__title">Latest Blog Posts</h2>
-                <p class="ns-section__sub">Notes, guides, breakdowns, and “what I wish someone told me”.</p>
-                <a class="ns-link" href="/blog/">Go to blog →</a>
-            </header>
-
-            <div class="post-feed">
-                {{#get "posts" filter="tag:hash-blog-col" limit="9" order="published_at desc"}}
-                    {{#foreach posts}}
-                        {{> "post-card"}}
-                    {{/foreach}}
                 {{/get}}
+
+                <div class="has-text-centered is-hidden-tablet mt-5">
+                    <a href="/blog/" class="button is-light is-fullwidth">Visit Blog</a>
+                </div>
             </div>
 
+            <div class="column is-4">
+                <div class="box mb-5">
+                    <h3 class="title is-4">Join the newsletter</h3>
+                    <p class="content">Get Salesforce tips, updates, launches, and practical notes in your inbox.</p>
+
+                    {{#if @site.members_enabled}}
+                        <a href="#/portal/signup" data-portal="signup" class="button is-primary is-fullwidth mb-3">
+                            <span class="icon"><i class="ph ph-envelope-simple"></i></span>
+                            <span>Subscribe Free</span>
+                        </a>
+
+                        <a href="#/portal/signin" data-portal="signin" class="button is-light is-fullwidth">
+                            Already a member? Sign in
+                        </a>
+                    {{else}}
+                        <div class="notification is-light">
+                            Enable Ghost Members to use newsletter signup here.
+                        </div>
+                    {{/if}}
+                </div>
+
+                <div class="box">
+                    <h3 class="title is-5">Quick Links</h3>
+                    <div class="content">
+                        <ul>
+                            <li><a href="/courses/">All Courses</a></li>
+                            <li><a href="/docs/">Documentation</a></li>
+                            <li><a href="/showcase/">Showcase</a></li>
+                            <li><a href="/newsletter/">Newsletter</a></li>
+                            <li><a href="/feed/">Updates Feed</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
-{{!-- The main content area --}}
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
 
-    <div class="post-feed">
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
+<section class="section">
+    <div class="container is-fluid">
+        <div class="has-text-centered mb-6">
+            <h2 class="title is-2">What learners are here for</h2>
+            <p class="subtitle is-5">Clear outcomes, practical execution, and less fluff.</p>
+        </div>
+
+        <div class="columns is-variable is-5">
+            <div class="column is-4">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <span class="icon has-text-link"><i class="ph ph-target"></i></span>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-5">Job-ready skills</p>
+                            <p>Learn what helps in real implementations and interviews, not just keyword collecting.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="column is-4">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <span class="icon has-text-warning"><i class="ph ph-stack"></i></span>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-5">Layered progression</p>
+                            <p>Move from beginner concepts to advanced builds with a path that actually makes sense.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="column is-4">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <span class="icon has-text-primary"><i class="ph ph-rocket-launch"></i></span>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-5">Momentum</p>
+                            <p>Stay consistent with guided tracks, practical lessons, and meaningful next steps.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    {{pagination}}
+<section class="hero is-light">
+    <div class="hero-body">
+        <div class="container is-fluid">
+            <div class="columns is-vcentered is-variable is-6">
+                <div class="column is-8">
+                    <h2 class="title is-2">Ready to build your Salesforce edge?</h2>
+                    <p class="subtitle is-5">Start with courses, sharpen with docs, and stay current with the blog.</p>
+                </div>
 
-</div>
-</main>
+                <div class="column is-4">
+                    <div class="buttons" style="display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap;">
+                        <a href="/courses/" class="button is-primary">
+                            <span class="icon"><i class="ph ph-book-open"></i></span>
+                            <span>Start Learning</span>
+                        </a>
+                        <a href="/contact/" class="button is-light">
+                            <span class="icon"><i class="ph ph-chat-circle-dots"></i></span>
+                            <span>Contact</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

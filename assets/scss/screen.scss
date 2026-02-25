@@ -1,0 +1,1276 @@
+/* ==========================================================================
+   screen.scss
+   Bulma v1 + SLDS-inspired Ghost theme skin
+   ========================================================================== */
+
+@use "sass:color";
+@use "sass:list";
+
+/* ==========================================================================
+   1) THEME TOKENS
+   ========================================================================== */
+
+$white: #ffffff;
+$black: #181818;
+
+/* SLDS-ish semantic colors */
+$brand-primary: #0176d3;
+$brand-primary-hover: #014486;
+$brand-primary-active: #032d60;
+
+$link-color: #0b5cab;
+$info-color: #0b5cab;
+$success-color: #2e844a;
+$warning-color: #dd7a01;
+$danger-color: #ba0517;
+
+/* Surface + text */
+$surface-body: #f3f3f3;
+$surface-card: #ffffff;
+$surface-subtle: #fafaf9;
+$surface-muted: #f8f8f8;
+
+$text-strong: #181818;
+$text-default: #3e3e3c;
+$text-weak: #706e6b;
+$text-inverse: #ffffff;
+
+/* Borders + focus */
+$border-color: #c9c9c9;
+$border-color-strong: #b0adab;
+$border-color-soft: #e5e5e5;
+$focus-ring: rgba(1, 118, 211, 0.28);
+
+/* Shadows */
+$shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+$shadow-popover: 0 2px 8px rgba(0, 0, 0, 0.16);
+$shadow-active: 0 4px 12px rgba(0, 0, 0, 0.16);
+
+/* Sizing */
+$radius-base: 0.25rem;
+$radius-large: 0.5rem;
+$navbar-height-local: 3.5rem;
+$control-height-local: 2.5em;
+$modal-width-local: 50rem;
+
+/* Font stack: Salesforce-ish without requiring proprietary assets */
+$font-stack:
+  "Salesforce Sans",
+  "Inter",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  "Helvetica Neue",
+  Arial,
+  sans-serif;
+
+/* Helper color map for component variants */
+$theme-colors: (
+  "primary": ($brand-primary, $text-inverse),
+  "link": ($link-color, $text-inverse),
+  "info": ($info-color, $text-inverse),
+  "success": ($success-color, $text-inverse),
+  "warning": ($warning-color, $text-inverse),
+  "danger": ($danger-color, $text-inverse)
+);
+
+/* ==========================================================================
+   2) BULMA SETUP
+   Keep Bulma config here; keep visual personality below.
+   ========================================================================== */
+
+@use "bulma/sass" with (
+  $primary: $brand-primary,
+  $link: $link-color,
+  $info: $info-color,
+  $success: $success-color,
+  $warning: $warning-color,
+  $danger: $danger-color,
+
+  $radius: $radius-base,
+  $box-shadow: $shadow-card,
+  $card-shadow: $shadow-card,
+
+  $button-border-color: $border-color,
+  $button-focus-border-color: $brand-primary,
+  $button-active-border-color: $border-color-strong,
+
+  $input-disabled-background-color: $surface-subtle,
+
+$navbar-height: $navbar-height-local,
+
+  $dropdown-content-shadow: $shadow-popover,
+  $dropdown-content-radius: $radius-base,
+
+  $control-height: $control-height-local,
+  $modal-content-width: $modal-width-local,
+
+  $tabs-link-active-color: $brand-primary,
+  $tabs-link-active-border-bottom-color: $brand-primary
+);
+
+/* ==========================================================================
+   3) ROOT + BASE
+   ========================================================================== */
+
+:root {
+  --theme-brand: #{$brand-primary};
+  --theme-brand-hover: #{$brand-primary-hover};
+  --theme-brand-active: #{$brand-primary-active};
+
+  --theme-surface-body: #{$surface-body};
+  --theme-surface-card: #{$surface-card};
+  --theme-surface-subtle: #{$surface-subtle};
+
+  --theme-border: #{$border-color};
+  --theme-border-strong: #{$border-color-strong};
+
+  --theme-text: #{$text-default};
+  --theme-text-strong: #{$text-strong};
+  --theme-text-weak: #{$text-weak};
+
+  --theme-focus: #{$focus-ring};
+
+  --theme-radius: #{$radius-base};
+  --theme-radius-lg: #{$radius-large};
+
+  --theme-shadow: #{$shadow-card};
+  --theme-shadow-popover: #{$shadow-popover};
+}
+
+html,
+body {
+  background: $surface-body;
+  color: $text-default;
+}
+
+body,
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: $font-stack;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.title,
+.subtitle {
+  color: $text-strong;
+  font-family: $font-stack;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.subtitle {
+  color: $text-default;
+  font-weight: 500;
+}
+
+a {
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+hr {
+  background-color: $border-color-soft;
+  height: 1px;
+}
+
+.content {
+  color: $text-default;
+  letter-spacing: 0.01em;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+  color: $text-strong;
+}
+
+.content blockquote {
+  background: $surface-subtle;
+  border-left: 4px solid $brand-primary;
+  border-radius: $radius-base;
+  color: $text-default;
+}
+
+.gh-sponsor {
+  color: #ea4aaa;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   4) BUTTONS
+   SLDS-inspired: flatter, clearer borders, no shouty uppercase nonsense.
+   ========================================================================== */
+
+.button {
+  border-radius: $radius-base;
+  border-width: 1px;
+  box-shadow: none;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  min-height: 2rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.05s ease;
+  position: relative;
+
+  &:hover,
+  &.is-hovered {
+    border-color: $border-color-strong;
+    box-shadow: none;
+  }
+
+  &:focus,
+  &.is-focused,
+  &:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 3px $focus-ring;
+  }
+
+  &:active,
+  &.is-active {
+    box-shadow: none;
+    transform: translateY(1px);
+  }
+
+  &.is-primary {
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+    color: $text-inverse;
+
+    &:hover,
+    &.is-hovered {
+      background-color: $brand-primary-hover;
+      border-color: $brand-primary-hover;
+      color: $text-inverse;
+    }
+
+    &:focus,
+    &.is-focused,
+    &:focus-visible {
+      box-shadow: 0 0 0 3px $focus-ring;
+    }
+
+    &:active,
+    &.is-active {
+      background-color: $brand-primary-active;
+      border-color: $brand-primary-active;
+    }
+  }
+
+  &.is-light {
+    background-color: $surface-card;
+    border-color: $border-color;
+    color: $text-default;
+
+    &:hover,
+    &.is-hovered {
+      background-color: $surface-subtle;
+      border-color: $border-color-strong;
+      color: $text-strong;
+    }
+  }
+
+  &.is-text {
+    box-shadow: none;
+    border-color: transparent;
+    background: transparent;
+
+    &:hover,
+    &.is-hovered {
+      background: rgba(1, 118, 211, 0.06);
+      color: $brand-primary-hover;
+    }
+
+    &:focus,
+    &.is-focused,
+    &:focus-visible {
+      box-shadow: none;
+      text-decoration: underline;
+    }
+  }
+
+  @each $name, $pair in $theme-colors {
+    $variant: list.nth($pair, 1);
+    $invert: list.nth($pair, 2);
+
+    &.is-#{$name}:not(.is-light):not(.is-outlined):not(.is-inverted):not(.is-text) {
+      background-color: $variant;
+      border-color: $variant;
+      color: $invert;
+
+      &:hover,
+      &.is-hovered {
+        background-color: color.scale($variant, $lightness: -8%);
+        border-color: color.scale($variant, $lightness: -8%);
+      }
+
+      &:active,
+      &.is-active {
+        background-color: color.scale($variant, $lightness: -14%);
+        border-color: color.scale($variant, $lightness: -14%);
+      }
+    }
+
+    &.is-outlined.is-#{$name} {
+      background-color: transparent;
+      border-color: $variant;
+      color: $variant;
+
+      &:hover,
+      &.is-hovered {
+        background-color: rgba(1, 118, 211, 0.06);
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   5) FORM CONTROLS
+   ========================================================================== */
+
+.input,
+.textarea,
+.select select {
+  background-color: $surface-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-base;
+  box-shadow: none;
+  color: $text-strong;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+
+  &::placeholder {
+    color: $text-weak;
+    opacity: 1;
+  }
+
+  &:hover {
+    border-color: $border-color-strong;
+  }
+
+  &:focus,
+  &.is-focused,
+  &:active,
+  &.is-active {
+    border-color: $brand-primary;
+    box-shadow: 0 0 0 3px $focus-ring;
+    outline: none;
+  }
+
+  &.is-disabled,
+  &[disabled],
+  &[readonly] {
+    background-color: $surface-subtle;
+    border-color: $border-color-soft;
+    color: $text-weak;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  @each $name, $pair in $theme-colors {
+    $variant: list.nth($pair, 1);
+
+    &.is-#{$name} {
+      border-color: $variant;
+
+      &:focus,
+      &.is-focused,
+      &:active,
+      &.is-active {
+        border-color: $variant;
+        box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.18);
+      }
+    }
+  }
+}
+
+.textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: $brand-primary;
+}
+
+.help {
+  color: $text-weak;
+}
+
+.label {
+  color: $text-strong;
+  font-weight: 600;
+}
+
+.checkbox,
+.radio {
+  color: $text-default;
+}
+
+/* ==========================================================================
+   6) CONTROL GROUPS
+   ========================================================================== */
+
+.control.has-addons {
+  .button,
+  .input,
+  .select select {
+    &:focus {
+      z-index: 2;
+      position: relative;
+    }
+  }
+
+  .button,
+  .input,
+  .select {
+    &:first-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &:last-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+
+    select {
+      &:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      &:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+  }
+
+  .button {
+    box-shadow: none;
+  }
+}
+
+/* ==========================================================================
+   7) PROGRESS
+   ========================================================================== */
+
+.progress {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #dddbda;
+
+  &::-webkit-progress-bar {
+    background: #dddbda;
+  }
+
+  &::-webkit-progress-value {
+    border-radius: 999px;
+  }
+
+  &::-moz-progress-bar {
+    border-radius: 999px;
+  }
+
+  &.is-small {
+    height: 0.375rem;
+  }
+}
+
+/* ==========================================================================
+   8) CARD
+   ========================================================================== */
+
+.card {
+  background: $surface-card;
+  border: 1px solid $border-color-soft;
+  border-radius: $radius-base;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+
+  .card-header {
+    background: $surface-subtle;
+    border-bottom: 1px solid $border-color-soft;
+    box-shadow: none;
+  }
+
+  .card-header-title {
+    color: $text-strong;
+    font-weight: 600;
+  }
+
+  .card-content {
+    color: $text-default;
+  }
+
+  .card-footer {
+    border-top: 1px solid $border-color-soft;
+    background: $surface-card;
+  }
+
+  .card-footer-item {
+    border: 0;
+    color: $link-color;
+    font-weight: 600;
+
+    &:hover {
+      background: rgba(1, 118, 211, 0.04);
+      color: $brand-primary-hover;
+    }
+  }
+}
+
+/* ==========================================================================
+   9) MENU
+   ========================================================================== */
+
+.menu {
+  .menu-label {
+    color: $text-weak;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .menu-list {
+    a {
+      border-radius: $radius-base;
+      color: $text-default;
+      padding: 0.5rem 0.75rem;
+
+      &:hover {
+        background: rgba(1, 118, 211, 0.06);
+        color: $text-strong;
+      }
+
+      &.is-active {
+        background: rgba(1, 118, 211, 0.08);
+        color: $brand-primary;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   10) NOTIFICATION
+   ========================================================================== */
+
+.notification {
+  border: 1px solid $border-color-soft;
+  border-radius: $radius-base;
+  box-shadow: none;
+  color: $text-default;
+
+  @each $name, $pair in $theme-colors {
+    $variant: list.nth($pair, 1);
+    $invert: list.nth($pair, 2);
+
+    &.is-#{$name} {
+      background: color.mix($variant, $white, 8%);
+      border-color: color.mix($variant, $white, 24%);
+      color: $text-strong;
+
+      a:not(.button) {
+        color: $variant;
+        font-weight: 600;
+        text-decoration: underline;
+      }
+
+      .delete {
+        background: rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   11) MESSAGES
+   ========================================================================== */
+
+.message {
+  border: 1px solid $border-color-soft;
+  border-radius: $radius-base;
+  overflow: hidden;
+  box-shadow: none;
+
+  .message-header {
+    background: $surface-subtle;
+    color: $text-strong;
+    border-bottom: 1px solid $border-color-soft;
+    font-weight: 600;
+  }
+
+  .message-body {
+    background: $surface-card;
+    color: $text-default;
+    border: 0;
+  }
+
+  @each $name, $pair in $theme-colors {
+    $variant: list.nth($pair, 1);
+
+    &.is-#{$name} {
+      border-color: color.mix($variant, $white, 24%);
+
+      .message-header {
+        background: color.mix($variant, $white, 10%);
+        color: $text-strong;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   12) MODAL
+   ========================================================================== */
+
+.modal {
+  .modal-background {
+    background-color: rgba(24, 24, 24, 0.6);
+  }
+
+  .modal-content,
+  .modal-card {
+    border-radius: $radius-large;
+    overflow: hidden;
+    box-shadow: $shadow-popover;
+  }
+
+  .modal-card-head,
+  .modal-card-foot {
+    background: $surface-subtle;
+    border-color: $border-color-soft;
+  }
+
+  .modal-card-title {
+    color: $text-strong;
+    font-weight: 600;
+  }
+
+  .modal-card-body {
+    background: $surface-card;
+    color: $text-default;
+  }
+}
+
+/* ==========================================================================
+   13) NAVBAR
+   ========================================================================== */
+
+.navbar {
+  background: $surface-card;
+  border-bottom: 1px solid $border-color-soft;
+
+  &:not(.is-transparent) {
+    box-shadow: none;
+  }
+
+  .navbar-brand > .navbar-item,
+  .navbar-brand .navbar-link,
+  .navbar-item,
+  .navbar-link {
+    color: $text-default;
+    font-weight: 500;
+  }
+
+  .navbar-item:hover,
+  .navbar-link:hover,
+  .navbar-item:focus,
+  .navbar-link:focus {
+    background: rgba(1, 118, 211, 0.05);
+    color: $text-strong;
+  }
+
+  .navbar-item.is-active,
+  .navbar-link.is-active {
+    color: $brand-primary;
+    font-weight: 600;
+  }
+
+  .navbar-dropdown {
+    border-top: 1px solid $border-color-soft;
+    border-radius: 0 0 $radius-base $radius-base;
+    box-shadow: $shadow-popover;
+  }
+
+  .navbar-divider {
+    background-color: $border-color-soft;
+  }
+
+  .has-dropdown .navbar-item {
+    color: $text-default;
+  }
+}
+
+/* Mobile navbar */
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    background: $surface-card;
+    border-top: 1px solid $border-color-soft;
+    box-shadow: none;
+  }
+
+  .navbar-dropdown {
+    box-shadow: none;
+    border-top: 0;
+  }
+
+  .navbar-item,
+  .navbar-link {
+    color: $text-default;
+  }
+
+  .navbar-item.is-active,
+  .navbar-link.is-active {
+    background: rgba(1, 118, 211, 0.06);
+    color: $brand-primary;
+  }
+
+  @each $name, $pair in $theme-colors {
+    $variant: list.nth($pair, 1);
+    $invert: list.nth($pair, 2);
+
+    .navbar.is-#{$name} {
+      .navbar-brand > .navbar-item,
+      .navbar-brand .navbar-link {
+        color: $invert;
+      }
+
+      .navbar-menu {
+        background: $variant;
+
+        .navbar-item,
+        .navbar-link {
+          color: $invert;
+        }
+
+        .navbar-item.is-active,
+        .navbar-link.is-active {
+          background: color.scale($variant, $lightness: -10%);
+          color: $invert;
+        }
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   14) TABS
+   ========================================================================== */
+
+.tabs {
+  a {
+    color: $text-default;
+    border-bottom-width: 3px;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  a:hover {
+    border-bottom-color: $border-color;
+    color: $text-strong;
+  }
+
+  li.is-active a {
+    color: $brand-primary;
+    border-bottom-color: $brand-primary;
+    box-shadow: none;
+    font-weight: 600;
+  }
+
+  &.is-boxed {
+    a {
+      border-radius: $radius-base $radius-base 0 0;
+    }
+
+    li.is-active a {
+      border-top-color: $brand-primary;
+      border-left-color: $border-color-soft;
+      border-right-color: $border-color-soft;
+      border-bottom-color: transparent;
+      box-shadow: inset 0 3px 0 $brand-primary;
+    }
+  }
+
+  &.is-toggle a,
+  &.is-toggle-rounded a {
+    border-radius: $radius-base;
+  }
+}
+
+/* ==========================================================================
+   15) PANEL
+   ========================================================================== */
+
+.panel {
+  background: $surface-card;
+  border: 1px solid $border-color-soft;
+  border-radius: $radius-base;
+  box-shadow: none;
+  overflow: hidden;
+
+  .panel-heading {
+    background: $surface-subtle;
+    color: $text-strong;
+    font-weight: 600;
+    border-bottom: 1px solid $border-color-soft;
+    border-radius: 0;
+  }
+
+  .panel-block,
+  .panel-tabs {
+    border: 0;
+    border-bottom: 1px solid $border-color-soft;
+    color: $text-default;
+    padding: 0.75rem 1rem;
+  }
+
+  .panel-block:last-child {
+    border-bottom: 0;
+  }
+
+  .panel-block.is-active {
+    color: $brand-primary;
+    background: rgba(1, 118, 211, 0.05);
+  }
+
+  .panel-tabs {
+    a {
+      color: $text-default;
+      border-bottom: 2px solid transparent;
+
+      &:hover {
+        color: $brand-primary-hover;
+        border-color: $border-color;
+      }
+
+      &.is-active {
+        color: $brand-primary;
+        border-color: $brand-primary;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   16) TABLES
+   ========================================================================== */
+
+.table {
+  background: $surface-card;
+  color: $text-default;
+
+  th {
+    color: $text-strong;
+    font-weight: 600;
+  }
+
+  th,
+  td {
+    border-color: $border-color-soft;
+  }
+
+  &.is-striped tbody tr:not(.is-selected):nth-child(even) {
+    background: $surface-subtle;
+  }
+
+  &.is-hoverable tbody tr:not(.is-selected):hover {
+    background: rgba(1, 118, 211, 0.03);
+  }
+
+  tr.is-selected {
+    background: $brand-primary;
+
+    td,
+    th {
+      color: $text-inverse;
+    }
+  }
+}
+
+/* ==========================================================================
+   17) PAGINATION
+   ========================================================================== */
+
+.pagination-link,
+.pagination-next,
+.pagination-previous {
+  background: $surface-card;
+  border-color: $border-color;
+  color: $text-default;
+  border-radius: $radius-base;
+  box-shadow: none;
+
+  &:hover {
+    border-color: $border-color-strong;
+    color: $text-strong;
+  }
+
+  &:focus,
+  &:focus-visible {
+    box-shadow: 0 0 0 3px $focus-ring;
+  }
+}
+
+.pagination-link.is-current {
+  background: $brand-primary;
+  border-color: $brand-primary;
+  color: $text-inverse;
+}
+
+/* ==========================================================================
+   18) TAGS + BADGES
+   ========================================================================== */
+
+.tag {
+  border-radius: 999px;
+  font-weight: 600;
+
+  &.is-light {
+    background: $surface-subtle;
+    color: $text-default;
+    border: 1px solid $border-color-soft;
+  }
+}
+
+/* ==========================================================================
+   19) DROPDOWNS
+   ========================================================================== */
+
+.dropdown-content {
+  border: 1px solid $border-color-soft;
+  box-shadow: $shadow-popover;
+  border-radius: $radius-base;
+}
+
+.dropdown-item {
+  color: $text-default;
+
+  &:hover,
+  &.is-active {
+    background: rgba(1, 118, 211, 0.06);
+    color: $text-strong;
+  }
+}
+
+/* ==========================================================================
+   20) BULMA / GHOST UTILITIES
+   ========================================================================== */
+
+.box {
+  background: $surface-card;
+  border: 1px solid $border-color-soft;
+  border-radius: $radius-base;
+  box-shadow: $shadow-card;
+}
+
+.delete:focus,
+.delete:focus-visible {
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+.is-slds-surface {
+  background: $surface-card;
+  border: 1px solid $border-color-soft;
+  border-radius: $radius-base;
+  box-shadow: $shadow-card;
+}
+
+.is-slds-muted {
+  color: $text-weak !important;
+}
+
+.has-slds-focus {
+  &:focus,
+  &:focus-visible {
+    outline: 0;
+    box-shadow: 0 0 0 3px $focus-ring;
+  }
+}
+
+
+
+.site-header {
+  --site-header-accent: #157c95;
+  --site-header-accent-dark: #10667b;
+  --site-header-surface: rgba(255, 255, 255, 0.88);
+  --site-header-border: rgba(15, 23, 42, 0.08);
+  --site-header-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --site-header-text: #1f2937;
+  --site-header-text-soft: #4b5563;
+  --site-header-active-bg: rgba(21, 124, 149, 0.08);
+  --site-header-hover-bg: rgba(15, 23, 42, 0.04);
+  --site-header-radius: 1rem;
+
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 0.9rem 1rem 0;
+}
+
+.site-navbar {
+  background: var(--site-header-surface);
+  border: 1px solid var(--site-header-border);
+  border-radius: var(--site-header-radius);
+  box-shadow: var(--site-header-shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  min-height: 4.25rem;
+  padding-inline: 0.35rem;
+}
+
+.site-navbar .container {
+  align-items: center;
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 4.25rem;
+  padding-inline: 0.85rem;
+  font-weight: 800;
+  color: var(--site-header-text);
+}
+
+.site-brand:hover,
+.site-brand:focus {
+  background: transparent !important;
+  color: var(--site-header-text);
+}
+
+.site-brand__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  flex-shrink: 0;
+}
+
+.site-brand__logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.site-brand__title {
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--site-header-text);
+}
+
+.site-navbar .navbar-item {
+  border-radius: 0.85rem;
+  color: var(--site-header-text-soft);
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.site-navbar .navbar-start > .navbar-item {
+  margin: 0 0.15rem;
+  padding-inline: 0.9rem;
+}
+
+.site-navbar .navbar-item:hover,
+.site-navbar .navbar-link:hover,
+.site-navbar .navbar-item:focus,
+.site-navbar .navbar-link:focus {
+  background: var(--site-header-hover-bg);
+  color: var(--site-header-text);
+}
+
+.site-navbar .navbar-item.is-active {
+  background: var(--site-header-active-bg);
+  color: var(--site-header-accent);
+}
+
+.site-icon-btn {
+  border-radius: 0.85rem;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: none;
+  font-weight: 600;
+}
+
+.site-icon-btn .icon {
+  margin-right: 0.1rem;
+}
+
+.site-cta {
+  border-radius: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(21, 124, 149, 0.22);
+}
+
+.site-cta:hover,
+.site-cta:focus {
+  background-color: var(--site-header-accent-dark);
+}
+
+.site-navbar .buttons {
+  gap: 0.5rem;
+}
+
+.site-navbar .navbar-burger {
+  width: 3rem;
+  height: 3rem;
+  margin-right: 0.25rem;
+  border-radius: 0.85rem;
+  color: var(--site-header-text);
+}
+
+.site-navbar .navbar-burger:hover {
+  background: var(--site-header-hover-bg);
+}
+
+.site-navbar .navbar-burger span {
+  height: 2px;
+  width: 18px;
+  left: calc(50% - 9px);
+  border-radius: 999px;
+}
+
+.site-navbar .navbar-burger.is-active {
+  color: var(--site-header-accent);
+}
+
+.site-navbar .navbar-menu {
+  box-shadow: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .site-navbar .navbar-menu {
+    align-items: center;
+  }
+
+  .site-navbar .navbar-end > .navbar-item {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .site-header {
+    padding: 0.75rem 0.75rem 0;
+  }
+
+  .site-navbar {
+    padding-inline: 0.25rem;
+  }
+
+  .site-brand {
+    min-height: 4rem;
+    padding-left: 0.75rem;
+    padding-right: 0.5rem;
+  }
+
+  .site-brand__title {
+    max-width: 10rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .site-navbar .navbar-menu {
+    background: transparent;
+    padding: 0.35rem 0.35rem 0.55rem;
+  }
+
+  .site-navbar .navbar-start,
+  .site-navbar .navbar-end {
+    padding-top: 0.35rem;
+  }
+
+  .site-navbar .navbar-start > .navbar-item,
+  .site-navbar .navbar-end .navbar-item {
+    margin: 0;
+    width: 100%;
+  }
+
+  .site-navbar .navbar-start > .navbar-item {
+    padding: 0.9rem 1rem;
+  }
+
+  .site-navbar .navbar-end {
+    margin-top: 0.45rem;
+    padding-top: 0.65rem;
+    border-top: 1px dashed rgba(15, 23, 42, 0.08);
+  }
+
+  .site-navbar .navbar-end .buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-navbar .navbar-end .buttons .button,
+  .site-navbar .navbar-end > .navbar-item > .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Optional dark mode support */
+.dark-mode .site-header,
+.auto-color.dark-mode .site-header {
+  --site-header-surface: rgba(17, 24, 39, 0.86);
+  --site-header-border: rgba(255, 255, 255, 0.08);
+  --site-header-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --site-header-text: #f9fafb;
+  --site-header-text-soft: #d1d5db;
+  --site-header-hover-bg: rgba(255, 255, 255, 0.06);
+  --site-header-active-bg: rgba(21, 124, 149, 0.18);
+}
+
+.dark-mode .site-brand__logo,
+.auto-color.dark-mode .site-brand__logo {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}

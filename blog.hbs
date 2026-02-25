@@ -1,0 +1,86 @@
+{{!< default}}
+
+{{!-- Ghost doesn't do code injection for pages used as data source in routes.yaml, so we do it manually here --}}
+{{#contentFor "head-after"}} 
+    {{#page}}{{#if codeinjection_head}}{{{codeinjection_head}}}{{/if}}{{/page}}
+{{/contentFor}}
+
+{{#contentFor "foot-after"}}
+    {{#page}}{{#if codeinjection_foot}}{{{codeinjection_foot}}}{{/if}}{{/page}}
+{{/contentFor}}
+
+<main>
+    {{!-- 1. BLOG HERO SECTION (Uses the Blog page data) --}}
+    {{#page}}
+    <section class="hero is-medium has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
+        <div class="hero-body">
+            <div class="container is-max-widescreen has-text-centered">
+                <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark">
+                    {{title}}
+                </h1>
+                {{#if custom_excerpt}}
+                    <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-4 mx-auto" style="max-width: 800px; line-height: 1.5;">
+                        {{custom_excerpt}}
+                    </p>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+    {{/page}}
+
+    {{!-- 2. FEATURED POSTS GRID --}}
+    {{#match pagination.page "=" 1}}
+        {{!-- Queries posts tagged with the internal #blog-col tag AND featured --}}
+        {{#get "posts" filter="tags:hash-blog-col+featured:true" include="tags,authors" limit="3" as |featured_posts|}}
+            {{#if featured_posts}}
+                <section class="section pt-0 pb-6">
+                    <div class="container is-max-widescreen">
+                        
+                        <div class="is-flex is-align-items-center mb-5">
+                            <h2 class="title is-4 mb-0 has-text-weight-bold" style="color: #0176D3;">
+                                <i class="ph-fill ph-star mr-2"></i> Featured
+                            </h2>
+                            <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
+                        </div>
+                        
+                        <div class="columns is-multiline">
+                            {{#foreach featured_posts}}
+                                <div class="column is-4-desktop is-6-tablet">
+                                    {{> "post-card"}}
+                                </div>
+                            {{/foreach}}
+                        </div>
+
+                    </div>
+                </section>
+            {{/if}}
+        {{/get}}
+    {{/match}}
+
+    {{!-- 3. LATEST POSTS FEED --}}
+    <section class="section pt-0">
+        <div class="container is-max-widescreen">
+            
+            <div class="is-flex is-align-items-center mb-5">
+                <h2 class="title is-4 mb-0 has-text-weight-bold has-text-grey-dark">
+                    <i class="ph-fill ph-clock-counter-clockwise mr-2"></i> Latest Posts
+                </h2>
+                <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
+            </div>
+
+            <div class="columns is-multiline">
+                {{#foreach posts}}
+                    <div class="column is-4-desktop is-6-tablet mb-4">
+                        {{> "post-card"}}
+                    </div>
+                {{/foreach}}
+            </div>
+
+            {{!-- 4. PAGINATION --}}
+            <div class="is-flex is-justify-content-center mt-6">
+                {{pagination}}
+            </div>
+            
+        </div>
+    </section>
+</main>

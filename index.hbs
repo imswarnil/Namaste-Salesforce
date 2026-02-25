@@ -1,54 +1,105 @@
 {{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
 
-<div class="site-header-content outer{{#match @custom.header_style "Left aligned"}} left-aligned{{/match}}{{#unless @custom.show_publication_cover}}{{#match @custom.header_style "Hidden"}} no-content{{/match}}{{/unless}}">
-
-    {{#if @custom.show_publication_cover}}
-        {{#if @site.cover_image}}
-            {{!-- This is a responsive image, it loads different sizes depending on device
-            https://medium.freecodecamp.org/a-guide-to-responsive-images-with-ready-to-use-templates-c400bd65c433 --}}
-            <img class="site-header-cover"
-                srcset="{{img_url @site.cover_image size="s"}} 300w,
-                        {{img_url @site.cover_image size="m"}} 600w,
-                        {{img_url @site.cover_image size="l"}} 1000w,
-                        {{img_url @site.cover_image size="xl"}} 2000w"
-                sizes="100vw"
-                src="{{img_url @site.cover_image size="xl"}}"
-                alt="{{@site.title}}"
-            />
+{{!-- Ghost doesn't do code injection for pages used as data source in routes.yaml, so we do it manually here --}}
+{{#contentFor "head-after"}}
+    {{#page}}
+        {{#if codeinjection_head}}
+            {{{codeinjection_head}}}
         {{/if}}
-    {{/if}}
+    {{/page}}
+{{/contentFor}}
 
-    {{#match @custom.header_style "!=" "Hidden"}}
-        <div class="site-header-inner inner">
-            {{#match @custom.navigation_layout "Logo on cover"}}
-                {{#if @site.logo}}
-                    <img class="site-logo" src="{{@site.logo}}" alt="{{@site.title}}">
-                {{else}}
-                    <h1 class="site-title">{{@site.title}}</h1>
-                {{/if}}
-            {{/match}}
-            {{#if @site.description}}
-                <p class="site-description">{{@site.description}}</p>
-            {{/if}}
+{{#contentFor "foot-after"}}
+    {{#page}}
+        {{#if codeinjection_foot}}
+            {{{codeinjection_foot}}}
+        {{/if}}
+    {{/page}}
+{{/contentFor}}
+
+{{!-- Hero section --}}
+{{#page}}
+    <section class="section pt-0">
+        {{> hero showContent=true }}
+    </section>
+{{/page}}
+
+{{!-- Feed --}}
+<section class="section">
+    <div class="container is-max-desktop">
+
+        {{!-- Latest posts heading --}}
+        <div class="level mb-5">
+            <div class="level-left">
+                <div class="level-item">
+                    <h2 class="title is-4 mb-0">{{t "Latest"}}</h2>
+                </div>
+            </div>
         </div>
-    {{/match}}
 
-</div>
+        {{!-- Posts grid --}}
+        <div data-sx-pagination-feed class="columns is-multiline is-variable is-5">
+            {{#foreach posts}}
+                <div class="column is-12-mobile is-6-tablet is-4-desktop">
+                    <article class="card">
 
-{{!-- The main content area --}}
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
+                        {{#if feature_image}}
+                            <div class="card-image">
+                                <figure class="image is-16by9">
+                                    <a href="{{url}}">
+                                        <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
+                                    </a>
+                                </figure>
+                            </div>
+                        {{/if}}
 
-    <div class="post-feed">
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
+                        <div class="card-content">
+                            {{#if primary_tag}}
+                                <p class="mb-3">
+                                    <a href="{{primary_tag.url}}" class="tag is-light">{{primary_tag.name}}</a>
+                                </p>
+                            {{/if}}
+
+                            <h3 class="title is-5 mb-3">
+                                <a href="{{url}}">{{title}}</a>
+                            </h3>
+
+                            <p class="subtitle is-7 mb-3">
+                                {{date format="DD MMM YYYY"}} • {{reading_time}}
+                            </p>
+
+                            <div class="content">
+                                {{#if custom_excerpt}}
+                                    {{custom_excerpt}}
+                                {{else}}
+                                    {{excerpt words="20"}}
+                                {{/if}}
+                            </div>
+                        </div>
+
+                        <footer class="card-footer">
+                            <a href="{{url}}" class="card-footer-item">{{t "Read more"}}</a>
+                        </footer>
+                    </article>
+                </div>
+            {{/foreach}}
+        </div>
+
+        {{!-- Pagination --}}
+        {{#if pagination}}
+            <div class="has-text-centered mt-6">
+                <button
+                    hidden="true"
+                    data-sx-pagination-btn
+                    data-sx-pagination-total="{{pagination.pages}}"
+                    class="button is-light is-medium"
+                    type="button"
+                >
+                    <span>{{t "Load more"}}</span>
+                    <span class="ml-2" aria-hidden="true">↓</span>
+                </button>
+            </div>
+        {{/if}}
+
     </div>
-
-    {{pagination}}
-
-</div>
-</main>
+</section>

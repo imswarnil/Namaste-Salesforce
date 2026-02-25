@@ -1,0 +1,76 @@
+{{!< default}}
+
+{{!-- Ghost doesn't do code injection for pages used as data in routes.yaml, so we do it manually here --}}
+{{#contentFor "head-after"}} 
+    {{#page}} {{#if codeinjection_head}} {{{codeinjection_head}}} {{/if}} {{/page}}
+{{/contentFor}}
+
+{{#contentFor "foot-after"}}
+    {{#page}} {{#if codeinjection_foot}} {{{codeinjection_foot}}} {{/if}} {{/page}}
+{{/contentFor}}
+
+<main>
+    {{!-- 1. TRAINING/DOCS HERO SECTION --}}
+    {{#page}}
+    <section class="hero is-medium has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
+        <div class="hero-body">
+            <div class="container is-max-widescreen has-text-centered">
+                <div class="mb-4">
+                    <i class="ph-duotone ph-books has-text-primary" style="font-size: 4rem;"></i>
+                </div>
+                <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark">
+                    {{title}}
+                </h1>
+                {{#if custom_excerpt}}
+                    <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-4 mx-auto" style="max-width: 800px; line-height: 1.5;">
+                        {{custom_excerpt}}
+                    </p>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+    {{/page}}
+
+    <section class="section pt-0 pb-6">
+        <div class="container is-max-widescreen">
+            
+            {{!-- 2. QUICK SEARCH BAR --}}
+            <div class="columns is-centered mb-6">
+                <div class="column is-8-desktop">
+                    <div class="box is-shadowless is-clickable p-1" style="border: 1px solid #DDDBDA; border-radius: 500px; transition: border-color 0.2s ease, box-shadow 0.2s ease;" data-ghost-search onmouseover="this.style.borderColor='#0176D3'; this.style.boxShadow='0 0 3px #0176D3';" onmouseout="this.style.borderColor='#DDDBDA'; this.style.boxShadow='none';">
+                        <div class="is-flex is-align-items-center px-4 py-3">
+                            <i class="ph ph-magnifying-glass is-size-4 has-text-grey mr-3"></i>
+                            <span class="has-text-grey is-size-5">Search training docs and resources...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{!-- 3. SLDS SECTION HEADER --}}
+            <div class="is-flex is-align-items-center mb-6">
+                <h2 class="title is-4 mb-0 has-text-weight-bold" style="color: #0176D3;">
+                    <i class="ph-fill ph-folder-open mr-2"></i> Training Modules
+                </h2>
+                <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
+            </div>
+
+            {{!-- 4. DOCS / FOLDERS GRID --}}
+            <div class="columns is-multiline">
+                {{#foreach posts}}
+                    <div class="column is-4-desktop is-6-tablet mb-5">
+                        {{!-- Reusing our beautiful SLDS post-card --}}
+                        {{> "post-card"}}
+                    </div>
+                {{/foreach}}
+            </div>
+
+            {{!-- 5. PAGINATION --}}
+            {{#if pagination}}
+                <div class="is-flex is-justify-content-center mt-6">
+                    {{pagination}}
+                </div>
+            {{/if}}
+            
+        </div>
+    </section>
+</main>
