@@ -1,15 +1,31 @@
-{{!-- Hero section --}}
-<section id="sx-hero" class="hero is-dark is-medium {{hero_class}} {{post_class}}">
+{{!-- Full Width Course Hero --}}
+<section id="ns-hero" class="hero is-light is-small {{hero_class}} {{post_class}}">
     <div class="hero-body">
-        <div class="container is-max-widescreen">
+        <div class="container">
             <div class="columns is-vcentered is-variable is-8 {{#has tag="#temp-media-start"}}is-flex-direction-row-reverse{{/has}}">
 
-                {{!-- Content Column --}}
-                <div class="column {{#if feature_image}}is-6-desktop{{else}}is-8-desktop is-offset-2-desktop has-text-centered{{/if}}">
+                {{!-- Left Hero Content --}}
+                <div class="column {{#if feature_image}}is-8{{else}}is-10{{/if}}">
 
-                    {{!-- Primary Tag & Featured Badge --}}
-                    <div class="field is-grouped is-grouped-multiline mb-4 {{#unless feature_image}}is-justify-content-center{{/unless}}">
-                        {{#foreach tags limit="1" from="2"}}
+                    {{!-- Breadcrumbs --}}
+                    <nav class="breadcrumb is-small" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/courses/">Courses</a></li>
+
+                            {{#foreach tags visibility="public" limit="1" from="2"}}
+                                <li><a href="{{url}}">{{name}}</a></li>
+                            {{/foreach}}
+
+                            <li class="is-active">
+                                <a href="{{url}}" aria-current="page">{{title}}</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    {{!-- Tags --}}
+                    <div class="field is-grouped is-grouped-multiline mb-4">
+                        {{#foreach tags visibility="public" limit="1" from="2"}}
                             <div class="control">
                                 <a href="{{url absolute="true"}}" class="tag is-primary is-light is-medium is-rounded has-text-weight-semibold">
                                     {{name}}
@@ -26,76 +42,86 @@
                         {{/if}}
                     </div>
 
-                    {{!-- Heading --}}
-                    <h1 class="title is-1 is-size-2-mobile has-text-weight-bold mb-5">
+                    {{!-- Title --}}
+                    <h1 class="title is-1 has-text-weight-bold">
                         {{title}}
                     </h1>
 
                     {{!-- Excerpt --}}
                     {{#if custom_excerpt}}
-                        <p class="subtitle is-5 mt-3 mb-6 has-text-grey-light">
+                        <p class="subtitle is-4 mt-4" style="line-height: 1.5; opacity: 0.9;">
                             {{custom_excerpt}}
+                        </p>
+                    {{else}}
+                        <p class="subtitle is-4 mt-4" style="line-height: 1.5; opacity: 0.9;">
+                            {{excerpt words="26"}}
                         </p>
                     {{/if}}
 
-                    {{!-- Metadata --}}
-                    <div id="sx-hero-meta"
-                         class="is-flex is-flex-wrap-wrap is-align-items-center mb-6 has-text-grey-light is-size-6 is-invisible"
-                         style="gap: 0.5rem;"
-                         data-empty="{{t 'No lessons yet'}}"
-                         data-sx-singular="{{t '% Lesson'}}"
-                         data-sx-plural="{{t '% Lessons'}}">
-                        
-                        <span id="sx-hero-meta-count" class="has-text-weight-semibold has-text-white"></span>
+                    {{!-- Meta --}}
+                    <div id="ns-hero-meta"
+                         class="is-flex is-align-items-center mt-5 is-flex-wrap-wrap"
+                         style="gap: 20px;">
+
+                        <span id="ns-hero-meta-count" class="is-flex is-align-items-center has-text-white has-text-weight-bold">
+                            <i class="ph ph-list-checks mr-2"></i>
+                            {{t "Structured course"}}
+                        </span>
 
                         {{#foreach tags visibility="internal"}}
                             {{#match slug "~^" "hash-course-duration-"}}
                                 {{#if description}}
-                                    <span class="has-text-grey">•</span><span>{{description}}</span>
-                                {{/if}}
-                            {{/match}}
-
-                            {{#match slug "~^" "hash-course-level-"}}
-                                {{#if description}}
-                                    <span class="has-text-grey">•</span><span>{{description}}</span>
+                                    <span class="is-flex is-align-items-center">
+                                        <i class="ph ph-clock mr-2"></i>{{description}}
+                                    </span>
                                 {{/if}}
                             {{/match}}
                         {{/foreach}}
 
-                        <span class="has-text-grey">•</span>
-                        <time id="sx-hero-meta-time" datetime='{{date updated_at format="YYYY-MM-DD"}}'>
-                            {{{t "Updated on {date}" date=(date updated_at)}}}
-                        </time>
+                        {{#foreach tags visibility="internal"}}
+                            {{#match slug "~^" "hash-course-level-"}}
+                                {{#if description}}
+                                    <span class="is-flex is-align-items-center">
+                                        <i class="ph ph-signal-high mr-2"></i>{{description}}
+                                    </span>
+                                {{/if}}
+                            {{/match}}
+                        {{/foreach}}
+
+                        <span class="is-flex is-align-items-center">
+                            <i class="ph ph-calendar mr-2"></i>
+                            Last updated {{date updated_at format="MMM YYYY"}}
+                        </span>
                     </div>
 
-                    {{!-- CTA Link --}}
-                    <div class="buttons {{#unless feature_image}}is-centered{{/unless}}">
-                        <a id="sx-hero-cta"
-                           href="#"
-                           class="button is-primary is-large is-rounded is-fullwidth-mobile has-text-weight-bold">
-                            <span>{{t "Start Course"}}</span>
-                            <span class="icon is-small ml-2">
-                                <i class="ph ph-arrow-right"></i>
-                            </span>
-                        </a>
-                    </div>
+                    {{!-- Author --}}
+                    {{#primary_author}}
+                        <div class="is-flex is-align-items-center mt-5">
+                            {{#if profile_image}}
+                                <figure class="image is-48x48 mr-3">
+                                    <img class="is-rounded" src="{{img_url profile_image size="xs"}}" alt="{{name}}">
+                                </figure>
+                            {{/if}}
+                            <div>
+                                <p class="is-size-6 m-0">Created by <strong>{{name}}</strong></p>
+                                {{#if bio}}
+                                    <p class="is-size-7" style="opacity: 0.8;">{{bio}}</p>
+                                {{/if}}
+                            </div>
+                        </div>
+                    {{/primary_author}}
+
                 </div>
 
-                {{!-- Media Column --}}
+                {{!-- Right Hero Media --}}
                 {{^has tag="#temp-no-media"}}
                     {{#if feature_image}}
-                        <div id="sx-hero-media" class="column is-6-desktop">
-                            <figure class="image box p-0 is-clipped is-shadowless has-background-black-ter
-                                {{#has tag="#temp-media-1-1"}}is-1by1
-                                {{else has tag="#temp-media-3-4"}}is-3by4
-                                {{else has tag="#temp-media-4-3"}}is-4by3
-                                {{else has tag="#temp-media-16-9"}}is-16by9
-                                {{else}}is-5by4{{/has}}">
-                                
+                        <div class="column is-4">
+                            <figure class="image is-4by3 box p-0 is-clipped is-shadowless has-background-black-ter">
                                 <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover;">
 
                                 {{#has tag="#temp-video"}}
-                                    <div class="is-overlay is-flex is-align-items-flex-end is-justify-content-flex-start p-5" style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                    <div class="is-overlay is-flex is-justify-content-center is-align-items-center" style="background: rgba(0,0,0,0.3);">
                                         <button type="button" class="button is-white is-rounded is-medium">
                                             <span class="icon">
                                                 <i class="ph-fill ph-play"></i>
@@ -108,7 +134,7 @@
 
                             {{#if feature_image_caption}}
                                 {{^has tag="#temp-video"}}
-                                    <p class="help has-text-centered mt-3 has-text-grey-light">{{feature_image_caption}}</p>
+                                    <p class="help has-text-centered mt-2 has-text-grey-light">{{feature_image_caption}}</p>
                                 {{/has}}
                             {{/if}}
                         </div>
@@ -120,135 +146,288 @@
     </div>
 </section>
 
-{{!-- Course Section (Added pb-6 to accommodate sticky navbar) --}}
-<div class="section pb-6">
-    <div class="container is-max-widescreen">
-        <div class="columns is-centered">
-            <div class="column is-8-desktop is-10-tablet">
+{{!-- Main Layout --}}
+<section class="section">
+    <div class="container">
+        <div class="columns is-variable is-8">
 
-                {{!-- Course content using Bulma Panel --}}
-                <div class="block">
-                    <nav class="panel is-primary has-background-white box p-0 is-shadowless" style="border: 1px solid #dbdbdb;">
-                        
-                        <div class="panel-heading is-flex is-justify-content-space-between is-align-items-center has-background-white has-text-dark border-bottom" style="border-bottom: 1px solid #dbdbdb;">
-                            <h2 class="title is-4 mb-0">{{t "Course content"}}</h2>
-                            <span class="tag is-light is-medium is-rounded">Structured learning path</span>
-                        </div>
+            {{!-- Left Main Column --}}
+            <div class="column is-7-tablet is-8-desktop">
 
-                        {{#has tag="#groups-disabled"}}
-                            {{#get "posts" filter="tags:{{primary_tag.slug}}+tags:hash-lessons-col" include="tags" order="published_at asc" limit="100" as |lessons|}}
-                                {{#foreach lessons}}
-                                    <a data-sx-lesson href="{{url absolute="true"}}" class="panel-block py-4 px-5 is-flex is-justify-content-space-between">
-                                        <div class="is-flex is-align-items-center">
-                                            <span class="panel-icon has-text-primary">
-                                                <i class="ph ph-play-circle is-size-5"></i>
-                                            </span>
-                                            <span class="has-text-weight-semibold has-text-dark">{{title}}</span>
-                                        </div>
+                {{!-- What you'll learn --}}
+                <div class="box mb-6">
+                    <h3 class="title is-4 mb-4">What you'll learn</h3>
 
-                                        <span class="is-size-7 has-text-grey">
-                                            {{#foreach tags visibility="internal"}}
-                                                {{#match slug "~^" "hash-lesson-duration-"}}
-                                                    {{#if description}}<span>{{description}}</span>{{/if}}
-                                                {{/match}}
-                                            {{/foreach}}
-                                        </span>
-                                    </a>
-                                {{else}}
-                                    <div class="panel-block p-5 has-text-grey">{{t "No lessons yet"}}</div>
-                                {{/foreach}}
-                            {{/get}}
-
-                        {{else}}
-                            {{#foreach tags visibility="internal"}}
-                                {{#match slug "~^" "hash-group-"}}
-                                    <div class="group-wrapper" data-sx-group id="tags-{{slug}}">
-
-                                        {{!-- Group Header --}}
-                                        <a data-sx-open="tags-{{slug}}" class="panel-block has-background-white-bis py-4 px-5 is-flex is-justify-content-space-between is-clickable">
-                                            <div class="is-flex is-align-items-center">
-                                                <span class="panel-icon mr-3">
-                                                    {{#if feature_image}}
-                                                        <figure class="image is-24x24"><img src="{{feature_image}}" alt="{{description}}" class="is-rounded"></figure>
-                                                    {{else}}
-                                                        <i class="ph-fill ph-folder-open is-size-5 has-text-grey"></i>
-                                                    {{/if}}
-                                                </span>
-                                                <div>
-                                                    <div class="has-text-weight-bold has-text-dark is-size-6">
-                                                        {{#if description}}{{description}}{{else}}{{name}}{{/if}}
-                                                    </div>
-                                                    {{#if meta_description}}
-                                                        <p class="is-size-7 has-text-grey mt-1">{{meta_description}}</p>
-                                                    {{/if}}
-                                                </div>
-                                            </div>
-
-                                            <div class="is-flex is-align-items-center">
-                                                <span data-sx-lessons-count-target class="tag is-white is-rounded border is-invisible mr-3"></span>
-                                                <span class="icon has-text-grey">
-                                                    <i class="ph ph-caret-down" data-sx-icon></i>
-                                                </span>
-                                            </div>
-                                        </a>
-
-                                        {{!-- Lessons List under Group --}}
-                                        {{#>withThis groupTag=. course=..}}
-                                            {{#get "posts" filter="tags:{{course.primary_tag.slug}}+tags:{{groupTag.slug}}+tags:hash-lessons-col" include="tags" order="published_at asc" limit="100" as |lessons|}}
-                                                <div class="lessons-collapse {{#if lessons}}is-block{{else}}is-hidden{{/if}}"
-                                                     data-sx-lessons-count="{{plural lessons.length empty=(t 'No lessons yet') singular=(t '% Lesson') plural=(t '% Lessons')}}">
-                                                    {{#foreach lessons}}
-                                                        <a data-sx-lesson
-                                                           data-sx-updated-on="{{date updated_at format="YYYY-MM-DD"}}"
-                                                           href="{{url absolute="true"}}"
-                                                           class="panel-block py-4 px-6 is-flex is-justify-content-space-between pl-6">
-                                                            <div class="is-flex is-align-items-center">
-                                                                <span class="panel-icon has-text-primary ml-3">
-                                                                    <i class="ph ph-play-circle is-size-5"></i>
-                                                                </span>
-                                                                <span class="is-size-6 has-text-dark">{{title}}</span>
-                                                            </div>
-
-                                                            <span class="is-size-7 has-text-grey">
-                                                                {{#foreach tags visibility="internal"}}
-                                                                    {{#match slug "~^" "hash-lesson-duration-"}}
-                                                                        {{#if description}}<span>{{description}}</span>{{/if}}
-                                                                    {{/match}}
-                                                                {{/foreach}}
-                                                            </span>
-                                                        </a>
-                                                    {{else}}
-                                                        <div class="panel-block p-5 pl-6 has-text-grey">{{t "No lessons yet"}}</div>
-                                                    {{/foreach}}
-                                                </div>
-                                            {{/get}}
-                                        {{/withThis}}
-                                    </div>
-                                {{/match}}
-                            {{/foreach}}
-                        {{/has}}
-                    </nav>
+                    <div class="columns is-multiline">
+                        {{#foreach tags visibility="internal"}}
+                            {{#match slug "~^" "hash-group-"}}
+                                <div class="column is-half is-flex is-align-items-flex-start">
+                                    <i class="ph ph-check has-text-primary is-size-5 mr-2"></i>
+                                    <span>{{#if description}}{{description}}{{else}}{{name}}{{/if}}</span>
+                                </div>
+                            {{/match}}
+                        {{/foreach}}
+                    </div>
                 </div>
 
-                <div class="content mt-6 is-medium">
+                {{!-- About --}}
+                <div class="content mb-6">
+                    <h2 class="title is-3">About this course</h2>
                     {{content}}
                 </div>
 
+                {{!-- Ad placeholder --}}
+                <div class="box mb-6 has-text-centered">
+                    <p class="heading">AdSense Placeholder</p>
+                    <p class="has-text-grey is-size-7">Replace this with your in-content ad unit later.</p>
+                </div>
+
+                {{!-- Curriculum --}}
+                <h2 id="ns-curriculum" class="title is-3 mb-4">Course Curriculum</h2>
+
+                <nav class="panel is-primary has-background-white box p-0 is-shadowless" style="border: 1px solid #dbdbdb;">
+
+                    <div class="panel-heading is-flex is-justify-content-space-between is-align-items-center has-background-white has-text-dark" style="border-bottom: 1px solid #dbdbdb;">
+                        <h2 class="title is-4 mb-0">{{t "Course content"}}</h2>
+                        <span class="tag is-light is-medium is-rounded">Structured learning path</span>
+                    </div>
+
+                    {{#has tag="#groups-disabled"}}
+                        {{#get "posts" filter="tags:{{primary_tag.slug}}+tags:hash-lessons-col" include="tags" order="published_at asc" limit="100" as |lessons|}}
+                            {{#foreach lessons}}
+                                <a data-ns-lesson href="{{url absolute="true"}}" class="panel-block py-4 px-5 is-flex is-justify-content-space-between">
+                                    <div class="is-flex is-align-items-center">
+                                        <span class="panel-icon has-text-primary">
+                                            <i class="ph ph-play-circle is-size-5"></i>
+                                        </span>
+                                        <span class="has-text-weight-semibold has-text-dark">{{title}}</span>
+                                    </div>
+
+                                    <span class="is-size-7 has-text-grey">
+                                        {{#foreach tags visibility="internal"}}
+                                            {{#match slug "~^" "hash-lesson-duration-"}}
+                                                {{#if description}}<span>{{description}}</span>{{/if}}
+                                            {{/match}}
+                                        {{/foreach}}
+                                    </span>
+                                </a>
+                            {{else}}
+                                <div class="panel-block p-5 has-text-grey">{{t "No lessons yet"}}</div>
+                            {{/foreach}}
+                        {{/get}}
+
+                    {{else}}
+                        {{#foreach tags visibility="internal"}}
+                            {{#match slug "~^" "hash-group-"}}
+                                <div class="group-wrapper" data-ns-group id="tags-{{slug}}">
+
+                                    {{!-- Group Header --}}
+                                    <a data-ns-open="tags-{{slug}}" class="panel-block has-background-white-bis py-4 px-5 is-flex is-justify-content-space-between is-clickable">
+                                        <div class="is-flex is-align-items-center">
+                                            <span class="panel-icon mr-3">
+                                                {{#if feature_image}}
+                                                    <figure class="image is-24x24">
+                                                        <img src="{{feature_image}}" alt="{{description}}" class="is-rounded">
+                                                    </figure>
+                                                {{else}}
+                                                    <i class="ph-fill ph-folder-open is-size-5 has-text-grey"></i>
+                                                {{/if}}
+                                            </span>
+
+                                            <div>
+                                                <div class="has-text-weight-bold has-text-dark is-size-6">
+                                                    {{#if description}}{{description}}{{else}}{{name}}{{/if}}
+                                                </div>
+
+                                                {{#if meta_description}}
+                                                    <p class="is-size-7 has-text-grey mt-1">{{meta_description}}</p>
+                                                {{/if}}
+                                            </div>
+                                        </div>
+
+                                        <div class="is-flex is-align-items-center">
+                                            <span data-ns-lessons-count-target class="tag is-white is-rounded is-invisible mr-3"></span>
+                                            <span class="icon has-text-grey">
+                                                <i class="ph ph-caret-down" data-ns-icon></i>
+                                            </span>
+                                        </div>
+                                    </a>
+
+                                    {{!-- Group Lessons --}}
+                                    {{#>withThis groupTag=. course=..}}
+                                        {{#get "posts" filter="tags:{{course.primary_tag.slug}}+tags:{{groupTag.slug}}+tags:hash-lessons-col" include="tags" order="published_at asc" limit="100" as |lessons|}}
+                                            <div class="lessons-collapse {{#if lessons}}is-block{{else}}is-hidden{{/if}}"
+                                                 data-ns-lessons-count="{{plural lessons.length empty=(t 'No lessons yet') singular=(t '% Lesson') plural=(t '% Lessons')}}">
+
+                                                {{#foreach lessons}}
+                                                    <a data-ns-lesson
+                                                       href="{{url absolute="true"}}"
+                                                       class="panel-block py-4 px-6 is-flex is-justify-content-space-between">
+                                                        <div class="is-flex is-align-items-center">
+                                                            <span class="panel-icon has-text-primary">
+                                                                <i class="ph ph-play-circle is-size-5"></i>
+                                                            </span>
+                                                            <span class="is-size-6 has-text-dark">{{title}}</span>
+                                                        </div>
+
+                                                        <span class="is-size-7 has-text-grey">
+                                                            {{#foreach tags visibility="internal"}}
+                                                                {{#match slug "~^" "hash-lesson-duration-"}}
+                                                                    {{#if description}}<span>{{description}}</span>{{/if}}
+                                                                {{/match}}
+                                                            {{/foreach}}
+                                                        </span>
+                                                    </a>
+                                                {{else}}
+                                                    <div class="panel-block p-5 has-text-grey">{{t "No lessons yet"}}</div>
+                                                {{/foreach}}
+                                            </div>
+                                        {{/get}}
+                                    {{/withThis}}
+                                </div>
+                            {{/match}}
+                        {{/foreach}}
+                    {{/has}}
+                </nav>
+
+                {{!-- Extra placeholders --}}
+                <div class="box mt-6 has-text-centered">
+                    <p class="heading">AdSense Placeholder</p>
+                    <p class="has-text-grey is-size-7">Second in-article ad slot.</p>
+                </div>
+
+                <div class="mt-6">
+                    <h2 class="title is-4 mb-4">Related docs & resources</h2>
+                    <div class="box has-text-grey">Placeholder for docs, files, cheatsheets, downloads, and GitHub links.</div>
+                </div>
+
+                <div class="mt-6">
+                    <h2 class="title is-4 mb-4">Student reviews</h2>
+                    <div class="box has-text-grey">Placeholder for reviews/testimonials.</div>
+                </div>
+
+                <div class="mt-6">
+                    <h2 class="title is-4 mb-4">Frequently asked questions</h2>
+                    <div class="box has-text-grey">Placeholder for FAQ.</div>
+                </div>
+
             </div>
+
+            {{!-- Right Sidebar --}}
+            <div class="column is-5-tablet is-4-desktop">
+                <div class="card">
+
+                    {{#if feature_image}}
+                        <div class="card-image">
+                            <figure class="image is-16by9 is-relative">
+                                <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                                <div class="is-overlay is-flex is-justify-content-center is-align-items-center" style="background: rgba(0,0,0,0.3);">
+                                    <i class="ph-fill ph-play-circle has-text-white" style="font-size: 4rem; cursor: pointer;"></i>
+                                </div>
+                            </figure>
+                        </div>
+                    {{/if}}
+
+                    <div class="card-content">
+                        <div class="mb-4">
+                            <span class="title is-2">Free</span>
+                            <span class="tag is-success is-light ml-2">Placeholder</span>
+                            <p class="has-text-grey is-size-7 mt-2">
+                                Replace with pricing, membership, or bundle info later.
+                            </p>
+                        </div>
+
+                        <a id="ns-hero-cta" href="#ns-curriculum" class="button is-primary is-fullwidth is-medium has-text-weight-bold mb-3">
+                            Start Course
+                        </a>
+
+                        <a href="/courses/" class="button is-light is-fullwidth mb-5">
+                            Back to Courses
+                        </a>
+
+                        <h4 class="title is-6 mb-3">This course includes:</h4>
+                        <ul class="is-size-6" style="line-height: 2.2; list-style: none; margin-left: 0;">
+                            <li class="is-flex is-align-items-center">
+                                <i class="ph ph-list-checks has-text-grey mr-3 is-size-5"></i>
+                                Structured curriculum
+                            </li>
+
+                            {{#foreach tags visibility="internal"}}
+                                {{#match slug "~^" "hash-course-duration-"}}
+                                    <li class="is-flex is-align-items-center">
+                                        <i class="ph ph-clock has-text-grey mr-3 is-size-5"></i>
+                                        {{#if description}}{{description}}{{else}}{{name}}{{/if}}
+                                    </li>
+                                {{/match}}
+                            {{/foreach}}
+
+                            {{#foreach tags visibility="internal"}}
+                                {{#match slug "~^" "hash-course-level-"}}
+                                    <li class="is-flex is-align-items-center">
+                                        <i class="ph ph-signal-high has-text-grey mr-3 is-size-5"></i>
+                                        {{#if description}}{{description}}{{else}}{{name}}{{/if}}
+                                    </li>
+                                {{/match}}
+                            {{/foreach}}
+
+                            <li class="is-flex is-align-items-center">
+                                <i class="ph ph-infinity has-text-grey mr-3 is-size-5"></i>
+                                Lifetime access placeholder
+                            </li>
+
+                            <li class="is-flex is-align-items-center">
+                                <i class="ph ph-calendar has-text-grey mr-3 is-size-5"></i>
+                                Updated {{date updated_at format="DD MMM YYYY"}}
+                            </li>
+                        </ul>
+
+                        <hr style="background-color: #DDDBDA; margin: 1.5rem 0;">
+
+                        <div class="is-flex is-justify-content-space-between is-align-items-center" style="gap: 1rem; flex-wrap: wrap;">
+                            <a href="https://twitter.com/intent/tweet?text={{encode title}}&amp;url={{url absolute="true"}}" target="_blank" rel="noopener" class="has-text-grey has-text-weight-semibold is-flex is-align-items-center">
+                                <i class="ph ph-share-network mr-2 is-size-5"></i> Share
+                            </a>
+
+                            <a href="/contact/" class="has-text-grey has-text-weight-semibold is-flex is-align-items-center">
+                                <i class="ph ph-envelope mr-2 is-size-5"></i> Contact
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box mt-5 has-text-centered">
+                    <p class="heading">Sidebar AdSense</p>
+                    <p class="has-text-grey is-size-7">Place sidebar ad here.</p>
+                </div>
+
+                <div class="box mt-5">
+                    <h4 class="title is-6 mb-3">Coming later</h4>
+                    <div class="content has-text-grey">
+                        <ul>
+                            <li>Instructor bio card</li>
+                            <li>Download bundle</li>
+                            <li>Certificate details</li>
+                            <li>Community CTA</li>
+                            <li>Course roadmap</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
+</section>
 
-{{!-- Sticky Footer CTA using Bulma Navbar --}}
-<nav id="sx-course-link-sticky" class="navbar is-fixed-bottom has-shadow is-hidden-mobile py-2" role="navigation">
-    <div class="container is-max-widescreen">
+{{!-- Sticky Footer CTA --}}
+<nav id="ns-course-link-sticky" class="navbar is-fixed-bottom has-shadow is-hidden-mobile py-2" role="navigation">
+    <div class="container">
         <div class="navbar-brand is-align-items-center">
             <span class="navbar-item has-text-weight-bold is-size-6">{{title}}</span>
         </div>
 
         <div class="navbar-end">
             <div class="navbar-item">
-                <a href="#" class="button is-primary is-rounded has-text-weight-semibold">
+                <a href="#ns-curriculum" class="button is-primary is-rounded has-text-weight-semibold">
                     <span>{{t "Start Course"}}</span>
                     <span class="icon is-small ml-1"><i class="ph ph-arrow-right"></i></span>
                 </a>
@@ -258,69 +437,59 @@
 </nav>
 
 <script>
-    (() => {
-        const lessons = Array.from(document.querySelectorAll("[data-sx-lesson]"));
-        const heroMeta = document.getElementById("sx-hero-meta");
-        const countNode = document.getElementById("sx-hero-meta-count");
-        const btn = document.getElementById("sx-hero-cta");
-        const stickyBtn = document.querySelector("#sx-course-link-sticky a.button");
+(() => {
+    const lessons = Array.from(document.querySelectorAll("[data-ns-lesson]"));
+    const heroBtn = document.getElementById("ns-hero-cta");
+    const stickyBtn = document.querySelector("#ns-course-link-sticky a.button");
 
-        if (lessons.length > 0) {
-            if (btn) btn.href = lessons[0].href;
-            if (stickyBtn) stickyBtn.href = lessons[0].href;
+    if (lessons.length > 0) {
+        if (heroBtn) heroBtn.href = lessons[0].href;
+        if (stickyBtn) stickyBtn.href = lessons[0].href;
+    } else {
+        if (heroBtn) heroBtn.href = "#ns-curriculum";
+        if (stickyBtn) stickyBtn.href = "#ns-curriculum";
+    }
 
-            if (countNode && heroMeta) {
-                const singular = heroMeta.getAttribute("data-sx-singular");
-                const plural = heroMeta.getAttribute("data-sx-plural");
-                countNode.textContent = (lessons.length === 1 ? singular : plural).replace("%", lessons.length);
-                heroMeta.classList.remove("is-invisible");
-            }
-        } else if (countNode && heroMeta) {
-            countNode.textContent = heroMeta.getAttribute("data-empty") || "No lessons yet";
-            heroMeta.classList.remove("is-invisible");
+    document.querySelectorAll("[data-ns-group]").forEach(group => {
+        const lessonsCount = group.querySelector("[data-ns-lessons-count]");
+        const targetElement = group.querySelector("[data-ns-lessons-count-target]");
+
+        if (targetElement && lessonsCount) {
+            targetElement.textContent = lessonsCount.getAttribute("data-ns-lessons-count");
+            targetElement.classList.remove("is-invisible");
         }
+    });
 
-        // Handle group lesson counts
-        document.querySelectorAll("[data-sx-group]").forEach(group => {
-            const lessonsCount = group.querySelector("[data-sx-lessons-count]");
-            const targetElement = group.querySelector("[data-sx-lessons-count-target]");
+    document.querySelectorAll("[data-ns-open]").forEach(trigger => {
+        trigger.addEventListener("click", (e) => {
+            e.preventDefault();
 
-            if (targetElement && lessonsCount) {
-                targetElement.textContent = lessonsCount.getAttribute("data-sx-lessons-count");
-                targetElement.classList.remove("is-invisible");
+            const group = trigger.closest(".group-wrapper");
+            const panel = group ? group.querySelector(".lessons-collapse") : null;
+            const icon = trigger.querySelector("[data-ns-icon]");
+
+            if (!group || !panel) return;
+
+            const isHidden = panel.classList.contains("is-hidden");
+
+            if (isHidden) {
+                panel.classList.remove("is-hidden");
+                panel.classList.add("is-block");
+
+                if (icon) {
+                    icon.classList.remove("ph-caret-right");
+                    icon.classList.add("ph-caret-down");
+                }
+            } else {
+                panel.classList.remove("is-block");
+                panel.classList.add("is-hidden");
+
+                if (icon) {
+                    icon.classList.remove("ph-caret-down");
+                    icon.classList.add("ph-caret-right");
+                }
             }
         });
-
-        // Handle Accordion Logic dynamically via Bulma utility classes and Phosphor icons
-        document.querySelectorAll("[data-sx-open]").forEach(trigger => {
-            trigger.addEventListener("click", (e) => {
-                e.preventDefault();
-                const group = trigger.closest(".group-wrapper");
-                const panel = group ? group.querySelector(".lessons-collapse") : null;
-                const icon = trigger.querySelector("[data-sx-icon]");
-
-                if (!group || !panel) return;
-
-                const isHidden = panel.classList.contains("is-hidden");
-
-                if (isHidden) {
-                    // Open it
-                    panel.classList.remove("is-hidden");
-                    panel.classList.add("is-block");
-                    if (icon) {
-                        icon.classList.remove("ph-caret-right");
-                        icon.classList.add("ph-caret-down");
-                    }
-                } else {
-                    // Close it
-                    panel.classList.remove("is-block");
-                    panel.classList.add("is-hidden");
-                    if (icon) {
-                        icon.classList.remove("ph-caret-down");
-                        icon.classList.add("ph-caret-right");
-                    }
-                }
-            });
-        });
-    })();
+    });
+})();
 </script>

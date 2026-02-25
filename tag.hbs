@@ -1,50 +1,70 @@
 {{!< default}}
 {{!-- The tag above means - insert everything in this file into the {body} of the default.hbs template --}}
 
-<main>
-    {{!-- 1. TAG HEADER (Using Bulma Hero) --}}
+<main class="has-background-white-bis ">
+    
+
+
+    {{!-- 2. TAG HERO SECTION --}}
     {{#tag}}
-    <section class="hero is-small has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
-        <div class="hero-body py-6">
+    <section class="hero is-medium has-background-white mb-6" style="border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <div class="hero-body px-4 py-6">
             <div class="container is-max-widescreen">
-                <div class="columns is-vcentered">
+                <div class="columns is-vcentered is-variable is-8">
                     
-                    {{!-- Tag Text Content --}}
-                    <div class="column">
-                        <div class="is-flex is-align-items-center mb-3">
+                    {{!-- Left Column: Tag Content --}}
+                    <div class="column is-6-desktop">
+                        
+                        {{!-- Tag Badge --}}
+                        <div class="is-flex is-align-items-center mb-4">
                             <span class="tag is-primary is-light is-medium has-text-weight-bold is-rounded">
-                                <i class="ph-fill ph-tag mr-2"></i> Category
+                                <i class="ph-fill ph-tag mr-2"></i> {{t "Category"}}
+                            </span>
+                            <span class="has-text-grey is-size-7 ml-3 is-flex is-align-items-center">
+                                <i class="ph-fill ph-files mr-1"></i> 
+                                {{plural ../pagination.total empty=(t '0 posts') singular=(t '% post') plural=(t '% posts')}}
                             </span>
                         </div>
-                        <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark">
+                        
+                        {{!-- Tag Title --}}
+                        <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark mb-4" style="letter-spacing: -0.02em;">
                             {{name}}
                         </h1>
-                        <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-4" style="line-height: 1.5; max-width: 800px;">
+                        
+                        {{!-- Tag Description --}}
+                        <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-2 mb-0" style="line-height: 1.5;">
                             {{#if description}}
                                 {{description}}
                             {{else}}
-                                A collection of {{plural ../pagination.total empty='0 posts' singular='% post' plural='% posts'}}
+                                {{t "Explore all our latest articles, tutorials, and insights related to"}} <strong>{{name}}</strong>.
                             {{/if}}
                         </p>
+                        
                     </div>
 
-                    {{!-- Tag Feature Image --}}
-                    {{#if feature_image}}
-                    <div class="column is-5-desktop is-6-tablet">
-                        <figure class="image is-16by9">
-                            <img 
-                                srcset="{{img_url feature_image size="s"}} 300w,
-                                        {{img_url feature_image size="m"}} 600w,
-                                        {{img_url feature_image size="l"}} 1000w"
-                                sizes="(max-width: 1000px) 400px, 800px"
-                                src="{{img_url feature_image size="m"}}"
-                                alt="{{name}}"
-                                style="border-radius: 0.5rem; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"
-                                loading="eager"
-                            />
-                        </figure>
+                    {{!-- Right Column: Feature Image OR Hero Ad --}}
+                    <div class="column is-6-desktop mt-5-touch">
+                        {{#if feature_image}}
+                            <figure class="image is-16by9 box p-0 is-clipped is-shadowless" style="background-color: transparent; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <img 
+                                    srcset="{{img_url feature_image size="s"}} 300w,
+                                            {{img_url feature_image size="m"}} 600w,
+                                            {{img_url feature_image size="l"}} 1000w"
+                                    sizes="(max-width: 1000px) 400px, 800px"
+                                    src="{{img_url feature_image size="m"}}"
+                                    alt="{{name}}"
+                                    style="object-fit: cover; height: 100%; width: 100%;"
+                                    loading="eager"
+                                />
+                            </figure>
+                        {{else}}
+                            {{!-- Hero Right Side Responsive Ad (Shows if no image is uploaded) --}}
+                            <div class="box is-shadowless has-background-light is-flex is-flex-direction-column is-align-items-center is-justify-content-center h-100" style="border: 1px dashed #cbd5e1; width: 100%; min-height: 250px; border-radius: 12px;">
+                                <p class="is-size-7 has-text-grey-light is-uppercase has-text-weight-bold mb-1">{{t "Advertisement"}}</p>
+                                <p class="has-text-grey"><i class="ph ph-ad mr-2"></i>Responsive Hero Ad (728x90 or 300x250)</p>
+                            </div>
+                        {{/if}}
                     </div>
-                    {{/if}}
 
                 </div>
             </div>
@@ -52,20 +72,44 @@
     </section>
     {{/tag}}
 
-    {{!-- 2. POSTS GRID --}}
+    {{!-- 3. POSTS COLLECTION GRID WITH IN-FEED ADS --}}
     <section class="section pt-0">
         <div class="container is-max-widescreen">
             
             <div class="columns is-multiline">
                 {{#foreach posts}}
-                    <div class="column is-4-desktop is-6-tablet">
-                        {{> "post-card"}}
+                    
+                    {{!-- Standard Post Card Column --}}
+                    <div class="column is-4-desktop is-6-tablet is-flex">
+                        {{!-- Assumes you have a partial named post-card.hbs --}}
+                        {{> "post-card"}} 
                     </div>
+
+                    {{!-- IN-GRID AD PLACEMENT: Injects a full-width ad after the 3rd post (Index 2) --}}
+                    {{#has index="2"}}
+                        <div class="column is-12 my-4">
+                            <div class="box is-shadowless has-background-white is-flex is-flex-direction-column is-align-items-center is-justify-content-center" style="border: 1px solid #e2e8f0; width: 100%; min-height: 120px; border-radius: 8px;">
+                                <p class="is-size-7 has-text-grey-light is-uppercase has-text-weight-bold mb-1" style="letter-spacing: 0.05em;">{{t "Advertisement"}}</p>
+                                <p class="has-text-grey"><i class="ph ph-ad mr-2"></i>In-Feed Leaderboard (728x90)</p>
+                            </div>
+                        </div>
+                    {{/has}}
+
+                    {{!-- Optional: Inject another ad after the 9th post (Index 8) --}}
+                    {{#has index="8"}}
+                        <div class="column is-12 my-4">
+                            <div class="box is-shadowless has-background-white is-flex is-flex-direction-column is-align-items-center is-justify-content-center" style="border: 1px solid #e2e8f0; width: 100%; min-height: 120px; border-radius: 8px;">
+                                <p class="is-size-7 has-text-grey-light is-uppercase has-text-weight-bold mb-1" style="letter-spacing: 0.05em;">{{t "Advertisement"}}</p>
+                                <p class="has-text-grey"><i class="ph ph-ad mr-2"></i>In-Feed Leaderboard (728x90)</p>
+                            </div>
+                        </div>
+                    {{/has}}
+
                 {{/foreach}}
             </div>
 
-            {{!-- 3. PAGINATION --}}
-            <div class="is-flex is-justify-content-center mt-6">
+            {{!-- 4. PAGINATION --}}
+            <div class="is-flex is-justify-content-center mt-6 pt-5" style="border-top: 1px solid #e2e8f0;">
                 {{pagination}}
             </div>
             
