@@ -2,33 +2,19 @@
 
 /* ==========================================================================
    ghost.scss
-   Ghost / Koenig editor support layer
-   Uses the same design tokens from variables.scss
+   Ghost / Koenig editor support — SLDS-themed
    ========================================================================== */
 
-/* Ghost custom font support (required by gscan / Ghost font settings) */
-body,
-button,
-input,
-optgroup,
-select,
-textarea {
+body, button, input, optgroup, select, textarea {
   font-family: var(--gh-font-body, #{v.$font-stack});
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.title,
-.subtitle {
+h1, h2, h3, h4, h5, h6, .title, .subtitle {
   font-family: var(--gh-font-heading, #{v.$font-stack});
 }
 
 /* ==========================================================================
-   1) CORE POST CONTENT WRAPPER
+   1) CORE WRAPPER
    ========================================================================== */
 
 .gh-content {
@@ -36,65 +22,39 @@ h6,
   width: 100%;
   margin-inline: auto;
   min-width: 0;
+  color: v.$text-default;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
-.gh-content > * + * {
-  margin-top: 1.5rem;
-}
+.gh-content > * + *   { margin-top: 1.25rem; }
+.gh-content > :first-child { margin-top: 0; }
+.gh-content > :last-child  { margin-bottom: 0; }
 
-.gh-content > :first-child {
-  margin-top: 0;
-}
-
-.gh-content > :last-child {
-  margin-bottom: 0;
-}
-
-.gh-content img,
-.gh-content .kg-image {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.gh-content figure {
-  margin: 0;
-}
-
+.gh-content img, .gh-content .kg-image { display: block; max-width: 100%; height: auto; }
+.gh-content figure { margin: 0; }
 .gh-content figcaption {
-  margin-top: 0.75rem;
+  color: v.$text-weak;
   font-size: 0.875rem;
   line-height: 1.5;
+  margin-top: 0.5rem;
   text-align: center;
-  color: var(--theme-text-weak);
 }
 
-.gh-content iframe,
-.gh-content video,
-.gh-content audio,
-.gh-content canvas,
-.gh-content svg {
-  max-width: 100%;
-}
+.gh-content iframe, .gh-content video,
+.gh-content audio, .gh-content canvas, .gh-content svg { max-width: 100%; }
 
 .gh-content .kg-card + .kg-card,
 .gh-content .kg-card + p,
-.gh-content p + .kg-card {
-  margin-top: 1.75rem;
-}
+.gh-content p + .kg-card { margin-top: 1.5rem; }
 
 /* ==========================================================================
-   2) REQUIRED KOENIG WIDTH HANDLING
+   2) WIDTH HANDLING
    ========================================================================== */
 
 .gh-content .kg-width-wide,
 .gh-content .kg-width-full,
-.gh-content .kg-content-wide {
-  width: 100%;
-  max-width: 100%;
-  margin-left: 0;
-  transform: none;
-}
+.gh-content .kg-content-wide { width: 100%; max-width: 100%; margin-left: 0; transform: none; }
 
 @media screen and (min-width: 1024px) {
   .gh-content .kg-width-wide,
@@ -104,7 +64,6 @@ h6,
     margin-left: 50%;
     transform: translateX(-50%);
   }
-
   .gh-content .kg-width-full {
     width: calc(100vw - (var(--gh-full-gutter) * 2));
     max-width: none;
@@ -114,24 +73,22 @@ h6,
 }
 
 /* ==========================================================================
-   3) IMAGE / EMBED CARDS
+   3) IMAGE / EMBED / VIDEO
    ========================================================================== */
 
 .gh-content .kg-image-card,
 .gh-content .kg-embed-card,
-.gh-content .kg-video-card {
-  width: 100%;
-}
+.gh-content .kg-video-card { width: 100%; }
 
 .gh-content .kg-image-card img,
 .gh-content .kg-embed-card iframe,
 .gh-content .kg-video-card iframe,
 .gh-content .kg-video-card video {
-  display: block;
-  width: 100%;
   border: 0;
-  border-radius: var(--theme-radius);
+  border-radius: v.$radius-base;
+  display: block;
   overflow: hidden;
+  width: 100%;
 }
 
 .gh-content .kg-embed-card iframe,
@@ -139,216 +96,158 @@ h6,
 .gh-content .kg-video-card video {
   aspect-ratio: 16 / 9;
   background: #000;
-  box-shadow: var(--theme-shadow);
-}
-
-.gh-content .kg-embed-card > div,
-.gh-content .kg-video-card > div {
-  width: 100%;
+  box-shadow: v.$shadow-card;
 }
 
 /* ==========================================================================
-   4) GALLERY CARD
+   4) GALLERY
    ========================================================================== */
 
 .gh-content .kg-gallery-card,
-.gh-content .kg-gallery-container {
-  width: 100%;
-}
+.gh-content .kg-gallery-container { width: 100%; }
 
 .gh-content .kg-gallery-container {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--gh-card-gap);
 }
 
-.gh-content .kg-gallery-row {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.gh-content .kg-gallery-image {
-  flex: 1 1 0;
-  margin: 0;
-}
-
+.gh-content .kg-gallery-row { display: flex; gap: var(--gh-card-gap); }
+.gh-content .kg-gallery-image { flex: 1 1 0; margin: 0; }
 .gh-content .kg-gallery-image img {
-  width: 100%;
+  border-radius: v.$radius-base;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
+  width: 100%;
 }
 
 @media screen and (max-width: 768px) {
-  .gh-content .kg-gallery-row {
-    flex-direction: column;
-  }
+  .gh-content .kg-gallery-row { flex-direction: column; }
 }
 
 /* ==========================================================================
    5) BOOKMARK CARD
    ========================================================================== */
 
-.gh-content .kg-bookmark-card {
-  width: 100%;
-}
+.gh-content .kg-bookmark-card { width: 100%; }
 
 .gh-content .kg-bookmark-card > a,
 .gh-content .kg-bookmark-container {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(7rem, 14rem);
-  gap: 1rem;
-  width: 100%;
-  text-decoration: none;
+  background: v.$surface-card;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-base;
+  box-shadow: v.$shadow-card;
   color: inherit;
-  background: var(--theme-surface-card);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 13rem);
   overflow: hidden;
+  text-decoration: none;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: v.$shadow-active; }
 }
 
 .gh-content .kg-bookmark-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 1rem 1rem 1rem 1.25rem;
   min-width: 0;
+  padding: 1rem 1rem 1rem 1.25rem;
 }
 
 .gh-content .kg-bookmark-title {
+  color: v.$text-strong;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--theme-text-strong);
-  margin-bottom: 0.35rem;
   line-height: 1.35;
+  margin-bottom: 0.35rem;
 }
 
 .gh-content .kg-bookmark-description {
+  color: v.$text-default;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: var(--theme-text);
 }
 
 .gh-content .kg-bookmark-metadata {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  color: v.$text-weak;
+  display: flex;
+  font-size: 0.875rem;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
   min-width: 0;
-  margin-top: 0.85rem;
-  font-size: 0.8125rem;
-  color: var(--theme-text-weak);
 }
 
-.gh-content .kg-bookmark-icon {
-  width: 1rem;
-  height: 1rem;
-  flex: 0 0 auto;
-}
+.gh-content .kg-bookmark-icon { flex: 0 0 auto; height: 1rem; width: 1rem; }
 
 .gh-content .kg-bookmark-author,
-.gh-content .kg-bookmark-publisher {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.gh-content .kg-bookmark-publisher { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .gh-content .kg-bookmark-thumbnail {
+  min-height: 100%;
   position: relative;
-  min-height: 100%;
-}
 
-.gh-content .kg-bookmark-thumbnail img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  object-fit: cover;
+  img { display: block; height: 100%; min-height: 100%; object-fit: cover; width: 100%; }
 }
 
 @media screen and (max-width: 640px) {
   .gh-content .kg-bookmark-card > a,
-  .gh-content .kg-bookmark-container {
-    grid-template-columns: 1fr;
-  }
-
-  .gh-content .kg-bookmark-thumbnail {
-    min-height: 12rem;
-    order: -1;
-  }
+  .gh-content .kg-bookmark-container { grid-template-columns: 1fr; }
+  .gh-content .kg-bookmark-thumbnail { min-height: 10rem; order: -1; }
 }
 
 /* ==========================================================================
    6) CODE CARD
    ========================================================================== */
 
-.gh-content .kg-code-card {
-  width: 100%;
-}
+.gh-content .kg-code-card { width: 100%; }
 
 .gh-content .kg-code-card pre {
+  background: #f4f6f9;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-base;
+  color: v.$text-strong;
+  font-size: 0.9375rem;
   margin: 0;
-  padding: 1rem 1.25rem;
   overflow-x: auto;
-  border-radius: var(--theme-radius);
-  background: #111827;
-  color: #e5e7eb;
-  box-shadow: var(--theme-shadow);
+  padding: 1rem 1.25rem;
 }
 
-.gh-content .kg-code-card code {
-  background: transparent;
-  color: inherit;
-  font-size: 0.9em;
-  padding: 0;
-}
+.gh-content .kg-code-card code { background: transparent; color: inherit; padding: 0; }
 
 /* ==========================================================================
    7) BUTTON CARD
    ========================================================================== */
 
-.gh-content .kg-button-card,
-.gh-content .kg-button-card.kg-align-center,
-.gh-content .kg-button-card.kg-align-left,
-.gh-content .kg-button-card.kg-align-right {
-  width: 100%;
-}
-
-.gh-content .kg-button-card.kg-align-center {
-  text-align: center;
-}
-
-.gh-content .kg-button-card.kg-align-left {
-  text-align: left;
-}
-
-.gh-content .kg-button-card.kg-align-right {
-  text-align: right;
-}
+.gh-content .kg-button-card { width: 100%; }
+.gh-content .kg-button-card.kg-align-center { text-align: center; }
+.gh-content .kg-button-card.kg-align-left   { text-align: left; }
+.gh-content .kg-button-card.kg-align-right  { text-align: right; }
 
 .gh-content .kg-btn,
 .gh-content .kg-button-card a {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: 0.625rem 1.125rem;
-  border-radius: var(--theme-radius);
-  background: var(--theme-brand);
-  color: #fff;
+  background: v.$brand-primary;
+  border: 1px solid v.$brand-primary;
+  border-radius: v.$radius-base;
+  color: v.$text-inverse;
+  display: inline-flex;
+  font-size: 1rem;
   font-weight: 700;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.5rem 1.25rem;
   text-decoration: none;
-  border: 0;
-  box-shadow: var(--theme-shadow);
-}
+  transition: background-color 0.15s, border-color 0.15s;
 
-.gh-content .kg-btn:hover,
-.gh-content .kg-btn:focus,
-.gh-content .kg-button-card a:hover,
-.gh-content .kg-button-card a:focus {
-  background: var(--theme-brand-hover);
-  color: #fff;
+  &:hover, &:focus {
+    background: v.$brand-primary-hover;
+    border-color: v.$brand-primary-hover;
+    color: v.$text-inverse;
+    text-decoration: none;
+  }
 }
 
 /* ==========================================================================
@@ -356,154 +255,107 @@ h6,
    ========================================================================== */
 
 .gh-content .kg-callout-card {
-  display: flex;
   align-items: flex-start;
+  background: #eff6ff;
+  border: 1px solid #c9e0f5;
+  border-left: 4px solid v.$brand-primary;
+  border-radius: v.$radius-base;
+  display: flex;
   gap: 0.875rem;
   padding: 1rem 1.125rem;
-  background: var(--theme-surface-subtle);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
 }
 
-.gh-content .kg-callout-emoji {
-  flex: 0 0 auto;
-  font-size: 1.4rem;
-  line-height: 1;
-}
-
-.gh-content .kg-callout-text {
-  min-width: 0;
-  color: var(--theme-text);
-}
+.gh-content .kg-callout-emoji { flex-shrink: 0; font-size: 1.375rem; line-height: 1; }
+.gh-content .kg-callout-text  { color: v.$text-default; font-size: 1rem; min-width: 0; }
 
 /* ==========================================================================
    9) TOGGLE CARD
    ========================================================================== */
 
 .gh-content .kg-toggle-card {
+  background: v.$surface-card;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-base;
   padding: 1rem 1.125rem;
-  background: var(--theme-surface-card);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
 }
 
 .gh-content .kg-toggle-heading {
-  display: flex;
   align-items: center;
+  color: v.$text-strong;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 700;
   gap: 0.75rem;
   margin: 0;
-  font-weight: 700;
-  color: var(--theme-text-strong);
 }
 
-.gh-content .kg-toggle-card-icon {
-  flex: 0 0 auto;
-}
-
-.gh-content .kg-toggle-content {
-  margin-top: 1rem;
-  color: var(--theme-text);
-}
+.gh-content .kg-toggle-card-icon { flex: 0 0 auto; }
+.gh-content .kg-toggle-content { color: v.$text-default; font-size: 1rem; margin-top: 0.875rem; }
 
 /* ==========================================================================
    10) FILE CARD
    ========================================================================== */
 
 .gh-content .kg-file-card {
-  display: flex;
   align-items: center;
+  background: v.$surface-card;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-base;
+  box-shadow: v.$shadow-card;
+  color: inherit;
+  display: flex;
   gap: 1rem;
   padding: 1rem 1.125rem;
-  background: var(--theme-surface-card);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
-  color: inherit;
   text-decoration: none;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: v.$shadow-active; text-decoration: none; }
 }
 
-.gh-content .kg-file-card-icon {
-  flex: 0 0 auto;
-  color: var(--theme-brand);
-}
-
-.gh-content .kg-file-card-contents {
-  flex: 1 1 auto;
-  min-width: 0;
-}
+.gh-content .kg-file-card-icon     { color: v.$brand-primary; flex: 0 0 auto; }
+.gh-content .kg-file-card-contents { flex: 1 1 auto; min-width: 0; }
 
 .gh-content .kg-file-card-title {
+  color: v.$text-strong;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--theme-text-strong);
   line-height: 1.35;
 }
 
 .gh-content .kg-file-card-caption,
-.gh-content .kg-file-card-metadata {
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--theme-text-weak);
-}
-
-.gh-content .kg-file-card-button {
-  flex: 0 0 auto;
-}
+.gh-content .kg-file-card-metadata { color: v.$text-weak; font-size: 0.875rem; margin-top: 0.2rem; }
+.gh-content .kg-file-card-button   { flex: 0 0 auto; }
 
 /* ==========================================================================
    11) AUDIO CARD
    ========================================================================== */
 
 .gh-content .kg-audio-card {
+  background: v.$surface-card;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-base;
   padding: 1rem 1.125rem;
-  background: var(--theme-surface-card);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius);
-  box-shadow: var(--theme-shadow);
 }
 
-.gh-content .kg-audio-player-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+.gh-content .kg-audio-player-container { align-items: center; display: flex; gap: 1rem; }
 
 .gh-content .kg-audio-thumbnail {
-  width: 4.5rem;
-  height: 4.5rem;
+  border-radius: v.$radius-base;
   flex: 0 0 auto;
-  border-radius: var(--theme-radius);
+  height: 4rem;
   object-fit: cover;
+  width: 4rem;
 }
 
-.gh-content .kg-audio-player {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.gh-content .kg-audio-title {
-  font-weight: 700;
-  color: var(--theme-text-strong);
-}
-
-.gh-content .kg-audio-player audio {
-  width: 100%;
-  margin-top: 0.75rem;
-}
+.gh-content .kg-audio-player  { flex: 1 1 auto; min-width: 0; }
+.gh-content .kg-audio-title   { color: v.$text-strong; font-size: 1rem; font-weight: 700; }
+.gh-content .kg-audio-player audio { margin-top: 0.5rem; width: 100%; }
 
 .gh-content .kg-audio-duration,
-.gh-content .kg-audio-caption {
-  margin-top: 0.35rem;
-  font-size: 0.875rem;
-  color: var(--theme-text-weak);
-}
+.gh-content .kg-audio-caption { color: v.$text-weak; font-size: 0.875rem; margin-top: 0.25rem; }
 
 @media screen and (max-width: 540px) {
-  .gh-content .kg-audio-player-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .gh-content .kg-audio-player-container { flex-direction: column; align-items: flex-start; }
 }
 
 /* ==========================================================================
@@ -511,75 +363,54 @@ h6,
    ========================================================================== */
 
 .gh-content .kg-header-card {
+  background: v.$brand-primary;
+  border-radius: v.$radius-large;
+  color: v.$text-inverse;
   display: grid;
   gap: 1rem;
-  padding: clamp(2rem, 6vw, 5rem) clamp(1.25rem, 4vw, 4rem);
-  border-radius: var(--theme-radius-lg);
   overflow: hidden;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem);
   text-align: center;
-  background: linear-gradient(
-    135deg,
-    var(--theme-brand) 0%,
-    var(--theme-brand-active) 100%
-  );
-  color: #fff;
 }
 
-.gh-content .kg-header-card.kg-style-light {
-  background: var(--theme-surface-subtle);
-  color: var(--theme-text-strong);
-}
-
-.gh-content .kg-header-card.kg-style-dark {
-  background: #111827;
-  color: #fff;
-}
-
+.gh-content .kg-header-card.kg-style-light  { background: v.$surface-subtle; color: v.$text-strong; }
+.gh-content .kg-header-card.kg-style-dark   { background: v.$brand-primary-active; color: v.$text-inverse; }
 .gh-content .kg-header-card.kg-style-accent {
-  background: linear-gradient(
-    135deg,
-    var(--theme-brand) 0%,
-    var(--theme-brand-hover) 100%
-  );
-  color: #fff;
+  background: linear-gradient(135deg, v.$brand-primary 0%, v.$brand-primary-hover 100%);
+  color: v.$text-inverse;
 }
-
-.gh-content .kg-header-card.kg-style-image {
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  color: #fff;
-}
+.gh-content .kg-header-card.kg-style-image { background-position: center; background-size: cover; color: v.$text-inverse; }
 
 .gh-content .kg-header-card-header {
-  margin: 0;
-  font-size: clamp(1.75rem, 4vw, 3rem);
-  line-height: 1.1;
-  font-weight: 700;
   color: inherit;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
 }
 
 .gh-content .kg-header-card-subheader {
-  margin: 0;
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.6;
-  font-weight: 500;
   color: inherit;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0;
   opacity: 0.92;
 }
 
 .gh-content .kg-header-card-button {
-  display: inline-flex;
   align-items: center;
+  background: v.$surface-card;
+  border-radius: v.$radius-base;
+  color: v.$brand-primary;
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 700;
   justify-content: center;
   justify-self: center;
-  min-height: 2.5rem;
-  padding: 0.625rem 1.25rem;
-  border-radius: var(--theme-radius);
+  min-height: 2.25rem;
+  padding: 0.5rem 1.25rem;
   text-decoration: none;
-  font-weight: 700;
-  background: #fff;
-  color: var(--theme-brand);
 }
 
 /* ==========================================================================
@@ -587,140 +418,83 @@ h6,
    ========================================================================== */
 
 .gh-content .kg-signup-card {
-  width: 100%;
-  background: var(--theme-surface-card);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius-lg);
-  box-shadow: var(--theme-shadow);
+  background: v.$surface-card;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-large;
+  box-shadow: v.$shadow-card;
   overflow: hidden;
+  width: 100%;
 }
 
-.gh-content .kg-signup-card-content {
-  display: grid;
-  gap: 1.25rem;
-  padding: clamp(1.25rem, 3vw, 2rem);
-}
+.gh-content .kg-signup-card-content { display: grid; gap: 1.25rem; padding: clamp(1.25rem, 3vw, 2rem); }
 
 .gh-content .kg-signup-card.kg-layout-split .kg-signup-card-content {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   align-items: stretch;
   gap: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   padding: 0;
 }
 
 .gh-content .kg-signup-card.kg-layout-split picture,
-.gh-content .kg-signup-card.kg-layout-split .kg-signup-card-image {
-  width: 100%;
-  height: 100%;
-}
-
-.gh-content .kg-signup-card.kg-layout-split .kg-signup-card-image {
-  display: block;
-  object-fit: cover;
-}
-
-.gh-content .kg-signup-card.kg-layout-split .kg-signup-card-text {
-  padding: clamp(1.25rem, 3vw, 2rem);
-}
+.gh-content .kg-signup-card.kg-layout-split .kg-signup-card-image { height: 100%; width: 100%; }
+.gh-content .kg-signup-card.kg-layout-split .kg-signup-card-image { display: block; object-fit: cover; }
+.gh-content .kg-signup-card.kg-layout-split .kg-signup-card-text  { padding: clamp(1.25rem, 3vw, 2rem); }
 
 .gh-content .kg-signup-card-heading,
-.gh-content .kg-signup-card-subheading {
-  margin: 0;
-}
+.gh-content .kg-signup-card-subheading { margin: 0; }
 
 .gh-content .kg-signup-card-heading {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
-  line-height: 1.15;
+  color: v.$text-strong;
+  font-size: clamp(1.25rem, 3vw, 2rem);
   font-weight: 700;
-  color: var(--theme-text-strong);
+  line-height: 1.2;
 }
 
-.gh-content .kg-signup-card-subheading {
-  margin-top: 0.5rem;
-  color: var(--theme-text);
-  line-height: 1.6;
-}
-
-.gh-content .kg-signup-card-form {
-  margin-top: 1rem;
-}
-
-.gh-content .kg-signup-card-fields {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
+.gh-content .kg-signup-card-subheading { color: v.$text-default; line-height: 1.6; margin-top: 0.5rem; }
+.gh-content .kg-signup-card-form { margin-top: 1rem; }
+.gh-content .kg-signup-card-fields { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 .gh-content .kg-signup-card-input {
+  background: v.$surface-card;
+  border: 1px solid v.$border-color;
+  border-radius: v.$radius-base;
+  color: v.$text-strong;
   flex: 1 1 14rem;
-  min-height: 2.5rem;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius);
-  background: var(--theme-surface-card);
-  color: var(--theme-text-strong);
-}
+  font-size: 1rem;
+  min-height: 2.25rem;
+  padding: 0.5rem 0.875rem;
 
-.gh-content .kg-signup-card-input:focus {
-  outline: 0;
-  border-color: var(--theme-brand);
-  box-shadow: 0 0 0 3px var(--theme-focus);
+  &:focus { border-color: v.$brand-primary; box-shadow: 0 0 3px v.$brand-primary; outline: 0; }
 }
 
 .gh-content .kg-signup-card-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: 0.625rem 1.125rem;
+  background: v.$brand-primary;
   border: 0;
-  border-radius: var(--theme-radius);
-  background: var(--theme-brand);
-  color: #fff;
-  font-weight: 700;
+  border-radius: v.$radius-base;
+  color: v.$text-inverse;
   cursor: pointer;
-}
+  font-size: 1rem;
+  font-weight: 700;
+  min-height: 2.25rem;
+  padding: 0.5rem 1.25rem;
 
-.gh-content .kg-signup-card-button:hover,
-.gh-content .kg-signup-card-button:focus {
-  background: var(--theme-brand-hover);
+  &:hover, &:focus { background: v.$brand-primary-hover; }
 }
 
 .gh-content .kg-signup-card-success,
 .gh-content .kg-signup-card-error,
-.gh-content .kg-signup-card-disclaimer {
-  margin-top: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-}
+.gh-content .kg-signup-card-disclaimer { font-size: 0.875rem; line-height: 1.5; margin-top: 0.5rem; }
 
-.gh-content .kg-signup-card-success {
-  display: none;
-  color: var(--theme-brand);
-  font-weight: 600;
-}
+.gh-content .kg-signup-card-success { color: v.$success-color; display: none; font-weight: 700; }
+.gh-content .kg-signup-card-error   { color: v.$danger-color; }
 
-.gh-content .kg-signup-card-error {
-  color: #ba0517;
-}
-
-.gh-content [data-members-form].success .kg-signup-card-success {
-  display: block;
-}
-
+.gh-content [data-members-form].success .kg-signup-card-success   { display: block; }
 .gh-content [data-members-form].success .kg-signup-card-fields,
-.gh-content [data-members-form].success .kg-signup-card-disclaimer {
-  display: none;
-}
+.gh-content [data-members-form].success .kg-signup-card-disclaimer { display: none; }
 
 @media screen and (max-width: 768px) {
-  .gh-content .kg-signup-card.kg-layout-split .kg-signup-card-content {
-    grid-template-columns: 1fr;
-  }
-
-  .gh-content .kg-signup-card.kg-layout-split .kg-signup-card-image {
-    min-height: 14rem;
-  }
+  .gh-content .kg-signup-card.kg-layout-split .kg-signup-card-content { grid-template-columns: 1fr; }
+  .gh-content .kg-signup-card.kg-layout-split .kg-signup-card-image   { min-height: 12rem; }
 }
 
 /* ==========================================================================
@@ -728,24 +502,15 @@ h6,
    ========================================================================== */
 
 .gh-content .kg-product-card {
+  background: v.$surface-card;
+  border: 1px solid v.$border-color-soft;
+  border-radius: v.$radius-large;
+  box-shadow: v.$shadow-card;
   padding: 1.25rem;
-  background: var(--theme-surface-card);
-  border: 1px solid var(--theme-border);
-  border-radius: var(--theme-radius-lg);
-  box-shadow: var(--theme-shadow);
-}
 
-.gh-content .kg-product-card img {
-  border-radius: var(--theme-radius);
-}
-
-.gh-content .kg-product-card h3,
-.gh-content .kg-product-card h4 {
-  color: var(--theme-text-strong);
-}
-
-.gh-content .kg-product-card a {
-  text-decoration: none;
+  img { border-radius: v.$radius-base; }
+  h3, h4 { color: v.$text-strong; font-weight: 700; }
+  a { text-decoration: none; }
 }
 
 /* ==========================================================================
@@ -753,33 +518,28 @@ h6,
    ========================================================================== */
 
 .gh-content .kg-blockquote-alt {
+  background: #eff6ff;
+  border-left: 4px solid v.$brand-primary;
+  border-radius: v.$radius-base;
+  color: v.$text-default;
+  font-style: normal;
   margin: 0;
   padding: 1rem 1.25rem;
-  border-left: 4px solid var(--theme-brand);
-  border-radius: var(--theme-radius);
-  background: var(--theme-surface-subtle);
-  color: var(--theme-text);
 }
 
 /* ==========================================================================
-   16) GHOST-SPECIFIC POST UTILITIES
+   16) UTILITIES
    ========================================================================== */
 
 .post-template .gh-content,
-.page-template .gh-content {
-  width: 100%;
-}
+.page-template .gh-content { width: 100%; }
 
-.gh-content .kg-card hr {
-  margin: 0;
-}
+.gh-content .kg-card hr { margin: 0; }
 
 .gh-content .kg-card .button,
 .gh-content .kg-btn,
 .gh-content .kg-signup-card-button,
-.gh-content .kg-header-card-button {
-  font-family: inherit;
-}
+.gh-content .kg-header-card-button { font-family: inherit; }
 
 .gh-content .kg-card a:not(.button):not(.kg-btn):not(.kg-header-card-button):not(.kg-signup-card-button) {
   word-break: break-word;

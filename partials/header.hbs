@@ -1,46 +1,83 @@
+<header class="site-header">
+    <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item site-navbar__brand" href="{{@site.url}}">
+                    {{#if @site.logo}}
+                        <img
+                            src="{{@site.logo}}"
+                            alt="{{@site.title}}"
+                            class="site-navbar__logo"
+                            width="32"
+                            height="32"
+                        >
+                    {{/if}}
 
-<nav class="navbar is-light" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="{{@site.url}}">
-                {{#if @site.logo}}
-                    <img src="{{@site.logo}}" alt="{{@site.title}}" style="max-height: 2rem;">
-                    <span class="ml-2 has-text-weight-semibold">{{@site.title}}</span>
-                {{else}}
-                    <span class="has-text-weight-semibold">{{@site.title}}</span>
-                {{/if}}
-            </a>
-            <button
-                class="button is-light is-small navbar-item is-hidden-desktop"
-                type="button"
-                aria-label="Search this site"
-                data-ghost-search
-            >
-                <span class="icon">
-                    <i class="ph ph-magnifying-glass"></i>
-                </span>
-            </button>
+                    <span class="site-navbar__title has-text-weight-semibold">
+                        {{@site.title}}
+                    </span>
+                </a>
 
-            <a
-                role="button"
-                class="navbar-burger"
-                aria-label="menu"
-                aria-expanded="false"
-                data-target="mainNavbarMenu"
-            >
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
+                <div class="site-navbar__mobile-actions is-hidden-desktop">
+                    <button
+                        class="button is-light is-small"
+                        type="button"
+                        aria-label="Search this site"
+                        data-ghost-search
+                    >
+                        <span class="icon is-small">
+                            <i class="ph ph-magnifying-glass"></i>
+                        </span>
+                    </button>
 
-        <div id="mainNavbarMenu" class="navbar-menu">
-            <div class="navbar-end">
-                {{navigation}}
+                    <button
+                        class="button is-light is-small"
+                        type="button"
+                        aria-label="Toggle dark mode"
+                        data-theme-toggle
+                    >
+                        <span class="icon is-small">
+                            <i class="ph ph-moon"></i>
+                        </span>
+                    </button>
+
+                    <button
+                        class="navbar-burger"
+                        type="button"
+                        aria-label="menu"
+                        aria-expanded="false"
+                        aria-controls="siteNavbarMenu"
+                        data-target="siteNavbarMenu"
+                    >
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
             </div>
 
-            <div class="navbar-end">
-                {{#unless @site.members_enabled}}
+            <div id="siteNavbarMenu" class="navbar-menu">
+                <div class="navbar-start site-navbar__center">
+                    {{navigation}}
+                    {{> "navbar-dropdowns"}}
+                </div>
+
+                <div class="navbar-end">
+                    <div class="navbar-item is-hidden-touch">
+                        <button
+                            class="button is-light is-small"
+                            type="button"
+                            aria-label="Toggle dark mode"
+                            data-theme-toggle
+                        >
+                            <span class="icon is-small">
+                                <i class="ph ph-moon"></i>
+                            </span>
+                            <span class="is-hidden-desktop-only">Theme</span>
+                        </button>
+                    </div>
+
                     <div class="navbar-item is-hidden-touch">
                         <button
                             class="button is-light is-small"
@@ -48,85 +85,162 @@
                             aria-label="Search this site"
                             data-ghost-search
                         >
-                            <span class="icon">
+                            <span class="icon is-small">
                                 <i class="ph ph-magnifying-glass"></i>
                             </span>
                             <span>Search</span>
                         </button>
                     </div>
-                {{else}}
-                    <div class="navbar-item">
-                            <span class="icon" data-ghost-search>
-                                <i class="ph ph-magnifying-glass"></i>
-                            </span>
-                    </div>
 
-                    <div class="navbar-item">
-                        <div class="buttons">
-                            {{#unless @member}}
-                                {{#unless @site.members_invite_only}}
-                                    <a class="button is-light is-small" href="#/portal/signin" data-portal="signin">
-                                        <span class="icon"><i class="ph ph-sign-in"></i></span>
-                                        <span>Sign in</span>
-                                    </a>
+                    {{#if @site.members_enabled}}
+                        <div class="navbar-item">
+                            <div class="buttons">
+                                {{#unless @member}}
+                                    {{#unless @site.members_invite_only}}
+                                        <a
+                                            class="button is-light is-small"
+                                            href="#/portal/signin"
+                                            data-portal="signin"
+                                        >
+                                            <span class="icon is-small">
+                                                <i class="ph ph-sign-in"></i>
+                                            </span>
+                                            <span>Sign in</span>
+                                        </a>
 
-                                    <a class="button is-primary is-small" href="#/portal/signup" data-portal="signup">
-                                        <span class="icon"><i class="ph ph-sparkle"></i></span>
-                                        <span>Subscribe</span>
-                                    </a>
+                                        <a
+                                            class="button is-primary is-small"
+                                            href="#/portal/signup"
+                                            data-portal="signup"
+                                        >
+                                            <span class="icon is-small">
+                                                <i class="ph ph-sparkle"></i>
+                                            </span>
+                                            <span>Subscribe</span>
+                                        </a>
+                                    {{else}}
+                                        <a
+                                            class="button is-primary is-small"
+                                            href="#/portal/signin"
+                                            data-portal="signin"
+                                        >
+                                            <span class="icon is-small">
+                                                <i class="ph ph-sign-in"></i>
+                                            </span>
+                                            <span>Sign in</span>
+                                        </a>
+                                    {{/unless}}
                                 {{else}}
-                                    <a class="button is-primary" href="#/portal/signin" data-portal="signin">
-                                        <span class="icon"><i class="ph ph-sign-in"></i></span>
-                                        <span>Sign in</span>
+                                    <a
+                                        class="button is-primary is-small"
+                                        href="#/portal/account"
+                                        data-portal="account"
+                                    >
+                                        <span class="icon is-small">
+                                            <i class="ph ph-user-circle"></i>
+                                        </span>
+                                        <span>Account</span>
                                     </a>
                                 {{/unless}}
-                            {{else}}
-                                <a class="button is-primary" href="#/portal/account" data-portal="account">
-                                    <span class="icon"><i class="ph ph-user-circle"></i></span>
-                                    <span>Account</span>
-                                </a>
-                            {{/unless}}
+                            </div>
                         </div>
-                    </div>
-                {{/unless}}
+                    {{/if}}
+                </div>
             </div>
         </div>
     </nav>
+</header>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var burgers = document.querySelectorAll('.navbar-burger');
+    var html = document.documentElement;
+    var storageKey = 'site-color-scheme';
 
-    burgers.forEach(function (burger) {
-        burger.addEventListener('click', function () {
-            var targetId = burger.getAttribute('data-target');
-            var target = document.getElementById(targetId);
+    var burger = document.querySelector('.navbar-burger');
+    var menu = document.getElementById('siteNavbarMenu');
+    var themeButtons = document.querySelectorAll('[data-theme-toggle]');
+    var menuLinks = document.querySelectorAll('#siteNavbarMenu a.navbar-item');
+    var mobileDropdownToggles = document.querySelectorAll('.js-navbar-dropdown-toggle');
 
-            burger.classList.toggle('is-active');
+    function getCurrentTheme() {
+        return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light';
+    }
 
-            if (target) {
-                target.classList.toggle('is-active');
-            }
+    function applyTheme(theme) {
+        html.setAttribute('data-color-scheme', theme);
+        localStorage.setItem(storageKey, theme);
 
-            burger.setAttribute(
-                'aria-expanded',
-                burger.classList.contains('is-active') ? 'true' : 'false'
+        themeButtons.forEach(function (button) {
+            var icon = button.querySelector('i');
+            if (!icon) return;
+
+            icon.className = theme === 'dark' ? 'ph ph-sun-dim' : 'ph ph-moon';
+            button.setAttribute(
+                'aria-label',
+                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
             );
+        });
+    }
+
+    function closeMenu() {
+        if (!burger || !menu) return;
+
+        burger.classList.remove('is-active');
+        menu.classList.remove('is-active');
+        burger.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('is-clipped');
+
+        document.querySelectorAll('.navbar-item.has-dropdown').forEach(function (item) {
+            item.classList.remove('is-active');
+        });
+    }
+
+    function toggleMenu() {
+        if (!burger || !menu) return;
+
+        var isActive = burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active', isActive);
+        burger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        document.body.classList.toggle('is-clipped', isActive);
+    }
+
+    applyTheme(getCurrentTheme());
+
+    themeButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            applyTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
         });
     });
 
-    var navLinks = document.querySelectorAll('#mainNavbarMenu .navbar-item');
-    navLinks.forEach(function (link) {
+    if (burger && menu) {
+        burger.addEventListener('click', toggleMenu);
+    }
+
+    menuLinks.forEach(function (link) {
         link.addEventListener('click', function () {
             if (window.innerWidth < 1024) {
-                var burger = document.querySelector('.navbar-burger');
-                var menu = document.getElementById('mainNavbarMenu');
-
-                if (burger) burger.classList.remove('is-active');
-                if (menu) menu.classList.remove('is-active');
-                if (burger) burger.setAttribute('aria-expanded', 'false');
+                closeMenu();
             }
         });
+    });
+
+    mobileDropdownToggles.forEach(function (toggle) {
+        toggle.addEventListener('click', function (event) {
+            if (window.innerWidth >= 1024) return;
+
+            event.preventDefault();
+
+            var parent = toggle.closest('.navbar-item.has-dropdown');
+            if (!parent) return;
+
+            parent.classList.toggle('is-active');
+        });
+    });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth >= 1024) {
+            closeMenu();
+        }
     });
 });
 </script>

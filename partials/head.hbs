@@ -1,4 +1,3 @@
-<head>
 
     {{!-- Basic meta - advanced meta is output with {ghost_head} below --}}
     <title>{{meta_title}}</title>
@@ -16,9 +15,24 @@
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+    (function () {
+        var storageKey = 'site-color-scheme';
+        var saved = localStorage.getItem(storageKey);
+        var theme;
+
+        if (saved === 'light' || saved === 'dark') {
+            theme = saved;
+        } else {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        document.documentElement.setAttribute('data-color-scheme', theme);
+    })();
+    </script>
     {{!-- This tag outputs all your advanced SEO meta, structured data, and other important settings,
 
     it should always be the last tag before the closing head tag --}}
     {{ghost_head}}
 
-</head>

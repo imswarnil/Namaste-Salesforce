@@ -1,27 +1,40 @@
 <!DOCTYPE html>
-<html lang="{{@site.locale}}">
+<html lang="{{@site.locale}}" data-color-scheme="light">
 <head>
+   
+    <script>
+    (function () {
+        var storageKey = 'site-color-scheme';
+        var saved = localStorage.getItem(storageKey);
+        var theme;
+
+        if (saved === 'light' || saved === 'dark') {
+            theme = saved;
+        } else {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        document.documentElement.setAttribute('data-color-scheme', theme);
+    })();
+    </script>
+
     {{> "head"}}
 </head>
 
 <body class="{{body_class}}">
-    <div class="has-background-light" style="min-height: 100vh; display: flex; flex-direction: column;">
-        {{!-- Header partial using Bulma navbar markup --}}
+    <div class="site-shell">
         {{> "header"}}
-
-        {{!-- Main content --}}
-        <main style="flex-grow: 1;">
+        <main id="site-main" class="site-main" role="main">
             {{{body}}}
         </main>
-        {{!-- Footer partial using Bulma footer/content markup --}}
-            {{> "footer"}}
+
+        {{> "footer"}}
     </div>
 
     {{#is "post, page"}}
         {{> "lightbox"}}
     {{/is}}
 
-    {{!-- Keep jQuery only if you still rely on fitVids from casper.js --}}
     <script
         src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="

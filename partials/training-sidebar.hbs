@@ -1,0 +1,42 @@
+{{!--
+  Shows all training sections + all their lessons
+  Expected params:
+  - current_module_slug
+  - current_slug
+--}}
+
+<div class="tr-side__top">
+  <a href="/training/" class="tr-side__back">← All training</a>
+</div>
+
+{{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc"}}
+  {{#foreach posts}}
+    <section class="tr-side__section">
+      <a
+        href="{{url}}"
+        class="tr-side__overview{{#match slug ../current_slug}} is-active{{/match}}{{#match slug ../current_module_slug}} is-current-module{{/match}}"
+      >
+        <span class="tr-side__eyebrow">Section</span>
+        <strong>{{title}}</strong>
+      </a>
+
+      <div class="tr-side__lesson-list">
+        {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc"}}
+          {{#foreach posts}}
+            <a
+              href="{{url}}"
+              class="tr-side__item{{#match slug ../../current_slug}} is-active{{/match}}"
+            >
+              <span class="tr-side__num">{{@number}}</span>
+              <span class="tr-side__text">{{title}}</span>
+            </a>
+          {{else}}
+            <span class="tr-side__empty">No lessons yet</span>
+          {{/foreach}}
+        {{/get}}
+      </div>
+    </section>
+  {{else}}
+    <p class="tr-side__empty">No training sections found.</p>
+  {{/foreach}}
+{{/get}}

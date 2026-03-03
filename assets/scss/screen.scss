@@ -1,586 +1,565 @@
-/* ==========================================================================
-   screen.scss
-   Bulma v1 + shared theme skin
-   ========================================================================== */
-
-@use "sass:color";
-@use "sass:list";
 @use "variables" as v;
+
+/* Keep this Bulma import path if your build supports Sass modules.
+   If your project uses a different Bulma entrypoint, keep your existing path
+   and preserve the CSS below. */
 @use "bulma/sass" with (
-  $primary: v.$brand-primary,
+  $family-primary: v.$font-stack,
+  $family-secondary: v.$font-stack,
+  $body-background-color: v.$surface-body,
+  $body-color: v.$text-default,
+  $text: v.$text-default,
+  $text-strong: v.$text-strong,
   $link: v.$link-color,
+  $primary: v.$brand-primary,
   $info: v.$info-color,
   $success: v.$success-color,
   $warning: v.$warning-color,
   $danger: v.$danger-color,
-
+  $border: v.$border-color,
   $radius: v.$radius-base,
-  $box-shadow: v.$shadow-card,
-  $card-shadow: v.$shadow-card,
-
-  $button-border-color: v.$border-color,
-  $button-focus-border-color: v.$brand-primary,
-  $button-active-border-color: v.$border-color-strong,
-
-  $input-disabled-background-color: v.$surface-subtle,
-
-  $navbar-height: v.$navbar-height-local,
-
-  $dropdown-content-shadow: v.$shadow-popover,
-  $dropdown-content-radius: v.$radius-base,
-
-  $control-height: v.$control-height-local,
-  $modal-content-width: v.$modal-width-local,
-
-  $tabs-link-active-color: v.$brand-primary,
-  $tabs-link-active-border-bottom-color: v.$brand-primary
+  $radius-large: v.$radius-large,
+  $navbar-height: v.$navbar-height-local
 );
-@use "ghost";
 
 /* ==========================================================================
-   1) ROOT
+   Runtime theme variables
    ========================================================================== */
 
-:root {
-  @include v.theme-css-vars;
+:root,
+html[data-color-scheme="light"] {
+  @include v.theme-css-vars-light;
+}
+
+html[data-color-scheme="dark"] {
+  @include v.theme-css-vars-dark;
 }
 
 /* ==========================================================================
-   2) BASE
+   Base
    ========================================================================== */
 
 html,
 body {
-  background: v.$surface-body;
-  color: v.$text-default;
+  background-color: var(--theme-surface-body);
+  color: var(--theme-text);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: var(--theme-font-body);
 }
 
 body {
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.title,
-.subtitle {
-  color: v.$text-strong;
-}
-
-.title {
-  font-weight: 600;
-}
-
-.subtitle {
-  color: v.$text-default;
-  font-weight: 500;
+  min-height: 100vh;
+  line-height: 1.5;
 }
 
 a {
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
+  color: var(--theme-brand);
+}
+
+a:hover,
+a:focus {
+  color: var(--theme-brand-hover);
 }
 
 hr {
-  background-color: v.$border-color-soft;
-  height: 1px;
+  background-color: var(--theme-border-soft);
 }
 
-.content {
-  color: v.$text-default;
-  letter-spacing: 0.01em;
+::selection {
+  background: rgba(1, 118, 211, 0.18);
+  color: var(--theme-text-strong);
 }
 
+.site-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--theme-surface-body);
+  color: var(--theme-text);
+}
+
+.site-main {
+  flex: 1 1 auto;
+}
+
+/* Ghost content helpers */
+.gh-canvas,
+.gh-content {
+  width: min(100%, var(--gh-content-width));
+  margin-inline: auto;
+}
+
+.gh-wide {
+  width: min(100%, var(--gh-wide-width));
+  margin-inline: auto;
+}
+
+/* ==========================================================================
+   Common component surfaces
+   ========================================================================== */
+
+.box,
+.card,
+.panel,
+.dropdown-content,
+.modal-card,
+.message,
+.menu,
+.table-container {
+  background: var(--theme-surface-card);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+.box,
+.card,
+.panel,
+.dropdown-content,
+.modal-card {
+  box-shadow: var(--theme-shadow);
+}
+
+.box {
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+}
+
+.card {
+  background-color: var(--theme-surface-card);
+  color: var(--theme-text);
+}
+
+.card-header,
+.card-footer {
+  background: var(--theme-surface-subtle);
+  border-color: var(--theme-border);
+}
+
+.card-header-title,
+.card-content,
+.card-footer-item {
+  color: var(--theme-text);
+}
+
+.card-header-title,
+.title,
+.subtitle,
+.label,
+.menu-label,
+.panel-heading,
+.modal-card-title,
+.table thead th,
+.table tfoot th,
 .content h1,
 .content h2,
 .content h3,
-.content h4 {
-  color: v.$text-strong;
+.content h4,
+.content h5,
+.content h6 {
+  color: var(--theme-text-strong);
+}
+
+.content,
+.content p,
+.content li,
+.content blockquote,
+.content dd,
+.content td,
+.content th {
+  color: var(--theme-text);
 }
 
 .content blockquote {
-  background: v.$surface-subtle;
-  border-left: 4px solid v.$brand-primary;
-  border-radius: v.$radius-base;
-  color: v.$text-default;
+  background: var(--theme-surface-subtle);
+  border-left-color: var(--theme-brand);
 }
 
-.gh-sponsor {
-  color: #ea4aaa;
-  font-weight: 600;
+.content pre,
+pre {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
 }
 
-/* ==========================================================================
-   3) BUTTONS
-   ========================================================================== */
-
-.button {
-  border-radius: v.$radius-base;
-  border-width: 1px;
-  box-shadow: none;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0;
-  min-height: 2rem;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.05s ease;
-  position: relative;
-
-  &:hover,
-  &.is-hovered {
-    border-color: v.$border-color-strong;
-    box-shadow: none;
-  }
-
-  &:focus,
-  &.is-focused,
-  &:focus-visible {
-    outline: 0;
-    box-shadow: 0 0 0 3px v.$focus-ring;
-  }
-
-  &:active,
-  &.is-active {
-    box-shadow: none;
-    transform: translateY(1px);
-  }
-
-  &.is-primary {
-    background-color: v.$brand-primary;
-    border-color: v.$brand-primary;
-    color: v.$text-inverse;
-
-    &:hover,
-    &.is-hovered {
-      background-color: v.$brand-primary-hover;
-      border-color: v.$brand-primary-hover;
-      color: v.$text-inverse;
-    }
-
-    &:active,
-    &.is-active {
-      background-color: v.$brand-primary-active;
-      border-color: v.$brand-primary-active;
-      color: v.$text-inverse;
-    }
-  }
-
-  &.is-light {
-    background-color: v.$surface-card;
-    border-color: v.$border-color;
-    color: v.$text-default;
-
-    &:hover,
-    &.is-hovered {
-      background-color: v.$surface-subtle;
-      border-color: v.$border-color-strong;
-      color: v.$text-strong;
-    }
-  }
-
-  &.is-text {
-    box-shadow: none;
-    border-color: transparent;
-    background: transparent;
-
-    &:hover,
-    &.is-hovered {
-      background: rgba(0, 158, 217, 0.06);
-      color: v.$brand-primary-hover;
-    }
-
-    &:focus,
-    &.is-focused,
-    &:focus-visible {
-      box-shadow: none;
-      text-decoration: underline;
-    }
-  }
-
-  @each $name, $pair in v.$theme-colors {
-    $variant: list.nth($pair, 1);
-    $invert: list.nth($pair, 2);
-
-    &.is-#{$name}:not(.is-light):not(.is-outlined):not(.is-inverted):not(.is-text) {
-      background-color: $variant;
-      border-color: $variant;
-      color: $invert;
-
-      &:hover,
-      &.is-hovered {
-        background-color: color.scale($variant, $lightness: -8%);
-        border-color: color.scale($variant, $lightness: -8%);
-      }
-
-      &:active,
-      &.is-active {
-        background-color: color.scale($variant, $lightness: -14%);
-        border-color: color.scale($variant, $lightness: -14%);
-      }
-    }
-
-    &.is-outlined.is-#{$name} {
-      background-color: transparent;
-      border-color: $variant;
-      color: $variant;
-
-      &:hover,
-      &.is-hovered {
-        background-color: rgba(0, 158, 217, 0.06);
-      }
-    }
-  }
+code:not(pre code) {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-brand);
+  padding: 0.12em 0.35em;
+  border-radius: 0.25rem;
 }
 
 /* ==========================================================================
-   4) FORM CONTROLS
+   Forms
    ========================================================================== */
 
 .input,
 .textarea,
 .select select {
-  background-color: v.$surface-card;
-  border: 1px solid v.$border-color;
-  border-radius: v.$radius-base;
+  background-color: var(--theme-surface-card);
+  border-color: var(--theme-border);
+  color: var(--theme-text-strong);
   box-shadow: none;
-  color: v.$text-strong;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease;
-
-  &::placeholder {
-    color: v.$text-weak;
-    opacity: 1;
-  }
-
-  &:hover {
-    border-color: v.$border-color-strong;
-  }
-
-  &:focus,
-  &.is-focused,
-  &:active,
-  &.is-active {
-    border-color: v.$brand-primary;
-    box-shadow: 0 0 0 3px v.$focus-ring;
-    outline: none;
-  }
-
-  &.is-disabled,
-  &[disabled],
-  &[readonly] {
-    background-color: v.$surface-subtle;
-    border-color: v.$border-color-soft;
-    color: v.$text-weak;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
 }
 
-.textarea {
-  min-height: 7rem;
-  resize: vertical;
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--theme-text-weak);
 }
 
-.select:not(.is-multiple):not(.is-loading)::after {
-  border-color: v.$brand-primary;
+.input:hover,
+.textarea:hover,
+.select select:hover {
+  border-color: var(--theme-border-strong);
 }
 
-.help {
-  color: v.$text-weak;
+.input:focus,
+.input:active,
+.textarea:focus,
+.textarea:active,
+.select select:focus,
+.select select:active {
+  border-color: var(--theme-brand);
+  box-shadow: 0 0 0 0.2rem var(--theme-focus);
 }
 
-.label {
-  color: v.$text-strong;
-  font-weight: 600;
+.checkbox,
+.radio {
+  color: var(--theme-text);
 }
 
 /* ==========================================================================
-   5) COMPONENTS
+   Buttons / tags / notifications
    ========================================================================== */
 
-.progress {
-  height: 0.5rem;
-  border-radius: 999px;
-  background: #dddbda;
-
-  &.is-small {
-    height: 0.375rem;
-  }
-}
-
-.card {
-  background: v.$surface-card;
-  border: 1px solid v.$border-color-soft;
-  border-radius: v.$radius-base;
-  box-shadow: v.$shadow-card;
-  overflow: hidden;
-
-  .card-header {
-    background: v.$surface-subtle;
-    border-bottom: 1px solid v.$border-color-soft;
-    box-shadow: none;
-  }
-
-  .card-header-title {
-    color: v.$text-strong;
-    font-weight: 600;
-  }
-
-  .card-content {
-    color: v.$text-default;
-  }
-
-  .card-footer {
-    border-top: 1px solid v.$border-color-soft;
-    background: v.$surface-card;
-  }
-
-  .card-footer-item {
-    border: 0;
-    color: v.$link-color;
-    font-weight: 600;
-
-    &:hover {
-      background: rgba(0, 158, 217, 0.04);
-      color: v.$brand-primary-hover;
-    }
-  }
-}
-
-.box {
-  background: v.$surface-card;
-  border: 1px solid v.$border-color-soft;
-  border-radius: v.$radius-base;
-  box-shadow: v.$shadow-card;
-}
-
-.notification {
-  border: 1px solid v.$border-color-soft;
-  border-radius: v.$radius-base;
+.button {
   box-shadow: none;
-  color: v.$text-default;
+  border-color: var(--theme-border);
 }
 
-.menu {
-  .menu-label {
-    color: v.$text-weak;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+.button:focus-visible,
+.input:focus-visible,
+.textarea:focus-visible,
+.select select:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem var(--theme-focus);
+}
 
-  .menu-list a {
-    border-radius: v.$radius-base;
-    color: v.$text-default;
-    padding: 0.5rem 0.75rem;
+.button.is-light,
+.tag.is-light,
+.notification.is-light {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
 
-    &:hover {
-      background: rgba(0, 158, 217, 0.06);
-      color: v.$text-strong;
-    }
+.button.is-light:hover,
+.tag.is-light:hover {
+  background: var(--theme-surface-muted);
+  color: var(--theme-text-strong);
+}
 
-    &.is-active {
-      background: rgba(0, 158, 217, 0.08);
-      color: v.$brand-primary;
-      font-weight: 600;
-    }
-  }
+.button.is-white {
+  background: var(--theme-surface-card);
+  color: var(--theme-text-strong);
+  border-color: var(--theme-border);
+}
+
+.button.is-white:hover {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
 }
 
 /* ==========================================================================
-   6) NAVBAR
+   Navbar / dropdown
    ========================================================================== */
+
+.navbar,
+.navbar-menu,
+.navbar-dropdown {
+  background: var(--theme-surface-card);
+}
 
 .navbar {
-  background: v.$surface-card;
-  border-bottom: 1px solid v.$border-color-soft;
+  border-bottom: 1px solid var(--theme-border);
+}
 
-  &:not(.is-transparent) {
-    box-shadow: none;
+.navbar-item,
+.navbar-link {
+  color: var(--theme-text);
+}
+
+a.navbar-item:hover,
+a.navbar-item:focus,
+.navbar-link:hover,
+.navbar-link:focus,
+.navbar-link.is-active,
+a.navbar-item.is-active {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
+}
+
+.navbar-dropdown {
+  border-color: var(--theme-border);
+  box-shadow: var(--theme-shadow-popover);
+}
+
+.navbar-divider {
+  background-color: var(--theme-border-soft);
+}
+
+.navbar-burger {
+  color: var(--theme-text);
+}
+
+/* ==========================================================================
+   Menu / panel / tabs / breadcrumb / pagination
+   ========================================================================== */
+
+.menu-list a,
+.panel-block,
+.panel-tabs a,
+.tabs a,
+.breadcrumb a,
+.pagination-link,
+.pagination-next,
+.pagination-previous {
+  color: var(--theme-text);
+}
+
+.menu-list a:hover,
+.panel-block:hover,
+.panel-tabs a:hover,
+.tabs a:hover,
+.breadcrumb a:hover,
+.pagination-link:hover,
+.pagination-next:hover,
+.pagination-previous:hover {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
+}
+
+.menu-list a.is-active,
+.tabs li.is-active a,
+.panel-tabs a.is-active,
+.pagination-link.is-current {
+  background: var(--theme-brand);
+  border-color: var(--theme-brand);
+  color: var(--theme-text-inverse);
+}
+
+.panel {
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+  overflow: hidden;
+}
+
+.panel-heading {
+  background: var(--theme-surface-subtle);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.panel-block {
+  border-color: var(--theme-border-soft);
+}
+
+.tabs a {
+  border-bottom-color: var(--theme-border);
+}
+
+.tabs.is-boxed a,
+.tabs.is-toggle a {
+  border-color: var(--theme-border);
+}
+
+.breadcrumb li + li::before {
+  color: var(--theme-text-weak);
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.table {
+  background: var(--theme-surface-card);
+  color: var(--theme-text);
+}
+
+.table td,
+.table th {
+  border-color: var(--theme-border-soft);
+}
+
+.table thead td,
+.table thead th,
+.table tfoot td,
+.table tfoot th {
+  color: var(--theme-text-strong);
+  border-color: var(--theme-border);
+}
+
+.table.is-striped tbody tr:not(.is-selected):nth-child(even) {
+  background: var(--theme-surface-row-alt);
+}
+
+.table.is-hoverable tbody tr:not(.is-selected):hover {
+  background: var(--theme-surface-subtle);
+}
+
+/* ==========================================================================
+   Message / modal / footer / hero
+   ========================================================================== */
+
+.message-header,
+.modal-card-head,
+.modal-card-foot {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
+  border-color: var(--theme-border);
+}
+
+.message-body,
+.modal-card-body {
+  background: var(--theme-surface-card);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+.footer {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text);
+  border-top: 1px solid var(--theme-border);
+}
+
+.hero.is-light,
+.hero.is-white {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text);
+}
+
+.hero.is-light .title,
+.hero.is-white .title,
+.hero.is-light .subtitle,
+.hero.is-white .subtitle {
+  color: var(--theme-text-strong);
+}
+
+/* ==========================================================================
+   Bulma utility class rescue plan
+   These helpers are static, so dark mode needs explicit overrides.
+   ========================================================================== */
+
+html[data-color-scheme="dark"] {
+  .has-background-light,
+  .has-background-white,
+  .has-background-white-bis,
+  .has-background-white-ter {
+    background-color: var(--theme-surface-card) !important;
   }
 
-  .navbar-brand > .navbar-item,
-  .navbar-brand .navbar-link,
-  .navbar-item,
-  .navbar-link {
-    color: v.$text-default;
-    font-weight: 500;
+  .has-background-black,
+  .has-background-dark {
+    background-color: #0b0f14 !important;
   }
 
-  .navbar-item:hover,
-  .navbar-link:hover,
-  .navbar-item:focus,
-  .navbar-link:focus {
-    background: rgba(0, 158, 217, 0.05);
-    color: v.$text-strong;
+  .has-text-dark,
+  .has-text-black,
+  .has-text-grey-dark {
+    color: var(--theme-text-strong) !important;
   }
 
-  .navbar-item.is-active,
-  .navbar-link.is-active {
-    color: v.$brand-primary;
-    font-weight: 600;
+  .has-text-grey,
+  .has-text-grey-light {
+    color: var(--theme-text-weak) !important;
   }
 
-  .navbar-dropdown {
-    border-top: 1px solid v.$border-color-soft;
-    border-radius: 0 0 v.$radius-base v.$radius-base;
-    box-shadow: v.$shadow-popover;
+  .has-text-light,
+  .has-text-white {
+    color: var(--theme-text-inverse) !important;
   }
 
-  .navbar-divider {
-    background-color: v.$border-color-soft;
+  .button.is-light,
+  .tag.is-light,
+  .notification.is-light {
+    background-color: var(--theme-surface-subtle) !important;
+    color: var(--theme-text) !important;
+    border-color: var(--theme-border) !important;
   }
+
+  .delete,
+  .modal-close {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .delete:hover,
+  .modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* ==========================================================================
+   A few LMS-friendly polish rules
+   ========================================================================== */
+
+.section,
+.tile,
+.media,
+.level,
+.columns,
+.column {
+  color: inherit;
+}
+
+.course-shell,
+.lesson-shell,
+.training-shell {
+  color: var(--theme-text);
+}
+
+.course-shell .card,
+.lesson-shell .card,
+.training-shell .card {
+  height: 100%;
+}
+
+.lesson-sidebar,
+.training-sidebar {
+  background: var(--theme-surface-card);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-lg);
+  box-shadow: var(--theme-shadow);
+}
+
+.lesson-sidebar .menu-list a,
+.training-sidebar .menu-list a {
+  border-radius: 0.375rem;
+}
+
+.lesson-content,
+.training-content {
+  min-width: 0;
 }
 
 @media screen and (max-width: 1023px) {
   .navbar-menu {
-    background: v.$surface-card;
-    border-top: 1px solid v.$border-color-soft;
-    box-shadow: none;
+    border-top: 1px solid var(--theme-border);
+    box-shadow: var(--theme-shadow-popover);
   }
 
-  .navbar-dropdown {
-    box-shadow: none;
-    border-top: 0;
+  .navbar-item,
+  .navbar-link {
+    text-align: left;
   }
-
-  .navbar-item.is-active,
-  .navbar-link.is-active {
-    background: rgba(0, 158, 217, 0.06);
-    color: v.$brand-primary;
-  }
-}
-
-/* ==========================================================================
-   7) TABS / TABLE / PAGINATION / TAGS / DROPDOWN
-   ========================================================================== */
-
-.tabs {
-  a {
-    color: v.$text-default;
-    border-bottom-width: 3px;
-    transition:
-      color 0.15s ease,
-      border-color 0.15s ease,
-      background-color 0.15s ease;
-  }
-
-  a:hover {
-    border-bottom-color: v.$border-color;
-    color: v.$text-strong;
-  }
-
-  li.is-active a {
-    color: v.$brand-primary;
-    border-bottom-color: v.$brand-primary;
-    box-shadow: none;
-    font-weight: 600;
-  }
-}
-
-.table {
-  background: v.$surface-card;
-  color: v.$text-default;
-
-  th {
-    color: v.$text-strong;
-    font-weight: 600;
-  }
-
-  th,
-  td {
-    border-color: v.$border-color-soft;
-  }
-
-  &.is-striped tbody tr:not(.is-selected):nth-child(even) {
-    background: v.$surface-subtle;
-  }
-
-  &.is-hoverable tbody tr:not(.is-selected):hover {
-    background: rgba(0, 158, 217, 0.03);
-  }
-}
-
-.pagination-link,
-.pagination-next,
-.pagination-previous {
-  background: v.$surface-card;
-  border-color: v.$border-color;
-  color: v.$text-default;
-  border-radius: v.$radius-base;
-  box-shadow: none;
-
-  &:hover {
-    border-color: v.$border-color-strong;
-    color: v.$text-strong;
-  }
-
-  &:focus,
-  &:focus-visible {
-    box-shadow: 0 0 0 3px v.$focus-ring;
-  }
-}
-
-.pagination-link.is-current {
-  background: v.$brand-primary;
-  border-color: v.$brand-primary;
-  color: v.$text-inverse;
-}
-
-.tag {
-  border-radius: 999px;
-  font-weight: 600;
-
-  &.is-light {
-    background: v.$surface-subtle;
-    color: v.$text-default;
-    border: 1px solid v.$border-color-soft;
-  }
-}
-
-.dropdown-content {
-  border: 1px solid v.$border-color-soft;
-  box-shadow: v.$shadow-popover;
-  border-radius: v.$radius-base;
-}
-
-.dropdown-item {
-  color: v.$text-default;
-
-  &:hover,
-  &.is-active {
-    background: rgba(0, 158, 217, 0.06);
-    color: v.$text-strong;
-  }
-}
-
-/* ==========================================================================
-   8) OPTIONAL HEADER HOOKS
-   ========================================================================== */
-
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-}
-
-.site-navbar {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
 }
