@@ -18,7 +18,7 @@
                     </span>
                 </a>
 
-                <div class="site-navbar__mobile-actions is-hidden-desktop">
+                <div class="site-navbar__mobile-tools is-hidden-desktop">
                     <button
                         class="button is-light is-small"
                         type="button"
@@ -58,12 +58,11 @@
             </div>
 
             <div id="siteNavbarMenu" class="navbar-menu">
-                <div class="navbar-start site-navbar__center">
-                    {{navigation}}
-                    {{> "navbar-dropdowns"}}
-                </div>
+                {{navigation}}
 
-                <div class="navbar-end">
+                <div class="navbar-start site-navbar__center js-site-nav-render"></div>
+
+                <div class="navbar-end site-navbar__actions">
                     <div class="navbar-item is-hidden-touch">
                         <button
                             class="button is-light is-small"
@@ -74,7 +73,6 @@
                             <span class="icon is-small">
                                 <i class="ph ph-moon"></i>
                             </span>
-                            <span class="is-hidden-desktop-only">Theme</span>
                         </button>
                     </div>
 
@@ -156,13 +154,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var html = document.documentElement;
     var storageKey = 'site-color-scheme';
 
-    var burger = document.querySelector('.navbar-burger');
+    var header = document.querySelector('.site-header');
+    var burger = header ? header.querySelector('.navbar-burger') : null;
     var menu = document.getElementById('siteNavbarMenu');
     var themeButtons = document.querySelectorAll('[data-theme-toggle]');
-    var menuLinks = document.querySelectorAll('#siteNavbarMenu a.navbar-item');
-    var mobileDropdownToggles = document.querySelectorAll('.js-navbar-dropdown-toggle');
+    var navSource = document.getElementById('site-nav-source');
+    var navRender = document.querySelector('.js-site-nav-render');
 
-    function getCurrentTheme() {
+    function getTheme() {
         return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light';
     }
 
@@ -182,7 +181,137 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function closeMenu() {
+    function readNavigationItems() {
+        if (!navSource) return [];
+
+        return Array.from(navSource.querySelectorAll('.js-site-nav-source-item')).map(function (item) {
+            return {
+                label: item.dataset.label || '',
+                url: item.dataset.url || '#',
+                slug: item.dataset.slug || '',
+                current: item.dataset.current === 'true',
+                icon: item.dataset.icon || 'ph-dot-outline'
+            };
+        });
+    }
+
+    function writeNavigationJson(items) {
+        var existing = document.getElementById('site-navigation-json');
+        if (existing) existing.remove();
+
+        var jsonScript = document.createElement('script');
+        jsonScript.id = 'site-navigation-json';
+        jsonScript.type = 'application/json';
+        jsonScript.textContent = JSON.stringify(items);
+
+        if (navSource && navSource.parentNode) {
+            navSource.parentNode.insertBefore(jsonScript, navSource.nextSibling);
+        } else {
+            document.body.appendChild(jsonScript);
+        }
+    }
+
+    function stripChildPrefix(label) {
+        return (label || '').replace(/^\s*-\s+/, '');
+    }
+
+    function isChildLabel(label) {
+        return /^\s*-\s+/.test(label || '');
+    }
+
+    function createIcon(iconClass) {
+        var span = document.createElement('span');
+        span.className = 'icon is-small';
+
+        var i = document.createElement('i');
+        i.className = 'ph ' + iconClass;
+
+        span.appendChild(i);
+        return span;
+    }
+
+    function createText(text) {
+        var span = document.createElement('span');
+        span.textContent = text;
+        return span;
+    }
+
+    function createNavAnchor(item, className) {
+        var link = document.createElement('a');
+        link.className = className;
+        link.href = item.url;
+        link.appendChild(createIcon(item.icon));
+        link.appendChild(createText(stripChildPrefix(item.label)));
+
+        if (item.current) {
+            link.classList.add('is-active');
+        }
+
+        return link;
+    }
+
+    function buildNavigation(items) {
+        if (!navRender) return;
+
+        var fragment = document.createDocumentFragment();
+        var i = 0;
+
+        while (i < items.length) {
+            var item = items[i];
+
+            if (isChildLabel(item.label)) {
+                i += 1;
+                continue;
+            }
+
+            var next = items[i + 1];
+            var hasChildren = !!(next && isChildLabel(next.label));
+
+            if (!hasChildren) {
+                fragment.appendChild(createNavAnchor(item, 'navbar-item'));
+                i += 1;
+                continue;
+            }
+
+            var dropdown = document.createElement('div');
+            dropdown.className = 'navbar-item has-dropdown is-hoverable';
+
+            var parentLink = createNavAnchor(item, 'navbar-link js-nav-parent-toggle');
+            var dropdownMenu = document.createElement('div');
+            dropdownMenu.className = 'navbar-dropdown';
+
+            if (item.current) {
+                parentLink.classList.add('is-active');
+                dropdown.classList.add('has-current');
+            }
+
+            var j = i + 1;
+            while (j < items.length && isChildLabel(items[j].label)) {
+                var child = items[j];
+                var childLink = createNavAnchor(child, 'navbar-item');
+
+                if (child.current) {
+                    childLink.classList.add('is-active');
+                    parentLink.classList.add('is-active');
+                    dropdown.classList.add('has-current');
+                }
+
+                dropdownMenu.appendChild(childLink);
+                j += 1;
+            }
+
+            dropdown.appendChild(parentLink);
+            dropdown.appendChild(dropdownMenu);
+            fragment.appendChild(dropdown);
+
+            i = j;
+        }
+
+        navRender.innerHTML = '';
+        navRender.appendChild(fragment);
+    }
+
+    function closeMobileMenu() {
         if (!burger || !menu) return;
 
         burger.classList.remove('is-active');
@@ -190,56 +319,61 @@ document.addEventListener('DOMContentLoaded', function () {
         burger.setAttribute('aria-expanded', 'false');
         document.body.classList.remove('is-clipped');
 
-        document.querySelectorAll('.navbar-item.has-dropdown').forEach(function (item) {
+        menu.querySelectorAll('.navbar-item.has-dropdown.is-active').forEach(function (item) {
             item.classList.remove('is-active');
         });
     }
 
-    function toggleMenu() {
+    function toggleMobileMenu() {
         if (!burger || !menu) return;
 
-        var isActive = burger.classList.toggle('is-active');
-        menu.classList.toggle('is-active', isActive);
-        burger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-        document.body.classList.toggle('is-clipped', isActive);
+        var active = burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active', active);
+        burger.setAttribute('aria-expanded', active ? 'true' : 'false');
+        document.body.classList.toggle('is-clipped', active);
     }
 
-    applyTheme(getCurrentTheme());
+    var navItems = readNavigationItems();
+    writeNavigationJson(navItems);
+    buildNavigation(navItems);
+    applyTheme(getTheme());
 
-    themeButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            applyTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
-        });
-    });
+    if (header) {
+        header.addEventListener('click', function (event) {
+            var themeToggle = event.target.closest('[data-theme-toggle]');
+            if (themeToggle) {
+                applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+                return;
+            }
 
-    if (burger && menu) {
-        burger.addEventListener('click', toggleMenu);
-    }
+            var burgerButton = event.target.closest('.navbar-burger');
+            if (burgerButton) {
+                toggleMobileMenu();
+                return;
+            }
 
-    menuLinks.forEach(function (link) {
-        link.addEventListener('click', function () {
-            if (window.innerWidth < 1024) {
-                closeMenu();
+            var parentToggle = event.target.closest('.js-nav-parent-toggle');
+            if (parentToggle && window.innerWidth < 1024) {
+                event.preventDefault();
+                var parentItem = parentToggle.closest('.navbar-item.has-dropdown');
+                if (parentItem) {
+                    parentItem.classList.toggle('is-active');
+                }
+                return;
+            }
+
+            var clickedLink = event.target.closest('#siteNavbarMenu a.navbar-item');
+            if (clickedLink && window.innerWidth < 1024) {
+                if (!clickedLink.classList.contains('navbar-link')) {
+                    closeMobileMenu();
+                }
             }
         });
-    });
-
-    mobileDropdownToggles.forEach(function (toggle) {
-        toggle.addEventListener('click', function (event) {
-            if (window.innerWidth >= 1024) return;
-
-            event.preventDefault();
-
-            var parent = toggle.closest('.navbar-item.has-dropdown');
-            if (!parent) return;
-
-            parent.classList.toggle('is-active');
-        });
-    });
+    }
 
     window.addEventListener('resize', function () {
         if (window.innerWidth >= 1024) {
-            closeMenu();
+            closeMobileMenu();
         }
     });
 });

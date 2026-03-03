@@ -1,620 +1,247 @@
 {{!-- partials/post-training.hbs --}}
+{{!--
+  Expected content model:
+  - Module / section post:
+      1) Public module tag first (slug matches module post slug)
+      2) #training-section
 
-<style>
-  :root {
-    --tr-primary: #0176D3;
-    --tr-primary-dark: #0b5cab;
-    --tr-header: #032D60;
-    --tr-bg: #F3F3F3;
-    --tr-surface: #FFFFFF;
-    --tr-border: #DDDBDA;
-    --tr-text: #181818;
-    --tr-header-height: 60px;
-    --tr-sidebar-width: 360px;
-  }
+  - Lesson post:
+      1) Same public module tag first
+      2) #training-content
+--}}
 
-  html, body {
-    overflow: hidden;
-  }
-
-  .training-player {
-    background: var(--tr-surface);
-    color: var(--tr-text);
-    min-height: 100vh;
-  }
-
-  .training-player__nav {
-    height: var(--tr-header-height);
-    background-color: var(--tr-header);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    padding: 0 1.25rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,.08);
-    position: relative;
-    z-index: 20;
-  }
-
-  .training-player__nav a {
-    color: #fff;
-  }
-
-  .training-player__layout {
-    height: calc(100vh - var(--tr-header-height));
-    display: flex;
-  }
-
-  .training-player__main {
-    flex: 1;
-    overflow-y: auto;
-    background: var(--tr-bg);
-    padding-bottom: 2rem;
-  }
-
-  .training-player__sidebar {
-    width: var(--tr-sidebar-width);
-    flex-shrink: 0;
-    background: var(--tr-surface);
-    border-left: 1px solid var(--tr-border);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
-
-  .training-player__media {
-    background: #000;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .training-player__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .training-player__media-fallback {
-    width: 100%;
-    height: 100%;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-    background:
-      radial-gradient(circle at top right, rgba(1,118,211,.35), transparent 30%),
-      radial-gradient(circle at bottom left, rgba(11,92,171,.25), transparent 35%),
-      linear-gradient(135deg, #031f42, #032D60 45%, #0b5cab);
-  }
-
-  .training-player__actions {
-    background: var(--tr-surface);
-    border-bottom: 1px solid var(--tr-border);
-    padding: 1rem 1.25rem;
-  }
-
-  .training-player__content-wrap {
-    padding: 1.5rem;
-  }
-
-  .training-player__card {
-    background: var(--tr-surface);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
-    padding: 2rem;
-    max-width: 920px;
-    margin: 0 auto;
-  }
-
-  .training-player__tabs {
-    margin-bottom: 0 !important;
-  }
-
-  .training-player__tabs li.is-active a {
-    border-bottom-color: var(--tr-primary);
-    color: var(--tr-primary);
-    font-weight: 700;
-  }
-
-  .training-player__eyebrow {
-    font-size: .75rem;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    font-weight: 700;
-    color: #6b7280;
-    margin-bottom: .5rem;
-  }
-
-  .training-player__meta {
-    color: #6b7280;
-    font-size: .95rem;
-  }
-
-  .training-player__sidebar-header {
-    padding: 1.25rem;
-    border-bottom: 1px solid var(--tr-border);
-    background: #FAFAFA;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-  }
-
-  .training-player__sidebar-scroll {
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .training-player__module {
-    border-bottom: 1px solid var(--tr-border);
-  }
-
-  .training-player__module details {
-    display: block;
-  }
-
-  .training-player__module summary {
-    list-style: none;
-  }
-
-  .training-player__module summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .training-player__module-header {
-    padding: 1rem 1.25rem;
-    background: #FAFAFA;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-  }
-
-  .training-player__module-header:hover {
-    background: #f1f1f1;
-  }
-
-  .training-player__module[open] .training-player__module-header {
-    background: #f1f1f1;
-  }
-
-  .training-player__module-caret {
-    transition: transform .2s ease;
-  }
-
-  .training-player__module[open] .training-player__module-caret {
-    transform: rotate(180deg);
-  }
-
-  .training-player__lesson {
-    padding: .8rem 1.25rem .8rem 1.75rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    text-decoration: none;
-    color: inherit;
-    transition: background-color .2s ease;
-    font-size: .92rem;
-    border-left: 4px solid transparent;
-  }
-
-  .training-player__lesson:hover {
-    background: var(--tr-bg);
-  }
-
-  .training-player__lesson.is-active {
-    background: #ebf3fa;
-    border-left-color: var(--tr-primary);
-    padding-left: calc(1.75rem - 4px);
-  }
-
-  .training-player__lesson.is-overview {
-    background: #fcfcfc;
-  }
-
-  .training-player__lesson.is-overview .training-player__lesson-title {
-    font-weight: 700;
-  }
-
-  .training-player__lesson-icon {
-    font-size: 1.15rem;
-    line-height: 1;
-    margin-top: 2px;
-    color: #b5b5b5;
-    flex-shrink: 0;
-  }
-
-  .training-player__lesson.is-active .training-player__lesson-icon {
-    color: var(--tr-primary);
-  }
-
-  .training-player__lesson.is-overview .training-player__lesson-icon {
-    color: #6b7280;
-  }
-
-  .training-player__lesson-title {
-    font-weight: 600;
-    line-height: 1.35;
-  }
-
-  .training-player__lesson-meta {
-    color: #7a7a7a;
-    font-size: .75rem;
-    margin-top: .15rem;
-  }
-
-  .training-player__ad {
-    background: #e5e5e5;
-    border: 2px dashed #b5b5b5;
-    color: #7a7a7a;
-    font-weight: 700;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .training-player__ad--horizontal {
-    width: 100%;
-    max-width: 728px;
-    height: 90px;
-    margin: 0 auto 1.5rem;
-  }
-
-  .training-player__ad--sidebar {
-    width: 300px;
-    height: 250px;
-    margin: 1rem auto;
-  }
-
-  .training-player__sidebar-ad-wrap {
-    background: #FAFAFA;
-    padding: 1rem;
-  }
-
-  .training-player__empty {
-    padding: 1rem 1.25rem;
-    color: #7a7a7a;
-    font-size: .9rem;
-  }
-
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-
-  @media (max-width: 1024px) {
-    html, body {
-      overflow: auto;
-    }
-
-    .training-player__layout {
-      flex-direction: column;
-      height: auto;
-    }
-
-    .training-player__sidebar {
-      width: 100%;
-      border-left: 0;
-      border-top: 1px solid var(--tr-border);
-      max-height: none;
-    }
-
-    .training-player__main {
-      overflow-y: visible;
-    }
-
-    .training-player__sidebar-ad-wrap {
-      display: none;
-    }
-  }
-</style>
-
-<section class="training-player">
-
-  {{!-- =========================================================
-      TOP NAVBAR
-  ========================================================== --}}
-  <nav class="training-player__nav is-flex is-justify-content-space-between">
-    <div class="is-flex is-align-items-center">
+<nav class="navbar is-dark" role="navigation" aria-label="training navigation">
+  <div class="navbar-brand">
+    <div class="navbar-item">
       {{#has tag="#training-content"}}
         {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |module_posts|}}
           {{#if module_posts.[0]}}
             {{#foreach module_posts}}
-              <a href="{{url}}" class="is-flex is-align-items-center mr-4" title="Back to Module">
-                <i class="ph ph-caret-left is-size-4 mr-1"></i> Back
+              <a href="{{url}}" class="button is-dark is-small mr-3">
+                <span class="icon"><i class="ph ph-caret-left"></i></span>
+                <span>Back</span>
               </a>
-              <div class="is-hidden-mobile">
-                <span class="has-text-weight-bold is-size-5">{{title}}</span>
-              </div>
+              <span class="has-text-weight-semibold">{{title}}</span>
             {{/foreach}}
           {{else}}
-            <a href="/training/" class="is-flex is-align-items-center mr-4" title="Back to Training">
-              <i class="ph ph-caret-left is-size-4 mr-1"></i> Back
+            <a href="/training/" class="button is-dark is-small mr-3">
+              <span class="icon"><i class="ph ph-caret-left"></i></span>
+              <span>Back</span>
             </a>
-            <div class="is-hidden-mobile">
-              <span class="has-text-weight-bold is-size-5">{{primary_tag.name}}</span>
-            </div>
+            <span class="has-text-weight-semibold">{{primary_tag.name}}</span>
           {{/if}}
         {{/get}}
       {{else}}
-        <a href="/training/" class="is-flex is-align-items-center mr-4" title="Back to Training">
-          <i class="ph ph-caret-left is-size-4 mr-1"></i> Back
+        <a href="/training/" class="button is-dark is-small mr-3">
+          <span class="icon"><i class="ph ph-caret-left"></i></span>
+          <span>Back</span>
         </a>
-        <div class="is-hidden-mobile">
-          <span class="has-text-weight-bold is-size-5">{{title}}</span>
-        </div>
+        <span class="has-text-weight-semibold">{{title}}</span>
       {{/has}}
     </div>
+  </div>
 
-    <div class="is-flex is-align-items-center">
-      <div class="mr-4 is-hidden-mobile has-text-right">
-        <div class="is-size-7 has-text-weight-bold">
-          {{#has tag="#training-section"}}
-            Module Overview
-          {{else}}
-            Lesson View
-          {{/has}}
-        </div>
-        <div class="is-size-7" style="opacity:.85;">
-          {{primary_tag.name}}
-        </div>
-      </div>
-
-      <a href="/training/" class="button is-primary is-inverted is-outlined is-small">
-        <i class="ph ph-book-open mr-1"></i> Training Hub
+  <div class="navbar-end">
+    <div class="navbar-item">
+      <a href="/training/" class="button is-link is-light is-small">
+        <span class="icon"><i class="ph ph-book-open"></i></span>
+        <span>Training Hub</span>
       </a>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <div class="training-player__layout">
+<section class="section">
+  <div class="container is-fluid">
+    <div class="columns is-variable is-5">
 
-    {{!-- =========================================================
-        MAIN PLAYER AREA
-    ========================================================== --}}
-    <main class="training-player__main">
-
-      {{!-- MEDIA / HERO --}}
-      <div class="training-player__media">
+      {{!-- MAIN --}}
+      <main class="column is-12-tablet is-8-desktop">
         {{#if feature_image}}
-          <img src="{{img_url feature_image size="xl"}}" alt="{{title}}">
-        {{else}}
-          <div class="training-player__media-fallback">
-            <i class="ph ph-play-circle is-size-1"></i>
-            <div class="title is-4 has-text-white mb-0">{{title}}</div>
-            <div class="is-size-6" style="opacity:.85;">{{primary_tag.name}}</div>
-          </div>
+          <figure class="image mb-4">
+            <img src="{{img_url feature_image size="xl"}}" alt="{{title}}">
+          </figure>
         {{/if}}
-      </div>
 
-      {{!-- ACTION BAR --}}
-      <div class="training-player__actions">
-        <div class="is-flex is-justify-content-space-between is-align-items-center is-flex-wrap-wrap" style="gap:.75rem;">
-
-          <div>
-            {{!-- =========================================
-                PREVIOUS BUTTON
-            ========================================== --}}
-            {{#has tag="#training-section"}}
-              {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_sections|}}
-                {{#if prev_sections.[0]}}
-                  {{#foreach prev_sections}}
-                    {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at desc" as |prev_last_lessons|}}
-                      {{#if prev_last_lessons.[0]}}
-                        {{#foreach prev_last_lessons}}
-                          <a href="{{url}}" class="button is-white has-text-grey-dark">
-                            <i class="ph ph-arrow-left mr-2"></i> Previous
-                          </a>
-                        {{/foreach}}
-                      {{else}}
-                        <button class="button is-white has-text-grey-dark" disabled>
-                          <i class="ph ph-arrow-left mr-2"></i> Previous
-                        </button>
-                      {{/if}}
-                    {{/get}}
-                  {{/foreach}}
-                {{else}}
-                  <button class="button is-white has-text-grey-dark" disabled>
-                    <i class="ph ph-arrow-left mr-2"></i> Previous
-                  </button>
-                {{/if}}
-              {{/get}}
-            {{else}}
-              {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |current_section|}}
-                {{#if current_section.[0]}}
-                  {{#foreach current_section}}
-                    {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}+published_at:<'{{../../published_at}}'" limit="1" order="published_at desc" as |prev_lessons|}}
-                      {{#if prev_lessons.[0]}}
-                        {{#foreach prev_lessons}}
-                          <a href="{{url}}" class="button is-white has-text-grey-dark">
-                            <i class="ph ph-arrow-left mr-2"></i> Previous
-                          </a>
-                        {{/foreach}}
-                      {{else}}
-                        {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_sections|}}
-                          {{#if prev_sections.[0]}}
-                            {{#foreach prev_sections}}
-                              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at desc" as |prev_last_lessons|}}
-                                {{#if prev_last_lessons.[0]}}
-                                  {{#foreach prev_last_lessons}}
-                                    <a href="{{url}}" class="button is-white has-text-grey-dark">
-                                      <i class="ph ph-arrow-left mr-2"></i> Previous
-                                    </a>
-                                  {{/foreach}}
-                                {{else}}
-                                  <button class="button is-white has-text-grey-dark" disabled>
-                                    <i class="ph ph-arrow-left mr-2"></i> Previous
-                                  </button>
-                                {{/if}}
-                              {{/get}}
-                            {{/foreach}}
-                          {{else}}
-                            <button class="button is-white has-text-grey-dark" disabled>
-                              <i class="ph ph-arrow-left mr-2"></i> Previous
-                            </button>
-                          {{/if}}
-                        {{/get}}
-                      {{/if}}
-                    {{/get}}
-                  {{/foreach}}
-                {{else}}
-                  <button class="button is-white has-text-grey-dark" disabled>
-                    <i class="ph ph-arrow-left mr-2"></i> Previous
-                  </button>
-                {{/if}}
-              {{/get}}
-            {{/has}}
-          </div>
-
-          <div class="buttons mb-0">
-            <button class="button is-light" type="button">
-              <i class="ph ph-bookmark-simple mr-2"></i> Bookmark
-            </button>
-
-            {{!-- =========================================
-                NEXT / START BUTTON
-            ========================================== --}}
-            {{#has tag="#training-section"}}
-              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at asc" as |first_lessons|}}
-                {{#if first_lessons.[0]}}
-                  {{#foreach first_lessons}}
-                    <a href="{{url}}" class="button is-primary">
-                      Start Module <i class="ph ph-arrow-right ml-2"></i>
-                    </a>
-                  {{/foreach}}
-                {{else}}
-                  {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_sections|}}
-                    {{#if next_sections.[0]}}
-                      {{#foreach next_sections}}
-                        {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at asc" as |next_first_lessons|}}
-                          {{#if next_first_lessons.[0]}}
-                            {{#foreach next_first_lessons}}
-                              <a href="{{url}}" class="button is-primary">
-                                Complete & Continue <i class="ph ph-arrow-right ml-2"></i>
-                              </a>
-                            {{/foreach}}
-                          {{else}}
-                            <a href="{{url}}" class="button is-primary">
-                              Next Section <i class="ph ph-arrow-right ml-2"></i>
-                            </a>
-                          {{/if}}
-                        {{/get}}
+        <div class="box">
+          <div class="level is-mobile mb-4">
+            <div class="level-left">
+              <div class="level-item">
+                {{!-- =====================================
+                    PREVIOUS BUTTON
+                ====================================== --}}
+                {{#has tag="#training-section"}}
+                  {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_sections|}}
+                    {{#if prev_sections.[0]}}
+                      {{#foreach prev_sections}}
+                        <a href="{{url}}" class="button is-light">
+                          <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                          <span>Previous</span>
+                        </a>
                       {{/foreach}}
                     {{else}}
-                      <button class="button is-primary" disabled>
-                        End of Training
+                      <button class="button is-light" disabled>
+                        <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                        <span>Previous</span>
                       </button>
                     {{/if}}
                   {{/get}}
-                {{/if}}
-              {{/get}}
-            {{else}}
-              {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |current_section|}}
-                {{#if current_section.[0]}}
-                  {{#foreach current_section}}
-                    {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}+published_at:>'{{../../published_at}}'" limit="1" order="published_at asc" as |next_lessons|}}
-                      {{#if next_lessons.[0]}}
-                        {{#foreach next_lessons}}
-                          <a href="{{url}}" class="button is-primary">
-                            Complete & Continue <i class="ph ph-arrow-right ml-2"></i>
-                          </a>
+                {{else}}
+                  {{#prev_post in="primary_tag"}}
+                    <a href="{{url}}" class="button is-light">
+                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                      <span>Previous</span>
+                    </a>
+                  {{else}}
+                    {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |current_sections|}}
+                      {{#if current_sections.[0]}}
+                        {{#foreach current_sections}}
+                          {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_sections|}}
+                            {{#if prev_sections.[0]}}
+                              {{#foreach prev_sections}}
+                                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1" order="published_at desc" as |prev_last_lessons|}}
+                                  {{#if prev_last_lessons.[0]}}
+                                    {{#foreach prev_last_lessons}}
+                                      <a href="{{url}}" class="button is-light">
+                                        <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                                        <span>Previous</span>
+                                      </a>
+                                    {{/foreach}}
+                                  {{else}}
+                                    <a href="{{url}}" class="button is-light">
+                                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                                      <span>Previous</span>
+                                    </a>
+                                  {{/if}}
+                                {{/get}}
+                              {{/foreach}}
+                            {{else}}
+                              <button class="button is-light" disabled>
+                                <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                                <span>Previous</span>
+                              </button>
+                            {{/if}}
+                          {{/get}}
                         {{/foreach}}
                       {{else}}
-                        {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_sections|}}
-                          {{#if next_sections.[0]}}
-                            {{#foreach next_sections}}
-                              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at asc" as |next_first_lessons|}}
-                                {{#if next_first_lessons.[0]}}
-                                  {{#foreach next_first_lessons}}
-                                    <a href="{{url}}" class="button is-primary">
-                                      Complete & Continue <i class="ph ph-arrow-right ml-2"></i>
-                                    </a>
-                                  {{/foreach}}
-                                {{else}}
-                                  <a href="{{url}}" class="button is-primary">
-                                    Next Section <i class="ph ph-arrow-right ml-2"></i>
-                                  </a>
-                                {{/if}}
-                              {{/get}}
-                            {{/foreach}}
-                          {{else}}
-                            <button class="button is-primary" disabled>
-                              End of Training
-                            </button>
-                          {{/if}}
-                        {{/get}}
+                        <button class="button is-light" disabled>
+                          <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                          <span>Previous</span>
+                        </button>
                       {{/if}}
                     {{/get}}
-                  {{/foreach}}
+                  {{/prev_post}}
+                {{/has}}
+              </div>
+            </div>
+
+            <div class="level-right">
+              <div class="level-item">
+                {{!-- =====================================
+                    NEXT BUTTON
+                ====================================== --}}
+                {{#has tag="#training-section"}}
+                  {{#next_post in="primary_tag"}}
+                    <a href="{{url}}" class="button is-primary">
+                      <span>Start Module</span>
+                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                    </a>
+                  {{else}}
+                    {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_sections|}}
+                      {{#if next_sections.[0]}}
+                        {{#foreach next_sections}}
+                          {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1" order="published_at asc" as |next_first_lessons|}}
+                            {{#if next_first_lessons.[0]}}
+                              {{#foreach next_first_lessons}}
+                                <a href="{{url}}" class="button is-primary">
+                                  <span>Next</span>
+                                  <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                                </a>
+                              {{/foreach}}
+                            {{else}}
+                              <a href="{{url}}" class="button is-primary">
+                                <span>Next</span>
+                                <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                              </a>
+                            {{/if}}
+                          {{/get}}
+                        {{/foreach}}
+                      {{else}}
+                        <button class="button is-primary" disabled>End of Training</button>
+                      {{/if}}
+                    {{/get}}
+                  {{/next_post}}
                 {{else}}
-                  <button class="button is-primary" disabled>
-                    End of Training
-                  </button>
-                {{/if}}
-              {{/get}}
-            {{/has}}
+                  {{#next_post in="primary_tag"}}
+                    <a href="{{url}}" class="button is-primary">
+                      <span>Complete & Continue</span>
+                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                    </a>
+                  {{else}}
+                    {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |current_sections|}}
+                      {{#if current_sections.[0]}}
+                        {{#foreach current_sections}}
+                          {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_sections|}}
+                            {{#if next_sections.[0]}}
+                              {{#foreach next_sections}}
+                                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1" order="published_at asc" as |next_first_lessons|}}
+                                  {{#if next_first_lessons.[0]}}
+                                    {{#foreach next_first_lessons}}
+                                      <a href="{{url}}" class="button is-primary">
+                                        <span>Complete & Continue</span>
+                                        <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                                      </a>
+                                    {{/foreach}}
+                                  {{else}}
+                                    <a href="{{url}}" class="button is-primary">
+                                      <span>Next Section</span>
+                                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                                    </a>
+                                  {{/if}}
+                                {{/get}}
+                              {{/foreach}}
+                            {{else}}
+                              <button class="button is-primary" disabled>End of Training</button>
+                            {{/if}}
+                          {{/get}}
+                        {{/foreach}}
+                      {{else}}
+                        <button class="button is-primary" disabled>End of Training</button>
+                      {{/if}}
+                    {{/get}}
+                  {{/next_post}}
+                {{/has}}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {{!-- CONTENT --}}
-      <div class="training-player__content-wrap">
-
-        <div class="training-player__ad training-player__ad--horizontal">
-          <span>Advertisement (728 × 90)</span>
-        </div>
-
-        <div class="training-player__card">
-          <div class="tabs training-player__tabs">
+          <div class="tabs is-boxed mb-5">
             <ul>
-              <li class="is-active"><a href="#training-overview">Overview</a></li>
-              <li><a href="#training-curriculum">Curriculum</a></li>
+              <li class="is-active"><a>Overview</a></li>
               <li><a href="/training/">All Modules</a></li>
+              <li><a href="#curriculum">Curriculum</a></li>
             </ul>
           </div>
 
-          <div class="content mt-5" id="training-overview">
+          <div class="content">
             {{#has tag="#training-section"}}
-              <p class="training-player__eyebrow">Training Module</p>
+              <p class="tag is-link is-light mb-3">Training Module</p>
               <h1 class="title is-3">{{title}}</h1>
-
-              <p class="training-player__meta">
-                {{primary_tag.name}} • Module overview
-              </p>
+              <p class="subtitle is-6">{{primary_tag.name}}</p>
 
               {{#if custom_excerpt}}
-                <p class="subtitle is-6 has-text-grey mt-3">{{custom_excerpt}}</p>
+                <div class="notification is-light">
+                  {{custom_excerpt}}
+                </div>
               {{/if}}
 
-              <div class="mt-5">
-                {{content}}
-              </div>
+              {{content}}
 
               <hr>
 
-              <h2 class="title is-5 mb-3">Lessons in this module</h2>
+              <h2 class="title is-5">Lessons in this module</h2>
 
-              <div class="menu" id="training-curriculum">
+              <div class="menu">
                 <ul class="menu-list">
                   {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="all" order="published_at asc" as |module_lessons|}}
                     {{#foreach module_lessons}}
@@ -624,9 +251,7 @@
                         </a>
                       </li>
                     {{else}}
-                      <li>
-                        <span class="has-text-grey">No lessons yet.</span>
-                      </li>
+                      <li><span class="has-text-grey">No lessons yet.</span></li>
                     {{/foreach}}
                   {{/get}}
                 </ul>
@@ -636,119 +261,150 @@
               {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |module_posts|}}
                 {{#if module_posts.[0]}}
                   {{#foreach module_posts}}
-                    <p class="training-player__eyebrow">Lesson</p>
-                    <h1 class="title is-3">{{../../title}}</h1>
-
-                    <p class="training-player__meta">
-                      <a href="{{url}}">{{title}}</a> • {{../../primary_tag.name}} • {{../../reading_time}}
+                    <p class="mb-3">
+                      <a href="{{url}}" class="button is-white is-small">
+                        <span class="icon"><i class="ph ph-caret-left"></i></span>
+                        <span>{{title}}</span>
+                      </a>
                     </p>
-
-                    {{#if ../../custom_excerpt}}
-                      <p class="subtitle is-6 has-text-grey mt-3">{{../../custom_excerpt}}</p>
-                    {{/if}}
                   {{/foreach}}
-                {{else}}
-                  <p class="training-player__eyebrow">Lesson</p>
-                  <h1 class="title is-3">{{title}}</h1>
-
-                  <p class="training-player__meta">
-                    {{primary_tag.name}} • {{reading_time}}
-                  </p>
-
-                  {{#if custom_excerpt}}
-                    <p class="subtitle is-6 has-text-grey mt-3">{{custom_excerpt}}</p>
-                  {{/if}}
                 {{/if}}
               {{/get}}
 
-              <div class="mt-5">
-                {{content}}
-              </div>
+              <p class="tag is-primary is-light mb-3">Lesson</p>
+              <h1 class="title is-3">{{title}}</h1>
+              <p class="subtitle is-6">{{primary_tag.name}} • {{reading_time}}</p>
+
+              {{#if custom_excerpt}}
+                <div class="notification is-light">
+                  {{custom_excerpt}}
+                </div>
+              {{/if}}
+
+              {{content}}
             {{/has}}
           </div>
         </div>
-      </div>
-    </main>
+      </main>
 
-    {{!-- =========================================================
-        SIDEBAR CURRICULUM
-    ========================================================== --}}
-  <aside class="training-player__sidebar">
-  <div class="training-player__sidebar-header">
-    <h2 class="title is-5 mb-1">Course Content</h2>
-    <p class="is-size-7 has-text-grey mb-0">{{primary_tag.name}}</p>
-  </div>
+  <aside class="column is-12-tablet is-4-desktop" id="curriculum">
+  <div class="box">
+    <h2 class="title is-5 mb-2">Course Content</h2>
+    <p class="is-size-7 has-text-grey mb-4">All modules and lessons</p>
 
-  <div class="training-player__sidebar-scroll">
-    {{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc" as |sections|}}
-      {{#foreach sections}}
-        <details class="training-player__module" {{#match slug ../primary_tag.slug}}open{{/match}}>
-          <summary class="training-player__module-header">
-            <span>{{@number}}. {{title}}</span>
-            <span class="training-player__module-caret">
-              <i class="ph ph-caret-down has-text-grey"></i>
-            </span>
-          </summary>
-
-          {{!-- Overview link for this section --}}
-          <a
-            href="{{url}}"
-            class="training-player__lesson is-overview{{#match slug ../slug}} is-active{{/match}}"
-          >
-            <span class="training-player__lesson-icon">
-              <i class="ph ph-book-open"></i>
-            </span>
-
-            <span>
-              <span class="training-player__lesson-title">Overview</span>
-              <span class="training-player__lesson-meta is-block">
-                Module intro
+    {{!-- =========================
+        WHEN CURRENT PAGE IS A SECTION
+    ========================== --}}
+    {{#has tag="#training-section"}}
+      {{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc" as |sections|}}
+        {{#foreach sections}}
+          <details {{#match slug ../slug}}open{{/match}} class="mb-4">
+            <summary class="button is-fullwidth is-light is-justify-content-space-between">
+              <span class="icon-text">
+                {{#match slug ../slug}}
+                  <span class="icon has-text-success"><i class="ph-fill ph-check-circle"></i></span>
+                {{else}}
+                  <span class="icon"><i class="ph ph-folder-open"></i></span>
+                {{/match}}
+                <span>{{@number}}. {{title}}</span>
               </span>
-            </span>
-          </a>
+              <span class="icon"><i class="ph ph-caret-down"></i></span>
+            </summary>
 
-          {{!-- IMPORTANT: use section post slug, not primary_tag.slug --}}
-          {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc" as |section_lessons|}}
-            {{#foreach section_lessons}}
-              <a
-                href="{{url}}"
-                class="training-player__lesson{{#match slug ../../slug}} is-active{{/match}}"
-              >
-                <span class="training-player__lesson-icon">
-                  {{#match slug ../../slug}}
-                    <i class="ph ph-play-circle"></i>
-                  {{else}}
-                    <i class="ph ph-circle"></i>
-                  {{/match}}
-                </span>
-
-                <span>
-                  <span class="training-player__lesson-title">{{title}}</span>
-                  <span class="training-player__lesson-meta is-block">
-                    <i class="ph ph-clock mr-1"></i>{{reading_time}}
-                  </span>
-                </span>
+            <nav class="panel mt-2">
+              <a href="{{url}}" class="panel-block {{#match slug ../slug}}is-active has-background-link-light has-text-link-dark{{/match}}">
+                {{#match slug ../slug}}
+                  <span class="icon has-text-success mr-2"><i class="ph-fill ph-check-circle"></i></span>
+                {{else}}
+                  <span class="icon mr-2"><i class="ph ph-book-open"></i></span>
+                {{/match}}
+                <span>Overview</span>
               </a>
-            {{else}}
-              <div class="training-player__empty">
-                No lessons yet.
-              </div>
-            {{/foreach}}
-          {{/get}}
-        </details>
-      {{else}}
-        <div class="training-player__empty">
-          No training sections found.
-        </div>
-      {{/foreach}}
-    {{/get}}
-  </div>
 
-  <div class="training-player__sidebar-ad-wrap">
-    <div class="training-player__ad training-player__ad--sidebar">
-      <span>Sidebar Ad<br>(300 × 250)</span>
-    </div>
+              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc" as |section_lessons|}}
+                {{#foreach section_lessons}}
+                  <a href="{{url}}" class="panel-block">
+                    <span class="icon mr-2"><i class="ph ph-play-circle"></i></span>
+                    <span>
+                      <span class="is-block">{{title}}</span>
+                      <span class="is-size-7 has-text-grey">{{reading_time}}</span>
+                    </span>
+                  </a>
+                {{else}}
+                  <div class="panel-block has-text-grey is-size-7">
+                    No lessons yet
+                  </div>
+                {{/foreach}}
+              {{/get}}
+            </nav>
+          </details>
+        {{else}}
+          <article class="message is-light">
+            <div class="message-body">No training sections found.</div>
+          </article>
+        {{/foreach}}
+      {{/get}}
+
+    {{!-- =========================
+        WHEN CURRENT PAGE IS A LESSON
+    ========================== --}}
+    {{else has tag="#training-content"}}
+      {{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc" as |sections|}}
+        {{#foreach sections}}
+          <details {{#match slug ../primary_tag.slug}}open{{/match}} class="mb-4">
+            <summary class="button is-fullwidth is-light is-justify-content-space-between">
+              <span class="icon-text">
+                {{#match slug ../primary_tag.slug}}
+                  <span class="icon has-text-success"><i class="ph-fill ph-check-circle"></i></span>
+                {{else}}
+                  <span class="icon"><i class="ph ph-folder-open"></i></span>
+                {{/match}}
+                <span>{{@number}}. {{title}}</span>
+              </span>
+              <span class="icon"><i class="ph ph-caret-down"></i></span>
+            </summary>
+
+            <nav class="panel mt-2">
+              <a href="{{url}}" class="panel-block {{#match slug ../primary_tag.slug}}has-background-light{{/match}}">
+                {{#match slug ../primary_tag.slug}}
+                  <span class="icon has-text-success mr-2"><i class="ph-fill ph-check-circle"></i></span>
+                {{else}}
+                  <span class="icon mr-2"><i class="ph ph-book-open"></i></span>
+                {{/match}}
+                <span>Overview</span>
+              </a>
+
+              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc" as |section_lessons|}}
+                {{#foreach section_lessons}}
+                  <a href="{{url}}" class="panel-block {{#match slug ../../slug}}is-active has-background-link-light has-text-link-dark{{/match}}">
+                    {{#match slug ../../slug}}
+                      <span class="icon has-text-success mr-2"><i class="ph-fill ph-check-circle"></i></span>
+                    {{else}}
+                      <span class="icon mr-2"><i class="ph ph-play-circle"></i></span>
+                    {{/match}}
+                    <span>
+                      <span class="is-block">{{title}}</span>
+                      <span class="is-size-7 has-text-grey">{{reading_time}}</span>
+                    </span>
+                  </a>
+                {{else}}
+                  <div class="panel-block has-text-grey is-size-7">
+                    No lessons yet
+                  </div>
+                {{/foreach}}
+              {{/get}}
+            </nav>
+          </details>
+        {{else}}
+          <article class="message is-light">
+            <div class="message-body">No training sections found.</div>
+          </article>
+        {{/foreach}}
+      {{/get}}
+    {{/has}}
   </div>
 </aside>
+
+    </div>
   </div>
 </section>
