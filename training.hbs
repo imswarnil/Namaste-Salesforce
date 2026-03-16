@@ -1,155 +1,110 @@
 {{!< default}}
 
-<style>
-  .tr-page {
-    padding: 2rem 0 3rem;
-  }
+<section class="section">
+  <div class="container is-max-desktop">
 
-  .tr-hero {
-    border: 1px solid rgba(0,0,0,.08);
-    border-radius: 20px;
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-    background: var(--color-background, #fff);
-  }
-
-  .tr-hero h1 {
-    margin: 0 0 .5rem;
-  }
-
-  .tr-hero .gh-content > *:last-child {
-    margin-bottom: 0;
-  }
-
-  .tr-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-  }
-
-  .tr-card {
-    border: 1px solid rgba(0,0,0,.08);
-    border-radius: 20px;
-    overflow: hidden;
-    background: var(--color-background, #fff);
-  }
-
-  .tr-card__media img {
-    width: 100%;
-    display: block;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-
-  .tr-card__body {
-    padding: 1rem;
-  }
-
-  .tr-card__eyebrow {
-    margin: 0 0 .35rem;
-    font-size: .75rem;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    opacity: .65;
-  }
-
-  .tr-card h2 {
-    margin: 0 0 .5rem;
-    font-size: 1.05rem;
-    line-height: 1.3;
-  }
-
-  .tr-card h2 a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .tr-card p {
-    margin: 0 0 .85rem;
-    opacity: .82;
-  }
-
-  .tr-card__actions {
-    display: flex;
-    gap: .6rem;
-    flex-wrap: wrap;
-  }
-
-  .tr-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: .7rem 1rem;
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 600;
-    border: 1px solid rgba(0,0,0,.08);
-    background: #111;
-    color: #fff;
-  }
-
-  .tr-btn--ghost {
-    background: transparent;
-    color: inherit;
-  }
-
-  .tr-btn--disabled {
-    background: #eee;
-    color: #666;
-    pointer-events: none;
-  }
-</style>
-
-<div class="container tr-page">
-  {{#page}}
-    <section class="tr-hero">
-      <h1>{{title}}</h1>
-
-      {{#if feature_image}}
-        <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="width:100%;border-radius:16px;margin:.75rem 0 1rem;">
-      {{/if}}
-
-      <div class="gh-content">
-        {{content}}
-      </div>
-    </section>
-  {{/page}}
-
-  <section class="tr-grid">
-    {{#foreach posts}}
-      <article class="tr-card">
-        {{#if feature_image}}
-          <a href="{{url}}" class="tr-card__media">
-            <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
-          </a>
-        {{/if}}
-
-        <div class="tr-card__body">
-          <p class="tr-card__eyebrow">Training Module</p>
-
-          <h2><a href="{{url}}">{{title}}</a></h2>
-
-          {{#if custom_excerpt}}
-            <p>{{custom_excerpt}}</p>
-          {{else}}
-            <p>{{excerpt words="24"}}</p>
+    {{#page}}
+      <div class="box mb-5">
+        <div class="columns is-vcentered is-variable is-5">
+          {{#if feature_image}}
+            <div class="column is-12-mobile is-5-tablet">
+              <figure class="image is-4by3">
+                <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+              </figure>
+            </div>
           {{/if}}
 
-          <div class="tr-card__actions">
-            <a href="{{url}}" class="tr-btn tr-btn--ghost">Overview</a>
+          <div class="column">
+            <span class="tag is-link is-light mb-3">Training</span>
+            <h1 class="title is-3 mb-3">{{title}}</h1>
 
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at asc"}}
-              {{#foreach posts}}
-                <a href="{{url}}" class="tr-btn">Start Learning</a>
-              {{else}}
-                <span class="tr-btn tr-btn--disabled">No Lessons Yet</span>
-              {{/foreach}}
-            {{/get}}
+            <div class="content">
+              {{content}}
+            </div>
           </div>
         </div>
-      </article>
+      </div>
+    {{/page}}
+
+    {{#if posts}}
+      <div class="columns is-multiline is-variable is-5">
+        {{#foreach posts}}
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="100" order="published_at asc" as |module_lessons|}}
+              <article class="card">
+                {{#if feature_image}}
+                  <div class="card-image">
+                    <a href="{{url}}">
+                      <figure class="image is-16by9">
+                        <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
+                      </figure>
+                    </a>
+                  </div>
+                {{/if}}
+
+                <div class="card-content">
+                  <div class="mb-3">
+                    <span class="tag is-light mr-2">Training Module</span>
+                    <span class="tag is-success is-light">
+                      {{module_lessons.length}} Lessons
+                    </span>
+                  </div>
+
+                  <h2 class="title is-5 mb-2">
+                    <a href="{{url}}">{{title}}</a>
+                  </h2>
+
+                  {{#if custom_excerpt}}
+                    <p class="has-text-grey mb-4">{{custom_excerpt}}</p>
+                  {{else}}
+                    <p class="has-text-grey mb-4">{{excerpt words="22"}}</p>
+                  {{/if}}
+
+                  <div class="content mb-4">
+                    {{#if module_lessons.[0]}}
+                      <p class="is-size-7 has-text-grey mb-2">Starts with:</p>
+                      {{#foreach module_lessons limit="1"}}
+                        <p class="mb-0">
+                          <span class="icon-text">
+                            <span class="icon"><i class="ph ph-play-circle"></i></span>
+                            <span>{{title}}</span>
+                          </span>
+                        </p>
+                      {{/foreach}}
+                    {{else}}
+                      <p class="is-size-7 has-text-grey mb-0">No lessons published yet.</p>
+                    {{/if}}
+                  </div>
+
+                  <div class="buttons">
+                    <a href="{{url}}" class="button is-light is-fullwidth">
+                      <span class="icon"><i class="ph ph-book-open"></i></span>
+                      <span>Overview</span>
+                    </a>
+
+                    {{#if module_lessons.[0]}}
+                      {{#foreach module_lessons limit="1"}}
+                        <a href="{{url}}" class="button is-primary is-fullwidth">
+                          <span class="icon"><i class="ph ph-play"></i></span>
+                          <span>Start Learning</span>
+                        </a>
+                      {{/foreach}}
+                    {{else}}
+                      <span class="button is-static is-fullwidth">No Lessons Yet</span>
+                    {{/if}}
+                  </div>
+                </div>
+              </article>
+            {{/get}}
+          </div>
+        {{/foreach}}
+      </div>
     {{else}}
-      <p>No training modules found yet.</p>
-    {{/foreach}}
-  </section>
-</div>
+      <article class="message is-light">
+        <div class="message-body">
+          No training modules found yet.
+        </div>
+      </article>
+    {{/if}}
+  </div>
+</section>

@@ -1,6 +1,13 @@
 <header class="site-header">
     <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
-        <div class="container">
+        <div class="container site-navbar__wrap">
+            <input
+                id="site-nav-toggle"
+                class="site-navbar__toggle"
+                type="checkbox"
+                hidden
+            >
+
             <div class="navbar-brand">
                 <a class="navbar-item site-navbar__brand" href="{{@site.url}}">
                     {{#if @site.logo}}
@@ -41,28 +48,63 @@
                         </span>
                     </button>
 
-                    <button
-                        class="navbar-burger"
-                        type="button"
-                        aria-label="menu"
-                        aria-expanded="false"
+                    <label
+                        for="site-nav-toggle"
+                        class="navbar-burger site-navbar__burger"
+                        role="button"
+                        aria-label="Toggle menu"
                         aria-controls="siteNavbarMenu"
-                        data-target="siteNavbarMenu"
                     >
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
                         <span aria-hidden="true"></span>
-                    </button>
+                    </label>
                 </div>
             </div>
 
-            <div id="siteNavbarMenu" class="navbar-menu">
-                {{navigation}}
+            <div id="siteNavbarMenu" class="navbar-menu site-navbar__menu">
+                <div class="navbar-start site-navbar__center">
+                    {{navigation}}
 
-                <div class="navbar-start site-navbar__center js-site-nav-render"></div>
+                    {{!-- Optional manual dropdowns if you want them --}}
+                    {{!--
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link" href="/learn/">
+                            <span class="icon is-small"><i class="ph ph-student"></i></span>
+                            <span>Learn</span>
+                        </a>
+
+                        <div class="navbar-dropdown">
+                            <a class="navbar-item" href="/courses/">
+                                <span class="icon is-small"><i class="ph ph-book-open"></i></span>
+                                <span>Courses</span>
+                            </a>
+                            <a class="navbar-item" href="/training/">
+                                <span class="icon is-small"><i class="ph ph-student"></i></span>
+                                <span>Training</span>
+                            </a>
+                        </div>
+                    </div>
+                    --}}
+                </div>
 
                 <div class="navbar-end site-navbar__actions">
+                    <div class="navbar-item">
+                        <a
+                            class="button is-light is-small site-navbar__github-button"
+                            href="https://github.com/imswarnil/Namaste-Salesforce"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Star project on GitHub"
+                        >
+                            <span class="icon is-small">
+                                <i class="ph ph-github-logo"></i>
+                            </span>
+                            <span>Star on GitHub</span>
+                        </a>
+                    </div>
+
                     <div class="navbar-item is-hidden-touch">
                         <button
                             class="button is-light is-small"
@@ -152,24 +194,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var html = document.documentElement;
+    var buttons = document.querySelectorAll('[data-theme-toggle]');
     var storageKey = 'site-color-scheme';
 
-    var header = document.querySelector('.site-header');
-    var burger = header ? header.querySelector('.navbar-burger') : null;
-    var menu = document.getElementById('siteNavbarMenu');
-    var themeButtons = document.querySelectorAll('[data-theme-toggle]');
-    var navSource = document.getElementById('site-nav-source');
-    var navRender = document.querySelector('.js-site-nav-render');
-
-    function getTheme() {
+    function currentTheme() {
         return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light';
     }
 
-    function applyTheme(theme) {
-        html.setAttribute('data-color-scheme', theme);
-        localStorage.setItem(storageKey, theme);
-
-        themeButtons.forEach(function (button) {
+    function syncThemeUi(theme) {
+        buttons.forEach(function (button) {
             var icon = button.querySelector('i');
             if (!icon) return;
 
@@ -181,200 +214,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function readNavigationItems() {
-        if (!navSource) return [];
+    syncThemeUi(currentTheme());
 
-        return Array.from(navSource.querySelectorAll('.js-site-nav-source-item')).map(function (item) {
-            return {
-                label: item.dataset.label || '',
-                url: item.dataset.url || '#',
-                slug: item.dataset.slug || '',
-                current: item.dataset.current === 'true',
-                icon: item.dataset.icon || 'ph-dot-outline'
-            };
-        });
-    }
+    document.addEventListener('click', function (event) {
+        var trigger = event.target.closest('[data-theme-toggle]');
+        if (!trigger) return;
 
-    function writeNavigationJson(items) {
-        var existing = document.getElementById('site-navigation-json');
-        if (existing) existing.remove();
-
-        var jsonScript = document.createElement('script');
-        jsonScript.id = 'site-navigation-json';
-        jsonScript.type = 'application/json';
-        jsonScript.textContent = JSON.stringify(items);
-
-        if (navSource && navSource.parentNode) {
-            navSource.parentNode.insertBefore(jsonScript, navSource.nextSibling);
-        } else {
-            document.body.appendChild(jsonScript);
-        }
-    }
-
-    function stripChildPrefix(label) {
-        return (label || '').replace(/^\s*-\s+/, '');
-    }
-
-    function isChildLabel(label) {
-        return /^\s*-\s+/.test(label || '');
-    }
-
-    function createIcon(iconClass) {
-        var span = document.createElement('span');
-        span.className = 'icon is-small';
-
-        var i = document.createElement('i');
-        i.className = 'ph ' + iconClass;
-
-        span.appendChild(i);
-        return span;
-    }
-
-    function createText(text) {
-        var span = document.createElement('span');
-        span.textContent = text;
-        return span;
-    }
-
-    function createNavAnchor(item, className) {
-        var link = document.createElement('a');
-        link.className = className;
-        link.href = item.url;
-        link.appendChild(createIcon(item.icon));
-        link.appendChild(createText(stripChildPrefix(item.label)));
-
-        if (item.current) {
-            link.classList.add('is-active');
-        }
-
-        return link;
-    }
-
-    function buildNavigation(items) {
-        if (!navRender) return;
-
-        var fragment = document.createDocumentFragment();
-        var i = 0;
-
-        while (i < items.length) {
-            var item = items[i];
-
-            if (isChildLabel(item.label)) {
-                i += 1;
-                continue;
-            }
-
-            var next = items[i + 1];
-            var hasChildren = !!(next && isChildLabel(next.label));
-
-            if (!hasChildren) {
-                fragment.appendChild(createNavAnchor(item, 'navbar-item'));
-                i += 1;
-                continue;
-            }
-
-            var dropdown = document.createElement('div');
-            dropdown.className = 'navbar-item has-dropdown is-hoverable';
-
-            var parentLink = createNavAnchor(item, 'navbar-link js-nav-parent-toggle');
-            var dropdownMenu = document.createElement('div');
-            dropdownMenu.className = 'navbar-dropdown';
-
-            if (item.current) {
-                parentLink.classList.add('is-active');
-                dropdown.classList.add('has-current');
-            }
-
-            var j = i + 1;
-            while (j < items.length && isChildLabel(items[j].label)) {
-                var child = items[j];
-                var childLink = createNavAnchor(child, 'navbar-item');
-
-                if (child.current) {
-                    childLink.classList.add('is-active');
-                    parentLink.classList.add('is-active');
-                    dropdown.classList.add('has-current');
-                }
-
-                dropdownMenu.appendChild(childLink);
-                j += 1;
-            }
-
-            dropdown.appendChild(parentLink);
-            dropdown.appendChild(dropdownMenu);
-            fragment.appendChild(dropdown);
-
-            i = j;
-        }
-
-        navRender.innerHTML = '';
-        navRender.appendChild(fragment);
-    }
-
-    function closeMobileMenu() {
-        if (!burger || !menu) return;
-
-        burger.classList.remove('is-active');
-        menu.classList.remove('is-active');
-        burger.setAttribute('aria-expanded', 'false');
-        document.body.classList.remove('is-clipped');
-
-        menu.querySelectorAll('.navbar-item.has-dropdown.is-active').forEach(function (item) {
-            item.classList.remove('is-active');
-        });
-    }
-
-    function toggleMobileMenu() {
-        if (!burger || !menu) return;
-
-        var active = burger.classList.toggle('is-active');
-        menu.classList.toggle('is-active', active);
-        burger.setAttribute('aria-expanded', active ? 'true' : 'false');
-        document.body.classList.toggle('is-clipped', active);
-    }
-
-    var navItems = readNavigationItems();
-    writeNavigationJson(navItems);
-    buildNavigation(navItems);
-    applyTheme(getTheme());
-
-    if (header) {
-        header.addEventListener('click', function (event) {
-            var themeToggle = event.target.closest('[data-theme-toggle]');
-            if (themeToggle) {
-                applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
-                return;
-            }
-
-            var burgerButton = event.target.closest('.navbar-burger');
-            if (burgerButton) {
-                toggleMobileMenu();
-                return;
-            }
-
-            var parentToggle = event.target.closest('.js-nav-parent-toggle');
-            if (parentToggle && window.innerWidth < 1024) {
-                event.preventDefault();
-                var parentItem = parentToggle.closest('.navbar-item.has-dropdown');
-                if (parentItem) {
-                    parentItem.classList.toggle('is-active');
-                }
-                return;
-            }
-
-            var clickedLink = event.target.closest('#siteNavbarMenu a.navbar-item');
-            if (clickedLink && window.innerWidth < 1024) {
-                if (!clickedLink.classList.contains('navbar-link')) {
-                    closeMobileMenu();
-                }
-            }
-        });
-    }
-
-    window.addEventListener('resize', function () {
-        if (window.innerWidth >= 1024) {
-            closeMobileMenu();
-        }
+        var nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-color-scheme', nextTheme);
+        localStorage.setItem(storageKey, nextTheme);
+        syncThemeUi(nextTheme);
     });
 });
 </script>

@@ -1,8 +1,35 @@
+/* ==========================================================================
+   Header / Navbar
+   Bulma-first styling for Ghost + theme variables
+   ========================================================================== */
+
+.site-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--theme-surface-body);
+  color: var(--theme-text);
+}
+
+.site-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Sticky header shell
+   -------------------------------------------------------------------------- */
+
 .site-header {
   position: sticky;
   top: 0;
   z-index: 30;
+  background: var(--theme-surface-card);
 }
+
+/* --------------------------------------------------------------------------
+   Core navbar
+   -------------------------------------------------------------------------- */
 
 .site-navbar.navbar {
   min-height: 3.5rem;
@@ -11,16 +38,31 @@
   box-shadow: none;
 }
 
+.site-navbar__wrap {
+  position: relative;
+}
+
+.site-navbar__menu {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Brand
+   -------------------------------------------------------------------------- */
+
 .site-navbar__brand {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding-left: 0 !important;
+  background: transparent !important;
 }
 
 .site-navbar__brand:hover,
 .site-navbar__brand:focus {
   background: transparent !important;
+  color: inherit;
 }
 
 .site-navbar__logo {
@@ -28,11 +70,18 @@
   max-height: 2rem;
   width: auto;
   object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .site-navbar__title {
   white-space: nowrap;
+  line-height: 1.2;
+  color: var(--theme-text-strong);
 }
+
+/* --------------------------------------------------------------------------
+   Mobile top tools
+   -------------------------------------------------------------------------- */
 
 .site-navbar__mobile-tools {
   margin-left: auto;
@@ -45,23 +94,127 @@
   min-width: 2.25rem;
 }
 
-.site-navbar .navbar-burger {
-  margin-left: 0;
+.site-navbar__mobile-tools .button,
+.site-navbar__actions .button.is-light {
+  border-color: var(--theme-border);
 }
 
-.site-navbar .buttons {
-  margin-bottom: 0;
+/* --------------------------------------------------------------------------
+   Burger (CSS-only via checkbox)
+   -------------------------------------------------------------------------- */
+
+.site-navbar .navbar-burger,
+.site-navbar__burger.navbar-burger {
+  margin-left: 0;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  color: var(--theme-text);
+  background: var(--theme-surface-subtle);
+  border: 1px solid var(--theme-border);
+}
+
+.site-navbar .navbar-burger:hover,
+.site-navbar__burger.navbar-burger:hover {
+  background: var(--theme-surface-muted);
+}
+
+.site-navbar .navbar-burger span,
+.site-navbar__burger.navbar-burger span {
+  width: 16px;
+  height: 2px;
+  left: calc(50% - 8px);
+  background-color: currentColor;
+}
+
+.site-navbar__toggle:checked ~ .navbar-brand .site-navbar__burger {
+  background: var(--theme-surface-muted);
+  color: var(--theme-text-strong);
+}
+
+.site-navbar__toggle:checked ~ .navbar-brand .site-navbar__burger span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.site-navbar__toggle:checked ~ .navbar-brand .site-navbar__burger span:nth-child(2) {
+  opacity: 0;
+}
+
+.site-navbar__toggle:checked ~ .navbar-brand .site-navbar__burger span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.site-navbar__toggle:checked ~ .navbar-brand .site-navbar__burger span:nth-child(4) {
+  opacity: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Global navbar icon sizing
+   -------------------------------------------------------------------------- */
+
+.site-navbar .icon,
+.site-navbar__nav-icon {
+  width: 1.25rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.site-navbar .icon i,
+.site-navbar__nav-icon i {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .site-navbar .navbar-item .icon:first-child:not(:last-child),
 .site-navbar .navbar-link .icon:first-child:not(:last-child) {
-  margin-right: 0.4rem;
+  margin-right: 0.45rem;
+}
+
+/* --------------------------------------------------------------------------
+   Center navigation items
+   -------------------------------------------------------------------------- */
+
+.site-navbar__center .navbar-item,
+.site-navbar__center .navbar-link,
+.site-navbar__nav-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-navbar__nav-item {
+  gap: 0;
+}
+
+.site-navbar .navbar-item,
+.site-navbar .navbar-link {
+  color: var(--theme-text);
 }
 
 .site-navbar .navbar-item.is-active,
-.site-navbar .navbar-link.is-active,
-.site-navbar .navbar-item.has-dropdown.has-current > .navbar-link {
+.site-navbar .navbar-link.is-active {
   font-weight: 600;
+  color: var(--theme-text-strong);
+}
+
+.site-navbar a.navbar-item:hover,
+.site-navbar a.navbar-item:focus,
+.site-navbar .navbar-link:hover,
+.site-navbar .navbar-link:focus {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Dropdowns
+   -------------------------------------------------------------------------- */
+
+.site-navbar .navbar-item.has-dropdown {
+  align-items: stretch;
 }
 
 .site-navbar .navbar-link:not(.is-arrowless)::after {
@@ -69,6 +222,9 @@
 }
 
 .site-navbar .navbar-dropdown {
+  min-width: 14rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
   background: var(--theme-surface-card);
   border-top: 1px solid var(--theme-border);
   border-left: 1px solid var(--theme-border);
@@ -76,23 +232,132 @@
   border-bottom: 1px solid var(--theme-border);
   border-radius: 0 0 0.5rem 0.5rem;
   box-shadow: var(--theme-shadow-popover);
-  min-width: 14rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
 }
 
 .site-navbar .navbar-dropdown .navbar-item {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
+  color: var(--theme-text);
+}
+
+.site-navbar .navbar-dropdown .navbar-item:hover,
+.site-navbar .navbar-dropdown .navbar-item:focus,
+.site-navbar .navbar-dropdown .navbar-item.is-active {
+  background: var(--theme-surface-subtle);
+  color: var(--theme-text-strong);
 }
 
 .site-navbar .navbar-divider {
+  margin: 0.25rem 0;
   background-color: var(--theme-border-soft);
 }
+
+/* --------------------------------------------------------------------------
+   Right-side actions
+   -------------------------------------------------------------------------- */
 
 .site-navbar__actions .navbar-item {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
+
+.site-navbar__actions .buttons {
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   GitHub button (grey)
+   -------------------------------------------------------------------------- */
+
+.site-navbar__github-button.button {
+  background-color: var(--theme-surface-subtle);
+  border-color: var(--theme-border);
+  color: var(--theme-text-strong);
+  box-shadow: none;
+  gap: 0.35rem;
+}
+
+.site-navbar__github-button.button:hover,
+.site-navbar__github-button.button.is-hovered,
+.site-navbar__github-button.button:focus,
+.site-navbar__github-button.button.is-focused {
+  background-color: var(--theme-surface-muted);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-text-strong);
+  box-shadow: none;
+}
+
+.site-navbar__github-button.button:active,
+.site-navbar__github-button.button.is-active {
+  background-color: var(--theme-surface-muted);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-text-strong);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Primary button override (use your theme tokens, not Bulma default blue)
+   -------------------------------------------------------------------------- */
+
+.site-navbar .button.is-primary,
+.site-navbar .buttons .button.is-primary {
+  background-color: var(--theme-brand);
+  border-color: var(--theme-brand);
+  color: var(--theme-text-inverse);
+  box-shadow: none;
+}
+
+.site-navbar .button.is-primary:hover,
+.site-navbar .button.is-primary.is-hovered,
+.site-navbar .button.is-primary:focus,
+.site-navbar .button.is-primary.is-focused {
+  background-color: var(--theme-brand-hover);
+  border-color: var(--theme-brand-hover);
+  color: var(--theme-text-inverse);
+  box-shadow: none;
+}
+
+.site-navbar .button.is-primary:active,
+.site-navbar .button.is-primary.is-active {
+  background-color: var(--theme-brand-active);
+  border-color: var(--theme-brand-active);
+  color: var(--theme-text-inverse);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Light buttons in navbar
+   -------------------------------------------------------------------------- */
+
+.site-navbar .button.is-light {
+  background: var(--theme-surface-subtle);
+  border-color: var(--theme-border);
+  color: var(--theme-text-strong);
+  box-shadow: none;
+}
+
+.site-navbar .button.is-light:hover,
+.site-navbar .button.is-light.is-hovered,
+.site-navbar .button.is-light:focus,
+.site-navbar .button.is-light.is-focused {
+  background: var(--theme-surface-muted);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-text-strong);
+  box-shadow: none;
+}
+
+.site-navbar .button.is-light:active,
+.site-navbar .button.is-light.is-active {
+  background: var(--theme-surface-muted);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-text-strong);
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Desktop layout
+   -------------------------------------------------------------------------- */
 
 @media screen and (min-width: 1024px) {
   .site-navbar .navbar-menu {
@@ -105,6 +370,7 @@
     flex: 1 1 auto;
     justify-content: center;
     margin-right: 0;
+    min-width: 0;
   }
 
   .site-navbar__actions {
@@ -113,29 +379,28 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Mobile layout
+   -------------------------------------------------------------------------- */
+
 @media screen and (max-width: 1023px) {
-  .site-navbar .navbar-menu {
-    padding-top: 0;
-    box-shadow: none;
-    background: transparent;
-  }
-
-  .site-navbar .navbar-menu.is-active {
-    display: block;
-  }
-
-  .site-navbar .navbar-start,
-  .site-navbar .navbar-end {
-    padding-top: 0;
-  }
-
-  .site-navbar .navbar-menu {
+  .site-navbar__menu {
+    display: none;
     margin-top: 0.5rem;
     padding: 0.75rem;
     background: var(--theme-surface-card);
     border: 1px solid var(--theme-border);
     border-radius: 0.75rem;
     box-shadow: var(--theme-shadow-popover);
+  }
+
+  .site-navbar__toggle:checked ~ .site-navbar__menu {
+    display: block;
+  }
+
+  .site-navbar .navbar-start,
+  .site-navbar .navbar-end {
+    padding-top: 0;
   }
 
   .site-navbar__title {
@@ -148,6 +413,19 @@
   .site-navbar .navbar-link {
     justify-content: center;
     text-align: center;
+  }
+
+  .site-navbar__center,
+  .site-navbar__actions {
+    display: block;
+    width: 100%;
+  }
+
+  .site-navbar__center .navbar-item,
+  .site-navbar__center .navbar-link,
+  .site-navbar__actions .navbar-item {
+    display: block;
+    width: 100%;
   }
 
   .site-navbar .navbar-item.has-dropdown {
@@ -165,13 +443,14 @@
     margin-bottom: 0.35rem;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+    background: var(--theme-surface-subtle);
     border: 1px solid var(--theme-border);
     border-radius: 0.5rem;
-    background: var(--theme-surface-subtle);
     box-shadow: none;
   }
 
-  .site-navbar .navbar-item.has-dropdown.is-active .navbar-dropdown {
+  .site-navbar .navbar-item.has-dropdown:focus-within .navbar-dropdown,
+  .site-navbar .navbar-item.has-dropdown:hover .navbar-dropdown {
     display: block;
   }
 
@@ -188,8 +467,6 @@
   }
 
   .site-navbar .navbar-end .navbar-item {
-    display: block;
-    width: 100%;
     padding-left: 0;
     padding-right: 0;
   }
@@ -202,6 +479,11 @@
   }
 
   .site-navbar .navbar-end .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .site-navbar__github-button.button {
     width: 100%;
     justify-content: center;
   }

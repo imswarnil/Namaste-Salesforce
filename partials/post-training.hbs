@@ -1,58 +1,53 @@
 {{!-- partials/post-training.hbs --}}
-{{!--
-  Expected content model:
-  - Module / section post:
-      1) Public module tag first (slug matches module post slug)
-      2) #training-section
 
-  - Lesson post:
-      1) Same public module tag first
-      2) #training-content
---}}
-
-<nav class="navbar is-dark" role="navigation" aria-label="training navigation">
-  <div class="navbar-brand">
-    <div class="navbar-item">
-      {{#has tag="#training-content"}}
-        {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |module_posts|}}
-          {{#if module_posts.[0]}}
-            {{#foreach module_posts}}
-              <a href="{{url}}" class="button is-dark is-small mr-3">
+<section
+  class="section"
+  data-training-shell
+  data-current-slug="{{slug}}"
+  data-current-module="{{primary_tag.slug}}"
+>
+  <nav class="navbar is-dark" role="navigation" aria-label="training navigation">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        {{#has tag="#training-content"}}
+          {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |module_posts|}}
+            {{#if module_posts.[0]}}
+              {{#foreach module_posts}}
+                <a href="{{url}}" class="button is-dark is-small mr-3">
+                  <span class="icon"><i class="ph ph-caret-left"></i></span>
+                  <span>Back</span>
+                </a>
+                <span class="has-text-weight-semibold">{{title}}</span>
+              {{/foreach}}
+            {{else}}
+              <a href="/training/" class="button is-dark is-small mr-3">
                 <span class="icon"><i class="ph ph-caret-left"></i></span>
                 <span>Back</span>
               </a>
-              <span class="has-text-weight-semibold">{{title}}</span>
-            {{/foreach}}
-          {{else}}
-            <a href="/training/" class="button is-dark is-small mr-3">
-              <span class="icon"><i class="ph ph-caret-left"></i></span>
-              <span>Back</span>
-            </a>
-            <span class="has-text-weight-semibold">{{primary_tag.name}}</span>
-          {{/if}}
-        {{/get}}
-      {{else}}
-        <a href="/training/" class="button is-dark is-small mr-3">
-          <span class="icon"><i class="ph ph-caret-left"></i></span>
-          <span>Back</span>
+              <span class="has-text-weight-semibold">{{primary_tag.name}}</span>
+            {{/if}}
+          {{/get}}
+        {{else}}
+          <a href="/training/" class="button is-dark is-small mr-3">
+            <span class="icon"><i class="ph ph-caret-left"></i></span>
+            <span>Back</span>
+          </a>
+          <span class="has-text-weight-semibold">{{title}}</span>
+        {{/has}}
+      </div>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <a href="/training/" class="button is-link is-light is-small">
+          <span class="icon"><i class="ph ph-book-open"></i></span>
+          <span>Training Hub</span>
         </a>
-        <span class="has-text-weight-semibold">{{title}}</span>
-      {{/has}}
+      </div>
     </div>
-  </div>
+  </nav>
 
-  <div class="navbar-end">
-    <div class="navbar-item">
-      <a href="/training/" class="button is-link is-light is-small">
-        <span class="icon"><i class="ph ph-book-open"></i></span>
-        <span>Training Hub</span>
-      </a>
-    </div>
-  </div>
-</nav>
-
-<section class="section">
-  <div class="container is-fluid">
+  <div class="container is-fluid mt-5">
     <div class="columns is-variable is-5">
 
       {{!-- MAIN --}}
@@ -61,19 +56,25 @@
           <figure class="image mb-4">
             <img src="{{img_url feature_image size="xl"}}" alt="{{title}}">
           </figure>
+        {{else}}
+          <article class="message is-dark mb-4">
+            <div class="message-body">
+              <p class="has-text-weight-semibold">{{title}}</p>
+              <p class="is-size-7">{{primary_tag.name}}</p>
+            </div>
+          </article>
         {{/if}}
 
-        <div class="box">
-          <div class="level is-mobile mb-4">
+        {{!-- ACTION BAR --}}
+        <div class="box mb-4">
+          <div class="level is-mobile">
             <div class="level-left">
               <div class="level-item">
-                {{!-- =====================================
-                    PREVIOUS BUTTON
-                ====================================== --}}
+                {{!-- PREVIOUS --}}
                 {{#has tag="#training-section"}}
-                  {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_sections|}}
-                    {{#if prev_sections.[0]}}
-                      {{#foreach prev_sections}}
+                  {{#get "posts" filter="tag:hash-training-content+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_lessons|}}
+                    {{#if prev_lessons.[0]}}
+                      {{#foreach prev_lessons}}
                         <a href="{{url}}" class="button is-light">
                           <span class="icon"><i class="ph ph-arrow-left"></i></span>
                           <span>Previous</span>
@@ -87,134 +88,91 @@
                     {{/if}}
                   {{/get}}
                 {{else}}
-                  {{#prev_post in="primary_tag"}}
-                    <a href="{{url}}" class="button is-light">
-                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                      <span>Previous</span>
-                    </a>
-                  {{else}}
-                    {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |current_sections|}}
-                      {{#if current_sections.[0]}}
-                        {{#foreach current_sections}}
-                          {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_sections|}}
-                            {{#if prev_sections.[0]}}
-                              {{#foreach prev_sections}}
-                                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1" order="published_at desc" as |prev_last_lessons|}}
-                                  {{#if prev_last_lessons.[0]}}
-                                    {{#foreach prev_last_lessons}}
-                                      <a href="{{url}}" class="button is-light">
-                                        <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                                        <span>Previous</span>
-                                      </a>
-                                    {{/foreach}}
-                                  {{else}}
-                                    <a href="{{url}}" class="button is-light">
-                                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                                      <span>Previous</span>
-                                    </a>
-                                  {{/if}}
-                                {{/get}}
-                              {{/foreach}}
-                            {{else}}
-                              <button class="button is-light" disabled>
-                                <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                                <span>Previous</span>
-                              </button>
-                            {{/if}}
-                          {{/get}}
-                        {{/foreach}}
-                      {{else}}
-                        <button class="button is-light" disabled>
+                  {{#get "posts" filter="tag:hash-training-content+published_at:<'{{published_at}}'" limit="1" order="published_at desc" as |prev_lessons|}}
+                    {{#if prev_lessons.[0]}}
+                      {{#foreach prev_lessons}}
+                        <a href="{{url}}" class="button is-light">
                           <span class="icon"><i class="ph ph-arrow-left"></i></span>
                           <span>Previous</span>
-                        </button>
-                      {{/if}}
-                    {{/get}}
-                  {{/prev_post}}
+                        </a>
+                      {{/foreach}}
+                    {{else}}
+                      {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |module_posts|}}
+                        {{#if module_posts.[0]}}
+                          {{#foreach module_posts}}
+                            <a href="{{url}}" class="button is-light">
+                              <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                              <span>Overview</span>
+                            </a>
+                          {{/foreach}}
+                        {{else}}
+                          <button class="button is-light" disabled>
+                            <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                            <span>Previous</span>
+                          </button>
+                        {{/if}}
+                      {{/get}}
+                    {{/if}}
+                  {{/get}}
                 {{/has}}
               </div>
             </div>
 
             <div class="level-right">
               <div class="level-item">
-                {{!-- =====================================
-                    NEXT BUTTON
-                ====================================== --}}
-                {{#has tag="#training-section"}}
-                  {{#next_post in="primary_tag"}}
-                    <a href="{{url}}" class="button is-primary">
-                      <span>Start Module</span>
-                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                    </a>
-                  {{else}}
-                    {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_sections|}}
-                      {{#if next_sections.[0]}}
-                        {{#foreach next_sections}}
-                          {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1" order="published_at asc" as |next_first_lessons|}}
-                            {{#if next_first_lessons.[0]}}
-                              {{#foreach next_first_lessons}}
-                                <a href="{{url}}" class="button is-primary">
-                                  <span>Next</span>
-                                  <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                                </a>
-                              {{/foreach}}
-                            {{else}}
+                <div class="buttons mb-0">
+                  <button class="button is-light" type="button">
+                    <span class="icon"><i class="ph ph-bookmark-simple"></i></span>
+                    <span>Bookmark</span>
+                  </button>
+
+                  {{!-- NEXT --}}
+                  {{#has tag="#training-section"}}
+                    {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1" order="published_at asc" as |first_module_lessons|}}
+                      {{#if first_module_lessons.[0]}}
+                        {{#foreach first_module_lessons}}
+                          <a href="{{url}}" class="button is-primary">
+                            <span>Start Module</span>
+                            <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                          </a>
+                        {{/foreach}}
+                      {{else}}
+                        {{#get "posts" filter="tag:hash-training-content+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_lessons|}}
+                          {{#if next_lessons.[0]}}
+                            {{#foreach next_lessons}}
                               <a href="{{url}}" class="button is-primary">
                                 <span>Next</span>
                                 <span class="icon"><i class="ph ph-arrow-right"></i></span>
                               </a>
-                            {{/if}}
-                          {{/get}}
-                        {{/foreach}}
-                      {{else}}
-                        <button class="button is-primary" disabled>End of Training</button>
+                            {{/foreach}}
+                          {{else}}
+                            <button class="button is-primary" disabled>End of Training</button>
+                          {{/if}}
+                        {{/get}}
                       {{/if}}
                     {{/get}}
-                  {{/next_post}}
-                {{else}}
-                  {{#next_post in="primary_tag"}}
-                    <a href="{{url}}" class="button is-primary">
-                      <span>Complete & Continue</span>
-                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                    </a>
                   {{else}}
-                    {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |current_sections|}}
-                      {{#if current_sections.[0]}}
-                        {{#foreach current_sections}}
-                          {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_sections|}}
-                            {{#if next_sections.[0]}}
-                              {{#foreach next_sections}}
-                                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1" order="published_at asc" as |next_first_lessons|}}
-                                  {{#if next_first_lessons.[0]}}
-                                    {{#foreach next_first_lessons}}
-                                      <a href="{{url}}" class="button is-primary">
-                                        <span>Complete & Continue</span>
-                                        <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                                      </a>
-                                    {{/foreach}}
-                                  {{else}}
-                                    <a href="{{url}}" class="button is-primary">
-                                      <span>Next Section</span>
-                                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                                    </a>
-                                  {{/if}}
-                                {{/get}}
-                              {{/foreach}}
-                            {{else}}
-                              <button class="button is-primary" disabled>End of Training</button>
-                            {{/if}}
-                          {{/get}}
+                    {{#get "posts" filter="tag:hash-training-content+published_at:>'{{published_at}}'" limit="1" order="published_at asc" as |next_lessons|}}
+                      {{#if next_lessons.[0]}}
+                        {{#foreach next_lessons}}
+                          <a href="{{url}}" class="button is-primary">
+                            <span>Complete & Continue</span>
+                            <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                          </a>
                         {{/foreach}}
                       {{else}}
                         <button class="button is-primary" disabled>End of Training</button>
                       {{/if}}
                     {{/get}}
-                  {{/next_post}}
-                {{/has}}
+                  {{/has}}
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
+        {{!-- CONTENT CARD --}}
+        <div class="box">
           <div class="tabs is-boxed mb-5">
             <ul>
               <li class="is-active"><a>Overview</a></li>
@@ -225,14 +183,16 @@
 
           <div class="content">
             {{#has tag="#training-section"}}
-              <p class="tag is-link is-light mb-3">Training Module</p>
+              <span class="tag is-link is-light mb-3">Training Module</span>
               <h1 class="title is-3">{{title}}</h1>
               <p class="subtitle is-6">{{primary_tag.name}}</p>
 
               {{#if custom_excerpt}}
-                <div class="notification is-light">
-                  {{custom_excerpt}}
-                </div>
+                <article class="message is-light mb-4">
+                  <div class="message-body">
+                    {{custom_excerpt}}
+                  </div>
+                </article>
               {{/if}}
 
               {{content}}
@@ -241,21 +201,21 @@
 
               <h2 class="title is-5">Lessons in this module</h2>
 
-              <div class="menu">
-                <ul class="menu-list">
-                  {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="all" order="published_at asc" as |module_lessons|}}
-                    {{#foreach module_lessons}}
-                      <li>
-                        <a href="{{url}}">
-                          <span class="mr-2">{{@number}}.</span>{{title}}
-                        </a>
-                      </li>
-                    {{else}}
-                      <li><span class="has-text-grey">No lessons yet.</span></li>
-                    {{/foreach}}
-                  {{/get}}
-                </ul>
-              </div>
+              <nav class="panel">
+                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="all" order="published_at asc" as |module_lessons|}}
+                  {{#foreach module_lessons}}
+                    <a href="{{url}}" class="panel-block">
+                      <span class="panel-icon"><i class="ph ph-play-circle"></i></span>
+                      <span>
+                        <span class="is-block">{{title}}</span>
+                        <span class="is-size-7 has-text-grey">{{reading_time}}</span>
+                      </span>
+                    </a>
+                  {{else}}
+                    <div class="panel-block has-text-grey">No lessons yet.</div>
+                  {{/foreach}}
+                {{/get}}
+              </nav>
 
             {{else}}
               {{#get "posts" filter="tag:hash-training-section+primary_tag:{{primary_tag.slug}}" limit="1" as |module_posts|}}
@@ -271,14 +231,16 @@
                 {{/if}}
               {{/get}}
 
-              <p class="tag is-primary is-light mb-3">Lesson</p>
+              <span class="tag is-primary is-light mb-3">Lesson</span>
               <h1 class="title is-3">{{title}}</h1>
               <p class="subtitle is-6">{{primary_tag.name}} • {{reading_time}}</p>
 
               {{#if custom_excerpt}}
-                <div class="notification is-light">
-                  {{custom_excerpt}}
-                </div>
+                <article class="message is-light mb-4">
+                  <div class="message-body">
+                    {{custom_excerpt}}
+                  </div>
+                </article>
               {{/if}}
 
               {{content}}
@@ -287,123 +249,100 @@
         </div>
       </main>
 
-  <aside class="column is-12-tablet is-4-desktop" id="curriculum">
-  <div class="box">
-    <h2 class="title is-5 mb-2">Course Content</h2>
-    <p class="is-size-7 has-text-grey mb-4">All modules and lessons</p>
+      {{!-- SIDEBAR --}}
+      <aside class="column is-12-tablet is-4-desktop" id="curriculum">
+        <div class="box">
+          <h2 class="title is-5 mb-2">Course Content</h2>
+          <p class="is-size-7 has-text-grey mb-4">All modules and lessons</p>
 
-    {{!-- =========================
-        WHEN CURRENT PAGE IS A SECTION
-    ========================== --}}
-    {{#has tag="#training-section"}}
-      {{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc" as |sections|}}
-        {{#foreach sections}}
-          <details {{#match slug ../slug}}open{{/match}} class="mb-4">
-            <summary class="button is-fullwidth is-light is-justify-content-space-between">
-              <span class="icon-text">
-                {{#match slug ../slug}}
-                  <span class="icon has-text-success"><i class="ph-fill ph-check-circle"></i></span>
-                {{else}}
-                  <span class="icon"><i class="ph ph-folder-open"></i></span>
-                {{/match}}
-                <span>{{@number}}. {{title}}</span>
-              </span>
-              <span class="icon"><i class="ph ph-caret-down"></i></span>
-            </summary>
+          <aside class="menu" data-training-sidebar>
+            {{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc" as |sections|}}
+              {{#foreach sections}}
+                <div class="mb-4" data-module-block="{{slug}}">
+                  <p class="menu-label mb-2">
+                    <button
+                      type="button"
+                      class="button is-light is-small is-fullwidth"
+                      data-module-toggle="{{slug}}"
+                      aria-expanded="false"
+                    >
+                      <span class="is-flex is-align-items-center is-justify-content-space-between" style="width:100%;">
+                        <span class="icon-text">
+                          <span class="icon" data-module-icon>
+                            <i class="ph ph-folder-open"></i>
+                          </span>
+                          <span>{{@number}}. {{title}}</span>
+                        </span>
 
-            <nav class="panel mt-2">
-              <a href="{{url}}" class="panel-block {{#match slug ../slug}}is-active has-background-link-light has-text-link-dark{{/match}}">
-                {{#match slug ../slug}}
-                  <span class="icon has-text-success mr-2"><i class="ph-fill ph-check-circle"></i></span>
-                {{else}}
-                  <span class="icon mr-2"><i class="ph ph-book-open"></i></span>
-                {{/match}}
-                <span>Overview</span>
-              </a>
+                        <span class="icon" data-module-caret>
+                          <i class="ph ph-caret-down"></i>
+                        </span>
+                      </span>
+                    </button>
+                  </p>
 
-              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc" as |section_lessons|}}
-                {{#foreach section_lessons}}
-                  <a href="{{url}}" class="panel-block">
-                    <span class="icon mr-2"><i class="ph ph-play-circle"></i></span>
-                    <span>
-                      <span class="is-block">{{title}}</span>
-                      <span class="is-size-7 has-text-grey">{{reading_time}}</span>
-                    </span>
-                  </a>
-                {{else}}
-                  <div class="panel-block has-text-grey is-size-7">
-                    No lessons yet
-                  </div>
-                {{/foreach}}
-              {{/get}}
-            </nav>
-          </details>
-        {{else}}
-          <article class="message is-light">
-            <div class="message-body">No training sections found.</div>
-          </article>
-        {{/foreach}}
-      {{/get}}
+                  <ul class="menu-list is-hidden" data-module-list="{{slug}}">
+                    <li>
+                      <a
+                        href="{{url}}"
+                        data-link-slug="{{slug}}"
+                        data-link-module="{{slug}}"
+                        data-link-kind="overview"
+                      >
+                        <span class="icon-text">
+                          <span class="icon is-small" data-link-icon>
+                            <i class="ph ph-book-open"></i>
+                          </span>
+                          <span>Overview</span>
+                        </span>
+                      </a>
 
-    {{!-- =========================
-        WHEN CURRENT PAGE IS A LESSON
-    ========================== --}}
-    {{else has tag="#training-content"}}
-      {{#get "posts" filter="tag:hash-training-section" limit="all" order="published_at asc" as |sections|}}
-        {{#foreach sections}}
-          <details {{#match slug ../primary_tag.slug}}open{{/match}} class="mb-4">
-            <summary class="button is-fullwidth is-light is-justify-content-space-between">
-              <span class="icon-text">
-                {{#match slug ../primary_tag.slug}}
-                  <span class="icon has-text-success"><i class="ph-fill ph-check-circle"></i></span>
-                {{else}}
-                  <span class="icon"><i class="ph ph-folder-open"></i></span>
-                {{/match}}
-                <span>{{@number}}. {{title}}</span>
-              </span>
-              <span class="icon"><i class="ph ph-caret-down"></i></span>
-            </summary>
-
-            <nav class="panel mt-2">
-              <a href="{{url}}" class="panel-block {{#match slug ../primary_tag.slug}}has-background-light{{/match}}">
-                {{#match slug ../primary_tag.slug}}
-                  <span class="icon has-text-success mr-2"><i class="ph-fill ph-check-circle"></i></span>
-                {{else}}
-                  <span class="icon mr-2"><i class="ph ph-book-open"></i></span>
-                {{/match}}
-                <span>Overview</span>
-              </a>
-
-              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc" as |section_lessons|}}
-                {{#foreach section_lessons}}
-                  <a href="{{url}}" class="panel-block {{#match slug ../../slug}}is-active has-background-link-light has-text-link-dark{{/match}}">
-                    {{#match slug ../../slug}}
-                      <span class="icon has-text-success mr-2"><i class="ph-fill ph-check-circle"></i></span>
-                    {{else}}
-                      <span class="icon mr-2"><i class="ph ph-play-circle"></i></span>
-                    {{/match}}
-                    <span>
-                      <span class="is-block">{{title}}</span>
-                      <span class="is-size-7 has-text-grey">{{reading_time}}</span>
-                    </span>
-                  </a>
-                {{else}}
-                  <div class="panel-block has-text-grey is-size-7">
-                    No lessons yet
-                  </div>
-                {{/foreach}}
-              {{/get}}
-            </nav>
-          </details>
-        {{else}}
-          <article class="message is-light">
-            <div class="message-body">No training sections found.</div>
-          </article>
-        {{/foreach}}
-      {{/get}}
-    {{/has}}
-  </div>
-</aside>
+                      {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="all" order="published_at asc" as |section_lessons|}}
+                        {{#if section_lessons.[0]}}
+                          <ul>
+                            {{#foreach section_lessons}}
+                              <li>
+                                <a
+                                  href="{{url}}"
+                                  data-link-slug="{{slug}}"
+                                  data-link-module="{{../slug}}"
+                                  data-link-kind="lesson"
+                                >
+                                  <span class="icon-text">
+                                    <span class="icon is-small" data-link-icon>
+                                      <i class="ph ph-play-circle"></i>
+                                    </span>
+                                    <span>
+                                      <span class="is-block">{{title}}</span>
+                                      <span class="is-size-7 has-text-grey">{{reading_time}}</span>
+                                    </span>
+                                  </span>
+                                </a>
+                              </li>
+                            {{/foreach}}
+                          </ul>
+                        {{else}}
+                          <ul>
+                            <li>
+                              <a class="is-static has-text-grey">
+                                No lessons yet
+                              </a>
+                            </li>
+                          </ul>
+                        {{/if}}
+                      {{/get}}
+                    </li>
+                  </ul>
+                </div>
+              {{else}}
+                <article class="message is-light">
+                  <div class="message-body">No training sections found.</div>
+                </article>
+              {{/foreach}}
+            {{/get}}
+          </aside>
+        </div>
+      </aside>
 
     </div>
   </div>
