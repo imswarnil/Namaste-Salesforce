@@ -10,7 +10,6 @@
     ✓ JSON-LD for Article / Person / Organization (on posts/pages/authors)
     ✓ Pagination prev/next link tags
     ✓ RSS autodiscovery
-
   WHAT WE ADD MANUALLY:
     • Performance: preconnect, dns-prefetch, resource hints
     • Phosphor Icons (loaded ONCE from CDN — NOT repeated in default.hbs)
@@ -28,36 +27,26 @@
 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
 
 {{!-- ── 2. Preload critical assets ────────────────────────────────────────── --}}
-<link rel="preload" as="style"  href="{{asset "built/main.css"}}">
-<link rel="preload" as="style"  href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" crossorigin>
+<link rel="preload" as="style" href="{{asset "built/main.css"}}">
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" crossorigin>
 
-{{!-- ── 3. Stylesheets ──────────────────────────────────────────────────────
-  Order: theme first, then icons (so we can override icon colours in SCSS)
-──────────────────────────────────────────────────────────────────────────── --}}
+{{!-- ── 3. Stylesheets ────────────────────────────────────────────────────── --}}
 <link rel="stylesheet" href="{{asset "built/main.css"}}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"    crossorigin>
 
-{{!-- ── 4. Browser colour scheme hint (matches our CSS vars) ─────────────── --}}
+{{!-- ── 4. Browser colour scheme hint ────────────────────────────────────── --}}
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#0176d3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#171b22" media="(prefers-color-scheme: dark)">
 
 {{!-- ── 5. Additional SEO meta ────────────────────────────────────────────── --}}
-
-{{!-- Generator tag (helps Ghost identify theme compatibility) --}}
 <meta name="generator" content="Ghost {{@site.version}}">
-
-{{!-- Handheld / IE compat --}}
 <meta name="HandheldFriendly" content="True">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-{{!-- Robots: Ghost manages noindex via post settings, this is the default --}}
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-{{!-- ── 6. Open Graph extras (Ghost outputs the core OG, we add extras) ───── --}}
-
-{{!-- Site name (improves how FB/LinkedIn show the source) --}}
+{{!-- ── 6. Open Graph extras ───────────────────────────────────────────────── --}}
 <meta property="og:site_name" content="{{@site.title}}">
 
 {{!-- Article-specific OG meta — only on posts --}}
@@ -71,6 +60,7 @@
 {{#foreach tags visibility="public"}}
 <meta property="article:tag" content="{{name}}">
 {{/foreach}}
+{{!-- FIX: {{#author}} is deprecated. Use {{#primary_author}} instead. --}}
 {{#primary_author}}
 <meta property="article:author" content="{{url absolute="true"}}">
 {{/primary_author}}
@@ -83,7 +73,7 @@
 
 {{!-- ── 8. Favicon & apple touch icon ────────────────────────────────────── --}}
 {{#if @site.icon}}
-<link rel="icon" href="{{@site.icon}}" type="image/png">
+<link rel="icon"             href="{{@site.icon}}" type="image/png">
 <link rel="apple-touch-icon" href="{{@site.icon}}">
 {{else}}
 <link rel="icon"             href="{{asset "images/favicon.png"}}" type="image/png">
@@ -93,10 +83,12 @@
 {{!-- ── 9. RSS feed autodiscovery ─────────────────────────────────────────── --}}
 <link rel="alternate" type="application/rss+xml" title="{{@site.title}} RSS" href="{{@site.url}}/rss/">
 
-{{!-- ── 10. JSON-LD: WebSite + SearchAction ─────────────────────────────────
-  Ghost outputs Article/Person JSON-LD automatically.
-  We add WebSite (with sitelinks searchbox) and BreadcrumbList on inner pages.
+{{!-- ── 10. JSON-LD structured data ──────────────────────────────────────────
+  Ghost outputs Article/Person JSON-LD automatically via {{ghost_head}}.
+  We add: WebSite+SearchAction (home), BreadcrumbList (tag/author/post pages).
 ──────────────────────────────────────────────────────────────────────────── --}}
+
+{{!-- WebSite + SearchAction — homepage only --}}
 {{#is "home"}}
 <script type="application/ld+json">
 {
@@ -112,15 +104,13 @@
       "publisher": {
         "@type": "Organization",
         "@id": "{{@site.url}}/#organization",
-        "name": "{{@site.title}}"
-        {{#if @site.logo}},
+        "name": "{{@site.title}}"{{#if @site.logo}},
         "logo": {
           "@type": "ImageObject",
           "url": "{{@site.logo}}",
           "width": 512,
           "height": 512
-        }
-        {{/if}}
+        }{{/if}}
       },
       "potentialAction": {
         "@type": "SearchAction",
@@ -144,8 +134,8 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home",  "item": "{{@site.url}}/" },
-    { "@type": "ListItem", "position": 2, "name": "Topics","item": "{{@site.url}}/tags/" },
+    { "@type": "ListItem", "position": 1, "name": "Home",   "item": "{{@site.url}}/" },
+    { "@type": "ListItem", "position": 2, "name": "Topics", "item": "{{@site.url}}/tags/" },
     { "@type": "ListItem", "position": 3, "name": "{{name}}", "item": "{{url absolute="true"}}" }
   ]
 }
@@ -154,8 +144,9 @@
 {{/is}}
 
 {{!-- BreadcrumbList for author pages --}}
+{{!-- FIX: {{#author}} is deprecated — replaced with {{#foreach authors limit="1"}} --}}
 {{#is "author"}}
-{{#author}}
+{{#foreach authors limit="1"}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -163,11 +154,11 @@
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home",    "item": "{{@site.url}}/" },
     { "@type": "ListItem", "position": 2, "name": "Authors", "item": "{{@site.url}}/authors/" },
-    { "@type": "ListItem", "position": 3, "name": "{{name}}","item": "{{url absolute="true"}}" }
+    { "@type": "ListItem", "position": 3, "name": "{{name}}", "item": "{{url absolute="true"}}" }
   ]
 }
 </script>
-{{/author}}
+{{/foreach}}
 {{/is}}
 
 {{!-- BreadcrumbList for posts --}}
@@ -178,19 +169,15 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{@site.url}}/" }
-    {{#if primary_tag}},
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{@site.url}}/" }{{#if primary_tag}},
     { "@type": "ListItem", "position": 2, "name": "{{primary_tag.name}}", "item": "{{primary_tag.url}}" },
-    { "@type": "ListItem", "position": 3, "name": "{{title}}", "item": "{{url absolute="true"}}" }
-    {{else}},
-    { "@type": "ListItem", "position": 2, "name": "{{title}}", "item": "{{url absolute="true"}}" }
-    {{/if}}
+    { "@type": "ListItem", "position": 3, "name": "{{title}}", "item": "{{url absolute="true"}}" }{{else}},
+    { "@type": "ListItem", "position": 2, "name": "{{title}}", "item": "{{url absolute="true"}}" }{{/if}}
   ]
 }
 </script>
 {{/post}}
 {{/is}}
 
-{{!-- ── 11. Ghost head (outputs title, meta description, OG, Twitter, canonical,
-            article JSON-LD, pagination links — MUST be last in <head>) ──── --}}
+{{!-- ── 11. Ghost head — MUST be last in <head> ───────────────────────────── --}}
 {{ghost_head}}
