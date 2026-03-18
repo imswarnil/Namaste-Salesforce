@@ -1,24 +1,25 @@
 {{!-- =========================================================================
-  partials/header.hbs  ·  Namaste Salesforce
-  SINGLE FILE — replaces header.hbs dispatcher + all sub-partials.
+  partials/header.hbs  ·  Namaste Salesforce  (single-file, no sub-partials)
 
-  VARIANTS (auto-selected):
-    #lesson post  → course-header    (lesson bar + slide-down panel)
-    #blog   post  → default-header blog-header  (+ reading progress strip)
-    everything    → default-header
+  BRAND STRIP (next to logo, desktop):
+    [Learn ▾] [Contribute ▾] [Products ▾]
+    — "Learn" and "Topics" removed; replaced with richer context dropdowns.
 
-  WHAT'S DIFFERENT FROM THE OLD MULTI-FILE VERSION:
-    • Single file — no sub-partials referenced anywhere
-    • Auth block inlined (was partials/header/auth.hbs)
-    • Donate icon replaces GitHub star button
-      → ph-heart  links to GitHub Sponsors
-      → desktop only (not shown in mobile menu)
-    • Logged-in: ph-user-circle as fallback avatar icon
-    • Theme toggle: rooster chirp (light) / owl hoot (dark) via Web Audio API
-    • JSON-LD SiteNavigationElement emitted once
+  RIGHT RAIL (desktop, always clean):
+    [Search] [Theme 🔊] [Account / Sign in] [GitHub ⭐] [$]
 
-  CSS CLASSES: unchanged — still default-header__*, course-header__*, blog-header__*
-  NAV DROPDOWNS: "- " label prefix → child item → JS builds flyout
+  SOUNDS:
+    Theme toggle   → rooster chirp (light) / owl hoot (dark)
+    Mobile burger  → soft "tok" click
+    Dropdown open  → very short "pop"
+    Search modal   → swoosh / whoosh
+    $ hover        → coins jingle
+
+  BRAND ANIMATION:
+    "Namaste Salesforce" cycles through 10 languages with a fast wobble
+    transition every 2.4 s. A small 🔊 speaker button sits to the top-right
+    of the brand text; click it to hear "Namaste Salesforce" spoken aloud
+    via Web Speech API, cycling through different voices / pitches.
 ========================================================================== --}}
 
 {{!-- ── JSON-LD ──────────────────────────────────────────────────────────── --}}
@@ -61,21 +62,24 @@
 }
 </script>
 
-{{!-- ════════════════════════════════════════════════════════════════════
+{{!-- ═══════════════════════════════════════════════════════════════════════
+  BRAND DROPDOWN PARTIALS  (reused by all three header variants via macros)
+  Defined once here as raw HTML blocks; each header includes them inline.
+═══════════════════════════════════════════════════════════════════════════ --}}
+
+{{!-- ══════════════════════════════════════════════════════════════════════
   DISPATCH
-════════════════════════════════════════════════════════════════════════ --}}
+══════════════════════════════════════════════════════════════════════════ --}}
 {{#is "post"}}{{#post}}{{#has tag="#lesson"}}
 
-{{!-- ──────────────────────────────────────────────────────────────────
-  COURSE HEADER  (#lesson posts)
-  Three zones: [← Back]  [Lesson title ▾]  [X/N · ☰ · ✕]
-────────────────────────────────────────────────────────────────────── --}}
+{{!-- ──────────────────────────────────────────────────────────────────────
+  COURSE HEADER  (#lesson posts only)
+  [← Back]  [Lesson title ▾]  [X/N  ☰  ✕]
+────────────────────────────────────────────────────────────────────────── --}}
 <header class="course-header site-header" role="banner" id="siteHeader">
   <div class="course-header__bar">
     <div class="container is-fluid">
       <div class="course-header__inner">
-
-        {{!-- Back --}}
         <div class="course-header__left">
           {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
             {{#foreach posts}}
@@ -91,28 +95,20 @@
             {{/foreach}}
           {{/get}}
         </div>
-
-        {{!-- Lesson title → opens panel --}}
         <div class="course-header__center">
-          <button class="course-header__title-btn" type="button"
-                  id="coursePanelBurger"
-                  aria-label="Show all lessons in this course"
-                  aria-expanded="false" aria-controls="courseLessonPanel">
+          <button class="course-header__title-btn" type="button" id="coursePanelBurger"
+                  aria-label="Show all lessons" aria-expanded="false" aria-controls="courseLessonPanel">
             <span class="course-header__title">{{title}}</span>
             <i class="ph ph-caret-down course-header__title-caret" aria-hidden="true"></i>
           </button>
         </div>
-
-        {{!-- Right: progress badge · menu · exit --}}
         <div class="course-header__right">
           <span class="course-header__badge" id="lessonBadge" aria-live="polite">
             <i class="ph ph-list-checks" aria-hidden="true"></i>
             <span id="lessonBadgeText">…</span>
           </span>
-          <button class="course-header__burger" type="button"
-                  id="courseBurgerBtn"
-                  aria-label="Toggle lesson list"
-                  aria-expanded="false" aria-controls="courseLessonPanel">
+          <button class="course-header__burger" type="button" id="courseBurgerBtn"
+                  aria-label="Toggle lesson list" aria-expanded="false" aria-controls="courseLessonPanel">
             <span class="course-header__burger-bar" aria-hidden="true"></span>
             <span class="course-header__burger-bar" aria-hidden="true"></span>
             <span class="course-header__burger-bar" aria-hidden="true"></span>
@@ -129,32 +125,24 @@
             {{/foreach}}
           {{/get}}
         </div>
-
       </div>
     </div>
   </div>
-
-  {{!-- Lesson panel --}}
   <div class="course-header__lesson-panel" id="courseLessonPanel"
        aria-label="Course lessons" aria-hidden="true">
     <div class="container is-fluid">
       <div class="course-header__lesson-wrap">
         <p class="course-header__lesson-label menu-label">
-          <i class="ph ph-list-checks" aria-hidden="true"></i>
-          Course Lessons
+          <i class="ph ph-list-checks" aria-hidden="true"></i> Course Lessons
         </p>
         <ul class="menu-list course-header__lesson-list" id="courseLessonList">
-          {{#get "posts"
-            filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
-            order="published_at asc"
-            limit="100"
-          }}
+          {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
+            order="published_at asc" limit="100"}}
             {{#foreach posts}}
               <li>
                 <a href="{{url}}"
                    class="course-header__lesson-link{{#match id ../../../../id}} is-active{{/match}}"
-                   data-lesson-num="{{@number}}"
-                   data-lesson-total="{{../length}}">
+                   data-lesson-num="{{@number}}" data-lesson-total="{{../length}}">
                   <span class="course-header__lesson-num">{{@number}}</span>
                   <span class="course-header__lesson-name">{{title}}</span>
                   {{#match id ../../../../id}}
@@ -172,53 +160,110 @@
 
 {{else has tag="#blog"}}
 
-{{!-- ──────────────────────────────────────────────────────────────────
+{{!-- ──────────────────────────────────────────────────────────────────────
   BLOG HEADER  (#blog posts)
-  Standard navbar + Topics dropdown + reading progress strip.
-────────────────────────────────────────────────────────────────────── --}}
+  Same default-header structure + reading progress strip.
+────────────────────────────────────────────────────────────────────────── --}}
 <header class="default-header blog-header site-header is-sticky"
         role="banner" id="siteHeader">
-  <nav class="navbar default-header__navbar" role="navigation"
-       aria-label="Main navigation">
+  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
     <div class="container default-header__wrap">
 
       <div class="navbar-brand default-header__brand-group">
-        <a class="navbar-item default-header__brand"
-           href="{{@site.url}}" aria-label="{{@site.title}} — homepage">
-          {{#if @site.logo}}
-            <img src="{{@site.logo}}" alt="{{@site.title}}"
-                 class="default-header__logo" width="32" height="32">
-          {{/if}}
-          <span class="default-header__title">{{@site.title}}</span>
-        </a>
+
+        {{!-- Animated brand --}}
+        <div class="default-header__brand-wrap">
+          <a class="navbar-item default-header__brand" href="{{@site.url}}"
+             aria-label="{{@site.title}} — homepage" id="brandLink">
+            {{#if @site.logo}}
+              <img src="{{@site.logo}}" alt="{{@site.title}}"
+                   class="default-header__logo" width="32" height="32">
+            {{/if}}
+            <span class="default-header__title" id="brandTitle">{{@site.title}}</span>
+          </a>
+          <button class="default-header__brand-speak" type="button"
+                  id="brandSpeakBtn" aria-label="Pronounce site name">
+            <i class="ph ph-speaker-simple-high" aria-hidden="true"></i>
+          </button>
+        </div>
+
         <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
 
-        {{!-- Topics dropdown (desktop) --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="topicsDropdownWrap">
-          <button class="default-header__learn-btn" type="button"
-                  id="topicsDropdownBtn"
-                  aria-haspopup="true" aria-expanded="false">
-            <i class="ph ph-tag" aria-hidden="true"></i>
-            <span>Topics</span>
+        {{!-- Contribute dropdown --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="contributeWrap">
+          <button class="default-header__learn-btn" type="button" id="contributeBtn"
+                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
+            <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+            <span>Contribute</span>
             <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
           </button>
-          <div class="default-header__learn-panel blog-header__topics-panel"
-               id="topicsDropdown" hidden>
-            <p class="default-header__learn-heading">Browse Topics</p>
-            <div class="blog-header__topics-tags">
-              {{#get "tags" limit="12" order="count.posts desc" include="count.posts"}}
-                {{#foreach tags}}
-                  <a class="blog-header__topic-tag" href="{{url}}">
-                    <span>{{name}}</span>
-                    <span class="blog-header__topic-count">{{count.posts}}</span>
-                  </a>
-                {{/foreach}}
-              {{/get}}
+          <div class="default-header__learn-panel" id="contributePanel" hidden>
+            <p class="default-header__learn-heading">Get Involved</p>
+            <div class="default-header__learn-grid">
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>GitHub</strong><small>Star &amp; fork the repo</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-bug" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-git-pull-request" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Pull Request</strong><small>Submit improvements</small></span>
+              </a>
+              <a class="default-header__learn-item" href="/contact/?ref=write">
+                <span class="default-header__learn-icon"><i class="ph ph-pencil-line" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Write a Post</strong><small>Share your knowledge</small></span>
+              </a>
             </div>
             <div class="default-header__learn-footer">
-              <a href="/tags/" class="default-header__learn-all">
-                All topics
-                <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              <a href="https://github.com/imswarnil/Namaste-Salesforce" class="default-header__learn-all" target="_blank" rel="noopener noreferrer">
+                View on GitHub <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Products I Use dropdown --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="productsWrap">
+          <button class="default-header__learn-btn" type="button" id="productsBtn"
+                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
+            <i class="ph ph-squares-four" aria-hidden="true"></i>
+            <span>Products</span>
+            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
+          </button>
+          <div class="default-header__learn-panel" id="productsPanel" hidden>
+            <p class="default-header__learn-heading">Tools I Use</p>
+            <div class="default-header__learn-grid">
+              <a class="default-header__learn-item" href="https://ghost.org" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-ghost" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Ghost CMS</strong><small>This site is built on Ghost</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-cursor" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Cursor</strong><small>AI-powered code editor</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-triangle" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Vercel</strong><small>Deployment &amp; hosting</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://www.figma.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-figma-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Figma</strong><small>Design &amp; prototyping</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://notion.so" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-note-blank" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Notion</strong><small>Notes &amp; planning</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-phosphor-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Phosphor Icons</strong><small>Icon set used across site</small></span>
+              </a>
+            </div>
+            <div class="default-header__learn-footer">
+              <a href="/resources/?filter=tool" class="default-header__learn-all">
+                All resources <i class="ph ph-arrow-right" aria-hidden="true"></i>
               </a>
             </div>
           </div>
@@ -226,485 +271,50 @@
 
         {{!-- Mobile tools --}}
         <div class="default-header__mobile-tools is-hidden-desktop">
-          <button class="default-header__icon-btn" type="button"
-                  aria-label="Search" data-ghost-search>
-            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-          </button>
-          <button class="default-header__icon-btn" type="button"
-                  aria-label="Switch to dark mode" data-theme-toggle>
-            <i class="ph ph-moon" aria-hidden="true"></i>
-          </button>
-          <button class="default-header__burger" type="button"
-                  id="blogNavBurger"
-                  aria-label="Toggle menu"
-                  aria-expanded="false" aria-controls="blogNavMenu">
-            <span class="default-header__burger-bar" aria-hidden="true"></span>
-            <span class="default-header__burger-bar" aria-hidden="true"></span>
-            <span class="default-header__burger-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-      </div>
-
-      <div id="blogNavMenu" class="navbar-menu default-header__menu"
-           aria-hidden="true">
-        <div class="navbar-start default-header__nav" id="blogNavLinks">
-          {{navigation}}
-        </div>
-        <div class="navbar-end default-header__actions">
-          {{!-- Search --}}
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button"
-                    aria-label="Search" data-ghost-search>
-              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-            </button>
-          </div>
-          {{!-- Theme --}}
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button"
-                    aria-label="Switch to dark mode" data-theme-toggle>
-              <i class="ph ph-moon" aria-hidden="true"></i>
-            </button>
-          </div>
-          {{!-- Become Author CTA --}}
-          <div class="navbar-item">
-            <a class="default-header__cta default-header__cta--author"
-               href="/contact/?ref=author">
-              <i class="ph ph-pencil-line" aria-hidden="true"></i>
-              <span>Become Author</span>
-            </a>
-          </div>
-          {{!-- Auth (inlined) --}}
-          {{#if @site.members_enabled}}
-            {{#if @member}}
-              <div class="navbar-item">
-                <div class="default-header__account-wrap" id="accountWrap">
-                  <button class="default-header__account-btn" type="button"
-                          id="accountBtn" aria-label="Account menu"
-                          aria-expanded="false" aria-haspopup="true">
-                    {{#if @member.avatar_image}}
-                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
-                           class="default-header__account-avatar" width="28" height="28">
-                    {{else}}
-                      <i class="ph-fill ph-user-circle default-header__account-icon" aria-hidden="true"></i>
-                    {{/if}}
-                    <span class="default-header__account-name-label is-hidden-mobile">
-                      {{@member.name}}
-                    </span>
-                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
-                  </button>
-                  <div class="default-header__account-dropdown" id="accountDropdown" hidden>
-                    <div class="default-header__account-header">
-                      <p class="default-header__account-name">{{@member.name}}</p>
-                      <p class="default-header__account-email">{{@member.email}}</p>
-                    </div>
-                    <hr class="default-header__divider">
-                    <a class="default-header__dropdown-item"
-                       href="#/portal/account" data-portal="account">
-                      <i class="ph ph-user" aria-hidden="true"></i>
-                      <span>Manage account</span>
-                    </a>
-                    <a class="default-header__dropdown-item"
-                       href="#/portal/account/newsletters" data-portal="account/newsletters">
-                      <i class="ph ph-envelope" aria-hidden="true"></i>
-                      <span>Newsletters</span>
-                    </a>
-                    <hr class="default-header__divider">
-                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
-                       href="javascript:void(0)" data-members-signout>
-                      <i class="ph ph-sign-out" aria-hidden="true"></i>
-                      <span>Sign out</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            {{else}}
-              {{#unless @site.members_invite_only}}
-                <div class="navbar-item default-header__auth-pair">
-                  <a class="default-header__btn default-header__btn--ghost"
-                     href="#/portal/signin" data-portal="signin">
-                    <i class="ph ph-sign-in" aria-hidden="true"></i>
-                    <span>Sign in</span>
-                  </a>
-                  <a class="default-header__btn default-header__btn--primary"
-                     href="#/portal/signup" data-portal="signup">
-                    <i class="ph ph-user-plus" aria-hidden="true"></i>
-                    <span>Join free</span>
-                  </a>
-                </div>
-              {{else}}
-                <div class="navbar-item">
-                  <a class="default-header__btn default-header__btn--primary"
-                     href="#/portal/signin" data-portal="signin">
-                    <i class="ph ph-sign-in" aria-hidden="true"></i>
-                    <span>Sign in</span>
-                  </a>
-                </div>
-              {{/unless}}
-            {{/if}}
-          {{/if}}
-          {{!-- Donate icon (desktop only) --}}
-          <div class="navbar-item is-hidden-touch">
-            <a class="default-header__donate-btn"
-               href="https://github.com/sponsors/imswarnil"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Sponsor this project">
-              <i class="ph-fill ph-heart" aria-hidden="true"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </nav>
-</header>
-
-{{!-- Reading progress strip --}}
-<div class="blog-header__progress-strip"
-     role="progressbar" aria-label="Reading progress"
-     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
-     id="blogReadingStrip">
-  <div class="blog-header__progress-fill" id="blogReadingFill"></div>
-</div>
-
-{{else}}
-
-{{!-- ──────────────────────────────────────────────────────────────────
-  DEFAULT HEADER  (all other pages and post types)
-────────────────────────────────────────────────────────────────────── --}}
-<header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
-        role="banner" id="siteHeader">
-  <nav class="navbar default-header__navbar" role="navigation"
-       aria-label="Main navigation">
-    <div class="container default-header__wrap">
-
-      <div class="navbar-brand default-header__brand-group">
-        <a class="navbar-item default-header__brand"
-           href="{{@site.url}}" aria-label="{{@site.title}} — go to homepage">
-          {{#if @site.logo}}
-            <img src="{{@site.logo}}" alt="{{@site.title}}"
-                 class="default-header__logo" width="32" height="32">
-          {{/if}}
-          <span class="default-header__title">{{@site.title}}</span>
-        </a>
-        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
-
-        {{!-- Learn dropdown (desktop) --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="learnDropdownWrap">
-          <button class="default-header__learn-btn" type="button"
-                  id="learnDropdownBtn"
-                  aria-haspopup="true" aria-expanded="false">
-            <i class="ph ph-graduation-cap" aria-hidden="true"></i>
-            <span>Learn</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="learnDropdown" hidden>
-            <p class="default-header__learn-heading">Learning Paths</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="/training/">
-                <span class="default-header__learn-icon">
-                  <i class="ph ph-user-gear" aria-hidden="true"></i>
-                </span>
-                <span class="default-header__learn-label">
-                  <strong>Admin</strong>
-                  <small>Manage orgs &amp; users</small>
-                </span>
-              </a>
-              <a class="default-header__learn-item" href="/courses/">
-                <span class="default-header__learn-icon">
-                  <i class="ph ph-code" aria-hidden="true"></i>
-                </span>
-                <span class="default-header__learn-label">
-                  <strong>Developer</strong>
-                  <small>Apex, LWC &amp; APIs</small>
-                </span>
-              </a>
-              <a class="default-header__learn-item" href="/courses/">
-                <span class="default-header__learn-icon">
-                  <i class="ph ph-chart-line-up" aria-hidden="true"></i>
-                </span>
-                <span class="default-header__learn-label">
-                  <strong>Analytics</strong>
-                  <small>CRM Analytics &amp; CRMA</small>
-                </span>
-              </a>
-              <a class="default-header__learn-item" href="/certifications/">
-                <span class="default-header__learn-icon">
-                  <i class="ph ph-trophy" aria-hidden="true"></i>
-                </span>
-                <span class="default-header__learn-label">
-                  <strong>Exam Prep</strong>
-                  <small>Cert study guides</small>
-                </span>
-              </a>
-              <a class="default-header__learn-item" href="/resources/">
-                <span class="default-header__learn-icon">
-                  <i class="ph ph-books" aria-hidden="true"></i>
-                </span>
-                <span class="default-header__learn-label">
-                  <strong>Resources</strong>
-                  <small>Books, tools &amp; more</small>
-                </span>
-              </a>
-              <a class="default-header__learn-item" href="/videos/">
-                <span class="default-header__learn-icon">
-                  <i class="ph ph-play-circle" aria-hidden="true"></i>
-                </span>
-                <span class="default-header__learn-label">
-                  <strong>Videos</strong>
-                  <small>Watch &amp; learn</small>
-                </span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="/courses/" class="default-header__learn-all">
-                Browse all courses
-                <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Mobile tools --}}
-        <div class="default-header__mobile-tools is-hidden-desktop">
-          <button class="default-header__icon-btn" type="button"
-                  aria-label="Search" data-ghost-search>
-            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-          </button>
-          <button class="default-header__icon-btn" type="button"
-                  aria-label="Switch to dark mode" data-theme-toggle>
-            <i class="ph ph-moon" aria-hidden="true"></i>
-          </button>
-          <button class="default-header__burger" type="button"
-                  id="defaultNavBurger"
-                  aria-label="Toggle menu"
-                  aria-expanded="false" aria-controls="defaultNavMenu">
-            <span class="default-header__burger-bar" aria-hidden="true"></span>
-            <span class="default-header__burger-bar" aria-hidden="true"></span>
-            <span class="default-header__burger-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-      </div>
-
-      <div id="defaultNavMenu" class="navbar-menu default-header__menu"
-           aria-hidden="true">
-        <div class="navbar-start default-header__nav" id="defaultNavLinks">
-          {{navigation}}
-        </div>
-        <div class="navbar-end default-header__actions">
-          {{!-- Search (desktop) --}}
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button"
-                    aria-label="Search" data-ghost-search>
-              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-            </button>
-          </div>
-          {{!-- Theme (desktop) --}}
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button"
-                    aria-label="Switch to dark mode" data-theme-toggle>
-              <i class="ph ph-moon" aria-hidden="true"></i>
-            </button>
-          </div>
-          {{!-- Context CTA --}}
-          {{#is "post"}}{{#post}}
-            {{#has tag="#course"}}
-              <div class="navbar-item">
-                <a class="default-header__cta default-header__cta--instructor"
-                   href="/contact/?ref=instructor">
-                  <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
-                  <span>Become Instructor</span>
-                </a>
-              </div>
-            {{/has}}
-          {{/post}}{{/is}}
-          {{!-- Auth (inlined) --}}
-          {{#if @site.members_enabled}}
-            {{#if @member}}
-              <div class="navbar-item">
-                <div class="default-header__account-wrap" id="accountWrap">
-                  <button class="default-header__account-btn" type="button"
-                          id="accountBtn" aria-label="Account menu"
-                          aria-expanded="false" aria-haspopup="true">
-                    {{#if @member.avatar_image}}
-                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
-                           class="default-header__account-avatar" width="28" height="28">
-                    {{else}}
-                      <i class="ph-fill ph-user-circle default-header__account-icon" aria-hidden="true"></i>
-                    {{/if}}
-                    <span class="default-header__account-name-label is-hidden-mobile">
-                      {{@member.name}}
-                    </span>
-                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
-                  </button>
-                  <div class="default-header__account-dropdown" id="accountDropdown" hidden>
-                    <div class="default-header__account-header">
-                      <p class="default-header__account-name">{{@member.name}}</p>
-                      <p class="default-header__account-email">{{@member.email}}</p>
-                    </div>
-                    <hr class="default-header__divider">
-                    <a class="default-header__dropdown-item"
-                       href="#/portal/account" data-portal="account">
-                      <i class="ph ph-user" aria-hidden="true"></i>
-                      <span>Manage account</span>
-                    </a>
-                    <a class="default-header__dropdown-item"
-                       href="#/portal/account/newsletters" data-portal="account/newsletters">
-                      <i class="ph ph-envelope" aria-hidden="true"></i>
-                      <span>Newsletters</span>
-                    </a>
-                    <hr class="default-header__divider">
-                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
-                       href="javascript:void(0)" data-members-signout>
-                      <i class="ph ph-sign-out" aria-hidden="true"></i>
-                      <span>Sign out</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            {{else}}
-              {{#unless @site.members_invite_only}}
-                <div class="navbar-item default-header__auth-pair">
-                  <a class="default-header__btn default-header__btn--ghost"
-                     href="#/portal/signin" data-portal="signin">
-                    <i class="ph ph-sign-in" aria-hidden="true"></i>
-                    <span>Sign in</span>
-                  </a>
-                  <a class="default-header__btn default-header__btn--primary"
-                     href="#/portal/signup" data-portal="signup">
-                    <i class="ph ph-user-plus" aria-hidden="true"></i>
-                    <span>Join free</span>
-                  </a>
-                </div>
-              {{else}}
-                <div class="navbar-item">
-                  <a class="default-header__btn default-header__btn--primary"
-                     href="#/portal/signin" data-portal="signin">
-                    <i class="ph ph-sign-in" aria-hidden="true"></i>
-                    <span>Sign in</span>
-                  </a>
-                </div>
-              {{/unless}}
-            {{/if}}
-          {{/if}}
-          {{!-- Donate icon — always last, desktop only --}}
-          <div class="navbar-item is-hidden-touch">
-            <a class="default-header__donate-btn"
-               href="https://github.com/sponsors/imswarnil"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Sponsor this project on GitHub Sponsors">
-              <i class="ph-fill ph-heart" aria-hidden="true"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </nav>
-</header>
-
-{{/has}}{{/post}}{{else}}
-
-{{!-- ──────────────────────────────────────────────────────────────────
-  DEFAULT HEADER  (non-post pages: home, tags, authors, etc.)
-  Identical markup to the post default above.
-────────────────────────────────────────────────────────────────────── --}}
-<header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
-        role="banner" id="siteHeader">
-  <nav class="navbar default-header__navbar" role="navigation"
-       aria-label="Main navigation">
-    <div class="container default-header__wrap">
-      <div class="navbar-brand default-header__brand-group">
-        <a class="navbar-item default-header__brand"
-           href="{{@site.url}}" aria-label="{{@site.title}} — go to homepage">
-          {{#if @site.logo}}
-            <img src="{{@site.logo}}" alt="{{@site.title}}"
-                 class="default-header__logo" width="32" height="32">
-          {{/if}}
-          <span class="default-header__title">{{@site.title}}</span>
-        </a>
-        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
-        <div class="default-header__learn-wrap is-hidden-touch" id="learnDropdownWrapP">
-          <button class="default-header__learn-btn" type="button"
-                  id="learnDropdownBtnP"
-                  aria-haspopup="true" aria-expanded="false">
-            <i class="ph ph-graduation-cap" aria-hidden="true"></i>
-            <span>Learn</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="learnDropdownP" hidden>
-            <p class="default-header__learn-heading">Learning Paths</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="/training/">
-                <span class="default-header__learn-icon"><i class="ph ph-user-gear" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Admin</strong><small>Manage orgs &amp; users</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/courses/">
-                <span class="default-header__learn-icon"><i class="ph ph-code" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Developer</strong><small>Apex, LWC &amp; APIs</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/courses/">
-                <span class="default-header__learn-icon"><i class="ph ph-chart-line-up" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Analytics</strong><small>CRM Analytics &amp; CRMA</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/certifications/">
-                <span class="default-header__learn-icon"><i class="ph ph-trophy" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Exam Prep</strong><small>Cert study guides</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/resources/">
-                <span class="default-header__learn-icon"><i class="ph ph-books" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Resources</strong><small>Books, tools &amp; more</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/videos/">
-                <span class="default-header__learn-icon"><i class="ph ph-play-circle" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Videos</strong><small>Watch &amp; learn</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="/courses/" class="default-header__learn-all">
-                Browse all courses
-                <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="default-header__mobile-tools is-hidden-desktop">
-          <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search>
+          <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search data-sound="swoosh">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </button>
           <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
             <i class="ph ph-moon" aria-hidden="true"></i>
           </button>
-          <button class="default-header__burger" type="button"
-                  id="defaultNavBurger" aria-label="Toggle menu"
-                  aria-expanded="false" aria-controls="defaultNavMenu">
+          <button class="default-header__burger" type="button" id="blogNavBurger"
+                  aria-label="Toggle menu" aria-expanded="false" aria-controls="blogNavMenu"
+                  data-sound="tok">
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
           </button>
         </div>
       </div>
-      <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
-        <div class="navbar-start default-header__nav" id="defaultNavLinks">
-          {{navigation}}
-        </div>
+
+      <div id="blogNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
+        <div class="navbar-start default-header__nav" id="blogNavLinks">{{navigation}}</div>
         <div class="navbar-end default-header__actions">
           <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search>
+            <button class="default-header__icon-btn" type="button" aria-label="Search"
+                    data-ghost-search data-sound="swoosh">
               <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
             </button>
           </div>
           <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode"
+                    data-theme-toggle>
               <i class="ph ph-moon" aria-hidden="true"></i>
             </button>
           </div>
+          <div class="navbar-item">
+            <a class="default-header__cta default-header__cta--author" href="/contact/?ref=author">
+              <i class="ph ph-pencil-line" aria-hidden="true"></i>
+              <span>Become Author</span>
+            </a>
+          </div>
+          {{!-- Auth --}}
           {{#if @site.members_enabled}}
             {{#if @member}}
               <div class="navbar-item">
                 <div class="default-header__account-wrap" id="accountWrap">
-                  <button class="default-header__account-btn" type="button"
-                          id="accountBtn" aria-label="Account menu"
-                          aria-expanded="false" aria-haspopup="true">
+                  <button class="default-header__account-btn" type="button" id="accountBtn"
+                          aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
                     {{#if @member.avatar_image}}
                       <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
                            class="default-header__account-avatar" width="28" height="28">
@@ -756,16 +366,490 @@
               {{/unless}}
             {{/if}}
           {{/if}}
+          {{!-- GitHub button --}}
           <div class="navbar-item is-hidden-touch">
-            <a class="default-header__donate-btn"
+            <a class="default-header__github-btn"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Star on GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
+            </a>
+          </div>
+          {{!-- Donate — $ icon --}}
+          <div class="navbar-item is-hidden-touch">
+            <a class="default-header__donate-btn" id="donateBtnBlog"
                href="https://github.com/sponsors/imswarnil"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Sponsor this project on GitHub Sponsors">
-              <i class="ph-fill ph-heart" aria-hidden="true"></i>
+               aria-label="Sponsor this project">
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
             </a>
           </div>
         </div>
       </div>
+
+    </div>
+  </nav>
+</header>
+<div class="blog-header__progress-strip" id="blogReadingStrip"
+     role="progressbar" aria-label="Reading progress"
+     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="blog-header__progress-fill" id="blogReadingFill"></div>
+</div>
+
+{{else}}
+
+{{!-- ──────────────────────────────────────────────────────────────────────
+  DEFAULT HEADER  (all post types that aren't #lesson or #blog)
+────────────────────────────────────────────────────────────────────────── --}}
+<header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
+        role="banner" id="siteHeader">
+  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+    <div class="container default-header__wrap">
+
+      <div class="navbar-brand default-header__brand-group">
+        <div class="default-header__brand-wrap">
+          <a class="navbar-item default-header__brand" href="{{@site.url}}"
+             aria-label="{{@site.title}} — go to homepage" id="brandLink">
+            {{#if @site.logo}}
+              <img src="{{@site.logo}}" alt="{{@site.title}}"
+                   class="default-header__logo" width="32" height="32">
+            {{/if}}
+            <span class="default-header__title" id="brandTitle">{{@site.title}}</span>
+          </a>
+          <button class="default-header__brand-speak" type="button"
+                  id="brandSpeakBtn" aria-label="Pronounce site name">
+            <i class="ph ph-speaker-simple-high" aria-hidden="true"></i>
+          </button>
+        </div>
+        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+
+        {{!-- Contribute dropdown --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="contributeWrap">
+          <button class="default-header__learn-btn" type="button" id="contributeBtn"
+                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
+            <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+            <span>Contribute</span>
+            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
+          </button>
+          <div class="default-header__learn-panel" id="contributePanel" hidden>
+            <p class="default-header__learn-heading">Get Involved</p>
+            <div class="default-header__learn-grid">
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>GitHub</strong><small>Star &amp; fork the repo</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-bug" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-git-pull-request" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Pull Request</strong><small>Submit improvements</small></span>
+              </a>
+              <a class="default-header__learn-item" href="/contact/?ref=write">
+                <span class="default-header__learn-icon"><i class="ph ph-pencil-line" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Write a Post</strong><small>Share your knowledge</small></span>
+              </a>
+            </div>
+            <div class="default-header__learn-footer">
+              <a href="https://github.com/imswarnil/Namaste-Salesforce" class="default-header__learn-all" target="_blank" rel="noopener noreferrer">
+                View on GitHub <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Products dropdown --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="productsWrap">
+          <button class="default-header__learn-btn" type="button" id="productsBtn"
+                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
+            <i class="ph ph-squares-four" aria-hidden="true"></i>
+            <span>Products</span>
+            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
+          </button>
+          <div class="default-header__learn-panel" id="productsPanel" hidden>
+            <p class="default-header__learn-heading">Tools I Use</p>
+            <div class="default-header__learn-grid">
+              <a class="default-header__learn-item" href="https://ghost.org" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-ghost" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Ghost CMS</strong><small>This site is built on Ghost</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-cursor" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Cursor</strong><small>AI-powered code editor</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-triangle" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Vercel</strong><small>Deployment &amp; hosting</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://www.figma.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-figma-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Figma</strong><small>Design &amp; prototyping</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://notion.so" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-note-blank" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Notion</strong><small>Notes &amp; planning</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-phosphor-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Phosphor Icons</strong><small>Icon set used across site</small></span>
+              </a>
+            </div>
+            <div class="default-header__learn-footer">
+              <a href="/resources/?filter=tool" class="default-header__learn-all">
+                All resources <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Mobile tools --}}
+        <div class="default-header__mobile-tools is-hidden-desktop">
+          <button class="default-header__icon-btn" type="button" aria-label="Search"
+                  data-ghost-search data-sound="swoosh">
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__burger" type="button" id="defaultNavBurger"
+                  aria-label="Toggle menu" aria-expanded="false" aria-controls="defaultNavMenu"
+                  data-sound="tok">
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
+        <div class="navbar-start default-header__nav" id="defaultNavLinks">{{navigation}}</div>
+        <div class="navbar-end default-header__actions">
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Search"
+                    data-ghost-search data-sound="swoosh">
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+          {{#is "post"}}{{#post}}
+            {{#has tag="#course"}}
+              <div class="navbar-item">
+                <a class="default-header__cta default-header__cta--instructor" href="/contact/?ref=instructor">
+                  <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
+                  <span>Become Instructor</span>
+                </a>
+              </div>
+            {{/has}}
+          {{/post}}{{/is}}
+          {{!-- Auth --}}
+          {{#if @site.members_enabled}}
+            {{#if @member}}
+              <div class="navbar-item">
+                <div class="default-header__account-wrap" id="accountWrap">
+                  <button class="default-header__account-btn" type="button" id="accountBtn"
+                          aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
+                    {{#if @member.avatar_image}}
+                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                           class="default-header__account-avatar" width="28" height="28">
+                    {{else}}
+                      <i class="ph-fill ph-user-circle default-header__account-icon" aria-hidden="true"></i>
+                    {{/if}}
+                    <span class="default-header__account-name-label is-hidden-mobile">{{@member.name}}</span>
+                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
+                  </button>
+                  <div class="default-header__account-dropdown" id="accountDropdown" hidden>
+                    <div class="default-header__account-header">
+                      <p class="default-header__account-name">{{@member.name}}</p>
+                      <p class="default-header__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span>
+                    </a>
+                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span>
+                    </a>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
+                       href="javascript:void(0)" data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              {{#unless @site.members_invite_only}}
+                <div class="navbar-item default-header__auth-pair">
+                  <a class="default-header__btn default-header__btn--ghost"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signup" data-portal="signup">
+                    <i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span>
+                  </a>
+                </div>
+              {{else}}
+                <div class="navbar-item">
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                </div>
+              {{/unless}}
+            {{/if}}
+          {{/if}}
+          {{!-- GitHub --}}
+          <div class="navbar-item is-hidden-touch">
+            <a class="default-header__github-btn"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Star on GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
+            </a>
+          </div>
+          {{!-- Donate --}}
+          <div class="navbar-item is-hidden-touch">
+            <a class="default-header__donate-btn" id="donateBtn"
+               href="https://github.com/sponsors/imswarnil"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Sponsor this project">
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+</header>
+
+{{/has}}{{/post}}{{else}}
+
+{{!-- ──────────────────────────────────────────────────────────────────────
+  DEFAULT HEADER  (non-post pages: home, index, tags, authors, etc.)
+────────────────────────────────────────────────────────────────────────── --}}
+<header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
+        role="banner" id="siteHeader">
+  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+    <div class="container default-header__wrap">
+
+      <div class="navbar-brand default-header__brand-group">
+        <div class="default-header__brand-wrap">
+          <a class="navbar-item default-header__brand" href="{{@site.url}}"
+             aria-label="{{@site.title}} — go to homepage" id="brandLink">
+            {{#if @site.logo}}
+              <img src="{{@site.logo}}" alt="{{@site.title}}"
+                   class="default-header__logo" width="32" height="32">
+            {{/if}}
+            <span class="default-header__title" id="brandTitle">{{@site.title}}</span>
+          </a>
+          <button class="default-header__brand-speak" type="button"
+                  id="brandSpeakBtn" aria-label="Pronounce site name">
+            <i class="ph ph-speaker-simple-high" aria-hidden="true"></i>
+          </button>
+        </div>
+        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+
+        {{!-- Contribute dropdown --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="contributeWrap">
+          <button class="default-header__learn-btn" type="button" id="contributeBtn"
+                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
+            <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+            <span>Contribute</span>
+            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
+          </button>
+          <div class="default-header__learn-panel" id="contributePanel" hidden>
+            <p class="default-header__learn-heading">Get Involved</p>
+            <div class="default-header__learn-grid">
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>GitHub</strong><small>Star &amp; fork the repo</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-bug" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-git-pull-request" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Pull Request</strong><small>Submit improvements</small></span>
+              </a>
+              <a class="default-header__learn-item" href="/contact/?ref=write">
+                <span class="default-header__learn-icon"><i class="ph ph-pencil-line" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Write a Post</strong><small>Share your knowledge</small></span>
+              </a>
+            </div>
+            <div class="default-header__learn-footer">
+              <a href="https://github.com/imswarnil/Namaste-Salesforce" class="default-header__learn-all" target="_blank" rel="noopener noreferrer">
+                View on GitHub <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Products dropdown --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="productsWrap">
+          <button class="default-header__learn-btn" type="button" id="productsBtn"
+                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
+            <i class="ph ph-squares-four" aria-hidden="true"></i>
+            <span>Products</span>
+            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
+          </button>
+          <div class="default-header__learn-panel" id="productsPanel" hidden>
+            <p class="default-header__learn-heading">Tools I Use</p>
+            <div class="default-header__learn-grid">
+              <a class="default-header__learn-item" href="https://ghost.org" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-ghost" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Ghost CMS</strong><small>This site is built on Ghost</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-cursor" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Cursor</strong><small>AI-powered code editor</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-triangle" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Vercel</strong><small>Deployment &amp; hosting</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://www.figma.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-figma-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Figma</strong><small>Design &amp; prototyping</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://notion.so" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-note-blank" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Notion</strong><small>Notes &amp; planning</small></span>
+              </a>
+              <a class="default-header__learn-item" href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">
+                <span class="default-header__learn-icon"><i class="ph ph-phosphor-logo" aria-hidden="true"></i></span>
+                <span class="default-header__learn-label"><strong>Phosphor Icons</strong><small>Icon set used across site</small></span>
+              </a>
+            </div>
+            <div class="default-header__learn-footer">
+              <a href="/resources/?filter=tool" class="default-header__learn-all">
+                All resources <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Mobile tools --}}
+        <div class="default-header__mobile-tools is-hidden-desktop">
+          <button class="default-header__icon-btn" type="button" aria-label="Search"
+                  data-ghost-search data-sound="swoosh">
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__burger" type="button" id="defaultNavBurger"
+                  aria-label="Toggle menu" aria-expanded="false" aria-controls="defaultNavMenu"
+                  data-sound="tok">
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
+        <div class="navbar-start default-header__nav" id="defaultNavLinks">{{navigation}}</div>
+        <div class="navbar-end default-header__actions">
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Search"
+                    data-ghost-search data-sound="swoosh">
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+          {{#if @site.members_enabled}}
+            {{#if @member}}
+              <div class="navbar-item">
+                <div class="default-header__account-wrap" id="accountWrap">
+                  <button class="default-header__account-btn" type="button" id="accountBtn"
+                          aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
+                    {{#if @member.avatar_image}}
+                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                           class="default-header__account-avatar" width="28" height="28">
+                    {{else}}
+                      <i class="ph-fill ph-user-circle default-header__account-icon" aria-hidden="true"></i>
+                    {{/if}}
+                    <span class="default-header__account-name-label is-hidden-mobile">{{@member.name}}</span>
+                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
+                  </button>
+                  <div class="default-header__account-dropdown" id="accountDropdown" hidden>
+                    <div class="default-header__account-header">
+                      <p class="default-header__account-name">{{@member.name}}</p>
+                      <p class="default-header__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span>
+                    </a>
+                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span>
+                    </a>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
+                       href="javascript:void(0)" data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              {{#unless @site.members_invite_only}}
+                <div class="navbar-item default-header__auth-pair">
+                  <a class="default-header__btn default-header__btn--ghost"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signup" data-portal="signup">
+                    <i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span>
+                  </a>
+                </div>
+              {{else}}
+                <div class="navbar-item">
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                </div>
+              {{/unless}}
+            {{/if}}
+          {{/if}}
+          {{!-- GitHub --}}
+          <div class="navbar-item is-hidden-touch">
+            <a class="default-header__github-btn"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Star on GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
+            </a>
+          </div>
+          {{!-- Donate --}}
+          <div class="navbar-item is-hidden-touch">
+            <a class="default-header__donate-btn" id="donateBtn"
+               href="https://github.com/sponsors/imswarnil"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Sponsor this project">
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </nav>
 </header>
@@ -773,77 +857,159 @@
 {{/is}}
 
 {{!-- ════════════════════════════════════════════════════════════════════
-  SHARED JAVASCRIPT  (runs for all three variants)
+  SHARED JAVASCRIPT
 ════════════════════════════════════════════════════════════════════════ --}}
 <script>
 (function () {
   'use strict';
 
-  // ─── Theme sounds ──────────────────────────────────────────────────────────
-  var prefersNoMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ─── Web Audio helpers ────────────────────────────────────────────────────
+  function makeCtx() {
+    try { return new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+  }
+
+  // Theme: rooster chirp (light) ← 3 ascending sine tones
   function playRooster() {
-    if (prefersNoMotion) return;
-    try {
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      // Three ascending chirps: C5 → E5 → G5
-      [523, 659, 784].forEach(function (f, i) {
-        var osc  = ctx.createOscillator();
-        var gain = ctx.createGain();
-        var t    = ctx.currentTime + i * 0.14;
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(f * 0.84, t);
-        osc.frequency.exponentialRampToValueAtTime(f, t + 0.05);
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.14, t + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(t); osc.stop(t + 0.22);
-      });
-      setTimeout(function () { try { ctx.close(); } catch (e) {} }, 800);
-    } catch (e) {}
+    if (noMotion) return;
+    var ctx = makeCtx(); if (!ctx) return;
+    [523, 659, 784].forEach(function (f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.14;
+      o.type = 'sine';
+      o.frequency.setValueAtTime(f * 0.84, t);
+      o.frequency.exponentialRampToValueAtTime(f, t + 0.05);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.14, t + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.22);
+    });
+    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 800);
   }
 
+  // Theme: owl hoot (dark) ← 2 descending sine hoots
   function playOwl() {
-    if (prefersNoMotion) return;
-    try {
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      // Two descending hoots: G4 → D4
-      [392, 294].forEach(function (f, i) {
-        var osc  = ctx.createOscillator();
-        var gain = ctx.createGain();
-        var t    = ctx.currentTime + i * 0.3;
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(f, t);
-        osc.frequency.exponentialRampToValueAtTime(f * 0.87, t + 0.22);
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.11, t + 0.06);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(t); osc.stop(t + 0.36);
-      });
-      setTimeout(function () { try { ctx.close(); } catch (e) {} }, 900);
-    } catch (e) {}
+    if (noMotion) return;
+    var ctx = makeCtx(); if (!ctx) return;
+    [392, 294].forEach(function (f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.3;
+      o.type = 'sine';
+      o.frequency.setValueAtTime(f, t);
+      o.frequency.exponentialRampToValueAtTime(f * 0.87, t + 0.22);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.11, t + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.36);
+    });
+    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 900);
   }
 
-  // ─── Theme toggle ──────────────────────────────────────────────────────────
-  var SK  = 'site-color-scheme';
-  var doc = document.documentElement;
+  // Menu burger: soft "tok" click — short filtered noise burst
+  function playTok() {
+    if (noMotion) return;
+    var ctx = makeCtx(); if (!ctx) return;
+    var buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    for (var i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (data.length * 0.15));
+    var src = ctx.createBufferSource(), g = ctx.createGain();
+    var filt = ctx.createBiquadFilter();
+    filt.type = 'bandpass'; filt.frequency.value = 1200; filt.Q.value = 1.5;
+    src.buffer = buf;
+    g.gain.setValueAtTime(0.35, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+    src.connect(filt); filt.connect(g); g.connect(ctx.destination);
+    src.start(); src.stop(ctx.currentTime + 0.07);
+    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 200);
+  }
 
+  // Dropdown pop: very short high-freq tick
+  function playPop() {
+    if (noMotion) return;
+    var ctx = makeCtx(); if (!ctx) return;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(900, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.04);
+    g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + 0.055);
+    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 200);
+  }
+
+  // Search swoosh: frequency-swept noise burst
+  function playSwoosh() {
+    if (noMotion) return;
+    var ctx = makeCtx(); if (!ctx) return;
+    var buf = ctx.createBuffer(1, ctx.sampleRate * 0.22, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (d.length * 0.38));
+    var src = ctx.createBufferSource(), g = ctx.createGain();
+    var filt = ctx.createBiquadFilter();
+    filt.type = 'highpass';
+    filt.frequency.setValueAtTime(200, ctx.currentTime);
+    filt.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + 0.18);
+    src.buffer = buf;
+    g.gain.setValueAtTime(0.22, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    src.connect(filt); filt.connect(g); g.connect(ctx.destination);
+    src.start(); src.stop(ctx.currentTime + 0.25);
+    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 400);
+  }
+
+  // Dollar hover: sparkly coins ← 4 short high pings at random pitches
+  function playCoins() {
+    if (noMotion) return;
+    var ctx = makeCtx(); if (!ctx) return;
+    [1800, 2200, 2600, 2000].forEach(function (f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      var t = ctx.currentTime + i * 0.045;
+      o.type = 'sine';
+      o.frequency.setValueAtTime(f + Math.random() * 300, t);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.09, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.13);
+    });
+    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 600);
+  }
+
+  // Route data-sound attribute to the right sound function
+  function soundFor(type) {
+    if (type === 'tok')    return playTok;
+    if (type === 'pop')    return playPop;
+    if (type === 'swoosh') return playSwoosh;
+    return function () {};
+  }
+
+  // Wire data-sound clicks (burger, dropdown triggers, search)
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-sound]');
+    if (el) soundFor(el.getAttribute('data-sound'))();
+  });
+
+  // Dollar hover
+  document.querySelectorAll('.default-header__donate-btn').forEach(function (btn) {
+    btn.addEventListener('mouseenter', playCoins);
+  });
+
+  // ─── Theme toggle ─────────────────────────────────────────────────────────
+  var SK = 'site-color-scheme';
+  var doc = document.documentElement;
   function getTheme() { return doc.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
   function applyTheme(t) { doc.setAttribute('data-color-scheme', t); localStorage.setItem(SK, t); syncUI(t); }
   function syncUI(t) {
-    var dark = t === 'dark';
+    var dk = t === 'dark';
     document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
       var ic = b.querySelector('i');
-      if (ic) ic.className = dark ? 'ph ph-sun-dim' : 'ph ph-moon';
-      b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      if (ic) ic.className = dk ? 'ph ph-sun-dim' : 'ph ph-moon';
+      b.setAttribute('aria-label', dk ? 'Switch to light mode' : 'Switch to dark mode');
     });
   }
-
   var sv = localStorage.getItem(SK);
   syncUI((sv === 'light' || sv === 'dark') ? sv : getTheme());
-
   document.addEventListener('click', function (e) {
     if (!e.target.closest('[data-theme-toggle]')) return;
     var next = getTheme() === 'dark' ? 'light' : 'dark';
@@ -851,7 +1017,95 @@
     if (next === 'light') playRooster(); else playOwl();
   });
 
-  // ─── Mobile burger (default + blog) ───────────────────────────────────────
+  // ─── Brand title animation ────────────────────────────────────────────────
+  // 10 languages cycling fast with wobble. Each title instance gets
+  // the same animation; JS finds the first .default-header__title on page.
+  var langVersions = [
+    'Namaste Salesforce',   // English
+    'नमस्ते Salesforce',     // Hindi
+    'नमस्कार Salesforce',   // Marathi
+    'ナマステ Salesforce',   // Japanese
+    '안녕 Salesforce',       // Korean
+    'مرحبا Salesforce',     // Arabic
+    'Bonjour Salesforce',   // French
+    'Hola Salesforce',      // Spanish
+    'Olá Salesforce',       // Portuguese
+    'Привет Salesforce',    // Russian
+  ];
+
+  var brandEl = document.getElementById('brandTitle');
+  if (brandEl) {
+    var langIdx = 0;
+    var isAnimating = false;
+
+    function wobbleTo(nextText) {
+      if (isAnimating) return;
+      isAnimating = true;
+      brandEl.classList.add('brand-title--wobble-out');
+      setTimeout(function () {
+        brandEl.textContent = nextText;
+        brandEl.classList.remove('brand-title--wobble-out');
+        brandEl.classList.add('brand-title--wobble-in');
+        setTimeout(function () {
+          brandEl.classList.remove('brand-title--wobble-in');
+          isAnimating = false;
+        }, 220);
+      }, 180);
+    }
+
+    // Auto-cycle every 2.4 s
+    setInterval(function () {
+      langIdx = (langIdx + 1) % langVersions.length;
+      wobbleTo(langVersions[langIdx]);
+    }, 2400);
+  }
+
+  // ─── Brand speak button ───────────────────────────────────────────────────
+  // Cycles through different voices / pitches on each click
+  var speakIdx = 0;
+  var speakVariants = [
+    { pitch: 1.0, rate: 0.95, volume: 1 },
+    { pitch: 1.4, rate: 1.1,  volume: 0.9 },
+    { pitch: 0.7, rate: 0.85, volume: 1 },
+    { pitch: 1.8, rate: 1.3,  volume: 0.85 },
+    { pitch: 0.5, rate: 0.75, volume: 1 },
+  ];
+
+  var speakBtn = document.getElementById('brandSpeakBtn');
+  if (speakBtn && 'speechSynthesis' in window) {
+    speakBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      playPop();
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance('Namaste Salesforce');
+      var v = speakVariants[speakIdx % speakVariants.length];
+      u.lang   = 'en-IN';
+      u.pitch  = v.pitch;
+      u.rate   = v.rate;
+      u.volume = v.volume;
+      // Try to use an Indian English voice if available
+      var voices = window.speechSynthesis.getVoices();
+      var preferred = voices.find(function (vo) { return /en.IN|en.US/i.test(vo.lang); });
+      if (preferred) u.voice = preferred;
+      window.speechSynthesis.speak(u);
+      speakIdx++;
+      // Wiggle the icon as feedback
+      var icon = speakBtn.querySelector('i');
+      if (icon) {
+        icon.classList.add('brand-speak--active');
+        setTimeout(function () { icon.classList.remove('brand-speak--active'); }, 500);
+      }
+    });
+    // Load voices (some browsers need this)
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = function () {};
+    }
+  } else if (speakBtn) {
+    speakBtn.hidden = true; // hide if TTS not supported
+  }
+
+  // ─── Mobile burger ────────────────────────────────────────────────────────
   function initBurger(burgerId, menuId) {
     var burger = document.getElementById(burgerId);
     var menu   = document.getElementById(menuId);
@@ -878,7 +1132,7 @@
   initBurger('defaultNavBurger', 'defaultNavMenu');
   initBurger('blogNavBurger',    'blogNavMenu');
 
-  // ─── Generic dropdown factory ──────────────────────────────────────────────
+  // ─── Generic dropdown factory ─────────────────────────────────────────────
   function makeDropdown(btnId, panelId, wrapId) {
     var btn   = document.getElementById(btnId);
     var panel = document.getElementById(panelId);
@@ -893,39 +1147,41 @@
     });
     document.addEventListener('click', function (e) {
       if (wrap && !wrap.contains(e.target)) {
-        panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('is-open');
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+        btn.classList.remove('is-open');
       }
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !panel.hidden) {
-        panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('is-open'); btn.focus();
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+        btn.classList.remove('is-open');
+        btn.focus();
       }
     });
   }
-  makeDropdown('learnDropdownBtn',  'learnDropdown',  'learnDropdownWrap');
-  makeDropdown('learnDropdownBtnP', 'learnDropdownP', 'learnDropdownWrapP');
-  makeDropdown('topicsDropdownBtn', 'topicsDropdown', 'topicsDropdownWrap');
-  makeDropdown('accountBtn',        'accountDropdown','accountWrap');
+  makeDropdown('contributeBtn', 'contributePanel', 'contributeWrap');
+  makeDropdown('productsBtn',   'productsPanel',   'productsWrap');
+  makeDropdown('accountBtn',    'accountDropdown', 'accountWrap');
 
-  // ─── Member initials (fallback when no avatar) ─────────────────────────────
+  // ─── Member initials ──────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
-    var initialsEl = document.getElementById('memberInitials');
-    if (initialsEl) {
-      var nameEl = document.querySelector('.default-header__account-name');
-      if (nameEl) {
-        initialsEl.textContent = nameEl.textContent.trim()
-          .split(/\s+/).map(function (w) { return w[0] || ''; }).slice(0, 2).join('').toUpperCase();
-      }
+    var el = document.getElementById('memberInitials');
+    if (el) {
+      var n = document.querySelector('.default-header__account-name');
+      if (n) el.textContent = n.textContent.trim()
+        .split(/\s+/).map(function (w) { return w[0] || ''; }).slice(0, 2).join('').toUpperCase();
     }
   });
 
-  // ─── Nav dropdown builder ──────────────────────────────────────────────────
+  // ─── Nav dropdown builder ─────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {
-    ['defaultNavLinks', 'blogNavLinks'].forEach(function (navId) {
-      var nav = document.getElementById(navId);
+    ['defaultNavLinks', 'blogNavLinks'].forEach(function (id) {
+      var nav = document.getElementById(id);
       if (!nav) return;
       var items = Array.from(nav.querySelectorAll('.default-header__nav-item'));
-      var cur   = null;
+      var cur = null;
       items.forEach(function (el) {
         if (el.getAttribute('data-child') === 'true' && cur) {
           var lbl = el.querySelector('.default-header__nav-label');
@@ -983,57 +1239,46 @@
     });
   });
 
-  // ─── Course header ─────────────────────────────────────────────────────────
+  // ─── Course header ────────────────────────────────────────────────────────
   (function () {
-    var titleBtn  = document.getElementById('coursePanelBurger');
-    var burgerBtn = document.getElementById('courseBurgerBtn');
-    var panel     = document.getElementById('courseLessonPanel');
-    if (!panel) return;
-    function togglePanel(force) {
-      var open = force !== undefined ? force : !panel.classList.contains('is-open');
-      panel.classList.toggle('is-open', open);
-      panel.setAttribute('aria-hidden', String(!open));
-      [titleBtn, burgerBtn].forEach(function (b) { if (b) b.setAttribute('aria-expanded', String(open)); });
-      if (titleBtn) {
-        var c = titleBtn.querySelector('.course-header__title-caret');
-        if (c) c.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
-      }
-      if (burgerBtn) burgerBtn.classList.toggle('is-open', open);
+    var tb = document.getElementById('coursePanelBurger');
+    var bb = document.getElementById('courseBurgerBtn');
+    var p  = document.getElementById('courseLessonPanel');
+    if (!p) return;
+    function tp(force) {
+      var open = force !== undefined ? force : !p.classList.contains('is-open');
+      p.classList.toggle('is-open', open);
+      p.setAttribute('aria-hidden', String(!open));
+      [tb, bb].forEach(function (b) { if (b) b.setAttribute('aria-expanded', String(open)); });
+      if (tb) { var c = tb.querySelector('.course-header__title-caret'); if (c) c.style.transform = open ? 'rotate(180deg)' : ''; }
+      if (bb) bb.classList.toggle('is-open', open);
     }
-    [titleBtn, burgerBtn].forEach(function (b) { if (b) b.addEventListener('click', function () { togglePanel(); }); });
+    [tb, bb].forEach(function (b) { if (b) b.addEventListener('click', function () { playPop(); tp(); }); });
     document.addEventListener('click', function (e) {
-      if (panel.classList.contains('is-open') &&
-          !panel.contains(e.target) &&
-          !(titleBtn && titleBtn.contains(e.target)) &&
-          !(burgerBtn && burgerBtn.contains(e.target))) togglePanel(false);
+      if (p.classList.contains('is-open') && !p.contains(e.target) && !(tb&&tb.contains(e.target)) && !(bb&&bb.contains(e.target))) tp(false);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && panel.classList.contains('is-open')) {
-        togglePanel(false); if (burgerBtn) burgerBtn.focus();
-      }
+      if (e.key === 'Escape' && p.classList.contains('is-open')) { tp(false); if (bb) bb.focus(); }
     });
     document.addEventListener('DOMContentLoaded', function () {
-      var active = document.querySelector('.course-header__lesson-link.is-active');
-      var badge  = document.getElementById('lessonBadgeText');
-      if (active && badge) {
-        badge.textContent = (active.getAttribute('data-lesson-num') || '?') +
-                            ' / ' + (active.getAttribute('data-lesson-total') || '?');
-      }
-      if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      var a = document.querySelector('.course-header__lesson-link.is-active');
+      var bx = document.getElementById('lessonBadgeText');
+      if (a && bx) bx.textContent = (a.getAttribute('data-lesson-num')||'?') + ' / ' + (a.getAttribute('data-lesson-total')||'?');
+      if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
   })();
 
-  // ─── Blog reading progress ─────────────────────────────────────────────────
+  // ─── Blog reading progress ────────────────────────────────────────────────
   (function () {
     var fill  = document.getElementById('blogReadingFill');
     var strip = document.getElementById('blogReadingStrip');
     if (!fill) return;
-    function update() {
-      var content = document.querySelector('.gh-content, .js-post-content');
+    function upd() {
+      var c = document.querySelector('.gh-content, .js-post-content');
       var pct;
-      if (content) {
-        var s = content.getBoundingClientRect().top + window.scrollY;
-        var e = s + content.offsetHeight - window.innerHeight;
+      if (c) {
+        var s = c.getBoundingClientRect().top + window.scrollY;
+        var e = s + c.offsetHeight - window.innerHeight;
         pct = Math.min(100, Math.max(0, Math.round(((window.scrollY - s) / Math.max(1, e - s)) * 100)));
       } else {
         pct = Math.min(100, Math.round(window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight) * 100));
@@ -1041,9 +1286,9 @@
       fill.style.width = pct + '%';
       if (strip) strip.setAttribute('aria-valuenow', pct);
     }
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update, { passive: true });
-    update();
+    window.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd, { passive: true });
+    upd();
   })();
 
 })();

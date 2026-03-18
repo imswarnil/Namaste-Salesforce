@@ -1151,3 +1151,198 @@ $_burger:  2.125rem;
   background:    var(--theme-brand);
   flex-shrink:   0;
 }
+
+
+// =============================================================================
+//  NEW ADDITIONS
+//  .default-header__brand-wrap  — positions title + speaker button together
+//  .default-header__brand-speak — small speaker icon next to brand title
+//  .default-header__donate-btn  — dollar $ icon (replaces heart)
+//  .default-header__github-btn  — GitHub star button
+//  Brand animation keyframes    — wobble-out / wobble-in cycles
+// =============================================================================
+
+// ── Brand wrap + animated title ───────────────────────────────────────────────
+
+.default-header__brand-wrap {
+  display:     flex;
+  align-items: center;
+  gap:         0;
+  position:    relative;
+}
+
+// The brand <a> stays the same; title span gets animation classes from JS
+.default-header__title {
+  display:            inline-block;
+  transform-origin:   left center;
+  will-change:        transform, opacity;
+}
+
+// Wobble out — scale + skew left, fade
+@keyframes brand-wobble-out {
+  0%   { transform: scaleX(1)    translateY(0)    skewX(0deg);   opacity: 1; }
+  40%  { transform: scaleX(0.85) translateY(-2px) skewX(-6deg);  opacity: 0.5; }
+  100% { transform: scaleX(0.7)  translateY(-4px) skewX(-10deg); opacity: 0; }
+}
+
+// Wobble in — snap from right, settle
+@keyframes brand-wobble-in {
+  0%   { transform: scaleX(1.1)  translateY(3px)  skewX(8deg);  opacity: 0; }
+  60%  { transform: scaleX(0.97) translateY(-1px) skewX(-2deg); opacity: 1; }
+  100% { transform: scaleX(1)    translateY(0)    skewX(0deg);  opacity: 1; }
+}
+
+.brand-title--wobble-out {
+  animation: brand-wobble-out 180ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.brand-title--wobble-in {
+  animation: brand-wobble-in 220ms cubic-bezier(0, 0, 0.2, 1.4) forwards;
+}
+
+// ── Speaker button ────────────────────────────────────────────────────────────
+
+.default-header__brand-speak {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           1.125rem;
+  height:          1.125rem;
+  padding:         0;
+  border:          none;
+  border-radius:   v.$radius-pill;
+  background:      transparent;
+  color:           var(--theme-text-weak);
+  cursor:          pointer;
+  position:        relative;
+  top:             -0.55rem;   // floats to top-right of the brand text
+  margin-left:     0.125rem;
+  flex-shrink:     0;
+  opacity:         0;
+  @include mx.transition(opacity, 140ms, ease);
+
+  i { font-size: 0.625rem; line-height: 1; }
+
+  .default-header__brand-wrap:hover &,
+  &:focus-visible { opacity: 1; }
+
+  &:hover { color: var(--theme-brand); background: var(--slds-brand-tint-1); }
+  &:focus-visible { @include mx.focus-ring(0.1rem); outline: none; opacity: 1; }
+}
+
+// Speaker icon wiggle on speak
+@keyframes speak-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20%      { transform: rotate(-12deg); }
+  50%      { transform: rotate(10deg); }
+  75%      { transform: rotate(-6deg); }
+}
+
+.brand-speak--active {
+  animation: speak-wiggle 500ms ease-in-out 1;
+  color: var(--theme-brand) !important;
+}
+
+
+// ── GitHub star button ─────────────────────────────────────────────────────
+
+.default-header__github-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
+  height:          1.875rem;
+  padding:         0 0.75rem;
+  background:      #24292f;
+  border:          1px solid rgba(255, 255, 255, 0.1);
+  border-radius:   v.$radius-sm;
+  color:           #e6edf3;
+  font-family:     inherit;
+  font-size:       v.$font-size-xs;
+  font-weight:     600;
+  text-decoration: none;
+  white-space:     nowrap;
+  cursor:          pointer;
+  @include mx.motion;
+
+  > i:first-of-type { font-size: 1rem; flex-shrink: 0; }
+
+  .default-header__github-star {
+    font-size:   0.8125rem;
+    color:       #e3b341;
+    opacity:     0;
+    transform:   scale(0.4) rotate(-30deg);
+    @include mx.transition(all, 240ms, cubic-bezier(0.34, 1.56, 0.64, 1));
+  }
+
+  &:hover {
+    background:   #32383f;
+    color:        #ffffff;
+    transform:    translateY(-1px);
+    box-shadow:   0 3px 10px rgba(0, 0, 0, 0.3);
+    .default-header__github-star { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  &:active { transform: translateY(0); box-shadow: none; }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+
+  html[data-color-scheme="dark"] & {
+    background:   #21262d;
+    border-color: #30363d;
+    color:        #c9d1d9;
+    &:hover { background: #30363d; }
+  }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    width:     100%;
+    height:    2.75rem;
+    justify-content: center;
+    font-size: v.$font-size-sm;
+    .default-header__github-star { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+}
+
+
+// ── Donate — dollar icon ──────────────────────────────────────────────────────
+
+.default-header__donate-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           1.875rem;
+  height:          1.875rem;
+  padding:         0;
+  border:          none;
+  border-radius:   v.$radius-sm;
+  background:      transparent;
+  color:           var(--theme-text-weak);
+  text-decoration: none;
+  @include mx.motion;
+
+  i {
+    font-size: 1.0625rem;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: rgba(46, 132, 74, 0.08);
+    color:      #{v.$success-color};
+    i { animation: dollar-bounce 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 1; }
+  }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+@keyframes dollar-bounce {
+  0%   { transform: translateY(0) scale(1); }
+  35%  { transform: translateY(-4px) scale(1.2); }
+  65%  { transform: translateY(1px) scale(0.95); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+
+// ── Reduced motion ────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-title--wobble-out,
+  .brand-title--wobble-in,
+  .brand-speak--active,
+  .default-header__donate-btn i { animation: none !important; }
+}
