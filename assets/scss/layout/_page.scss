@@ -1,0 +1,56 @@
+// =============================================================================
+//  layout/_page.scss
+//  page.hbs and post-default.hbs layouts
+//
+//  Covers:
+//    • page.hbs  — .container.is-max-desktop centered content
+//    • post-default.hbs  — 2-col layout (content + sidebar)
+//      collapses to single column on mobile with sidebar below
+// =============================================================================
+
+@use "../variables" as v;
+@use "../mixins"    as mx;
+
+
+// =============================================================================
+//  PAGE TEMPLATE  (page.hbs)
+// =============================================================================
+
+// Ghost's is-max-desktop is 960px — ensure it doesn't overflow on mobile
+.container.is-max-desktop {
+  max-width: min(960px, 100%);
+  width:     100%;
+}
+
+// Prevent feature images from overflowing on narrow screens
+.post-template figure.image img,
+.page-template figure.image img {
+  width:     100%;
+  height:    auto;
+  display:   block;
+}
+
+
+// =============================================================================
+//  POST DEFAULT  (post-default.hbs)
+//  2-column: main content (is-8-desktop) + sidebar (is-4-desktop)
+// =============================================================================
+
+.post-default-sidebar {
+  @media screen and (min-width: v.$bp-desktop) {
+    position: sticky;
+    top:      calc(var(--slds-header-height) + 1.5rem);
+    align-self: flex-start;
+  }
+}
+
+// Sidebar goes below content on mobile
+@media screen and (max-width: #{v.$bp-desktop - 1px}) {
+  // Bulma column order — sidebar second in DOM, visually after content
+  .columns > .column.is-4-desktop {
+    order: 2;
+  }
+  .columns > .column.is-8-desktop {
+    order: 1;
+  }
+}
