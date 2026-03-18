@@ -1,18 +1,31 @@
 {{!-- =========================================================================
-  header.hbs
-  
-  1. Emits JSON-LD on EVERY page (WebSite + SiteNavigationElement).
-     Child items (label starts with "- ") are excluded from JSON-LD.
-  
-  2. Dispatches to the right header partial:
-       #lesson post  →  partials/header/course.hbs
-       #blog post    →  partials/header/blog.hbs
-       everything    →  partials/header/default.hbs
+  partials/header.hbs  ·  Namaste Salesforce
+  SINGLE FILE — zero sub-partials. All three header variants inline.
+
+  VARIANTS:
+    #lesson post  → Course header  (lesson bar + slide-down panel)
+    #blog   post  → Blog header    (reading progress bar)
+    everything    → Default header
+
+  RIGHT RAIL (default + blog):
+    [Search] [Theme] [Contribute] [Social: Twitter LinkedIn YouTube GitHub★]
+    [Support ▾] [Auth: Sign in / Account]
+
+  OPEN SOURCE PATTERN (replaces Learn + Topics dropdowns):
+    • Contribute pill     → GitHub repo
+    • Support dropdown   → GitHub Sponsors · Buy Me a Coffee
+    • Social icon strip  → Twitter, LinkedIn, YouTube, GitHub (+star count)
+    • Auth block         → Ghost members sign in / account
+
+  NAV DROPDOWNS:
+    Add "- " prefix to a nav label in Ghost Admin to make it a child item.
+    JS builds the dropdown DOM from data-child="true" links.
+
+  JSON-LD:
+    SiteNavigationElement + WebSite emitted on every page.
 ========================================================================== --}}
 
-{{!-- ══════════════════════════════════════════════════════════════════════
-  JSON-LD — emitted on EVERY page, always valid
-══════════════════════════════════════════════════════════════════════════ --}}
+{{!-- ── JSON-LD ──────────────────────────────────────────────────────────── --}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -28,14 +41,11 @@
         "@type": "Organization",
         "@id": "{{@site.url}}/#organization",
         "name": "{{@site.title}}"{{#if @site.logo}},
-        "logo": {
-          "@type": "ImageObject",
-          "url": "{{@site.logo}}"
-        }{{/if}}
+        "logo": { "@type": "ImageObject", "url": "{{@site.logo}}" }{{/if}}
       },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "{{@site.url}}/?s={search_term_string}",
+        "target": { "@type": "EntryPoint", "urlTemplate": "{{@site.url}}/?s={search_term_string}" },
         "query-input": "required name=search_term_string"
       }
     },
@@ -44,15 +54,9 @@
       "@id": "{{@site.url}}/#site-navigation",
       "name": "Site Navigation",
       "itemListElement": [
-        {{!-- Only top-level items (no "- " prefix) → clean JSON-LD --}}
         {{#foreach navigation}}
           {{#match label "~^" "- "}}{{else}}
-          {
-            "@type": "ListItem",
-            "position": {{@number}},
-            "name": "{{label}}",
-            "url": "{{url absolute="true"}}"
-          }{{#unless @last}},{{/unless}}
+          { "@type": "ListItem", "position": {{@number}}, "name": "{{label}}", "url": "{{url absolute="true"}}" }{{#unless @last}},{{/unless}}
           {{/match}}
         {{/foreach}}
       ]
@@ -62,18 +66,945 @@
 </script>
 
 {{!-- ══════════════════════════════════════════════════════════════════════
-  Header dispatch
+  DISPATCH
 ══════════════════════════════════════════════════════════════════════════ --}}
 {{#is "post"}}
-  {{#post}}
-    {{#has tag="#lesson"}}
-      {{> "header/course"}}
-    {{else has tag="#blog"}}
-      {{> "header/blog"}}
-    {{else}}
-      {{> "header/default"}}
-    {{/has}}
-  {{/post}}
+{{#post}}
+{{#has tag="#lesson"}}
+
+{{!-- ════════════════════════════════════════════════════════════════════
+  1. COURSE HEADER
+  #lesson posts only.
+  [← Back] [Lesson title ▾] [3/12  ☰  ✕]
+════════════════════════════════════════════════════════════════════════ --}}
+<header class="course-header site-header" role="banner" id="siteHeader">
+  <div class="course-header__bar">
+    <div class="container is-fluid">
+      <div class="course-header__inner">
+
+        {{!-- Back to course --}}
+        <div class="course-header__left">
+          {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
+            {{#foreach posts}}
+              <a class="course-header__back" href="{{url}}"
+                 aria-label="Back to {{title}}">
+                <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                <span class="course-header__back-title">{{title}}</span>
+              </a>
+            {{else}}
+              <a class="course-header__back" href="/courses/">
+                <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                <span class="course-header__back-title">Courses</span>
+              </a>
+            {{/foreach}}
+          {{/get}}
+        </div>
+
+        {{!-- Lesson title — also opens panel --}}
+        <div class="course-header__center">
+          <button class="course-header__title-btn" type="button"
+                  aria-label="Show all lessons in this course"
+                  aria-expanded="false" aria-controls="courseLessonPanel"
+                  id="coursePanelBurger">
+            <span class="course-header__title">{{title}}</span>
+            <i class="ph ph-caret-down course-header__title-caret" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        {{!-- Right: X/N badge · hamburger · ✕ exit --}}
+        <div class="course-header__right">
+          <span class="course-header__badge" id="lessonBadge" aria-live="polite">
+            <i class="ph ph-list-checks" aria-hidden="true"></i>
+            <span id="lessonBadgeText">…</span>
+          </span>
+          <button class="course-header__burger" type="button"
+                  aria-label="Toggle lesson list" aria-expanded="false"
+                  aria-controls="courseLessonPanel" id="courseBurgerBtn">
+            <span class="course-header__burger-bar" aria-hidden="true"></span>
+            <span class="course-header__burger-bar" aria-hidden="true"></span>
+            <span class="course-header__burger-bar" aria-hidden="true"></span>
+          </button>
+          {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
+            {{#foreach posts}}
+              <a class="course-header__close" href="{{url}}" aria-label="Exit lesson">
+                <i class="ph ph-x" aria-hidden="true"></i>
+              </a>
+            {{else}}
+              <a class="course-header__close" href="/courses/" aria-label="Back to courses">
+                <i class="ph ph-x" aria-hidden="true"></i>
+              </a>
+            {{/foreach}}
+          {{/get}}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {{!-- Lesson slide-down panel --}}
+  <div class="course-header__lesson-panel" id="courseLessonPanel"
+       aria-label="Course lessons" aria-hidden="true">
+    <div class="container is-fluid">
+      <div class="course-header__lesson-wrap">
+        <p class="course-header__lesson-label">
+          <i class="ph ph-list-checks" aria-hidden="true"></i>
+          Course Lessons
+        </p>
+        <ul class="menu-list course-header__lesson-list" id="courseLessonList">
+          {{#get "posts"
+            filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
+            order="published_at asc"
+            limit="100"
+          }}
+            {{#foreach posts}}
+              <li>
+                <a href="{{url}}"
+                   class="course-header__lesson-link{{#match id ../../../../id}} is-active{{/match}}"
+                   data-lesson-num="{{@number}}"
+                   data-lesson-total="{{../length}}">
+                  <span class="course-header__lesson-num">{{@number}}</span>
+                  <span class="course-header__lesson-name">{{title}}</span>
+                  {{#match id ../../../../id}}
+                    <span class="course-header__lesson-dot" aria-label="Current lesson"></span>
+                  {{/match}}
+                </a>
+              </li>
+            {{/foreach}}
+          {{/get}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>
+
+{{else has tag="#blog"}}
+
+{{!-- ════════════════════════════════════════════════════════════════════
+  2. BLOG HEADER
+  #blog posts only.
+  Standard navbar + sticky reading progress bar.
+  No Topics dropdown. Same open-source rail as default.
+════════════════════════════════════════════════════════════════════════ --}}
+<header class="default-header blog-header site-header is-sticky"
+        role="banner" id="siteHeader">
+  <nav class="navbar default-header__navbar" role="navigation"
+       aria-label="Main navigation">
+    <div class="container default-header__wrap">
+
+      <div class="navbar-brand default-header__brand-group">
+        <a class="navbar-item default-header__brand"
+           href="{{@site.url}}" aria-label="{{@site.title}} homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="default-header__logo" width="32" height="32">
+          {{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
+        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+        {{!-- Reading label (desktop) --}}
+        <span class="dh-reading-label is-hidden-touch" aria-hidden="true">
+          <i class="ph ph-note-pencil"></i>
+          <span class="dh-reading-label__title">{{title}}</span>
+        </span>
+        {{!-- Mobile tools --}}
+        <div class="default-header__mobile-tools is-hidden-desktop">
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Search" data-ghost-search>
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__burger" type="button"
+                  aria-label="Toggle navigation menu" aria-expanded="false"
+                  aria-controls="blogNavMenu" id="blogNavBurger">
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="blogNavMenu" class="navbar-menu default-header__menu"
+           aria-hidden="true">
+        <div class="navbar-start default-header__nav" id="blogNavLinks">
+          {{navigation}}
+        </div>
+        <div class="navbar-end default-header__actions">
+          {{!-- Search --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Search" data-ghost-search>
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+          {{!-- Theme --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+          {{!-- Contribute pill --}}
+          <div class="navbar-item is-hidden-touch">
+            <a class="dh-contribute-btn"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer">
+              <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+              <span>Contribute</span>
+            </a>
+          </div>
+          {{!-- Social strip (desktop) --}}
+          <div class="navbar-item dh-social-strip is-hidden-touch" aria-label="Social links">
+            <a class="dh-social-btn" href="https://twitter.com/imswarnil"
+               target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+              <i class="ph ph-x-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn" href="https://linkedin.com/in/imswarnil"
+               target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn" href="https://youtube.com/@imswarnil"
+               target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+              <i class="ph ph-youtube-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn dh-social-btn--github"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <span class="dh-github-count" id="dhGithubCountBlog" hidden></span>
+            </a>
+          </div>
+          {{!-- Support dropdown --}}
+          <div class="navbar-item">
+            <div class="dh-support-wrap" id="dhSupportWrapBlog">
+              <button class="dh-support-btn" type="button"
+                      id="dhSupportBtnBlog"
+                      aria-haspopup="true" aria-expanded="false">
+                <i class="ph ph-heart" aria-hidden="true"></i>
+                <span class="is-hidden-mobile">Support</span>
+                <i class="ph ph-caret-down dh-support-caret" aria-hidden="true"></i>
+              </button>
+              <div class="dh-support-panel" id="dhSupportPanelBlog" hidden>
+                <p class="dh-support-panel__heading">Support the project</p>
+                <a class="dh-support-item"
+                   href="https://github.com/sponsors/imswarnil"
+                   target="_blank" rel="noopener noreferrer">
+                  <span class="dh-support-item__icon dh-support-item__icon--github">
+                    <i class="ph ph-github-logo" aria-hidden="true"></i>
+                  </span>
+                  <span class="dh-support-item__body">
+                    <strong>GitHub Sponsors</strong>
+                    <small>Monthly recurring support</small>
+                  </span>
+                </a>
+                <a class="dh-support-item"
+                   href="https://buymeacoffee.com/imswarnil"
+                   target="_blank" rel="noopener noreferrer">
+                  <span class="dh-support-item__icon dh-support-item__icon--bmc">
+                    <i class="ph ph-coffee" aria-hidden="true"></i>
+                  </span>
+                  <span class="dh-support-item__body">
+                    <strong>Buy Me a Coffee</strong>
+                    <small>One-time hazelnut cold coffee</small>
+                  </span>
+                </a>
+                <div class="dh-support-panel__footer">
+                  <i class="ph ph-heart-fill" aria-hidden="true"></i>
+                  Free &amp; open source forever
+                </div>
+              </div>
+            </div>
+          </div>
+          {{!-- Auth --}}
+          {{#if @site.members_enabled}}
+            {{#if @member}}
+              <div class="navbar-item">
+                <div class="default-header__account-wrap" id="accountWrapBlog">
+                  <button class="default-header__account-btn" type="button"
+                          aria-label="Account menu" aria-expanded="false"
+                          aria-haspopup="true" id="accountBtnBlog">
+                    {{#if @member.avatar_image}}
+                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                           class="default-header__account-avatar" width="28" height="28">
+                    {{else}}
+                      <span class="default-header__account-initials" id="memberInitialsBlog"></span>
+                    {{/if}}
+                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
+                  </button>
+                  <div class="default-header__account-dropdown" id="accountDropdownBlog" hidden>
+                    <div class="default-header__account-header">
+                      <p class="default-header__account-name">{{@member.name}}</p>
+                      <p class="default-header__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span>
+                    </a>
+                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span>
+                    </a>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
+                       href="javascript:void(0)" data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              {{#unless @site.members_invite_only}}
+                <div class="navbar-item default-header__auth-pair">
+                  <a class="default-header__btn default-header__btn--ghost"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signup" data-portal="signup">
+                    <i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span>
+                  </a>
+                </div>
+              {{else}}
+                <div class="navbar-item">
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                </div>
+              {{/unless}}
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+
+    </div>
+  </nav>
+</header>
+{{!-- Reading progress --}}
+<div class="blog-header__progress-strip" id="blogProgressStrip"
+     role="progressbar" aria-label="Reading progress"
+     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="blog-header__progress-fill" id="blogProgressFill"></div>
+</div>
+
 {{else}}
-  {{> "header/default"}}
+
+{{!-- ════════════════════════════════════════════════════════════════════
+  3A. DEFAULT HEADER (other post types — course, training, module, etc.)
+════════════════════════════════════════════════════════════════════════ --}}
+<header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
+        role="banner" id="siteHeader">
+  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+    <div class="container default-header__wrap">
+      <div class="navbar-brand default-header__brand-group">
+        <a class="navbar-item default-header__brand"
+           href="{{@site.url}}" aria-label="{{@site.title}} homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="default-header__logo" width="32" height="32">
+          {{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
+        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+        {{!-- Context badge (course / training / module) --}}
+        {{#has tag="#course"}}
+          <span class="dh-context-badge is-hidden-touch">
+            <i class="ph ph-book-open" aria-hidden="true"></i> Course
+          </span>
+        {{else has tag="#training"}}
+          <span class="dh-context-badge is-hidden-touch">
+            <i class="ph ph-graduation-cap" aria-hidden="true"></i> Training
+          </span>
+        {{else has tag="#module"}}
+          <span class="dh-context-badge is-hidden-touch">
+            <i class="ph ph-stack" aria-hidden="true"></i> Module
+          </span>
+        {{/has}}
+        <div class="default-header__mobile-tools is-hidden-desktop">
+          <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search>
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__burger" type="button"
+                  aria-label="Toggle navigation menu" aria-expanded="false"
+                  aria-controls="defaultNavMenu" id="defaultNavBurger">
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
+        <div class="navbar-start default-header__nav" id="defaultNavLinks">
+          {{navigation}}
+        </div>
+        <div class="navbar-end default-header__actions">
+          {{!-- Search --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search>
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+          {{!-- Theme --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+          {{!-- Context CTA --}}
+          {{#has tag="#course"}}
+            <div class="navbar-item is-hidden-touch">
+              <a class="dh-contribute-btn dh-contribute-btn--instructor"
+                 href="/contact/?ref=instructor">
+                <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
+                <span>Teach here</span>
+              </a>
+            </div>
+          {{else}}
+            <div class="navbar-item is-hidden-touch">
+              <a class="dh-contribute-btn"
+                 href="https://github.com/imswarnil/Namaste-Salesforce"
+                 target="_blank" rel="noopener noreferrer">
+                <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+                <span>Contribute</span>
+              </a>
+            </div>
+          {{/has}}
+          {{!-- Social strip --}}
+          <div class="navbar-item dh-social-strip is-hidden-touch">
+            <a class="dh-social-btn" href="https://twitter.com/imswarnil" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+              <i class="ph ph-x-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn" href="https://linkedin.com/in/imswarnil" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn" href="https://youtube.com/@imswarnil" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+              <i class="ph ph-youtube-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn dh-social-btn--github"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <span class="dh-github-count" id="dhGithubCountPost" hidden></span>
+            </a>
+          </div>
+          {{!-- Support --}}
+          <div class="navbar-item">
+            <div class="dh-support-wrap" id="dhSupportWrapPost">
+              <button class="dh-support-btn" type="button" id="dhSupportBtnPost"
+                      aria-haspopup="true" aria-expanded="false">
+                <i class="ph ph-heart" aria-hidden="true"></i>
+                <span class="is-hidden-mobile">Support</span>
+                <i class="ph ph-caret-down dh-support-caret" aria-hidden="true"></i>
+              </button>
+              <div class="dh-support-panel" id="dhSupportPanelPost" hidden>
+                <p class="dh-support-panel__heading">Support the project</p>
+                <a class="dh-support-item" href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener noreferrer">
+                  <span class="dh-support-item__icon dh-support-item__icon--github"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
+                  <span class="dh-support-item__body"><strong>GitHub Sponsors</strong><small>Monthly recurring support</small></span>
+                </a>
+                <a class="dh-support-item" href="https://buymeacoffee.com/imswarnil" target="_blank" rel="noopener noreferrer">
+                  <span class="dh-support-item__icon dh-support-item__icon--bmc"><i class="ph ph-coffee" aria-hidden="true"></i></span>
+                  <span class="dh-support-item__body"><strong>Buy Me a Coffee</strong><small>One-time hazelnut cold coffee</small></span>
+                </a>
+                <div class="dh-support-panel__footer">
+                  <i class="ph ph-heart-fill" aria-hidden="true"></i> Free &amp; open source forever
+                </div>
+              </div>
+            </div>
+          </div>
+          {{!-- Auth --}}
+          {{#if @site.members_enabled}}
+            {{#if @member}}
+              <div class="navbar-item">
+                <div class="default-header__account-wrap" id="accountWrapPost">
+                  <button class="default-header__account-btn" type="button"
+                          id="accountBtnPost" aria-label="Account menu"
+                          aria-expanded="false" aria-haspopup="true">
+                    {{#if @member.avatar_image}}
+                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                           class="default-header__account-avatar" width="28" height="28">
+                    {{else}}
+                      <span class="default-header__account-initials" id="memberInitialsPost"></span>
+                    {{/if}}
+                    <span class="default-header__account-name-label is-hidden-mobile">{{@member.name}}</span>
+                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
+                  </button>
+                  <div class="default-header__account-dropdown" id="accountDropdownPost" hidden>
+                    <div class="default-header__account-header">
+                      <p class="default-header__account-name">{{@member.name}}</p>
+                      <p class="default-header__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span>
+                    </a>
+                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span>
+                    </a>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
+                       href="javascript:void(0)" data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              {{#unless @site.members_invite_only}}
+                <div class="navbar-item default-header__auth-pair">
+                  <a class="default-header__btn default-header__btn--ghost"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signup" data-portal="signup">
+                    <i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span>
+                  </a>
+                </div>
+              {{else}}
+                <div class="navbar-item">
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                </div>
+              {{/unless}}
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+{{/has}}
+{{/post}}
+
+{{else}}
+
+{{!-- ════════════════════════════════════════════════════════════════════
+  3B. DEFAULT HEADER (non-post pages: home, tags, authors, static pages)
+════════════════════════════════════════════════════════════════════════ --}}
+<header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
+        role="banner" id="siteHeader">
+  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+    <div class="container default-header__wrap">
+      <div class="navbar-brand default-header__brand-group">
+        <a class="navbar-item default-header__brand"
+           href="{{@site.url}}" aria-label="{{@site.title}} homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="default-header__logo" width="32" height="32">
+          {{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
+        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+        <div class="default-header__mobile-tools is-hidden-desktop">
+          <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search>
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__burger" type="button"
+                  aria-label="Toggle navigation menu" aria-expanded="false"
+                  aria-controls="defaultNavMenu" id="defaultNavBurger">
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
+        <div class="navbar-start default-header__nav" id="defaultNavLinks">
+          {{navigation}}
+        </div>
+        <div class="navbar-end default-header__actions">
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search>
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="navbar-item is-hidden-touch">
+            <a class="dh-contribute-btn"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer">
+              <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+              <span>Contribute</span>
+            </a>
+          </div>
+          <div class="navbar-item dh-social-strip is-hidden-touch" aria-label="Social links">
+            <a class="dh-social-btn" href="https://twitter.com/imswarnil" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">
+              <i class="ph ph-x-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn" href="https://linkedin.com/in/imswarnil" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn" href="https://youtube.com/@imswarnil" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+              <i class="ph ph-youtube-logo" aria-hidden="true"></i>
+            </a>
+            <a class="dh-social-btn dh-social-btn--github"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <span class="dh-github-count" id="dhGithubCountPage" hidden></span>
+            </a>
+          </div>
+          {{!-- Support --}}
+          <div class="navbar-item">
+            <div class="dh-support-wrap" id="dhSupportWrapPage">
+              <button class="dh-support-btn" type="button" id="dhSupportBtnPage"
+                      aria-haspopup="true" aria-expanded="false">
+                <i class="ph ph-heart" aria-hidden="true"></i>
+                <span class="is-hidden-mobile">Support</span>
+                <i class="ph ph-caret-down dh-support-caret" aria-hidden="true"></i>
+              </button>
+              <div class="dh-support-panel" id="dhSupportPanelPage" hidden>
+                <p class="dh-support-panel__heading">Support the project</p>
+                <a class="dh-support-item" href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener noreferrer">
+                  <span class="dh-support-item__icon dh-support-item__icon--github"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
+                  <span class="dh-support-item__body"><strong>GitHub Sponsors</strong><small>Monthly recurring support</small></span>
+                </a>
+                <a class="dh-support-item" href="https://buymeacoffee.com/imswarnil" target="_blank" rel="noopener noreferrer">
+                  <span class="dh-support-item__icon dh-support-item__icon--bmc"><i class="ph ph-coffee" aria-hidden="true"></i></span>
+                  <span class="dh-support-item__body"><strong>Buy Me a Coffee</strong><small>One-time hazelnut cold coffee</small></span>
+                </a>
+                <div class="dh-support-panel__footer">
+                  <i class="ph ph-heart-fill" aria-hidden="true"></i> Free &amp; open source forever
+                </div>
+              </div>
+            </div>
+          </div>
+          {{!-- Auth --}}
+          {{#if @site.members_enabled}}
+            {{#if @member}}
+              <div class="navbar-item">
+                <div class="default-header__account-wrap" id="accountWrap">
+                  <button class="default-header__account-btn" type="button"
+                          id="accountBtn" aria-label="Account menu"
+                          aria-expanded="false" aria-haspopup="true">
+                    {{#if @member.avatar_image}}
+                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                           class="default-header__account-avatar" width="28" height="28">
+                    {{else}}
+                      <span class="default-header__account-initials" id="memberInitials"></span>
+                    {{/if}}
+                    <span class="default-header__account-name-label is-hidden-mobile">{{@member.name}}</span>
+                    <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
+                  </button>
+                  <div class="default-header__account-dropdown" id="accountDropdown" hidden>
+                    <div class="default-header__account-header">
+                      <p class="default-header__account-name">{{@member.name}}</p>
+                      <p class="default-header__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span>
+                    </a>
+                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span>
+                    </a>
+                    <hr class="default-header__divider">
+                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
+                       href="javascript:void(0)" data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {{else}}
+              {{#unless @site.members_invite_only}}
+                <div class="navbar-item default-header__auth-pair">
+                  <a class="default-header__btn default-header__btn--ghost"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signup" data-portal="signup">
+                    <i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span>
+                  </a>
+                </div>
+              {{else}}
+                <div class="navbar-item">
+                  <a class="default-header__btn default-header__btn--primary"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
+                  </a>
+                </div>
+              {{/unless}}
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
 {{/is}}
+
+{{!-- ══════════════════════════════════════════════════════════════════════
+  SHARED JS — runs for all three variants
+══════════════════════════════════════════════════════════════════════════ --}}
+<script>
+(function () {
+  'use strict';
+
+  // ── Theme ──────────────────────────────────────────────────────────────────
+  var SK = 'site-color-scheme';
+  var doc = document.documentElement;
+  function getTheme() { return doc.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
+  function applyTheme(t) { doc.setAttribute('data-color-scheme', t); localStorage.setItem(SK, t); syncUI(t); }
+  function syncUI(t) {
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
+      var ic = b.querySelector('i');
+      if (ic) ic.className = t === 'dark' ? 'ph ph-sun-dim' : 'ph ph-moon';
+      b.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+  }
+  syncUI(localStorage.getItem(SK) === 'dark' ? 'dark' : getTheme());
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-theme-toggle]')) applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── GitHub star count ──────────────────────────────────────────────────────
+  var cached = sessionStorage.getItem('gh-stars');
+  function updateStarEls(n) {
+    if (!n) return;
+    var txt = n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+    document.querySelectorAll('.dh-github-count').forEach(function (el) {
+      el.textContent = txt;
+      el.hidden = false;
+    });
+  }
+  if (cached) {
+    updateStarEls(parseInt(cached, 10));
+  } else {
+    fetch('https://api.github.com/repos/imswarnil/Namaste-Salesforce')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.stargazers_count) {
+          sessionStorage.setItem('gh-stars', d.stargazers_count);
+          updateStarEls(d.stargazers_count);
+        }
+      }).catch(function () {});
+  }
+
+  // ── Generic dropdown factory ───────────────────────────────────────────────
+  function makeDropdown(btnId, panelId, wrapId) {
+    var btn   = document.getElementById(btnId);
+    var panel = document.getElementById(panelId);
+    var wrap  = wrapId ? document.getElementById(wrapId) : null;
+    if (!btn || !panel) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = panel.hidden;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.classList.toggle('is-open', open);
+      var caret = btn.querySelector('.dh-support-caret');
+      if (caret) caret.style.transform = open ? 'rotate(180deg)' : '';
+    });
+    document.addEventListener('click', function (e) {
+      if (wrap && !wrap.contains(e.target)) {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+        btn.classList.remove('is-open');
+        var c = btn.querySelector('.dh-support-caret');
+        if (c) c.style.transform = '';
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !panel.hidden) {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+        btn.classList.remove('is-open');
+        btn.focus();
+      }
+    });
+  }
+  // Support dropdowns (each variant has unique IDs)
+  makeDropdown('dhSupportBtnPage', 'dhSupportPanelPage', 'dhSupportWrapPage');
+  makeDropdown('dhSupportBtnPost', 'dhSupportPanelPost', 'dhSupportWrapPost');
+  makeDropdown('dhSupportBtnBlog', 'dhSupportPanelBlog', 'dhSupportWrapBlog');
+  // Account dropdowns
+  makeDropdown('accountBtn',     'accountDropdown',     'accountWrap');
+  makeDropdown('accountBtnPost', 'accountDropdownPost', 'accountWrapPost');
+  makeDropdown('accountBtnBlog', 'accountDropdownBlog', 'accountWrapBlog');
+
+  // ── Member initials ────────────────────────────────────────────────────────
+  ['memberInitials', 'memberInitialsPost', 'memberInitialsBlog'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var nameEl = el.closest('.default-header__account-dropdown')
+                   ? el.closest('.default-header__account-dropdown')
+                       .querySelector('.default-header__account-name')
+                   : document.querySelector('.default-header__account-name');
+    if (nameEl) {
+      el.textContent = nameEl.textContent.trim()
+        .split(/\s+/).map(function (w) { return w[0] || ''; }).slice(0, 2).join('').toUpperCase();
+    }
+  });
+
+  // ── Mobile burger ──────────────────────────────────────────────────────────
+  function initBurger(burgerId, menuId) {
+    var burger = document.getElementById(burgerId);
+    var menu   = document.getElementById(menuId);
+    var hdr    = document.getElementById('siteHeader');
+    if (!burger || !menu) return;
+    function toggle(force) {
+      var open = force !== undefined ? force : !burger.classList.contains('is-open');
+      burger.classList.toggle('is-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('is-open', open);
+      menu.setAttribute('aria-hidden', String(!open));
+      if (hdr) hdr.classList.toggle('menu-is-open', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    }
+    burger.addEventListener('click', function () { toggle(); });
+    document.addEventListener('click', function (e) {
+      if (menu.classList.contains('is-open') &&
+          !menu.contains(e.target) && !burger.contains(e.target)) toggle(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('is-open')) { toggle(false); burger.focus(); }
+    });
+  }
+  initBurger('defaultNavBurger', 'defaultNavMenu');
+  initBurger('blogNavBurger',    'blogNavMenu');
+
+  // ── Nav dropdown builder ───────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    ['defaultNavLinks', 'blogNavLinks'].forEach(function (navId) {
+      var nav = document.getElementById(navId);
+      if (!nav) return;
+      var items = Array.from(nav.querySelectorAll('.default-header__nav-item'));
+      var cur   = null;
+      items.forEach(function (el) {
+        if (el.dataset.child === 'true' && cur) {
+          var lbl = el.querySelector('.default-header__nav-label');
+          if (lbl) lbl.textContent = lbl.textContent.replace(/^[\-–]\s*/, '').trim();
+          var li = document.createElement('li');
+          li.appendChild(el);
+          cur.list.appendChild(li);
+        } else {
+          var wrap = document.createElement('div');
+          wrap.className = 'default-header__dropdown-wrap';
+          el.parentNode.insertBefore(wrap, el);
+          wrap.appendChild(el);
+          var list = document.createElement('ul');
+          list.className = 'default-header__dropdown-menu';
+          list.setAttribute('role', 'menu');
+          wrap.appendChild(list);
+          cur = { wrap: wrap, trigger: el, list: list };
+        }
+      });
+      nav.querySelectorAll('.default-header__dropdown-wrap').forEach(function (wrap) {
+        var list = wrap.querySelector('.default-header__dropdown-menu');
+        var item = wrap.querySelector('.default-header__nav-item');
+        if (!list || !list.children.length) {
+          if (item) wrap.parentNode.insertBefore(item, wrap);
+          wrap.remove(); return;
+        }
+        wrap.classList.add('has-dropdown');
+        if (item) {
+          item.classList.add('has-dropdown-trigger');
+          item.setAttribute('aria-haspopup', 'true');
+          item.setAttribute('aria-expanded', 'false');
+          var chev = document.createElement('i');
+          chev.className = 'ph ph-caret-down default-header__dropdown-chevron';
+          chev.setAttribute('aria-hidden', 'true');
+          item.appendChild(chev);
+        }
+      });
+      nav.addEventListener('click', function (e) {
+        var t = e.target.closest('.has-dropdown-trigger');
+        if (!t || window.innerWidth >= 1024) return;
+        e.preventDefault();
+        var w = t.closest('.has-dropdown');
+        var isOpen = w.classList.contains('is-open');
+        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
+          d.classList.remove('is-open');
+          var dt = d.querySelector('.has-dropdown-trigger');
+          if (dt) dt.setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) { w.classList.add('is-open'); t.setAttribute('aria-expanded', 'true'); }
+      });
+      document.addEventListener('click', function (e) {
+        if (!nav.contains(e.target)) {
+          nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) { d.classList.remove('is-open'); });
+        }
+      });
+    });
+  });
+
+  // ── Course header — lesson panel + X/N badge ───────────────────────────────
+  (function () {
+    var titleBtn  = document.getElementById('coursePanelBurger');
+    var burgerBtn = document.getElementById('courseBurgerBtn');
+    var panel     = document.getElementById('courseLessonPanel');
+    if (!panel) return;
+    function togglePanel(force) {
+      var open = force !== undefined ? force : !panel.classList.contains('is-open');
+      panel.classList.toggle('is-open', open);
+      panel.setAttribute('aria-hidden', String(!open));
+      [titleBtn, burgerBtn].forEach(function (b) { if (b) b.setAttribute('aria-expanded', String(open)); });
+      if (titleBtn) {
+        var c = titleBtn.querySelector('.course-header__title-caret');
+        if (c) c.style.transform = open ? 'rotate(180deg)' : '';
+      }
+      if (burgerBtn) burgerBtn.classList.toggle('is-open', open);
+    }
+    [titleBtn, burgerBtn].forEach(function (b) { if (b) b.addEventListener('click', function () { togglePanel(); }); });
+    document.addEventListener('click', function (e) {
+      if (panel.classList.contains('is-open') &&
+          !panel.contains(e.target) &&
+          !(titleBtn && titleBtn.contains(e.target)) &&
+          !(burgerBtn && burgerBtn.contains(e.target))) togglePanel(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panel.classList.contains('is-open')) { togglePanel(false); if (burgerBtn) burgerBtn.focus(); }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+      var active = document.querySelector('.course-header__lesson-link.is-active');
+      var badgeTxt = document.getElementById('lessonBadgeText');
+      if (active && badgeTxt) {
+        badgeTxt.textContent = (active.dataset.lessonNum || '?') + ' / ' + (active.dataset.lessonTotal || '?');
+      }
+      if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  })();
+
+  // ── Blog reading progress ──────────────────────────────────────────────────
+  (function () {
+    var fill  = document.getElementById('blogProgressFill');
+    var strip = document.getElementById('blogProgressStrip');
+    if (!fill) return;
+    function update() {
+      var content = document.querySelector('.gh-content, article');
+      var pct;
+      if (content) {
+        var startY = content.getBoundingClientRect().top + window.scrollY;
+        var endY   = startY + content.offsetHeight - window.innerHeight;
+        pct = Math.min(100, Math.round((Math.max(0, window.scrollY - startY) / Math.max(1, endY - startY)) * 100));
+      } else {
+        pct = Math.min(100, Math.round((window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)) * 100));
+      }
+      fill.style.width = pct + '%';
+      if (strip) strip.setAttribute('aria-valuenow', pct);
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  })();
+
+})();
+</script>

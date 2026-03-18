@@ -1,100 +1,282 @@
-{{!-- Namaste Salesforce: Bulma & SLDS Post Card --}}
+{{!-- =========================================================================
+  partials/post-card.hbs  ·  Namaste Salesforce
+  Single-file card system. All 5 variants inline — no sub-partials.
 
-<article class="card is-hoverable is-flex is-flex-direction-column {{post_class}}" style="height: 100%;">
+  Variants auto-selected by tag:
+    #course   → .pc--course   accent bar, placeholder, CTA, access badge
+    #blog     → .pc--blog     author avatar, 2-line excerpt, editorial footer
+    #video    → .pc--video    16:9, play overlay, duration badge
+    #training → .pc--training horizontal row, icon, slide-right hover
+    default   → .pc--default  everything else (lessons, resources, pages)
 
-    {{!-- 1. CARD IMAGE --}}
+  Locked states handled in all variants:
+    has image  → dark blur overlay + badge over the thumbnail
+    no image   → lock pill in tag row
+
+  Usage anywhere: {{> "post-card"}}
+========================================================================== --}}
+
+{{!-- ══ COURSE ═══════════════════════════════════════════════════════════════ --}}
+{{#has tag="#course"}}
+<article class="pc pc--course {{post_class}}" aria-label="{{title}}">
+
+  <a href="{{url}}" class="pc__img-wrap" tabindex="-1" aria-hidden="true">
     {{#if feature_image}}
-    <div class="card-image">
-        <a href="{{url}}" class="image is-2by1" style="display: block;">
-            <img 
-                srcset="{{img_url feature_image size="s"}} 300w,
-                        {{img_url feature_image size="m"}} 600w,
-                        {{img_url feature_image size="l"}} 1000w,
-                        {{img_url feature_image size="xl"}} 2000w"
-                sizes="(max-width: 1000px) 400px, 800px"
-                src="{{img_url feature_image size="m"}}"
-                alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-                loading="lazy"
-                style="object-fit: cover;"
-            />
-
-            {{!-- Locked Content Overlay --}}
-            {{#unless access}}
-            {{^has visibility="public"}}
-                <div class="is-overlay is-flex is-justify-content-center is-align-items-center has-background-black-ter" style="background-color: rgba(8, 7, 7, 0.7) !important;">
-                    <span class="has-text-white has-text-weight-bold is-flex is-align-items-center">
-                        <i class="ph ph-lock mr-2 is-size-5"></i>
-                        {{#has visibility="members"}}Members only{{else}}Paid-members only{{/has}}
-                    </span>
-                </div>
-            {{/has}}
-            {{/unless}}
-        </a>
-    </div>
+      <img
+        srcset="{{img_url feature_image size="s"}} 300w,
+                {{img_url feature_image size="m"}} 600w,
+                {{img_url feature_image size="l"}} 1000w"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        src="{{img_url feature_image size="m"}}"
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+        class="pc__img" loading="lazy">
+    {{else}}
+      <div class="pc__placeholder pc__placeholder--course">
+        <i class="ph ph-book-open" aria-hidden="true"></i>
+      </div>
     {{/if}}
+    {{#has visibility="public"}}
+      <span class="pc__access-badge pc__access-badge--free">Free</span>
+    {{else has visibility="members"}}
+      <span class="pc__access-badge pc__access-badge--members">
+        <i class="ph ph-star" aria-hidden="true"></i> Members
+      </span>
+    {{else}}
+      <span class="pc__access-badge pc__access-badge--paid">
+        <i class="ph ph-crown" aria-hidden="true"></i> Paid
+      </span>
+    {{/has}}
+    {{#unless access}}{{^has visibility="public"}}
+      <div class="pc__locked-overlay">
+        <span class="pc__locked-badge">
+          <i class="ph ph-lock" aria-hidden="true"></i>
+          {{#has visibility="members"}}Members only{{else}}Paid only{{/has}}
+        </span>
+      </div>
+    {{/has}}{{/unless}}
+  </a>
 
-    {{!-- 2. CARD CONTENT --}}
-    <div class="card-content is-flex-grow-1 is-flex is-flex-direction-column pb-4">
-        
-        <div class="mb-4">
-            {{!-- Tags --}}
-            <div class="tags are-small mb-2">
-                {{#primary_tag}}
-                    <a href="{{url}}" class="tag is-primary is-light has-text-weight-bold">{{name}}</a>
-                {{/primary_tag}}
-                
-                {{#if featured}}
-                    <span class="tag is-warning is-light has-text-weight-bold">
-                        <i class="ph-fill ph-fire mr-1 has-text-warning-dark"></i> Featured
-                    </span>
-                {{/if}}
-            </div>
-
-            {{!-- Title --}}
-            <h2 class="title is-4 mb-2" style="line-height: 1.3;">
-                <a href="{{url}}" class="has-text-dark">
-                    {{#unless access}}
-                    {{^has visibility="public"}}
-                        {{#unless feature_image}}
-                            <i class="ph ph-lock has-text-grey-light mr-1"></i>
-                        {{/unless}}
-                    {{/has}}
-                    {{/unless}}
-                    {{title}}
-                </a>
-            </h2>
-
-            {{!-- Excerpt --}}
-            {{#if excerpt}}
-                <div class="content has-text-grey-dark is-size-6" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                    {{excerpt}}
-                </div>
-            {{/if}}
-        </div>
-
-        {{!-- 3. CARD FOOTER / META --}}
-        <div class="is-flex is-align-items-center is-justify-content-space-between mt-auto pt-3" style="border-top: 1px solid #DDDBDA;">
-            
-            <time class="is-size-7 has-text-grey has-text-weight-medium" datetime="{{date format="YYYY-MM-DD"}}">
-                {{date format="DD MMM YYYY"}}
-            </time>
-            
-            <div class="is-size-7 has-text-grey is-flex is-align-items-center has-text-weight-medium">
-                {{#if reading_time}}
-                    <span class="is-flex is-align-items-center mr-3">
-                        <i class="ph ph-clock mr-1 is-size-6"></i> {{reading_time}}
-                    </span>
-                {{/if}}
-                
-                {{#if @site.comments_enabled}}
-                    <span class="is-flex is-align-items-center">
-                        <i class="ph ph-chat-circle mr-1 is-size-6"></i> {{comment_count}}
-                    </span>
-                {{/if}}
-            </div>
-
-        </div>
-
+  <div class="pc__body">
+    <div class="pc__tags">
+      {{#primary_tag}}<a href="{{url}}" class="pc__tag pc__tag--primary">{{name}}</a>{{/primary_tag}}
+      {{#if featured}}<span class="pc__tag pc__tag--featured"><i class="ph-fill ph-fire" aria-hidden="true"></i> Featured</span>{{/if}}
     </div>
+    <h2 class="pc__title"><a href="{{url}}" class="pc__title-link">{{title}}</a></h2>
+    {{#if excerpt}}<p class="pc__excerpt">{{excerpt}}</p>{{/if}}
+    <div class="pc__course-meta">
+      {{#foreach tags visibility="internal"}}
+        {{#match slug "~^" "hash-course-level-"}}{{#if description}}
+          <span><i class="ph ph-signal-high" aria-hidden="true"></i>{{description}}</span>
+        {{/if}}{{/match}}
+      {{/foreach}}
+      {{#foreach tags visibility="internal"}}
+        {{#match slug "~^" "hash-course-duration-"}}{{#if description}}
+          <span><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</span>
+        {{/if}}{{/match}}
+      {{/foreach}}
+    </div>
+    <a href="{{url}}" class="pc__cta-btn">
+      {{#unless access}}{{^has visibility="public"}}
+        <i class="ph ph-lock" aria-hidden="true"></i>
+        {{#has visibility="members"}}Join to access{{else}}Subscribe{{/has}}
+      {{else}}<i class="ph ph-play-circle" aria-hidden="true"></i> Start Course{{/has}}
+      {{else}}<i class="ph ph-play-circle" aria-hidden="true"></i> Start Course{{/unless}}
+    </a>
+  </div>
 
 </article>
+
+{{!-- ══ BLOG ════════════════════════════════════════════════════════════════ --}}
+{{else has tag="#blog"}}
+<article class="pc pc--blog {{post_class}}" aria-label="{{title}}">
+
+  {{#if feature_image}}
+    <a href="{{url}}" class="pc__img-wrap pc__img-wrap--wide" tabindex="-1" aria-hidden="true">
+      <img
+        srcset="{{img_url feature_image size="s"}} 300w,
+                {{img_url feature_image size="m"}} 600w,
+                {{img_url feature_image size="l"}} 1000w"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        src="{{img_url feature_image size="m"}}"
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+        class="pc__img" loading="lazy">
+      {{#unless access}}{{^has visibility="public"}}
+        <div class="pc__locked-overlay">
+          <span class="pc__locked-badge">
+            <i class="ph ph-lock" aria-hidden="true"></i>
+            {{#has visibility="members"}}Members only{{else}}Paid only{{/has}}
+          </span>
+        </div>
+      {{/has}}{{/unless}}
+    </a>
+  {{/if}}
+
+  <div class="pc__body">
+    <div class="pc__tags">
+      {{#primary_tag}}<a href="{{url}}" class="pc__tag pc__tag--primary">{{name}}</a>{{/primary_tag}}
+      {{#if featured}}<span class="pc__tag pc__tag--featured"><i class="ph-fill ph-fire" aria-hidden="true"></i> Featured</span>{{/if}}
+      {{#unless feature_image}}{{#unless access}}{{^has visibility="public"}}
+        <span class="pc__tag pc__tag--locked"><i class="ph ph-lock" aria-hidden="true"></i>
+          {{#has visibility="members"}}Members{{else}}Paid{{/has}}</span>
+      {{/has}}{{/unless}}{{/unless}}
+    </div>
+    <h2 class="pc__title"><a href="{{url}}" class="pc__title-link">{{title}}</a></h2>
+    {{#if excerpt}}<p class="pc__excerpt pc__excerpt--2line">{{excerpt}}</p>{{/if}}
+    <footer class="pc__blog-footer">
+      {{#primary_author}}
+        <a href="{{url}}" class="pc__author">
+          {{#if profile_image}}
+            <img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="pc__author-img">
+          {{else}}
+            <span class="pc__author-fallback" aria-hidden="true">{{name.[0]}}</span>
+          {{/if}}
+          <span class="pc__author-name">{{name}}</span>
+        </a>
+      {{/primary_author}}
+      <div class="pc__blog-meta">
+        <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+        {{#if reading_time}}
+          <span class="pc__meta-dot" aria-hidden="true"></span>
+          <span><i class="ph ph-clock" aria-hidden="true"></i> {{reading_time}}</span>
+        {{/if}}
+      </div>
+    </footer>
+  </div>
+
+</article>
+
+{{!-- ══ VIDEO ═══════════════════════════════════════════════════════════════ --}}
+{{else has tag="#video"}}
+<article class="pc pc--video {{post_class}}" aria-label="{{title}}">
+
+  <a href="{{url}}" class="pc__img-wrap pc__img-wrap--wide" tabindex="-1" aria-hidden="true">
+    {{#if feature_image}}
+      <img
+        srcset="{{img_url feature_image size="s"}} 300w,
+                {{img_url feature_image size="m"}} 600w,
+                {{img_url feature_image size="l"}} 1000w"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        src="{{img_url feature_image size="m"}}"
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+        class="pc__img" loading="lazy">
+    {{else}}
+      <div class="pc__placeholder pc__placeholder--video">
+        <i class="ph ph-video-camera" aria-hidden="true"></i>
+      </div>
+    {{/if}}
+    <div class="pc__video-play" aria-hidden="true">
+      <i class="ph-fill ph-play-circle"></i>
+    </div>
+    {{#if reading_time}}
+      <span class="pc__video-dur">
+        <i class="ph ph-clock" aria-hidden="true"></i> {{reading_time}}
+      </span>
+    {{/if}}
+    {{#unless access}}{{^has visibility="public"}}
+      <div class="pc__locked-overlay">
+        <span class="pc__locked-badge">
+          <i class="ph ph-lock" aria-hidden="true"></i>
+          {{#has visibility="members"}}Members only{{else}}Paid only{{/has}}
+        </span>
+      </div>
+    {{/has}}{{/unless}}
+  </a>
+
+  <div class="pc__body">
+    <div class="pc__tags">
+      {{#primary_tag}}<a href="{{url}}" class="pc__tag pc__tag--primary">{{name}}</a>{{/primary_tag}}
+      {{#unless feature_image}}{{#unless access}}{{^has visibility="public"}}
+        <span class="pc__tag pc__tag--locked"><i class="ph ph-lock" aria-hidden="true"></i>
+          {{#has visibility="members"}}Members{{else}}Paid{{/has}}</span>
+      {{/has}}{{/unless}}{{/unless}}
+    </div>
+    <h2 class="pc__title"><a href="{{url}}" class="pc__title-link">{{title}}</a></h2>
+    {{#if excerpt}}<p class="pc__excerpt">{{excerpt}}</p>{{/if}}
+    <footer class="pc__meta">
+      <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+    </footer>
+  </div>
+
+</article>
+
+{{!-- ══ TRAINING ════════════════════════════════════════════════════════════ --}}
+{{else has tag="#training"}}
+<article class="pc pc--training {{post_class}}" aria-label="{{title}}">
+
+  <div class="pc__training-icon" aria-hidden="true">
+    <i class="ph ph-graduation-cap"></i>
+  </div>
+
+  <div class="pc__body">
+    <div class="pc__tags">
+      {{#primary_tag}}<a href="{{url}}" class="pc__tag pc__tag--primary">{{name}}</a>{{/primary_tag}}
+      <span class="pc__tag pc__tag--section">Training</span>
+    </div>
+    <h2 class="pc__title pc__title--sm">
+      <a href="{{url}}" class="pc__title-link">{{title}}</a>
+    </h2>
+    {{#if excerpt}}<p class="pc__excerpt pc__excerpt--1line">{{excerpt}}</p>{{/if}}
+    <footer class="pc__meta pc__meta--flush">
+      <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+      {{#if reading_time}}
+        <span class="pc__meta-dot" aria-hidden="true"></span>
+        <span><i class="ph ph-clock" aria-hidden="true"></i> {{reading_time}}</span>
+      {{/if}}
+    </footer>
+  </div>
+
+  <i class="ph ph-arrow-right pc__training-arrow" aria-hidden="true"></i>
+
+</article>
+
+{{!-- ══ DEFAULT ══════════════════════════════════════════════════════════════ --}}
+{{else}}
+<article class="pc pc--default {{post_class}}" aria-label="{{title}}">
+
+  {{#if feature_image}}
+    <a href="{{url}}" class="pc__img-wrap" tabindex="-1" aria-hidden="true">
+      <img
+        srcset="{{img_url feature_image size="s"}} 300w,
+                {{img_url feature_image size="m"}} 600w,
+                {{img_url feature_image size="l"}} 1000w"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        src="{{img_url feature_image size="m"}}"
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+        class="pc__img" loading="lazy">
+      {{#unless access}}{{^has visibility="public"}}
+        <div class="pc__locked-overlay">
+          <span class="pc__locked-badge">
+            <i class="ph ph-lock" aria-hidden="true"></i>
+            {{#has visibility="members"}}Members only{{else}}Paid only{{/has}}
+          </span>
+        </div>
+      {{/has}}{{/unless}}
+    </a>
+  {{/if}}
+
+  <div class="pc__body">
+    <div class="pc__tags">
+      {{#primary_tag}}<a href="{{url}}" class="pc__tag pc__tag--primary">{{name}}</a>{{/primary_tag}}
+      {{#if featured}}<span class="pc__tag pc__tag--featured"><i class="ph-fill ph-fire" aria-hidden="true"></i> Featured</span>{{/if}}
+      {{#unless feature_image}}{{#unless access}}{{^has visibility="public"}}
+        <span class="pc__tag pc__tag--locked"><i class="ph ph-lock" aria-hidden="true"></i>
+          {{#has visibility="members"}}Members{{else}}Paid{{/has}}</span>
+      {{/has}}{{/unless}}{{/unless}}
+    </div>
+    <h2 class="pc__title"><a href="{{url}}" class="pc__title-link">{{title}}</a></h2>
+    {{#if excerpt}}<p class="pc__excerpt">{{excerpt}}</p>{{/if}}
+    <footer class="pc__meta">
+      <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+      {{#if reading_time}}
+        <span class="pc__meta-dot" aria-hidden="true"></span>
+        <span><i class="ph ph-clock" aria-hidden="true"></i> {{reading_time}}</span>
+      {{/if}}
+      {{#if @site.comments_enabled}}{{#if comment_count}}
+        <span class="pc__meta-dot" aria-hidden="true"></span>
+        <span><i class="ph ph-chat-circle" aria-hidden="true"></i> {{comment_count}}</span>
+      {{/if}}{{/if}}
+    </footer>
+  </div>
+
+</article>
+{{/has}}
