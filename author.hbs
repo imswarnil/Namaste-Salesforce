@@ -1,97 +1,243 @@
 {{!< default}}
-{{!-- The tag above means - insert everything in this file into the {body} of the default.hbs template --}}
+{{!-- =========================================================================
+  author.hbs — Author profile page
+  Uses Bulma throughout. Ghost provides: {{#author}}, {{#foreach posts}},
+  {{pagination}}, {{social_url}}, {{img_url}}.
+========================================================================== --}}
 
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
+{{#author}}
 
-    <div class="post-feed">
+{{!-- ════════════════════════════════════════════════════════
+  HERO — Author profile header
+════════════════════════════════════════════════════════ --}}
+<section class="author-hero section pb-0">
+  <div class="container is-max-widescreen">
+    <div class="columns is-vcentered is-variable is-8">
 
-        {{#author}}
-        <section class="post-card post-card-large">
+      {{!-- Left: avatar + name + bio --}}
+      <div class="column is-8-desktop">
 
+        <div class="is-flex is-align-items-center mb-5" style="gap: 1.5rem;">
+
+          {{!-- Avatar --}}
+          <figure class="author-hero__avatar image is-96x96 is-flex-shrink-0">
+            {{#if profile_image}}
+              <img
+                class="is-rounded"
+                src="{{img_url profile_image size="s"}}"
+                alt="{{name}}"
+                width="96" height="96"
+                loading="eager"
+              >
+            {{else}}
+              <div class="is-rounded is-flex is-align-items-center is-justify-content-center
+                          has-background-primary-light has-text-primary author-hero__avatar-fallback">
+                <i class="ph-fill ph-user is-size-2" aria-hidden="true"></i>
+              </div>
+            {{/if}}
+          </figure>
+
+          {{!-- Name + role --}}
+          <div>
+            <div class="tags mb-2">
+              <span class="tag is-primary is-light is-medium has-text-weight-bold">
+                <span class="icon is-small"><i class="ph ph-identification-badge"></i></span>
+                <span>Author</span>
+              </span>
+              {{#if location}}
+                <span class="tag is-light is-medium">
+                  <span class="icon is-small"><i class="ph ph-map-pin"></i></span>
+                  <span>{{location}}</span>
+                </span>
+              {{/if}}
+            </div>
+            <h1 class="title is-2 is-size-3-mobile mb-2" style="letter-spacing: -0.02em;">
+              {{name}}
+            </h1>
+            {{#if twitter}}
+              <p class="is-size-6 has-text-grey">@{{twitter}}</p>
+            {{/if}}
+          </div>
+        </div>
+
+        {{!-- Bio --}}
+        {{#if bio}}
+          <p class="subtitle is-5 has-text-grey" style="line-height: 1.7; max-width: 40rem;">
+            {{bio}}
+          </p>
+        {{/if}}
+
+        {{!-- Social links —— Bulma .buttons row --}}
+        <div class="buttons mt-4">
+          {{#if website}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{website}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-globe"></i></span>
+              <span>Website</span>
+            </a>
+          {{/if}}
+          {{#if twitter}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{social_url type="twitter"}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-x-logo"></i></span>
+              <span>Twitter</span>
+            </a>
+          {{/if}}
+          {{#if linkedin}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{social_url type="linkedin"}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-linkedin-logo"></i></span>
+              <span>LinkedIn</span>
+            </a>
+          {{/if}}
+          {{#if facebook}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{social_url type="facebook"}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-facebook-logo"></i></span>
+              <span>Facebook</span>
+            </a>
+          {{/if}}
+          {{#if youtube}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{social_url type="youtube"}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-youtube-logo"></i></span>
+              <span>YouTube</span>
+            </a>
+          {{/if}}
+          {{#if instagram}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{social_url type="instagram"}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-instagram-logo"></i></span>
+              <span>Instagram</span>
+            </a>
+          {{/if}}
+          {{#if bluesky}}
+            <a class="button is-light is-small author-hero__social-btn"
+               href="{{social_url type="bluesky"}}" target="_blank" rel="noopener noreferrer">
+              <span class="icon is-small"><i class="ph ph-butterfly"></i></span>
+              <span>Bluesky</span>
+            </a>
+          {{/if}}
+        </div>
+
+      </div>
+
+      {{!-- Right: stats --}}
+      <div class="column is-4-desktop is-hidden-touch">
+        <div class="box author-hero__stats-box">
+          <p class="heading has-text-grey mb-4">
+            <span class="icon is-small mr-1"><i class="ph ph-chart-bar"></i></span>
+            Stats
+          </p>
+          <div class="columns is-mobile is-multiline has-text-centered">
+            <div class="column is-6">
+              <p class="title is-3 has-text-primary mb-1">
+                {{plural ../pagination.total empty="0" singular="%" plural="%"}}
+              </p>
+              <p class="is-size-7 has-text-grey has-text-weight-bold is-uppercase" style="letter-spacing: .05em;">
+                Articles
+              </p>
+            </div>
             {{#if cover_image}}
-            <div class="post-card-image-link">
-                {{!-- This is a responsive image, it loads different sizes depending on device
-                https://medium.freecodecamp.org/a-guide-to-responsive-images-with-ready-to-use-templates-c400bd65c433 --}}
-                <img class="post-card-image"
-                    srcset="{{img_url cover_image size="s"}} 300w,
-                            {{img_url cover_image size="m"}} 600w,
-                            {{img_url cover_image size="l"}} 1000w,
-                            {{img_url cover_image size="xl"}} 2000w"
-                    sizes="(max-width: 1000px) 400px, 800px"
-                    src="{{img_url cover_image size="m"}}"
-                    alt="{{title}}"
-                />
+            <div class="column is-12">
+              <figure class="image is-16by9 author-hero__cover">
+                <img
+                  srcset="{{img_url cover_image size="m"}} 600w,
+                          {{img_url cover_image size="l"}} 1000w"
+                  sizes="400px"
+                  src="{{img_url cover_image size="m"}}"
+                  alt="Cover image for {{name}}"
+                  loading="lazy"
+                  style="object-fit: cover;"
+                >
+              </figure>
             </div>
             {{/if}}
-
-            <div class="post-card-content">
-            <div class="post-card-content-link">
-
-                {{#if profile_image}}
-                    <img class="author-profile-pic" src="{{profile_image}}" alt="{{name}}" />
-                {{/if}}
-
-                <header class="post-card-header">
-                    <h2 class="post-card-title">{{name}}</h2>
-                </header>
-
-                {{#if bio}}
-                    <div class="post-card-excerpt">{{bio}}</div>
-                {{/if}}
-
-                <footer class="author-profile-footer">
-                    {{#if location}}
-                        <div class="author-profile-location">{{location}}</div>
-                    {{/if}}
-                    <div class="author-profile-meta">
-                        {{#if website}}
-                            <a class="author-profile-social-link" href="{{website}}" target="_blank" rel="noopener">{{website}}</a>
-                        {{/if}}
-                        {{#if twitter}}
-                            <a class="author-profile-social-link" href="{{social_url type="twitter"}}" target="_blank" rel="noopener">{{> "icons/twitter"}}</a>
-                        {{/if}}
-                        {{#if facebook}}
-                            <a class="author-profile-social-link" href="{{social_url type="facebook"}}" target="_blank" rel="noopener">{{> "icons/facebook"}}</a>
-                        {{/if}}
-                        {{#if linkedin}}
-                            <a class="author-profile-social-link" href="{{social_url type="linkedin"}}" target="_blank" rel="noopener">{{> "icons/linkedin"}}</a>
-                        {{/if}}
-                        {{#if bluesky}}
-                            <a class="author-profile-social-link" href="{{social_url type="bluesky"}}" target="_blank" rel="noopener">{{> "icons/bluesky"}}</a>
-                        {{/if}}
-                        {{#if threads}}
-                            <a class="author-profile-social-link" href="{{social_url type="threads"}}" target="_blank" rel="noopener">{{> "icons/threads"}}</a>
-                        {{/if}}
-                        {{#if mastodon}}
-                            <a class="author-profile-social-link" href="{{social_url type="mastodon"}}" target="_blank" rel="noopener">{{> "icons/mastodon"}}</a>
-                        {{/if}}
-                        {{#if tiktok}}
-                            <a class="author-profile-social-link" href="{{social_url type="tiktok"}}" target="_blank" rel="noopener">{{> "icons/tiktok"}}</a>
-                        {{/if}}
-                        {{#if youtube}}
-                            <a class="author-profile-social-link" href="{{social_url type="youtube"}}" target="_blank" rel="noopener">{{> "icons/youtube"}}</a>
-                        {{/if}}
-                        {{#if instagram}}
-                            <a class="author-profile-social-link" href="{{social_url type="instagram"}}" target="_blank" rel="noopener">{{> "icons/instagram"}}</a>
-                        {{/if}}
-                    </div>
-                </footer>
-
-            </div>
-            </div>
-
-        </section>
-        {{/author}}
-
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
+          </div>
+        </div>
+      </div>
 
     </div>
+  </div>
+</section>
 
-    {{pagination}}
-    
+{{!-- Divider --}}
+<div class="container is-max-widescreen">
+  <hr class="author-hero__divider">
 </div>
-</main>
+
+{{/author}}
+
+{{!-- ════════════════════════════════════════════════════════
+  POSTS GRID
+════════════════════════════════════════════════════════ --}}
+<section class="section pt-4">
+  <div class="container is-max-widescreen">
+
+    {{!-- Section label --}}
+    <div class="is-flex is-align-items-center is-justify-content-space-between mb-5">
+      <h2 class="title is-5 mb-0">
+        <span class="icon has-text-primary mr-2"><i class="ph-fill ph-note-pencil"></i></span>
+        All Articles
+      </h2>
+      <span class="tag is-light is-medium">
+        {{plural pagination.total empty="Nothing yet" singular="% article" plural="% articles"}}
+      </span>
+    </div>
+
+    {{#if posts}}
+
+      <div class="columns is-multiline">
+        {{#foreach posts}}
+          <div class="column is-4-desktop is-6-tablet is-flex">
+            {{> "post-card"}}
+          </div>
+        {{/foreach}}
+      </div>
+
+      {{!-- Pagination --}}
+      {{#if pagination}}
+        <nav class="pagination is-centered mt-6 pt-4" role="navigation" aria-label="pagination"
+             style="border-top: 1px solid var(--theme-border);">
+          {{#if pagination.prev}}
+            <a class="pagination-previous button is-light"
+               href="{{page_url pagination.prev}}">
+              <span class="icon"><i class="ph ph-arrow-left"></i></span>
+              <span>Newer</span>
+            </a>
+          {{else}}
+            <span class="pagination-previous button is-light" disabled>
+              <span class="icon"><i class="ph ph-arrow-left"></i></span>
+              <span>Newer</span>
+            </span>
+          {{/if}}
+
+          {{#if pagination.next}}
+            <a class="pagination-next button is-light"
+               href="{{page_url pagination.next}}">
+              <span>Older</span>
+              <span class="icon"><i class="ph ph-arrow-right"></i></span>
+            </a>
+          {{else}}
+            <span class="pagination-next button is-light" disabled>
+              <span>Older</span>
+              <span class="icon"><i class="ph ph-arrow-right"></i></span>
+            </span>
+          {{/if}}
+        </nav>
+      {{/if}}
+
+    {{else}}
+
+      {{!-- Empty state --}}
+      <div class="box has-text-centered py-6 author-empty">
+        <i class="ph ph-note is-size-1 has-text-grey-light" aria-hidden="true"></i>
+        <p class="title is-5 mt-4 has-text-grey">No articles yet</p>
+        <p class="has-text-grey-light">Check back soon — great content is on the way.</p>
+        <a class="button is-primary is-light mt-4" href="/">Back to home</a>
+      </div>
+
+    {{/if}}
+
+  </div>
+</section>

@@ -1,49 +1,205 @@
 // =============================================================================
 //  _header.scss
+//  Namaste Salesforce · Ghost Theme
 //
-//  Maps exactly to header.hbs + navigation.hbs.
+//  3-bar burger (JS-toggled, CSS-animated).
+//  Mobile menu visibility controlled by .is-open class (added by JS),
+//  NOT by checkbox — more reliable, better a11y.
 //
-//  Key design decisions:
-//   • Hamburger: 4-bar morphing animation — bars 2+3 slide out,
-//     bars 1+4 cross into ✕. Staggered with cubic-bezier snap.
-//   • Nav items: compact pill chips (align-self: center) — hover gets
-//     a brand tint bg, active gets solid brand bg + white text.
-//   • Action buttons: unified .site-navbar__action-btn system,
-//     no Bulma .button.is-light.is-small coupling needed.
-//   • Pure-CSS mobile menu via hidden <input type=checkbox>.
+//  Sections:
+//    1.  Header shell + sticky variants
+//    2.  Context bars (course / lesson)
+//    3.  Navbar shell
+//    4.  Brand
+//    5.  Mobile tools
+//    6.  Burger (3-bar → ✕)
+//    7.  Mobile menu panel
+//    8.  Nav links + dropdown system
+//    9.  Actions area
+//   10.  GitHub button
+//   11.  Icon-only buttons
+//   12.  Join / auth buttons
+//   13.  Account dropdown
+//   14.  Desktop dropdown (hover)
 // =============================================================================
 
 @use "variables" as v;
 @use "mixins"    as mx;
 
-
 // ─── Local tokens ─────────────────────────────────────────────────────────────
-$_nav-item-h:       2rem    !default;   // pill height (desktop)
-$_nav-item-h-mob:   2.75rem !default;   // row height (mobile)
-$_action-btn-h:     1.875rem !default;  // action button height
-$_icon-btn-size:    1.875rem !default;  // square icon-only button
-$_burger-size:      2.125rem !default;  // burger button box
-$_burger-bar-w:     18px    !default;   // bar width
-$_burger-bar-h:     2px     !default;   // bar thickness
-$_burger-gap:       4px     !default;   // gap between bars
+$_item-h:      1.875rem !default;   // desktop nav pill height
+$_item-h-mob:  2.875rem !default;   // mobile nav row height
+$_action-h:    1.875rem !default;   // action button height
+$_icon-size:   1.875rem !default;   // square icon button
+$_burger-size: 2.125rem !default;   // burger box
+$_bar-w:       18px     !default;   // bar width
+$_bar-h:       2px      !default;   // bar thickness
+$_gap:         4.5px    !default;   // gap between 3 bars
+$_drop-r:      v.$radius-md !default;
 
 
 // =============================================================================
-//  1) HEADER SHELL + NAVBAR
+//  1) HEADER SHELL
 // =============================================================================
 
 .site-header {
-  position: sticky;
-  top:      0;
+  position: relative;
   z-index:  200;
   width:    100%;
+
+  // @custom.sticky_header = true → .is-sticky class
+  &.is-sticky { position: sticky; top: 0; }
+
+  // When mobile menu is open — prevent body scroll bleed on iOS
+  &.menu-is-open { position: sticky; top: 0; }
 }
+
+
+// =============================================================================
+//  2) CONTEXT BARS
+// =============================================================================
+
+.site-header__context-bar {
+  display:       flex;
+  align-items:   center;
+  background:    var(--theme-surface-subtle);
+  border-bottom: 1px solid var(--theme-border);
+  min-height:    2.5rem;
+  padding:       0;
+
+  &--course {
+    background:   var(--theme-surface-card);
+    border-bottom: 2px solid var(--theme-brand);
+  }
+
+  &[hidden] { display: none; }
+}
+
+.site-header__context-inner {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             1rem;
+  width:           100%;
+  padding:         0.375rem 0;
+}
+
+.site-header__context-breadcrumb {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  min-width:   0;
+  flex:        1;
+}
+
+.site-header__context-back {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
+  color:           var(--theme-brand);
+  font-size:       v.$font-size-xs;
+  font-weight:     700;
+  text-decoration: none;
+  white-space:     nowrap;
+  @include mx.motion;
+
+  i { font-size: 0.875rem; }
+  &:hover { color: var(--theme-brand-hover); }
+}
+
+.site-header__context-sep {
+  color:     var(--theme-border-strong);
+  font-size: v.$font-size-xs;
+}
+
+.site-header__context-title {
+  font-size:    v.$font-size-xs;
+  font-weight:  600;
+  color:        var(--theme-text-strong);
+  white-space:  nowrap;
+  overflow:     hidden;
+  text-overflow: ellipsis;
+}
+
+// Reading progress (lesson pages)
+.site-header__context-progress {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  flex-shrink: 0;
+
+  &[hidden] { display: none; }
+}
+
+.site-header__context-progress-track {
+  width:         120px;
+  height:        4px;
+  background:    var(--theme-border-soft);
+  border-radius: v.$radius-pill;
+  overflow:      hidden;
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) { width: 70px; }
+}
+
+.site-header__context-progress-fill {
+  height:        100%;
+  background:    var(--theme-brand);
+  border-radius: v.$radius-pill;
+  transition:    width 200ms linear;
+}
+
+.site-header__context-progress-label {
+  font-size:   0.625rem;
+  font-weight: 700;
+  color:       var(--theme-text-weak);
+  min-width:   2rem;
+  text-align:  right;
+}
+
+.site-header__context-actions {
+  display:     flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.site-header__context-btn {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           1.625rem;
+  height:          1.625rem;
+  padding:         0;
+  background:      transparent;
+  border:          none;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-weak);
+  cursor:          pointer;
+  @include mx.motion;
+
+  i { font-size: 0.875rem; }
+  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+}
+
+
+// =============================================================================
+//  3) NAVBAR SHELL
+// =============================================================================
 
 .navbar.site-navbar {
   min-height:    var(--slds-header-height);
   background:    var(--theme-surface-card);
   border-bottom: 1px solid var(--theme-border);
-  box-shadow:    0 1px 0 var(--theme-border), 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow:    0 1px 0 var(--theme-border-soft), 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  // Ghost custom "Blur" header style
+  .header-style-Blur & {
+    background:      rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px) saturate(1.4);
+
+    html[data-color-scheme="dark"] & {
+      background: rgba(23, 27, 34, 0.82);
+    }
+  }
 }
 
 .site-navbar__wrap {
@@ -51,30 +207,31 @@ $_burger-gap:       4px     !default;   // gap between bars
   align-items: stretch;
   min-height:  var(--slds-header-height);
   flex-wrap:   nowrap;
-  gap:         0;
+  position:    relative;
 }
 
 
 // =============================================================================
-//  2) BRAND
+//  4) BRAND
 // =============================================================================
 
+.site-navbar__brand-wrap {
+  // Bulma .navbar-brand — already flex, align-items center
+  align-items: center;
+}
+
 .site-navbar__brand {
-  display:        flex;
-  align-items:    center;
-  gap:            0.5rem;
-  padding:        0 0.75rem 0 0.25rem;
-  color:          var(--theme-text-strong);
+  display:         flex;
+  align-items:     center;
+  gap:             0.5rem;
+  padding:         0 0.75rem 0 0;
+  color:           var(--theme-text-strong);
   text-decoration: none;
-  flex-shrink:    0;
+  flex-shrink:     0;
   @include mx.motion;
 
-  &:hover, &:focus {
-    background:     transparent;
-    color:          var(--theme-brand);
-    text-decoration: none;
-  }
-  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+  &:hover, &:focus { color: var(--theme-brand); background: transparent; }
+  &:focus-visible   { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
 .site-navbar__logo {
@@ -96,7 +253,7 @@ $_burger-gap:       4px     !default;   // gap between bars
 
 
 // =============================================================================
-//  3) MOBILE TOOLS BAR
+//  5) MOBILE TOOLS
 // =============================================================================
 
 .site-navbar__mobile-tools {
@@ -104,124 +261,93 @@ $_burger-gap:       4px     !default;   // gap between bars
   align-items: center;
   gap:         0.125rem;
   margin-left: auto;
-  padding:     0 0.25rem;
+  padding:     0 0.375rem;
 }
 
 
 // =============================================================================
-//  4) HAMBURGER BURGER — 4-bar morphing animation
+//  6) BURGER — 3 bars → ✕
+//  JS adds .is-open to the button.
 //
-//  Layout: 4 spans (.site-navbar__burger-bar) stacked in a flex column.
-//  Default ☰: all 4 bars visible, evenly spaced.
-//  Active  ✕: bars 2+3 slide left/right and fade out,
-//              bars 1+4 translate to center and rotate ±45°.
-//
-//  Stagger:
-//   Opening  (☰→✕): bars 2+3 exit first (0ms),  then 1+4 cross (80ms delay)
-//   Closing  (✕→☰): bars 1+4 unrotate first (0ms), bars 2+3 slide back (100ms delay)
+//  Stack math (3 bars × 2px + 2 gaps × 4.5px = 15px total)
+//  Center at 7.5px.
+//  Bar 1 center:  1px  → translateY(+6.5px)
+//  Bar 3 center: 14px  → translateY(-6.5px)
 // =============================================================================
-
-// Hide the actual checkbox — it's our state machine
-.site-navbar__toggle { display: none; }
 
 .site-navbar__burger {
   display:         flex;
   flex-direction:  column;
   align-items:     center;
   justify-content: center;
-  gap:             $_burger-gap;
+  gap:             $_gap;
   width:           $_burger-size;
   height:          $_burger-size;
-  padding:         0.3125rem;
+  padding:         0.375rem;
+  border:          none;
   border-radius:   v.$radius-sm;
-  cursor:          pointer;
+  background:      transparent;
   color:           var(--theme-text);
-  user-select:     none;
+  cursor:          pointer;
+  flex-shrink:     0;
   @include mx.motion;
 
   &:hover { background: var(--theme-surface-subtle); color: var(--theme-brand); }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
-// ── The 4 bars ─────────────────────────────────────────────────────────────
 .site-navbar__burger-bar {
-  display:       block;
-  width:         $_burger-bar-w;
-  height:        $_burger-bar-h;
-  background:    currentColor;
-  border-radius: v.$radius-pill;
+  display:          block;
+  width:            $_bar-w;
+  height:           $_bar-h;
+  background:       currentColor;
+  border-radius:    v.$radius-pill;
   transform-origin: center;
-
-  // ── CLOSING transitions (✕ → ☰)
-  // bars 1+4 unrotate first, then 2+3 slide back
-  &:nth-child(1),
-  &:nth-child(4) {
-    transition:
-      transform    280ms cubic-bezier(0.23, 1, 0.32, 1) 0ms,
-      opacity      200ms ease 0ms;
-  }
-  &:nth-child(2),
-  &:nth-child(3) {
-    transition:
-      transform    220ms cubic-bezier(0.23, 1, 0.32, 1) 100ms,
-      opacity      200ms ease 100ms;
-  }
+  // Default: bars slide back in
+  transition:
+    transform 260ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity   160ms ease;
 }
 
-// ── Measurements for ✕ centering ─────────────────────────────────────────
-// With 4 bars × 2px + 3 gaps × 4px = 20px total stack height.
-// Center of stack from top of bar-1: 10px.
-// Bar-1 center from top of itself:    1px  → translate down:  9px
-// Bar-4 center from top of itself:   19px  → translate up:   -9px
-
-// ── OPENED state (checkbox checked) ──────────────────────────────────────
-// bars 2+3 exit first (0ms delay), then 1+4 cross (80ms delay)
-
-#site-nav-toggle:checked ~ .navbar-brand .site-navbar__burger {
+// ── Open (✕) state ───────────────────────────────────────────────────────────
+.site-navbar__burger.is-open {
   color: var(--theme-brand);
 
   .site-navbar__burger-bar {
-    // ── OPENING transitions override ──────────────────────────────────
-    &:nth-child(1),
-    &:nth-child(4) {
-      transition:
-        transform    300ms cubic-bezier(0.23, 1, 0.32, 1) 80ms,
-        opacity      200ms ease 0ms;
-    }
-    &:nth-child(2),
-    &:nth-child(3) {
-      transition:
-        transform    200ms ease 0ms,
-        opacity      160ms ease 0ms;
-    }
+    transition:
+      transform 300ms cubic-bezier(0.23, 1, 0.32, 1),
+      opacity   160ms ease;
 
-    // ── Transforms ───────────────────────────────────────────────────
-    &:nth-child(1) { transform: translateY(9px)  rotate(45deg); }
-    &:nth-child(2) { transform: translateX(-10px); opacity: 0; }
-    &:nth-child(3) { transform: translateX(10px);  opacity: 0; }
-    &:nth-child(4) { transform: translateY(-9px) rotate(-45deg); }
+    &:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    &:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    &:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
   }
 }
 
 
 // =============================================================================
-//  5) MOBILE MENU  (#siteNavbarMenu)
-//
-//  Desktop: flex row (Bulma handles this via .navbar-menu display:flex)
-//  Mobile:  absolute panel, max-height: 0 → 85vh via checkbox state
+//  7) MOBILE MENU PANEL
+//  JS adds .is-open — max-height animates open.
+//  We fully override Bulma's .navbar-menu behaviour.
 // =============================================================================
 
+// Reset Bulma's .navbar-menu entirely
 .navbar-menu.site-navbar__menu {
-  flex:        1;
-  display:     flex;
-  align-items: stretch;
-}
+  // ── Desktop: flex row ──────────────────────────────────────────────────────
+  @media screen and (min-width: v.$bp-desktop) {
+    display:     flex !important;  // override Bulma
+    align-items: stretch;
+    flex:        1;
+    padding:     0;
+    box-shadow:  none;
+    background:  transparent;
+  }
 
-@media screen and (max-width: #{v.$bp-desktop - 1px}) {
-
-  .navbar-menu.site-navbar__menu {
-    display:    block;
+  // ── Mobile: hidden panel ───────────────────────────────────────────────────
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    display:    block !important;  // Bulma sets display:none on mobile — fight it
     position:   absolute;
-    top:        var(--slds-header-height);
+    top:        100%;
     left:       0;
     right:      0;
     z-index:    190;
@@ -230,20 +356,26 @@ $_burger-gap:       4px     !default;   // gap between bars
     box-shadow: var(--theme-shadow-popover);
     max-height: 0;
     overflow:   hidden;
-    transition: max-height 300ms cubic-bezier(0.23, 1, 0.32, 1);
+    visibility: hidden;
+    transition:
+      max-height 300ms cubic-bezier(0.23, 1, 0.32, 1),
+      visibility 0ms   linear 300ms;
     @include mx.scrollbar;
 
-    // Revealed when checkbox is checked
-    #site-nav-toggle:checked ~ & {
+    &.is-open {
       max-height:  85dvh;
       overflow-y:  auto;
+      visibility:  visible;
+      transition:
+        max-height 300ms cubic-bezier(0.23, 1, 0.32, 1),
+        visibility 0ms   linear 0ms;
     }
   }
 }
 
 
 // =============================================================================
-//  6) NAV LINKS COLUMN  (.site-navbar__nav)
+//  8) NAV LINKS + DROPDOWN SYSTEM
 // =============================================================================
 
 .site-navbar__nav {
@@ -251,46 +383,65 @@ $_burger-gap:       4px     !default;   // gap between bars
   align-items: stretch;
   flex:        1;
   gap:         0.125rem;
-  padding:     0 0.375rem;
-}
+  padding:     0 0.25rem;
 
-@media screen and (max-width: #{v.$bp-desktop - 1px}) {
-  .site-navbar__nav {
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
     flex-direction: column;
+    align-items:    stretch;
     gap:            0.125rem;
     padding:        0.5rem 0.625rem;
-    align-items:    stretch;
   }
 }
 
+// ── Dropdown wrapper (added by JS) ────────────────────────────────────────────
+.site-navbar__dropdown-wrap {
+  position:    relative;
+  display:     flex;
+  align-items: stretch;
 
-// =============================================================================
-//  7) NAV ITEMS  (.site-navbar__nav-item)
-//
-//  Desktop: compact pill chip, vertically centered in the navbar.
-//           hover  → brand-tint-1 bg + brand text
-//           active → solid brand bg + white text
-//
-//  Mobile:  full-width row.
-//           hover  → brand-tint-1 bg + brand text
-//           active → brand-tint-2 bg + brand text + left accent bar
-// =============================================================================
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    flex-direction: column;
+  }
 
+  // Desktop: open on hover
+  @media screen and (min-width: v.$bp-desktop) {
+    &.has-dropdown:hover .site-navbar__dropdown-menu,
+    &.has-dropdown:focus-within .site-navbar__dropdown-menu {
+      opacity:    1;
+      visibility: visible;
+      transform:  translateY(0);
+    }
+
+    &.has-dropdown:hover .site-navbar__dropdown-chevron,
+    &.has-dropdown:focus-within .site-navbar__dropdown-chevron {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Mobile: open via JS .is-open class
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    &.has-dropdown.is-open .site-navbar__dropdown-menu {
+      max-height:  30rem;
+      padding:     0.25rem 0 0.5rem 0.875rem;
+    }
+  }
+}
+
+// ── Nav item (top-level pill) ─────────────────────────────────────────────────
 .site-navbar__nav-item {
-  display:        flex;
-  align-items:    center;
-  gap:            0.375rem;
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.375rem;
   text-decoration: none;
-  white-space:    nowrap;
-  font-size:      v.$font-size-sm;
-  font-weight:    600;
-  letter-spacing: 0.005em;
+  white-space:     nowrap;
+  font-size:       v.$font-size-sm;
+  font-weight:     600;
   @include mx.motion;
 
-  // ── DESKTOP ────────────────────────────────────────────────────────────
+  // Desktop
   @media screen and (min-width: v.$bp-desktop) {
-    align-self:    center;      // don't stretch to full navbar height
-    height:        $_nav-item-h;
+    align-self:    center;
+    height:        $_item-h;
     padding:       0 0.625rem;
     border-radius: v.$radius-sm;
     color:         var(--theme-text);
@@ -309,10 +460,10 @@ $_burger-gap:       4px     !default;   // gap between bars
     &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
   }
 
-  // ── MOBILE ─────────────────────────────────────────────────────────────
+  // Mobile
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    height:        $_nav-item-h-mob;
-    padding:       0 0.875rem;
+    height:        $_item-h-mob;
+    padding:       0 0.75rem;
     border-radius: v.$radius-sm;
     color:         var(--theme-text);
     position:      relative;
@@ -327,13 +478,12 @@ $_burger-gap:       4px     !default;   // gap between bars
       color:       var(--theme-brand);
       font-weight: 700;
 
-      // left accent bar
       &::before {
         content:       "";
         position:      absolute;
         left:          0;
-        top:           20%;
-        bottom:        20%;
+        top:           25%;
+        bottom:        25%;
         width:         3px;
         background:    var(--theme-brand);
         border-radius: v.$radius-pill;
@@ -344,31 +494,106 @@ $_burger-gap:       4px     !default;   // gap between bars
   }
 }
 
-// ── Icon inside nav item ──────────────────────────────────────────────────────
+// Nav icon
 .site-navbar__nav-icon {
-  display:      flex;
-  align-items:  center;
-  flex-shrink:  0;
-  color:        var(--theme-text-weak);
+  display:     flex;
+  align-items: center;
+  flex-shrink: 0;
+  color:       var(--theme-text-weak);
   @include mx.motion;
 
-  // Inherit the parent's color on state changes
-  .site-navbar__nav-item:hover &  { color: var(--theme-brand); }
+  i { font-size: 1rem; line-height: 1; }
+
+  .site-navbar__nav-item:hover &   { color: var(--theme-brand); }
+
   .site-navbar__nav-item.is-active & {
-    @media screen and (min-width: v.$bp-desktop) { color: #ffffff; }
+    @media screen and (min-width: v.$bp-desktop)          { color: #ffffff; }
     @media screen and (max-width: #{v.$bp-desktop - 1px}) { color: var(--theme-brand); }
   }
-
-  i { font-size: 1rem; line-height: 1; }
 }
 
-.site-navbar__nav-label {
-  line-height: 1;
+// Nav label
+.site-navbar__nav-label { line-height: 1; }
+
+// Dropdown chevron (appended by JS)
+.site-navbar__dropdown-chevron {
+  font-size:    0.75rem;
+  margin-left:  0.125rem;
+  color:        var(--theme-text-weak);
+  @include mx.transition(transform, 220ms, ease);
+
+  .site-navbar__nav-item:hover & { color: var(--theme-brand); }
+}
+
+// ── Desktop dropdown panel ─────────────────────────────────────────────────────
+.site-navbar__dropdown-menu {
+  list-style: none;
+  margin:     0;
+  padding:    0;
+
+  @media screen and (min-width: v.$bp-desktop) {
+    position:      absolute;
+    top:           100%;
+    left:          0;
+    min-width:     13rem;
+    background:    var(--theme-surface-card);
+    border:        1px solid var(--theme-border);
+    border-top:    2px solid var(--theme-brand);
+    border-radius: 0 0 $_drop-r $_drop-r;
+    box-shadow:    var(--theme-shadow-popover);
+    padding:       0.375rem 0.375rem;
+    opacity:       0;
+    visibility:    hidden;
+    transform:     translateY(-4px);
+    z-index:       200;
+    @include mx.transition(opacity, 160ms, ease);
+    @include mx.scrollbar;
+  }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    max-height: 0;
+    overflow:   hidden;
+    @include mx.transition(max-height, 260ms, ease);
+    border-left: 2px solid var(--theme-border-soft);
+    margin-left: 0.75rem;
+  }
+
+  // Items inside dropdown
+  li { margin: 0; }
+
+  .site-navbar__nav-item {
+    width: 100%;
+
+    @media screen and (min-width: v.$bp-desktop) {
+      align-self:    auto;
+      height:        2.25rem;
+      padding:       0 0.75rem;
+      border-radius: v.$radius-sm;
+      font-weight:   500;
+      color:         var(--theme-text);
+
+      &.is-active {
+        background:  var(--slds-brand-tint-1);
+        color:       var(--theme-brand);
+        font-weight: 700;
+      }
+    }
+
+    @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+      height:     2.5rem;
+      padding:    0 0.625rem;
+      font-size:  v.$font-size-xs;
+      font-weight: 500;
+      color:      var(--theme-text-weak);
+
+      &:hover { color: var(--theme-brand); }
+    }
+  }
 }
 
 
 // =============================================================================
-//  8) ACTIONS AREA  (.site-navbar__actions)
+//  9) ACTIONS AREA
 // =============================================================================
 
 .site-navbar__actions {
@@ -378,7 +603,6 @@ $_burger-gap:       4px     !default;   // gap between bars
   padding:     0 0.5rem;
   flex-shrink: 0;
 
-  // Reset Bulma .navbar-item padding inside actions
   > .navbar-item {
     padding:    0 0.125rem;
     min-height: unset;
@@ -386,225 +610,272 @@ $_burger-gap:       4px     !default;   // gap between bars
     align-items: center;
   }
 
-  .site-navbar__auth-buttons {
-    display:     flex;
-    align-items: center;
-    gap:         0.375rem;
-  }
-
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
     flex-direction: column;
     align-items:    stretch;
-    padding:        0.625rem 0.625rem 0.875rem;
+    padding:        0.75rem 0.875rem 1rem;
     border-top:     1px solid var(--theme-border-soft);
     gap:            0.375rem;
+    margin-top:     0.25rem;
 
-    > .navbar-item { padding: 0; }
-
-    .site-navbar__auth-buttons {
-      flex-direction: column;
-      gap: 0.375rem;
-    }
-
-    .site-navbar__action-btn { width: 100%; justify-content: center; }
+    > .navbar-item { padding: 0; justify-content: stretch; }
   }
 }
 
 
 // =============================================================================
-//  9) ACTION BUTTONS  (.site-navbar__action-btn)
-//  Unified button system — no Bulma .button coupling.
-//  Default: neutral surface
-//  --primary modifier: brand solid
+//  10) GITHUB BUTTON  — real GitHub grey style
 // =============================================================================
 
-.site-navbar__action-btn {
+.site-navbar__github-btn {
   display:         inline-flex;
   align-items:     center;
-  justify-content: center;
-  gap:             0.3125rem;
-  height:          $_action-btn-h;
-  padding:         0 0.6875rem;
-  border:          1px solid var(--theme-border-strong);
+  gap:             0.3rem;
+  height:          1.875rem;
+  padding:         0 0.75rem;
+  background:      #24292f;
+  border:          1px solid rgba(255, 255, 255, 0.12);
   border-radius:   v.$radius-sm;
-  background:      var(--theme-surface-card);
-  color:           var(--theme-text-strong);
-  font-family:     inherit;
+  color:           #ffffff;
   font-size:       v.$font-size-xs;
   font-weight:     600;
-  line-height:     1;
-  letter-spacing:  0.01em;
-  white-space:     nowrap;
   text-decoration: none;
+  white-space:     nowrap;
   cursor:          pointer;
   @include mx.motion;
 
-  i { font-size: 0.9375rem; line-height: 1; flex-shrink: 0; }
+  i { font-size: 0.9375rem; line-height: 1; }
 
   &:hover {
-    background:   var(--theme-surface-subtle);
-    border-color: var(--theme-border-strong);
-    color:        var(--theme-brand);
-    transform:    translateY(-1px);
-    box-shadow:   var(--theme-shadow-sm);
-    text-decoration: none;
+    background:  #32383f;
+    color:       #ffffff;
+    transform:   translateY(-1px);
+    box-shadow:  0 2px 8px rgba(0, 0, 0, 0.25);
   }
-
   &:active  { transform: translateY(0); box-shadow: none; }
-
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 
-  // ── Primary / Subscribe variant ─────────────────────────────────────────
-  &--primary {
-    background:   var(--theme-brand);
-    border-color: var(--theme-brand);
-    color:        #ffffff;
+  // Dark mode — GitHub dark style
+  html[data-color-scheme="dark"] & {
+    background:  #21262d;
+    border-color: #30363d;
+    color:        #c9d1d9;
 
-    &:hover {
-      background:   var(--theme-brand-hover);
-      border-color: var(--theme-brand-hover);
-      color:        #ffffff;
-    }
-    &:active { filter: brightness(0.9); }
+    &:hover { background: #30363d; color: #c9d1d9; }
   }
-}
 
-// GitHub star: subtle icon color
-.site-navbar__github-btn {
-  i { color: var(--theme-text-weak); }
-  &:hover i { color: var(--theme-brand); }
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    width:           100%;
+    justify-content: center;
+    height:          2.5rem;
+  }
 }
 
 
 // =============================================================================
-//  10) ICON-ONLY BUTTON  (.site-navbar__icon-btn)
-//  Square button with a single Phosphor icon — no label text.
-//  Used for: theme toggle, search (mobile + desktop standalone)
+//  11) ICON-ONLY BUTTON  — search, theme toggle
+//  Just an icon, no border, no background by default. Clean and minimal.
 // =============================================================================
 
 .site-navbar__icon-btn {
   display:         inline-flex;
   align-items:     center;
   justify-content: center;
-  width:           $_icon-btn-size;
-  height:          $_icon-btn-size;
+  width:           $_icon-size;
+  height:          $_icon-size;
   padding:         0;
-  border:          1px solid transparent;
+  border:          none;
   border-radius:   v.$radius-sm;
   background:      transparent;
   color:           var(--theme-text-weak);
-  font-family:     inherit;
   cursor:          pointer;
   @include mx.motion;
 
   i { font-size: 1.0625rem; line-height: 1; }
 
   &:hover {
-    background:   var(--theme-surface-subtle);
-    border-color: var(--theme-border);
-    color:        var(--theme-brand);
+    background: var(--theme-surface-subtle);
+    color:      var(--theme-brand);
   }
-
   &:active { background: var(--slds-brand-tint-1); }
-
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
 
 // =============================================================================
-//  11) DROPDOWN (optional — when manual dropdown markup is uncommented in HBS)
-//  .navbar-item.has-dropdown.is-hoverable
-//   └─ .navbar-link
-//   └─ .navbar-dropdown
-//         └─ .navbar-item
+//  12) JOIN / AUTH BUTTON
+//  Single button — replaces separate Sign in + Subscribe.
 // =============================================================================
 
-.site-navbar .navbar-item.has-dropdown {
+.site-navbar__join-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             0.3rem;
+  height:          $_action-h;
+  padding:         0 0.875rem;
+  background:      var(--theme-brand);
+  border:          1px solid var(--theme-brand);
+  border-radius:   v.$radius-sm;
+  color:           #ffffff;
+  font-family:     inherit;
+  font-size:       v.$font-size-xs;
+  font-weight:     700;
+  text-decoration: none;
+  white-space:     nowrap;
+  cursor:          pointer;
+  @include mx.motion;
+
+  i { font-size: 0.9375rem; flex-shrink: 0; }
+
+  &:hover {
+    background:   var(--theme-brand-hover);
+    border-color: var(--theme-brand-hover);
+    color:        #ffffff;
+    transform:    translateY(-1px);
+    box-shadow:   0 3px 10px rgba(1, 118, 211, 0.3);
+  }
+  &:active  { transform: translateY(0); box-shadow: none; }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    width:   100%;
+    height:  2.5rem;
+    font-size: v.$font-size-sm;
+  }
+}
+
+
+// =============================================================================
+//  13) ACCOUNT DROPDOWN (logged-in member)
+// =============================================================================
+
+.site-navbar__account-wrap {
   position: relative;
 }
 
-.site-navbar .navbar-link {
-  display:     flex;
-  align-items: center;
-  gap:         0.375rem;
-  align-self:  center;
-  height:      $_nav-item-h;
-  padding:     0 2rem 0 0.625rem;
-  border-radius: v.$radius-sm;
-  color:         var(--theme-text);
-  font-size:     v.$font-size-sm;
-  font-weight:   600;
+.site-navbar__account-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.25rem;
+  height:          $_action-h;
+  padding:         0 0.5rem;
+  background:      var(--theme-surface-subtle);
+  border:          1px solid var(--theme-border);
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text);
+  cursor:          pointer;
   @include mx.motion;
 
-  // CSS chevron — separate from Bulma's image-based one
-  &::after {
-    content:      "";
-    position:     absolute;
-    right:        0.625rem;
-    top:          50%;
-    width:        0.375em;
-    height:       0.375em;
-    border:       1.5px solid var(--theme-text-weak);
-    border-top:   none;
-    border-left:  none;
-    transform:    translateY(-65%) rotate(45deg);
-    transition:   border-color 140ms ease, transform 220ms ease;
+  &:hover {
+    background:   var(--slds-brand-tint-1);
+    border-color: var(--theme-brand);
+    color:        var(--theme-brand);
   }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+.site-navbar__account-avatar {
+  width:         28px;
+  height:        28px;
+  border-radius: v.$radius-pill;
+  object-fit:    cover;
+  flex-shrink:   0;
+}
+
+.site-navbar__account-initials {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           28px;
+  height:          28px;
+  border-radius:   v.$radius-pill;
+  background:      var(--theme-brand);
+  color:           #ffffff;
+  font-size:       0.6875rem;
+  font-weight:     700;
+  text-transform:  uppercase;
+  flex-shrink:     0;
+}
+
+.site-navbar__account-caret {
+  font-size:   0.75rem;
+  color:       var(--theme-text-weak);
+  @include mx.transition(transform, 200ms, ease);
+
+  .site-navbar__account-btn[aria-expanded="true"] & {
+    transform: rotate(180deg);
+    color: var(--theme-brand);
+  }
+}
+
+.site-navbar__account-dropdown {
+  position:      absolute;
+  top:           calc(100% + 0.375rem);
+  right:         0;
+  min-width:     16rem;
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: $_drop-r;
+  box-shadow:    var(--theme-shadow-popover);
+  z-index:       200;
+  overflow:      hidden;
+
+  &[hidden] { display: none; }
+}
+
+.site-navbar__account-header {
+  padding:       0.875rem 1rem;
+  background:    var(--theme-surface-subtle);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.site-navbar__account-name {
+  font-size:   v.$font-size-sm;
+  font-weight: 700;
+  color:       var(--theme-text-strong);
+  margin:      0 0 0.125rem;
+}
+
+.site-navbar__account-email {
+  font-size: v.$font-size-xs;
+  color:     var(--theme-text-weak);
+  margin:    0;
+}
+
+.site-navbar__dropdown-divider {
+  height:     1px;
+  background: var(--theme-border-soft);
+  border:     none;
+  margin:     0.25rem 0;
+}
+
+.site-navbar__dropdown-item {
+  display:         flex;
+  align-items:     center;
+  gap:             0.5rem;
+  height:          2.25rem;
+  padding:         0 0.875rem;
+  color:           var(--theme-text);
+  font-size:       v.$font-size-sm;
+  font-weight:     500;
+  text-decoration: none;
+  @include mx.motion;
+
+  i { font-size: 1rem; color: var(--theme-text-weak); flex-shrink: 0; }
 
   &:hover {
     background: var(--slds-brand-tint-1);
     color:      var(--theme-brand);
-    &::after { border-color: var(--theme-brand); }
+    i { color: var(--theme-brand); }
   }
-}
 
-.site-navbar .navbar-item.has-dropdown:hover > .navbar-link::after,
-.site-navbar .navbar-item.has-dropdown.is-active > .navbar-link::after {
-  transform: translateY(-35%) rotate(225deg);
-  border-color: var(--theme-brand);
-}
-
-.site-navbar .navbar-dropdown {
-  background:    var(--theme-surface-card);
-  border:        1px solid var(--theme-border);
-  border-top:    2px solid var(--theme-brand);
-  border-radius: 0 0 v.$radius-lg v.$radius-lg;
-  box-shadow:    var(--theme-shadow-popover);
-  padding:       0.375rem 0.375rem;
-  min-width:     13rem;
-  @include mx.scrollbar;
-
-  .navbar-item {
-    display:       flex;
-    align-items:   center;
-    gap:           0.5rem;
-    height:        2.125rem;
-    padding:       0 0.625rem;
-    border-radius: v.$radius-sm;
-    font-size:     v.$font-size-sm;
-    font-weight:   500;
-    color:         var(--theme-text);
-    @include mx.motion;
-
+  &--danger {
+    color: var(--theme-text-weak);
     &:hover {
-      background: var(--slds-brand-tint-1);
-      color:      var(--theme-brand);
+      background: rgba(186, 5, 23, 0.06);
+      color: #{v.$danger-color};
+      i { color: #{v.$danger-color}; }
     }
-
-    &.is-active {
-      background:  var(--slds-brand-tint-2);
-      color:       var(--theme-brand);
-      font-weight: 700;
-    }
-
-    i { font-size: 1rem; color: var(--theme-text-weak); flex-shrink: 0; }
-    &:hover i { color: var(--theme-brand); }
-  }
-
-  .navbar-divider {
-    background: var(--theme-border-soft);
-    height:     1px;
-    margin:     0.25rem 0;
-    border:     none;
   }
 }

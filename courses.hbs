@@ -3,101 +3,463 @@
 {{#contentFor "head-after"}}
     {{#page}}{{#if codeinjection_head}}{{{codeinjection_head}}}{{/if}}{{/page}}
 {{/contentFor}}
-
 {{#contentFor "foot-after"}}
     {{#page}}{{#if codeinjection_foot}}{{{codeinjection_foot}}}{{/if}}{{/page}}
 {{/contentFor}}
 
 <main>
-    {{!-- HERO – icon left, content right with proper spacing --}}
-    {{#page}}
-    <section class="hero is-small has-background-white-ter" 
-             aria-labelledby="hero-title">
-        <div class="hero-body">
-            <div class="container is-max-widescreen">
-                {{!-- Use columns for precise alignment and responsive stacking --}}
-                <div class="columns is-vcentered is-desktop">
-                    {{!-- Icon column: auto width on desktop, centered on mobile --}}
-                    <div class="column is-narrow has-text-centered-mobile">
-                        <i class="ph-duotone ph-graduation-cap has-text-primary" 
-                           style="font-size: 5rem; line-height: 1;"></i>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    HERO
+══════════════════════════════════════════════════════════════════════════ }}
+{{#page}}
+<section class="hero is-small has-background-white-bis" aria-labelledby="courses-hero-title">
+    <div class="hero-body py-6">
+        <div class="container is-fluid">
+
+            <div class="columns is-vcentered is-variable is-5">
+                <div class="column is-narrow has-text-centered-mobile">
+                    <i class="ph-duotone ph-graduation-cap has-text-primary"
+                       style="font-size: 4.5rem; line-height: 1;" aria-hidden="true"></i>
+                </div>
+                <div class="column">
+                    <h1 id="courses-hero-title" class="title is-2 has-text-dark mb-2">{{title}}</h1>
+                    {{#if custom_excerpt}}
+                        <p class="subtitle is-5 has-text-grey" style="max-width: 52rem;">{{custom_excerpt}}</p>
+                    {{else}}
+                        <p class="subtitle is-5 has-text-grey" style="max-width: 52rem;">
+                            Practical Salesforce courses — Admin, Developer, and Architect tracks built for real outcomes.
+                        </p>
+                    {{/if}}
+                </div>
+            </div>
+
+            {{! Stat chips }}
+            <div class="is-flex is-flex-wrap-wrap is-align-items-center mt-5">
+                <div class="courses-stat">
+                    <span class="courses-stat__num">3</span>
+                    <span class="courses-stat__label">Tracks</span>
+                </div>
+                <div class="courses-stat">
+                    <span class="courses-stat__num">20+</span>
+                    <span class="courses-stat__label">Courses</span>
+                </div>
+                <div class="courses-stat">
+                    <span class="courses-stat__num">100+</span>
+                    <span class="courses-stat__label">Lessons</span>
+                </div>
+                <div class="courses-stat">
+                    <span class="courses-stat__num">Free</span>
+                    <span class="courses-stat__label">To Start</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{{/page}}
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    LEARNING TRACKS  (page 1 only)
+══════════════════════════════════════════════════════════════════════════ }}
+{{#match pagination.page "=" 1}}
+<section class="section pb-4" aria-labelledby="tracks-heading">
+    <div class="container is-fluid">
+
+        {{! Section heading }}
+        <div class="is-flex is-align-items-center mb-5">
+            <h2 id="tracks-heading" class="title is-5 mb-0 has-text-dark">
+                <span class="icon has-text-primary mr-1"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i></span>
+                Learning Tracks
+            </h2>
+            <div class="divider-line ml-4"></div>
+        </div>
+
+        <div class="columns is-multiline is-variable is-5">
+
+            {{! Admin }}
+            <div class="column is-12-mobile is-4-tablet is-4-desktop">
+                <div class="card is-fullheight">
+                    <div class="card-content">
+                        <div class="is-flex is-align-items-center mb-4">
+                            <span class="icon is-large has-text-warning mr-3">
+                                <i class="ph-duotone ph-gear-six" style="font-size: 2rem;" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <p class="title is-5 mb-0">Admin Track</p>
+                                <span class="tag is-warning is-light is-small">Beginner friendly</span>
+                            </div>
+                        </div>
+                        <p class="is-size-6 has-text-grey mb-4">
+                            Security model, flows, automation, reports, and full platform ownership.
+                        </p>
+                        <div class="tags mb-3">
+                            <span class="tag is-light">Flows</span>
+                            <span class="tag is-light">Automation</span>
+                            <span class="tag is-light">Reports</span>
+                            <span class="tag is-light">Security</span>
+                        </div>
+                        <div class="track-progress mb-4">
+                            <span class="track-progress__fill" style="width: 85%;"></span>
+                        </div>
                     </div>
-                    {{!-- Text column: fills remaining space --}}
-                    <div class="column">
-                        <h1 id="hero-title" class="title is-4 is-size-2-mobile has-text-weight-bold has-text-dark mb-2">
-                            {{title}}
-                        </h1>
-                        {{#if custom_excerpt}}
-                            <p class="subtitle is-6 is-size-5-mobile has-text-grey" 
-                               style="max-width: 800px; line-height: 1.5;">
-                                {{custom_excerpt}}
-                            </p>
-                        {{/if}}
+                    <footer class="card-footer">
+                        <a href="/tag/admin/" class="card-footer-item has-text-warning">
+                            <span class="icon is-small mr-1"><i class="ph ph-arrow-right"></i></span>
+                            View Admin Courses
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            {{! Developer }}
+            <div class="column is-12-mobile is-4-tablet is-4-desktop">
+                <div class="card is-fullheight">
+                    <div class="card-content">
+                        <div class="is-flex is-align-items-center mb-4">
+                            <span class="icon is-large has-text-link mr-3">
+                                <i class="ph-duotone ph-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <p class="title is-5 mb-0">Developer Track</p>
+                                <span class="tag is-info is-light is-small">Most popular</span>
+                            </div>
+                        </div>
+                        <p class="is-size-6 has-text-grey mb-4">
+                            Apex, LWC, APIs, triggers, testing, and packaging for scalable custom apps.
+                        </p>
+                        <div class="tags mb-3">
+                            <span class="tag is-light">Apex</span>
+                            <span class="tag is-light">LWC</span>
+                            <span class="tag is-light">APIs</span>
+                            <span class="tag is-light">Testing</span>
+                        </div>
+                        <div class="track-progress mb-4">
+                            <span class="track-progress__fill" style="width: 72%;"></span>
+                        </div>
                     </div>
+                    <footer class="card-footer">
+                        <a href="/tag/developer/" class="card-footer-item has-text-link">
+                            <span class="icon is-small mr-1"><i class="ph ph-arrow-right"></i></span>
+                            View Developer Courses
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+            {{! Architect }}
+            <div class="column is-12-mobile is-4-tablet is-4-desktop">
+                <div class="card is-fullheight">
+                    <div class="card-content">
+                        <div class="is-flex is-align-items-center mb-4">
+                            <span class="icon is-large has-text-success mr-3">
+                                <i class="ph-duotone ph-tree-structure" style="font-size: 2rem;" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <p class="title is-5 mb-0">Architect Track</p>
+                                <span class="tag is-success is-light is-small">Advanced</span>
+                            </div>
+                        </div>
+                        <p class="is-size-6 has-text-grey mb-4">
+                            Solution design, data strategy, integrations, governance, and enterprise-scale thinking.
+                        </p>
+                        <div class="tags mb-3">
+                            <span class="tag is-light">Design</span>
+                            <span class="tag is-light">Governance</span>
+                            <span class="tag is-light">Data Strategy</span>
+                        </div>
+                        <div class="track-progress mb-4">
+                            <span class="track-progress__fill" style="width: 40%;"></span>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/tag/architect/" class="card-footer-item has-text-success">
+                            <span class="icon is-small mr-1"><i class="ph ph-arrow-right"></i></span>
+                            View Architect Courses
+                        </a>
+                    </footer>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{{/match}}
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    SPONSORED COURSE  (page 1 only)
+══════════════════════════════════════════════════════════════════════════ }}
+{{#match pagination.page "=" 1}}
+<section class="section pb-0" aria-label="Sponsored course">
+    <div class="container is-fluid">
+        <div class="notification is-warning is-light is-sponsored">
+            <div class="columns is-vcentered is-variable is-5">
+                <div class="column is-narrow">
+                    <span class="tag is-warning is-medium">
+                        <span class="icon is-small mr-1"><i class="ph ph-seal-check" aria-hidden="true"></i></span>
+                        Sponsored
+                    </span>
+                </div>
+                <div class="column">
+                    <p class="has-text-weight-semibold has-text-dark mb-1">
+                        Salesforce Platform Developer I — Cert Bootcamp
+                    </p>
+                    <p class="is-size-7 has-text-grey">
+                        Intensive PD1 exam prep. Covers Apex, SOQL, triggers, LWC fundamentals, and the Salesforce data model.
+                    </p>
+                </div>
+                <div class="column is-narrow">
+                    <a href="/courses/" class="button is-warning is-small">
+                        <span class="icon is-small"><i class="ph ph-arrow-right"></i></span>
+                        <span>Learn More</span>
+                    </a>
                 </div>
             </div>
         </div>
-    </section>
-    {{/page}}
+    </div>
+</section>
+{{/match}}
 
-    {{!-- FEATURED COURSES (first page only) --}}
-    {{#match pagination.page "=" 1}}
-        {{#get "posts" filter="tags:hash-courses-col+featured:true" include="tags,authors" limit="3" as |featured|}}
-            {{#if featured}}
-                <section class="section pt-5 pb-6" aria-labelledby="featured-heading">
-                    <div class="container is-max-widescreen">
-                        <div class="is-flex is-align-items-center mb-5">
-                            <h2 id="featured-heading" class="title is-4 mb-0 has-text-weight-bold" style="color: #0176D3;">
-                                <i class="ph-fill ph-star mr-2" aria-hidden="true"></i> Featured Courses
-                            </h2>
-                            <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;" aria-hidden="true"></div>
-                        </div>
+{{! ══════════════════════════════════════════════════════════════════════════
+    FEATURED COURSES  (page 1 only)
+══════════════════════════════════════════════════════════════════════════ }}
+{{#match pagination.page "=" 1}}
+    {{#get "posts" filter="tag:hash-course+featured:true" include="tags,authors" limit="3" as |featured|}}
+        {{#if featured}}
+        <section class="section pb-0" aria-labelledby="featured-heading">
+            <div class="container is-fluid">
 
-                        <div class="columns is-multiline is-variable is-6">
-                            {{#foreach featured}}
-                                <div class="column is-4-desktop is-6-tablet mb-5">
-                                    {{> "post-card" lazyLoading=true}}
-                                </div>
-                            {{/foreach}}
-                        </div>
-                    </div>
-                </section>
-            {{/if}}
-        {{/get}}
-    {{/match}}
+                <div class="is-flex is-align-items-center mb-5">
+                    <h2 id="featured-heading" class="title is-5 mb-0 has-text-primary">
+                        <span class="icon mr-1"><i class="ph-fill ph-star" aria-hidden="true"></i></span>
+                        Featured Courses
+                    </h2>
+                    <div class="divider-line ml-4"></div>
+                </div>
 
-    {{!-- ALL COURSES (excluding featured) --}}
-    <section class="section pt-4" aria-labelledby="all-courses-heading">
-        <div class="container is-max-widescreen">
-            <div class="is-flex is-align-items-center mb-5">
-                <h2 id="all-courses-heading" class="title is-4 mb-0 has-text-weight-bold has-text-grey-dark">
-                    <i class="ph-fill ph-books mr-2" aria-hidden="true"></i> All Courses
-                </h2>
-                <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;" aria-hidden="true"></div>
-            </div>
-
-            {{#if posts}}
-                <div class="columns is-multiline is-variable is-6">
-                    {{#foreach posts}}
-                        <div class="column is-4-desktop is-6-tablet mb-5">
+                <div class="columns is-multiline is-variable is-5">
+                    {{#foreach featured}}
+                        <div class="column is-12-mobile is-6-tablet is-4-desktop">
                             {{> "post-card" lazyLoading=true}}
                         </div>
                     {{/foreach}}
                 </div>
-            {{else}}
-                <div class="has-text-centered py-6">
-                    <i class="ph-duotone ph-warning-circle is-size-1 has-text-grey-light mb-4" aria-hidden="true"></i>
-                    <p class="title is-5 has-text-grey">No courses found.</p>
-                    <p class="subtitle is-6 has-text-grey">Check back later or browse other sections.</p>
-                </div>
-            {{/if}}
 
-            {{!-- PAGINATION --}}
-            {{#if pagination}}
-                <nav class="pagination is-centered mt-6 pt-2" role="navigation" aria-label="Pagination">
-                    {{pagination}}
-                </nav>
-            {{/if}}
+            </div>
+        </section>
+        {{/if}}
+    {{/get}}
+{{/match}}
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    FILTER BAR
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section pb-0">
+    <div class="container is-fluid">
+        <div class="courses-filter is-flex is-flex-wrap-wrap is-align-items-center"
+             role="navigation" aria-label="Filter by topic">
+            <p class="heading mb-0 mr-3 has-text-grey">Filter</p>
+            <div class="tags mb-0">
+                <a href="/courses/"          class="tag is-medium is-light is-active">All</a>
+                <a href="/tag/admin/"         class="tag is-medium is-light">
+                    <span class="icon is-small"><i class="ph ph-gear-six"></i></span><span>Admin</span>
+                </a>
+                <a href="/tag/developer/"     class="tag is-medium is-light">
+                    <span class="icon is-small"><i class="ph ph-code"></i></span><span>Developer</span>
+                </a>
+                <a href="/tag/architect/"     class="tag is-medium is-light">
+                    <span class="icon is-small"><i class="ph ph-tree-structure"></i></span><span>Architect</span>
+                </a>
+                <a href="/tag/lwc/"           class="tag is-medium is-light">LWC</a>
+                <a href="/tag/apex/"          class="tag is-medium is-light">Apex</a>
+                <a href="/tag/flows/"         class="tag is-medium is-light">Flows</a>
+                <a href="/tag/integration/"   class="tag is-medium is-light">Integration</a>
+                <a href="/tag/soql/"          class="tag is-medium is-light">SOQL</a>
+            </div>
         </div>
-    </section>
+        <hr class="my-4">
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    ALL COURSES
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section pt-0" aria-labelledby="all-courses-heading">
+    <div class="container is-fluid">
+
+        <div class="is-flex is-align-items-center mb-5">
+            <h2 id="all-courses-heading" class="title is-5 mb-0 has-text-dark">
+                <span class="icon has-text-grey mr-1"><i class="ph-fill ph-books" aria-hidden="true"></i></span>
+                All Courses
+            </h2>
+            {{#if pagination}}
+                <span class="tag is-light ml-3">{{pagination.total}} total</span>
+            {{/if}}
+            <div class="divider-line ml-4"></div>
+        </div>
+
+        {{#if posts}}
+            <div class="columns is-multiline is-variable is-5">
+                {{#foreach posts}}
+
+                    <div class="column is-12-mobile is-6-tablet is-4-desktop">
+                        {{> "post-card" lazyLoading=true}}
+                    </div>
+
+                    {{! Teach on Namaste Salesforce — mid-grid CTA after card 6 }}
+                    {{#match @index "=" 6}}
+                        <div class="column is-12">
+                            <div class="box has-background-primary p-5">
+                                <div class="columns is-vcentered is-variable is-6">
+
+                                    <div class="column">
+                                        <p class="heading has-text-white mb-2" style="opacity: .65; letter-spacing: .08em;">
+                                            <i class="ph ph-chalkboard-teacher mr-1"></i>
+                                            For Salesforce Professionals
+                                        </p>
+                                        <h3 class="title is-4 has-text-white mb-3">Teach on Namaste Salesforce</h3>
+                                        <p class="is-size-6 mb-4" style="color: rgba(255,255,255,.82); max-width: 44rem; line-height: 1.65;">
+                                            Share your Salesforce knowledge with a growing community of learners.
+                                            A single tutorial, a full course, or a certification walkthrough —
+                                            your experience belongs here. No gatekeeping, free to publish.
+                                        </p>
+                                        <div class="instructor-perks">
+                                            <span class="instructor-perks__item">
+                                                <i class="ph ph-check-circle"></i> Free to publish
+                                            </span>
+                                            <span class="instructor-perks__item">
+                                                <i class="ph ph-check-circle"></i> Ghost CMS editor
+                                            </span>
+                                            <span class="instructor-perks__item">
+                                                <i class="ph ph-check-circle"></i> Open source platform
+                                            </span>
+                                            <span class="instructor-perks__item">
+                                                <i class="ph ph-check-circle"></i> Real learner audience
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="column is-narrow">
+                                        <div class="buttons is-flex-direction-column-mobile">
+                                            <a href="/contact/" class="button is-white">
+                                                <span class="icon"><i class="ph ph-paper-plane-tilt"></i></span>
+                                                <span>Apply to Teach</span>
+                                            </a>
+                                            <a href="/contact/" class="button is-white is-outlined">
+                                                Ask a question
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    {{/match}}
+
+                {{/foreach}}
+            </div>
+
+        {{else}}
+            <div class="has-text-centered py-6">
+                <i class="ph-duotone ph-warning-circle courses-empty-icon has-text-grey-light" aria-hidden="true"></i>
+                <p class="title is-5 has-text-grey mb-2">No courses found.</p>
+                <p class="subtitle is-6 has-text-grey-light">
+                    Tag posts with <code>hash-course</code> to list them here.
+                </p>
+            </div>
+        {{/if}}
+
+        {{! Pagination }}
+        {{#if pagination}}
+            <nav class="pagination is-centered mt-6" role="navigation" aria-label="Course pages">
+                {{pagination}}
+            </nav>
+        {{/if}}
+
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    BECOME AN INSTRUCTOR  (bottom, every page)
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section has-background-white-bis" aria-label="Become an instructor">
+    <div class="container is-fluid">
+
+        <div class="box has-background-primary p-6">
+            <div class="columns is-vcentered is-variable is-8">
+
+                <div class="column">
+                    <p class="heading has-text-white mb-3" style="opacity: .65; letter-spacing: .09em;">
+                        <i class="ph ph-chalkboard-teacher mr-1"></i>
+                        Open to all Salesforce professionals
+                    </p>
+                    <h2 class="title is-3 has-text-white mb-4">Share your Salesforce knowledge. Teach here.</h2>
+                    <p class="is-size-5 mb-5" style="color: rgba(255,255,255,.82); max-width: 46rem; line-height: 1.65;">
+                        Namaste Salesforce is an open source, community-first learning platform.
+                        If you've solved real Salesforce problems — in admin, development, or architecture —
+                        there's a place for your course here. No complicated setup, no revenue split.
+                        Just Ghost CMS and a community that wants to learn from practitioners.
+                    </p>
+                    <div class="instructor-perks">
+                        <span class="instructor-perks__item">
+                            <i class="ph ph-check-circle"></i> Completely free to publish
+                        </span>
+                        <span class="instructor-perks__item">
+                            <i class="ph ph-check-circle"></i> Ghost CMS — clean writing experience
+                        </span>
+                        <span class="instructor-perks__item">
+                            <i class="ph ph-check-circle"></i> Open source — your content, your control
+                        </span>
+                        <span class="instructor-perks__item">
+                            <i class="ph ph-check-circle"></i> Real Salesforce learner audience
+                        </span>
+                    </div>
+                </div>
+
+                <div class="column is-narrow">
+                    <div class="box mb-4">
+                        <p class="heading mb-3">What you get</p>
+                        <div class="media mb-3">
+                            <div class="media-left">
+                                <span class="icon has-text-primary"><i class="ph ph-article"></i></span>
+                            </div>
+                            <div class="media-content">
+                                <p class="is-size-7 has-text-weight-semibold mb-0">Ghost CMS</p>
+                                <p class="is-size-7 has-text-grey">Clean, distraction-free editor</p>
+                            </div>
+                        </div>
+                        <div class="media mb-3">
+                            <div class="media-left">
+                                <span class="icon has-text-primary"><i class="ph ph-users-three"></i></span>
+                            </div>
+                            <div class="media-content">
+                                <p class="is-size-7 has-text-weight-semibold mb-0">Community reach</p>
+                                <p class="is-size-7 has-text-grey">Growing Salesforce learner base</p>
+                            </div>
+                        </div>
+                        <div class="media mb-4">
+                            <div class="media-left">
+                                <span class="icon has-text-primary"><i class="ph ph-github-logo"></i></span>
+                            </div>
+                            <div class="media-content">
+                                <p class="is-size-7 has-text-weight-semibold mb-0">Open source</p>
+                                <p class="is-size-7 has-text-grey">Full transparency, no lock-in</p>
+                            </div>
+                        </div>
+                        <a href="/contact/" class="button is-primary is-fullwidth is-small">
+                            <span class="icon"><i class="ph ph-paper-plane-tilt"></i></span>
+                            <span>Apply to Teach</span>
+                        </a>
+                        <a href="/contact/" class="button is-light is-fullwidth is-small mt-2">
+                            Ask a question
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
 </main>

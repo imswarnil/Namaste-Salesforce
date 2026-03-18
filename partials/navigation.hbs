@@ -1,46 +1,67 @@
 {{!-- =========================================================================
   navigation.hbs
-  Renders {{navigation}} as a list of .site-navbar__nav-item links.
-  Each item gets:
-    • data-nav-slug  — the Ghost slug for CSS/JS targeting
-    • .is-active     — added by Ghost when the URL matches current page
-    • Phosphor icon  — matched to slug via {{#match}}
+  Outputs Ghost primary navigation with dropdown support.
+
+  DROPDOWN CONVENTION:
+    Any Ghost nav item whose label starts with "- " (dash space) is treated
+    as a child of the preceding top-level item. JavaScript (in header.hbs)
+    reads [data-child="true"] and rebuilds the DOM into proper dropdowns.
+
+  ICON MATCHING:
+    Icons are matched by slug via {{#match}}. Add new slugs as needed.
+    Falls back to ph-circle-dashed for unrecognised slugs.
 ========================================================================== --}}
 
 {{#foreach navigation}}
-  <a
-    href="{{url absolute="true"}}"
-    class="site-navbar__nav-item{{#if current}} is-active{{/if}}"
-    data-nav-slug="{{slug}}"
-    {{#if current}}aria-current="page"{{/if}}
-  >
-    <span class="site-navbar__nav-icon" aria-hidden="true">
-      {{#match slug "=" "home"}}
-        <i class="ph ph-house-simple"></i>
-      {{else match slug "=" "about"}}
-        <i class="ph ph-user"></i>
-      {{else match slug "=" "blog"}}
-        <i class="ph ph-note-pencil"></i>
-      {{else match slug "=" "training"}}
-        <i class="ph ph-student"></i>
-      {{else match slug "=" "contact"}}
-        <i class="ph ph-envelope-simple"></i>
-      {{else match slug "=" "courses"}}
-        <i class="ph ph-book-open"></i>
-      {{else match slug "=" "projects"}}
-        <i class="ph ph-code"></i>
-      {{else match slug "=" "portfolio"}}
-        <i class="ph ph-briefcase"></i>
-      {{else match slug "=" "videos"}}
-        <i class="ph ph-play-circle"></i>
-      {{else match slug "=" "newsletter"}}
-        <i class="ph ph-newspaper"></i>
-      {{else match slug "=" "tags"}}
-        <i class="ph ph-hash"></i>
-      {{else}}
-        <i class="ph ph-circle-dashed"></i>
-      {{/match}}
-    </span>
-    <span class="site-navbar__nav-label">{{label}}</span>
-  </a>
+  {{#match label "~^" "- "}}
+    {{!-- CHILD ITEM — label starts with "- " --}}
+    <a
+      class="site-navbar__nav-item site-navbar__nav-item--child{{#if current}} is-active{{/if}}"
+      href="{{url absolute="true"}}"
+      data-child="true"
+      data-nav-slug="{{slug}}"
+      {{#if current}}aria-current="page"{{/if}}
+    >
+      <span class="site-navbar__nav-icon" aria-hidden="true">
+        {{#match slug "=" "home"}}       <i class="ph ph-house-simple"></i>
+        {{else match slug "=" "about"}}  <i class="ph ph-user"></i>
+        {{else match slug "=" "blog"}}   <i class="ph ph-note-pencil"></i>
+        {{else match slug "=" "training"}}<i class="ph ph-student"></i>
+        {{else match slug "=" "contact"}}<i class="ph ph-envelope-simple"></i>
+        {{else match slug "=" "courses"}}<i class="ph ph-book-open"></i>
+        {{else match slug "=" "projects"}}<i class="ph ph-code"></i>
+        {{else match slug "=" "videos"}} <i class="ph ph-play-circle"></i>
+        {{else match slug "=" "tags"}}   <i class="ph ph-hash"></i>
+        {{else match slug "=" "authors"}}<i class="ph ph-users"></i>
+        {{else}}                         <i class="ph ph-circle-dashed"></i>
+        {{/match}}
+      </span>
+      {{!-- Strip the leading "- " from the displayed label --}}
+      <span class="site-navbar__nav-label">{{label}}</span>
+    </a>
+  {{else}}
+    {{!-- TOP-LEVEL ITEM --}}
+    <a
+      class="site-navbar__nav-item{{#if current}} is-active{{/if}}"
+      href="{{url absolute="true"}}"
+      data-nav-slug="{{slug}}"
+      {{#if current}}aria-current="page"{{/if}}
+    >
+      <span class="site-navbar__nav-icon" aria-hidden="true">
+        {{#match slug "=" "home"}}       <i class="ph ph-house-simple"></i>
+        {{else match slug "=" "about"}}  <i class="ph ph-user"></i>
+        {{else match slug "=" "blog"}}   <i class="ph ph-note-pencil"></i>
+        {{else match slug "=" "training"}}<i class="ph ph-student"></i>
+        {{else match slug "=" "contact"}}<i class="ph ph-envelope-simple"></i>
+        {{else match slug "=" "courses"}}<i class="ph ph-book-open"></i>
+        {{else match slug "=" "projects"}}<i class="ph ph-code"></i>
+        {{else match slug "=" "videos"}} <i class="ph ph-play-circle"></i>
+        {{else match slug "=" "tags"}}   <i class="ph ph-hash"></i>
+        {{else match slug "=" "authors"}}<i class="ph ph-users"></i>
+        {{else}}                         <i class="ph ph-circle-dashed"></i>
+        {{/match}}
+      </span>
+      <span class="site-navbar__nav-label">{{label}}</span>
+    </a>
+  {{/match}}
 {{/foreach}}

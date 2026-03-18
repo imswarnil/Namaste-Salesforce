@@ -1,0 +1,728 @@
+// =============================================================================
+//  _posts.scss
+//  All post-template, page-template, author, and tag page styles.
+//  Bulma handles layout — we handle theming, custom states, and extras.
+//
+//  Sections:
+//    1.  Ghost content  (.gh-content prose)
+//    2.  Post card      (.card.is-hoverable overrides for post-card.hbs)
+//    3.  Post default   (post-default.hbs)
+//    4.  Post blog      (post-blog.hbs — TOC, reading progress)
+//    5.  Post course    (post-course.hbs — hero, curriculum panel)
+//    6.  Post lesson    (post-lesson.hbs — 3-col layout, sidebar, TOC)
+//    7.  Author page    (author.hbs)
+//    8.  Tag page       (tag.hbs)
+//    9.  Pagination     (shared)
+// =============================================================================
+
+@use "variables" as v;
+@use "mixins"    as mx;
+
+
+// =============================================================================
+//  1) GHOST CONTENT  — .gh-content prose
+//  The rendered post body. Bulma's .content handles most typography.
+//  We handle theme colours, Koenig card sizing, and dark-mode.
+// =============================================================================
+
+.gh-content {
+  color:       var(--theme-text);
+  font-size:   1rem;
+  line-height: 1.75;
+
+  // Headings
+  h1, h2, h3, h4, h5, h6 {
+    color:       var(--theme-text-strong);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-top:  2rem;
+  }
+
+  // Links
+  a {
+    color:                 var(--theme-brand);
+    text-underline-offset: 2px;
+    &:hover { color: var(--theme-brand-hover); }
+  }
+
+  // Blockquote
+  blockquote {
+    background:        var(--theme-surface-subtle);
+    border-left:       4px solid var(--theme-brand);
+    border-radius:     0 v.$radius-sm v.$radius-sm 0;
+    color:             var(--theme-text);
+    padding:           1rem 1.25rem;
+    font-style:        normal;
+    margin:            1.5rem 0;
+
+    p { margin: 0; }
+    cite { font-size: v.$font-size-sm; color: var(--theme-text-weak); }
+  }
+
+  // Code blocks
+  pre {
+    background:    var(--theme-surface-subtle);
+    border:        1px solid var(--theme-border);
+    border-radius: v.$radius-md;
+    color:         var(--theme-text-strong);
+    overflow-x:    auto;
+    @include mx.scrollbar;
+  }
+
+  // Inline code
+  code:not(pre code) {
+    background:    var(--theme-surface-subtle);
+    color:         var(--theme-brand);
+    border-radius: v.$radius-sm;
+    padding:       0.1em 0.35em;
+    font-size:     0.875em;
+  }
+
+  // Images
+  img, figure {
+    border-radius: v.$radius-md;
+    max-width:     100%;
+  }
+
+  figcaption {
+    color:       var(--theme-text-weak);
+    font-size:   v.$font-size-sm;
+    text-align:  center;
+    margin-top:  0.5rem;
+  }
+
+  // Horizontal rule
+  hr {
+    background-color: var(--theme-border);
+    height:           1px;
+    border:           none;
+    margin:           2rem 0;
+  }
+
+  // Tables
+  table {
+    border-collapse: separate;
+    border-spacing:  0;
+    border:          1px solid var(--theme-border);
+    border-radius:   v.$radius-md;
+    overflow:        hidden;
+    width:           100%;
+
+    th {
+      background:     var(--theme-surface-subtle);
+      color:          var(--theme-text-strong);
+      font-size:      v.$font-size-xs;
+      font-weight:    700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-bottom:  2px solid var(--theme-border);
+    }
+
+    td, th { padding: 0.625rem 0.875rem; border-color: var(--theme-border-soft); }
+    tbody tr:hover { background: var(--slds-brand-tint-1); }
+  }
+
+  // Koenig bookmark card
+  .kg-bookmark-card {
+    border:        1px solid var(--theme-border);
+    border-radius: v.$radius-md;
+    overflow:      hidden;
+    background:    var(--theme-surface-card);
+    @include mx.motion;
+
+    &:hover { box-shadow: var(--theme-shadow-raised); }
+  }
+
+  .kg-bookmark-title    { color: var(--theme-text-strong); font-weight: 700; }
+  .kg-bookmark-description { color: var(--theme-text-weak); }
+  .kg-bookmark-metadata    { color: var(--theme-text-weak); font-size: v.$font-size-xs; }
+
+  // Koenig callout card
+  .kg-callout-card {
+    background:   var(--theme-surface-subtle);
+    border-left:  4px solid var(--theme-brand);
+    border-radius: 0 v.$radius-md v.$radius-md 0;
+    padding:      1rem 1.25rem;
+    display:      flex;
+    gap:          0.875rem;
+    align-items:  flex-start;
+  }
+
+  .kg-callout-text { color: var(--theme-text); }
+
+  // Koenig toggle card
+  .kg-toggle-card {
+    border:        1px solid var(--theme-border);
+    border-radius: v.$radius-md;
+    background:    var(--theme-surface-card);
+    padding:       1rem 1.25rem;
+  }
+
+  .kg-toggle-heading { color: var(--theme-text-strong); font-weight: 700; }
+
+  // Koenig button
+  .kg-btn,
+  .kg-button-card a {
+    background:    var(--theme-brand);
+    border:        1px solid var(--theme-brand);
+    border-radius: v.$radius-sm;
+    color:         #ffffff;
+    font-weight:   700;
+    padding:       0.5rem 1.25rem;
+    @include mx.motion;
+
+    &:hover { background: var(--theme-brand-hover); color: #ffffff; }
+  }
+}
+
+
+// =============================================================================
+//  2) POST CARD  — extends .card.is-hoverable from post-card.hbs
+// =============================================================================
+
+// Base card state — theme-aware surface
+.card {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-md;
+  color:         var(--theme-text);
+  @include mx.motion;
+
+  &.is-hoverable:hover {
+    box-shadow: var(--theme-shadow-raised);
+    transform:  translateY(-2px);
+    border-color: var(--theme-border-strong);
+  }
+}
+
+// Card image link — prevents gap under image
+.card-image a.image {
+  display: block;
+  overflow: hidden;
+  border-radius: v.$radius-md v.$radius-md 0 0;
+
+  img {
+    transition: transform 300ms ease;
+    will-change: transform;
+  }
+
+  &:hover img { transform: scale(1.03); }
+}
+
+// Card content
+.card-content {
+  background: var(--theme-surface-card);
+
+  // Title link inside card
+  .title a {
+    color:           var(--theme-text-strong);
+    text-decoration: none;
+    @include mx.motion;
+
+    &:hover { color: var(--theme-brand); }
+  }
+}
+
+// Card meta footer line
+.card-content [style*="border-top"] {
+  border-color: var(--theme-border-soft) !important;
+}
+
+// Locked content overlay
+.is-overlay.has-background-black-ter {
+  border-radius: v.$radius-md v.$radius-md 0 0;
+}
+
+
+// =============================================================================
+//  3) POST DEFAULT  (post-default.hbs)
+// =============================================================================
+
+.post-default-aside {
+  .box {
+    position: sticky;
+    top: calc(var(--slds-header-height) + 1.5rem);
+    background:    var(--theme-surface-card);
+    border:        1px solid var(--theme-border);
+    border-radius: v.$radius-md;
+    box-shadow:    var(--theme-shadow-card);
+  }
+}
+
+
+// =============================================================================
+//  4) POST BLOG  (post-blog.hbs)
+// =============================================================================
+
+// Reading progress bar — thin brand line at top of viewport
+.reading-progress {
+  position:   fixed;
+  top:        0;
+  left:       0;
+  z-index:    300;
+  height:     3px;
+  width:      0%;
+  background: var(--theme-brand);
+  transition: width 100ms linear;
+}
+
+// Newsletter subscribe box in sidebar
+.box.has-background-primary {
+  background: var(--theme-brand) !important;
+  border:     none;
+
+  input.input {
+    background:   rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color:        #ffffff;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.7); }
+    &:focus { background: rgba(255, 255, 255, 0.25); border-color: rgba(255, 255, 255, 0.6); }
+  }
+}
+
+// TOC link active state (set by JS scroll-spy)
+.toc-link {
+  @include mx.motion;
+  padding:       0.3rem 0.5rem;
+  border-radius: v.$radius-sm;
+  display:       block;
+  color:         var(--theme-text-weak);
+  font-size:     v.$font-size-sm;
+
+  &:hover { color: var(--theme-brand); background: var(--slds-brand-tint-1); }
+
+  &.has-background-primary-light {
+    background:  var(--slds-brand-tint-1) !important;
+    color:       var(--theme-brand) !important;
+    font-weight: 700 !important;
+  }
+}
+
+// Feature image in blog post
+.is-16by9.box.is-clipped {
+  border-radius: v.$radius-lg !important;
+  border-color:  var(--theme-border) !important;
+
+  img { border-radius: v.$radius-lg; }
+}
+
+// Mobile TOC toggle box
+#mobile-toc-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+// Share row border
+.level[style*="border-top"] {
+  border-color: var(--theme-border) !important;
+}
+
+
+// =============================================================================
+//  5) POST COURSE  (post-course.hbs)
+// =============================================================================
+
+// Course hero section
+.hero#ns-hero {
+  background: linear-gradient(160deg, var(--slds-brand-tint-1) 0%, transparent 50%),
+              var(--theme-surface-card);
+  border-bottom: 1px solid var(--theme-border);
+
+  .hero-body { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+}
+
+// No-AI badge
+.ns-badge.ns-no-ai {
+  display:       flex;
+  align-items:   flex-start;
+  gap:           0.875rem;
+  background:    var(--theme-surface-subtle);
+  border:        1px solid var(--theme-border);
+  border-left:   4px solid var(--theme-brand);
+  border-radius: v.$radius-md;
+  margin-bottom: 1.5rem;
+  padding:       1rem 1.125rem;
+
+  .icon { color: var(--theme-brand); font-size: 1.25rem; flex-shrink: 0; }
+  strong { color: var(--theme-text-strong); }
+  p { color: var(--theme-text-weak); font-size: v.$font-size-sm; }
+}
+
+// Section boxes
+.ns-section {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-md;
+  margin-bottom: 1.5rem;
+}
+
+// Course curriculum panel
+.panel.is-primary {
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-md;
+  overflow:      hidden;
+
+  .panel-heading {
+    background:     var(--theme-surface-subtle) !important;
+    color:          var(--theme-text-strong) !important;
+    border-bottom:  1px solid var(--theme-border) !important;
+    border-radius:  v.$radius-md v.$radius-md 0 0;
+  }
+}
+
+// Lesson panel items
+.ns-panel-block {
+  border-color:    var(--theme-border-soft);
+  color:           var(--theme-text);
+  @include mx.motion;
+
+  &:hover {
+    background: var(--slds-brand-tint-1);
+    color:      var(--theme-brand);
+  }
+
+  .has-text-dark { color: var(--theme-text-strong) !important; }
+  .has-text-grey { color: var(--theme-text-weak) !important; }
+}
+
+// Sticky hero feature image
+.ns-hero-media {
+  border-radius: v.$radius-lg;
+  overflow:      hidden;
+}
+
+// Sticky sidebar
+.ns-sticky {
+  position:   sticky;
+  top:        calc(var(--slds-header-height) + 1rem);
+  max-height: calc(100dvh - var(--slds-header-height) - 2rem);
+  overflow-y: auto;
+  @include mx.scrollbar;
+}
+
+// Course sidebar card
+.ns-card {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-lg;
+  box-shadow:    var(--theme-shadow-card);
+  overflow:      hidden;
+}
+
+// Sticky course footer nav
+#ns-course-link-sticky {
+  background:    var(--theme-surface-card);
+  border-top:    1px solid var(--theme-border);
+  box-shadow:    0 -2px 8px rgba(0, 0, 0, 0.07);
+}
+
+// Ad placeholder boxes
+.ns-ad {
+  background:    var(--theme-surface-subtle);
+  border:        1px dashed var(--theme-border);
+  border-radius: v.$radius-sm;
+  color:         var(--theme-text-weak);
+  font-size:     v.$font-size-xs;
+  padding:       1.5rem;
+  text-align:    center;
+  margin-bottom: 1.5rem;
+
+  small { display: block; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+}
+
+// Muted text helper
+.ns-muted { color: var(--theme-text-weak) !important; }
+
+// Hero meta pills
+#ns-hero-meta {
+  .is-flex.is-align-items-center {
+    font-size:  v.$font-size-sm;
+    color:      var(--theme-text-weak);
+    font-weight: 600;
+
+    i { color: var(--theme-brand); }
+  }
+}
+
+
+// =============================================================================
+//  6) POST LESSON  (post-lesson.hbs)
+// =============================================================================
+
+.ns-lesson-wrapper {
+  background: var(--theme-surface-body);
+}
+
+// ── Left sidebar ─────────────────────────────────────────────────────────────
+.ns-lesson-sidebar {
+  @media screen and (min-width: v.$bp-desktop) {
+    max-height: calc(100dvh - var(--slds-header-height));
+    position:   sticky;
+    top:        var(--slds-header-height);
+    overflow-y: auto;
+    @include mx.scrollbar;
+  }
+}
+
+.ns-lesson-sidebar-sticky {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-lg;
+  padding:       1.25rem;
+  box-shadow:    var(--theme-shadow-sm);
+}
+
+.ns-lesson-back-btn {
+  @include mx.motion;
+  &:hover { color: var(--theme-brand) !important; border-color: var(--theme-brand) !important; }
+}
+
+.ns-lesson-scroll-area {
+  max-height:  calc(100dvh - var(--slds-header-height) - 8rem);
+  overflow-y:  auto;
+  @include mx.scrollbar;
+}
+
+.ns-lesson-menu-label {
+  font-size:      v.$font-size-xs;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:          var(--theme-text-weak);
+  padding:        0 0.5rem;
+  margin-bottom:  0.5rem;
+}
+
+// Lesson list items
+.ns-lesson-item {
+  display:       flex;
+  align-items:   flex-start;
+  gap:           0.375rem;
+  border-radius: v.$radius-sm;
+  color:         var(--theme-text);
+  font-size:     v.$font-size-sm;
+  padding:       0.5rem 0.625rem;
+  @include mx.motion;
+
+  &:hover {
+    background: var(--slds-brand-tint-1);
+    color:      var(--theme-brand);
+  }
+
+  &.is-active {
+    background:  var(--slds-brand-tint-1);
+    color:       var(--theme-brand);
+    font-weight: 700;
+    box-shadow:  inset 3px 0 0 var(--theme-brand);
+  }
+}
+
+.ns-lesson-number {
+  color:      var(--theme-text-weak);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ns-lesson-title { line-height: 1.4; }
+
+// ── Main lesson document ──────────────────────────────────────────────────────
+.ns-lesson-main {
+  min-width: 0;
+}
+
+.ns-lesson-document {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-lg;
+  box-shadow:    var(--theme-shadow-sm);
+}
+
+.ns-lesson-header { border-bottom: 1px solid var(--theme-border-soft); padding-bottom: 1.5rem; }
+
+.ns-lesson-feature-image {
+  border-radius: v.$radius-md;
+  overflow: hidden;
+}
+
+// Lesson pagination nav
+.ns-lesson-pagination {
+  border-top: 1px solid var(--theme-border);
+  padding-top: 1.25rem;
+  margin-top:  2rem;
+}
+
+// ── Right TOC sidebar ─────────────────────────────────────────────────────────
+.ns-lesson-right-sidebar {
+  @media screen and (min-width: v.$bp-desktop) {
+    position: sticky;
+    top:      calc(var(--slds-header-height) + 1rem);
+    max-height: calc(100dvh - var(--slds-header-height) - 2rem);
+    overflow-y: auto;
+    @include mx.scrollbar;
+  }
+}
+
+.ns-lesson-toc-box {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-md;
+}
+
+.ns-lesson-toc {
+  // TOC links injected by JS
+  a {
+    display:       block;
+    padding:       0.25rem 0.375rem;
+    border-radius: v.$radius-sm;
+    font-size:     v.$font-size-xs;
+    color:         var(--theme-text-weak);
+    @include mx.motion;
+
+    &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+    &.is-active { color: var(--theme-brand); font-weight: 700; }
+  }
+}
+
+.ns-lesson-ad-box {
+  background:    var(--theme-surface-subtle) !important;
+  border:        1px dashed var(--theme-border);
+  border-radius: v.$radius-md;
+}
+
+
+// =============================================================================
+//  7) AUTHOR PAGE  (author.hbs)
+// =============================================================================
+
+.author-hero {
+  background: var(--theme-surface-card);
+  border-bottom: 1px solid var(--theme-border);
+
+  // Avatar
+  &__avatar {
+    border:        3px solid var(--theme-border);
+    border-radius: 50%;
+    overflow:      hidden;
+    flex-shrink:   0;
+    box-shadow:    var(--theme-shadow-card);
+
+    img { border-radius: 50%; }
+  }
+
+  &__avatar-fallback {
+    width:         96px;
+    height:        96px;
+    border-radius: 50%;
+  }
+
+  // Stats box
+  &__stats-box {
+    background:    var(--theme-surface-subtle);
+    border:        1px solid var(--theme-border);
+    border-radius: v.$radius-lg;
+    box-shadow:    none;
+  }
+
+  // Cover image
+  &__cover {
+    border-radius: v.$radius-md;
+    overflow:      hidden;
+
+    img { object-fit: cover; height: 100%; }
+  }
+
+  &__divider {
+    background-color: var(--theme-border);
+    height:           1px;
+    margin:           0 0 0;
+  }
+
+  // Social buttons
+  &__social-btn {
+    @include mx.motion;
+    border-color:  var(--theme-border) !important;
+    color:         var(--theme-text-weak) !important;
+    background:    var(--theme-surface-card) !important;
+
+    &:hover {
+      background:   var(--slds-brand-tint-1) !important;
+      border-color: var(--theme-brand) !important;
+      color:        var(--theme-brand) !important;
+    }
+  }
+}
+
+// Empty state
+.author-empty {
+  background:    var(--theme-surface-subtle);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-lg;
+}
+
+
+// =============================================================================
+//  8) TAG PAGE  (tag.hbs)
+// =============================================================================
+
+// Tag hero
+.tag-hero-section,
+section.hero.is-medium {
+  background: var(--theme-surface-card) !important;
+  border-top:    1px solid var(--theme-border) !important;
+  border-bottom: 1px solid var(--theme-border) !important;
+  color: var(--theme-text) !important;
+
+  .title, .subtitle { color: var(--theme-text-strong) !important; }
+  .subtitle { color: var(--theme-text-weak) !important; }
+}
+
+// Feature image box on tag pages
+.image.is-16by9.box.is-clipped {
+  border-radius: v.$radius-lg !important;
+  border:        1px solid var(--theme-border) !important;
+}
+
+// In-feed ad placeholders on tag page
+.box.is-shadowless.has-background-white {
+  background:    var(--theme-surface-card) !important;
+  border-color:  var(--theme-border) !important;
+  color:         var(--theme-text-weak) !important;
+  border-radius: v.$radius-sm !important;
+}
+
+// Tag page section background
+main.has-background-white-bis {
+  background: var(--theme-surface-body) !important;
+}
+
+
+// =============================================================================
+//  9) PAGINATION  (shared across tag, author, index)
+// =============================================================================
+
+// Ghost outputs .pagination automatically — theme it
+nav[role="navigation"] .pagination-link,
+nav[role="navigation"] .pagination-next,
+nav[role="navigation"] .pagination-previous {
+  background:    var(--theme-surface-card);
+  border-color:  var(--theme-border-strong);
+  color:         var(--theme-text-strong);
+  @include mx.motion;
+
+  &:hover {
+    background:   var(--slds-brand-tint-1);
+    border-color: var(--theme-brand);
+    color:        var(--theme-brand);
+  }
+
+  &.is-current {
+    background:   var(--theme-brand);
+    border-color: var(--theme-brand);
+    color:        #ffffff;
+  }
+
+  &[disabled] {
+    opacity:        0.45;
+    pointer-events: none;
+  }
+}

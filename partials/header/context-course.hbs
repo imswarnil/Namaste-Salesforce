@@ -1,0 +1,46 @@
+{{!-- =========================================================================
+  partials/header/context-course.hbs
+  Context sub-bar shown on course and lesson pages.
+  Hidden by CSS on non-course pages (body class detection via JS).
+  JS in header.hbs populates course title + progress dynamically.
+========================================================================== --}}
+<div class="site-header__context-bar site-header__context-bar--course" id="siteContextBar" hidden>
+  <div class="container">
+    <div class="site-header__context-inner">
+
+      {{!-- Left: breadcrumb trail --}}
+      <div class="site-header__context-breadcrumb">
+        <a class="site-header__context-back" href="/courses/" aria-label="Back to all courses">
+          <i class="ph ph-arrow-left" aria-hidden="true"></i>
+          <span class="is-hidden-mobile">Courses</span>
+        </a>
+        <span class="site-header__context-sep" aria-hidden="true">/</span>
+        <span class="site-header__context-title" id="contextCourseTitle">
+          {{!-- Populated by JS from the page <h1> --}}
+          Loading…
+        </span>
+      </div>
+
+      {{!-- Center: lesson progress bar (shown on lesson pages) --}}
+      <div class="site-header__context-progress" id="contextProgress" hidden>
+        <div class="site-header__context-progress-track">
+          <div class="site-header__context-progress-fill" id="contextProgressFill" style="width: 0%"></div>
+        </div>
+        <span class="site-header__context-progress-label" id="contextProgressLabel">0%</span>
+      </div>
+
+      {{!-- Right: actions --}}
+      <div class="site-header__context-actions">
+        <button
+          class="site-header__context-btn"
+          type="button"
+          id="contextBarClose"
+          aria-label="Dismiss course bar"
+        >
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

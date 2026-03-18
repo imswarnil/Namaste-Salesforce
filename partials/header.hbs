@@ -1,14 +1,26 @@
 {{!-- =========================================================================
   header.hbs
-  Site header with:
-  • JSON-LD  — WebSite + SiteNavigationElement structured data
-  • Pure-CSS hamburger via hidden checkbox (no extra JS needed)
-  • Ghost Portal sign-in / subscribe / account buttons
-  • data-theme-toggle  — toggled by inline script at the bottom
-  • data-ghost-search  — handled by Ghost's built-in search
+  Namaste Salesforce — Site Header
+
+  Structure:
+    ① JSON-LD   SiteNavigation structured data
+    ② Context bars  (course / lesson — shown by JS on relevant pages)
+    ③ Main navbar   (always visible)
+
+  Features:
+    • Ghost @custom.sticky_header  → controls position:sticky / static
+    • Ghost @custom.show_github_button → toggles GitHub star btn
+    • 3-bar hamburger (JS-toggled, CSS-animated)
+    • Dropdown nav:  any Ghost nav item whose label starts with "- "
+      becomes a child of the item above it. JS builds the dropdown DOM.
+    • Account dropdown when member is logged in
+    • Single "Join" CTA (sign-in + signup in one trigger via portal)
+    • Context-aware sub-bars for course / lesson pages
 ========================================================================== --}}
 
-{{!-- ── JSON-LD: WebSite + SiteNavigation ──────────────────────────────────── --}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+  ① JSON-LD — WebSite + SiteNavigationElement
+══════════════════════════════════════════════════════════════════════════ --}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -19,32 +31,30 @@
       "url": "{{@site.url}}/",
       "name": "{{@site.title}}",
       {{#if @site.description}}"description": "{{@site.description}}",{{/if}}
+      "inLanguage": "en-US",
       "publisher": {
         "@type": "Organization",
-        "name": "{{@site.title}}",
-        "@id": "{{@site.url}}/#organization"
+        "@id": "{{@site.url}}/#organization",
+        "name": "{{@site.title}}"
         {{#if @site.logo}},
-        "logo": {
-          "@type": "ImageObject",
-          "url": "{{@site.logo}}"
-        }
+        "logo": { "@type": "ImageObject", "url": "{{@site.logo}}" }
         {{/if}}
-      },
-      "inLanguage": "en-US"
+      }
     },
     {
       "@type": "ItemList",
       "@id": "{{@site.url}}/#site-navigation",
       "name": "Main Navigation",
-      "description": "Primary navigation links for {{@site.title}}",
       "itemListElement": [
         {{#foreach navigation}}
+        {{#unless (match label "~^" "- ")}}
         {
           "@type": "ListItem",
           "position": {{@number}},
           "name": "{{label}}",
           "url": "{{url absolute="true"}}"
         }{{#unless @last}},{{/unless}}
+        {{/unless}}
         {{/foreach}}
       ]
     }
@@ -52,162 +62,191 @@
 }
 </script>
 
-<header class="site-header" role="banner">
-  <nav class="navbar site-navbar" role="navigation" aria-label="Main navigation">
+{{!-- ══════════════════════════════════════════════════════════════════════
+  ② CONTEXT BARS (injected here, shown/hidden by JS per page type)
+══════════════════════════════════════════════════════════════════════════ --}}
+{{> "header/context-course"}}
+
+{{!-- ══════════════════════════════════════════════════════════════════════
+  ③ MAIN NAVBAR
+══════════════════════════════════════════════════════════════════════════ --}}
+<header
+  class="site-header{{#if @custom.sticky_header}} is-sticky{{/if}} header-style-{{@custom.header_style}}"
+  role="banner"
+  id="siteHeader"
+  data-sticky="{{@custom.sticky_header}}"
+>
+  <nav
+    class="navbar site-navbar"
+    role="navigation"
+    aria-label="Main navigation"
+    id="siteNavbar"
+  >
     <div class="container site-navbar__wrap">
 
-      {{!-- ── Hidden checkbox — drives mobile menu open/close via pure CSS ── --}}
-      <input
-        id="site-nav-toggle"
-        class="site-navbar__toggle"
-        type="checkbox"
-        hidden
-        aria-hidden="true"
-      >
-
-      {{!-- ── Brand + mobile tools ─────────────────────────────────────────── --}}
-      <div class="navbar-brand">
-
+      {{!-- ── Brand ──────────────────────────────────────────────────────── --}}
+      <div class="navbar-brand site-navbar__brand-wrap">
         <a
           class="navbar-item site-navbar__brand"
           href="{{@site.url}}"
-          aria-label="{{@site.title}} — go to homepage"
+          aria-label="{{@site.title}} — homepage"
         >
           {{#if @site.logo}}
             <img
               src="{{@site.logo}}"
               alt="{{@site.title}}"
               class="site-navbar__logo"
-              width="32"
-              height="32"
+              width="32" height="32"
             >
           {{/if}}
-          <span class="site-navbar__title">
-            {{@site.title}}
-          </span>
+          <span class="site-navbar__title">{{@site.title}}</span>
         </a>
 
-        {{!-- Mobile-only tools: search + theme + hamburger --}}
-        <div class="site-navbar__mobile-tools is-hidden-desktop">
-
-          <button
-            class="site-navbar__icon-btn"
-            type="button"
-            aria-label="Search this site"
-            data-ghost-search
-          >
+        {{!-- Mobile tools (visible only on mobile) --}}
+        <div class="site-navbar__mobile-tools is-hidden-desktop" role="group" aria-label="Quick actions">
+          <button class="site-navbar__icon-btn" type="button"
+                  aria-label="Search" data-ghost-search>
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </button>
-
-          <button
-            class="site-navbar__icon-btn"
-            type="button"
-            aria-label="Switch to dark mode"
-            data-theme-toggle
-          >
+          <button class="site-navbar__icon-btn" type="button"
+                  aria-label="Switch to dark mode" data-theme-toggle>
             <i class="ph ph-moon" aria-hidden="true"></i>
           </button>
-
-          {{!-- Label targets the hidden checkbox — no JS needed to toggle menu --}}
-          <label
-            for="site-nav-toggle"
+          {{!-- 3-bar burger (JS-controlled) --}}
+          <button
             class="site-navbar__burger"
-            role="button"
-            aria-label="Toggle navigation menu"
-            aria-controls="siteNavbarMenu"
+            type="button"
+            aria-label="Toggle menu"
             aria-expanded="false"
+            aria-controls="siteNavbarMenu"
+            id="siteNavBurger"
           >
-            {{!-- 4 spans: bars 1+4 cross into ✕, bars 2+3 slide out --}}
             <span class="site-navbar__burger-bar" aria-hidden="true"></span>
             <span class="site-navbar__burger-bar" aria-hidden="true"></span>
             <span class="site-navbar__burger-bar" aria-hidden="true"></span>
-            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
-          </label>
-
+          </button>
         </div>
       </div>
       {{!-- /navbar-brand --}}
 
-      {{!-- ── Menu ──────────────────────────────────────────────────────────── --}}
+      {{!-- ── Menu ──────────────────────────────────────────────────────── --}}
       <div
         id="siteNavbarMenu"
         class="navbar-menu site-navbar__menu"
         aria-label="Site navigation"
+        aria-hidden="true"
       >
 
-        {{!-- Navigation links (rendered by navigation.hbs partial) --}}
-        <div class="navbar-start site-navbar__nav">
+        {{!-- Navigation links — JS will build dropdowns from "- " prefixed items --}}
+        <div class="navbar-start site-navbar__nav" id="siteNavLinks">
           {{navigation}}
         </div>
 
-        {{!-- Action buttons --}}
+        {{!-- Actions end --}}
         <div class="navbar-end site-navbar__actions">
 
-          {{!-- GitHub star (desktop + mobile) --}}
-          <div class="navbar-item">
-            <a
-              class="site-navbar__action-btn site-navbar__github-btn"
-              href="https://github.com/imswarnil/Namaste-Salesforce"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Star project on GitHub"
-            >
-              <i class="ph ph-github-logo" aria-hidden="true"></i>
-              <span>Star</span>
-            </a>
+          {{!-- Search (desktop) --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="site-navbar__icon-btn" type="button"
+                    aria-label="Search" data-ghost-search>
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
           </div>
 
-          {{!-- Theme toggle (desktop only) --}}
+          {{!-- Theme toggle (desktop) --}}
           <div class="navbar-item is-hidden-touch">
-            <button
-              class="site-navbar__icon-btn"
-              type="button"
-              aria-label="Switch to dark mode"
-              data-theme-toggle
-            >
+            <button class="site-navbar__icon-btn" type="button"
+                    aria-label="Switch to dark mode" data-theme-toggle>
               <i class="ph ph-moon" aria-hidden="true"></i>
             </button>
           </div>
 
-          {{!-- Search (desktop only) --}}
-          <div class="navbar-item is-hidden-touch">
-            <button
-              class="site-navbar__action-btn"
-              type="button"
-              aria-label="Search this site"
-              data-ghost-search
-            >
-              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-              <span>Search</span>
-            </button>
-          </div>
-
-          {{!-- Members: sign-in / subscribe / account --}}
-          {{#if @site.members_enabled}}
+          {{!-- GitHub star button --}}
+          {{#if @custom.show_github_button}}
             <div class="navbar-item">
-              {{#unless @member}}
-                {{#unless @site.members_invite_only}}
-                  <div class="site-navbar__auth-buttons">
-                    <a
-                      class="site-navbar__action-btn"
-                      href="#/portal/signin"
-                      data-portal="signin"
-                    >
-                      <i class="ph ph-sign-in" aria-hidden="true"></i>
-                      <span>Sign in</span>
+              <a
+                class="site-navbar__github-btn"
+                href="{{@custom.github_url}}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Star on GitHub"
+              >
+                <i class="ph ph-github-logo" aria-hidden="true"></i>
+                <span class="is-hidden-mobile">Star</span>
+              </a>
+            </div>
+          {{/if}}
+
+          {{!-- Member auth --}}
+          <div class="navbar-item">
+            {{#if @site.members_enabled}}
+              {{#if @member}}
+
+                {{!-- LOGGED IN — account icon + dropdown --}}
+                <div class="site-navbar__account-wrap" id="accountDropdownWrap">
+                  <button
+                    class="site-navbar__account-btn"
+                    type="button"
+                    aria-label="Account menu"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    id="accountDropdownBtn"
+                  >
+                    {{#if @member.avatar_image}}
+                      <img
+                        src="{{@member.avatar_image}}"
+                        alt="{{@member.name}}"
+                        class="site-navbar__account-avatar"
+                        width="28" height="28"
+                      >
+                    {{else}}
+                      <span class="site-navbar__account-initials" aria-hidden="true">
+                        {{!-- First letter of name, populated by JS --}}
+                      </span>
+                      <i class="ph ph-user-circle" aria-hidden="true"></i>
+                    {{/if}}
+                    <i class="ph ph-caret-down site-navbar__account-caret" aria-hidden="true"></i>
+                  </button>
+
+                  <div class="site-navbar__account-dropdown" id="accountDropdown" hidden>
+                    <div class="site-navbar__account-header">
+                      <p class="site-navbar__account-name">{{@member.name}}</p>
+                      <p class="site-navbar__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="site-navbar__dropdown-divider">
+                    <a class="site-navbar__dropdown-item" href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i>
+                      <span>Manage account</span>
                     </a>
-                    <a
-                      class="site-navbar__action-btn site-navbar__action-btn--primary"
-                      href="#/portal/signup"
-                      data-portal="signup"
-                    >
-                      <i class="ph ph-sparkle" aria-hidden="true"></i>
-                      <span>Subscribe</span>
+                    <a class="site-navbar__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i>
+                      <span>Newsletters</span>
+                    </a>
+                    <hr class="site-navbar__dropdown-divider">
+                    <a class="site-navbar__dropdown-item site-navbar__dropdown-item--danger"
+                       href="javascript:void(0)"
+                       data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i>
+                      <span>Sign out</span>
                     </a>
                   </div>
+                </div>
+
+              {{else}}
+
+                {{!-- LOGGED OUT — single Join CTA --}}
+                {{#unless @site.members_invite_only}}
+                  <a
+                    class="site-navbar__join-btn"
+                    href="#/portal/signup"
+                    data-portal="signup"
+                  >
+                    <i class="ph ph-user-plus" aria-hidden="true"></i>
+                    <span>Join</span>
+                  </a>
                 {{else}}
                   <a
-                    class="site-navbar__action-btn site-navbar__action-btn--primary"
+                    class="site-navbar__join-btn"
                     href="#/portal/signin"
                     data-portal="signin"
                   >
@@ -215,18 +254,11 @@
                     <span>Sign in</span>
                   </a>
                 {{/unless}}
-              {{else}}
-                <a
-                  class="site-navbar__action-btn site-navbar__action-btn--primary"
-                  href="#/portal/account"
-                  data-portal="account"
-                >
-                  <i class="ph ph-user-circle" aria-hidden="true"></i>
-                  <span>Account</span>
-                </a>
-              {{/unless}}
-            </div>
-          {{/if}}
+
+              {{/if}}
+            {{/if}}
+          </div>
+          {{!-- /member auth --}}
 
         </div>
         {{!-- /navbar-end --}}
@@ -239,55 +271,254 @@
   </nav>
 </header>
 
-{{!-- =========================================================================
-  Theme toggle + aria-expanded sync script
-========================================================================== --}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+  SCRIPTS
+══════════════════════════════════════════════════════════════════════════ --}}
 <script>
 (function () {
+  'use strict';
+
+  // ── Theme ────────────────────────────────────────────────────────────────
   var html       = document.documentElement;
-  var toggles    = document.querySelectorAll('[data-theme-toggle]');
-  var checkbox   = document.getElementById('site-nav-toggle');
-  var burgerLabel = document.querySelector('.site-navbar__burger');
   var storageKey = 'site-color-scheme';
 
-  // ── Theme helpers ──────────────────────────────────────────────────────────
-  function getTheme() {
-    return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light';
+  function getTheme() { return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
+
+  function applyTheme(t) {
+    html.setAttribute('data-color-scheme', t);
+    localStorage.setItem(storageKey, t);
+    syncThemeUI(t);
   }
 
-  function applyTheme(theme) {
-    html.setAttribute('data-color-scheme', theme);
-    localStorage.setItem(storageKey, theme);
-    syncToggleUI(theme);
-  }
-
-  function syncToggleUI(theme) {
-    var isDark = theme === 'dark';
-    toggles.forEach(function (btn) {
-      var icon = btn.querySelector('i');
-      if (!icon) return;
-      icon.className = isDark ? 'ph ph-sun-dim' : 'ph ph-moon';
-      btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  function syncThemeUI(t) {
+    var dark = t === 'dark';
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+      var ic = btn.querySelector('i');
+      if (ic) ic.className = dark ? 'ph ph-sun-dim' : 'ph ph-moon';
+      btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
     });
   }
 
-  // Restore saved theme on load
   var saved = localStorage.getItem(storageKey);
-  if (saved) applyTheme(saved);
-  else syncToggleUI(getTheme());
+  if (saved === 'light' || saved === 'dark') applyTheme(saved);
+  else syncThemeUI(getTheme());
 
-  // Toggle on click
   document.addEventListener('click', function (e) {
-    if (e.target.closest('[data-theme-toggle]')) {
-      applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    if (e.target.closest('[data-theme-toggle]')) applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── Mobile burger ─────────────────────────────────────────────────────────
+  var burger = document.getElementById('siteNavBurger');
+  var menu   = document.getElementById('siteNavbarMenu');
+  var header = document.getElementById('siteHeader');
+  var OPEN_CLASS = 'is-open';
+
+  function toggleMenu(force) {
+    var open = (force !== undefined) ? force : !burger.classList.contains(OPEN_CLASS);
+    burger.classList.toggle(OPEN_CLASS, open);
+    burger.setAttribute('aria-expanded', open);
+    menu.classList.toggle(OPEN_CLASS, open);
+    menu.setAttribute('aria-hidden', !open);
+    header.classList.toggle('menu-is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  if (burger && menu) {
+    burger.addEventListener('click', function () { toggleMenu(); });
+
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+      if (menu.classList.contains(OPEN_CLASS) &&
+          !menu.contains(e.target) &&
+          !burger.contains(e.target)) {
+        toggleMenu(false);
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains(OPEN_CLASS)) toggleMenu(false);
+    });
+  }
+
+  // ── Nav dropdown builder ───────────────────────────────────────────────────
+  // Reads [data-child="true"] items and wraps preceding item in a dropdown.
+  document.addEventListener('DOMContentLoaded', function () {
+    var nav = document.getElementById('siteNavLinks');
+    if (!nav) return;
+
+    var items   = Array.from(nav.children);
+    var rebuilt = [];
+    var current = null; // current top-level wrapper that may receive children
+
+    items.forEach(function (el) {
+      var isChild = el.getAttribute('data-child') === 'true';
+
+      if (isChild && current) {
+        // Strip leading "- " from the visible label
+        var lbl = current.dropdownEl.querySelector('.site-navbar__nav-label');
+        var labelEl = el.querySelector('.site-navbar__nav-label');
+        if (labelEl) labelEl.textContent = labelEl.textContent.replace(/^-\s*/, '');
+
+        // Append into the dropdown list
+        var li = document.createElement('li');
+        li.appendChild(el);
+        current.listEl.appendChild(li);
+
+      } else {
+        // Top-level item — check if next sibling will be a child
+        // We wrap it in a dropdown trigger container preemptively
+        var wrapper = document.createElement('div');
+        wrapper.className = 'site-navbar__dropdown-wrap';
+
+        // Clone the item into the wrapper
+        wrapper.appendChild(el);
+
+        // Create dropdown list (hidden until populated)
+        var list = document.createElement('ul');
+        list.className = 'site-navbar__dropdown-menu';
+        list.setAttribute('role', 'menu');
+        wrapper.appendChild(list);
+
+        current = { wrapperEl: wrapper, dropdownEl: el, listEl: list };
+        rebuilt.push(wrapper);
+      }
+    });
+
+    // Clear nav and re-insert
+    nav.innerHTML = '';
+    rebuilt.forEach(function (w) {
+      // Only add dropdown classes if there are children
+      if (w.querySelector('.site-navbar__dropdown-menu li')) {
+        w.classList.add('has-dropdown');
+        var trigger = w.querySelector('.site-navbar__nav-item');
+        if (trigger) {
+          trigger.classList.add('has-dropdown-trigger');
+          trigger.setAttribute('aria-haspopup', 'true');
+          trigger.setAttribute('aria-expanded', 'false');
+
+          // Add chevron icon
+          var chevron = document.createElement('i');
+          chevron.className = 'ph ph-caret-down site-navbar__dropdown-chevron';
+          chevron.setAttribute('aria-hidden', 'true');
+          trigger.appendChild(chevron);
+        }
+      }
+      nav.appendChild(w);
+    });
+
+    // ── Dropdown open/close ──────────────────────────────────────────────────
+    nav.addEventListener('click', function (e) {
+      var trigger = e.target.closest('.has-dropdown-trigger');
+      if (!trigger) return;
+
+      // On desktop, let hover handle it; on mobile, toggle on click
+      if (window.innerWidth < 1024) {
+        e.preventDefault();
+        var wrap = trigger.closest('.has-dropdown');
+        var isOpen = wrap.classList.contains('is-open');
+        // Close all others
+        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
+          d.classList.remove('is-open');
+          d.querySelector('.has-dropdown-trigger').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          wrap.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      }
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function (e) {
+      if (!nav.contains(e.target)) {
+        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
+          d.classList.remove('is-open');
+        });
+      }
+    });
+  });
+
+  // ── Account dropdown ───────────────────────────────────────────────────────
+  var accountBtn  = document.getElementById('accountDropdownBtn');
+  var accountDrop = document.getElementById('accountDropdown');
+  var accountWrap = document.getElementById('accountDropdownWrap');
+
+  if (accountBtn && accountDrop) {
+    // Populate initials
+    var memberName = accountDrop.closest('.navbar-item')
+                                 ? accountDrop.previousElementSibling : null;
+
+    accountBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = accountDrop.hidden;
+      accountDrop.hidden = !open;
+      accountBtn.setAttribute('aria-expanded', open);
+    });
+
+    document.addEventListener('click', function (e) {
+      if (accountWrap && !accountWrap.contains(e.target)) {
+        accountDrop.hidden = true;
+        accountBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !accountDrop.hidden) {
+        accountDrop.hidden = true;
+        accountBtn.setAttribute('aria-expanded', 'false');
+        accountBtn.focus();
+      }
+    });
+  }
+
+  // ── Context bar (course / lesson pages) ───────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    var contextBar  = document.getElementById('siteContextBar');
+    var contextTitle = document.getElementById('contextCourseTitle');
+    var closeBtn    = document.getElementById('contextBarClose');
+    var body        = document.body;
+
+    var isCourse = body.classList.contains('tag-hash-course');
+    var isLesson = body.classList.contains('tag-hash-lesson');
+
+    if ((isCourse || isLesson) && contextBar) {
+      // Populate title from page <h1>
+      var h1 = document.querySelector('h1.title, h1, .ns-lesson-document h1');
+      if (h1 && contextTitle) contextTitle.textContent = h1.textContent.trim();
+
+      contextBar.hidden = false;
+      contextBar.removeAttribute('hidden');
+
+      // Lesson progress
+      if (isLesson) {
+        var progressWrap = document.getElementById('contextProgress');
+        var progressFill = document.getElementById('contextProgressFill');
+        var progressLabel = document.getElementById('contextProgressLabel');
+
+        if (progressWrap) {
+          progressWrap.hidden = false;
+
+          function updateProgress() {
+            var scrolled = window.scrollY;
+            var docH = document.documentElement.scrollHeight - window.innerHeight;
+            var pct = docH > 0 ? Math.round((scrolled / docH) * 100) : 0;
+            if (progressFill)  progressFill.style.width  = pct + '%';
+            if (progressLabel) progressLabel.textContent  = pct + '%';
+          }
+
+          window.addEventListener('scroll', updateProgress, { passive: true });
+          updateProgress();
+        }
+      }
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        contextBar.hidden = true;
+      });
     }
   });
 
-  // ── Burger aria-expanded sync ──────────────────────────────────────────────
-  if (checkbox && burgerLabel) {
-    checkbox.addEventListener('change', function () {
-      burgerLabel.setAttribute('aria-expanded', checkbox.checked ? 'true' : 'false');
-    });
-  }
 })();
 </script>
