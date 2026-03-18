@@ -162,11 +162,12 @@
           </div>
 
           {{!-- GitHub star button --}}
-          {{#if @custom.show_github_button}}
+          {{!-- show_github_button: shown by default, hidden only if explicitly set to false --}}
+          {{#unless (match @custom.show_github_button "=" false)}}
             <div class="navbar-item">
               <a
                 class="site-navbar__github-btn"
-                href="{{@custom.github_url}}"
+                href="{{#if @custom.github_url}}{{@custom.github_url}}{{else}}https://github.com/imswarnil/Namaste-Salesforce{{/if}}"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Star on GitHub"
@@ -175,7 +176,7 @@
                 <span class="is-hidden-mobile">Star</span>
               </a>
             </div>
-          {{/if}}
+          {{/unless}}
 
           {{!-- Member auth --}}
           <div class="navbar-item">
