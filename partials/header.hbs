@@ -1,525 +1,102 @@
 {{!-- =========================================================================
-  header.hbs
-  Namaste Salesforce — Site Header
+  header.hbs · Namaste Salesforce
 
-  Structure:
-    ① JSON-LD   SiteNavigation structured data
-    ② Context bars  (course / lesson — shown by JS on relevant pages)
-    ③ Main navbar   (always visible)
+  Renders ONE of three headers depending on context:
 
-  Features:
-    • Ghost @custom.sticky_header  → controls position:sticky / static
-    • Ghost @custom.show_github_button → toggles GitHub star btn
-    • 3-bar hamburger (JS-toggled, CSS-animated)
-    • Dropdown nav:  any Ghost nav item whose label starts with "- "
-      becomes a child of the item above it. JS builds the dropdown DOM.
-    • Account dropdown when member is logged in
-    • Single "Join" CTA (sign-in + signup in one trigger via portal)
-    • Context-aware sub-bars for course / lesson pages
-========================================================================== --}}
+    1. #lesson page  → Course context bar  (lesson sidebar nav + back button)
+                        The full navbar is hidden — it just gets in the way.
+
+    2. All other pages → Standard navbar with:
+         • 3-bar hamburger (JS-animated)
+         • Dropdown nav from Ghost nav items prefixed with "- "
+         • Sign in + Subscribe / Account dropdown (members)
+         • GitHub star button (last in actions)
+
+  JSON-LD: WebSite + SiteNavigationElement (only on non-lesson pages)
+=========================================================================== --}}
 
 {{!-- ══════════════════════════════════════════════════════════════════════
-  ① JSON-LD — WebSite + SiteNavigationElement
+  Render completely different header for lesson pages
 ══════════════════════════════════════════════════════════════════════════ --}}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "{{@site.url}}/#website",
-      "url": "{{@site.url}}/",
-      "name": "{{@site.title}}",
-      {{#if @site.description}}"description": "{{@site.description}}",{{/if}}
-      "inLanguage": "en-US",
-      "publisher": {
-        "@type": "Organization",
-        "@id": "{{@site.url}}/#organization",
-        "name": "{{@site.title}}"
-        {{#if @site.logo}},
-        "logo": { "@type": "ImageObject", "url": "{{@site.logo}}" }
-        {{/if}}
-      }
-    },
-    {
-      "@type": "ItemList",
-      "@id": "{{@site.url}}/#site-navigation",
-      "name": "Main Navigation",
-      "itemListElement": [
-        {{#foreach navigation}}
-        {{#unless (match label "~^" "- ")}}
-        {
-          "@type": "ListItem",
-          "position": {{@number}},
-          "name": "{{label}}",
-          "url": "{{url absolute="true"}}"
-        }{{#unless @last}},{{/unless}}
-        {{/unless}}
-        {{/foreach}}
-      ]
-    }
-  ]
-}
-</script>
+{{#is "post"}}
+  {{#post}}
+    {{#has tag="#lesson"}}
 
-{{!-- ══════════════════════════════════════════════════════════════════════
-  ② CONTEXT BARS (injected here, shown/hidden by JS per page type)
-══════════════════════════════════════════════════════════════════════════ --}}
-{{> "header/context-course"}}
+      {{!-- ────────────────────────────────────────────────────────────────
+        LESSON HEADER — replaces the full navbar
+        Shows: back-to-course | course title | lesson title | progress bar
+        All populated by inline JS from DOM data.
+      ──────────────────────────────────────────────────────────────────── --}}
+      <header class="site-header lesson-header" role="banner" id="siteHeader">
+        <div class="lesson-header__bar">
+          <div class="container is-fluid">
+            <div class="lesson-header__inner">
 
-{{!-- ══════════════════════════════════════════════════════════════════════
-  ③ MAIN NAVBAR
-══════════════════════════════════════════════════════════════════════════ --}}
-<header
-  class="site-header{{#if @custom.sticky_header}} is-sticky{{/if}} header-style-{{@custom.header_style}}"
-  role="banner"
-  id="siteHeader"
-  data-sticky="{{@custom.sticky_header}}"
->
-  <nav
-    class="navbar site-navbar"
-    role="navigation"
-    aria-label="Main navigation"
-    id="siteNavbar"
-  >
-    <div class="container site-navbar__wrap">
-
-      {{!-- ── Brand ──────────────────────────────────────────────────────── --}}
-      <div class="navbar-brand site-navbar__brand-wrap">
-        <a
-          class="navbar-item site-navbar__brand"
-          href="{{@site.url}}"
-          aria-label="{{@site.title}} — homepage"
-        >
-          {{#if @site.logo}}
-            <img
-              src="{{@site.logo}}"
-              alt="{{@site.title}}"
-              class="site-navbar__logo"
-              width="32" height="32"
-            >
-          {{/if}}
-          <span class="site-navbar__title">{{@site.title}}</span>
-        </a>
-
-        {{!-- Mobile tools (visible only on mobile) --}}
-        <div class="site-navbar__mobile-tools is-hidden-desktop" role="group" aria-label="Quick actions">
-          <button class="site-navbar__icon-btn" type="button"
-                  aria-label="Search" data-ghost-search>
-            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-          </button>
-          <button class="site-navbar__icon-btn" type="button"
-                  aria-label="Switch to dark mode" data-theme-toggle>
-            <i class="ph ph-moon" aria-hidden="true"></i>
-          </button>
-          {{!-- 3-bar burger (JS-controlled) --}}
-          <button
-            class="site-navbar__burger"
-            type="button"
-            aria-label="Toggle menu"
-            aria-expanded="false"
-            aria-controls="siteNavbarMenu"
-            id="siteNavBurger"
-          >
-            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
-            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
-            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
-          </button>
-        </div>
-      </div>
-      {{!-- /navbar-brand --}}
-
-      {{!-- ── Menu ──────────────────────────────────────────────────────── --}}
-      <div
-        id="siteNavbarMenu"
-        class="navbar-menu site-navbar__menu"
-        aria-label="Site navigation"
-        aria-hidden="true"
-      >
-
-        {{!-- Navigation links — JS will build dropdowns from "- " prefixed items --}}
-        <div class="navbar-start site-navbar__nav" id="siteNavLinks">
-          {{navigation}}
-        </div>
-
-        {{!-- Actions end --}}
-        <div class="navbar-end site-navbar__actions">
-
-          {{!-- Search (desktop) --}}
-          <div class="navbar-item is-hidden-touch">
-            <button class="site-navbar__icon-btn" type="button"
-                    aria-label="Search" data-ghost-search>
-              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-            </button>
-          </div>
-
-          {{!-- Theme toggle (desktop) --}}
-          <div class="navbar-item is-hidden-touch">
-            <button class="site-navbar__icon-btn" type="button"
-                    aria-label="Switch to dark mode" data-theme-toggle>
-              <i class="ph ph-moon" aria-hidden="true"></i>
-            </button>
-          </div>
-
-          {{!-- GitHub star button --}}
-          {{!-- show_github_button: shown by default, hidden only if explicitly set to false --}}
-          {{#unless (match @custom.show_github_button "=" false)}}
-            <div class="navbar-item">
-              <a
-                class="site-navbar__github-btn"
-                href="{{#if @custom.github_url}}{{@custom.github_url}}{{else}}https://github.com/imswarnil/Namaste-Salesforce{{/if}}"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Star on GitHub"
-              >
-                <i class="ph ph-github-logo" aria-hidden="true"></i>
-                <span class="is-hidden-mobile">Star</span>
-              </a>
-            </div>
-          {{/unless}}
-
-          {{!-- Member auth --}}
-          <div class="navbar-item">
-            {{#if @site.members_enabled}}
-              {{#if @member}}
-
-                {{!-- LOGGED IN — account icon + dropdown --}}
-                <div class="site-navbar__account-wrap" id="accountDropdownWrap">
-                  <button
-                    class="site-navbar__account-btn"
-                    type="button"
-                    aria-label="Account menu"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                    id="accountDropdownBtn"
-                  >
-                    {{#if @member.avatar_image}}
-                      <img
-                        src="{{@member.avatar_image}}"
-                        alt="{{@member.name}}"
-                        class="site-navbar__account-avatar"
-                        width="28" height="28"
-                      >
-                    {{else}}
-                      <span class="site-navbar__account-initials" aria-hidden="true">
-                        {{!-- First letter of name, populated by JS --}}
-                      </span>
-                      <i class="ph ph-user-circle" aria-hidden="true"></i>
-                    {{/if}}
-                    <i class="ph ph-caret-down site-navbar__account-caret" aria-hidden="true"></i>
-                  </button>
-
-                  <div class="site-navbar__account-dropdown" id="accountDropdown" hidden>
-                    <div class="site-navbar__account-header">
-                      <p class="site-navbar__account-name">{{@member.name}}</p>
-                      <p class="site-navbar__account-email">{{@member.email}}</p>
-                    </div>
-                    <hr class="site-navbar__dropdown-divider">
-                    <a class="site-navbar__dropdown-item" href="#/portal/account" data-portal="account">
-                      <i class="ph ph-user" aria-hidden="true"></i>
-                      <span>Manage account</span>
+              {{!-- Back to course --}}
+              <div class="lesson-header__left">
+                {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
+                  {{#foreach posts}}
+                    <a class="lesson-header__back" href="{{url}}" aria-label="Back to course">
+                      <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                      <span class="lesson-header__back-label is-hidden-mobile">{{title}}</span>
                     </a>
-                    <a class="site-navbar__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
-                      <i class="ph ph-envelope" aria-hidden="true"></i>
-                      <span>Newsletters</span>
+                  {{else}}
+                    <a class="lesson-header__back" href="/courses/" aria-label="Back to courses">
+                      <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                      <span class="lesson-header__back-label is-hidden-mobile">Courses</span>
                     </a>
-                    <hr class="site-navbar__dropdown-divider">
-                    <a class="site-navbar__dropdown-item site-navbar__dropdown-item--danger"
-                       href="javascript:void(0)"
-                       data-members-signout>
-                      <i class="ph ph-sign-out" aria-hidden="true"></i>
-                      <span>Sign out</span>
-                    </a>
+                  {{/foreach}}
+                {{/get}}
+              </div>
+
+              {{!-- Current lesson title (center) --}}
+              <div class="lesson-header__center">
+                <span class="lesson-header__lesson-title" id="lessonHeaderTitle">
+                  {{title}}
+                </span>
+              </div>
+
+              {{!-- Right: reading progress + close --}}
+              <div class="lesson-header__right">
+                <div class="lesson-header__progress" aria-label="Reading progress">
+                  <div class="lesson-header__progress-track">
+                    <div class="lesson-header__progress-fill" id="lessonProgressFill"></div>
                   </div>
+                  <span class="lesson-header__progress-pct" id="lessonProgressPct">0%</span>
                 </div>
+                <a class="lesson-header__close" href="/courses/" aria-label="Exit lesson">
+                  <i class="ph ph-x" aria-hidden="true"></i>
+                </a>
+              </div>
 
-              {{else}}
-
-                {{!-- LOGGED OUT — single Join CTA --}}
-                {{#unless @site.members_invite_only}}
-                  <a
-                    class="site-navbar__join-btn"
-                    href="#/portal/signup"
-                    data-portal="signup"
-                  >
-                    <i class="ph ph-user-plus" aria-hidden="true"></i>
-                    <span>Join</span>
-                  </a>
-                {{else}}
-                  <a
-                    class="site-navbar__join-btn"
-                    href="#/portal/signin"
-                    data-portal="signin"
-                  >
-                    <i class="ph ph-sign-in" aria-hidden="true"></i>
-                    <span>Sign in</span>
-                  </a>
-                {{/unless}}
-
-              {{/if}}
-            {{/if}}
+            </div>
           </div>
-          {{!-- /member auth --}}
-
         </div>
-        {{!-- /navbar-end --}}
 
-      </div>
-      {{!-- /navbar-menu --}}
-
-    </div>
-    {{!-- /container --}}
-  </nav>
-</header>
-
-{{!-- ══════════════════════════════════════════════════════════════════════
-  SCRIPTS
-══════════════════════════════════════════════════════════════════════════ --}}
-<script>
-(function () {
-  'use strict';
-
-  // ── Theme ────────────────────────────────────────────────────────────────
-  var html       = document.documentElement;
-  var storageKey = 'site-color-scheme';
-
-  function getTheme() { return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
-
-  function applyTheme(t) {
-    html.setAttribute('data-color-scheme', t);
-    localStorage.setItem(storageKey, t);
-    syncThemeUI(t);
-  }
-
-  function syncThemeUI(t) {
-    var dark = t === 'dark';
-    document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
-      var ic = btn.querySelector('i');
-      if (ic) ic.className = dark ? 'ph ph-sun-dim' : 'ph ph-moon';
-      btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-    });
-  }
-
-  var saved = localStorage.getItem(storageKey);
-  if (saved === 'light' || saved === 'dark') applyTheme(saved);
-  else syncThemeUI(getTheme());
-
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('[data-theme-toggle]')) applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
-  });
-
-  // ── Mobile burger ─────────────────────────────────────────────────────────
-  var burger = document.getElementById('siteNavBurger');
-  var menu   = document.getElementById('siteNavbarMenu');
-  var header = document.getElementById('siteHeader');
-  var OPEN_CLASS = 'is-open';
-
-  function toggleMenu(force) {
-    var open = (force !== undefined) ? force : !burger.classList.contains(OPEN_CLASS);
-    burger.classList.toggle(OPEN_CLASS, open);
-    burger.setAttribute('aria-expanded', open);
-    menu.classList.toggle(OPEN_CLASS, open);
-    menu.setAttribute('aria-hidden', !open);
-    header.classList.toggle('menu-is-open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
-  }
-
-  if (burger && menu) {
-    burger.addEventListener('click', function () { toggleMenu(); });
-
-    // Close on outside click
-    document.addEventListener('click', function (e) {
-      if (menu.classList.contains(OPEN_CLASS) &&
-          !menu.contains(e.target) &&
-          !burger.contains(e.target)) {
-        toggleMenu(false);
-      }
-    });
-
-    // Close on Escape
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && menu.classList.contains(OPEN_CLASS)) toggleMenu(false);
-    });
-  }
-
-  // ── Nav dropdown builder ───────────────────────────────────────────────────
-  // Reads [data-child="true"] items and wraps preceding item in a dropdown.
-  document.addEventListener('DOMContentLoaded', function () {
-    var nav = document.getElementById('siteNavLinks');
-    if (!nav) return;
-
-    var items   = Array.from(nav.children);
-    var rebuilt = [];
-    var current = null; // current top-level wrapper that may receive children
-
-    items.forEach(function (el) {
-      var isChild = el.getAttribute('data-child') === 'true';
-
-      if (isChild && current) {
-        // Strip leading "- " from the visible label
-        var lbl = current.dropdownEl.querySelector('.site-navbar__nav-label');
-        var labelEl = el.querySelector('.site-navbar__nav-label');
-        if (labelEl) labelEl.textContent = labelEl.textContent.replace(/^-\s*/, '');
-
-        // Append into the dropdown list
-        var li = document.createElement('li');
-        li.appendChild(el);
-        current.listEl.appendChild(li);
-
-      } else {
-        // Top-level item — check if next sibling will be a child
-        // We wrap it in a dropdown trigger container preemptively
-        var wrapper = document.createElement('div');
-        wrapper.className = 'site-navbar__dropdown-wrap';
-
-        // Clone the item into the wrapper
-        wrapper.appendChild(el);
-
-        // Create dropdown list (hidden until populated)
-        var list = document.createElement('ul');
-        list.className = 'site-navbar__dropdown-menu';
-        list.setAttribute('role', 'menu');
-        wrapper.appendChild(list);
-
-        current = { wrapperEl: wrapper, dropdownEl: el, listEl: list };
-        rebuilt.push(wrapper);
-      }
-    });
-
-    // Clear nav and re-insert
-    nav.innerHTML = '';
-    rebuilt.forEach(function (w) {
-      // Only add dropdown classes if there are children
-      if (w.querySelector('.site-navbar__dropdown-menu li')) {
-        w.classList.add('has-dropdown');
-        var trigger = w.querySelector('.site-navbar__nav-item');
-        if (trigger) {
-          trigger.classList.add('has-dropdown-trigger');
-          trigger.setAttribute('aria-haspopup', 'true');
-          trigger.setAttribute('aria-expanded', 'false');
-
-          // Add chevron icon
-          var chevron = document.createElement('i');
-          chevron.className = 'ph ph-caret-down site-navbar__dropdown-chevron';
-          chevron.setAttribute('aria-hidden', 'true');
-          trigger.appendChild(chevron);
-        }
-      }
-      nav.appendChild(w);
-    });
-
-    // ── Dropdown open/close ──────────────────────────────────────────────────
-    nav.addEventListener('click', function (e) {
-      var trigger = e.target.closest('.has-dropdown-trigger');
-      if (!trigger) return;
-
-      // On desktop, let hover handle it; on mobile, toggle on click
-      if (window.innerWidth < 1024) {
-        e.preventDefault();
-        var wrap = trigger.closest('.has-dropdown');
-        var isOpen = wrap.classList.contains('is-open');
-        // Close all others
-        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
-          d.classList.remove('is-open');
-          d.querySelector('.has-dropdown-trigger').setAttribute('aria-expanded', 'false');
-        });
-        if (!isOpen) {
-          wrap.classList.add('is-open');
-          trigger.setAttribute('aria-expanded', 'true');
-        }
-      }
-    });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function (e) {
-      if (!nav.contains(e.target)) {
-        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
-          d.classList.remove('is-open');
-        });
-      }
-    });
-  });
-
-  // ── Account dropdown ───────────────────────────────────────────────────────
-  var accountBtn  = document.getElementById('accountDropdownBtn');
-  var accountDrop = document.getElementById('accountDropdown');
-  var accountWrap = document.getElementById('accountDropdownWrap');
-
-  if (accountBtn && accountDrop) {
-    // Populate initials
-    var memberName = accountDrop.closest('.navbar-item')
-                                 ? accountDrop.previousElementSibling : null;
-
-    accountBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var open = accountDrop.hidden;
-      accountDrop.hidden = !open;
-      accountBtn.setAttribute('aria-expanded', open);
-    });
-
-    document.addEventListener('click', function (e) {
-      if (accountWrap && !accountWrap.contains(e.target)) {
-        accountDrop.hidden = true;
-        accountBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !accountDrop.hidden) {
-        accountDrop.hidden = true;
-        accountBtn.setAttribute('aria-expanded', 'false');
-        accountBtn.focus();
-      }
-    });
-  }
-
-  // ── Context bar (course / lesson pages) ───────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function () {
-    var contextBar  = document.getElementById('siteContextBar');
-    var contextTitle = document.getElementById('contextCourseTitle');
-    var closeBtn    = document.getElementById('contextBarClose');
-    var body        = document.body;
-
-    var isCourse = body.classList.contains('tag-hash-course');
-    var isLesson = body.classList.contains('tag-hash-lesson');
-
-    if ((isCourse || isLesson) && contextBar) {
-      // Populate title from page <h1>
-      var h1 = document.querySelector('h1.title, h1, .ns-lesson-document h1');
-      if (h1 && contextTitle) contextTitle.textContent = h1.textContent.trim();
-
-      contextBar.hidden = false;
-      contextBar.removeAttribute('hidden');
-
-      // Lesson progress
-      if (isLesson) {
-        var progressWrap = document.getElementById('contextProgress');
-        var progressFill = document.getElementById('contextProgressFill');
-        var progressLabel = document.getElementById('contextProgressLabel');
-
-        if (progressWrap) {
-          progressWrap.hidden = false;
-
-          function updateProgress() {
+        {{!-- Reading progress update script --}}
+        <script>
+        (function () {
+          var fill  = document.getElementById('lessonProgressFill');
+          var pct   = document.getElementById('lessonProgressPct');
+          function update() {
             var scrolled = window.scrollY;
-            var docH = document.documentElement.scrollHeight - window.innerHeight;
-            var pct = docH > 0 ? Math.round((scrolled / docH) * 100) : 0;
-            if (progressFill)  progressFill.style.width  = pct + '%';
-            if (progressLabel) progressLabel.textContent  = pct + '%';
+            var total    = document.documentElement.scrollHeight - window.innerHeight;
+            var p        = total > 0 ? Math.min(100, Math.round((scrolled / total) * 100)) : 0;
+            if (fill) fill.style.width = p + '%';
+            if (pct)  pct.textContent  = p + '%';
           }
+          window.addEventListener('scroll', update, { passive: true });
+          update();
+        })();
+        </script>
+      </header>
 
-          window.addEventListener('scroll', updateProgress, { passive: true });
-          updateProgress();
-        }
-      }
-    }
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', function () {
-        contextBar.hidden = true;
-      });
-    }
-  });
-
-})();
-</script>
+    {{else}}
+      {{!-- Not a lesson — render the standard header --}}
+      {{> "header/standard"}}
+    {{/has}}
+  {{/post}}
+{{else}}
+  {{!-- Not a post at all — render the standard header --}}
+  {{> "header/standard"}}
+{{/is}}

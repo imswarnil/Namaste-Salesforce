@@ -879,3 +879,242 @@ $_drop-r:      v.$radius-md !default;
     }
   }
 }
+
+
+// =============================================================================
+//  AUTH BUTTON PAIR  (.site-navbar__btn)
+//  Sign in (ghost/outline) + Subscribe (primary) as separate buttons.
+// =============================================================================
+
+.site-navbar__auth-pair {
+  display:     flex;
+  align-items: center;
+  gap:         0.375rem;
+  padding:     0 !important;
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    flex-direction: column;
+    gap:            0.375rem;
+    width:          100%;
+  }
+}
+
+.site-navbar__btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             0.3rem;
+  height:          1.875rem;
+  padding:         0 0.75rem;
+  border-radius:   v.$radius-sm;
+  font-family:     inherit;
+  font-size:       v.$font-size-xs;
+  font-weight:     700;
+  text-decoration: none;
+  white-space:     nowrap;
+  cursor:          pointer;
+  @include mx.motion;
+
+  i { font-size: 0.9375rem; flex-shrink: 0; }
+
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    width:   100%;
+    height:  2.5rem;
+    font-size: v.$font-size-sm;
+  }
+
+  // Ghost/outline variant — Sign in
+  &--ghost {
+    background:   transparent;
+    border:       1px solid var(--theme-border-strong);
+    color:        var(--theme-text-strong);
+
+    &:hover {
+      background:   var(--theme-surface-subtle);
+      border-color: var(--theme-brand);
+      color:        var(--theme-brand);
+    }
+    &:active { background: var(--slds-brand-tint-1); }
+  }
+
+  // Primary — Subscribe
+  &--primary {
+    background:   var(--theme-brand);
+    border:       1px solid var(--theme-brand);
+    color:        #ffffff;
+
+    &:hover {
+      background:   var(--theme-brand-hover);
+      border-color: var(--theme-brand-hover);
+      color:        #ffffff;
+      transform:    translateY(-1px);
+      box-shadow:   0 3px 10px rgba(1, 118, 211, 0.28);
+    }
+    &:active { transform: translateY(0); box-shadow: none; }
+  }
+}
+
+// Account name label in button
+.site-navbar__account-name-label {
+  font-size:   v.$font-size-xs;
+  font-weight: 600;
+  color:       var(--theme-text-strong);
+  max-width:   8rem;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+  white-space:  nowrap;
+}
+
+
+// =============================================================================
+//  LESSON HEADER  (replaces full navbar on #lesson pages)
+// =============================================================================
+
+.lesson-header {
+  position:  sticky;
+  top:       0;
+  z-index:   200;
+  width:     100%;
+}
+
+.lesson-header__bar {
+  background:    var(--theme-surface-card);
+  border-bottom: 2px solid var(--theme-brand);
+  box-shadow:    0 1px 0 var(--theme-border-soft), 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height:    var(--slds-header-height);
+  display:       flex;
+  align-items:   center;
+}
+
+.lesson-header__inner {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             1rem;
+  width:           100%;
+  padding:         0.5rem 0;
+  min-height:      var(--slds-header-height);
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
+    gap: 0.5rem;
+  }
+}
+
+// Left: back button
+.lesson-header__left {
+  flex-shrink: 0;
+}
+
+.lesson-header__back {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.375rem;
+  color:           var(--theme-text-weak);
+  font-size:       v.$font-size-sm;
+  font-weight:     600;
+  text-decoration: none;
+  padding:         0.375rem 0.625rem;
+  border-radius:   v.$radius-sm;
+  @include mx.motion;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: var(--slds-brand-tint-1);
+    color:      var(--theme-brand);
+  }
+}
+
+.lesson-header__back-label {
+  max-width:     14rem;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+
+  @media screen and (max-width: #{v.$bp-tablet - 1px}) { max-width: 8rem; }
+}
+
+// Center: lesson title
+.lesson-header__center {
+  flex:        1;
+  min-width:   0;
+  text-align:  center;
+}
+
+.lesson-header__lesson-title {
+  font-size:     v.$font-size-sm;
+  font-weight:   700;
+  color:         var(--theme-text-strong);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  display:       block;
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
+    font-size: v.$font-size-xs;
+  }
+}
+
+// Right: progress + close
+.lesson-header__right {
+  display:     flex;
+  align-items: center;
+  gap:         0.75rem;
+  flex-shrink: 0;
+}
+
+.lesson-header__progress {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) { display: none; }
+}
+
+.lesson-header__progress-track {
+  width:         100px;
+  height:        4px;
+  background:    var(--theme-border-soft);
+  border-radius: v.$radius-pill;
+  overflow:      hidden;
+
+  @media screen and (max-width: #{v.$bp-tablet - 1px}) { width: 64px; }
+}
+
+.lesson-header__progress-fill {
+  height:        100%;
+  width:         0%;
+  background:    var(--theme-brand);
+  border-radius: v.$radius-pill;
+  transition:    width 200ms linear;
+}
+
+.lesson-header__progress-pct {
+  font-size:      0.625rem;
+  font-weight:    700;
+  color:          var(--theme-text-weak);
+  min-width:      2.25rem;
+  text-align:     right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lesson-header__close {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           1.875rem;
+  height:          1.875rem;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-weak);
+  text-decoration: none;
+  @include mx.motion;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(186, 5, 23, 0.06);
+    color:      #{v.$danger-color};
+  }
+}

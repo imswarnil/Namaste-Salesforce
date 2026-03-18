@@ -1,0 +1,425 @@
+{{!-- =========================================================================
+  partials/header/standard.hbs
+  The main site navbar. Included by header.hbs on all non-lesson pages.
+
+  Features:
+    • JSON-LD WebSite + SiteNavigation
+    • Ghost @custom settings: sticky_header, header_style, show_github_button, github_url
+    • 3-bar hamburger (JS class-toggled, CSS animated)
+    • Dropdown nav: Ghost nav items starting with "- " become child items
+    • Sign in + Subscribe buttons (split) OR Account dropdown when logged in
+    • GitHub star button (always last in actions row)
+=========================================================================== --}}
+
+{{!-- ── JSON-LD ──────────────────────────────────────────────────────────── --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{@site.url}}/#website",
+      "url": "{{@site.url}}/",
+      "name": "{{@site.title}}",
+      {{#if @site.description}}"description": "{{@site.description}}",{{/if}}
+      "inLanguage": "en-US",
+      "publisher": {
+        "@type": "Organization",
+        "@id": "{{@site.url}}/#organization",
+        "name": "{{@site.title}}"{{#if @site.logo}},
+        "logo": { "@type": "ImageObject", "url": "{{@site.logo}}" }{{/if}}
+      }
+    },
+    {
+      "@type": "ItemList",
+      "@id": "{{@site.url}}/#site-navigation",
+      "name": "Main Navigation",
+      "itemListElement": [
+        {{#foreach navigation}}
+        {
+          "@type": "ListItem",
+          "position": {{@number}},
+          "name": "{{label}}",
+          "url": "{{url absolute="true"}}"
+        }{{#unless @last}},{{/unless}}
+        {{/foreach}}
+      ]
+    }
+  ]
+}
+</script>
+
+{{!-- ── Header element ─────────────────────────────────────────────────────── --}}
+<header
+  class="site-header{{#match @custom.sticky_header "!=" false}} is-sticky{{/match}}{{#if @custom.header_style}} header-style-{{@custom.header_style}}{{/if}}"
+  role="banner"
+  id="siteHeader"
+>
+
+  <nav class="navbar site-navbar" role="navigation" aria-label="Main navigation">
+    <div class="container site-navbar__wrap">
+
+      {{!-- ── Brand ──────────────────────────────────────────────────────── --}}
+      <div class="navbar-brand site-navbar__brand-wrap">
+
+        <a class="navbar-item site-navbar__brand" href="{{@site.url}}"
+           aria-label="{{@site.title}} — go to homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="site-navbar__logo" width="32" height="32">
+          {{/if}}
+          <span class="site-navbar__title">{{@site.title}}</span>
+        </a>
+
+        {{!-- Mobile tools --}}
+        <div class="site-navbar__mobile-tools is-hidden-desktop"
+             role="group" aria-label="Quick actions">
+
+          <button class="site-navbar__icon-btn" type="button"
+                  aria-label="Search" data-ghost-search>
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+
+          <button class="site-navbar__icon-btn" type="button"
+                  aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+
+          {{!-- 3-bar burger --}}
+          <button class="site-navbar__burger" type="button"
+                  aria-label="Toggle menu" aria-expanded="false"
+                  aria-controls="siteNavbarMenu" id="siteNavBurger">
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+          </button>
+
+        </div>
+      </div>
+      {{!-- /navbar-brand --}}
+
+      {{!-- ── Menu ──────────────────────────────────────────────────────── --}}
+      <div id="siteNavbarMenu" class="navbar-menu site-navbar__menu"
+           aria-label="Site navigation" aria-hidden="true">
+
+        {{!-- Navigation links --}}
+        <div class="navbar-start site-navbar__nav" id="siteNavLinks">
+          {{navigation}}
+        </div>
+
+        {{!-- Actions --}}
+        <div class="navbar-end site-navbar__actions">
+
+          {{!-- Search (desktop only) --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="site-navbar__icon-btn" type="button"
+                    aria-label="Search" data-ghost-search>
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          {{!-- Theme toggle (desktop only) --}}
+          <div class="navbar-item is-hidden-touch">
+            <button class="site-navbar__icon-btn" type="button"
+                    aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          {{!-- ── Auth buttons ─────────────────────────────────────────── --}}
+          {{#if @site.members_enabled}}
+            {{#if @member}}
+
+              {{!-- LOGGED IN: Account dropdown --}}
+              <div class="navbar-item">
+                <div class="site-navbar__account-wrap" id="accountDropdownWrap">
+                  <button class="site-navbar__account-btn" type="button"
+                          aria-label="Account menu" aria-expanded="false"
+                          aria-haspopup="true" id="accountDropdownBtn">
+                    {{#if @member.avatar_image}}
+                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                           class="site-navbar__account-avatar" width="28" height="28">
+                    {{else}}
+                      <i class="ph ph-user-circle" aria-hidden="true"></i>
+                    {{/if}}
+                    <span class="is-hidden-mobile site-navbar__account-name-label">
+                      {{@member.name}}
+                    </span>
+                    <i class="ph ph-caret-down site-navbar__account-caret" aria-hidden="true"></i>
+                  </button>
+
+                  <div class="site-navbar__account-dropdown" id="accountDropdown" hidden>
+                    <div class="site-navbar__account-header">
+                      <p class="site-navbar__account-fullname">{{@member.name}}</p>
+                      <p class="site-navbar__account-email">{{@member.email}}</p>
+                    </div>
+                    <hr class="site-navbar__dropdown-divider">
+                    <a class="site-navbar__dropdown-item"
+                       href="#/portal/account" data-portal="account">
+                      <i class="ph ph-user" aria-hidden="true"></i>
+                      <span>Manage account</span>
+                    </a>
+                    <a class="site-navbar__dropdown-item"
+                       href="#/portal/account/newsletters" data-portal="account/newsletters">
+                      <i class="ph ph-envelope" aria-hidden="true"></i>
+                      <span>Newsletters</span>
+                    </a>
+                    <hr class="site-navbar__dropdown-divider">
+                    <a class="site-navbar__dropdown-item site-navbar__dropdown-item--danger"
+                       href="javascript:void(0)" data-members-signout>
+                      <i class="ph ph-sign-out" aria-hidden="true"></i>
+                      <span>Sign out</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            {{else}}
+
+              {{!-- LOGGED OUT: Sign in + Subscribe (two separate buttons) --}}
+              {{#unless @site.members_invite_only}}
+                <div class="navbar-item site-navbar__auth-pair">
+                  <a class="site-navbar__btn site-navbar__btn--ghost"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i>
+                    <span>Sign in</span>
+                  </a>
+                  <a class="site-navbar__btn site-navbar__btn--primary"
+                     href="#/portal/signup" data-portal="signup">
+                    <i class="ph ph-sparkle" aria-hidden="true"></i>
+                    <span>Subscribe</span>
+                  </a>
+                </div>
+              {{else}}
+                <div class="navbar-item">
+                  <a class="site-navbar__btn site-navbar__btn--primary"
+                     href="#/portal/signin" data-portal="signin">
+                    <i class="ph ph-sign-in" aria-hidden="true"></i>
+                    <span>Sign in</span>
+                  </a>
+                </div>
+              {{/unless}}
+
+            {{/if}}
+          {{/if}}
+          {{!-- /auth --}}
+
+          {{!-- GitHub star — always last --}}
+          {{#if @custom.show_github_button}}
+            <div class="navbar-item">
+              <a class="site-navbar__github-btn"
+                 href="{{#if @custom.github_url}}{{@custom.github_url}}{{else}}https://github.com/imswarnil/Namaste-Salesforce{{/if}}"
+                 target="_blank" rel="noopener noreferrer" aria-label="Star on GitHub">
+                <i class="ph ph-github-logo" aria-hidden="true"></i>
+                <span>Star</span>
+              </a>
+            </div>
+          {{else}}
+            {{!-- show_github_button not yet saved → show by default --}}
+            {{#unless @custom.show_github_button}}
+              {{!-- only hide if explicitly false (boolean false, not undefined) --}}
+            {{/unless}}
+            <div class="navbar-item">
+              <a class="site-navbar__github-btn"
+                 href="https://github.com/imswarnil/Namaste-Salesforce"
+                 target="_blank" rel="noopener noreferrer" aria-label="Star on GitHub">
+                <i class="ph ph-github-logo" aria-hidden="true"></i>
+                <span>Star</span>
+              </a>
+            </div>
+          {{/if}}
+
+        </div>
+        {{!-- /navbar-end --}}
+
+      </div>
+      {{!-- /navbar-menu --}}
+
+    </div>
+  </nav>
+</header>
+
+{{!-- ══════════════════════════════════════════════════════════════════════
+  Scripts
+══════════════════════════════════════════════════════════════════════════ --}}
+<script>
+(function () {
+  'use strict';
+
+  // ── Theme toggle ────────────────────────────────────────────────────────
+  var html = document.documentElement;
+  var SK   = 'site-color-scheme';
+
+  function getTheme() { return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
+
+  function applyTheme(t) {
+    html.setAttribute('data-color-scheme', t);
+    localStorage.setItem(SK, t);
+    syncThemeUI(t);
+  }
+
+  function syncThemeUI(t) {
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+      var ic = btn.querySelector('i');
+      if (ic) ic.className = t === 'dark' ? 'ph ph-sun-dim' : 'ph ph-moon';
+      btn.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+  }
+
+  var saved = localStorage.getItem(SK);
+  syncThemeUI((saved === 'light' || saved === 'dark') ? saved : getTheme());
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-theme-toggle]'))
+      applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── Mobile burger ────────────────────────────────────────────────────────
+  var burger = document.getElementById('siteNavBurger');
+  var menu   = document.getElementById('siteNavbarMenu');
+  var header = document.getElementById('siteHeader');
+
+  function toggleMenu(force) {
+    var open = force !== undefined ? force : !burger.classList.contains('is-open');
+    burger.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('is-open', open);
+    menu.setAttribute('aria-hidden', String(!open));
+    if (header) header.classList.toggle('menu-is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  if (burger && menu) {
+    burger.addEventListener('click', function () { toggleMenu(); });
+
+    document.addEventListener('click', function (e) {
+      if (menu.classList.contains('is-open') &&
+          !menu.contains(e.target) && !burger.contains(e.target))
+        toggleMenu(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('is-open')) {
+        toggleMenu(false);
+        burger.focus();
+      }
+    });
+  }
+
+  // ── Dropdown builder ─────────────────────────────────────────────────────
+  // Items with [data-child="true"] become children of the preceding item.
+  document.addEventListener('DOMContentLoaded', function () {
+    var nav = document.getElementById('siteNavLinks');
+    if (!nav) return;
+
+    var items   = Array.from(nav.querySelectorAll('.site-navbar__nav-item'));
+    var rebuilt = [];
+    var current = null;
+
+    items.forEach(function (el) {
+      var isChild = el.getAttribute('data-child') === 'true';
+
+      if (isChild && current) {
+        // Strip "- " prefix from label
+        var lbl = el.querySelector('.site-navbar__nav-label');
+        if (lbl) lbl.textContent = lbl.textContent.replace(/^-\s*/, '').trim();
+        var li = document.createElement('li');
+        li.appendChild(el.cloneNode(true));
+        current.list.appendChild(li);
+        el.remove();
+      } else {
+        var wrap = document.createElement('div');
+        wrap.className = 'site-navbar__dropdown-wrap';
+        el.parentNode.insertBefore(wrap, el);
+        wrap.appendChild(el);
+
+        var list = document.createElement('ul');
+        list.className = 'site-navbar__dropdown-menu';
+        list.setAttribute('role', 'menu');
+        wrap.appendChild(list);
+
+        current = { wrap: wrap, trigger: el, list: list };
+        rebuilt.push(current);
+      }
+    });
+
+    // Activate dropdowns that got children
+    rebuilt.forEach(function (r) {
+      if (!r.list.children.length) {
+        // No children — unwrap: move item back, remove wrapper
+        r.wrap.parentNode.insertBefore(r.trigger, r.wrap);
+        r.wrap.remove();
+        return;
+      }
+      r.wrap.classList.add('has-dropdown');
+      r.trigger.classList.add('has-dropdown-trigger');
+      r.trigger.setAttribute('aria-haspopup', 'true');
+      r.trigger.setAttribute('aria-expanded', 'false');
+
+      var chevron = document.createElement('i');
+      chevron.className = 'ph ph-caret-down site-navbar__dropdown-chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      r.trigger.appendChild(chevron);
+    });
+
+    // Mobile tap-to-open
+    nav.addEventListener('click', function (e) {
+      var trigger = e.target.closest('.has-dropdown-trigger');
+      if (!trigger || window.innerWidth >= 1024) return;
+
+      e.preventDefault();
+      var wrap   = trigger.closest('.has-dropdown');
+      var isOpen = wrap.classList.contains('is-open');
+
+      nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
+        d.classList.remove('is-open');
+        d.querySelector('.has-dropdown-trigger').setAttribute('aria-expanded', 'false');
+      });
+
+      if (!isOpen) {
+        wrap.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Close desktop dropdowns on outside click
+    document.addEventListener('click', function (e) {
+      if (!nav.contains(e.target)) {
+        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
+          d.classList.remove('is-open');
+        });
+      }
+    });
+  });
+
+  // ── Account dropdown ──────────────────────────────────────────────────────
+  var accountBtn  = document.getElementById('accountDropdownBtn');
+  var accountDrop = document.getElementById('accountDropdown');
+  var accountWrap = document.getElementById('accountDropdownWrap');
+
+  if (accountBtn && accountDrop) {
+    accountBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var opening = accountDrop.hidden;
+      accountDrop.hidden = !opening;
+      accountBtn.setAttribute('aria-expanded', String(opening));
+    });
+
+    document.addEventListener('click', function (e) {
+      if (accountWrap && !accountWrap.contains(e.target)) {
+        accountDrop.hidden = true;
+        accountBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !accountDrop.hidden) {
+        accountDrop.hidden = true;
+        accountBtn.setAttribute('aria-expanded', 'false');
+        accountBtn.focus();
+      }
+    });
+  }
+
+})();
+</script>
