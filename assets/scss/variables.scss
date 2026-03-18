@@ -1,91 +1,125 @@
-@use "sass:list";
-@use "sass:map";
+// =============================================================================
+//  _variables.scss
+//  All design tokens — zero CSS output.
+//  Every other file @use's this as "v".
+// =============================================================================
 
-/* ==========================================================================
-   variables.scss
-   Shared theme tokens for Bulma + Ghost + custom UI
-   Runtime dark mode is driven via CSS variables on html[data-color-scheme]
-   ========================================================================== */
 
-/* Core */
+// ─── BRAND ───────────────────────────────────────────────────────────────────
+
+$brand-primary:        #0176d3 !default;
+$brand-primary-hover:  #014486 !default;
+$brand-primary-active: #0b5cab !default;
+$brand-primary-dark:   #1b96ff !default;   // lighter on dark bg
+
+
+// ─── SEMANTIC PALETTE ────────────────────────────────────────────────────────
+
+$link-color:    #0176d3 !default;
+$info-color:    #0b5cab !default;
+$success-color: #2e844a !default;
+$warning-color: #dd7a01 !default;
+$danger-color:  #ba0517 !default;
+
 $white: #ffffff !default;
 $black: #080707 !default;
 
-/* Brand */
-$brand-primary: #0176d3 !default;
-$brand-primary-hover: #014486 !default;
-$brand-primary-active: #0b5cab !default;
 
-/* Semantic */
-$link-color: #0176d3 !default;
-$info-color: #0b5cab !default;
-$success-color: #2e844a !default;
-$warning-color: #dd7a01 !default;
-$danger-color: #ba0517 !default;
+// ─── LIGHT SURFACES ──────────────────────────────────────────────────────────
 
-/* Light surfaces */
-$surface-body: #f3f2f2 !default;
-$surface-card: #ffffff !default;
-$surface-subtle: #fafaf9 !default;
-$surface-muted: #f8f8f8 !default;
-$surface-row-alt: #fbfbfb !default;
+$surface-body:    #f3f2f2 !default;
+$surface-card:    #ffffff !default;
+$surface-subtle:  #fafaf9 !default;
+$surface-muted:   #f3f2f2 !default;
+$surface-row-alt: #f9f9f9 !default;
 
-/* Light text */
-$text-strong: #181818 !default;
+
+// ─── LIGHT TEXT ──────────────────────────────────────────────────────────────
+
+$text-strong:  #181818 !default;
 $text-default: #3e3e3c !default;
-$text-weak: #706e6b !default;
+$text-weak:    #706e6b !default;
 $text-inverse: #ffffff !default;
 
-/* Light borders + focus */
-$border-color: #dddbda !default;
-$border-color-strong: #c9c7c5 !default;
-$border-color-soft: #ecebea !default;
-$focus-ring: rgba(27, 150, 255, 0.35) !default;
 
-/* Light shadows */
-$shadow-card: 0 2px 2px 0 rgba(0, 0, 0, 0.08) !default;
-$shadow-popover: 0 2px 8px rgba(0, 0, 0, 0.16) !default;
-$shadow-active: 0 4px 12px rgba(0, 0, 0, 0.18) !default;
+// ─── LIGHT BORDERS ───────────────────────────────────────────────────────────
 
-/* Dark surfaces */
-$dark-surface-body: #0f1115 !default;
-$dark-surface-card: #171b22 !default;
-$dark-surface-subtle: #1c222b !default;
-$dark-surface-muted: #212733 !default;
+$border:        #dddbda !default;
+$border-strong: #c9c7c5 !default;
+$border-soft:   #ecebea !default;
+$focus-ring:    rgba(27, 150, 255, 0.35) !default;
+
+
+// ─── LIGHT SHADOWS ───────────────────────────────────────────────────────────
+
+$shadow-sm:      0 1px 2px rgba(0, 0, 0, 0.07) !default;
+$shadow-card:    0 2px 4px rgba(0, 0, 0, 0.09), 0 0 0 1px rgba(0,0,0,0.04) !default;
+$shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0,0,0,0.06) !default;
+$shadow-raised:  0 8px 24px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0,0,0,0.06) !default;
+
+
+// ─── DARK SURFACES ───────────────────────────────────────────────────────────
+
+$dark-surface-body:    #0f1115 !default;
+$dark-surface-card:    #171b22 !default;
+$dark-surface-subtle:  #1c222b !default;
+$dark-surface-muted:   #212733 !default;
 $dark-surface-row-alt: #141922 !default;
 
-/* Dark text */
-$dark-text-strong: #f3f4f6 !default;
+
+// ─── DARK TEXT ───────────────────────────────────────────────────────────────
+
+$dark-text-strong:  #f3f4f6 !default;
 $dark-text-default: #d7dbe1 !default;
-$dark-text-weak: #9aa4b2 !default;
+$dark-text-weak:    #9aa4b2 !default;
 $dark-text-inverse: #0f1115 !default;
 
-/* Dark borders + focus */
-$dark-border-color: #2c3440 !default;
-$dark-border-color-strong: #3a4554 !default;
-$dark-border-color-soft: #222a35 !default;
-$dark-focus-ring: rgba(27, 150, 255, 0.45) !default;
 
-/* Dark shadows */
-$dark-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.25) !default;
-$dark-shadow-popover: 0 10px 28px rgba(0, 0, 0, 0.35) !default;
-$dark-shadow-active: 0 12px 32px rgba(0, 0, 0, 0.42) !default;
+// ─── DARK BORDERS ────────────────────────────────────────────────────────────
 
-/* Sizing */
-$radius-base: 0.25rem !default;
-$radius-large: 0.5rem !default;
-$navbar-height-local: 3.5rem !default;
-$control-height-local: 2.5em !default;
-$modal-width-local: 50rem !default;
+$dark-border:        #2c3440 !default;
+$dark-border-strong: #3a4554 !default;
+$dark-border-soft:   #222a35 !default;
+$dark-focus-ring:    rgba(27, 150, 255, 0.45) !default;
 
-/* Ghost content widths */
-$gh-content-width: 48rem !default;
-$gh-wide-width: 72rem !default;
-$gh-full-gutter: 1rem !default;
-$gh-card-gap: 1rem !default;
 
-/* Fonts */
-$font-stack:
+// ─── DARK SHADOWS ────────────────────────────────────────────────────────────
+
+$dark-shadow-sm:      0 1px 2px rgba(0, 0, 0, 0.20) !default;
+$dark-shadow-card:    0 2px 8px rgba(0, 0, 0, 0.30) !default;
+$dark-shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.40) !default;
+$dark-shadow-raised:  0 12px 32px rgba(0, 0, 0, 0.45) !default;
+
+
+// ─── SHAPE ───────────────────────────────────────────────────────────────────
+
+$radius-sm:  0.25rem !default;   // 4px  — inputs, buttons, tags
+$radius-md:  0.375rem !default;  // 6px  — cards, panels
+$radius-lg:  0.5rem !default;    // 8px  — modals, dropdowns
+$radius-pill: 999rem !default;   // pills, badges
+
+
+// ─── SPACING ─────────────────────────────────────────────────────────────────
+
+$space-xs:  0.25rem !default;
+$space-sm:  0.5rem !default;
+$space-md:  0.75rem !default;
+$space-lg:  1rem !default;
+$space-xl:  1.5rem !default;
+$space-2xl: 2rem !default;
+
+
+// ─── LAYOUT ──────────────────────────────────────────────────────────────────
+
+$navbar-height:    3.5rem !default;
+$content-width:    48rem !default;
+$wide-width:       72rem !default;
+$full-gutter:      1rem !default;
+
+
+// ─── TYPOGRAPHY ──────────────────────────────────────────────────────────────
+
+$font-body:
   "Salesforce Sans",
   "Inter",
   -apple-system,
@@ -96,237 +130,15 @@ $font-stack:
   Arial,
   sans-serif !default;
 
-/* Helper map */
-$theme-colors: (
-  "primary": ($brand-primary, $text-inverse),
-  "link": ($link-color, $text-inverse),
-  "info": ($info-color, $text-inverse),
-  "success": ($success-color, $text-inverse),
-  "warning": ($warning-color, $text-inverse),
-  "danger": ($danger-color, $text-inverse)
-) !default;
+$font-size-base:  0.9375rem !default;   // 15px
+$font-size-sm:    0.875rem !default;    // 14px
+$font-size-xs:    0.75rem !default;     // 12px
+$font-size-lg:    1.0625rem !default;   // 17px
+$line-height:     1.5 !default;
 
-@function theme-color($name, $index: 1) {
-  $pair: map.get($theme-colors, $name);
-  @return list.nth($pair, $index);
-}
 
-/* Light runtime CSS vars */
-@mixin theme-css-vars-light {
-  color-scheme: light;
+// ─── BREAKPOINTS ─────────────────────────────────────────────────────────────
 
-  --theme-brand: #{$brand-primary};
-  --theme-brand-hover: #{$brand-primary-hover};
-  --theme-brand-active: #{$brand-primary-active};
-
-  --theme-surface-body: #{$surface-body};
-  --theme-surface-card: #{$surface-card};
-  --theme-surface-subtle: #{$surface-subtle};
-  --theme-surface-muted: #{$surface-muted};
-  --theme-surface-row-alt: #{$surface-row-alt};
-
-  --theme-border: #{$border-color};
-  --theme-border-strong: #{$border-color-strong};
-  --theme-border-soft: #{$border-color-soft};
-
-  --theme-text: #{$text-default};
-  --theme-text-strong: #{$text-strong};
-  --theme-text-weak: #{$text-weak};
-  --theme-text-inverse: #{$text-inverse};
-
-  --theme-focus: #{$focus-ring};
-
-  --theme-radius: #{$radius-base};
-  --theme-radius-lg: #{$radius-large};
-
-  --theme-shadow: #{$shadow-card};
-  --theme-shadow-popover: #{$shadow-popover};
-  --theme-shadow-active: #{$shadow-active};
-
-  --theme-font-body: #{$font-stack};
-  --theme-font-heading: #{$font-stack};
-
-  --gh-content-width: #{$gh-content-width};
-  --gh-wide-width: #{$gh-wide-width};
-  --gh-full-gutter: #{$gh-full-gutter};
-  --gh-card-gap: #{$gh-card-gap};
-
-  /* Bulma runtime vars */
-  --bulma-body-background-color: #{$surface-body};
-  --bulma-body-color: #{$text-default};
-
-  --bulma-scheme-main: #{$surface-card};
-  --bulma-scheme-main-bis: #{$surface-subtle};
-  --bulma-scheme-main-ter: #{$surface-muted};
-  --bulma-scheme-invert: #{$text-inverse};
-
-  --bulma-background: #{$surface-subtle};
-  --bulma-border: #{$border-color};
-  --bulma-border-weak: #{$border-color-soft};
-
-  --bulma-text: #{$text-default};
-  --bulma-text-strong: #{$text-strong};
-  --bulma-text-weak: #{$text-weak};
-
-  --bulma-link: #{$link-color};
-  --bulma-link-hover: #{$brand-primary-hover};
-
-  --bulma-primary: #{$brand-primary};
-  --bulma-info: #{$info-color};
-  --bulma-success: #{$success-color};
-  --bulma-warning: #{$warning-color};
-  --bulma-danger: #{$danger-color};
-
-  --bulma-navbar-background-color: #{$surface-card};
-  --bulma-navbar-item-color: #{$text-default};
-  --bulma-navbar-item-hover-background-color: #{$surface-subtle};
-  --bulma-navbar-item-hover-color: #{$text-strong};
-  --bulma-navbar-dropdown-background-color: #{$surface-card};
-  --bulma-navbar-dropdown-border-top: 1px solid #{$border-color};
-
-  --bulma-card-background-color: #{$surface-card};
-  --bulma-card-color: #{$text-default};
-  --bulma-card-header-background-color: #{$surface-subtle};
-  --bulma-card-header-color: #{$text-strong};
-
-  --bulma-box-background-color: #{$surface-card};
-  --bulma-box-color: #{$text-default};
-
-  --bulma-input-background-color: #{$surface-card};
-  --bulma-input-color: #{$text-strong};
-  --bulma-input-border-color: #{$border-color};
-
-  --bulma-panel-background-color: #{$surface-card};
-  --bulma-panel-heading-background-color: #{$surface-subtle};
-  --bulma-panel-heading-color: #{$text-strong};
-
-  --bulma-menu-item-color: #{$text-default};
-  --bulma-menu-item-hover-color: #{$text-strong};
-  --bulma-menu-item-hover-background-color: #{$surface-subtle};
-
-  --bulma-table-background-color: #{$surface-card};
-  --bulma-table-color: #{$text-default};
-  --bulma-table-cell-border-color: #{$border-color-soft};
-  --bulma-table-head-cell-color: #{$text-strong};
-  --bulma-table-head-cell-border-width: 0 0 1px;
-
-  --bulma-modal-card-head-background-color: #{$surface-subtle};
-  --bulma-modal-card-body-background-color: #{$surface-card};
-  --bulma-modal-card-foot-background-color: #{$surface-subtle};
-
-  --bulma-footer-background-color: #{$surface-subtle};
-  --bulma-footer-color: #{$text-default};
-
-  --bulma-radius: #{$radius-base};
-  --bulma-radius-large: #{$radius-large};
-}
-
-/* Dark runtime CSS vars */
-@mixin theme-css-vars-dark {
-  color-scheme: dark;
-
-  --theme-brand: #{$brand-primary};
-  --theme-brand-hover: #{$brand-primary-hover};
-  --theme-brand-active: #{$brand-primary-active};
-
-  --theme-surface-body: #{$dark-surface-body};
-  --theme-surface-card: #{$dark-surface-card};
-  --theme-surface-subtle: #{$dark-surface-subtle};
-  --theme-surface-muted: #{$dark-surface-muted};
-  --theme-surface-row-alt: #{$dark-surface-row-alt};
-
-  --theme-border: #{$dark-border-color};
-  --theme-border-strong: #{$dark-border-color-strong};
-  --theme-border-soft: #{$dark-border-color-soft};
-
-  --theme-text: #{$dark-text-default};
-  --theme-text-strong: #{$dark-text-strong};
-  --theme-text-weak: #{$dark-text-weak};
-  --theme-text-inverse: #{$dark-text-inverse};
-
-  --theme-focus: #{$dark-focus-ring};
-
-  --theme-radius: #{$radius-base};
-  --theme-radius-lg: #{$radius-large};
-
-  --theme-shadow: #{$dark-shadow-card};
-  --theme-shadow-popover: #{$dark-shadow-popover};
-  --theme-shadow-active: #{$dark-shadow-active};
-
-  --theme-font-body: #{$font-stack};
-  --theme-font-heading: #{$font-stack};
-
-  --gh-content-width: #{$gh-content-width};
-  --gh-wide-width: #{$gh-wide-width};
-  --gh-full-gutter: #{$gh-full-gutter};
-  --gh-card-gap: #{$gh-card-gap};
-
-  /* Bulma runtime vars */
-  --bulma-body-background-color: #{$dark-surface-body};
-  --bulma-body-color: #{$dark-text-default};
-
-  --bulma-scheme-main: #{$dark-surface-card};
-  --bulma-scheme-main-bis: #{$dark-surface-subtle};
-  --bulma-scheme-main-ter: #{$dark-surface-muted};
-  --bulma-scheme-invert: #{$dark-text-inverse};
-
-  --bulma-background: #{$dark-surface-subtle};
-  --bulma-border: #{$dark-border-color};
-  --bulma-border-weak: #{$dark-border-color-soft};
-
-  --bulma-text: #{$dark-text-default};
-  --bulma-text-strong: #{$dark-text-strong};
-  --bulma-text-weak: #{$dark-text-weak};
-
-  --bulma-link: #{$brand-primary};
-  --bulma-link-hover: #{$white};
-
-  --bulma-primary: #{$brand-primary};
-  --bulma-info: #{$info-color};
-  --bulma-success: #{$success-color};
-  --bulma-warning: #{$warning-color};
-  --bulma-danger: #{$danger-color};
-
-  --bulma-navbar-background-color: #{$dark-surface-card};
-  --bulma-navbar-item-color: #{$dark-text-default};
-  --bulma-navbar-item-hover-background-color: #{$dark-surface-subtle};
-  --bulma-navbar-item-hover-color: #{$dark-text-strong};
-  --bulma-navbar-dropdown-background-color: #{$dark-surface-card};
-  --bulma-navbar-dropdown-border-top: 1px solid #{$dark-border-color};
-
-  --bulma-card-background-color: #{$dark-surface-card};
-  --bulma-card-color: #{$dark-text-default};
-  --bulma-card-header-background-color: #{$dark-surface-subtle};
-  --bulma-card-header-color: #{$dark-text-strong};
-
-  --bulma-box-background-color: #{$dark-surface-card};
-  --bulma-box-color: #{$dark-text-default};
-
-  --bulma-input-background-color: #{$dark-surface-card};
-  --bulma-input-color: #{$dark-text-strong};
-  --bulma-input-border-color: #{$dark-border-color};
-
-  --bulma-panel-background-color: #{$dark-surface-card};
-  --bulma-panel-heading-background-color: #{$dark-surface-subtle};
-  --bulma-panel-heading-color: #{$dark-text-strong};
-
-  --bulma-menu-item-color: #{$dark-text-default};
-  --bulma-menu-item-hover-color: #{$dark-text-strong};
-  --bulma-menu-item-hover-background-color: #{$dark-surface-subtle};
-
-  --bulma-table-background-color: #{$dark-surface-card};
-  --bulma-table-color: #{$dark-text-default};
-  --bulma-table-cell-border-color: #{$dark-border-color-soft};
-  --bulma-table-head-cell-color: #{$dark-text-strong};
-  --bulma-table-head-cell-border-width: 0 0 1px;
-
-  --bulma-modal-card-head-background-color: #{$dark-surface-subtle};
-  --bulma-modal-card-body-background-color: #{$dark-surface-card};
-  --bulma-modal-card-foot-background-color: #{$dark-surface-subtle};
-
-  --bulma-footer-background-color: #{$dark-surface-subtle};
-  --bulma-footer-color: #{$dark-text-default};
-
-  --bulma-radius: #{$radius-base};
-  --bulma-radius-large: #{$radius-large};
-}
+$bp-mobile:  640px !default;
+$bp-tablet:  768px !default;
+$bp-desktop: 1024px !default;

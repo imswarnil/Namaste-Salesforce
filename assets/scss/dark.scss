@@ -1,0 +1,83 @@
+// =============================================================================
+// _dark.scss
+//
+// Bulma compiles many utility classes with static colour values at build time
+// (e.g. .has-background-light → background: #f5f5f5 — a fixed value).
+// Those classes don't respond to CSS custom properties automatically.
+//
+// This file patches only the static utilities that need a visible change
+// in dark mode. Everything else is already handled by CSS vars in _mixins.scss.
+//
+// Scoped to: html[data-color-scheme="dark"]
+// =============================================================================
+
+html[data-color-scheme="dark"] {
+
+  // -------------------------------------------------------------------------
+  // Background helpers
+  // -------------------------------------------------------------------------
+  .has-background-light,
+  .has-background-white,
+  .has-background-white-bis,
+  .has-background-white-ter {
+    background-color: var(--theme-surface-card) !important;
+  }
+
+  .has-background-black,
+  .has-background-dark {
+    background-color: #0b0f14 !important;
+  }
+
+  // -------------------------------------------------------------------------
+  // Text helpers
+  // -------------------------------------------------------------------------
+  .has-text-dark,
+  .has-text-black,
+  .has-text-grey-dark {
+    color: var(--theme-text-strong) !important;
+  }
+
+  .has-text-grey,
+  .has-text-grey-light {
+    color: var(--theme-text-weak) !important;
+  }
+
+  .has-text-light,
+  .has-text-white {
+    color: var(--theme-text-inverse) !important;
+  }
+
+  // -------------------------------------------------------------------------
+  // Light-variant Bulma components
+  // -------------------------------------------------------------------------
+  .button.is-light,
+  .tag.is-light,
+  .notification.is-light {
+    background-color: var(--theme-surface-subtle) !important;
+    color:            var(--theme-text) !important;
+    border-color:     var(--theme-border) !important;
+  }
+
+  // -------------------------------------------------------------------------
+  // Delete / close icons
+  // -------------------------------------------------------------------------
+  .delete,
+  .modal-close {
+    background-color: rgba(255, 255, 255, 0.15);
+    &:hover { background-color: rgba(255, 255, 255, 0.22); }
+  }
+
+  // -------------------------------------------------------------------------
+  // Box + notification defaults
+  // -------------------------------------------------------------------------
+  .box {
+    background-color: var(--theme-surface-card);
+    border-color:     var(--theme-border);
+    color:            var(--theme-text);
+  }
+
+  .notification {
+    background-color: var(--theme-surface-subtle);
+    color:            var(--theme-text);
+  }
+}

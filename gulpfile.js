@@ -49,7 +49,7 @@ function hbs(done) {
 // THE SCSS PIPELINE
 function css(done) {
     pump([
-        src('assets/scss/screen.scss', {sourcemaps: true}),
+        src('assets/scss/main.scss', {sourcemaps: true}),
         sass({
             includePaths: ['node_modules'],
             quietDeps: true, 

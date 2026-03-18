@@ -1,0 +1,82 @@
+// =============================================================================
+// _typography.scss
+//
+// Heading scale, .content prose overrides, code styling.
+// Uses CSS vars for theme-awareness; $vars for compile-time font/size values.
+// =============================================================================
+
+@use "variables" as v;
+
+// ---------------------------------------------------------------------------
+// Heading font + colour
+// ---------------------------------------------------------------------------
+h1, h2, h3, h4, h5, h6,
+.title,
+.subtitle {
+  font-family: var(--theme-font-heading);
+  color:       var(--theme-text-strong);
+  line-height: 1.25;
+}
+
+// ---------------------------------------------------------------------------
+// Heading scale — fluid with clamp()
+// ---------------------------------------------------------------------------
+h1, .is-size-1 { font-size: clamp(1.75rem, 4vw, 2.5rem);   font-weight: 700; }
+h2, .is-size-2 { font-size: clamp(1.375rem, 3vw, 2rem);     font-weight: 700; }
+h3, .is-size-3 { font-size: clamp(1.125rem, 2.5vw, 1.5rem); font-weight: 700; }
+h4, .is-size-4 { font-size: 1.125rem; font-weight: 600; }
+h5, .is-size-5 { font-size: 1rem;     font-weight: 600; }
+h6, .is-size-6 { font-size: 0.875rem; font-weight: 600; }
+
+// ---------------------------------------------------------------------------
+// Prose: .content — theme colours only, Bulma handles spacing/margins
+// ---------------------------------------------------------------------------
+.content {
+  color: var(--theme-text);
+
+  h1, h2, h3,
+  h4, h5, h6 { color: var(--theme-text-strong); }
+
+  p, li, dd, td, th { color: var(--theme-text); }
+
+  a {
+    color: var(--theme-brand);
+    &:hover { color: var(--theme-brand-hover); }
+  }
+
+  blockquote {
+    background:        var(--theme-surface-subtle);
+    border-left-color: var(--theme-brand);
+    color:             var(--theme-text);
+  }
+
+  pre {
+    background:    var(--theme-surface-subtle);
+    color:         var(--theme-text-strong);
+    border:        1px solid var(--theme-border);
+    border-radius: var(--theme-radius);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Inline code (outside <pre>)
+// ---------------------------------------------------------------------------
+code:not(pre code) {
+  background:    var(--theme-surface-subtle);
+  color:         var(--theme-brand);
+  padding:       0.12em 0.35em;
+  border-radius: 0.25rem;
+  font-size:     0.9em;
+}
+
+// ---------------------------------------------------------------------------
+// Form labels + help text
+// ---------------------------------------------------------------------------
+.label {
+  color:       var(--theme-text-strong);
+  font-weight: 600;
+}
+
+.help {
+  color: var(--theme-text-weak);
+}

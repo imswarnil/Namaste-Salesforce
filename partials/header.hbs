@@ -1,229 +1,293 @@
-<header class="site-header">
-    <nav class="navbar site-navbar" role="navigation" aria-label="main navigation">
-        <div class="container site-navbar__wrap">
-            <input
-                id="site-nav-toggle"
-                class="site-navbar__toggle"
-                type="checkbox"
-                hidden
+{{!-- =========================================================================
+  header.hbs
+  Site header with:
+  • JSON-LD  — WebSite + SiteNavigationElement structured data
+  • Pure-CSS hamburger via hidden checkbox (no extra JS needed)
+  • Ghost Portal sign-in / subscribe / account buttons
+  • data-theme-toggle  — toggled by inline script at the bottom
+  • data-ghost-search  — handled by Ghost's built-in search
+========================================================================== --}}
+
+{{!-- ── JSON-LD: WebSite + SiteNavigation ──────────────────────────────────── --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{@site.url}}/#website",
+      "url": "{{@site.url}}/",
+      "name": "{{@site.title}}",
+      {{#if @site.description}}"description": "{{@site.description}}",{{/if}}
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{@site.title}}",
+        "@id": "{{@site.url}}/#organization"
+        {{#if @site.logo}},
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{{@site.logo}}"
+        }
+        {{/if}}
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "ItemList",
+      "@id": "{{@site.url}}/#site-navigation",
+      "name": "Main Navigation",
+      "description": "Primary navigation links for {{@site.title}}",
+      "itemListElement": [
+        {{#foreach navigation}}
+        {
+          "@type": "ListItem",
+          "position": {{@number}},
+          "name": "{{label}}",
+          "url": "{{url absolute="true"}}"
+        }{{#unless @last}},{{/unless}}
+        {{/foreach}}
+      ]
+    }
+  ]
+}
+</script>
+
+<header class="site-header" role="banner">
+  <nav class="navbar site-navbar" role="navigation" aria-label="Main navigation">
+    <div class="container site-navbar__wrap">
+
+      {{!-- ── Hidden checkbox — drives mobile menu open/close via pure CSS ── --}}
+      <input
+        id="site-nav-toggle"
+        class="site-navbar__toggle"
+        type="checkbox"
+        hidden
+        aria-hidden="true"
+      >
+
+      {{!-- ── Brand + mobile tools ─────────────────────────────────────────── --}}
+      <div class="navbar-brand">
+
+        <a
+          class="navbar-item site-navbar__brand"
+          href="{{@site.url}}"
+          aria-label="{{@site.title}} — go to homepage"
+        >
+          {{#if @site.logo}}
+            <img
+              src="{{@site.logo}}"
+              alt="{{@site.title}}"
+              class="site-navbar__logo"
+              width="32"
+              height="32"
             >
+          {{/if}}
+          <span class="site-navbar__title">
+            {{@site.title}}
+          </span>
+        </a>
 
-            <div class="navbar-brand">
-                <a class="navbar-item site-navbar__brand" href="{{@site.url}}">
-                    {{#if @site.logo}}
-                        <img
-                            src="{{@site.logo}}"
-                            alt="{{@site.title}}"
-                            class="site-navbar__logo"
-                            width="32"
-                            height="32"
-                        >
-                    {{/if}}
+        {{!-- Mobile-only tools: search + theme + hamburger --}}
+        <div class="site-navbar__mobile-tools is-hidden-desktop">
 
-                    <span class="site-navbar__title has-text-weight-semibold">
-                        {{@site.title}}
-                    </span>
-                </a>
+          <button
+            class="site-navbar__icon-btn"
+            type="button"
+            aria-label="Search this site"
+            data-ghost-search
+          >
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
 
-                <div class="site-navbar__mobile-tools is-hidden-desktop">
-                    <button
-                        class="button is-light is-small"
-                        type="button"
-                        aria-label="Search this site"
-                        data-ghost-search
-                    >
-                        <span class="icon is-small">
-                            <i class="ph ph-magnifying-glass"></i>
-                        </span>
-                    </button>
+          <button
+            class="site-navbar__icon-btn"
+            type="button"
+            aria-label="Switch to dark mode"
+            data-theme-toggle
+          >
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
 
-                    <button
-                        class="button is-light is-small"
-                        type="button"
-                        aria-label="Toggle dark mode"
-                        data-theme-toggle
-                    >
-                        <span class="icon is-small">
-                            <i class="ph ph-moon"></i>
-                        </span>
-                    </button>
+          {{!-- Label targets the hidden checkbox — no JS needed to toggle menu --}}
+          <label
+            for="site-nav-toggle"
+            class="site-navbar__burger"
+            role="button"
+            aria-label="Toggle navigation menu"
+            aria-controls="siteNavbarMenu"
+            aria-expanded="false"
+          >
+            {{!-- 4 spans: bars 1+4 cross into ✕, bars 2+3 slide out --}}
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+            <span class="site-navbar__burger-bar" aria-hidden="true"></span>
+          </label>
 
-                    <label
-                        for="site-nav-toggle"
-                        class="navbar-burger site-navbar__burger"
-                        role="button"
-                        aria-label="Toggle menu"
-                        aria-controls="siteNavbarMenu"
-                    >
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="siteNavbarMenu" class="navbar-menu site-navbar__menu">
-                <div class="navbar-start site-navbar__center">
-                    {{navigation}}
-
-                    {{!-- Optional manual dropdowns if you want them --}}
-                    {{!--
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link" href="/learn/">
-                            <span class="icon is-small"><i class="ph ph-student"></i></span>
-                            <span>Learn</span>
-                        </a>
-
-                        <div class="navbar-dropdown">
-                            <a class="navbar-item" href="/courses/">
-                                <span class="icon is-small"><i class="ph ph-book-open"></i></span>
-                                <span>Courses</span>
-                            </a>
-                            <a class="navbar-item" href="/training/">
-                                <span class="icon is-small"><i class="ph ph-student"></i></span>
-                                <span>Training</span>
-                            </a>
-                        </div>
-                    </div>
-                    --}}
-                </div>
-
-                <div class="navbar-end site-navbar__actions">
-                    <div class="navbar-item">
-                        <a
-                            class="button is-light is-small site-navbar__github-button"
-                            href="https://github.com/imswarnil/Namaste-Salesforce"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Star project on GitHub"
-                        >
-                            <span class="icon is-small">
-                                <i class="ph ph-github-logo"></i>
-                            </span>
-                            <span>Star on GitHub</span>
-                        </a>
-                    </div>
-
-                    <div class="navbar-item is-hidden-touch">
-                        <button
-                            class="button is-light is-small"
-                            type="button"
-                            aria-label="Toggle dark mode"
-                            data-theme-toggle
-                        >
-                            <span class="icon is-small">
-                                <i class="ph ph-moon"></i>
-                            </span>
-                        </button>
-                    </div>
-
-                    <div class="navbar-item is-hidden-touch">
-                        <button
-                            class="button is-light is-small"
-                            type="button"
-                            aria-label="Search this site"
-                            data-ghost-search
-                        >
-                            <span class="icon is-small">
-                                <i class="ph ph-magnifying-glass"></i>
-                            </span>
-                            <span>Search</span>
-                        </button>
-                    </div>
-
-                    {{#if @site.members_enabled}}
-                        <div class="navbar-item">
-                            <div class="buttons">
-                                {{#unless @member}}
-                                    {{#unless @site.members_invite_only}}
-                                        <a
-                                            class="button is-light is-small"
-                                            href="#/portal/signin"
-                                            data-portal="signin"
-                                        >
-                                            <span class="icon is-small">
-                                                <i class="ph ph-sign-in"></i>
-                                            </span>
-                                            <span>Sign in</span>
-                                        </a>
-
-                                        <a
-                                            class="button is-primary is-small"
-                                            href="#/portal/signup"
-                                            data-portal="signup"
-                                        >
-                                            <span class="icon is-small">
-                                                <i class="ph ph-sparkle"></i>
-                                            </span>
-                                            <span>Subscribe</span>
-                                        </a>
-                                    {{else}}
-                                        <a
-                                            class="button is-primary is-small"
-                                            href="#/portal/signin"
-                                            data-portal="signin"
-                                        >
-                                            <span class="icon is-small">
-                                                <i class="ph ph-sign-in"></i>
-                                            </span>
-                                            <span>Sign in</span>
-                                        </a>
-                                    {{/unless}}
-                                {{else}}
-                                    <a
-                                        class="button is-primary is-small"
-                                        href="#/portal/account"
-                                        data-portal="account"
-                                    >
-                                        <span class="icon is-small">
-                                            <i class="ph ph-user-circle"></i>
-                                        </span>
-                                        <span>Account</span>
-                                    </a>
-                                {{/unless}}
-                            </div>
-                        </div>
-                    {{/if}}
-                </div>
-            </div>
         </div>
-    </nav>
+      </div>
+      {{!-- /navbar-brand --}}
+
+      {{!-- ── Menu ──────────────────────────────────────────────────────────── --}}
+      <div
+        id="siteNavbarMenu"
+        class="navbar-menu site-navbar__menu"
+        aria-label="Site navigation"
+      >
+
+        {{!-- Navigation links (rendered by navigation.hbs partial) --}}
+        <div class="navbar-start site-navbar__nav">
+          {{navigation}}
+        </div>
+
+        {{!-- Action buttons --}}
+        <div class="navbar-end site-navbar__actions">
+
+          {{!-- GitHub star (desktop + mobile) --}}
+          <div class="navbar-item">
+            <a
+              class="site-navbar__action-btn site-navbar__github-btn"
+              href="https://github.com/imswarnil/Namaste-Salesforce"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Star project on GitHub"
+            >
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <span>Star</span>
+            </a>
+          </div>
+
+          {{!-- Theme toggle (desktop only) --}}
+          <div class="navbar-item is-hidden-touch">
+            <button
+              class="site-navbar__icon-btn"
+              type="button"
+              aria-label="Switch to dark mode"
+              data-theme-toggle
+            >
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          {{!-- Search (desktop only) --}}
+          <div class="navbar-item is-hidden-touch">
+            <button
+              class="site-navbar__action-btn"
+              type="button"
+              aria-label="Search this site"
+              data-ghost-search
+            >
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+              <span>Search</span>
+            </button>
+          </div>
+
+          {{!-- Members: sign-in / subscribe / account --}}
+          {{#if @site.members_enabled}}
+            <div class="navbar-item">
+              {{#unless @member}}
+                {{#unless @site.members_invite_only}}
+                  <div class="site-navbar__auth-buttons">
+                    <a
+                      class="site-navbar__action-btn"
+                      href="#/portal/signin"
+                      data-portal="signin"
+                    >
+                      <i class="ph ph-sign-in" aria-hidden="true"></i>
+                      <span>Sign in</span>
+                    </a>
+                    <a
+                      class="site-navbar__action-btn site-navbar__action-btn--primary"
+                      href="#/portal/signup"
+                      data-portal="signup"
+                    >
+                      <i class="ph ph-sparkle" aria-hidden="true"></i>
+                      <span>Subscribe</span>
+                    </a>
+                  </div>
+                {{else}}
+                  <a
+                    class="site-navbar__action-btn site-navbar__action-btn--primary"
+                    href="#/portal/signin"
+                    data-portal="signin"
+                  >
+                    <i class="ph ph-sign-in" aria-hidden="true"></i>
+                    <span>Sign in</span>
+                  </a>
+                {{/unless}}
+              {{else}}
+                <a
+                  class="site-navbar__action-btn site-navbar__action-btn--primary"
+                  href="#/portal/account"
+                  data-portal="account"
+                >
+                  <i class="ph ph-user-circle" aria-hidden="true"></i>
+                  <span>Account</span>
+                </a>
+              {{/unless}}
+            </div>
+          {{/if}}
+
+        </div>
+        {{!-- /navbar-end --}}
+
+      </div>
+      {{!-- /navbar-menu --}}
+
+    </div>
+    {{!-- /container --}}
+  </nav>
 </header>
 
+{{!-- =========================================================================
+  Theme toggle + aria-expanded sync script
+========================================================================== --}}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var html = document.documentElement;
-    var buttons = document.querySelectorAll('[data-theme-toggle]');
-    var storageKey = 'site-color-scheme';
+(function () {
+  var html       = document.documentElement;
+  var toggles    = document.querySelectorAll('[data-theme-toggle]');
+  var checkbox   = document.getElementById('site-nav-toggle');
+  var burgerLabel = document.querySelector('.site-navbar__burger');
+  var storageKey = 'site-color-scheme';
 
-    function currentTheme() {
-        return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light';
-    }
+  // ── Theme helpers ──────────────────────────────────────────────────────────
+  function getTheme() {
+    return html.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light';
+  }
 
-    function syncThemeUi(theme) {
-        buttons.forEach(function (button) {
-            var icon = button.querySelector('i');
-            if (!icon) return;
+  function applyTheme(theme) {
+    html.setAttribute('data-color-scheme', theme);
+    localStorage.setItem(storageKey, theme);
+    syncToggleUI(theme);
+  }
 
-            icon.className = theme === 'dark' ? 'ph ph-sun-dim' : 'ph ph-moon';
-            button.setAttribute(
-                'aria-label',
-                theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-            );
-        });
-    }
-
-    syncThemeUi(currentTheme());
-
-    document.addEventListener('click', function (event) {
-        var trigger = event.target.closest('[data-theme-toggle]');
-        if (!trigger) return;
-
-        var nextTheme = currentTheme() === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-color-scheme', nextTheme);
-        localStorage.setItem(storageKey, nextTheme);
-        syncThemeUi(nextTheme);
+  function syncToggleUI(theme) {
+    var isDark = theme === 'dark';
+    toggles.forEach(function (btn) {
+      var icon = btn.querySelector('i');
+      if (!icon) return;
+      icon.className = isDark ? 'ph ph-sun-dim' : 'ph ph-moon';
+      btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
     });
-});
+  }
+
+  // Restore saved theme on load
+  var saved = localStorage.getItem(storageKey);
+  if (saved) applyTheme(saved);
+  else syncToggleUI(getTheme());
+
+  // Toggle on click
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-theme-toggle]')) {
+      applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+    }
+  });
+
+  // ── Burger aria-expanded sync ──────────────────────────────────────────────
+  if (checkbox && burgerLabel) {
+    checkbox.addEventListener('change', function () {
+      burgerLabel.setAttribute('aria-expanded', checkbox.checked ? 'true' : 'false');
+    });
+  }
+})();
 </script>

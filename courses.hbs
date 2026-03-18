@@ -1,92 +1,103 @@
 {{!< default}}
 
-{{!-- Ghost doesn't do code injection for pages used as data in routes.yaml, so we do it manually here --}}
-{{#contentFor "head-after"}} 
-    {{#page}} {{#if codeinjection_head}} {{{codeinjection_head}}} {{/if}} {{/page}}
+{{#contentFor "head-after"}}
+    {{#page}}{{#if codeinjection_head}}{{{codeinjection_head}}}{{/if}}{{/page}}
 {{/contentFor}}
 
 {{#contentFor "foot-after"}}
-    {{#page}} {{#if codeinjection_foot}} {{{codeinjection_foot}}} {{/if}} {{/page}}
+    {{#page}}{{#if codeinjection_foot}}{{{codeinjection_foot}}}{{/if}}{{/page}}
 {{/contentFor}}
 
 <main>
-    {{!-- 1. COURSES HERO SECTION --}}
+    {{!-- HERO – icon left, content right with proper spacing --}}
     {{#page}}
-    <section class="hero is-medium has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
+    <section class="hero is-small has-background-white-ter" 
+             aria-labelledby="hero-title">
         <div class="hero-body">
-            <div class="container is-max-widescreen has-text-centered">
-                <div class="mb-4">
-                    <i class="ph-duotone ph-graduation-cap has-text-primary" style="font-size: 4rem;"></i>
+            <div class="container is-max-widescreen">
+                {{!-- Use columns for precise alignment and responsive stacking --}}
+                <div class="columns is-vcentered is-desktop">
+                    {{!-- Icon column: auto width on desktop, centered on mobile --}}
+                    <div class="column is-narrow has-text-centered-mobile">
+                        <i class="ph-duotone ph-graduation-cap has-text-primary" 
+                           style="font-size: 5rem; line-height: 1;"></i>
+                    </div>
+                    {{!-- Text column: fills remaining space --}}
+                    <div class="column">
+                        <h1 id="hero-title" class="title is-4 is-size-2-mobile has-text-weight-bold has-text-dark mb-2">
+                            {{title}}
+                        </h1>
+                        {{#if custom_excerpt}}
+                            <p class="subtitle is-6 is-size-5-mobile has-text-grey" 
+                               style="max-width: 800px; line-height: 1.5;">
+                                {{custom_excerpt}}
+                            </p>
+                        {{/if}}
+                    </div>
                 </div>
-                <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark">
-                    {{title}}
-                </h1>
-                {{#if custom_excerpt}}
-                    <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-4 mx-auto" style="max-width: 800px; line-height: 1.5;">
-                        {{custom_excerpt}}
-                    </p>
-                {{/if}}
             </div>
         </div>
     </section>
     {{/page}}
 
-    {{!-- 2. FEATURED COURSES GRID --}}
+    {{!-- FEATURED COURSES (first page only) --}}
     {{#match pagination.page "=" 1}}
-        {{!-- Simplified Query: Fetch 3 featured courses so they fit our desktop grid perfectly --}}
-        {{#get "posts" filter="tags:hash-courses-col+featured:true" include="tags,authors" limit="3" as |featured_courses|}}
-            {{#if featured_courses}}
-                <section class="section pt-0 pb-6">
+        {{#get "posts" filter="tags:hash-courses-col+featured:true" include="tags,authors" limit="3" as |featured|}}
+            {{#if featured}}
+                <section class="section pt-5 pb-6" aria-labelledby="featured-heading">
                     <div class="container is-max-widescreen">
-                        
-                        <div class="is-flex is-align-items-center mb-6">
-                            <h2 class="title is-4 mb-0 has-text-weight-bold" style="color: #0176D3;">
-                                <i class="ph-fill ph-star mr-2"></i> Featured Courses
+                        <div class="is-flex is-align-items-center mb-5">
+                            <h2 id="featured-heading" class="title is-4 mb-0 has-text-weight-bold" style="color: #0176D3;">
+                                <i class="ph-fill ph-star mr-2" aria-hidden="true"></i> Featured Courses
                             </h2>
-                            <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
+                            <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;" aria-hidden="true"></div>
                         </div>
-                        
-                        <div class="columns is-multiline">
-                            {{#foreach featured_courses}}
-                                <div class="column is-4-desktop is-6-tablet mb-4">
-                                    {{!-- Assumes you are using our updated post-card.hbs --}}
-                                    {{> "post-card"}} 
+
+                        <div class="columns is-multiline is-variable is-6">
+                            {{#foreach featured}}
+                                <div class="column is-4-desktop is-6-tablet mb-5">
+                                    {{> "post-card" lazyLoading=true}}
                                 </div>
                             {{/foreach}}
                         </div>
-
                     </div>
                 </section>
             {{/if}}
         {{/get}}
     {{/match}}
 
-    {{!-- 3. ALL COURSES FEED --}}
-    <section class="section pt-0">
+    {{!-- ALL COURSES (excluding featured) --}}
+    <section class="section pt-4" aria-labelledby="all-courses-heading">
         <div class="container is-max-widescreen">
-            
-            <div class="is-flex is-align-items-center mb-6">
-                <h2 class="title is-4 mb-0 has-text-weight-bold has-text-grey-dark">
-                    <i class="ph-fill ph-books mr-2"></i> Latest Courses
+            <div class="is-flex is-align-items-center mb-5">
+                <h2 id="all-courses-heading" class="title is-4 mb-0 has-text-weight-bold has-text-grey-dark">
+                    <i class="ph-fill ph-books mr-2" aria-hidden="true"></i> All Courses
                 </h2>
-                <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
+                <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;" aria-hidden="true"></div>
             </div>
 
-            <div class="columns is-multiline">
-                {{#foreach posts}}
-                    <div class="column is-4-desktop is-6-tablet mb-5">
-                        {{> "post-card"}}
-                    </div>
-                {{/foreach}}
-            </div>
-
-            {{!-- 4. PAGINATION --}}
-            {{#if pagination}}
-                <div class="is-flex is-justify-content-center mt-6">
-                    {{pagination}}
+            {{#if posts}}
+                <div class="columns is-multiline is-variable is-6">
+                    {{#foreach posts}}
+                        <div class="column is-4-desktop is-6-tablet mb-5">
+                            {{> "post-card" lazyLoading=true}}
+                        </div>
+                    {{/foreach}}
+                </div>
+            {{else}}
+                <div class="has-text-centered py-6">
+                    <i class="ph-duotone ph-warning-circle is-size-1 has-text-grey-light mb-4" aria-hidden="true"></i>
+                    <p class="title is-5 has-text-grey">No courses found.</p>
+                    <p class="subtitle is-6 has-text-grey">Check back later or browse other sections.</p>
                 </div>
             {{/if}}
-            
+
+            {{!-- PAGINATION --}}
+            {{#if pagination}}
+                <nav class="pagination is-centered mt-6 pt-2" role="navigation" aria-label="Pagination">
+                    {{pagination}}
+                </nav>
+            {{/if}}
         </div>
     </section>
 </main>

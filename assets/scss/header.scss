@@ -1,0 +1,610 @@
+// =============================================================================
+//  _header.scss
+//
+//  Maps exactly to header.hbs + navigation.hbs.
+//
+//  Key design decisions:
+//   • Hamburger: 4-bar morphing animation — bars 2+3 slide out,
+//     bars 1+4 cross into ✕. Staggered with cubic-bezier snap.
+//   • Nav items: compact pill chips (align-self: center) — hover gets
+//     a brand tint bg, active gets solid brand bg + white text.
+//   • Action buttons: unified .site-navbar__action-btn system,
+//     no Bulma .button.is-light.is-small coupling needed.
+//   • Pure-CSS mobile menu via hidden <input type=checkbox>.
+// =============================================================================
+
+@use "variables" as v;
+@use "mixins"    as mx;
+
+
+// ─── Local tokens ─────────────────────────────────────────────────────────────
+$_nav-item-h:       2rem    !default;   // pill height (desktop)
+$_nav-item-h-mob:   2.75rem !default;   // row height (mobile)
+$_action-btn-h:     1.875rem !default;  // action button height
+$_icon-btn-size:    1.875rem !default;  // square icon-only button
+$_burger-size:      2.125rem !default;  // burger button box
+$_burger-bar-w:     18px    !default;   // bar width
+$_burger-bar-h:     2px     !default;   // bar thickness
+$_burger-gap:       4px     !default;   // gap between bars
+
+
+// =============================================================================
+//  1) HEADER SHELL + NAVBAR
+// =============================================================================
+
+.site-header {
+  position: sticky;
+  top:      0;
+  z-index:  200;
+  width:    100%;
+}
+
+.navbar.site-navbar {
+  min-height:    var(--slds-header-height);
+  background:    var(--theme-surface-card);
+  border-bottom: 1px solid var(--theme-border);
+  box-shadow:    0 1px 0 var(--theme-border), 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.site-navbar__wrap {
+  display:     flex;
+  align-items: stretch;
+  min-height:  var(--slds-header-height);
+  flex-wrap:   nowrap;
+  gap:         0;
+}
+
+
+// =============================================================================
+//  2) BRAND
+// =============================================================================
+
+.site-navbar__brand {
+  display:        flex;
+  align-items:    center;
+  gap:            0.5rem;
+  padding:        0 0.75rem 0 0.25rem;
+  color:          var(--theme-text-strong);
+  text-decoration: none;
+  flex-shrink:    0;
+  @include mx.motion;
+
+  &:hover, &:focus {
+    background:     transparent;
+    color:          var(--theme-brand);
+    text-decoration: none;
+  }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+.site-navbar__logo {
+  display:       block;
+  width:         32px;
+  height:        32px;
+  object-fit:    contain;
+  border-radius: v.$radius-sm;
+  flex-shrink:   0;
+}
+
+.site-navbar__title {
+  font-size:      v.$font-size-lg;
+  font-weight:    700;
+  letter-spacing: -0.025em;
+  white-space:    nowrap;
+  color:          inherit;
+}
+
+
+// =============================================================================
+//  3) MOBILE TOOLS BAR
+// =============================================================================
+
+.site-navbar__mobile-tools {
+  display:     flex;
+  align-items: center;
+  gap:         0.125rem;
+  margin-left: auto;
+  padding:     0 0.25rem;
+}
+
+
+// =============================================================================
+//  4) HAMBURGER BURGER — 4-bar morphing animation
+//
+//  Layout: 4 spans (.site-navbar__burger-bar) stacked in a flex column.
+//  Default ☰: all 4 bars visible, evenly spaced.
+//  Active  ✕: bars 2+3 slide left/right and fade out,
+//              bars 1+4 translate to center and rotate ±45°.
+//
+//  Stagger:
+//   Opening  (☰→✕): bars 2+3 exit first (0ms),  then 1+4 cross (80ms delay)
+//   Closing  (✕→☰): bars 1+4 unrotate first (0ms), bars 2+3 slide back (100ms delay)
+// =============================================================================
+
+// Hide the actual checkbox — it's our state machine
+.site-navbar__toggle { display: none; }
+
+.site-navbar__burger {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             $_burger-gap;
+  width:           $_burger-size;
+  height:          $_burger-size;
+  padding:         0.3125rem;
+  border-radius:   v.$radius-sm;
+  cursor:          pointer;
+  color:           var(--theme-text);
+  user-select:     none;
+  @include mx.motion;
+
+  &:hover { background: var(--theme-surface-subtle); color: var(--theme-brand); }
+}
+
+// ── The 4 bars ─────────────────────────────────────────────────────────────
+.site-navbar__burger-bar {
+  display:       block;
+  width:         $_burger-bar-w;
+  height:        $_burger-bar-h;
+  background:    currentColor;
+  border-radius: v.$radius-pill;
+  transform-origin: center;
+
+  // ── CLOSING transitions (✕ → ☰)
+  // bars 1+4 unrotate first, then 2+3 slide back
+  &:nth-child(1),
+  &:nth-child(4) {
+    transition:
+      transform    280ms cubic-bezier(0.23, 1, 0.32, 1) 0ms,
+      opacity      200ms ease 0ms;
+  }
+  &:nth-child(2),
+  &:nth-child(3) {
+    transition:
+      transform    220ms cubic-bezier(0.23, 1, 0.32, 1) 100ms,
+      opacity      200ms ease 100ms;
+  }
+}
+
+// ── Measurements for ✕ centering ─────────────────────────────────────────
+// With 4 bars × 2px + 3 gaps × 4px = 20px total stack height.
+// Center of stack from top of bar-1: 10px.
+// Bar-1 center from top of itself:    1px  → translate down:  9px
+// Bar-4 center from top of itself:   19px  → translate up:   -9px
+
+// ── OPENED state (checkbox checked) ──────────────────────────────────────
+// bars 2+3 exit first (0ms delay), then 1+4 cross (80ms delay)
+
+#site-nav-toggle:checked ~ .navbar-brand .site-navbar__burger {
+  color: var(--theme-brand);
+
+  .site-navbar__burger-bar {
+    // ── OPENING transitions override ──────────────────────────────────
+    &:nth-child(1),
+    &:nth-child(4) {
+      transition:
+        transform    300ms cubic-bezier(0.23, 1, 0.32, 1) 80ms,
+        opacity      200ms ease 0ms;
+    }
+    &:nth-child(2),
+    &:nth-child(3) {
+      transition:
+        transform    200ms ease 0ms,
+        opacity      160ms ease 0ms;
+    }
+
+    // ── Transforms ───────────────────────────────────────────────────
+    &:nth-child(1) { transform: translateY(9px)  rotate(45deg); }
+    &:nth-child(2) { transform: translateX(-10px); opacity: 0; }
+    &:nth-child(3) { transform: translateX(10px);  opacity: 0; }
+    &:nth-child(4) { transform: translateY(-9px) rotate(-45deg); }
+  }
+}
+
+
+// =============================================================================
+//  5) MOBILE MENU  (#siteNavbarMenu)
+//
+//  Desktop: flex row (Bulma handles this via .navbar-menu display:flex)
+//  Mobile:  absolute panel, max-height: 0 → 85vh via checkbox state
+// =============================================================================
+
+.navbar-menu.site-navbar__menu {
+  flex:        1;
+  display:     flex;
+  align-items: stretch;
+}
+
+@media screen and (max-width: #{v.$bp-desktop - 1px}) {
+
+  .navbar-menu.site-navbar__menu {
+    display:    block;
+    position:   absolute;
+    top:        var(--slds-header-height);
+    left:       0;
+    right:      0;
+    z-index:    190;
+    background: var(--theme-surface-card);
+    border-top: 1px solid var(--theme-border);
+    box-shadow: var(--theme-shadow-popover);
+    max-height: 0;
+    overflow:   hidden;
+    transition: max-height 300ms cubic-bezier(0.23, 1, 0.32, 1);
+    @include mx.scrollbar;
+
+    // Revealed when checkbox is checked
+    #site-nav-toggle:checked ~ & {
+      max-height:  85dvh;
+      overflow-y:  auto;
+    }
+  }
+}
+
+
+// =============================================================================
+//  6) NAV LINKS COLUMN  (.site-navbar__nav)
+// =============================================================================
+
+.site-navbar__nav {
+  display:     flex;
+  align-items: stretch;
+  flex:        1;
+  gap:         0.125rem;
+  padding:     0 0.375rem;
+}
+
+@media screen and (max-width: #{v.$bp-desktop - 1px}) {
+  .site-navbar__nav {
+    flex-direction: column;
+    gap:            0.125rem;
+    padding:        0.5rem 0.625rem;
+    align-items:    stretch;
+  }
+}
+
+
+// =============================================================================
+//  7) NAV ITEMS  (.site-navbar__nav-item)
+//
+//  Desktop: compact pill chip, vertically centered in the navbar.
+//           hover  → brand-tint-1 bg + brand text
+//           active → solid brand bg + white text
+//
+//  Mobile:  full-width row.
+//           hover  → brand-tint-1 bg + brand text
+//           active → brand-tint-2 bg + brand text + left accent bar
+// =============================================================================
+
+.site-navbar__nav-item {
+  display:        flex;
+  align-items:    center;
+  gap:            0.375rem;
+  text-decoration: none;
+  white-space:    nowrap;
+  font-size:      v.$font-size-sm;
+  font-weight:    600;
+  letter-spacing: 0.005em;
+  @include mx.motion;
+
+  // ── DESKTOP ────────────────────────────────────────────────────────────
+  @media screen and (min-width: v.$bp-desktop) {
+    align-self:    center;      // don't stretch to full navbar height
+    height:        $_nav-item-h;
+    padding:       0 0.625rem;
+    border-radius: v.$radius-sm;
+    color:         var(--theme-text);
+
+    &:hover {
+      background: var(--slds-brand-tint-1);
+      color:      var(--theme-brand);
+    }
+
+    &.is-active {
+      background:  var(--theme-brand);
+      color:       #ffffff;
+      font-weight: 700;
+    }
+
+    &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+  }
+
+  // ── MOBILE ─────────────────────────────────────────────────────────────
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    height:        $_nav-item-h-mob;
+    padding:       0 0.875rem;
+    border-radius: v.$radius-sm;
+    color:         var(--theme-text);
+    position:      relative;
+
+    &:hover {
+      background: var(--slds-brand-tint-1);
+      color:      var(--theme-brand);
+    }
+
+    &.is-active {
+      background:  var(--slds-brand-tint-2);
+      color:       var(--theme-brand);
+      font-weight: 700;
+
+      // left accent bar
+      &::before {
+        content:       "";
+        position:      absolute;
+        left:          0;
+        top:           20%;
+        bottom:        20%;
+        width:         3px;
+        background:    var(--theme-brand);
+        border-radius: v.$radius-pill;
+      }
+    }
+
+    &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+  }
+}
+
+// ── Icon inside nav item ──────────────────────────────────────────────────────
+.site-navbar__nav-icon {
+  display:      flex;
+  align-items:  center;
+  flex-shrink:  0;
+  color:        var(--theme-text-weak);
+  @include mx.motion;
+
+  // Inherit the parent's color on state changes
+  .site-navbar__nav-item:hover &  { color: var(--theme-brand); }
+  .site-navbar__nav-item.is-active & {
+    @media screen and (min-width: v.$bp-desktop) { color: #ffffff; }
+    @media screen and (max-width: #{v.$bp-desktop - 1px}) { color: var(--theme-brand); }
+  }
+
+  i { font-size: 1rem; line-height: 1; }
+}
+
+.site-navbar__nav-label {
+  line-height: 1;
+}
+
+
+// =============================================================================
+//  8) ACTIONS AREA  (.site-navbar__actions)
+// =============================================================================
+
+.site-navbar__actions {
+  display:     flex;
+  align-items: center;
+  gap:         0.25rem;
+  padding:     0 0.5rem;
+  flex-shrink: 0;
+
+  // Reset Bulma .navbar-item padding inside actions
+  > .navbar-item {
+    padding:    0 0.125rem;
+    min-height: unset;
+    display:    flex;
+    align-items: center;
+  }
+
+  .site-navbar__auth-buttons {
+    display:     flex;
+    align-items: center;
+    gap:         0.375rem;
+  }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    flex-direction: column;
+    align-items:    stretch;
+    padding:        0.625rem 0.625rem 0.875rem;
+    border-top:     1px solid var(--theme-border-soft);
+    gap:            0.375rem;
+
+    > .navbar-item { padding: 0; }
+
+    .site-navbar__auth-buttons {
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    .site-navbar__action-btn { width: 100%; justify-content: center; }
+  }
+}
+
+
+// =============================================================================
+//  9) ACTION BUTTONS  (.site-navbar__action-btn)
+//  Unified button system — no Bulma .button coupling.
+//  Default: neutral surface
+//  --primary modifier: brand solid
+// =============================================================================
+
+.site-navbar__action-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             0.3125rem;
+  height:          $_action-btn-h;
+  padding:         0 0.6875rem;
+  border:          1px solid var(--theme-border-strong);
+  border-radius:   v.$radius-sm;
+  background:      var(--theme-surface-card);
+  color:           var(--theme-text-strong);
+  font-family:     inherit;
+  font-size:       v.$font-size-xs;
+  font-weight:     600;
+  line-height:     1;
+  letter-spacing:  0.01em;
+  white-space:     nowrap;
+  text-decoration: none;
+  cursor:          pointer;
+  @include mx.motion;
+
+  i { font-size: 0.9375rem; line-height: 1; flex-shrink: 0; }
+
+  &:hover {
+    background:   var(--theme-surface-subtle);
+    border-color: var(--theme-border-strong);
+    color:        var(--theme-brand);
+    transform:    translateY(-1px);
+    box-shadow:   var(--theme-shadow-sm);
+    text-decoration: none;
+  }
+
+  &:active  { transform: translateY(0); box-shadow: none; }
+
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+
+  // ── Primary / Subscribe variant ─────────────────────────────────────────
+  &--primary {
+    background:   var(--theme-brand);
+    border-color: var(--theme-brand);
+    color:        #ffffff;
+
+    &:hover {
+      background:   var(--theme-brand-hover);
+      border-color: var(--theme-brand-hover);
+      color:        #ffffff;
+    }
+    &:active { filter: brightness(0.9); }
+  }
+}
+
+// GitHub star: subtle icon color
+.site-navbar__github-btn {
+  i { color: var(--theme-text-weak); }
+  &:hover i { color: var(--theme-brand); }
+}
+
+
+// =============================================================================
+//  10) ICON-ONLY BUTTON  (.site-navbar__icon-btn)
+//  Square button with a single Phosphor icon — no label text.
+//  Used for: theme toggle, search (mobile + desktop standalone)
+// =============================================================================
+
+.site-navbar__icon-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           $_icon-btn-size;
+  height:          $_icon-btn-size;
+  padding:         0;
+  border:          1px solid transparent;
+  border-radius:   v.$radius-sm;
+  background:      transparent;
+  color:           var(--theme-text-weak);
+  font-family:     inherit;
+  cursor:          pointer;
+  @include mx.motion;
+
+  i { font-size: 1.0625rem; line-height: 1; }
+
+  &:hover {
+    background:   var(--theme-surface-subtle);
+    border-color: var(--theme-border);
+    color:        var(--theme-brand);
+  }
+
+  &:active { background: var(--slds-brand-tint-1); }
+
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+
+// =============================================================================
+//  11) DROPDOWN (optional — when manual dropdown markup is uncommented in HBS)
+//  .navbar-item.has-dropdown.is-hoverable
+//   └─ .navbar-link
+//   └─ .navbar-dropdown
+//         └─ .navbar-item
+// =============================================================================
+
+.site-navbar .navbar-item.has-dropdown {
+  position: relative;
+}
+
+.site-navbar .navbar-link {
+  display:     flex;
+  align-items: center;
+  gap:         0.375rem;
+  align-self:  center;
+  height:      $_nav-item-h;
+  padding:     0 2rem 0 0.625rem;
+  border-radius: v.$radius-sm;
+  color:         var(--theme-text);
+  font-size:     v.$font-size-sm;
+  font-weight:   600;
+  @include mx.motion;
+
+  // CSS chevron — separate from Bulma's image-based one
+  &::after {
+    content:      "";
+    position:     absolute;
+    right:        0.625rem;
+    top:          50%;
+    width:        0.375em;
+    height:       0.375em;
+    border:       1.5px solid var(--theme-text-weak);
+    border-top:   none;
+    border-left:  none;
+    transform:    translateY(-65%) rotate(45deg);
+    transition:   border-color 140ms ease, transform 220ms ease;
+  }
+
+  &:hover {
+    background: var(--slds-brand-tint-1);
+    color:      var(--theme-brand);
+    &::after { border-color: var(--theme-brand); }
+  }
+}
+
+.site-navbar .navbar-item.has-dropdown:hover > .navbar-link::after,
+.site-navbar .navbar-item.has-dropdown.is-active > .navbar-link::after {
+  transform: translateY(-35%) rotate(225deg);
+  border-color: var(--theme-brand);
+}
+
+.site-navbar .navbar-dropdown {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-top:    2px solid var(--theme-brand);
+  border-radius: 0 0 v.$radius-lg v.$radius-lg;
+  box-shadow:    var(--theme-shadow-popover);
+  padding:       0.375rem 0.375rem;
+  min-width:     13rem;
+  @include mx.scrollbar;
+
+  .navbar-item {
+    display:       flex;
+    align-items:   center;
+    gap:           0.5rem;
+    height:        2.125rem;
+    padding:       0 0.625rem;
+    border-radius: v.$radius-sm;
+    font-size:     v.$font-size-sm;
+    font-weight:   500;
+    color:         var(--theme-text);
+    @include mx.motion;
+
+    &:hover {
+      background: var(--slds-brand-tint-1);
+      color:      var(--theme-brand);
+    }
+
+    &.is-active {
+      background:  var(--slds-brand-tint-2);
+      color:       var(--theme-brand);
+      font-weight: 700;
+    }
+
+    i { font-size: 1rem; color: var(--theme-text-weak); flex-shrink: 0; }
+    &:hover i { color: var(--theme-brand); }
+  }
+
+  .navbar-divider {
+    background: var(--theme-border-soft);
+    height:     1px;
+    margin:     0.25rem 0;
+    border:     none;
+  }
+}

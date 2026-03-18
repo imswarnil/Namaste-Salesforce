@@ -1,0 +1,517 @@
+// =============================================================================
+// abstracts/_mixins.scss
+//
+// Two categories:
+//   A) Component primitives (motion, surface, buttons, etc.)
+//   B) Theme emitters — emit ALL CSS custom properties for light + dark
+//
+// Import via: @use "../abstracts/mixins" as mx;
+// =============================================================================
+
+@use "variables" as v;
+
+// =============================================================================
+// A) COMPONENT PRIMITIVES
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Motion
+// ---------------------------------------------------------------------------
+@mixin motion-fast {
+  transition:
+    background-color 140ms ease,
+    border-color     140ms ease,
+    color            140ms ease,
+    box-shadow       140ms ease,
+    transform        120ms ease;
+}
+
+@mixin motion-medium {
+  transition:
+    background-color 220ms ease,
+    border-color     220ms ease,
+    color            220ms ease,
+    box-shadow       220ms ease,
+    transform        200ms ease;
+}
+
+// ---------------------------------------------------------------------------
+// Focus ring
+// ---------------------------------------------------------------------------
+@mixin focus-ring($spread: 0.2rem) {
+  outline: none;
+  box-shadow:
+    0 0 0 1px var(--theme-brand),
+    0 0 0 $spread var(--theme-focus);
+}
+
+// ---------------------------------------------------------------------------
+// Surfaces
+// ---------------------------------------------------------------------------
+@mixin surface($radius: var(--theme-radius), $shadow: var(--theme-shadow)) {
+  background-color: var(--theme-surface-card);
+  color:            var(--theme-text);
+  border:           1px solid var(--theme-border);
+  border-radius:    $radius;
+  box-shadow:       $shadow;
+}
+
+@mixin popover {
+  background-color: var(--theme-surface-card);
+  color:            var(--theme-text);
+  border:           1px solid var(--theme-border);
+  border-radius:    calc(var(--theme-radius) + 0.125rem);
+  box-shadow:       var(--theme-shadow-popover);
+}
+
+@mixin header-strip {
+  background:    var(--theme-surface-subtle);
+  color:         var(--theme-text-strong);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+// ---------------------------------------------------------------------------
+// Form control
+// ---------------------------------------------------------------------------
+@mixin control {
+  min-height: 2.5rem;
+  padding-inline: 0.75rem;
+  border:           1px solid var(--theme-border);
+  border-radius:    var(--theme-radius);
+  background-color: var(--theme-surface-card);
+  color:            var(--theme-text-strong);
+  box-shadow:       inset 0 1px 1px rgba(0, 0, 0, 0.03);
+  @include motion-fast;
+
+  &::placeholder { color: var(--theme-text-weak); }
+
+  &:hover        { border-color: var(--theme-border-strong); }
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    border-color: var(--theme-brand);
+    @include focus-ring;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Buttons
+// ---------------------------------------------------------------------------
+@mixin button-base {
+  min-height:     2rem;
+  padding-inline: 1rem;
+  border-width:   1px;
+  border-style:   solid;
+  border-radius:  var(--theme-radius);
+  font-weight:    600;
+  line-height:    1.2;
+  letter-spacing: 0.01em;
+  box-shadow:     none;
+  @include motion-fast;
+
+  &:hover  { transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+
+  &:focus,
+  &:focus-visible { @include focus-ring; }
+
+  &[disabled],
+  &.is-disabled {
+    opacity:   0.55;
+    cursor:    not-allowed;
+    box-shadow: none;
+    transform:  none;
+  }
+}
+
+@mixin button-neutral {
+  @include button-base;
+  background-color: var(--theme-surface-card);
+  border-color:     var(--theme-border-strong);
+  color:            var(--theme-text-strong);
+
+  &:hover {
+    background-color: var(--theme-surface-subtle);
+    border-color:     var(--theme-brand);
+    color:            var(--theme-text-strong);
+  }
+  &:active {
+    background-color: var(--theme-surface-muted);
+    border-color:     var(--theme-brand);
+    box-shadow:       inset 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@mixin button-outline($color: var(--theme-brand)) {
+  @include button-base;
+  background-color: transparent;
+  border-color:     $color;
+  color:            $color;
+
+  &:hover  { background-color: rgba(1, 118, 211, 0.06); color: $color; }
+  &:active { background-color: rgba(1, 118, 211, 0.12); }
+}
+
+@mixin button-solid(
+  $bg,
+  $hover:  null,
+  $active: null,
+  $text:   var(--theme-text-inverse)
+) {
+  @include button-base;
+  background-color: $bg;
+  border-color:     $bg;
+  color:            $text;
+
+  @if $hover != null {
+    &:hover {
+      background-color: $hover;
+      border-color:     $hover;
+      color:            $text;
+    }
+  }
+  @if $active != null {
+    &:active {
+      background-color: $active;
+      border-color:     $active;
+      color:            $text;
+      box-shadow:       inset 0 2px 4px rgba(0, 0, 0, 0.18);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Badge / chip
+// ---------------------------------------------------------------------------
+@mixin badge {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.35rem;
+  min-height:      1.5rem;
+  padding:         0.125rem 0.5rem;
+  border:          1px solid var(--theme-border);
+  border-radius:   999rem;
+  background:      var(--theme-surface-subtle);
+  color:           var(--theme-text-strong);
+  font-size:       0.75rem;
+  font-weight:     700;
+  line-height:     1;
+}
+
+// ---------------------------------------------------------------------------
+// Nav row (menu-list item, panel-block)
+// ---------------------------------------------------------------------------
+@mixin nav-row($active-soft: rgba(1, 118, 211, 0.08)) {
+  display:       flex;
+  align-items:   center;
+  min-height:    2rem;
+  border-radius: var(--theme-radius);
+  color:         var(--theme-text);
+  @include motion-fast;
+
+  &:hover,
+  &:focus {
+    background: var(--theme-surface-subtle);
+    color:      var(--theme-text-strong);
+  }
+  &.is-active {
+    background: $active-soft;
+    color:      var(--theme-text-strong);
+    box-shadow: inset 3px 0 0 0 var(--theme-brand);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tabs
+// ---------------------------------------------------------------------------
+@mixin tab-link {
+  border:        0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color:         var(--theme-text-weak);
+  font-weight:   600;
+  @include motion-fast;
+
+  &:hover,
+  &:focus {
+    background:         transparent;
+    color:              var(--theme-text-strong);
+    border-bottom-color: var(--theme-border-strong);
+  }
+}
+
+@mixin tab-link-active {
+  color:              var(--theme-brand);
+  border-bottom-color: var(--theme-brand);
+  box-shadow:          inset 0 -1px 0 var(--theme-brand);
+}
+
+// ---------------------------------------------------------------------------
+// Data table
+// ---------------------------------------------------------------------------
+@mixin data-table {
+  border-collapse: separate;
+  border-spacing:  0;
+  border:          1px solid var(--theme-border);
+  border-radius:   var(--theme-radius);
+  overflow:        hidden;
+  box-shadow:      var(--theme-shadow);
+
+  thead th {
+    background:      var(--theme-surface-subtle);
+    color:           var(--theme-text-strong);
+    font-size:       0.75rem;
+    font-weight:     700;
+    letter-spacing:  0.03em;
+    text-transform:  uppercase;
+    border-bottom:   1px solid var(--theme-border);
+  }
+  tbody tr:hover { background: rgba(1, 118, 211, 0.04); }
+}
+
+// ---------------------------------------------------------------------------
+// Scrollbar polish
+// ---------------------------------------------------------------------------
+@mixin scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-border-strong) transparent;
+
+  &::-webkit-scrollbar       { width: 0.625rem; height: 0.625rem; }
+  &::-webkit-scrollbar-thumb {
+    background:     var(--theme-border-strong);
+    border-radius:  999rem;
+    border:         2px solid transparent;
+    background-clip: content-box;
+  }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+
+// =============================================================================
+// B) THEME EMITTERS
+// Emit all CSS custom properties onto the appropriate selector.
+// Call inside :root / html[data-color-scheme] rules in main.scss.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Light theme
+// ---------------------------------------------------------------------------
+@mixin theme-light {
+  color-scheme: light;
+
+  // — Brand
+  --theme-brand:        #{v.$brand-primary};
+  --theme-brand-hover:  #{v.$brand-primary-hover};
+  --theme-brand-active: #{v.$brand-primary-active};
+
+  // — Surfaces
+  --theme-surface-body:    #{v.$surface-body};
+  --theme-surface-card:    #{v.$surface-card};
+  --theme-surface-subtle:  #{v.$surface-subtle};
+  --theme-surface-muted:   #{v.$surface-muted};
+  --theme-surface-row-alt: #{v.$surface-row-alt};
+
+  // — Borders
+  --theme-border:        #{v.$border-color};
+  --theme-border-strong: #{v.$border-color-strong};
+  --theme-border-soft:   #{v.$border-color-soft};
+
+  // — Text
+  --theme-text:         #{v.$text-default};
+  --theme-text-strong:  #{v.$text-strong};
+  --theme-text-weak:    #{v.$text-weak};
+  --theme-text-inverse: #{v.$text-inverse};
+
+  // — Interaction
+  --theme-focus: #{v.$focus-ring};
+
+  // — Shape
+  --theme-radius:    #{v.$radius-base};
+  --theme-radius-lg: #{v.$radius-large};
+
+  // — Shadows
+  --theme-shadow:         #{v.$shadow-card};
+  --theme-shadow-popover: #{v.$shadow-popover};
+  --theme-shadow-active:  #{v.$shadow-active};
+
+  // — Typography
+  --theme-font-body:    #{v.$font-stack};
+  --theme-font-heading: #{v.$font-stack};
+
+  // — Ghost layout vars
+  --gh-content-width: #{v.$gh-content-width};
+  --gh-wide-width:    #{v.$gh-wide-width};
+  --gh-full-gutter:   #{v.$gh-full-gutter};
+  --gh-card-gap:      #{v.$gh-card-gap};
+
+  // — SLDS extras
+  --slds-brand-soft:    #{v.$slds-brand-soft};
+  --slds-brand-softer:  #{v.$slds-brand-softer};
+  --slds-header-height: #{v.$navbar-height};
+
+  // — Bulma runtime overrides (light)
+  --bulma-body-background-color:             #{v.$surface-body};
+  --bulma-body-color:                        #{v.$text-default};
+  --bulma-scheme-main:                       #{v.$surface-card};
+  --bulma-scheme-main-bis:                   #{v.$surface-subtle};
+  --bulma-scheme-main-ter:                   #{v.$surface-muted};
+  --bulma-scheme-invert:                     #{v.$text-inverse};
+  --bulma-background:                        #{v.$surface-subtle};
+  --bulma-border:                            #{v.$border-color};
+  --bulma-border-weak:                       #{v.$border-color-soft};
+  --bulma-text:                              #{v.$text-default};
+  --bulma-text-strong:                       #{v.$text-strong};
+  --bulma-text-weak:                         #{v.$text-weak};
+  --bulma-link:                              #{v.$link-color};
+  --bulma-link-hover:                        #{v.$brand-primary-hover};
+  --bulma-primary:                           #{v.$brand-primary};
+  --bulma-info:                              #{v.$info-color};
+  --bulma-success:                           #{v.$success-color};
+  --bulma-warning:                           #{v.$warning-color};
+  --bulma-danger:                            #{v.$danger-color};
+  --bulma-navbar-background-color:           #{v.$surface-card};
+  --bulma-navbar-item-color:                 #{v.$text-default};
+  --bulma-navbar-item-hover-background-color: #{v.$surface-subtle};
+  --bulma-navbar-item-hover-color:           #{v.$text-strong};
+  --bulma-navbar-dropdown-background-color:  #{v.$surface-card};
+  --bulma-navbar-dropdown-border-top:        1px solid #{v.$border-color};
+  --bulma-card-background-color:             #{v.$surface-card};
+  --bulma-card-color:                        #{v.$text-default};
+  --bulma-card-header-background-color:      #{v.$surface-subtle};
+  --bulma-card-header-color:                 #{v.$text-strong};
+  --bulma-box-background-color:              #{v.$surface-card};
+  --bulma-box-color:                         #{v.$text-default};
+  --bulma-input-background-color:            #{v.$surface-card};
+  --bulma-input-color:                       #{v.$text-strong};
+  --bulma-input-border-color:                #{v.$border-color};
+  --bulma-panel-background-color:            #{v.$surface-card};
+  --bulma-panel-heading-background-color:    #{v.$surface-subtle};
+  --bulma-panel-heading-color:               #{v.$text-strong};
+  --bulma-menu-item-color:                   #{v.$text-default};
+  --bulma-menu-item-hover-color:             #{v.$text-strong};
+  --bulma-menu-item-hover-background-color:  #{v.$surface-subtle};
+  --bulma-table-background-color:            #{v.$surface-card};
+  --bulma-table-color:                       #{v.$text-default};
+  --bulma-table-cell-border-color:           #{v.$border-color-soft};
+  --bulma-table-head-cell-color:             #{v.$text-strong};
+  --bulma-table-head-cell-border-width:      0 0 1px;
+  --bulma-modal-card-head-background-color:  #{v.$surface-subtle};
+  --bulma-modal-card-body-background-color:  #{v.$surface-card};
+  --bulma-modal-card-foot-background-color:  #{v.$surface-subtle};
+  --bulma-footer-background-color:           #{v.$surface-subtle};
+  --bulma-footer-color:                      #{v.$text-default};
+  --bulma-radius:                            #{v.$radius-base};
+  --bulma-radius-large:                      #{v.$radius-large};
+}
+
+// ---------------------------------------------------------------------------
+// Dark theme
+// ---------------------------------------------------------------------------
+@mixin theme-dark {
+  color-scheme: dark;
+
+  // — Brand (same across themes)
+  --theme-brand:        #{v.$brand-primary};
+  --theme-brand-hover:  #{v.$brand-primary-hover};
+  --theme-brand-active: #{v.$brand-primary-active};
+
+  // — Surfaces
+  --theme-surface-body:    #{v.$dark-surface-body};
+  --theme-surface-card:    #{v.$dark-surface-card};
+  --theme-surface-subtle:  #{v.$dark-surface-subtle};
+  --theme-surface-muted:   #{v.$dark-surface-muted};
+  --theme-surface-row-alt: #{v.$dark-surface-row-alt};
+
+  // — Borders
+  --theme-border:        #{v.$dark-border-color};
+  --theme-border-strong: #{v.$dark-border-color-strong};
+  --theme-border-soft:   #{v.$dark-border-color-soft};
+
+  // — Text
+  --theme-text:         #{v.$dark-text-default};
+  --theme-text-strong:  #{v.$dark-text-strong};
+  --theme-text-weak:    #{v.$dark-text-weak};
+  --theme-text-inverse: #{v.$dark-text-inverse};
+
+  // — Interaction
+  --theme-focus: #{v.$dark-focus-ring};
+
+  // — Shape (shared)
+  --theme-radius:    #{v.$radius-base};
+  --theme-radius-lg: #{v.$radius-large};
+
+  // — Shadows
+  --theme-shadow:         #{v.$dark-shadow-card};
+  --theme-shadow-popover: #{v.$dark-shadow-popover};
+  --theme-shadow-active:  #{v.$dark-shadow-active};
+
+  // — Typography
+  --theme-font-body:    #{v.$font-stack};
+  --theme-font-heading: #{v.$font-stack};
+
+  // — Ghost layout vars (shared)
+  --gh-content-width: #{v.$gh-content-width};
+  --gh-wide-width:    #{v.$gh-wide-width};
+  --gh-full-gutter:   #{v.$gh-full-gutter};
+  --gh-card-gap:      #{v.$gh-card-gap};
+
+  // — SLDS extras (dark)
+  --slds-brand-soft:    rgba(1, 118, 211, 0.18);
+  --slds-brand-softer:  rgba(1, 118, 211, 0.10);
+  --slds-header-height: #{v.$navbar-height};
+
+  // — Bulma runtime overrides (dark)
+  --bulma-body-background-color:             #{v.$dark-surface-body};
+  --bulma-body-color:                        #{v.$dark-text-default};
+  --bulma-scheme-main:                       #{v.$dark-surface-card};
+  --bulma-scheme-main-bis:                   #{v.$dark-surface-subtle};
+  --bulma-scheme-main-ter:                   #{v.$dark-surface-muted};
+  --bulma-scheme-invert:                     #{v.$dark-text-inverse};
+  --bulma-background:                        #{v.$dark-surface-subtle};
+  --bulma-border:                            #{v.$dark-border-color};
+  --bulma-border-weak:                       #{v.$dark-border-color-soft};
+  --bulma-text:                              #{v.$dark-text-default};
+  --bulma-text-strong:                       #{v.$dark-text-strong};
+  --bulma-text-weak:                         #{v.$dark-text-weak};
+  --bulma-link:                              #{v.$brand-primary};
+  --bulma-link-hover:                        #{v.$white};
+  --bulma-primary:                           #{v.$brand-primary};
+  --bulma-info:                              #{v.$info-color};
+  --bulma-success:                           #{v.$success-color};
+  --bulma-warning:                           #{v.$warning-color};
+  --bulma-danger:                            #{v.$danger-color};
+  --bulma-navbar-background-color:           #{v.$dark-surface-card};
+  --bulma-navbar-item-color:                 #{v.$dark-text-default};
+  --bulma-navbar-item-hover-background-color: #{v.$dark-surface-subtle};
+  --bulma-navbar-item-hover-color:           #{v.$dark-text-strong};
+  --bulma-navbar-dropdown-background-color:  #{v.$dark-surface-card};
+  --bulma-navbar-dropdown-border-top:        1px solid #{v.$dark-border-color};
+  --bulma-card-background-color:             #{v.$dark-surface-card};
+  --bulma-card-color:                        #{v.$dark-text-default};
+  --bulma-card-header-background-color:      #{v.$dark-surface-subtle};
+  --bulma-card-header-color:                 #{v.$dark-text-strong};
+  --bulma-box-background-color:              #{v.$dark-surface-card};
+  --bulma-box-color:                         #{v.$dark-text-default};
+  --bulma-input-background-color:            #{v.$dark-surface-card};
+  --bulma-input-color:                       #{v.$dark-text-strong};
+  --bulma-input-border-color:                #{v.$dark-border-color};
+  --bulma-panel-background-color:            #{v.$dark-surface-card};
+  --bulma-panel-heading-background-color:    #{v.$dark-surface-subtle};
+  --bulma-panel-heading-color:               #{v.$dark-text-strong};
+  --bulma-menu-item-color:                   #{v.$dark-text-default};
+  --bulma-menu-item-hover-color:             #{v.$dark-text-strong};
+  --bulma-menu-item-hover-background-color:  #{v.$dark-surface-subtle};
+  --bulma-table-background-color:            #{v.$dark-surface-card};
+  --bulma-table-color:                       #{v.$dark-text-default};
+  --bulma-table-cell-border-color:           #{v.$dark-border-color-soft};
+  --bulma-table-head-cell-color:             #{v.$dark-text-strong};
+  --bulma-table-head-cell-border-width:      0 0 1px;
+  --bulma-modal-card-head-background-color:  #{v.$dark-surface-subtle};
+  --bulma-modal-card-body-background-color:  #{v.$dark-surface-card};
+  --bulma-modal-card-foot-background-color:  #{v.$dark-surface-subtle};
+  --bulma-footer-background-color:           #{v.$dark-surface-subtle};
+  --bulma-footer-color:                      #{v.$dark-text-default};
+  --bulma-radius:                            #{v.$radius-base};
+  --bulma-radius-large:                      #{v.$radius-large};
+}

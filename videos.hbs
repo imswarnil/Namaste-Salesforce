@@ -1,0 +1,73 @@
+{{!< default}}
+
+<section class="section">
+  <div class="container is-max-widescreen">
+
+    <!-- HEADER -->
+    <div class="mb-5">
+      <h1 class="title is-3">Videos</h1>
+      <p class="subtitle is-6 has-text-grey">
+        Learn faster with visual content.
+      </p>
+    </div>
+
+    <!-- VIDEO LIST -->
+    {{#get "posts" filter="tag:videos" include="authors" limit="all"}}
+
+      {{#foreach posts}}
+
+      <div class="box mb-4">
+
+        <div class="columns is-variable is-4 is-vcentered">
+
+          <!-- THUMBNAIL -->
+          <div class="column is-12-mobile is-5-tablet is-4-desktop">
+            <a href="{{url}}">
+              <figure class="image is-16by9">
+                {{#if feature_image}}
+                  <img src="{{feature_image}}" alt="{{title}}">
+                {{else}}
+                  <img src="https://images.unsplash.com/photo-1492724441997-5dc865305da7">
+                {{/if}}
+              </figure>
+            </a>
+          </div>
+
+          <!-- CONTENT -->
+          <div class="column">
+
+            <!-- TITLE -->
+            <h2 class="title is-5 mb-2">
+              <a href="{{url}}" class="has-text-dark">
+                {{title}}
+              </a>
+            </h2>
+
+            <!-- META -->
+            <p class="is-size-7 has-text-grey mb-2">
+              {{reading_time}} • {{date format="MMM D, YYYY"}}
+            </p>
+
+            <!-- DESCRIPTION -->
+            <p class="content is-size-7 has-text-grey">
+              {{excerpt words="25"}}
+            </p>
+
+            <!-- TAGS -->
+            <div class="tags mt-2">
+              <span class="tag is-light">Video</span>
+              <span class="tag is-light">CRM Analytics</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {{/foreach}}
+
+    {{/get}}
+
+  </div>
+</section>

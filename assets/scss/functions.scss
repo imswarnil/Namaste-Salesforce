@@ -1,0 +1,46 @@
+// =============================================================================
+// _functions.scss
+//
+// Pure SCSS helper functions — no CSS output.
+// @use "functions" as fn;
+// =============================================================================
+
+@use "sass:list";
+@use "sass:map";
+@use "variables" as v;
+
+// ---------------------------------------------------------------------------
+// theme-color($name, $index)
+// Returns the bg ($index 1) or text ($index 2) from the semantic palette.
+// Usage: fn.theme-color("primary")    → #0176d3
+//        fn.theme-color("primary", 2) → #ffffff
+// ---------------------------------------------------------------------------
+$_theme-colors: (
+  "primary": (v.$brand-primary, v.$text-inverse),
+  "link":    (v.$link-color,    v.$text-inverse),
+  "info":    (v.$info-color,    v.$text-inverse),
+  "success": (v.$success-color, v.$text-inverse),
+  "warning": (v.$warning-color, v.$text-inverse),
+  "danger":  (v.$danger-color,  v.$text-inverse),
+);
+
+@function theme-color($name, $index: 1) {
+  $pair: map.get($_theme-colors, $name);
+  @return list.nth($pair, $index);
+}
+
+// ---------------------------------------------------------------------------
+// rem($px) — px to rem assuming 16px root
+// Usage: fn.rem(24) → 1.5rem
+// ---------------------------------------------------------------------------
+@function rem($px) {
+  @return #{$px / 16}rem;
+}
+
+// ---------------------------------------------------------------------------
+// alpha($color, $a) — rgba shorthand
+// Usage: fn.alpha(v.$brand-primary, 0.1)
+// ---------------------------------------------------------------------------
+@function alpha($color, $a) {
+  @return rgba($color, $a);
+}
