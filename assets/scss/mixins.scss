@@ -184,10 +184,23 @@
 @mixin theme-light {
   color-scheme: light;
 
-  // Brand
-  --theme-brand:         #{v.$brand-primary};
-  --theme-brand-hover:   #{v.$brand-primary-hover};
-  --theme-brand-active:  #{v.$brand-primary-active};
+  // ── Ghost CMS accent colour override ──────────────────────────────────────
+  // Ghost exposes the accent colour set in Admin → Branding as the CSS var
+  // --ghost-accent-color. When the admin picks a colour, we promote it to our
+  // entire --theme-brand system so every component updates automatically.
+  // The #{v.$brand-primary} values below are the compile-time fallbacks used
+  // when no accent colour has been set in Ghost Admin.
+  --theme-brand:         var(--ghost-accent-color, #{v.$brand-primary});
+  --theme-brand-hover:   var(--ghost-accent-color, #{v.$brand-primary-hover});
+  --theme-brand-active:  var(--ghost-accent-color, #{v.$brand-primary-active});
+
+  // ── Ghost font overrides ───────────────────────────────────────────────────
+  // Ghost exposes chosen fonts from Admin → Branding as:
+  //   --gh-font-heading  (heading font)
+  //   --gh-font-body     (body font)
+  // When set, they override our $font-body stack. Falls back to $font-body.
+  --theme-font-body:     var(--gh-font-body,    #{v.$font-body});
+  --theme-font-heading:  var(--gh-font-heading, #{v.$font-body});
 
   // Surfaces
   --theme-surface-body:     #{v.$surface-body};
@@ -222,18 +235,18 @@
   --theme-shadow-popover: #{v.$shadow-popover};
   --theme-shadow-raised:  #{v.$shadow-raised};
 
-  // Typography
-  --theme-font:          #{v.$font-body};
+  // Typography — use Ghost font vars with $font-body fallback
+  --theme-font:          var(--gh-font-body, #{v.$font-body});
 
   // Ghost layout
   --gh-content-width:    #{v.$content-width};
   --gh-wide-width:       #{v.$wide-width};
   --gh-full-gutter:      #{v.$full-gutter};
 
-  // SLDS extras
-  --slds-brand-tint-1:   rgba(1, 118, 211, 0.06);
-  --slds-brand-tint-2:   rgba(1, 118, 211, 0.12);
-  --slds-brand-tint-3:   rgba(1, 118, 211, 0.20);
+  // SLDS tints — derived from the theme brand (which may be the Ghost accent colour)
+  --slds-brand-tint-1:   color-mix(in srgb, var(--theme-brand) 8%,  transparent);
+  --slds-brand-tint-2:   color-mix(in srgb, var(--theme-brand) 15%, transparent);
+  --slds-brand-tint-3:   color-mix(in srgb, var(--theme-brand) 24%, transparent);
   --slds-header-height:  #{v.$navbar-height};
 
   // ── Bulma runtime variable overrides ──────────────────────────────────────
@@ -465,10 +478,10 @@
 @mixin theme-dark {
   color-scheme: dark;
 
-  // Brand
-  --theme-brand:         #{v.$brand-primary-dark};
-  --theme-brand-hover:   #{v.$brand-primary};
-  --theme-brand-active:  #{v.$brand-primary-active};
+  // Brand — Ghost accent colour works in dark mode too
+  --theme-brand:         var(--ghost-accent-color, #{v.$brand-primary-dark});
+  --theme-brand-hover:   var(--ghost-accent-color, #{v.$brand-primary});
+  --theme-brand-active:  var(--ghost-accent-color, #{v.$brand-primary-active});
 
   // Surfaces
   --theme-surface-body:     #{v.$dark-surface-body};
@@ -503,18 +516,20 @@
   --theme-shadow-popover: #{v.$dark-shadow-popover};
   --theme-shadow-raised:  #{v.$dark-shadow-raised};
 
-  // Typography (shared)
-  --theme-font:          #{v.$font-body};
+  // Typography — Ghost font vars with fallback
+  --theme-font:          var(--gh-font-body,    #{v.$font-body});
+  --theme-font-body:     var(--gh-font-body,    #{v.$font-body});
+  --theme-font-heading:  var(--gh-font-heading, #{v.$font-body});
 
   // Ghost layout (shared)
   --gh-content-width:    #{v.$content-width};
   --gh-wide-width:       #{v.$wide-width};
   --gh-full-gutter:      #{v.$full-gutter};
 
-  // SLDS (darker tints)
-  --slds-brand-tint-1:   rgba(27, 150, 255, 0.10);
-  --slds-brand-tint-2:   rgba(27, 150, 255, 0.18);
-  --slds-brand-tint-3:   rgba(27, 150, 255, 0.28);
+  // SLDS tints — derived from the brand (accent colour applies here too)
+  --slds-brand-tint-1:   color-mix(in srgb, var(--theme-brand) 12%, transparent);
+  --slds-brand-tint-2:   color-mix(in srgb, var(--theme-brand) 20%, transparent);
+  --slds-brand-tint-3:   color-mix(in srgb, var(--theme-brand) 30%, transparent);
   --slds-header-height:  #{v.$navbar-height};
 
   // ── Bulma runtime overrides (dark) ────────────────────────────────────────

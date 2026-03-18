@@ -1,45 +1,33 @@
 // =============================================================================
-//  _header.scss
-//  Namaste Salesforce · Ghost Theme
+//  _header.scss  ·  Namaste Salesforce
 //
-//  3-bar burger (JS-toggled, CSS-animated).
-//  Mobile menu visibility controlled by .is-open class (added by JS),
-//  NOT by checkbox — more reliable, better a11y.
+//  Three headers with their own BEM prefixes:
+//    default-header__*  →  standard navbar  (all pages except lesson/blog)
+//    course-header__*   →  #lesson posts    (lesson bar + panel)
+//    blog-header__*     →  #blog posts      (adds topics dropdown + progress)
 //
-//  Sections:
-//    1.  Header shell + sticky variants
-//    2.  Context bars (course / lesson)
-//    3.  Navbar shell
-//    4.  Brand
-//    5.  Mobile tools
-//    6.  Burger (3-bar → ✕)
-//    7.  Mobile menu panel
-//    8.  Nav links + dropdown system
-//    9.  Actions area
-//   10.  GitHub button
-//   11.  Icon-only buttons
-//   12.  Join / auth buttons
-//   13.  Account dropdown
-//   14.  Desktop dropdown (hover)
+//  CLASS CONTRACT — navigation.hbs outputs THESE exact classes,
+//  so any rename here must also be renamed in navigation.hbs:
+//    .default-header__nav-item   top-level and child nav links
+//    .default-header__nav-icon   icon span
+//    .default-header__nav-label  text span
+//    [data-child="true"]         marks child items for JS dropdown builder
 // =============================================================================
 
 @use "variables" as v;
 @use "mixins"    as mx;
 
 // ─── Local tokens ─────────────────────────────────────────────────────────────
-$_item-h:      1.875rem !default;   // desktop nav pill height
-$_item-h-mob:  2.875rem !default;   // mobile nav row height
-$_action-h:    1.875rem !default;   // action button height
-$_icon-size:   1.875rem !default;   // square icon button
-$_burger-size: 2.125rem !default;   // burger box
-$_bar-w:       18px     !default;   // bar width
-$_bar-h:       2px      !default;   // bar thickness
-$_gap:         4.5px    !default;   // gap between 3 bars
-$_drop-r:      v.$radius-md !default;
+$_nav-h:   var(--slds-header-height);
+$_pill-h:  1.875rem;
+$_mob-h:   3rem;
+$_btn-h:   1.875rem;
+$_icon-sz: 1.875rem;
+$_burger:  2.125rem;
 
 
 // =============================================================================
-//  1) HEADER SHELL
+//  SHARED SHELL
 // =============================================================================
 
 .site-header {
@@ -47,194 +35,55 @@ $_drop-r:      v.$radius-md !default;
   z-index:  200;
   width:    100%;
 
-  // @custom.sticky_header = true → .is-sticky class
-  &.is-sticky { position: sticky; top: 0; }
-
-  // When mobile menu is open — prevent body scroll bleed on iOS
+  &.is-sticky    { position: sticky; top: 0; }
   &.menu-is-open { position: sticky; top: 0; }
 }
 
 
 // =============================================================================
-//  2) CONTEXT BARS
+//  1. DEFAULT HEADER  (all standard pages)
 // =============================================================================
 
-.site-header__context-bar {
-  display:       flex;
-  align-items:   center;
-  background:    var(--theme-surface-subtle);
-  border-bottom: 1px solid var(--theme-border);
-  min-height:    2.5rem;
-  padding:       0;
+// ── 1a Outer bar ─────────────────────────────────────────────────────────────
 
-  &--course {
-    background:   var(--theme-surface-card);
-    border-bottom: 2px solid var(--theme-brand);
-  }
-
-  &[hidden] { display: none; }
-}
-
-.site-header__context-inner {
-  display:         flex;
-  align-items:     center;
-  justify-content: space-between;
-  gap:             1rem;
-  width:           100%;
-  padding:         0.375rem 0;
-}
-
-.site-header__context-breadcrumb {
-  display:     flex;
-  align-items: center;
-  gap:         0.5rem;
-  min-width:   0;
-  flex:        1;
-}
-
-.site-header__context-back {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.3rem;
-  color:           var(--theme-brand);
-  font-size:       v.$font-size-xs;
-  font-weight:     700;
-  text-decoration: none;
-  white-space:     nowrap;
-  @include mx.motion;
-
-  i { font-size: 0.875rem; }
-  &:hover { color: var(--theme-brand-hover); }
-}
-
-.site-header__context-sep {
-  color:     var(--theme-border-strong);
-  font-size: v.$font-size-xs;
-}
-
-.site-header__context-title {
-  font-size:    v.$font-size-xs;
-  font-weight:  600;
-  color:        var(--theme-text-strong);
-  white-space:  nowrap;
-  overflow:     hidden;
-  text-overflow: ellipsis;
-}
-
-// Reading progress (lesson pages)
-.site-header__context-progress {
-  display:     flex;
-  align-items: center;
-  gap:         0.5rem;
-  flex-shrink: 0;
-
-  &[hidden] { display: none; }
-}
-
-.site-header__context-progress-track {
-  width:         120px;
-  height:        4px;
-  background:    var(--theme-border-soft);
-  border-radius: v.$radius-pill;
-  overflow:      hidden;
-
-  @media screen and (max-width: #{v.$bp-mobile - 1px}) { width: 70px; }
-}
-
-.site-header__context-progress-fill {
-  height:        100%;
-  background:    var(--theme-brand);
-  border-radius: v.$radius-pill;
-  transition:    width 200ms linear;
-}
-
-.site-header__context-progress-label {
-  font-size:   0.625rem;
-  font-weight: 700;
-  color:       var(--theme-text-weak);
-  min-width:   2rem;
-  text-align:  right;
-}
-
-.site-header__context-actions {
-  display:     flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.site-header__context-btn {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           1.625rem;
-  height:          1.625rem;
-  padding:         0;
-  background:      transparent;
-  border:          none;
-  border-radius:   v.$radius-sm;
-  color:           var(--theme-text-weak);
-  cursor:          pointer;
-  @include mx.motion;
-
-  i { font-size: 0.875rem; }
-  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
-}
-
-
-// =============================================================================
-//  3) NAVBAR SHELL
-// =============================================================================
-
-.navbar.site-navbar {
-  min-height:    var(--slds-header-height);
+.default-header__navbar {
+  min-height:    $_nav-h;
   background:    var(--theme-surface-card);
   border-bottom: 1px solid var(--theme-border);
-  box-shadow:    0 1px 0 var(--theme-border-soft), 0 2px 8px rgba(0, 0, 0, 0.04);
-
-  // Ghost custom "Blur" header style
-  .header-style-Blur & {
-    background:      rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(12px) saturate(1.4);
-
-    html[data-color-scheme="dark"] & {
-      background: rgba(23, 27, 34, 0.82);
-    }
-  }
+  box-shadow:    0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.site-navbar__wrap {
+.default-header__wrap {
   display:     flex;
   align-items: stretch;
-  min-height:  var(--slds-header-height);
+  min-height:  $_nav-h;
   flex-wrap:   nowrap;
   position:    relative;
 }
 
 
-// =============================================================================
-//  4) BRAND
-// =============================================================================
+// ── 1b Brand ─────────────────────────────────────────────────────────────────
 
-.site-navbar__brand-wrap {
-  // Bulma .navbar-brand — already flex, align-items center
+.default-header__brand-group {
+  display:     flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
-.site-navbar__brand {
+.default-header__brand {
   display:         flex;
   align-items:     center;
   gap:             0.5rem;
-  padding:         0 0.75rem 0 0;
+  padding:         0 0.375rem 0 0;
   color:           var(--theme-text-strong);
   text-decoration: none;
-  flex-shrink:     0;
   @include mx.motion;
 
   &:hover, &:focus { color: var(--theme-brand); background: transparent; }
   &:focus-visible   { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
-.site-navbar__logo {
+.default-header__logo {
   display:       block;
   width:         32px;
   height:        32px;
@@ -243,7 +92,8 @@ $_drop-r:      v.$radius-md !default;
   flex-shrink:   0;
 }
 
-.site-navbar__title {
+.default-header__title {
+  font-family:    var(--theme-font-heading, var(--theme-font-body));
   font-size:      v.$font-size-lg;
   font-weight:    700;
   letter-spacing: -0.025em;
@@ -251,12 +101,169 @@ $_drop-r:      v.$radius-md !default;
   color:          inherit;
 }
 
+.default-header__brand-sep {
+  display:     block;
+  width:       1px;
+  height:      1.125rem;
+  background:  var(--theme-border);
+  margin:      0 0.5rem;
+  flex-shrink: 0;
+  align-self:  center;
+}
 
-// =============================================================================
-//  5) MOBILE TOOLS
-// =============================================================================
 
-.site-navbar__mobile-tools {
+// ── 1c "Learn" / "Topics" dropdown trigger ────────────────────────────────────
+
+.default-header__learn-wrap {
+  position:   relative;
+  align-self: center;
+}
+
+.default-header__learn-btn {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           0.3rem;
+  height:        $_pill-h;
+  padding:       0 0.75rem;           // ← left+right padding
+  background:    transparent;
+  border:        none;
+  border-radius: v.$radius-sm;
+  color:         var(--theme-text-weak);
+  font-family:   inherit;
+  font-size:     v.$font-size-sm;
+  font-weight:   600;
+  cursor:        pointer;
+  white-space:   nowrap;
+  @include mx.motion;
+
+  i:first-child  { font-size: 0.9375rem; }  // prefix icon
+
+  &:hover,
+  &.is-open {
+    background: var(--slds-brand-tint-1);
+    color:      var(--theme-brand);
+  }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+.default-header__learn-caret {
+  font-size:    0.7rem;
+  margin-left:  0.125rem;
+  @include mx.transition(transform, 200ms, ease);
+  .default-header__learn-btn.is-open & { transform: rotate(180deg); }
+}
+
+// Panel — shared by Learn and Topics
+.default-header__learn-panel {
+  position:      absolute;
+  top:           calc(100% + 6px);
+  left:          0;
+  width:         26rem;
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-top:    2px solid var(--theme-brand);
+  border-radius: 0 v.$radius-lg v.$radius-lg v.$radius-lg;
+  box-shadow:    var(--theme-shadow-popover);
+  z-index:       300;
+  overflow:      hidden;
+
+  &[hidden] { display: none; }
+}
+
+.default-header__learn-heading {
+  font-size:      v.$font-size-xs;
+  font-weight:    700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color:          var(--theme-text-weak);
+  padding:        1rem 1.125rem 0.5rem;  // ← generous left padding
+  margin:         0;
+}
+
+.default-header__learn-grid {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   2px;
+  padding:               0 0.625rem 0.625rem;  // ← left+right padding
+}
+
+.default-header__learn-item {
+  display:         flex;
+  align-items:     center;
+  gap:             0.625rem;
+  padding:         0.625rem 0.75rem;
+  border-radius:   v.$radius-md;
+  text-decoration: none;
+  @include mx.motion;
+
+  &:hover {
+    background: var(--slds-brand-tint-1);
+    .default-header__learn-icon { color: var(--theme-brand); background: var(--slds-brand-tint-2); }
+    strong { color: var(--theme-brand); }
+  }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+.default-header__learn-icon {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           2rem;
+  height:          2rem;
+  border-radius:   v.$radius-sm;
+  background:      var(--theme-surface-subtle);
+  color:           var(--theme-text-weak);
+  flex-shrink:     0;
+  @include mx.motion;
+
+  i { font-size: 1rem; }
+}
+
+.default-header__learn-label {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.1rem;
+  min-width:      0;
+
+  strong {
+    font-size:   v.$font-size-sm;
+    font-weight: 700;
+    color:       var(--theme-text-strong);
+    @include mx.motion;
+  }
+  small {
+    font-size:     v.$font-size-xs;
+    color:         var(--theme-text-weak);
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+  }
+}
+
+.default-header__learn-footer {
+  border-top:  1px solid var(--theme-border-soft);
+  padding:     0.625rem 1.125rem;    // ← left padding matches heading
+  background:  var(--theme-surface-subtle);
+}
+
+.default-header__learn-all {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
+  font-size:       v.$font-size-xs;
+  font-weight:     700;
+  color:           var(--theme-brand);
+  text-decoration: none;
+  @include mx.motion;
+
+  i { @include mx.transition(transform, 160ms, ease); }
+  &:hover i { transform: translateX(3px); }
+}
+
+
+// ── 1d Mobile tools ───────────────────────────────────────────────────────────
+
+.default-header__mobile-tools {
   display:     flex;
   align-items: center;
   gap:         0.125rem;
@@ -265,28 +272,22 @@ $_drop-r:      v.$radius-md !default;
 }
 
 
-// =============================================================================
-//  6) BURGER — 3 bars → ✕
-//  JS adds .is-open to the button.
-//
-//  Stack math (3 bars × 2px + 2 gaps × 4.5px = 15px total)
-//  Center at 7.5px.
-//  Bar 1 center:  1px  → translateY(+6.5px)
-//  Bar 3 center: 14px  → translateY(-6.5px)
-// =============================================================================
+// ── 1e 3-bar burger ───────────────────────────────────────────────────────────
+// 3 bars × 2px + 2 gaps × 4.5px = 15px stack
+// Bar 1 center: 1px  → +6.5px  |  Bar 3: 14px → -6.5px
 
-.site-navbar__burger {
+.default-header__burger {
   display:         flex;
   flex-direction:  column;
   align-items:     center;
   justify-content: center;
-  gap:             $_gap;
-  width:           $_burger-size;
-  height:          $_burger-size;
+  gap:             4.5px;
+  width:           $_burger;
+  height:          $_burger;
   padding:         0.375rem;
+  background:      transparent;
   border:          none;
   border-radius:   v.$radius-sm;
-  background:      transparent;
   color:           var(--theme-text);
   cursor:          pointer;
   flex-shrink:     0;
@@ -296,46 +297,29 @@ $_drop-r:      v.$radius-md !default;
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
-.site-navbar__burger-bar {
+.default-header__burger-bar {
   display:          block;
-  width:            $_bar-w;
-  height:           $_bar-h;
+  width:            18px;
+  height:           2px;
   background:       currentColor;
   border-radius:    v.$radius-pill;
   transform-origin: center;
-  // Default: bars slide back in
-  transition:
-    transform 260ms cubic-bezier(0.23, 1, 0.32, 1),
-    opacity   160ms ease;
+  transition:       transform 260ms cubic-bezier(0.23, 1, 0.32, 1), opacity 160ms ease;
 }
 
-// ── Open (✕) state ───────────────────────────────────────────────────────────
-.site-navbar__burger.is-open {
+.default-header__burger.is-open {
   color: var(--theme-brand);
-
-  .site-navbar__burger-bar {
-    transition:
-      transform 300ms cubic-bezier(0.23, 1, 0.32, 1),
-      opacity   160ms ease;
-
-    &:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    &:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    &:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-  }
+  .default-header__burger-bar:nth-child(1) { transform: translateY(6.5px)  rotate(45deg); }
+  .default-header__burger-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .default-header__burger-bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 }
 
 
-// =============================================================================
-//  7) MOBILE MENU PANEL
-//  JS adds .is-open — max-height animates open.
-//  We fully override Bulma's .navbar-menu behaviour.
-// =============================================================================
+// ── 1f Mobile menu panel ──────────────────────────────────────────────────────
 
-// Reset Bulma's .navbar-menu entirely
-.navbar-menu.site-navbar__menu {
-  // ── Desktop: flex row ──────────────────────────────────────────────────────
+.navbar-menu.default-header__menu {
   @media screen and (min-width: v.$bp-desktop) {
-    display:     flex !important;  // override Bulma
+    display:     flex !important;
     align-items: stretch;
     flex:        1;
     padding:     0;
@@ -343,9 +327,8 @@ $_drop-r:      v.$radius-md !default;
     background:  transparent;
   }
 
-  // ── Mobile: hidden panel ───────────────────────────────────────────────────
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    display:    block !important;  // Bulma sets display:none on mobile — fight it
+    display:    block !important;
     position:   absolute;
     top:        100%;
     left:       0;
@@ -353,250 +336,223 @@ $_drop-r:      v.$radius-md !default;
     z-index:    190;
     background: var(--theme-surface-card);
     border-top: 1px solid var(--theme-border);
-    box-shadow: var(--theme-shadow-popover);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
     max-height: 0;
     overflow:   hidden;
     visibility: hidden;
-    transition:
-      max-height 300ms cubic-bezier(0.23, 1, 0.32, 1),
-      visibility 0ms   linear 300ms;
     @include mx.scrollbar;
+    transition: max-height 300ms cubic-bezier(0.23, 1, 0.32, 1), visibility 0ms linear 300ms;
 
     &.is-open {
-      max-height:  85dvh;
-      overflow-y:  auto;
-      visibility:  visible;
-      transition:
-        max-height 300ms cubic-bezier(0.23, 1, 0.32, 1),
-        visibility 0ms   linear 0ms;
+      max-height: 85dvh;
+      overflow-y: auto;
+      visibility: visible;
+      transition: max-height 300ms cubic-bezier(0.23, 1, 0.32, 1), visibility 0ms linear 0ms;
     }
   }
 }
 
 
-// =============================================================================
-//  8) NAV LINKS + DROPDOWN SYSTEM
-// =============================================================================
+// ── 1g Nav links ──────────────────────────────────────────────────────────────
 
-.site-navbar__nav {
+.default-header__nav {
   display:     flex;
-  align-items: stretch;
+  align-items: center;      // vertically centre pills
   flex:        1;
-  gap:         0.125rem;
-  padding:     0 0.25rem;
+  gap:         2px;
+  padding:     0 0.375rem;
 
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
     flex-direction: column;
     align-items:    stretch;
-    gap:            0.125rem;
-    padding:        0.5rem 0.625rem;
+    padding:        0.625rem 0.75rem;
+    gap:            2px;
   }
 }
 
-// ── Dropdown wrapper (added by JS) ────────────────────────────────────────────
-.site-navbar__dropdown-wrap {
+// Wrapper div inserted by JS for dropdown parents
+.default-header__dropdown-wrap {
   position:    relative;
   display:     flex;
-  align-items: stretch;
+  align-items: center;
 
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
     flex-direction: column;
+    align-items:    stretch;
   }
 
-  // Desktop: open on hover
+  // Desktop hover-open
   @media screen and (min-width: v.$bp-desktop) {
-    &.has-dropdown:hover .site-navbar__dropdown-menu,
-    &.has-dropdown:focus-within .site-navbar__dropdown-menu {
+    &.has-dropdown:hover .default-header__dropdown-menu,
+    &.has-dropdown:focus-within .default-header__dropdown-menu {
       opacity:    1;
       visibility: visible;
       transform:  translateY(0);
+      pointer-events: auto;
     }
-
-    &.has-dropdown:hover .site-navbar__dropdown-chevron,
-    &.has-dropdown:focus-within .site-navbar__dropdown-chevron {
+    &.has-dropdown:hover .default-header__dropdown-chevron,
+    &.has-dropdown:focus-within .default-header__dropdown-chevron {
       transform: rotate(180deg);
+      color: var(--theme-brand);
     }
   }
 
-  // Mobile: open via JS .is-open class
+  // Mobile tap-open
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    &.has-dropdown.is-open .site-navbar__dropdown-menu {
-      max-height:  30rem;
-      padding:     0.25rem 0 0.5rem 0.875rem;
+    &.has-dropdown.is-open .default-header__dropdown-menu {
+      max-height:   30rem;
+      padding:      0.25rem 0 0.5rem 0.75rem;
+      border-color: var(--theme-border);
     }
   }
 }
 
-// ── Nav item (top-level pill) ─────────────────────────────────────────────────
-.site-navbar__nav-item {
-  display:         inline-flex;
+// ── THE nav item pill — navigation.hbs outputs .default-header__nav-item ──────
+.default-header__nav-item {
+  display:         flex;
   align-items:     center;
   gap:             0.375rem;
-  text-decoration: none;
-  white-space:     nowrap;
   font-size:       v.$font-size-sm;
   font-weight:     600;
+  text-decoration: none;
+  white-space:     nowrap;
+  line-height:     1;
   @include mx.motion;
 
-  // Desktop
+  // Desktop: fixed-height pill
   @media screen and (min-width: v.$bp-desktop) {
-    align-self:    center;
-    height:        $_item-h;
+    height:        $_pill-h;
     padding:       0 0.625rem;
     border-radius: v.$radius-sm;
     color:         var(--theme-text);
 
-    &:hover {
-      background: var(--slds-brand-tint-1);
-      color:      var(--theme-brand);
-    }
-
-    &.is-active {
-      background:  var(--theme-brand);
-      color:       #ffffff;
-      font-weight: 700;
-    }
-
+    &:hover     { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+    &.is-active { background: var(--theme-brand); color: #ffffff; font-weight: 700; }
     &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
   }
 
-  // Mobile
+  // Mobile: full-width row
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    height:        $_item-h-mob;
+    height:        $_mob-h;
     padding:       0 0.75rem;
     border-radius: v.$radius-sm;
     color:         var(--theme-text);
     position:      relative;
 
-    &:hover {
-      background: var(--slds-brand-tint-1);
-      color:      var(--theme-brand);
-    }
-
+    &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
     &.is-active {
       background:  var(--slds-brand-tint-2);
       color:       var(--theme-brand);
       font-weight: 700;
-
+      // Left accent bar
       &::before {
         content:       "";
         position:      absolute;
         left:          0;
-        top:           25%;
-        bottom:        25%;
+        top:           20%;
+        bottom:        20%;
         width:         3px;
         background:    var(--theme-brand);
         border-radius: v.$radius-pill;
       }
     }
-
     &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
   }
 }
 
-// Nav icon
-.site-navbar__nav-icon {
+// Nav icon span — width + height so it doesn't collapse
+.default-header__nav-icon {
   display:     flex;
   align-items: center;
+  justify-content: center;
+  width:       1rem;
+  height:      1rem;
   flex-shrink: 0;
   color:       var(--theme-text-weak);
   @include mx.motion;
 
-  i { font-size: 1rem; line-height: 1; }
+  i { font-size: 1rem; line-height: 1; display: block; }
 
-  .site-navbar__nav-item:hover &   { color: var(--theme-brand); }
-
-  .site-navbar__nav-item.is-active & {
+  .default-header__nav-item:hover &  { color: var(--theme-brand); }
+  .default-header__nav-item.is-active & {
     @media screen and (min-width: v.$bp-desktop)          { color: #ffffff; }
     @media screen and (max-width: #{v.$bp-desktop - 1px}) { color: var(--theme-brand); }
   }
 }
 
-// Nav label
-.site-navbar__nav-label { line-height: 1; }
-
-// Dropdown chevron (appended by JS)
-.site-navbar__dropdown-chevron {
-  font-size:    0.75rem;
-  margin-left:  0.125rem;
-  color:        var(--theme-text-weak);
-  @include mx.transition(transform, 220ms, ease);
-
-  .site-navbar__nav-item:hover & { color: var(--theme-brand); }
+// Nav label — block removes inline ghost space
+.default-header__nav-label {
+  display:    block;
+  line-height: 1;
 }
 
-// ── Desktop dropdown panel ─────────────────────────────────────────────────────
-.site-navbar__dropdown-menu {
+// JS-injected dropdown chevron
+.default-header__dropdown-chevron {
+  font-size:    0.7rem;
+  margin-left:  0.125rem;
+  color:        var(--theme-text-weak);
+  flex-shrink:  0;
+  @include mx.transition(transform, 200ms, ease);
+}
+
+// Dropdown menu panel
+.default-header__dropdown-menu {
   list-style: none;
   margin:     0;
   padding:    0;
 
   @media screen and (min-width: v.$bp-desktop) {
-    position:      absolute;
-    top:           100%;
-    left:          0;
-    min-width:     13rem;
-    background:    var(--theme-surface-card);
-    border:        1px solid var(--theme-border);
-    border-top:    2px solid var(--theme-brand);
-    border-radius: 0 0 $_drop-r $_drop-r;
-    box-shadow:    var(--theme-shadow-popover);
-    padding:       0.375rem 0.375rem;
-    opacity:       0;
-    visibility:    hidden;
-    transform:     translateY(-4px);
-    z-index:       200;
-    @include mx.transition(opacity, 160ms, ease);
+    position:       absolute;
+    top:            calc(100% + 4px);
+    left:           0;
+    min-width:      14rem;
+    background:     var(--theme-surface-card);
+    border:         1px solid var(--theme-border);
+    border-top:     2px solid var(--theme-brand);
+    border-radius:  0 0 v.$radius-lg v.$radius-lg;
+    box-shadow:     var(--theme-shadow-popover);
+    padding:        0.375rem;    // ← inner padding
+    opacity:        0;
+    visibility:     hidden;
+    pointer-events: none;
+    transform:      translateY(-6px);
+    z-index:        200;
+    transition:     opacity 160ms ease, transform 160ms ease, visibility 0ms linear 160ms;
     @include mx.scrollbar;
   }
 
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    max-height: 0;
-    overflow:   hidden;
-    @include mx.transition(max-height, 260ms, ease);
-    border-left: 2px solid var(--theme-border-soft);
+    max-height:  0;
+    overflow:    hidden;
+    border-left: 2px solid transparent;
     margin-left: 0.75rem;
+    transition:  max-height 240ms ease, padding 240ms ease, border-color 240ms ease;
   }
 
-  // Items inside dropdown
-  li { margin: 0; }
+  li { margin: 0; padding: 0; }
 
-  .site-navbar__nav-item {
+  // Dropdown item overrides
+  .default-header__nav-item {
     width: 100%;
 
     @media screen and (min-width: v.$bp-desktop) {
-      align-self:    auto;
-      height:        2.25rem;
-      padding:       0 0.75rem;
-      border-radius: v.$radius-sm;
-      font-weight:   500;
-      color:         var(--theme-text);
-
-      &.is-active {
-        background:  var(--slds-brand-tint-1);
-        color:       var(--theme-brand);
-        font-weight: 700;
-      }
-    }
-
-    @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-      height:     2.5rem;
-      padding:    0 0.625rem;
-      font-size:  v.$font-size-xs;
+      height:      2.125rem;
       font-weight: 500;
-      color:      var(--theme-text-weak);
-
-      &:hover { color: var(--theme-brand); }
+      &.is-active { background: var(--slds-brand-tint-1); color: var(--theme-brand); font-weight: 700; }
+    }
+    @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+      height:      2.5rem;
+      font-size:   v.$font-size-xs;
+      font-weight: 500;
+      color:       var(--theme-text-weak);
     }
   }
 }
 
 
-// =============================================================================
-//  9) ACTIONS AREA
-// =============================================================================
+// ── 1h Actions area ───────────────────────────────────────────────────────────
 
-.site-navbar__actions {
+.default-header__actions {
   display:     flex;
   align-items: center;
   gap:         0.25rem;
@@ -604,9 +560,9 @@ $_drop-r:      v.$radius-md !default;
   flex-shrink: 0;
 
   > .navbar-item {
-    padding:    0 0.125rem;
-    min-height: unset;
-    display:    flex;
+    padding:     0 0.125rem;
+    min-height:  unset;
+    display:     flex;
     align-items: center;
   }
 
@@ -614,75 +570,20 @@ $_drop-r:      v.$radius-md !default;
     flex-direction: column;
     align-items:    stretch;
     padding:        0.75rem 0.875rem 1rem;
-    border-top:     1px solid var(--theme-border-soft);
     gap:            0.375rem;
-    margin-top:     0.25rem;
+    border-top:     1px solid var(--theme-border-soft);
 
-    > .navbar-item { padding: 0; justify-content: stretch; }
+    > .navbar-item { padding: 0; }
   }
 }
 
-
-// =============================================================================
-//  10) GITHUB BUTTON  — real GitHub grey style
-// =============================================================================
-
-.site-navbar__github-btn {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.3rem;
-  height:          1.875rem;
-  padding:         0 0.75rem;
-  background:      #24292f;
-  border:          1px solid rgba(255, 255, 255, 0.12);
-  border-radius:   v.$radius-sm;
-  color:           #ffffff;
-  font-size:       v.$font-size-xs;
-  font-weight:     600;
-  text-decoration: none;
-  white-space:     nowrap;
-  cursor:          pointer;
-  @include mx.motion;
-
-  i { font-size: 0.9375rem; line-height: 1; }
-
-  &:hover {
-    background:  #32383f;
-    color:       #ffffff;
-    transform:   translateY(-1px);
-    box-shadow:  0 2px 8px rgba(0, 0, 0, 0.25);
-  }
-  &:active  { transform: translateY(0); box-shadow: none; }
-  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
-
-  // Dark mode — GitHub dark style
-  html[data-color-scheme="dark"] & {
-    background:  #21262d;
-    border-color: #30363d;
-    color:        #c9d1d9;
-
-    &:hover { background: #30363d; color: #c9d1d9; }
-  }
-
-  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    width:           100%;
-    justify-content: center;
-    height:          2.5rem;
-  }
-}
-
-
-// =============================================================================
-//  11) ICON-ONLY BUTTON  — search, theme toggle
-//  Just an icon, no border, no background by default. Clean and minimal.
-// =============================================================================
-
-.site-navbar__icon-btn {
+// Icon button — search, theme toggle
+.default-header__icon-btn {
   display:         inline-flex;
   align-items:     center;
   justify-content: center;
-  width:           $_icon-size;
-  height:          $_icon-size;
+  width:           $_icon-sz;
+  height:          $_icon-sz;
   padding:         0;
   border:          none;
   border-radius:   v.$radius-sm;
@@ -693,200 +594,15 @@ $_drop-r:      v.$radius-md !default;
 
   i { font-size: 1.0625rem; line-height: 1; }
 
-  &:hover {
-    background: var(--theme-surface-subtle);
-    color:      var(--theme-brand);
-  }
+  &:hover  { background: var(--theme-surface-subtle); color: var(--theme-brand); }
   &:active { background: var(--slds-brand-tint-1); }
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
 
-// =============================================================================
-//  12) JOIN / AUTH BUTTON
-//  Single button — replaces separate Sign in + Subscribe.
-// =============================================================================
+// ── 1i Auth buttons ───────────────────────────────────────────────────────────
 
-.site-navbar__join-btn {
-  display:         inline-flex;
-  align-items:     center;
-  justify-content: center;
-  gap:             0.3rem;
-  height:          $_action-h;
-  padding:         0 0.875rem;
-  background:      var(--theme-brand);
-  border:          1px solid var(--theme-brand);
-  border-radius:   v.$radius-sm;
-  color:           #ffffff;
-  font-family:     inherit;
-  font-size:       v.$font-size-xs;
-  font-weight:     700;
-  text-decoration: none;
-  white-space:     nowrap;
-  cursor:          pointer;
-  @include mx.motion;
-
-  i { font-size: 0.9375rem; flex-shrink: 0; }
-
-  &:hover {
-    background:   var(--theme-brand-hover);
-    border-color: var(--theme-brand-hover);
-    color:        #ffffff;
-    transform:    translateY(-1px);
-    box-shadow:   0 3px 10px rgba(1, 118, 211, 0.3);
-  }
-  &:active  { transform: translateY(0); box-shadow: none; }
-  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
-
-  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    width:   100%;
-    height:  2.5rem;
-    font-size: v.$font-size-sm;
-  }
-}
-
-
-// =============================================================================
-//  13) ACCOUNT DROPDOWN (logged-in member)
-// =============================================================================
-
-.site-navbar__account-wrap {
-  position: relative;
-}
-
-.site-navbar__account-btn {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.25rem;
-  height:          $_action-h;
-  padding:         0 0.5rem;
-  background:      var(--theme-surface-subtle);
-  border:          1px solid var(--theme-border);
-  border-radius:   v.$radius-sm;
-  color:           var(--theme-text);
-  cursor:          pointer;
-  @include mx.motion;
-
-  &:hover {
-    background:   var(--slds-brand-tint-1);
-    border-color: var(--theme-brand);
-    color:        var(--theme-brand);
-  }
-  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
-}
-
-.site-navbar__account-avatar {
-  width:         28px;
-  height:        28px;
-  border-radius: v.$radius-pill;
-  object-fit:    cover;
-  flex-shrink:   0;
-}
-
-.site-navbar__account-initials {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           28px;
-  height:          28px;
-  border-radius:   v.$radius-pill;
-  background:      var(--theme-brand);
-  color:           #ffffff;
-  font-size:       0.6875rem;
-  font-weight:     700;
-  text-transform:  uppercase;
-  flex-shrink:     0;
-}
-
-.site-navbar__account-caret {
-  font-size:   0.75rem;
-  color:       var(--theme-text-weak);
-  @include mx.transition(transform, 200ms, ease);
-
-  .site-navbar__account-btn[aria-expanded="true"] & {
-    transform: rotate(180deg);
-    color: var(--theme-brand);
-  }
-}
-
-.site-navbar__account-dropdown {
-  position:      absolute;
-  top:           calc(100% + 0.375rem);
-  right:         0;
-  min-width:     16rem;
-  background:    var(--theme-surface-card);
-  border:        1px solid var(--theme-border);
-  border-radius: $_drop-r;
-  box-shadow:    var(--theme-shadow-popover);
-  z-index:       200;
-  overflow:      hidden;
-
-  &[hidden] { display: none; }
-}
-
-.site-navbar__account-header {
-  padding:       0.875rem 1rem;
-  background:    var(--theme-surface-subtle);
-  border-bottom: 1px solid var(--theme-border);
-}
-
-.site-navbar__account-name {
-  font-size:   v.$font-size-sm;
-  font-weight: 700;
-  color:       var(--theme-text-strong);
-  margin:      0 0 0.125rem;
-}
-
-.site-navbar__account-email {
-  font-size: v.$font-size-xs;
-  color:     var(--theme-text-weak);
-  margin:    0;
-}
-
-.site-navbar__dropdown-divider {
-  height:     1px;
-  background: var(--theme-border-soft);
-  border:     none;
-  margin:     0.25rem 0;
-}
-
-.site-navbar__dropdown-item {
-  display:         flex;
-  align-items:     center;
-  gap:             0.5rem;
-  height:          2.25rem;
-  padding:         0 0.875rem;
-  color:           var(--theme-text);
-  font-size:       v.$font-size-sm;
-  font-weight:     500;
-  text-decoration: none;
-  @include mx.motion;
-
-  i { font-size: 1rem; color: var(--theme-text-weak); flex-shrink: 0; }
-
-  &:hover {
-    background: var(--slds-brand-tint-1);
-    color:      var(--theme-brand);
-    i { color: var(--theme-brand); }
-  }
-
-  &--danger {
-    color: var(--theme-text-weak);
-    &:hover {
-      background: rgba(186, 5, 23, 0.06);
-      color: #{v.$danger-color};
-      i { color: #{v.$danger-color}; }
-    }
-  }
-}
-
-
-// =============================================================================
-//  AUTH BUTTON PAIR  (.site-navbar__btn)
-//  Sign in (ghost/outline) + Subscribe (primary) as separate buttons.
-// =============================================================================
-
-.site-navbar__auth-pair {
+.default-header__auth-pair {
   display:     flex;
   align-items: center;
   gap:         0.375rem;
@@ -894,17 +610,16 @@ $_drop-r:      v.$radius-md !default;
 
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
     flex-direction: column;
-    gap:            0.375rem;
     width:          100%;
   }
 }
 
-.site-navbar__btn {
+.default-header__btn {
   display:         inline-flex;
   align-items:     center;
   justify-content: center;
   gap:             0.3rem;
-  height:          1.875rem;
+  height:          $_btn-h;
   padding:         0 0.75rem;
   border-radius:   v.$radius-sm;
   font-family:     inherit;
@@ -916,98 +631,307 @@ $_drop-r:      v.$radius-md !default;
   @include mx.motion;
 
   i { font-size: 0.9375rem; flex-shrink: 0; }
-
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    width:   100%;
-    height:  2.5rem;
+    width:     100%;
+    height:    2.75rem;
     font-size: v.$font-size-sm;
   }
 
-  // Ghost/outline variant — Sign in
   &--ghost {
     background:   transparent;
     border:       1px solid var(--theme-border-strong);
     color:        var(--theme-text-strong);
-
-    &:hover {
-      background:   var(--theme-surface-subtle);
-      border-color: var(--theme-brand);
-      color:        var(--theme-brand);
-    }
+    &:hover  { background: var(--theme-surface-subtle); border-color: var(--theme-brand); color: var(--theme-brand); }
     &:active { background: var(--slds-brand-tint-1); }
   }
 
-  // Primary — Subscribe
   &--primary {
     background:   var(--theme-brand);
     border:       1px solid var(--theme-brand);
     color:        #ffffff;
-
-    &:hover {
-      background:   var(--theme-brand-hover);
-      border-color: var(--theme-brand-hover);
-      color:        #ffffff;
-      transform:    translateY(-1px);
-      box-shadow:   0 3px 10px rgba(1, 118, 211, 0.28);
-    }
+    &:hover  { background: var(--theme-brand-hover); border-color: var(--theme-brand-hover); color: #ffffff; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(1, 118, 211, 0.28); }
     &:active { transform: translateY(0); box-shadow: none; }
   }
 }
 
-// Account name label in button
-.site-navbar__account-name-label {
-  font-size:   v.$font-size-xs;
-  font-weight: 600;
-  color:       var(--theme-text-strong);
-  max-width:   8rem;
-  overflow:    hidden;
-  text-overflow: ellipsis;
-  white-space:  nowrap;
+
+// ── 1j Context CTA (Become Author / Become Instructor) ────────────────────────
+
+.default-header__cta {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
+  height:          $_btn-h;
+  padding:         0 0.75rem;
+  border-radius:   v.$radius-sm;
+  font-family:     inherit;
+  font-size:       v.$font-size-xs;
+  font-weight:     700;
+  text-decoration: none;
+  white-space:     nowrap;
+  cursor:          pointer;
+  @include mx.motion;
+
+  i { font-size: 0.9375rem; flex-shrink: 0; }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    width:     100%;
+    height:    2.75rem;
+    font-size: v.$font-size-sm;
+    justify-content: center;
+  }
+
+  // Become Author — subtle teal/green
+  &--author {
+    background:   rgba(46, 132, 74, 0.08);
+    border:       1px solid rgba(46, 132, 74, 0.25);
+    color:        #{v.$success-color};
+    &:hover { background: rgba(46, 132, 74, 0.14); border-color: #{v.$success-color}; color: #{v.$success-color}; transform: translateY(-1px); }
+  }
+
+  // Become Instructor — brand with slight glow
+  &--instructor {
+    background:   var(--slds-brand-tint-1);
+    border:       1px solid var(--slds-brand-tint-2);
+    color:        var(--theme-brand);
+    &:hover { background: var(--slds-brand-tint-2); border-color: var(--theme-brand); transform: translateY(-1px); }
+  }
+}
+
+
+// ── 1k Account dropdown ───────────────────────────────────────────────────────
+
+.default-header__account-wrap { position: relative; }
+
+.default-header__account-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.375rem;
+  height:          $_btn-h;
+  padding:         0 0.5rem;
+  background:      var(--theme-surface-subtle);
+  border:          1px solid var(--theme-border);
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text);
+  cursor:          pointer;
+  @include mx.motion;
+
+  &:hover { background: var(--slds-brand-tint-1); border-color: var(--theme-brand); color: var(--theme-brand); }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+  &[aria-expanded="true"] .default-header__account-caret { transform: rotate(180deg); }
+}
+
+.default-header__account-avatar {
+  width: 28px; height: 28px; border-radius: v.$radius-pill; object-fit: cover; flex-shrink: 0;
+}
+
+.default-header__account-initials {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: v.$radius-pill;
+  background: var(--theme-brand); color: #ffffff;
+  font-size: 0.6875rem; font-weight: 700; flex-shrink: 0;
+}
+
+.default-header__account-name-label {
+  font-size: v.$font-size-xs; font-weight: 600; color: var(--theme-text-strong);
+  max-width: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.default-header__account-caret {
+  font-size: 0.75rem; color: var(--theme-text-weak);
+  @include mx.transition(transform, 200ms, ease);
+}
+
+.default-header__account-dropdown {
+  position: absolute; top: calc(100% + 0.375rem); right: 0; min-width: 16rem;
+  background: var(--theme-surface-card); border: 1px solid var(--theme-border);
+  border-radius: v.$radius-lg; box-shadow: var(--theme-shadow-popover);
+  z-index: 200; overflow: hidden;
+  &[hidden] { display: none; }
+}
+
+.default-header__account-header {
+  padding: 0.875rem 1rem; background: var(--theme-surface-subtle); border-bottom: 1px solid var(--theme-border);
+}
+.default-header__account-name  { font-size: v.$font-size-sm; font-weight: 700; color: var(--theme-text-strong); margin: 0 0 0.125rem; }
+.default-header__account-email { font-size: v.$font-size-xs; color: var(--theme-text-weak); margin: 0; }
+
+.default-header__divider { height: 1px; background: var(--theme-border-soft); border: none; margin: 0.25rem 0; }
+
+.default-header__dropdown-item {
+  display: flex; align-items: center; gap: 0.5rem; height: 2.25rem; padding: 0 0.875rem;
+  color: var(--theme-text); font-size: v.$font-size-sm; font-weight: 500; text-decoration: none;
+  @include mx.motion;
+  i { font-size: 1rem; color: var(--theme-text-weak); flex-shrink: 0; }
+  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); i { color: var(--theme-brand); } }
+  &--danger { color: var(--theme-text-weak); &:hover { background: rgba(186, 5, 23, 0.06); color: #{v.$danger-color}; i { color: #{v.$danger-color}; } } }
+}
+
+
+// ── 1l GitHub Star button ─────────────────────────────────────────────────────
+
+.default-header__github-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
+  height:          $_btn-h;
+  padding:         0 0.75rem;
+  background:      #24292f;
+  border:          1px solid rgba(255, 255, 255, 0.1);
+  border-radius:   v.$radius-sm;
+  color:           #e6edf3;
+  font-family:     inherit;
+  font-size:       v.$font-size-xs;
+  font-weight:     600;
+  text-decoration: none;
+  white-space:     nowrap;
+  cursor:          pointer;
+  @include mx.motion;
+
+  > i:first-of-type { font-size: 1rem; flex-shrink: 0; }
+
+  .default-header__github-star {
+    font-size:   0.8125rem;
+    color:       #e3b341;
+    opacity:     0;
+    transform:   scale(0.4) rotate(-30deg);
+    @include mx.transition(all, 240ms, cubic-bezier(0.34, 1.56, 0.64, 1));
+  }
+
+  &:hover {
+    background:   #32383f;
+    color:        #ffffff;
+    transform:    translateY(-1px);
+    box-shadow:   0 3px 10px rgba(0, 0, 0, 0.3);
+    .default-header__github-star { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  &:active { transform: translateY(0); box-shadow: none; }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+
+  html[data-color-scheme="dark"] & {
+    background: #21262d; border-color: #30363d; color: #c9d1d9;
+    &:hover { background: #30363d; }
+  }
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+    width:           100%;
+    height:          2.75rem;
+    justify-content: center;
+    font-size:       v.$font-size-sm;
+    .default-header__github-star { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
 }
 
 
 // =============================================================================
-//  LESSON HEADER  (replaces full navbar on #lesson pages)
+//  2. BLOG HEADER extras (topics panel + reading strip)
 // =============================================================================
 
-.lesson-header {
+// Topics panel is wider than learn panel
+.blog-header__topics-panel {
+  width: 22rem;
+}
+
+.blog-header__topics-tags {
+  display:   flex;
+  flex-wrap: wrap;
+  gap:       0.375rem;
+  padding:   0.25rem 1.125rem 0.875rem;   // ← left+right padding
+}
+
+.blog-header__topic-tag {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.3rem;
+  height:          1.625rem;
+  padding:         0 0.5rem;
+  background:      var(--theme-surface-subtle);
+  border:          1px solid var(--theme-border);
+  border-radius:   v.$radius-pill;
+  color:           var(--theme-text-weak);
+  font-size:       v.$font-size-xs;
+  font-weight:     600;
+  text-decoration: none;
+  @include mx.motion;
+
+  &:hover { background: var(--slds-brand-tint-1); border-color: var(--theme-brand); color: var(--theme-brand); }
+}
+
+.blog-header__topic-count {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  min-width:       1.125rem;
+  height:          1rem;
+  padding:         0 0.25rem;
+  background:      var(--theme-border-soft);
+  border-radius:   v.$radius-pill;
+  font-size:       0.625rem;
+  font-weight:     700;
+  color:           var(--theme-text-weak);
+
+  .blog-header__topic-tag:hover & { background: var(--theme-brand); color: #ffffff; }
+}
+
+// Reading progress strip
+.blog-header__progress-strip {
+  position:   sticky;
+  top:        var(--slds-header-height);
+  z-index:    180;
+  width:      100%;
+  height:     3px;
+  background: var(--theme-border-soft);
+  overflow:   hidden;
+}
+
+.blog-header__progress-fill {
+  height:        100%;
+  width:         0%;
+  background:    var(--theme-brand);
+  border-radius: 0 v.$radius-pill v.$radius-pill 0;
+  transition:    width 100ms linear;
+}
+
+
+// =============================================================================
+//  3. COURSE HEADER  (#lesson pages)
+// =============================================================================
+
+.course-header {
   position:  sticky;
   top:       0;
   z-index:   200;
   width:     100%;
 }
 
-.lesson-header__bar {
+// Bar — visually distinct: brand top border, shorter height
+.course-header__bar {
   background:    var(--theme-surface-card);
-  border-bottom: 2px solid var(--theme-brand);
-  box-shadow:    0 1px 0 var(--theme-border-soft), 0 2px 8px rgba(0, 0, 0, 0.05);
-  min-height:    var(--slds-header-height);
+  border-top:    3px solid var(--theme-brand);
+  border-bottom: 1px solid var(--theme-border);
+  box-shadow:    0 2px 6px rgba(0, 0, 0, 0.06);
+  min-height:    3rem;
   display:       flex;
   align-items:   center;
 }
 
-.lesson-header__inner {
+.course-header__inner {
   display:         flex;
   align-items:     center;
   justify-content: space-between;
-  gap:             1rem;
+  gap:             0.75rem;
   width:           100%;
-  padding:         0.5rem 0;
-  min-height:      var(--slds-header-height);
-
-  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
-    gap: 0.5rem;
-  }
+  min-height:      3rem;
+  padding:         0.375rem 0;
 }
 
-// Left: back button
-.lesson-header__left {
-  flex-shrink: 0;
-}
+// Back link
+.course-header__left { flex-shrink: 0; }
 
-.lesson-header__back {
+.course-header__back {
   display:         inline-flex;
   align-items:     center;
   gap:             0.375rem;
@@ -1017,90 +941,127 @@ $_drop-r:      v.$radius-md !default;
   text-decoration: none;
   padding:         0.375rem 0.625rem;
   border-radius:   v.$radius-sm;
+  max-width:       14rem;
   @include mx.motion;
 
-  i { font-size: 1rem; }
-
-  &:hover {
-    background: var(--slds-brand-tint-1);
-    color:      var(--theme-brand);
-  }
+  i { font-size: 1rem; flex-shrink: 0; }
+  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 }
 
-.lesson-header__back-label {
-  max-width:     14rem;
+.course-header__back-title {
   overflow:      hidden;
   text-overflow: ellipsis;
   white-space:   nowrap;
-
-  @media screen and (max-width: #{v.$bp-tablet - 1px}) { max-width: 8rem; }
-}
-
-// Center: lesson title
-.lesson-header__center {
-  flex:        1;
-  min-width:   0;
-  text-align:  center;
-}
-
-.lesson-header__lesson-title {
-  font-size:     v.$font-size-sm;
-  font-weight:   700;
-  color:         var(--theme-text-strong);
-  white-space:   nowrap;
-  overflow:      hidden;
-  text-overflow: ellipsis;
-  display:       block;
-
-  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
-    font-size: v.$font-size-xs;
-  }
-}
-
-// Right: progress + close
-.lesson-header__right {
-  display:     flex;
-  align-items: center;
-  gap:         0.75rem;
-  flex-shrink: 0;
-}
-
-.lesson-header__progress {
-  display:     flex;
-  align-items: center;
-  gap:         0.5rem;
 
   @media screen and (max-width: #{v.$bp-mobile - 1px}) { display: none; }
 }
 
-.lesson-header__progress-track {
-  width:         100px;
-  height:        4px;
-  background:    var(--theme-border-soft);
-  border-radius: v.$radius-pill;
+// Center: lesson title button
+.course-header__center { flex: 1; min-width: 0; text-align: center; }
+
+.course-header__title-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             0.375rem;
+  background:      transparent;
+  border:          none;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-strong);
+  cursor:          pointer;
+  max-width:       100%;
+  padding:         0.375rem 0.5rem;
+  @include mx.motion;
+
+  &:hover   { background: var(--theme-surface-subtle); }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+.course-header__title {
+  font-size:     v.$font-size-sm;
+  font-weight:   700;
+  white-space:   nowrap;
   overflow:      hidden;
+  text-overflow: ellipsis;
+  max-width:     clamp(8rem, 30vw, 30rem);
 
-  @media screen and (max-width: #{v.$bp-tablet - 1px}) { width: 64px; }
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) { max-width: 42vw; font-size: v.$font-size-xs; }
 }
 
-.lesson-header__progress-fill {
-  height:        100%;
-  width:         0%;
-  background:    var(--theme-brand);
-  border-radius: v.$radius-pill;
-  transition:    width 200ms linear;
+.course-header__title-caret {
+  font-size:   0.75rem;
+  color:       var(--theme-text-weak);
+  flex-shrink: 0;
+  @include mx.transition(transform, 200ms, ease);
 }
 
-.lesson-header__progress-pct {
-  font-size:      0.625rem;
+// Right: badge + hamburger + close
+.course-header__right {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  flex-shrink: 0;
+}
+
+.course-header__badge {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            0.3rem;
+  height:         1.5rem;
+  padding:        0 0.5rem;
+  background:     var(--slds-brand-tint-1);
+  border:         1px solid var(--slds-brand-tint-2);
+  border-radius:  v.$radius-pill;
+  font-size:      v.$font-size-xs;
   font-weight:    700;
-  color:          var(--theme-text-weak);
-  min-width:      2.25rem;
-  text-align:     right;
-  font-variant-numeric: tabular-nums;
+  color:          var(--theme-brand);
+  white-space:    nowrap;
+
+  i { font-size: 0.75rem; }
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) { display: none; }
 }
 
-.lesson-header__close {
+// Hamburger — same 3-bar style
+.course-header__burger {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  gap:             4.5px;
+  width:           2rem;
+  height:          2rem;
+  padding:         0.3rem;
+  background:      transparent;
+  border:          none;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-weak);
+  cursor:          pointer;
+  @include mx.motion;
+
+  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
+
+.course-header__burger-bar {
+  display:          block;
+  width:            14px;
+  height:           1.5px;
+  background:       currentColor;
+  border-radius:    v.$radius-pill;
+  transform-origin: center;
+  transition:       transform 260ms cubic-bezier(0.23, 1, 0.32, 1), opacity 160ms ease;
+}
+
+.course-header__burger.is-open {
+  color: var(--theme-brand);
+  .course-header__burger-bar:nth-child(1) { transform: translateY(6px)  rotate(45deg); }
+  .course-header__burger-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .course-header__burger-bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+}
+
+.course-header__close {
   display:         flex;
   align-items:     center;
   justify-content: center;
@@ -1112,9 +1073,94 @@ $_drop-r:      v.$radius-md !default;
   @include mx.motion;
 
   i { font-size: 1rem; }
+  &:hover { background: rgba(186, 5, 23, 0.08); color: #{v.$danger-color}; }
+  &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
+}
 
-  &:hover {
-    background: rgba(186, 5, 23, 0.06);
-    color:      #{v.$danger-color};
+// Lesson panel
+.course-header__lesson-panel {
+  background:    var(--theme-surface-card);
+  border-bottom: 1px solid var(--theme-border);
+  box-shadow:    0 8px 20px rgba(0, 0, 0, 0.10);
+  max-height:    0;
+  overflow:      hidden;
+  visibility:    hidden;
+  transition:    max-height 280ms cubic-bezier(0.23, 1, 0.32, 1), visibility 0ms linear 280ms;
+
+  &.is-open {
+    max-height: 70dvh;
+    overflow-y: auto;
+    visibility: visible;
+    transition: max-height 280ms cubic-bezier(0.23, 1, 0.32, 1), visibility 0ms linear 0ms;
+    @include mx.scrollbar;
   }
+}
+
+.course-header__lesson-wrap { padding: 0.875rem 0 1rem; }
+
+.course-header__lesson-label {
+  font-size:      v.$font-size-xs;
+  font-weight:    700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color:          var(--theme-text-weak);
+  padding:        0 0.75rem;
+  margin-bottom:  0.5rem;
+  display:        flex;
+  align-items:    center;
+  gap:            0.375rem;
+
+  i { font-size: 0.875rem; color: var(--theme-brand); }
+}
+
+.course-header__lesson-list.menu-list {
+  padding: 0 0.375rem;
+  li { margin: 0; padding: 0; }
+}
+
+.course-header__lesson-link {
+  display:         flex;
+  align-items:     center;
+  gap:             0.5rem;
+  height:          2.75rem;
+  padding:         0 0.625rem;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text);
+  font-size:       v.$font-size-sm;
+  font-weight:     500;
+  text-decoration: none;
+  @include mx.motion;
+
+  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+  &.is-active {
+    background:  var(--slds-brand-tint-2);
+    color:       var(--theme-brand);
+    font-weight: 700;
+    box-shadow:  inset 3px 0 0 var(--theme-brand);
+  }
+}
+
+.course-header__lesson-num {
+  flex-shrink: 0;
+  min-width:   1.375rem;
+  font-size:   v.$font-size-xs;
+  font-weight: 700;
+  color:       var(--theme-text-weak);
+  font-variant-numeric: tabular-nums;
+  .course-header__lesson-link.is-active & { color: var(--theme-brand); }
+}
+
+.course-header__lesson-name {
+  flex:          1;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+.course-header__lesson-dot {
+  width:         6px;
+  height:        6px;
+  border-radius: v.$radius-pill;
+  background:    var(--theme-brand);
+  flex-shrink:   0;
 }

@@ -1,0 +1,218 @@
+{{!-- =========================================================================
+  partials/header/course.hbs
+  Used on #lesson posts.
+
+  Layout:
+    LEFT   — Back to course link
+    CENTER — Lesson title button (click/tap = open lesson list panel)
+    RIGHT  — Lesson X/N badge  |  hamburger (mobile)
+
+  Mobile hamburger opens a full-width slide-down panel listing all lessons.
+  No reading progress bar per spec.
+========================================================================== --}}
+
+<header class="course-header site-header" role="banner" id="siteHeader">
+
+  {{!-- Main bar --}}
+  <div class="course-header__bar">
+    <div class="container is-fluid">
+      <div class="course-header__inner">
+
+        {{!-- LEFT: back to course --}}
+        <div class="course-header__left">
+          {{#get "posts"
+            filter="tag:hash-course+primary_tag:{{primary_tag.slug}}"
+            limit="1"
+          }}
+            {{#foreach posts}}
+              <a class="course-header__back"
+                 href="{{url}}"
+                 id="courseBackLink"
+                 aria-label="Back to {{title}}">
+                <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                <span class="course-header__back-title">{{title}}</span>
+              </a>
+            {{else}}
+              <a class="course-header__back" href="/courses/">
+                <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                <span class="course-header__back-title">Courses</span>
+              </a>
+            {{/foreach}}
+          {{/get}}
+        </div>
+
+        {{!-- CENTER: lesson title — also acts as toggle for lesson panel --}}
+        <div class="course-header__center">
+          <button
+            class="course-header__title-btn"
+            type="button"
+            aria-label="Show all lessons in this course"
+            aria-expanded="false"
+            aria-controls="courseLessonPanel"
+            id="coursePanelBurger"
+          >
+            <span class="course-header__title">{{title}}</span>
+            <i class="ph ph-caret-down course-header__title-caret" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        {{!-- RIGHT: X/N badge + mobile hamburger --}}
+        <div class="course-header__right">
+
+          {{!-- X of N badge — populated by JS from lesson list --}}
+          <span class="course-header__badge" id="lessonBadge" aria-live="polite">
+            <i class="ph ph-list-checks" aria-hidden="true"></i>
+            <span id="lessonBadgeText">…</span>
+          </span>
+
+          {{!-- Hamburger (visible on all screen sizes to open lesson panel) --}}
+          <button
+            class="course-header__burger"
+            type="button"
+            aria-label="Toggle lesson list"
+            aria-expanded="false"
+            aria-controls="courseLessonPanel"
+            id="courseBurgerBtn"
+          >
+            <span class="course-header__burger-bar" aria-hidden="true"></span>
+            <span class="course-header__burger-bar" aria-hidden="true"></span>
+            <span class="course-header__burger-bar" aria-hidden="true"></span>
+          </button>
+
+          {{!-- Close — back to course page --}}
+          {{#get "posts"
+            filter="tag:hash-course+primary_tag:{{primary_tag.slug}}"
+            limit="1"
+          }}
+            {{#foreach posts}}
+              <a class="course-header__close"
+                 href="{{url}}"
+                 aria-label="Exit lesson">
+                <i class="ph ph-x" aria-hidden="true"></i>
+              </a>
+            {{else}}
+              <a class="course-header__close" href="/courses/" aria-label="Back to courses">
+                <i class="ph ph-x" aria-hidden="true"></i>
+              </a>
+            {{/foreach}}
+          {{/get}}
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- ── Lesson list panel ────────────────────────────────────────────── --}}
+  <div class="course-header__lesson-panel"
+       id="courseLessonPanel"
+       aria-label="Course lessons"
+       aria-hidden="true">
+    <div class="container is-fluid">
+      <div class="course-header__lesson-wrap">
+
+        <p class="course-header__lesson-label menu-label">
+          <i class="ph ph-list-checks" aria-hidden="true"></i>
+          Course Lessons
+        </p>
+
+        <ul class="menu-list course-header__lesson-list" id="courseLessonList">
+          {{#get "posts"
+            filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
+            order="published_at asc"
+            limit="all"
+          }}
+            {{#foreach posts}}
+              <li>
+                <a
+                  href="{{url}}"
+                  class="course-header__lesson-link{{#match id ../../../../id}} is-active{{/match}}"
+                  data-lesson-num="{{@number}}"
+                  data-lesson-total="{{../length}}"
+                >
+                  <span class="course-header__lesson-num">{{@number}}</span>
+                  <span class="course-header__lesson-name">{{title}}</span>
+                  {{#match id ../../../../id}}
+                    <span class="course-header__lesson-dot" aria-label="Current"></span>
+                  {{/match}}
+                </a>
+              </li>
+            {{/foreach}}
+          {{/get}}
+        </ul>
+
+      </div>
+    </div>
+  </div>
+  {{!-- /lesson panel --}}
+
+</header>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Theme sync ─────────────────────────────────────────────────────────────
+  var SK = 'site-color-scheme';
+  var sv = localStorage.getItem(SK);
+  if (sv === 'light' || sv === 'dark') document.documentElement.setAttribute('data-color-scheme', sv);
+
+  // ── Lesson panel toggle ────────────────────────────────────────────────────
+  // Both the title button and the hamburger button open the same panel.
+  var titleBtn  = document.getElementById('coursePanelBurger');
+  var burgerBtn = document.getElementById('courseBurgerBtn');
+  var panel     = document.getElementById('courseLessonPanel');
+
+  function togglePanel(force) {
+    var open = force !== undefined ? force : !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open', open);
+    panel.setAttribute('aria-hidden', String(!open));
+    [titleBtn, burgerBtn].forEach(function (btn) {
+      if (btn) btn.setAttribute('aria-expanded', String(open));
+    });
+    if (titleBtn) {
+      var caret = titleBtn.querySelector('.course-header__title-caret');
+      if (caret) caret.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+    burgerBtn && burgerBtn.classList.toggle('is-open', open);
+  }
+
+  [titleBtn, burgerBtn].forEach(function (btn) {
+    if (!btn) return;
+    btn.addEventListener('click', function () { togglePanel(); });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (panel.classList.contains('is-open') &&
+        !panel.contains(e.target) &&
+        !(titleBtn && titleBtn.contains(e.target)) &&
+        !(burgerBtn && burgerBtn.contains(e.target))) {
+      togglePanel(false);
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+      togglePanel(false);
+      if (burgerBtn) burgerBtn.focus();
+    }
+  });
+
+  // ── X / N badge ────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    var badgeText = document.getElementById('lessonBadgeText');
+    var active    = document.querySelector('.course-header__lesson-link.is-active');
+    if (active && badgeText) {
+      var num   = active.getAttribute('data-lesson-num')   || '?';
+      var total = active.getAttribute('data-lesson-total') || '?';
+      badgeText.textContent = num + ' / ' + total;
+    }
+
+    // Scroll active lesson into view inside the panel
+    if (active) {
+      active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  });
+
+})();
+</script>
+

@@ -1,102 +1,79 @@
 {{!-- =========================================================================
-  header.hbs · Namaste Salesforce
-
-  Renders ONE of three headers depending on context:
-
-    1. #lesson page  → Course context bar  (lesson sidebar nav + back button)
-                        The full navbar is hidden — it just gets in the way.
-
-    2. All other pages → Standard navbar with:
-         • 3-bar hamburger (JS-animated)
-         • Dropdown nav from Ghost nav items prefixed with "- "
-         • Sign in + Subscribe / Account dropdown (members)
-         • GitHub star button (last in actions)
-
-  JSON-LD: WebSite + SiteNavigationElement (only on non-lesson pages)
-=========================================================================== --}}
+  header.hbs
+  
+  1. Emits JSON-LD on EVERY page (WebSite + SiteNavigationElement).
+     Child items (label starts with "- ") are excluded from JSON-LD.
+  
+  2. Dispatches to the right header partial:
+       #lesson post  →  partials/header/course.hbs
+       #blog post    →  partials/header/blog.hbs
+       everything    →  partials/header/default.hbs
+========================================================================== --}}
 
 {{!-- ══════════════════════════════════════════════════════════════════════
-  Render completely different header for lesson pages
+  JSON-LD — emitted on EVERY page, always valid
+══════════════════════════════════════════════════════════════════════════ --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{@site.url}}/#website",
+      "url": "{{@site.url}}/",
+      "name": "{{@site.title}}"{{#if @site.description}},
+      "description": "{{@site.description}}"{{/if}},
+      "inLanguage": "en-US",
+      "publisher": {
+        "@type": "Organization",
+        "@id": "{{@site.url}}/#organization",
+        "name": "{{@site.title}}"{{#if @site.logo}},
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{{@site.logo}}"
+        }{{/if}}
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{@site.url}}/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "ItemList",
+      "@id": "{{@site.url}}/#site-navigation",
+      "name": "Site Navigation",
+      "itemListElement": [
+        {{!-- Only top-level items (no "- " prefix) → clean JSON-LD --}}
+        {{#foreach navigation}}
+          {{#match label "~^" "- "}}{{else}}
+          {
+            "@type": "ListItem",
+            "position": {{@number}},
+            "name": "{{label}}",
+            "url": "{{url absolute="true"}}"
+          }{{#unless @last}},{{/unless}}
+          {{/match}}
+        {{/foreach}}
+      ]
+    }
+  ]
+}
+</script>
+
+{{!-- ══════════════════════════════════════════════════════════════════════
+  Header dispatch
 ══════════════════════════════════════════════════════════════════════════ --}}
 {{#is "post"}}
   {{#post}}
     {{#has tag="#lesson"}}
-
-      {{!-- ────────────────────────────────────────────────────────────────
-        LESSON HEADER — replaces the full navbar
-        Shows: back-to-course | course title | lesson title | progress bar
-        All populated by inline JS from DOM data.
-      ──────────────────────────────────────────────────────────────────── --}}
-      <header class="site-header lesson-header" role="banner" id="siteHeader">
-        <div class="lesson-header__bar">
-          <div class="container is-fluid">
-            <div class="lesson-header__inner">
-
-              {{!-- Back to course --}}
-              <div class="lesson-header__left">
-                {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
-                  {{#foreach posts}}
-                    <a class="lesson-header__back" href="{{url}}" aria-label="Back to course">
-                      <i class="ph ph-arrow-left" aria-hidden="true"></i>
-                      <span class="lesson-header__back-label is-hidden-mobile">{{title}}</span>
-                    </a>
-                  {{else}}
-                    <a class="lesson-header__back" href="/courses/" aria-label="Back to courses">
-                      <i class="ph ph-arrow-left" aria-hidden="true"></i>
-                      <span class="lesson-header__back-label is-hidden-mobile">Courses</span>
-                    </a>
-                  {{/foreach}}
-                {{/get}}
-              </div>
-
-              {{!-- Current lesson title (center) --}}
-              <div class="lesson-header__center">
-                <span class="lesson-header__lesson-title" id="lessonHeaderTitle">
-                  {{title}}
-                </span>
-              </div>
-
-              {{!-- Right: reading progress + close --}}
-              <div class="lesson-header__right">
-                <div class="lesson-header__progress" aria-label="Reading progress">
-                  <div class="lesson-header__progress-track">
-                    <div class="lesson-header__progress-fill" id="lessonProgressFill"></div>
-                  </div>
-                  <span class="lesson-header__progress-pct" id="lessonProgressPct">0%</span>
-                </div>
-                <a class="lesson-header__close" href="/courses/" aria-label="Exit lesson">
-                  <i class="ph ph-x" aria-hidden="true"></i>
-                </a>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        {{!-- Reading progress update script --}}
-        <script>
-        (function () {
-          var fill  = document.getElementById('lessonProgressFill');
-          var pct   = document.getElementById('lessonProgressPct');
-          function update() {
-            var scrolled = window.scrollY;
-            var total    = document.documentElement.scrollHeight - window.innerHeight;
-            var p        = total > 0 ? Math.min(100, Math.round((scrolled / total) * 100)) : 0;
-            if (fill) fill.style.width = p + '%';
-            if (pct)  pct.textContent  = p + '%';
-          }
-          window.addEventListener('scroll', update, { passive: true });
-          update();
-        })();
-        </script>
-      </header>
-
+      {{> "header/course"}}
+    {{else has tag="#blog"}}
+      {{> "header/blog"}}
     {{else}}
-      {{!-- Not a lesson — render the standard header --}}
-      {{> "header/standard"}}
+      {{> "header/default"}}
     {{/has}}
   {{/post}}
 {{else}}
-  {{!-- Not a post at all — render the standard header --}}
-  {{> "header/standard"}}
+  {{> "header/default"}}
 {{/is}}

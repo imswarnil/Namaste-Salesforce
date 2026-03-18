@@ -1,0 +1,328 @@
+{{!-- =========================================================================
+  partials/header/blog.hbs
+  Used on #blog posts.
+
+  = default navbar  (reused from default.hbs structure but with blog CTAs)
+  + Topics/Tags dropdown in actions area
+  + "Become Author" CTA instead of Sign in/Login
+  + Sticky 3px reading-progress strip below the navbar
+========================================================================== --}}
+
+<header
+  class="default-header blog-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
+  role="banner"
+  id="siteHeader"
+>
+  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+    <div class="container default-header__wrap">
+
+      {{!-- Brand --}}
+      <div class="navbar-brand default-header__brand-group">
+        <a class="navbar-item default-header__brand"
+           href="{{@site.url}}"
+           aria-label="{{@site.title}} — homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="default-header__logo" width="32" height="32">
+          {{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
+
+        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+
+        {{!-- Topics dropdown (desktop) --}}
+        <div class="default-header__learn-wrap is-hidden-touch" id="topicsDropdownWrap">
+          <button class="default-header__learn-btn" type="button"
+                  aria-haspopup="true" aria-expanded="false"
+                  id="topicsDropdownBtn">
+            <i class="ph ph-tag" aria-hidden="true"></i>
+            <span>Topics</span>
+            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
+          </button>
+
+          <div class="default-header__learn-panel blog-header__topics-panel"
+               id="topicsDropdown" hidden>
+            <p class="default-header__learn-heading">Browse Topics</p>
+            <div class="blog-header__topics-tags">
+              {{#get "tags" limit="12" order="count.posts desc" include="count.posts"}}
+                {{#foreach tags}}
+                  <a class="blog-header__topic-tag" href="{{url}}">
+                    <span>{{name}}</span>
+                    <span class="blog-header__topic-count">{{count.posts}}</span>
+                  </a>
+                {{/foreach}}
+              {{/get}}
+            </div>
+            <div class="default-header__learn-footer">
+              <a href="/tags/" class="default-header__learn-all">
+                All topics
+                <i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Mobile tools --}}
+        <div class="default-header__mobile-tools is-hidden-desktop"
+             role="group" aria-label="Quick actions">
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Search" data-ghost-search>
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Switch to dark mode" data-theme-toggle>
+            <i class="ph ph-moon" aria-hidden="true"></i>
+          </button>
+          <button class="default-header__burger" type="button"
+                  aria-label="Toggle menu" aria-expanded="false"
+                  aria-controls="blogNavMenu" id="blogNavBurger">
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+            <span class="default-header__burger-bar" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      {{!-- Menu --}}
+      <div id="blogNavMenu" class="navbar-menu default-header__menu"
+           aria-label="Site navigation" aria-hidden="true">
+
+        <div class="navbar-start default-header__nav" id="blogNavLinks">
+          {{navigation}}
+        </div>
+
+        <div class="navbar-end default-header__actions">
+
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Search" data-ghost-search>
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="navbar-item is-hidden-touch">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Switch to dark mode" data-theme-toggle>
+              <i class="ph ph-moon" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          {{!-- Become Author CTA --}}
+          <div class="navbar-item">
+            <a class="default-header__cta default-header__cta--author"
+               href="/contact/?ref=author">
+              <i class="ph ph-pencil-line" aria-hidden="true"></i>
+              <span>Become Author</span>
+            </a>
+          </div>
+
+          {{!-- Auth --}}
+          {{> "header/auth"}}
+
+          {{!-- GitHub last --}}
+          <div class="navbar-item">
+            <a class="default-header__github-btn"
+               href="https://github.com/imswarnil/Namaste-Salesforce"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Star on GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              <span>Star</span>
+              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </nav>
+</header>
+
+{{!-- Reading progress strip --}}
+<div class="blog-header__progress-strip"
+     role="progressbar" aria-label="Reading progress"
+     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+     id="blogReadingStrip">
+  <div class="blog-header__progress-fill" id="blogReadingFill"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var SK  = 'site-color-scheme';
+  var doc = document.documentElement;
+
+  function getTheme() { return doc.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
+  function applyTheme(t) { doc.setAttribute('data-color-scheme', t); localStorage.setItem(SK, t); syncUI(t); }
+  function syncUI(t) {
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
+      var ic = b.querySelector('i');
+      if (ic) ic.className = t === 'dark' ? 'ph ph-sun-dim' : 'ph ph-moon';
+      b.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+  }
+  var sv = localStorage.getItem(SK);
+  syncUI((sv === 'light' || sv === 'dark') ? sv : getTheme());
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-theme-toggle]')) applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── Reading progress ──────────────────────────────────────────────────────
+  var fill  = document.getElementById('blogReadingFill');
+  var strip = document.getElementById('blogReadingStrip');
+  function updateProgress() {
+    var content = document.querySelector('.gh-content, .js-post-content');
+    var scrolled, total;
+    if (content) {
+      var startY = content.getBoundingClientRect().top + window.scrollY;
+      var endY   = startY + content.offsetHeight - window.innerHeight;
+      scrolled   = Math.max(0, window.scrollY - startY);
+      total      = Math.max(1, endY - startY);
+    } else {
+      scrolled = window.scrollY;
+      total    = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    }
+    var pct = Math.min(100, Math.round((scrolled / total) * 100));
+    if (fill)  fill.style.width = pct + '%';
+    if (strip) strip.setAttribute('aria-valuenow', pct);
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress, { passive: true });
+  updateProgress();
+
+  // ── Burger ────────────────────────────────────────────────────────────────
+  var burger = document.getElementById('blogNavBurger');
+  var menu   = document.getElementById('blogNavMenu');
+  var hdr    = document.getElementById('siteHeader');
+  function toggleMenu(force) {
+    var open = force !== undefined ? force : !burger.classList.contains('is-open');
+    burger.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('is-open', open);
+    menu.setAttribute('aria-hidden', String(!open));
+    if (hdr) hdr.classList.toggle('menu-is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  if (burger && menu) {
+    burger.addEventListener('click', function () { toggleMenu(); });
+    document.addEventListener('click', function (e) {
+      if (menu.classList.contains('is-open') && !menu.contains(e.target) && !burger.contains(e.target)) toggleMenu(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menu.classList.contains('is-open')) { toggleMenu(false); burger.focus(); }
+    });
+  }
+
+  // ── Nav dropdown builder ──────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    var nav = document.getElementById('blogNavLinks');
+    if (!nav) return;
+    var items = Array.from(nav.querySelectorAll('.default-header__nav-item'));
+    var current = null;
+    items.forEach(function (el) {
+      if (el.getAttribute('data-child') === 'true' && current) {
+        var lbl = el.querySelector('.default-header__nav-label');
+        if (lbl) lbl.textContent = lbl.textContent.replace(/^[\-–]\s*/, '').trim();
+        var li = document.createElement('li');
+        li.appendChild(el);
+        current.list.appendChild(li);
+      } else {
+        var wrap = document.createElement('div');
+        wrap.className = 'default-header__dropdown-wrap';
+        el.parentNode.insertBefore(wrap, el);
+        wrap.appendChild(el);
+        var list = document.createElement('ul');
+        list.className = 'default-header__dropdown-menu';
+        list.setAttribute('role', 'menu');
+        wrap.appendChild(list);
+        current = { wrap: wrap, trigger: el, list: list };
+      }
+    });
+    nav.querySelectorAll('.default-header__dropdown-wrap').forEach(function (wrap) {
+      var list = wrap.querySelector('.default-header__dropdown-menu');
+      var item = wrap.querySelector('.default-header__nav-item');
+      if (!list || !list.children.length) {
+        if (item) wrap.parentNode.insertBefore(item, wrap);
+        wrap.remove(); return;
+      }
+      wrap.classList.add('has-dropdown');
+      if (item) {
+        item.classList.add('has-dropdown-trigger');
+        item.setAttribute('aria-haspopup', 'true');
+        item.setAttribute('aria-expanded', 'false');
+        var chev = document.createElement('i');
+        chev.className = 'ph ph-caret-down default-header__dropdown-chevron';
+        chev.setAttribute('aria-hidden', 'true');
+        item.appendChild(chev);
+      }
+    });
+    nav.addEventListener('click', function (e) {
+      var t = e.target.closest('.has-dropdown-trigger');
+      if (!t || window.innerWidth >= 1024) return;
+      e.preventDefault();
+      var wrap = t.closest('.has-dropdown'), isOpen = wrap.classList.contains('is-open');
+      nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
+        d.classList.remove('is-open');
+        var dt = d.querySelector('.has-dropdown-trigger');
+        if (dt) dt.setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) { wrap.classList.add('is-open'); t.setAttribute('aria-expanded', 'true'); }
+    });
+    document.addEventListener('click', function (e) {
+      if (!nav.contains(e.target)) nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) { d.classList.remove('is-open'); });
+    });
+  });
+
+  // ── Topics dropdown ───────────────────────────────────────────────────────
+  (function () {
+    var btn   = document.getElementById('topicsDropdownBtn');
+    var panel = document.getElementById('topicsDropdown');
+    var wrap  = document.getElementById('topicsDropdownWrap');
+    if (!btn || !panel) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = panel.hidden;
+      panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.classList.toggle('is-open', open);
+    });
+    document.addEventListener('click', function (e) {
+      if (wrap && !wrap.contains(e.target)) {
+        panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('is-open');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !panel.hidden) {
+        panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('is-open'); btn.focus();
+      }
+    });
+  })();
+
+  // ── Account dropdown ──────────────────────────────────────────────────────
+  var initialsEl = document.getElementById('memberInitials');
+  if (initialsEl) {
+    var nameEl = document.querySelector('.default-header__account-name');
+    if (nameEl) {
+      initialsEl.textContent = nameEl.textContent.trim()
+        .split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
+    }
+  }
+  (function () {
+    var btn   = document.getElementById('accountBtn');
+    var panel = document.getElementById('accountDropdown');
+    var wrap  = document.getElementById('accountWrap');
+    if (!btn || !panel) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation(); var open = panel.hidden;
+      panel.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', function (e) {
+      if (wrap && !wrap.contains(e.target)) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !panel.hidden) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
+    });
+  })();
+
+})();
+</script>

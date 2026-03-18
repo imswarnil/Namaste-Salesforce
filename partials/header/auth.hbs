@@ -1,0 +1,81 @@
+{{!-- =========================================================================
+  partials/header/partials/auth.hbs
+  Reusable auth block — included by default.hbs and blog.hbs
+  Shows: Sign in + Login when logged out, Account dropdown when logged in.
+========================================================================== --}}
+
+{{#if @site.members_enabled}}
+  {{#if @member}}
+
+    {{!-- Logged in: account avatar + dropdown --}}
+    <div class="navbar-item">
+      <div class="default-header__account-wrap" id="accountWrap">
+        <button class="default-header__account-btn" type="button"
+                aria-label="Account menu" aria-expanded="false"
+                aria-haspopup="true" id="accountBtn">
+          {{#if @member.avatar_image}}
+            <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
+                 class="default-header__account-avatar" width="28" height="28">
+          {{else}}
+            <span class="default-header__account-initials" id="memberInitials"></span>
+          {{/if}}
+          <span class="default-header__account-name-label is-hidden-mobile">
+            {{@member.name}}
+          </span>
+          <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
+        </button>
+
+        <div class="default-header__account-dropdown" id="accountDropdown" hidden>
+          <div class="default-header__account-header">
+            <p class="default-header__account-name">{{@member.name}}</p>
+            <p class="default-header__account-email">{{@member.email}}</p>
+          </div>
+          <hr class="default-header__divider">
+          <a class="default-header__dropdown-item"
+             href="#/portal/account" data-portal="account">
+            <i class="ph ph-user" aria-hidden="true"></i>
+            <span>Manage account</span>
+          </a>
+          <a class="default-header__dropdown-item"
+             href="#/portal/account/newsletters" data-portal="account/newsletters">
+            <i class="ph ph-envelope" aria-hidden="true"></i>
+            <span>Newsletters</span>
+          </a>
+          <hr class="default-header__divider">
+          <a class="default-header__dropdown-item default-header__dropdown-item--danger"
+             href="javascript:void(0)" data-members-signout>
+            <i class="ph ph-sign-out" aria-hidden="true"></i>
+            <span>Sign out</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  {{else}}
+
+    {{!-- Logged out: Sign in + Login --}}
+    {{#unless @site.members_invite_only}}
+      <div class="navbar-item default-header__auth-pair">
+        <a class="default-header__btn default-header__btn--ghost"
+           href="#/portal/signin" data-portal="signin">
+          <i class="ph ph-sign-in" aria-hidden="true"></i>
+          <span>Sign in</span>
+        </a>
+        <a class="default-header__btn default-header__btn--primary"
+           href="#/portal/signup" data-portal="signup">
+          <i class="ph ph-user-plus" aria-hidden="true"></i>
+          <span>Login</span>
+        </a>
+      </div>
+    {{else}}
+      <div class="navbar-item">
+        <a class="default-header__btn default-header__btn--primary"
+           href="#/portal/signin" data-portal="signin">
+          <i class="ph ph-sign-in" aria-hidden="true"></i>
+          <span>Sign in</span>
+        </a>
+      </div>
+    {{/unless}}
+
+  {{/if}}
+{{/if}}
