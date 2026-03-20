@@ -1,27 +1,76 @@
 {{!< default}}
 
-<section class="section">
-  <div class="container">
+{{#contentFor "head-after"}} 
+    {{#page}}{{#if codeinjection_head}}{{{codeinjection_head}}}{{/if}}{{/page}}
+{{/contentFor}}
 
-    <h1 class="title">Documentation</h1>
+{{#contentFor "foot-after"}}
+    {{#page}}{{#if codeinjection_foot}}{{{codeinjection_foot}}}{{/if}}{{/page}}
+{{/contentFor}}
 
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
-{{!-- The main content area --}}
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
+<main>
 
-    <div class="post-feed">
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
-    </div>
-    {{pagination}}
+    {{!-- HERO --}}
+    {{#page}}
+    <section class="hero is-medium has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
+        <div class="hero-body">
+            <div class="container is-max-widescreen has-text-centered">
+                <h1 class="title is-1">{{title}}</h1>
+                {{#if custom_excerpt}}
+                    <p class="subtitle is-4 mt-4">{{custom_excerpt}}</p>
+                {{/if}}
+            </div>
+        </div>
+    </section>
+    {{/page}}
 
-</div>
+    {{!-- DOCS SECTIONS --}}
+    <section class="section pt-0">
+        <div class="container is-max-widescreen">
+
+            <div class="columns is-multiline">
+
+                {{!-- LOOP ALL TAGS --}}
+                {{#get "tags" limit="all"}}
+                    {{#foreach tags}}
+
+                        {{!-- CHECK: does this tag have docs posts? --}}
+                        {{#get "posts" filter="primary_tag:{{slug}}+tag:hash-docs" limit="1"}}
+                            {{#if posts}}
+
+                                <div class="column is-4">
+
+                                    <div class="card">
+                                        <div class="card-content">
+
+                                            <p class="title is-5">
+                                                <a href="/tag/{{slug}}/">{{name}}</a>
+                                            </p>
+
+                                            <ul>
+                                                {{#get "posts" filter="primary_tag:{{slug}}+tag:hash-docs" limit="5"}}
+                                                    {{#foreach posts}}
+                                                        <li>
+                                                            <a href="{{url}}">{{title}}</a>
+                                                        </li>
+                                                    {{/foreach}}
+                                                {{/get}}
+                                            </ul>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            {{/if}}
+                        {{/get}}
+
+                    {{/foreach}}
+                {{/get}}
+
+            </div>
+
+        </div>
+    </section>
+
 </main>
-
-
-  </div>
-</section>
