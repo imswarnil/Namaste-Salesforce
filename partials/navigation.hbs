@@ -76,3 +76,24 @@
   {{/match}}
 
 {{/foreach}}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+
+    {{#foreach navigation}}
+
+    {
+      "@type": "SiteNavigationElement",
+      "@id": "#nav-{{@index}}",
+      "position": {{@index}},
+      "name": "{{#match label "~^" "- "}}{{replace label "- " ""}}{{else}}{{label}}{{/match}}",
+      "url": "{{url absolute="true"}}"
+    }{{#unless @last}},{{/unless}}
+
+    {{/foreach}}
+
+  ]
+}
+</script>
