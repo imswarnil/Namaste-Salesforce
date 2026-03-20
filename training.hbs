@@ -1,1264 +1,222 @@
 {{!< default}}
+{{!-- =========================================================================
+  training.hbs  ·  /training/  (collection index)
 
-<div class="training-page">
+  CONTEXT:
+    data: page.training  → Ghost page slug "training" supplies hero copy
+    {{posts}}            → paginated #training posts (published_at asc)
+    {{pagination}}       → Ghost pagination object
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       COURSE HERO HEADER
-  ════════════════════════════════════════════════════════════════════════ -->
-  <div class="tp-hero">
-    <div class="tp-hero__inner">
+  PURPOSE:
+    Lists every training post as a card.
+    Each training post is an overview page for one structured course.
+    Individual training posts → post.hbs → post-training partial (hero + modules).
+    Training content posts   → post.hbs → post-training-content partial (reader).
+========================================================================== --}}
 
-      <!-- Breadcrumb -->
-      <nav class="tp-breadcrumb" aria-label="breadcrumb">
-        <a href="/training">All Courses</a>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        <a href="/training/analytics">CRM Analytics</a>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        <span>CRM Analytics Fundamentals</span>
-      </nav>
-
-      <div class="tp-hero__layout">
-
-        <!-- Left: info -->
-        <div class="tp-hero__info">
-          <div class="tp-hero__category">CRM Analytics · Beginner</div>
-          <h1 class="tp-hero__title">CRM Analytics Fundamentals</h1>
-          <p class="tp-hero__description">
-            Learn CRM Analytics from scratch. Build dashboards, work with dataflows,
-            and master SAQL queries with real-world business examples. By the end of
-            this course you will be able to create, share and embed analytics
-            directly inside Salesforce records.
-          </p>
-
-          <!-- Stats row -->
-          <div class="tp-hero__stats">
-            <div class="tp-stat">
-              <svg class="tp-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span>2,100 Enrolled</span>
-            </div>
-            <div class="tp-stat">
-              <svg class="tp-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>6h 40min Total</span>
-            </div>
-            <div class="tp-stat">
-              <svg class="tp-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              <span>7 Modules</span>
-            </div>
-            <div class="tp-stat">
-              <svg class="tp-stat__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              <span>English</span>
-            </div>
-          </div>
-
-          <!-- Overall progress -->
-          <div class="tp-hero__progress">
-            <div class="tp-hero__progress-header">
-              <span class="tp-hero__progress-label">Overall Progress</span>
-              <span class="tp-hero__progress-pct">58%</span>
-            </div>
-            <div class="tp-hero__progress-track">
-              <div class="tp-hero__progress-fill" style="width: 58%"></div>
-            </div>
-            <div class="tp-hero__progress-sub">4 of 7 modules complete</div>
-          </div>
-        </div>
-
-        <!-- Right: enroll card -->
-        <div class="tp-enroll-card">
-          <div class="tp-enroll-card__badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Salesforce Certified
-          </div>
-
-          <div class="tp-enroll-card__thumbnail">
-            <div class="tp-enroll-card__thumb-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
-              <span>Preview Course</span>
-            </div>
-          </div>
-
-          <div class="tp-enroll-card__body">
-            <div class="tp-enroll-card__status">
-              <span class="tp-badge tp-badge--in-progress">In Progress</span>
-            </div>
-            <a href="#modules" class="tp-btn tp-btn--primary tp-btn--full">
-              Continue Learning
-            </a>
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--full">
-              View Certificate
-            </a>
-            <ul class="tp-enroll-card__features">
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Earn a Salesforce credential
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Hands-on Trailhead exercises
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Access on web and mobile
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Lifetime access after enrolment
-              </li>
-            </ul>
-          </div>
-        </div>
-
+{{!-- ── HERO ──────────────────────────────────────────────────────────────── --}}
+<section class="tr-index-hero">
+  <div class="container">
+    <div class="tr-index-hero__inner">
+      <span class="tr-index-hero__eyebrow">
+        <i class="ph ph-graduation-cap" aria-hidden="true"></i>
+        Salesforce Training
+      </span>
+      <h1 class="tr-index-hero__title">
+        {{#if title}}{{title}}{{else}}All Training Courses{{/if}}
+      </h1>
+      <p class="tr-index-hero__lead">
+        {{#if custom_excerpt}}
+          {{custom_excerpt}}
+        {{else}}
+          Structured, step-by-step training paths for every Salesforce role.
+          Free to access — built by practitioners, not marketers.
+        {{/if}}
+      </p>
+      <div class="tr-index-hero__ctas">
+        <button class="button is-white is-medium tr-index-hero__search"
+                type="button" data-ghost-search>
+          <span class="icon is-small">
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </span>
+          <span>Search training…</span>
+        </button>
+        <a href="/courses/" class="button is-medium tr-index-hero__courses-link">
+          <span class="icon is-small">
+            <i class="ph ph-book-open" aria-hidden="true"></i>
+          </span>
+          <span>Browse courses instead</span>
+        </a>
       </div>
     </div>
   </div>
+</section>
 
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       MODULES SECTION
-  ════════════════════════════════════════════════════════════════════════ -->
-  <div class="tp-body" id="modules">
-    <div class="tp-body__inner">
-
-      <!-- Section header -->
-      <div class="tp-section-header">
-        <div class="tp-section-header__left">
-          <h2 class="tp-section-header__title">Course Modules</h2>
-          <span class="tp-section-header__count">7 modules · 38 lessons</span>
-        </div>
-        <div class="tp-section-header__right">
-          <!-- Filter tabs -->
-          <div class="tp-filter-tabs" role="tablist">
-            <button class="tp-filter-tab is-active" role="tab">All</button>
-            <button class="tp-filter-tab" role="tab">In Progress</button>
-            <button class="tp-filter-tab" role="tab">Completed</button>
-            <button class="tp-filter-tab" role="tab">Not Started</button>
-          </div>
-        </div>
+{{!-- ── FILTER PILLS (static) ─────────────────────────────────────────────── --}}
+<div class="tr-index-filters">
+  <div class="container">
+    <div class="tr-index-filters__inner">
+      <span class="tr-index-filters__label">Filter:</span>
+      <div class="tr-index-filters__tabs" role="tablist">
+        <button class="tr-index-filters__tab is-active" role="tab"
+                aria-selected="true" data-filter="all">All levels</button>
+        <button class="tr-index-filters__tab" role="tab"
+                data-filter="beginner">Beginner</button>
+        <button class="tr-index-filters__tab" role="tab"
+                data-filter="intermediate">Intermediate</button>
+        <button class="tr-index-filters__tab" role="tab"
+                data-filter="advanced">Advanced</button>
       </div>
-
-
-      <!-- ─── MODULE GRID ───────────────────────────────────────────────── -->
-      <div class="tp-module-grid">
-
-
-        <!-- MODULE 1 — Completed -->
-        <div class="tp-module-card tp-module-card--complete">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">01</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--complete">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Complete
-            </div>
-          </div>
-          <h3 class="tp-module-card__title">Introduction to CRM Analytics</h3>
-          <p class="tp-module-card__description">
-            Understand the CRM Analytics platform, its architecture, and how it
-            fits into the Salesforce ecosystem.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              45 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              5 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>What is CRM Analytics?</span>
-              <span class="tp-lesson-row__dur">8 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Platform Architecture</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Navigating the App</span>
-              <span class="tp-lesson-row__dur">9 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 2 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:100%"></div>
-            </div>
-            <span>100%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">Review Module</a>
-          </div>
-        </div>
-
-
-        <!-- MODULE 2 — Completed -->
-        <div class="tp-module-card tp-module-card--complete">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">02</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--complete">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Complete
-            </div>
-          </div>
-          <h3 class="tp-module-card__title">Datasets &amp; Dataflows</h3>
-          <p class="tp-module-card__description">
-            Create and manage datasets using the Dataflow editor. Learn how to
-            load, transform and join Salesforce data.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              58 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              6 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Understanding Datasets</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Dataflow Editor Basics</span>
-              <span class="tp-lesson-row__dur">12 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Transformations</span>
-              <span class="tp-lesson-row__dur">11 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 3 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:100%"></div>
-            </div>
-            <span>100%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">Review Module</a>
-          </div>
-        </div>
-
-
-        <!-- MODULE 3 — Completed -->
-        <div class="tp-module-card tp-module-card--complete">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">03</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--complete">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Complete
-            </div>
-          </div>
-          <h3 class="tp-module-card__title">Lenses &amp; Exploration</h3>
-          <p class="tp-module-card__description">
-            Build and save lenses. Use the Explorer UI to slice, dice and
-            visualise your data before committing to a dashboard.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              50 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              5 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Creating Your First Lens</span>
-              <span class="tp-lesson-row__dur">9 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Grouping &amp; Filtering</span>
-              <span class="tp-lesson-row__dur">11 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Chart Types</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 2 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:100%"></div>
-            </div>
-            <span>100%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">Review Module</a>
-          </div>
-        </div>
-
-
-        <!-- MODULE 4 — Completed -->
-        <div class="tp-module-card tp-module-card--complete">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">04</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--complete">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Complete
-            </div>
-          </div>
-          <h3 class="tp-module-card__title">Dashboard Builder</h3>
-          <p class="tp-module-card__description">
-            Design and publish interactive dashboards. Learn layout grids,
-            widget types and connecting widgets via faceting.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              62 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              6 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Dashboard Designer Intro</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Adding Widgets</span>
-              <span class="tp-lesson-row__dur">12 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Faceting</span>
-              <span class="tp-lesson-row__dur">11 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 3 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:100%"></div>
-            </div>
-            <span>100%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">Review Module</a>
-          </div>
-        </div>
-
-
-        <!-- MODULE 5 — In Progress (current) -->
-        <div class="tp-module-card tp-module-card--active">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">05</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--in-progress">
-              In Progress
-            </div>
-          </div>
-          <h3 class="tp-module-card__title">SAQL Fundamentals</h3>
-          <p class="tp-module-card__description">
-            Write SAQL queries to build custom lenses and power advanced
-            dashboard widgets beyond the point-and-click UI.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              55 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              6 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>SAQL Overview</span>
-              <span class="tp-lesson-row__dur">9 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--done">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>Foreach &amp; Group By</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-lesson-row tp-lesson-row--current">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
-              <span>Filters &amp; Projections</span>
-              <span class="tp-lesson-row__dur">11 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 3 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:33%"></div>
-            </div>
-            <span>33%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--primary tp-btn--small tp-btn--full">Continue</a>
-          </div>
-        </div>
-
-
-        <!-- MODULE 6 — Not started -->
-        <div class="tp-module-card tp-module-card--locked">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">06</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--not-started">Not Started</div>
-          </div>
-          <h3 class="tp-module-card__title">Recipes &amp; Data Prep</h3>
-          <p class="tp-module-card__description">
-            Use Data Prep Recipes to clean, blend and enrich datasets with
-            a no-code visual interface.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              48 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              5 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>What are Recipes?</span>
-              <span class="tp-lesson-row__dur">9 min</span>
-            </div>
-            <div class="tp-lesson-row">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Joining Data Sources</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-lesson-row">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Computed Fields</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 2 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:0%"></div>
-            </div>
-            <span>0%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">Start Module</a>
-          </div>
-        </div>
-
-
-        <!-- MODULE 7 — Not started -->
-        <div class="tp-module-card tp-module-card--locked">
-          <div class="tp-module-card__header">
-            <div class="tp-module-card__number">07</div>
-            <div class="tp-module-card__status-badge tp-badge tp-badge--not-started">Not Started</div>
-          </div>
-          <h3 class="tp-module-card__title">Sharing &amp; Security</h3>
-          <p class="tp-module-card__description">
-            Share apps and dashboards with users and groups. Manage row-level
-            security predicates and inheritance rules.
-          </p>
-          <div class="tp-module-card__meta">
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              42 min
-            </span>
-            <span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              5 Lessons
-            </span>
-          </div>
-          <div class="tp-module-card__lessons">
-            <div class="tp-lesson-row">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Sharing Apps</span>
-              <span class="tp-lesson-row__dur">8 min</span>
-            </div>
-            <div class="tp-lesson-row">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Row-Level Security</span>
-              <span class="tp-lesson-row__dur">10 min</span>
-            </div>
-            <div class="tp-lesson-row">
-              <svg class="tp-lesson-row__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Predicate Logic</span>
-              <span class="tp-lesson-row__dur">9 min</span>
-            </div>
-            <div class="tp-module-card__lessons-more">+ 2 more lessons</div>
-          </div>
-          <div class="tp-module-card__progress">
-            <div class="tp-module-card__progress-track">
-              <div class="tp-module-card__progress-fill" style="width:0%"></div>
-            </div>
-            <span>0%</span>
-          </div>
-          <div class="tp-module-card__action">
-            <a href="#" class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">Start Module</a>
-          </div>
-        </div>
-
-
-      </div>
-      <!-- ─── END MODULE GRID ──────────────────────────────────────────── -->
-
-
-      <!-- Pagination -->
-      <nav class="tp-pagination" aria-label="Module pagination">
-        <a href="#" class="tp-pagination__prev" aria-disabled="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          Previous
-        </a>
-        <ul class="tp-pagination__list">
-          <li><a href="#" class="tp-pagination__link is-current" aria-current="page">1</a></li>
-          <li><a href="#" class="tp-pagination__link">2</a></li>
-          <li><a href="#" class="tp-pagination__link">3</a></li>
-        </ul>
-        <a href="#" class="tp-pagination__next">
-          Next
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </a>
-      </nav>
-
     </div>
   </div>
-
 </div>
 
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     PAGE STYLES
-════════════════════════════════════════════════════════════════════════════ -->
-<style>
-/* ─── SLDS tokens ─────────────────────────────────────────────────────────── */
-.training-page {
-  --c-brand:         #0176d3;
-  --c-brand-hover:   #014486;
-  --c-brand-active:  #0b5cab;
-  --c-brand-soft:    rgba(1,118,211,0.08);
-  --c-brand-border:  rgba(1,118,211,0.2);
-  --c-success:       #2e844a;
-  --c-success-soft:  rgba(46,132,74,0.08);
-  --c-success-border:rgba(46,132,74,0.2);
-  --c-warning:       #dd7a01;
-  --c-warning-soft:  rgba(221,122,1,0.08);
-  --c-danger:        #ba0517;
-
-  --c-surface:       #ffffff;
-  --c-surface-alt:   #fafaf9;
-  --c-surface-muted: #f3f2f2;
-  --c-border:        #dddbda;
-  --c-border-soft:   #ecebea;
-  --c-border-strong: #c9c7c5;
-
-  --c-text:          #3e3e3c;
-  --c-text-strong:   #181818;
-  --c-text-weak:     #706e6b;
-  --c-text-inverse:  #ffffff;
-
-  --radius:          0.25rem;
-  --shadow-sm:       0 2px 2px rgba(0,0,0,0.08);
-  --shadow-md:       0 4px 12px rgba(0,0,0,0.12);
-  --shadow-lg:       0 8px 24px rgba(0,0,0,0.14);
-
-  --font: "Salesforce Sans", "Inter", -apple-system, BlinkMacSystemFont,
-          "Segoe UI", Roboto, sans-serif;
-
-  font-family: var(--font);
-  font-size:   0.8125rem;
-  color:       var(--c-text);
-  background:  var(--c-surface-muted);
-}
-
-/* ─── Breadcrumb ─────────────────────────────────────────────────────────── */
-.tp-breadcrumb {
-  display:     flex;
-  align-items: center;
-  gap:         0.375rem;
-  font-size:   0.75rem;
-  color:       var(--c-text-weak);
-  margin-bottom: 1rem;
-  flex-wrap:   wrap;
-}
-
-.tp-breadcrumb a {
-  color:           var(--c-text-weak);
-  text-decoration: none;
-  transition:      color 80ms linear;
-}
-
-.tp-breadcrumb a:hover { color: var(--c-brand); }
-
-.tp-breadcrumb span { color: var(--c-text-strong); font-weight: 700; }
-
-.tp-breadcrumb svg  { color: var(--c-border-strong); flex-shrink: 0; }
-
-/* ─── Hero ───────────────────────────────────────────────────────────────── */
-.tp-hero {
-  background:    var(--c-surface);
-  border-bottom: 1px solid var(--c-border);
-}
-
-.tp-hero__inner {
-  max-width:    80rem;
-  margin-inline:auto;
-  padding:      2rem 1.5rem;
-}
-
-.tp-hero__layout {
-  display:     flex;
-  gap:         2.5rem;
-  align-items: flex-start;
-  flex-wrap:   wrap;
-}
-
-.tp-hero__info { flex: 1 1 28rem; min-width: 0; }
-
-.tp-hero__category {
-  font-size:      0.75rem;
-  font-weight:    700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color:          var(--c-brand);
-  margin-bottom:  0.625rem;
-}
-
-.tp-hero__title {
-  font-size:     1.75rem;
-  font-weight:   700;
-  color:         var(--c-text-strong);
-  line-height:   1.2;
-  margin:        0 0 0.875rem;
-  letter-spacing:-0.01em;
-}
-
-.tp-hero__description {
-  font-size:   0.9375rem;
-  color:       var(--c-text);
-  line-height: 1.65;
-  max-width:   42rem;
-  margin:      0 0 1.25rem;
-}
-
-/* Stats row */
-.tp-hero__stats {
-  display:     flex;
-  flex-wrap:   wrap;
-  gap:         1.25rem;
-  margin-bottom:1.5rem;
-}
-
-.tp-stat {
-  display:     flex;
-  align-items: center;
-  gap:         0.375rem;
-  font-size:   0.8125rem;
-  color:       var(--c-text-weak);
-}
-
-.tp-stat__icon {
-  width:       1rem;
-  height:      1rem;
-  flex-shrink: 0;
-  color:       var(--c-brand);
-}
-
-/* Hero progress */
-.tp-hero__progress {
-  max-width: 36rem;
-}
-
-.tp-hero__progress-header {
-  display:         flex;
-  justify-content: space-between;
-  align-items:     center;
-  margin-bottom:   0.375rem;
-}
-
-.tp-hero__progress-label {
-  font-size:   0.8125rem;
-  font-weight: 700;
-  color:       var(--c-text-strong);
-}
-
-.tp-hero__progress-pct {
-  font-size:   0.8125rem;
-  font-weight: 700;
-  color:       var(--c-brand);
-}
-
-.tp-hero__progress-track {
-  height:        0.5rem;
-  background:    var(--c-surface-muted);
-  border-radius: 999rem;
-  overflow:      hidden;
-  border:        1px solid var(--c-border-soft);
-}
-
-.tp-hero__progress-fill {
-  height:        100%;
-  background:    linear-gradient(90deg, var(--c-brand) 0%, #1b96ff 100%);
-  border-radius: 999rem;
-  transition:    width 600ms ease;
-}
-
-.tp-hero__progress-sub {
-  font-size:  0.75rem;
-  color:      var(--c-text-weak);
-  margin-top: 0.375rem;
-}
-
-/* ─── Enrol card ─────────────────────────────────────────────────────────── */
-.tp-enroll-card {
-  flex:          0 0 20rem;
-  background:    var(--c-surface);
-  border:        1px solid var(--c-border);
-  border-radius: var(--radius);
-  box-shadow:    var(--shadow-lg);
-  overflow:      hidden;
-  align-self:    flex-start;
-  position:      sticky;
-  top:           1rem;
-}
-
-.tp-enroll-card__badge {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  gap:             0.375rem;
-  padding:         0.5rem 1rem;
-  background:      var(--c-brand-soft);
-  border-bottom:   1px solid var(--c-brand-border);
-  color:           var(--c-brand);
-  font-size:       0.75rem;
-  font-weight:     700;
-}
-
-.tp-enroll-card__badge svg {
-  width:  0.875rem;
-  height: 0.875rem;
-}
-
-.tp-enroll-card__thumbnail {
-  background:  var(--c-surface-muted);
-  aspect-ratio:16/9;
-  overflow:    hidden;
-  border-bottom:1px solid var(--c-border-soft);
-}
-
-.tp-enroll-card__thumb-placeholder {
-  width:          100%;
-  height:         100%;
-  display:        flex;
-  flex-direction: column;
-  align-items:    center;
-  justify-content:center;
-  gap:            0.5rem;
-  color:          var(--c-brand);
-  cursor:         pointer;
-  transition:     background 80ms linear;
-
-  &:hover { background: rgba(1,118,211,0.04); }
-}
-
-.tp-enroll-card__thumb-placeholder svg {
-  width:   2.5rem;
-  height:  2.5rem;
-  opacity: 0.6;
-}
-
-.tp-enroll-card__thumb-placeholder span {
-  font-size:   0.75rem;
-  font-weight: 700;
-  color:       var(--c-brand);
-}
-
-.tp-enroll-card__body {
-  padding:        1.25rem;
-  display:        flex;
-  flex-direction: column;
-  gap:            0.75rem;
-}
-
-.tp-enroll-card__status { display: flex; }
-
-.tp-enroll-card__features {
-  list-style: none;
-  margin:     0;
-  padding:    0;
-  border-top: 1px solid var(--c-border-soft);
-  padding-top:0.75rem;
-  display:    flex;
-  flex-direction:column;
-  gap:        0.5rem;
-}
-
-.tp-enroll-card__features li {
-  display:     flex;
-  align-items: center;
-  gap:         0.5rem;
-  font-size:   0.8125rem;
-  color:       var(--c-text-weak);
-}
-
-.tp-enroll-card__features li svg {
-  width:       0.875rem;
-  height:      0.875rem;
-  flex-shrink: 0;
-  color:       var(--c-success);
-}
-
-/* ─── Buttons ────────────────────────────────────────────────────────────── */
-.tp-btn {
-  display:         inline-flex;
-  align-items:     center;
-  justify-content: center;
-  gap:             0.375rem;
-  min-height:      1.875rem;
-  padding:         0 1rem;
-  border:          1px solid transparent;
-  border-radius:   var(--radius);
-  font-family:     var(--font);
-  font-size:       0.8125rem;
-  font-weight:     700;
-  line-height:     1.2;
-  white-space:     nowrap;
-  cursor:          pointer;
-  text-decoration: none;
-  transition:      background-color 80ms linear, border-color 80ms linear, color 80ms linear;
-}
-
-.tp-btn--primary {
-  background:  var(--c-brand);
-  border-color:var(--c-brand);
-  color:       var(--c-text-inverse);
-
-  &:hover, &:focus {
-    background:      var(--c-brand-hover);
-    border-color:    var(--c-brand-hover);
-    color:           var(--c-text-inverse);
-    text-decoration: none;
-  }
-}
-
-.tp-btn--neutral {
-  background:  var(--c-surface);
-  border-color:var(--c-border);
-  color:       var(--c-text-strong);
-
-  &:hover, &:focus {
-    background:      var(--c-surface-alt);
-    border-color:    var(--c-brand);
-    color:           var(--c-text-strong);
-    text-decoration: none;
-  }
-}
-
-.tp-btn--small  { min-height: 1.5rem; font-size: 0.75rem; padding: 0 0.75rem; }
-.tp-btn--full   { width: 100%; }
-
-/* ─── Badges ─────────────────────────────────────────────────────────────── */
-.tp-badge {
-  display:       inline-flex;
-  align-items:   center;
-  gap:           0.25rem;
-  min-height:    1.25rem;
-  padding:       0 0.5rem;
-  border-radius: 999rem;
-  font-size:     0.6875rem;
-  font-weight:   700;
-  line-height:   1;
-  border:        1px solid transparent;
-}
-
-.tp-badge--complete {
-  background:  var(--c-success-soft);
-  border-color:var(--c-success-border);
-  color:       var(--c-success);
-}
-
-.tp-badge--complete svg {
-  width: 0.75rem; height: 0.75rem;
-}
-
-.tp-badge--in-progress {
-  background:  var(--c-brand-soft);
-  border-color:var(--c-brand-border);
-  color:       var(--c-brand);
-}
-
-.tp-badge--not-started {
-  background:  #f3f2f2;
-  border-color:var(--c-border);
-  color:       var(--c-text-weak);
-}
-
-/* ─── Body / section ─────────────────────────────────────────────────────── */
-.tp-body {
-  padding: 2rem 1.5rem;
-}
-
-.tp-body__inner {
-  max-width:    80rem;
-  margin-inline:auto;
-}
-
-/* ─── Section header ─────────────────────────────────────────────────────── */
-.tp-section-header {
-  display:         flex;
-  align-items:     center;
-  justify-content: space-between;
-  margin-bottom:   1.5rem;
-  gap:             1rem;
-  flex-wrap:       wrap;
-}
-
-.tp-section-header__left {
-  display:     flex;
-  align-items: baseline;
-  gap:         0.75rem;
-}
-
-.tp-section-header__title {
-  font-size:   1.25rem;
-  font-weight: 700;
-  color:       var(--c-text-strong);
-  margin:      0;
-}
-
-.tp-section-header__count {
-  font-size: 0.8125rem;
-  color:     var(--c-text-weak);
-}
-
-/* Filter tabs */
-.tp-filter-tabs {
-  display:       flex;
-  gap:           0;
-  border:        1px solid var(--c-border);
-  border-radius: var(--radius);
-  overflow:      hidden;
-  background:    var(--c-surface-alt);
-}
-
-.tp-filter-tab {
-  padding:         0 0.875rem;
-  min-height:      1.875rem;
-  border:          0;
-  border-right:    1px solid var(--c-border);
-  background:      transparent;
-  color:           var(--c-text-weak);
-  font-family:     var(--font);
-  font-size:       0.8125rem;
-  font-weight:     400;
-  cursor:          pointer;
-  white-space:     nowrap;
-  transition:      background-color 80ms linear, color 80ms linear;
-
-  &:last-child { border-right: 0; }
-
-  &:hover { background: var(--c-surface); color: var(--c-text-strong); }
-
-  &.is-active {
-    background:  var(--c-surface);
-    color:       var(--c-brand);
-    font-weight: 700;
-    box-shadow:  inset 0 -2px 0 var(--c-brand);
-  }
-}
-
-/* ─── Module grid ────────────────────────────────────────────────────────── */
-.tp-module-grid {
-  display:               grid;
-  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
-  gap:                   1rem;
-  margin-bottom:         2rem;
-}
-
-/* ─── Module card ────────────────────────────────────────────────────────── */
-.tp-module-card {
-  background:    var(--c-surface);
-  border:        1px solid var(--c-border);
-  border-radius: var(--radius);
-  box-shadow:    var(--shadow-sm);
-  padding:       1.25rem;
-  display:       flex;
-  flex-direction:column;
-  gap:           0.875rem;
-  transition:    box-shadow 80ms linear, border-color 80ms linear;
-
-  &:hover { box-shadow: var(--shadow-md); }
-}
-
-.tp-module-card--active {
-  border-color:var(--c-brand);
-  box-shadow:  0 0 0 1px var(--c-brand), var(--shadow-md);
-}
-
-.tp-module-card--locked {
-  background: var(--c-surface-alt);
-
-  .tp-module-card__number { opacity: 0.45; }
-}
-
-/* Card header row */
-.tp-module-card__header {
-  display:         flex;
-  align-items:     center;
-  justify-content: space-between;
-}
-
-.tp-module-card__number {
-  font-size:      1.5rem;
-  font-weight:    700;
-  line-height:    1;
-  color:          var(--c-border-strong);
-  letter-spacing: -0.03em;
-}
-
-.tp-module-card--active .tp-module-card__number { color: var(--c-brand); }
-.tp-module-card--complete .tp-module-card__number { color: var(--c-success); }
-
-/* Title */
-.tp-module-card__title {
-  font-size:   0.9375rem;
-  font-weight: 700;
-  color:       var(--c-text-strong);
-  margin:      0;
-  line-height: 1.3;
-}
-
-/* Description */
-.tp-module-card__description {
-  font-size:          0.8125rem;
-  color:              var(--c-text-weak);
-  line-height:        1.55;
-  margin:             0;
-  display:            -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow:           hidden;
-}
-
-/* Meta row */
-.tp-module-card__meta {
-  display:     flex;
-  gap:         1rem;
-  flex-wrap:   wrap;
-}
-
-.tp-module-card__meta span {
-  display:     flex;
-  align-items: center;
-  gap:         0.3rem;
-  font-size:   0.75rem;
-  color:       var(--c-text-weak);
-}
-
-.tp-module-card__meta svg {
-  width:       0.875rem;
-  height:      0.875rem;
-  flex-shrink: 0;
-}
-
-/* Lesson list inside card */
-.tp-module-card__lessons {
-  display:       flex;
-  flex-direction:column;
-  gap:           0;
-  border:        1px solid var(--c-border-soft);
-  border-radius: var(--radius);
-  overflow:      hidden;
-  flex:          1 1 auto;
-}
-
-.tp-lesson-row {
-  display:       flex;
-  align-items:   center;
-  gap:           0.5rem;
-  padding:       0.4rem 0.625rem;
-  font-size:     0.75rem;
-  color:         var(--c-text-weak);
-  border-top:    1px solid var(--c-border-soft);
-  transition:    background 80ms linear;
-
-  &:first-child { border-top: 0; }
-  &:hover { background: var(--c-surface-alt); }
-
-  span:first-of-type { flex: 1 1 auto; }
-}
-
-.tp-lesson-row--done   { color: var(--c-text-weak); }
-.tp-lesson-row--current {
-  background:  var(--c-brand-soft);
-  color:       var(--c-brand);
-  font-weight: 700;
-}
-
-.tp-lesson-row__icon {
-  width:       0.875rem;
-  height:      0.875rem;
-  flex-shrink: 0;
-}
-
-.tp-lesson-row--done   .tp-lesson-row__icon { color: var(--c-success); }
-.tp-lesson-row--current .tp-lesson-row__icon { color: var(--c-brand);   }
-
-.tp-lesson-row__dur {
-  font-size:   0.6875rem;
-  color:       var(--c-text-weak);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.tp-module-card__lessons-more {
-  padding:    0.375rem 0.625rem;
-  font-size:  0.6875rem;
-  color:      var(--c-brand);
-  font-weight:700;
-  border-top: 1px solid var(--c-border-soft);
-  cursor:     pointer;
-}
-
-/* Progress bar inside card */
-.tp-module-card__progress {
-  display:     flex;
-  align-items: center;
-  gap:         0.75rem;
-  font-size:   0.75rem;
-  font-weight: 700;
-  color:       var(--c-text-weak);
-}
-
-.tp-module-card--complete .tp-module-card__progress { color: var(--c-success); }
-.tp-module-card--active   .tp-module-card__progress { color: var(--c-brand);   }
-
-.tp-module-card__progress-track {
-  flex:          1 1 auto;
-  height:        0.375rem;
-  background:    var(--c-surface-muted);
-  border-radius: 999rem;
-  overflow:      hidden;
-  border:        1px solid var(--c-border-soft);
-}
-
-.tp-module-card__progress-fill {
-  height:        100%;
-  background:    var(--c-brand);
-  border-radius: 999rem;
-  transition:    width 400ms ease;
-}
-
-.tp-module-card--complete .tp-module-card__progress-fill {
-  background: var(--c-success);
-}
-
-/* Card action */
-.tp-module-card__action { margin-top: auto; }
-
-/* ─── Pagination ─────────────────────────────────────────────────────────── */
-.tp-pagination {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  gap:             0.5rem;
-  margin-top:      2rem;
-  flex-wrap:       wrap;
-}
-
-.tp-pagination__prev,
-.tp-pagination__next {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.25rem;
-  min-height:      1.875rem;
-  padding:         0 0.875rem;
-  border:          1px solid var(--c-border);
-  border-radius:   var(--radius);
-  background:      var(--c-surface);
-  color:           var(--c-text-strong);
-  font-size:       0.8125rem;
-  font-weight:     700;
-  text-decoration: none;
-  transition:      border-color 80ms linear, background 80ms linear;
-
-  svg { width: 1rem; height: 1rem; }
-
-  &:hover {
-    background:      var(--c-surface-alt);
-    border-color:    var(--c-brand);
-    text-decoration: none;
-    color:           var(--c-text-strong);
-  }
-
-  &[aria-disabled="true"] {
-    opacity: 0.45;
-    pointer-events: none;
-  }
-}
-
-.tp-pagination__list {
-  display:     flex;
-  align-items: center;
-  gap:         0.25rem;
-  list-style:  none;
-  margin:      0;
-  padding:     0;
-}
-
-.tp-pagination__link {
-  display:         inline-flex;
-  align-items:     center;
-  justify-content: center;
-  width:           2rem;
-  height:          1.875rem;
-  border:          1px solid var(--c-border);
-  border-radius:   var(--radius);
-  background:      var(--c-surface);
-  color:           var(--c-text-strong);
-  font-size:       0.8125rem;
-  font-weight:     700;
-  text-decoration: none;
-  transition:      border-color 80ms linear, background 80ms linear, color 80ms linear;
-
-  &:hover {
-    border-color:    var(--c-brand);
-    background:      var(--c-surface-alt);
-    text-decoration: none;
-  }
-
-  &.is-current {
-    background:  var(--c-brand);
-    border-color:var(--c-brand);
-    color:       #fff;
-  }
-}
-
-/* ─── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 1023px) {
-  .tp-hero__layout { flex-direction: column; }
-  .tp-enroll-card  { position: static; width: 100%; flex: none; }
-  .tp-module-grid  { grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
-}
-
-@media (max-width: 640px) {
-  .tp-hero__inner, .tp-body { padding-inline: 1rem; }
-  .tp-hero__title  { font-size: 1.375rem; }
-  .tp-module-grid  { grid-template-columns: 1fr; }
-  .tp-section-header { flex-direction: column; align-items: flex-start; }
-  .tp-filter-tabs  { width: 100%; overflow-x: auto; }
-}
-</style>
+{{!-- ── TRAINING CARDS ──────────────────────────────────────────────────────── --}}
+<section class="tr-index-body">
+  <div class="container">
+
+    {{#if posts}}
+      <div class="columns is-multiline tr-card-grid">
+        {{#foreach posts}}
+          <div class="column is-12-mobile is-6-tablet is-4-desktop">
+            <a href="{{url}}" class="tr-card">
+
+              {{!-- Cover / thumbnail --}}
+              <div class="tr-card__cover">
+                {{#if feature_image}}
+                  <img src="{{img_url feature_image size="m"}}"
+                       alt="{{title}}" loading="lazy">
+                {{else}}
+                  <div class="tr-card__cover-placeholder" aria-hidden="true">
+                    <i class="ph ph-chalkboard-teacher"></i>
+                  </div>
+                {{/if}}
+                {{!-- Level badge from internal tags --}}
+                {{#foreach tags visibility="internal"}}
+                  {{#match slug "~^" "hash-training-level-"}}
+                    {{#if description}}
+                      <span class="tr-card__level-badge">{{description}}</span>
+                    {{/if}}
+                  {{/match}}
+                {{/foreach}}
+              </div>
+
+              {{!-- Card body --}}
+              <div class="tr-card__body">
+
+                {{!-- Category label --}}
+                {{#if primary_tag}}
+                  <span class="tr-card__category">{{primary_tag.name}}</span>
+                {{/if}}
+
+                <h2 class="tr-card__title">{{title}}</h2>
+
+                {{#if custom_excerpt}}
+                  <p class="tr-card__excerpt">{{custom_excerpt}}</p>
+                {{else}}
+                  <p class="tr-card__excerpt">{{excerpt words="18"}}…</p>
+                {{/if}}
+
+                {{!-- Meta row --}}
+                <div class="tr-card__meta">
+                  {{!-- Module count --}}
+                  <span class="tr-card__meta-item">
+                    <i class="ph ph-stack" aria-hidden="true"></i>
+                    {{#get "posts"
+                      filter="tag:hash-training-content+primary_tag:{{slug}}"
+                      limit="1"
+                    }}
+                      <span id="tc-{{../slug}}">Modules</span>
+                    {{/get}}
+                  </span>
+
+                  {{!-- Duration from internal tag --}}
+                  {{#foreach tags visibility="internal"}}
+                    {{#match slug "~^" "hash-training-duration-"}}
+                      {{#if description}}
+                        <span class="tr-card__meta-item">
+                          <i class="ph ph-clock" aria-hidden="true"></i>
+                          {{description}}
+                        </span>
+                      {{/if}}
+                    {{/match}}
+                  {{/foreach}}
+                </div>
+
+              </div>
+
+              {{!-- Card footer --}}
+              <div class="tr-card__footer">
+                {{#primary_author}}
+                  <div class="tr-card__author">
+                    {{#if profile_image}}
+                      <img src="{{img_url profile_image size="xxs"}}"
+                           alt="{{name}}" loading="lazy"
+                           class="tr-card__author-img">
+                    {{else}}
+                      <span class="tr-card__author-placeholder">
+                        <i class="ph ph-user-circle" aria-hidden="true"></i>
+                      </span>
+                    {{/if}}
+                    <span class="tr-card__author-name">{{name}}</span>
+                  </div>
+                {{/primary_author}}
+                <span class="tr-card__cta">
+                  Start
+                  <i class="ph ph-arrow-right" aria-hidden="true"></i>
+                </span>
+              </div>
+
+            </a>
+          </div>
+        {{/foreach}}
+      </div>
+
+      {{!-- Pagination --}}
+      {{#if pagination.pages}}
+        {{pagination}}
+      {{/if}}
+
+    {{else}}
+      <div class="tr-index-empty">
+        <i class="ph ph-books tr-index-empty__icon" aria-hidden="true"></i>
+        <p class="tr-index-empty__title">No training courses yet</p>
+        <p class="tr-index-empty__body">
+          Create a post with the <code>#training</code> internal tag to
+          create a training course.
+        </p>
+      </div>
+    {{/if}}
+
+  </div>
+</section>
+
+{{!-- ── CONTRIBUTE BAND ─────────────────────────────────────────────────────── --}}
+<section class="tr-contribute">
+  <div class="container">
+    <div class="tr-contribute__inner">
+      <div class="tr-contribute__icon" aria-hidden="true">
+        <i class="ph ph-chalkboard-teacher"></i>
+      </div>
+      <div class="tr-contribute__text">
+        <h2 class="tr-contribute__title">
+          Want to create a training course?
+        </h2>
+        <p class="tr-contribute__lead">
+          If you have real Salesforce project experience, we'd love to
+          feature your training on this platform. All contributors get
+          credited and the course is free for the community.
+        </p>
+      </div>
+      <div class="tr-contribute__actions">
+        <a href="/contact/?ref=training-author"
+           class="button is-primary is-medium">
+          <span class="icon is-small">
+            <i class="ph ph-pencil-line" aria-hidden="true"></i>
+          </span>
+          <span>Become an instructor</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

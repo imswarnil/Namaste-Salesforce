@@ -1,0 +1,366 @@
+{{!-- =========================================================================
+  partials/post-training.hbs  ·  Individual Training Overview
+  Called from post.hbs via:  {{#has tag="#training"}} → {{> "post-training"}}
+
+  RENDERS: The hero + module grid for a single training (#training post).
+  URL pattern: /training/{slug}/
+
+  CONTENT MODEL:
+    This post (context) = the training overview
+    {{slug}} of this post = the primary_tag of its content posts
+    Content posts fetched: filter="tag:hash-training-content+primary_tag:{{slug}}"
+
+  MODULE GRID: Each module card links to its content post at
+    /training/{this-post-slug}/{content-slug}/
+
+  STATS: Read from internal tags:
+    hash-training-duration-* → duration description
+    hash-training-level-*    → level description
+
+  NOTE: Progress (58% etc.) requires membership data not available in HBS.
+  Cards show static "Not Started" badge — can be enhanced with JS + members API.
+========================================================================== --}}
+
+<div class="tp-page">
+
+  {{!-- ════════════════════════════════════════════════════════════════════
+    HERO SECTION
+  ════════════════════════════════════════════════════════════════════════ --}}
+  <div class="tp-hero">
+    <div class="container">
+
+      {{!-- Breadcrumb --}}
+      <nav class="tp-breadcrumb" aria-label="breadcrumb">
+        <a href="/">Home</a>
+        <i class="ph ph-caret-right" aria-hidden="true"></i>
+        <a href="/training/">Training</a>
+        {{#if primary_tag}}
+          <i class="ph ph-caret-right" aria-hidden="true"></i>
+          <a href="{{primary_tag.url}}">{{primary_tag.name}}</a>
+        {{/if}}
+        <i class="ph ph-caret-right" aria-hidden="true"></i>
+        <span>{{title}}</span>
+      </nav>
+
+      <div class="tp-hero__layout">
+
+        {{!-- Left: info --}}
+        <div class="tp-hero__info">
+
+          {{!-- Category + level --}}
+          <div class="tp-hero__category">
+            {{#if primary_tag}}{{primary_tag.name}}{{else}}Training{{/if}}
+            {{#foreach tags visibility="internal"}}
+              {{#match slug "~^" "hash-training-level-"}}
+                {{#if description}} · {{description}}{{/if}}
+              {{/match}}
+            {{/foreach}}
+          </div>
+
+          <h1 class="tp-hero__title">{{title}}</h1>
+
+          {{#if custom_excerpt}}
+            <p class="tp-hero__description">{{custom_excerpt}}</p>
+          {{else}}
+            <p class="tp-hero__description">{{excerpt words="40"}}</p>
+          {{/if}}
+
+          {{!-- Stats row --}}
+          <div class="tp-hero__stats">
+
+            {{!-- Module count --}}
+            {{#get "posts"
+              filter="tag:hash-training-content+primary_tag:{{slug}}"
+              limit="all"
+            }}
+              <div class="tp-stat">
+                <i class="ph ph-stack tp-stat__icon" aria-hidden="true"></i>
+                <span>{{posts.length}} Modules</span>
+              </div>
+            {{/get}}
+
+            {{!-- Duration from internal tag --}}
+            {{#foreach tags visibility="internal"}}
+              {{#match slug "~^" "hash-training-duration-"}}
+                {{#if description}}
+                  <div class="tp-stat">
+                    <i class="ph ph-clock tp-stat__icon" aria-hidden="true"></i>
+                    <span>{{description}}</span>
+                  </div>
+                {{/if}}
+              {{/match}}
+            {{/foreach}}
+
+            {{!-- Level from internal tag --}}
+            {{#foreach tags visibility="internal"}}
+              {{#match slug "~^" "hash-training-level-"}}
+                {{#if description}}
+                  <div class="tp-stat">
+                    <i class="ph ph-signal-high tp-stat__icon" aria-hidden="true"></i>
+                    <span>{{description}}</span>
+                  </div>
+                {{/if}}
+              {{/match}}
+            {{/foreach}}
+
+            <div class="tp-stat">
+              <i class="ph ph-globe tp-stat__icon" aria-hidden="true"></i>
+              <span>English</span>
+            </div>
+
+            <div class="tp-stat">
+              <i class="ph ph-calendar tp-stat__icon" aria-hidden="true"></i>
+              <span>Updated {{date updated_at format="MMM YYYY"}}</span>
+            </div>
+
+          </div>
+
+          {{!-- Author --}}
+          {{#primary_author}}
+            <div class="tp-hero__author">
+              {{#if profile_image}}
+                <img src="{{img_url profile_image size="xs"}}"
+                     alt="{{name}}" loading="lazy"
+                     class="tp-hero__author-img">
+              {{else}}
+                <span class="tp-hero__author-placeholder">
+                  <i class="ph ph-user-circle" aria-hidden="true"></i>
+                </span>
+              {{/if}}
+              <div class="tp-hero__author-info">
+                <p class="tp-hero__author-label">Created by</p>
+                <p class="tp-hero__author-name">{{name}}</p>
+              </div>
+            </div>
+          {{/primary_author}}
+
+        </div>
+
+        {{!-- Right: enroll / start card --}}
+        <div class="tp-enroll-card">
+
+          <div class="tp-enroll-card__badge">
+            <i class="ph ph-seal-check" aria-hidden="true"></i>
+            Salesforce Verified
+          </div>
+
+          {{!-- Thumbnail / cover --}}
+          {{#if feature_image}}
+            <div class="tp-enroll-card__thumbnail">
+              <img src="{{img_url feature_image size="m"}}"
+                   alt="{{title}}" loading="lazy">
+            </div>
+          {{else}}
+            <div class="tp-enroll-card__thumbnail tp-enroll-card__thumbnail--placeholder">
+              <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
+              <span>Preview</span>
+            </div>
+          {{/if}}
+
+          <div class="tp-enroll-card__body">
+            {{!-- First module CTA --}}
+            {{#get "posts"
+              filter="tag:hash-training-content+primary_tag:{{slug}}"
+              order="published_at asc"
+              limit="1"
+            }}
+              {{#foreach posts}}
+                <a href="{{url}}" class="tp-btn tp-btn--primary tp-btn--full">
+                  <i class="ph ph-rocket-launch" aria-hidden="true"></i>
+                  Start Training
+                </a>
+              {{else}}
+                <span class="tp-btn tp-btn--primary tp-btn--full tp-btn--disabled">
+                  Coming soon
+                </span>
+              {{/foreach}}
+            {{/get}}
+
+            <a href="/training/" class="tp-btn tp-btn--neutral tp-btn--full">
+              <i class="ph ph-arrow-left" aria-hidden="true"></i>
+              All training courses
+            </a>
+
+            <ul class="tp-enroll-card__features">
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Free forever — no paywall
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Hands-on real-world examples
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Access on web and mobile
+              </li>
+              <li>
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                Updated regularly
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- ════════════════════════════════════════════════════════════════════
+    ABOUT CONTENT (the post's body)
+  ════════════════════════════════════════════════════════════════════════ --}}
+  {{#if content}}
+    <div class="tp-about">
+      <div class="container">
+        <div class="tp-about__inner">
+          <h2 class="tp-about__heading">About this training</h2>
+          <div class="content gh-content tp-about__body">
+            {{content}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  {{!-- ════════════════════════════════════════════════════════════════════
+    MODULE GRID
+  ════════════════════════════════════════════════════════════════════════ --}}
+  <div class="tp-modules" id="modules">
+    <div class="container">
+
+      {{!-- Section header --}}
+      <div class="tp-modules__header">
+        <div class="tp-modules__header-left">
+          <h2 class="tp-modules__title">Course Modules</h2>
+          {{#get "posts"
+            filter="tag:hash-training-content+primary_tag:{{slug}}"
+            limit="all"
+          }}
+            <span class="tp-modules__count">
+              {{posts.length}} modules
+            </span>
+          {{/get}}
+        </div>
+      </div>
+
+      {{!-- Module cards --}}
+      {{#get "posts"
+        filter="tag:hash-training-content+primary_tag:{{slug}}"
+        order="published_at asc"
+        limit="100"
+        include="tags"
+      }}
+
+        {{#if posts}}
+          <div class="tp-module-grid">
+            {{#foreach posts}}
+              <div class="tp-module-card">
+
+                {{!-- Card header: number + badge --}}
+                <div class="tp-module-card__header">
+                  <div class="tp-module-card__number">
+                    {{@number}}
+                  </div>
+                  <span class="tp-badge tp-badge--not-started">
+                    Not Started
+                  </span>
+                </div>
+
+                <h3 class="tp-module-card__title">{{title}}</h3>
+
+                {{#if custom_excerpt}}
+                  <p class="tp-module-card__description">{{custom_excerpt}}</p>
+                {{else}}
+                  <p class="tp-module-card__description">
+                    {{excerpt words="20"}}…
+                  </p>
+                {{/if}}
+
+                <div class="tp-module-card__meta">
+                  <span>
+                    <i class="ph ph-clock" aria-hidden="true"></i>
+                    {{reading_time}}
+                  </span>
+                  {{#if feature_image}}
+                    <span>
+                      <i class="ph ph-image" aria-hidden="true"></i>
+                      Has media
+                    </span>
+                  {{/if}}
+                </div>
+
+                {{!-- Progress bar (static — no progress tracking without members API) --}}
+                <div class="tp-module-card__progress">
+                  <div class="tp-module-card__progress-track">
+                    <div class="tp-module-card__progress-fill"
+                         style="width:0%"></div>
+                  </div>
+                  <span>0%</span>
+                </div>
+
+                <div class="tp-module-card__action">
+                  <a href="{{url}}"
+                     class="tp-btn tp-btn--neutral tp-btn--small tp-btn--full">
+                    <i class="ph ph-play-circle" aria-hidden="true"></i>
+                    Start Module
+                  </a>
+                </div>
+
+              </div>
+            {{/foreach}}
+          </div>
+
+        {{else}}
+          <div class="tp-modules__empty">
+            <i class="ph ph-stack" aria-hidden="true"></i>
+            <p>No modules yet.</p>
+            <p>Create posts with tag <code>#training-content</code> and
+               set primary_tag to <strong>{{../../slug}}</strong>.</p>
+          </div>
+        {{/if}}
+
+      {{/get}}
+
+    </div>
+  </div>
+
+  {{!-- Sticky bottom bar (desktop) --}}
+  <div class="tp-sticky-bar is-hidden-touch" id="tpStickyBar">
+    <div class="container">
+      <div class="tp-sticky-bar__inner">
+        <span class="tp-sticky-bar__title">{{title}}</span>
+        {{#get "posts"
+          filter="tag:hash-training-content+primary_tag:{{slug}}"
+          order="published_at asc"
+          limit="1"
+        }}
+          {{#foreach posts}}
+            <a href="{{url}}" class="tp-btn tp-btn--primary">
+              Start Training
+              <i class="ph ph-arrow-right" aria-hidden="true"></i>
+            </a>
+          {{/foreach}}
+        {{/get}}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // Show sticky bar after scrolling past hero
+  var bar  = document.getElementById('tpStickyBar');
+  var hero = document.querySelector('.tp-hero');
+  if (!bar || !hero) return;
+
+  function onScroll() {
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    bar.classList.toggle('is-visible', heroBottom < 0);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>

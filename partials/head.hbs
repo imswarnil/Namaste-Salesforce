@@ -1,3 +1,4 @@
+<head>
 
     {{!-- Basic meta - advanced meta is output with {ghost_head} below --}}
     <title>{{meta_title}}</title>
@@ -10,7 +11,20 @@
     <link rel="preload" as="script" href="{{asset "built/casper.js"}}" />
     <link rel="stylesheet" type="text/css" href="{{asset "built/main.css"}}" />
 
-    
+    {{!-- ══════════════════════════════════════════════════════════════
+      Theme detection — MUST run inline before <body> to prevent FOUC.
+      This is the ONLY place this script lives. head.hbs does NOT repeat it.
+    ══════════════════════════════════════════════════════════════════ --}}
+    <script>
+    (function () {
+        var k = 'site-color-scheme';
+        var s = localStorage.getItem(k);
+        var t = (s === 'light' || s === 'dark') ? s
+              : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-color-scheme', t);
+    })();
+    </script>
+
 
     {{!-- Theme assets - use the {asset} helper to reference styles & scripts,
     this will take care of caching and cache-busting automatically --}}
@@ -27,4 +41,4 @@
 })();
 </script>
     {{ghost_head}}
-
+</head>
