@@ -65,9 +65,15 @@
       "@id": "{{@site.url}}/#site-navigation",
       "name": "Primary Navigation",
       "hasPart": [
-        {{#foreach navigation}}{{#match label "~^" "- "}}{{else}}
-        { "@type": "SiteNavigationElement", "name": "{{label}}", "url": "{{url absolute="true"}}", "position": {{@number}} }{{#unless @last}},{{/unless}}
-        {{/match}}{{/foreach}}
+        {{#foreach navigation}}
+        {{#unless @first}},{{/unless}}
+        {
+          "@type": "SiteNavigationElement",
+          "name": "{{label}}",
+          "url": "{{url absolute="true"}}",
+          "position": {{@number}}
+        }
+        {{/foreach}}
       ]
     },
     {

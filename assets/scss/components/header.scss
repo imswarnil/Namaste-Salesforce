@@ -429,20 +429,57 @@ $_mw: v.$nav-more-w;              // 36rem     More panel width
   &:active { background: var(--slds-brand-tint-1); }
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 
-  // Mobile: expand to full row
-  @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    width:         100%;
-    height:        $_m;
-    border-radius: v.$radius-sm;
-    background:    var(--theme-surface-subtle);
-    border:        1px solid var(--theme-border);
-    padding:       0 0.875rem;
-    justify-content: flex-start;
-    gap:           0.625rem;
-    font-size:     v.$font-size-sm;
-    color:         var(--theme-text-strong);
-    &::after { content: attr(aria-label); font-size: v.$font-size-sm; }
-    &:hover  { background: var(--slds-brand-tint-1); border-color: var(--theme-brand); color: var(--theme-brand); }
+  // Mobile toolbar (search + theme in .default-header__mobile-tools):
+  // Stay as compact icon squares — no expansion, no label.
+  // CSS tooltip appears above on :focus-visible for a11y.
+  .default-header__mobile-tools & {
+    @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+      width:  $_i;
+      height: $_i;
+      background: transparent;
+      border: none;
+      position: relative;
+
+      // CSS tooltip via ::after
+      &::after {
+        content:        attr(aria-label);
+        position:       absolute;
+        bottom:         calc(100% + 6px);
+        left:           50%;
+        transform:      translateX(-50%);
+        white-space:    nowrap;
+        background:     var(--theme-text-strong);
+        color:          var(--theme-surface-card);
+        font-size:      0.625rem;
+        font-weight:    600;
+        padding:        0.2rem 0.5rem;
+        border-radius:  v.$radius-sm;
+        pointer-events: none;
+        opacity:        0;
+        @include mx.transition(opacity, 120ms, ease);
+        z-index: 500;
+      }
+
+      &:hover::after,
+      &:focus-visible::after { opacity: 1; }
+    }
+  }
+
+  // Mobile actions rail (inside the slide-down menu): expand to labelled full-width row
+  .default-header__actions & {
+    @media screen and (max-width: #{v.$bp-desktop - 1px}) {
+      width:           100%;
+      height:          $_m;
+      border-radius:   v.$radius-sm;
+      background:      var(--theme-surface-subtle);
+      border:          1px solid var(--theme-border);
+      padding:         0 0.875rem;
+      justify-content: flex-start;
+      gap:             0.625rem;
+      color:           var(--theme-text-strong);
+      &::after { content: attr(aria-label); font-size: v.$font-size-sm; }
+      &:hover  { background: var(--slds-brand-tint-1); border-color: var(--theme-brand); color: var(--theme-brand); }
+    }
   }
 }
 
@@ -651,7 +688,12 @@ $_mw: v.$nav-more-w;              // 36rem     More panel width
 //  2. MORE MEGA-DROPDOWN  (.dh-more-*)
 // =============================================================================
 
-.dh-more-wrap { position: relative; align-self: center; }
+.dh-more-wrap {
+  position:   relative;
+  align-self: center;
+
+  @media screen and (max-width: #{v.$bp-desktop - 1px}) { width: 100%; }
+}
 
 // Trigger button
 .dh-more-btn {
@@ -675,9 +717,20 @@ $_mw: v.$nav-more-w;              // 36rem     More panel width
   &:focus-visible { @include mx.focus-ring(0.15rem); outline: none; }
 
   @media screen and (max-width: #{v.$bp-desktop - 1px}) {
-    width: 100%; height: $_m; border-radius: v.$radius-sm;
-    background: var(--theme-surface-subtle); border: 1px solid var(--theme-border);
-    color: var(--theme-text-strong); font-size: v.$font-size-sm;
+    width:           100%;
+    height:          $_m;
+    border-radius:   v.$radius-sm;
+    background:      var(--slds-brand-tint-1);
+    border:          1px solid var(--slds-brand-tint-2);
+    color:           var(--theme-brand);
+    font-size:       v.$font-size-sm;
+    justify-content: space-between;  // label left, caret right
+
+    &:hover, &.is-open {
+      background:   var(--theme-brand);
+      border-color: var(--theme-brand);
+      color:        #{v.$white};
+    }
   }
 }
 
