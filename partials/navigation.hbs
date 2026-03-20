@@ -1,23 +1,26 @@
 {{!-- =========================================================================
   partials/navigation.hbs  ·  Namaste Salesforce
 
-  Outputs Ghost primary navigation as .default-header__nav-item links.
+  Outputs Ghost primary navigation as semantic anchor tags.
 
   CSS CLASS CONTRACT (must match _header.scss exactly):
     .default-header__nav-item   — every link (top-level + child)
     .default-header__nav-icon   — icon span (aria-hidden)
     .default-header__nav-label  — text label span
-    [data-child="true"]         — child item → JS builds flyout
+    [data-child="true"]         — child item; JS moves it into a flyout
 
   DROPDOWN CONVENTION:
-    Prefix any Ghost Admin nav label with "- " (dash + space) to make it a
-    dropdown child of the item above it. JS strips the prefix and builds
-    the hover flyout on desktop, tap-to-open on mobile.
+    Prefix any Ghost Admin nav label with "- " (dash + space) to make it
+    a dropdown child of the preceding item. JS in header.hbs:
+      • Strips the "- " prefix from the visible label
+      • Wraps parent + children in .default-header__dropdown-wrap
+      • Desktop: hover-to-open flyout
+      • Mobile: tap-to-open accordion
 ========================================================================== --}}
 
 {{#foreach navigation}}
 
-  {{!-- ── CHILD item — label starts with "- " ─────────────────────────────── --}}
+  {{!-- ── CHILD ITEM — label starts with "- " ─────────────────────────────── --}}
   {{#match label "~^" "- "}}
     <a
       class="default-header__nav-item{{#if current}} is-active{{/if}}"
@@ -27,20 +30,20 @@
       {{#if current}}aria-current="page"{{/if}}
     >
       <span class="default-header__nav-icon" aria-hidden="true">
-        {{#match slug "=" "admin"}}            <i class="ph ph-gear-six"></i>
-        {{else match slug "=" "developer"}}    <i class="ph ph-code"></i>
-        {{else match slug "=" "architect"}}    <i class="ph ph-tree-structure"></i>
-        {{else match slug "=" "crm-analytics"}}<i class="ph ph-chart-line-up"></i>
+        {{#match slug "=" "admin"}}             <i class="ph ph-gear-six"></i>
+        {{else match slug "=" "developer"}}     <i class="ph ph-code"></i>
+        {{else match slug "=" "architect"}}     <i class="ph ph-tree-structure"></i>
+        {{else match slug "=" "crm-analytics"}} <i class="ph ph-chart-line-up"></i>
         {{else match slug "=" "certifications"}}<i class="ph ph-certificate"></i>
-        {{else match slug "=" "resources"}}    <i class="ph ph-books"></i>
-        {{else match slug "=" "docs"}}         <i class="ph ph-file-text"></i>
-        {{else}}                               <i class="ph ph-minus"></i>
+        {{else match slug "=" "resources"}}     <i class="ph ph-books"></i>
+        {{else match slug "=" "docs"}}          <i class="ph ph-file-text"></i>
+        {{else}}                                <i class="ph ph-minus"></i>
         {{/match}}
       </span>
       <span class="default-header__nav-label">{{label}}</span>
     </a>
 
-  {{!-- ── TOP-LEVEL item ─────────────────────────────────────────────────────── --}}
+  {{!-- ── TOP-LEVEL ITEM ──────────────────────────────────────────────────── --}}
   {{else}}
     <a
       class="default-header__nav-item{{#if current}} is-active{{/if}}"

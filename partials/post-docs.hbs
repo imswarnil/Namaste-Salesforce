@@ -1,0 +1,45 @@
+
+<div class="columns">
+
+  <!-- SIDEBAR -->
+  <aside class="column is-3">
+    <div class="sidebar">
+
+      {{#get "tags" limit="all"}}
+        {{#foreach tags}}
+
+          {{#get "posts" filter="primary_tag:{{slug}}+tag:docs" limit="1"}}
+            {{#if posts}}
+
+              <div class="menu">
+                <p class="menu-label">{{name}}</p>
+
+                <ul class="menu-list">
+                  {{#get "posts" filter="primary_tag:{{slug}}+tag:docs" limit="all"}}
+                    {{#foreach posts}}
+                      <li>
+                        <a href="{{url}}" class="{{#if current}}is-active{{/if}}">
+                          {{title}}
+                        </a>
+                      </li>
+                    {{/foreach}}
+                  {{/get}}
+                </ul>
+              </div>
+
+            {{/if}}
+          {{/get}}
+
+        {{/foreach}}
+      {{/get}}
+
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="column is-9 content">
+    <h1>{{title}}</h1>
+    {{content}}
+  </main>
+
+</div>
