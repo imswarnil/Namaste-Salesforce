@@ -1,88 +1,75 @@
 {{!-- =========================================================================
   partials/navigation.hbs  ·  Namaste Salesforce
 
-  RENDERS: Ghost primary navigation as .default-header__nav-item links.
-  USED IN: header.hbs inside #defaultNavLinks and #blogNavLinks
+  Outputs Ghost primary navigation as .default-header__nav-item links.
 
-  ICON CONTRACT (must match _header.scss):
-    .default-header__nav-item   — every link (top-level and child)
+  CSS CLASS CONTRACT (must match _header.scss exactly):
+    .default-header__nav-item   — every link (top-level + child)
     .default-header__nav-icon   — icon span (aria-hidden)
-    .default-header__nav-label  — text span
-    [data-child="true"]         — marks child items for JS dropdown builder
+    .default-header__nav-label  — text label span
+    [data-child="true"]         — child item → JS builds flyout
 
   DROPDOWN CONVENTION:
-    Add label "- My Child Item" (dash + space prefix) in Ghost Admin
-    → renders with data-child="true"
-    → JS in header.hbs strips the "- " and wraps it in a dropdown list
-    Works for any depth; nesting is flat (one level of children only)
-
-  ICON MAPPING:
-    Recognised slugs get a specific Phosphor icon.
-    Unknown slugs fall back to ph-circle-dashed.
-    Add new slugs to the match chain below to customise.
+    Prefix any Ghost Admin nav label with "- " (dash + space) to make it a
+    dropdown child of the item above it. JS strips the prefix and builds
+    the hover flyout on desktop, tap-to-open on mobile.
 ========================================================================== --}}
 
 {{#foreach navigation}}
 
-  {{!-- ── CHILD ITEM — label starts with "- " ─────────────────────────────── --}}
+  {{!-- ── CHILD item — label starts with "- " ─────────────────────────────── --}}
   {{#match label "~^" "- "}}
     <a
       class="default-header__nav-item{{#if current}} is-active{{/if}}"
       href="{{url absolute="true"}}"
       data-child="true"
-      data-nav-slug="{{slug}}"
+      data-sound="tick"
       {{#if current}}aria-current="page"{{/if}}
     >
       <span class="default-header__nav-icon" aria-hidden="true">
-        {{!-- Icon for child items — generic nav icons --}}
         {{#match slug "=" "admin"}}            <i class="ph ph-gear-six"></i>
         {{else match slug "=" "developer"}}    <i class="ph ph-code"></i>
         {{else match slug "=" "architect"}}    <i class="ph ph-tree-structure"></i>
         {{else match slug "=" "crm-analytics"}}<i class="ph ph-chart-line-up"></i>
         {{else match slug "=" "certifications"}}<i class="ph ph-certificate"></i>
         {{else match slug "=" "resources"}}    <i class="ph ph-books"></i>
-        {{else match slug "=" "path"}}         <i class="ph ph-path"></i>
         {{else match slug "=" "docs"}}         <i class="ph ph-file-text"></i>
-        {{else}}                               <i class="ph ph-dot-outline"></i>
+        {{else}}                               <i class="ph ph-minus"></i>
         {{/match}}
       </span>
       <span class="default-header__nav-label">{{label}}</span>
     </a>
 
-  {{!-- ── TOP-LEVEL ITEM ────────────────────────────────────────────────────── --}}
+  {{!-- ── TOP-LEVEL item ─────────────────────────────────────────────────────── --}}
   {{else}}
     <a
       class="default-header__nav-item{{#if current}} is-active{{/if}}"
       href="{{url absolute="true"}}"
-      data-nav-slug="{{slug}}"
+      data-sound="tick"
       {{#if current}}aria-current="page"{{/if}}
     >
       <span class="default-header__nav-icon" aria-hidden="true">
-        {{#match slug "=" "home"}}            <i class="ph ph-house-simple"></i>
-        {{else match slug "=" "about"}}       <i class="ph ph-user-circle"></i>
-        {{else match slug "=" "blog"}}        <i class="ph ph-note-pencil"></i>
-        {{else match slug "=" "training"}}    <i class="ph ph-graduation-cap"></i>
-        {{else match slug "=" "courses"}}     <i class="ph ph-book-open"></i>
-        {{else match slug "=" "videos"}}      <i class="ph ph-play-circle"></i>
-        {{else match slug "=" "resources"}}   <i class="ph ph-books"></i>
-        {{else match slug "=" "path"}}        <i class="ph ph-signpost"></i>
+        {{#match slug "=" "home"}}              <i class="ph ph-house-simple"></i>
+        {{else match slug "=" "about"}}         <i class="ph ph-user-circle"></i>
+        {{else match slug "=" "blog"}}          <i class="ph ph-note-pencil"></i>
+        {{else match slug "=" "training"}}      <i class="ph ph-graduation-cap"></i>
+        {{else match slug "=" "courses"}}       <i class="ph ph-book-open"></i>
+        {{else match slug "=" "videos"}}        <i class="ph ph-play-circle"></i>
+        {{else match slug "=" "resources"}}     <i class="ph ph-books"></i>
+        {{else match slug "=" "path"}}          <i class="ph ph-signpost"></i>
         {{else match slug "=" "certifications"}}<i class="ph ph-certificate"></i>
-        {{else match slug "=" "contact"}}     <i class="ph ph-envelope-simple"></i>
-        {{else match slug "=" "newsletter"}}  <i class="ph ph-newspaper"></i>
-        {{else match slug "=" "tags"}}        <i class="ph ph-hash"></i>
-        {{else match slug "=" "authors"}}     <i class="ph ph-users"></i>
-        {{else match slug "=" "projects"}}    <i class="ph ph-code"></i>
-        {{else match slug "=" "portfolio"}}   <i class="ph ph-briefcase"></i>
-        {{else match slug "=" "docs"}}        <i class="ph ph-file-text"></i>
-        {{else match slug "=" "community"}}   <i class="ph ph-users-three"></i>
-        {{else match slug "=" "contribute"}}  <i class="ph ph-git-pull-request"></i>
-        {{else match slug "=" "sponsor"}}     <i class="ph ph-heart"></i>
-        {{else}}                              <i class="ph ph-circle-dashed"></i>
+        {{else match slug "=" "contact"}}       <i class="ph ph-envelope-simple"></i>
+        {{else match slug "=" "newsletter"}}    <i class="ph ph-newspaper"></i>
+        {{else match slug "=" "tags"}}          <i class="ph ph-hash"></i>
+        {{else match slug "=" "authors"}}       <i class="ph ph-users"></i>
+        {{else match slug "=" "docs"}}          <i class="ph ph-file-text"></i>
+        {{else match slug "=" "community"}}     <i class="ph ph-users-three"></i>
+        {{else match slug "=" "start"}}         <i class="ph ph-rocket-launch"></i>
+        {{else}}                                <i class="ph ph-circle-dashed"></i>
         {{/match}}
       </span>
       <span class="default-header__nav-label">{{label}}</span>
     </a>
-
   {{/match}}
 
 {{/foreach}}

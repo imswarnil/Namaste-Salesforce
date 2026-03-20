@@ -1,25 +1,39 @@
 {{!-- =========================================================================
-  partials/header.hbs  ·  Namaste Salesforce  (single-file, no sub-partials)
+  partials/header.hbs  ·  Namaste Salesforce
+  SINGLE FILE — zero sub-partials.
 
-  BRAND STRIP (next to logo, desktop):
-    [Learn ▾] [Contribute ▾] [Products ▾]
-    — "Learn" and "Topics" removed; replaced with richer context dropdowns.
+  VARIANTS:
+    #lesson post  → course-header   compact bar (desktop: back + title + ✕ only)
+    #blog   post  → default-header  + reading progress strip
+    everything    → default-header
 
-  RIGHT RAIL (desktop, always clean):
-    [Search] [Theme 🔊] [Account / Sign in] [GitHub ⭐] [$]
+  BRAND STRIP (left, desktop):
+    [Logo + Title] — clean, no dropdowns next to brand.
 
-  SOUNDS:
-    Theme toggle   → rooster chirp (light) / owl hoot (dark)
-    Mobile burger  → soft "tok" click
-    Dropdown open  → very short "pop"
-    Search modal   → swoosh / whoosh
-    $ hover        → coins jingle
+  ACTIONS RAIL (desktop, right):
+    [More ▾]  [🔍]  [☀/🌙]  [$]  [Auth]  [Star on GitHub]
+    • More = 2-column dropdown: Contribute | Community (Discord, IG, Twitter, LI, YT, Trailblazer)
+    • Products I Use = single link in More footer
+    • $ = ph-currency-dollar → coins sound on hover → GitHub Sponsors
 
-  BRAND ANIMATION:
-    "Namaste Salesforce" cycles through 10 languages with a fast wobble
-    transition every 2.4 s. A small 🔊 speaker button sits to the top-right
-    of the brand text; click it to hear "Namaste Salesforce" spoken aloud
-    via Web Speech API, cycling through different voices / pitches.
+  COURSE HEADER:
+    Desktop: [← Back]  [Lesson title - plain text]  [✕]  — no panel, no badge
+    Mobile:  [← Back]  [Lesson title toggle ▾]  [☰]  [✕]  — lesson list panel
+
+  MOBILE MENU:
+    Full mirror of desktop actions — every item visible in the drawer.
+    Smooth slide-down from top (Bulma navbar-menu pattern preserved).
+
+  SOUNDS (Web Audio API — gentle, not harsh, no external files):
+    Light mode → soft 3-note chime (ascending sine, very low gain)
+    Dark mode  → soft 2-note descending tone
+    Burger     → brief soft click (noise burst, low volume)
+    Dropdown   → gentle pop (short sine sweep)
+    Search     → soft swoosh (highpass noise)
+    Nav click  → subtle tick (very short high sine)
+    $ hover    → delicate coins (4 quiet high pings)
+
+  JSON-LD: SiteNavigationElement built dynamically from Ghost {{navigation}}.
 ========================================================================== --}}
 
 {{!-- ── JSON-LD ──────────────────────────────────────────────────────────── --}}
@@ -47,39 +61,49 @@
       }
     },
     {
-      "@type": "ItemList",
+      "@type": "SiteNavigationElement",
       "@id": "{{@site.url}}/#site-navigation",
-      "name": "Site Navigation",
-      "itemListElement": [
-        {{#foreach navigation}}
-          {{#match label "~^" "- "}}{{else}}
-          { "@type": "ListItem", "position": {{@number}}, "name": "{{label}}", "url": "{{url absolute="true"}}" }{{#unless @last}},{{/unless}}
-          {{/match}}
-        {{/foreach}}
+      "name": "Primary Navigation",
+      "hasPart": [
+        {{#foreach navigation}}{{#match label "~^" "- "}}{{else}}
+        { "@type": "SiteNavigationElement", "name": "{{label}}", "url": "{{url absolute="true"}}", "position": {{@number}} }{{#unless @last}},{{/unless}}
+        {{/match}}{{/foreach}}
+      ]
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "@id": "{{@site.url}}/#more-navigation",
+      "name": "Contribute & Community",
+      "hasPart": [
+        { "@type": "SiteNavigationElement", "name": "GitHub Repository", "url": "https://github.com/imswarnil/Namaste-Salesforce" },
+        { "@type": "SiteNavigationElement", "name": "Documentation", "url": "{{@site.url}}/docs/" },
+        { "@type": "SiteNavigationElement", "name": "Become an Author", "url": "{{@site.url}}/contact/?ref=author" },
+        { "@type": "SiteNavigationElement", "name": "Become a Sponsor", "url": "https://github.com/sponsors/imswarnil" },
+        { "@type": "SiteNavigationElement", "name": "Discord Community", "url": "https://discord.gg/imswarnil" },
+        { "@type": "SiteNavigationElement", "name": "YouTube", "url": "https://youtube.com/@imswarnil" },
+        { "@type": "SiteNavigationElement", "name": "Products I Use", "url": "{{@site.url}}/products/" }
       ]
     }
   ]
 }
 </script>
 
-{{!-- ═══════════════════════════════════════════════════════════════════════
-  BRAND DROPDOWN PARTIALS  (reused by all three header variants via macros)
-  Defined once here as raw HTML blocks; each header includes them inline.
-═══════════════════════════════════════════════════════════════════════════ --}}
-
-{{!-- ══════════════════════════════════════════════════════════════════════
+{{!-- ════════════════════════════════════════════════════════════════════════
   DISPATCH
-══════════════════════════════════════════════════════════════════════════ --}}
+════════════════════════════════════════════════════════════════════════════ --}}
 {{#is "post"}}{{#post}}{{#has tag="#lesson"}}
 
-{{!-- ──────────────────────────────────────────────────────────────────────
-  COURSE HEADER  (#lesson posts only)
-  [← Back]  [Lesson title ▾]  [X/N  ☰  ✕]
-────────────────────────────────────────────────────────────────────────── --}}
+{{!-- ────────────────────────────────────────────────────────────────────────
+  COURSE HEADER  (#lesson posts)
+  Desktop: [← Back]  [Title - plain text]  [✕]   — no panel, no badge
+  Mobile:  [← Back]  [Title button ▾]  [☰]  [✕]  — lesson panel on mobile only
+──────────────────────────────────────────────────────────────────────────── --}}
 <header class="course-header site-header" role="banner" id="siteHeader">
   <div class="course-header__bar">
     <div class="container is-fluid">
       <div class="course-header__inner">
+
+        {{!-- Left: back to course --}}
         <div class="course-header__left">
           {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
             {{#foreach posts}}
@@ -95,24 +119,35 @@
             {{/foreach}}
           {{/get}}
         </div>
+
+        {{!-- Center: lesson title
+             Desktop → plain <span> (no toggle)
+             Mobile  → <button> that opens lesson panel --}}
         <div class="course-header__center">
-          <button class="course-header__title-btn" type="button" id="coursePanelBurger"
-                  aria-label="Show all lessons" aria-expanded="false" aria-controls="courseLessonPanel">
+          {{!-- Desktop: plain text --}}
+          <span class="course-header__title is-hidden-touch">{{title}}</span>
+          {{!-- Mobile: toggles lesson list --}}
+          <button class="course-header__title-btn is-hidden-desktop" type="button"
+                  id="coursePanelBurger"
+                  aria-label="Show all lessons in this course"
+                  aria-expanded="false" aria-controls="courseLessonPanel">
             <span class="course-header__title">{{title}}</span>
             <i class="ph ph-caret-down course-header__title-caret" aria-hidden="true"></i>
           </button>
         </div>
+
+        {{!-- Right: mobile burger + exit ✕ --}}
         <div class="course-header__right">
-          <span class="course-header__badge" id="lessonBadge" aria-live="polite">
-            <i class="ph ph-list-checks" aria-hidden="true"></i>
-            <span id="lessonBadgeText">…</span>
-          </span>
-          <button class="course-header__burger" type="button" id="courseBurgerBtn"
-                  aria-label="Toggle lesson list" aria-expanded="false" aria-controls="courseLessonPanel">
+          {{!-- ☰ lesson list toggle — mobile only --}}
+          <button class="course-header__burger is-hidden-desktop" type="button"
+                  id="courseBurgerBtn"
+                  aria-label="Toggle lesson list"
+                  aria-expanded="false" aria-controls="courseLessonPanel">
             <span class="course-header__burger-bar" aria-hidden="true"></span>
             <span class="course-header__burger-bar" aria-hidden="true"></span>
             <span class="course-header__burger-bar" aria-hidden="true"></span>
           </button>
+          {{!-- ✕ exit lesson — always visible --}}
           {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
             {{#foreach posts}}
               <a class="course-header__close" href="{{url}}" aria-label="Exit lesson">
@@ -125,24 +160,32 @@
             {{/foreach}}
           {{/get}}
         </div>
+
       </div>
     </div>
   </div>
+
+  {{!-- Lesson list panel — mobile only (hidden on desktop via CSS) --}}
   <div class="course-header__lesson-panel" id="courseLessonPanel"
        aria-label="Course lessons" aria-hidden="true">
     <div class="container is-fluid">
       <div class="course-header__lesson-wrap">
         <p class="course-header__lesson-label menu-label">
-          <i class="ph ph-list-checks" aria-hidden="true"></i> Course Lessons
+          <i class="ph ph-list-checks" aria-hidden="true"></i>
+          Course Lessons
         </p>
         <ul class="menu-list course-header__lesson-list" id="courseLessonList">
-          {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
-            order="published_at asc" limit="100"}}
+          {{#get "posts"
+            filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
+            order="published_at asc"
+            limit="100"
+          }}
             {{#foreach posts}}
               <li>
                 <a href="{{url}}"
                    class="course-header__lesson-link{{#match id ../../../../id}} is-active{{/match}}"
-                   data-lesson-num="{{@number}}" data-lesson-total="{{../length}}">
+                   data-lesson-num="{{@number}}"
+                   data-lesson-total="{{../length}}">
                   <span class="course-header__lesson-num">{{@number}}</span>
                   <span class="course-header__lesson-name">{{title}}</span>
                   {{#match id ../../../../id}}
@@ -160,126 +203,42 @@
 
 {{else has tag="#blog"}}
 
-{{!-- ──────────────────────────────────────────────────────────────────────
+{{!-- ────────────────────────────────────────────────────────────────────────
   BLOG HEADER  (#blog posts)
   Same default-header structure + reading progress strip.
-────────────────────────────────────────────────────────────────────────── --}}
+  No Topics dropdown. Start button in brand. More in actions.
+──────────────────────────────────────────────────────────────────────────── --}}
 <header class="default-header blog-header site-header is-sticky"
         role="banner" id="siteHeader">
-  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+  <nav class="navbar default-header__navbar" role="navigation"
+       aria-label="Main navigation">
     <div class="container default-header__wrap">
 
       <div class="navbar-brand default-header__brand-group">
+        <a class="navbar-item default-header__brand"
+           href="{{@site.url}}" aria-label="{{@site.title}} — homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="default-header__logo" width="32" height="32">
+          {{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
 
-        {{!-- Animated brand --}}
-        <div class="default-header__brand-wrap">
-          <a class="navbar-item default-header__brand" href="{{@site.url}}"
-             aria-label="{{@site.title}} — homepage" id="brandLink">
-            {{#if @site.logo}}
-              <img src="{{@site.logo}}" alt="{{@site.title}}"
-                   class="default-header__logo" width="32" height="32">
-            {{/if}}
-            <span class="default-header__title" id="brandTitle">{{@site.title}}</span>
-          </a>
-          <button class="default-header__brand-speak" type="button"
-                  id="brandSpeakBtn" aria-label="Pronounce site name">
-            <i class="ph ph-speaker-simple-high" aria-hidden="true"></i>
-          </button>
-        </div>
-
-        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
-
-        {{!-- Contribute dropdown --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="contributeWrap">
-          <button class="default-header__learn-btn" type="button" id="contributeBtn"
-                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
-            <i class="ph ph-git-pull-request" aria-hidden="true"></i>
-            <span>Contribute</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="contributePanel" hidden>
-            <p class="default-header__learn-heading">Get Involved</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>GitHub</strong><small>Star &amp; fork the repo</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-bug" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-git-pull-request" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Pull Request</strong><small>Submit improvements</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/contact/?ref=write">
-                <span class="default-header__learn-icon"><i class="ph ph-pencil-line" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Write a Post</strong><small>Share your knowledge</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="https://github.com/imswarnil/Namaste-Salesforce" class="default-header__learn-all" target="_blank" rel="noopener noreferrer">
-                View on GitHub <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Products I Use dropdown --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="productsWrap">
-          <button class="default-header__learn-btn" type="button" id="productsBtn"
-                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
-            <i class="ph ph-squares-four" aria-hidden="true"></i>
-            <span>Products</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="productsPanel" hidden>
-            <p class="default-header__learn-heading">Tools I Use</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="https://ghost.org" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-ghost" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Ghost CMS</strong><small>This site is built on Ghost</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-cursor" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Cursor</strong><small>AI-powered code editor</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-triangle" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Vercel</strong><small>Deployment &amp; hosting</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://www.figma.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-figma-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Figma</strong><small>Design &amp; prototyping</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://notion.so" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-note-blank" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Notion</strong><small>Notes &amp; planning</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-phosphor-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Phosphor Icons</strong><small>Icon set used across site</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="/resources/?filter=tool" class="default-header__learn-all">
-                All resources <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Mobile tools --}}
+        {{!-- Mobile toolbar --}}
         <div class="default-header__mobile-tools is-hidden-desktop">
-          <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search data-sound="swoosh">
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Search" data-ghost-search data-sound="swoosh">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </button>
-          <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Switch to dark mode" data-theme-toggle>
             <i class="ph ph-moon" aria-hidden="true"></i>
           </button>
-          <button class="default-header__burger" type="button" id="blogNavBurger"
-                  aria-label="Toggle menu" aria-expanded="false" aria-controls="blogNavMenu"
-                  data-sound="tok">
+          <button class="default-header__burger" type="button"
+                  id="blogNavBurger"
+                  aria-label="Toggle navigation menu"
+                  aria-expanded="false" aria-controls="blogNavMenu"
+                  data-sound="click">
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
@@ -288,33 +247,140 @@
       </div>
 
       <div id="blogNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
-        <div class="navbar-start default-header__nav" id="blogNavLinks">{{navigation}}</div>
+        <div class="navbar-start default-header__nav" id="blogNavLinks">
+          {{navigation}}
+        </div>
         <div class="navbar-end default-header__actions">
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Search"
-                    data-ghost-search data-sound="swoosh">
+
+          {{!-- More ▾ mega-dropdown --}}
+          <div class="navbar-item">
+            <div class="dh-more-wrap" id="moreWrap">
+              <button class="dh-more-btn" type="button"
+                      id="moreBtn"
+                      aria-haspopup="true" aria-expanded="false"
+                      aria-controls="morePanel" data-sound="pop">
+                <i class="ph ph-dots-three-bold" aria-hidden="true"></i>
+                <span>More</span>
+                <i class="ph ph-caret-down dh-more-caret" aria-hidden="true"></i>
+              </button>
+              <div class="dh-more-panel" id="morePanel" hidden>
+                <div class="dh-more-body">
+                  {{!-- Contribute --}}
+                  <div class="dh-more-section">
+                    <p class="dh-more-section__label">
+                      <i class="ph ph-git-pull-request" aria-hidden="true"></i>
+                      Contribute
+                    </p>
+                    <ul class="dh-more-list">
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-github-logo"></i></span>
+                        <span class="dh-more-text"><strong>GitHub Repo</strong><small>Star &amp; fork the project</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="/docs/">
+                        <span class="dh-more-icon"><i class="ph ph-book-open-text"></i></span>
+                        <span class="dh-more-text"><strong>Documentation</strong><small>Guides &amp; references</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-bug"></i></span>
+                        <span class="dh-more-text"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-git-pull-request"></i></span>
+                        <span class="dh-more-text"><strong>Pull Request</strong><small>Submit improvements</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="/contact/?ref=author">
+                        <span class="dh-more-icon"><i class="ph ph-pencil-line"></i></span>
+                        <span class="dh-more-text"><strong>Become an Author</strong><small>Write for Namaste Salesforce</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--sponsor"><i class="ph ph-currency-dollar"></i></span>
+                        <span class="dh-more-text"><strong>Become a Sponsor</strong><small>Support open source learning</small></span>
+                      </a></li>
+                    </ul>
+                  </div>
+                  {{!-- Community --}}
+                  <div class="dh-more-section">
+                    <p class="dh-more-section__label">
+                      <i class="ph ph-users-three" aria-hidden="true"></i>
+                      Community
+                    </p>
+                    <ul class="dh-more-list">
+                      <li><a class="dh-more-item" href="https://trailhead.salesforce.com/en/trailblazer-community" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--sf"><i class="ph ph-cloud"></i></span>
+                        <span class="dh-more-text"><strong>Trailblazer</strong><small>Official SF community</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://discord.gg/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--discord"><i class="ph ph-discord-logo"></i></span>
+                        <span class="dh-more-text"><strong>Discord</strong><small>Chat with the community</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://instagram.com/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--ig"><i class="ph ph-instagram-logo"></i></span>
+                        <span class="dh-more-text"><strong>Instagram</strong><small>Behind the scenes</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://twitter.com/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-x-logo"></i></span>
+                        <span class="dh-more-text"><strong>Twitter / X</strong><small>Follow for updates</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://linkedin.com/in/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--li"><i class="ph ph-linkedin-logo"></i></span>
+                        <span class="dh-more-text"><strong>LinkedIn</strong><small>Connect professionally</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://youtube.com/@imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--yt"><i class="ph ph-youtube-logo"></i></span>
+                        <span class="dh-more-text"><strong>YouTube</strong><small>Video tutorials</small></span>
+                      </a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="dh-more-footer">
+                  <a class="dh-more-footer__link" href="/products/">
+                    <i class="ph ph-squares-four" aria-hidden="true"></i>
+                    Products I Use
+                  </a>
+                  <a class="dh-more-footer__sponsor" href="https://github.com/sponsors/imswarnil"
+                     target="_blank" rel="noopener noreferrer">
+                    <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+                    Sponsor
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{!-- Search --}}
+          <div class="navbar-item">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Search" data-ghost-search data-sound="swoosh">
               <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
             </button>
           </div>
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode"
-                    data-theme-toggle>
+
+          {{!-- Theme --}}
+          <div class="navbar-item">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Switch to dark mode" data-theme-toggle>
               <i class="ph ph-moon" aria-hidden="true"></i>
             </button>
           </div>
+
+          {{!-- Donate $ --}}
           <div class="navbar-item">
-            <a class="default-header__cta default-header__cta--author" href="/contact/?ref=author">
-              <i class="ph ph-pencil-line" aria-hidden="true"></i>
-              <span>Become Author</span>
+            <a class="default-header__icon-btn default-header__donate-btn"
+               href="https://github.com/sponsors/imswarnil"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Sponsor this project" data-donate>
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
             </a>
           </div>
+
           {{!-- Auth --}}
           {{#if @site.members_enabled}}
             {{#if @member}}
               <div class="navbar-item">
                 <div class="default-header__account-wrap" id="accountWrap">
-                  <button class="default-header__account-btn" type="button" id="accountBtn"
-                          aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
+                  <button class="default-header__account-btn" type="button"
+                          id="accountBtn" aria-label="Account menu"
+                          aria-expanded="false" aria-haspopup="true" data-sound="pop">
                     {{#if @member.avatar_image}}
                       <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
                            class="default-header__account-avatar" width="28" height="28">
@@ -366,28 +432,20 @@
               {{/unless}}
             {{/if}}
           {{/if}}
-          {{!-- GitHub button --}}
-          <div class="navbar-item is-hidden-touch">
+
+          {{!-- GitHub --}}
+          <div class="navbar-item">
             <a class="default-header__github-btn"
                href="https://github.com/imswarnil/Namaste-Salesforce"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Star on GitHub">
+               aria-label="Star this project on GitHub">
               <i class="ph ph-github-logo" aria-hidden="true"></i>
-              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
+              <span>Star on GitHub</span>
             </a>
           </div>
-          {{!-- Donate — $ icon --}}
-          <div class="navbar-item is-hidden-touch">
-            <a class="default-header__donate-btn" id="donateBtnBlog"
-               href="https://github.com/sponsors/imswarnil"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Sponsor this project">
-              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
-            </a>
-          </div>
+
         </div>
       </div>
-
     </div>
   </nav>
 </header>
@@ -399,123 +457,39 @@
 
 {{else}}
 
-{{!-- ──────────────────────────────────────────────────────────────────────
-  DEFAULT HEADER  (all post types that aren't #lesson or #blog)
-────────────────────────────────────────────────────────────────────────── --}}
+{{!-- ────────────────────────────────────────────────────────────────────────
+  DEFAULT HEADER  (all other post types + all non-post pages)
+──────────────────────────────────────────────────────────────────────────── --}}
 <header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
         role="banner" id="siteHeader">
-  <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
+  <nav class="navbar default-header__navbar" role="navigation"
+       aria-label="Main navigation">
     <div class="container default-header__wrap">
 
       <div class="navbar-brand default-header__brand-group">
-        <div class="default-header__brand-wrap">
-          <a class="navbar-item default-header__brand" href="{{@site.url}}"
-             aria-label="{{@site.title}} — go to homepage" id="brandLink">
-            {{#if @site.logo}}
-              <img src="{{@site.logo}}" alt="{{@site.title}}"
-                   class="default-header__logo" width="32" height="32">
-            {{/if}}
-            <span class="default-header__title" id="brandTitle">{{@site.title}}</span>
-          </a>
-          <button class="default-header__brand-speak" type="button"
-                  id="brandSpeakBtn" aria-label="Pronounce site name">
-            <i class="ph ph-speaker-simple-high" aria-hidden="true"></i>
-          </button>
-        </div>
-        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+        <a class="navbar-item default-header__brand"
+           href="{{@site.url}}" aria-label="{{@site.title}} — homepage">
+          {{#if @site.logo}}
+            <img src="{{@site.logo}}" alt="{{@site.title}}"
+                 class="default-header__logo" width="32" height="32">
+          {{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
 
-        {{!-- Contribute dropdown --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="contributeWrap">
-          <button class="default-header__learn-btn" type="button" id="contributeBtn"
-                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
-            <i class="ph ph-git-pull-request" aria-hidden="true"></i>
-            <span>Contribute</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="contributePanel" hidden>
-            <p class="default-header__learn-heading">Get Involved</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>GitHub</strong><small>Star &amp; fork the repo</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-bug" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-git-pull-request" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Pull Request</strong><small>Submit improvements</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/contact/?ref=write">
-                <span class="default-header__learn-icon"><i class="ph ph-pencil-line" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Write a Post</strong><small>Share your knowledge</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="https://github.com/imswarnil/Namaste-Salesforce" class="default-header__learn-all" target="_blank" rel="noopener noreferrer">
-                View on GitHub <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Products dropdown --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="productsWrap">
-          <button class="default-header__learn-btn" type="button" id="productsBtn"
-                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
-            <i class="ph ph-squares-four" aria-hidden="true"></i>
-            <span>Products</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="productsPanel" hidden>
-            <p class="default-header__learn-heading">Tools I Use</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="https://ghost.org" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-ghost" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Ghost CMS</strong><small>This site is built on Ghost</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-cursor" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Cursor</strong><small>AI-powered code editor</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-triangle" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Vercel</strong><small>Deployment &amp; hosting</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://www.figma.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-figma-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Figma</strong><small>Design &amp; prototyping</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://notion.so" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-note-blank" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Notion</strong><small>Notes &amp; planning</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-phosphor-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Phosphor Icons</strong><small>Icon set used across site</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="/resources/?filter=tool" class="default-header__learn-all">
-                All resources <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Mobile tools --}}
         <div class="default-header__mobile-tools is-hidden-desktop">
-          <button class="default-header__icon-btn" type="button" aria-label="Search"
-                  data-ghost-search data-sound="swoosh">
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Search" data-ghost-search data-sound="swoosh">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </button>
-          <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+          <button class="default-header__icon-btn" type="button"
+                  aria-label="Switch to dark mode" data-theme-toggle>
             <i class="ph ph-moon" aria-hidden="true"></i>
           </button>
-          <button class="default-header__burger" type="button" id="defaultNavBurger"
-                  aria-label="Toggle menu" aria-expanded="false" aria-controls="defaultNavMenu"
-                  data-sound="tok">
+          <button class="default-header__burger" type="button"
+                  id="defaultNavBurger"
+                  aria-label="Toggle navigation menu"
+                  aria-expanded="false" aria-controls="defaultNavMenu"
+                  data-sound="click">
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
@@ -524,36 +498,128 @@
       </div>
 
       <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
-        <div class="navbar-start default-header__nav" id="defaultNavLinks">{{navigation}}</div>
+        <div class="navbar-start default-header__nav" id="defaultNavLinks">
+          {{navigation}}
+        </div>
         <div class="navbar-end default-header__actions">
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Search"
-                    data-ghost-search data-sound="swoosh">
+
+          {{!-- More ▾ mega-dropdown --}}
+          <div class="navbar-item">
+            <div class="dh-more-wrap" id="moreWrap">
+              <button class="dh-more-btn" type="button"
+                      id="moreBtn"
+                      aria-haspopup="true" aria-expanded="false"
+                      aria-controls="morePanel" data-sound="pop">
+                <i class="ph ph-dots-three-bold" aria-hidden="true"></i>
+                <span>More</span>
+                <i class="ph ph-caret-down dh-more-caret" aria-hidden="true"></i>
+              </button>
+              <div class="dh-more-panel" id="morePanel" hidden>
+                <div class="dh-more-body">
+                  <div class="dh-more-section">
+                    <p class="dh-more-section__label">
+                      <i class="ph ph-git-pull-request" aria-hidden="true"></i> Contribute
+                    </p>
+                    <ul class="dh-more-list">
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-github-logo"></i></span>
+                        <span class="dh-more-text"><strong>GitHub Repo</strong><small>Star &amp; fork the project</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-bug"></i></span>
+                        <span class="dh-more-text"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-git-pull-request"></i></span>
+                        <span class="dh-more-text"><strong>Pull Request</strong><small>Submit improvements</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="/contact/?ref=write">
+                        <span class="dh-more-icon"><i class="ph ph-pencil-line"></i></span>
+                        <span class="dh-more-text"><strong>Write a Post</strong><small>Share your expertise</small></span>
+                      </a></li>
+                    </ul>
+                  </div>
+                  <div class="dh-more-section">
+                    <p class="dh-more-section__label">
+                      <i class="ph ph-users-three" aria-hidden="true"></i> Community
+                    </p>
+                    <ul class="dh-more-list">
+                      <li><a class="dh-more-item" href="https://trailhead.salesforce.com/en/trailblazer-community" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--sf"><i class="ph ph-cloud"></i></span>
+                        <span class="dh-more-text"><strong>Trailblazer</strong><small>Official SF community</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://discord.gg/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--discord"><i class="ph ph-discord-logo"></i></span>
+                        <span class="dh-more-text"><strong>Discord</strong><small>Chat with the community</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://instagram.com/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--ig"><i class="ph ph-instagram-logo"></i></span>
+                        <span class="dh-more-text"><strong>Instagram</strong><small>Behind the scenes</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://twitter.com/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon"><i class="ph ph-x-logo"></i></span>
+                        <span class="dh-more-text"><strong>Twitter / X</strong><small>Follow for updates</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://linkedin.com/in/imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--li"><i class="ph ph-linkedin-logo"></i></span>
+                        <span class="dh-more-text"><strong>LinkedIn</strong><small>Connect professionally</small></span>
+                      </a></li>
+                      <li><a class="dh-more-item" href="https://youtube.com/@imswarnil" target="_blank" rel="noopener noreferrer">
+                        <span class="dh-more-icon dh-more-icon--yt"><i class="ph ph-youtube-logo"></i></span>
+                        <span class="dh-more-text"><strong>YouTube</strong><small>Video tutorials</small></span>
+                      </a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="dh-more-footer">
+                  <a class="dh-more-footer__link" href="/products/">
+                    <i class="ph ph-squares-four" aria-hidden="true"></i>
+                    Products I Use
+                  </a>
+                  <a class="dh-more-footer__sponsor" href="https://github.com/sponsors/imswarnil"
+                     target="_blank" rel="noopener noreferrer">
+                    <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+                    Sponsor
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{!-- Search --}}
+          <div class="navbar-item">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Search" data-ghost-search data-sound="swoosh">
               <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
             </button>
           </div>
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
+
+          {{!-- Theme --}}
+          <div class="navbar-item">
+            <button class="default-header__icon-btn" type="button"
+                    aria-label="Switch to dark mode" data-theme-toggle>
               <i class="ph ph-moon" aria-hidden="true"></i>
             </button>
           </div>
-          {{#is "post"}}{{#post}}
-            {{#has tag="#course"}}
-              <div class="navbar-item">
-                <a class="default-header__cta default-header__cta--instructor" href="/contact/?ref=instructor">
-                  <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
-                  <span>Become Instructor</span>
-                </a>
-              </div>
-            {{/has}}
-          {{/post}}{{/is}}
+
+          {{!-- Donate $ --}}
+          <div class="navbar-item">
+            <a class="default-header__icon-btn default-header__donate-btn"
+               href="https://github.com/sponsors/imswarnil"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Sponsor this project" data-donate>
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+            </a>
+          </div>
+
           {{!-- Auth --}}
           {{#if @site.members_enabled}}
             {{#if @member}}
               <div class="navbar-item">
                 <div class="default-header__account-wrap" id="accountWrap">
-                  <button class="default-header__account-btn" type="button" id="accountBtn"
-                          aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
+                  <button class="default-header__account-btn" type="button"
+                          id="accountBtn" aria-label="Account menu"
+                          aria-expanded="false" aria-haspopup="true" data-sound="pop">
                     {{#if @member.avatar_image}}
                       <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
                            class="default-header__account-avatar" width="28" height="28">
@@ -605,184 +671,122 @@
               {{/unless}}
             {{/if}}
           {{/if}}
+
           {{!-- GitHub --}}
-          <div class="navbar-item is-hidden-touch">
+          <div class="navbar-item">
             <a class="default-header__github-btn"
                href="https://github.com/imswarnil/Namaste-Salesforce"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Star on GitHub">
+               aria-label="Star this project on GitHub">
               <i class="ph ph-github-logo" aria-hidden="true"></i>
-              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
+              <span>Star on GitHub</span>
             </a>
           </div>
-          {{!-- Donate --}}
-          <div class="navbar-item is-hidden-touch">
-            <a class="default-header__donate-btn" id="donateBtn"
-               href="https://github.com/sponsors/imswarnil"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Sponsor this project">
-              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
-            </a>
-          </div>
+
         </div>
       </div>
-
     </div>
   </nav>
 </header>
 
 {{/has}}{{/post}}{{else}}
 
-{{!-- ──────────────────────────────────────────────────────────────────────
-  DEFAULT HEADER  (non-post pages: home, index, tags, authors, etc.)
-────────────────────────────────────────────────────────────────────────── --}}
+{{!-- Non-post pages use the same default header above.
+      Ghost requires re-rendering since context is different.
+      Only difference: no {{#is "post"}} context checks needed. --}}
 <header class="default-header site-header{{#if @custom.sticky_header}} is-sticky{{/if}}"
         role="banner" id="siteHeader">
   <nav class="navbar default-header__navbar" role="navigation" aria-label="Main navigation">
     <div class="container default-header__wrap">
-
       <div class="navbar-brand default-header__brand-group">
-        <div class="default-header__brand-wrap">
-          <a class="navbar-item default-header__brand" href="{{@site.url}}"
-             aria-label="{{@site.title}} — go to homepage" id="brandLink">
-            {{#if @site.logo}}
-              <img src="{{@site.logo}}" alt="{{@site.title}}"
-                   class="default-header__logo" width="32" height="32">
-            {{/if}}
-            <span class="default-header__title" id="brandTitle">{{@site.title}}</span>
-          </a>
-          <button class="default-header__brand-speak" type="button"
-                  id="brandSpeakBtn" aria-label="Pronounce site name">
-            <i class="ph ph-speaker-simple-high" aria-hidden="true"></i>
-          </button>
-        </div>
-        <span class="default-header__brand-sep is-hidden-touch" aria-hidden="true"></span>
+        <a class="navbar-item default-header__brand" href="{{@site.url}}" aria-label="{{@site.title}} — homepage">
+          {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="default-header__logo" width="32" height="32">{{/if}}
+          <span class="default-header__title">{{@site.title}}</span>
+        </a>
 
-        {{!-- Contribute dropdown --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="contributeWrap">
-          <button class="default-header__learn-btn" type="button" id="contributeBtn"
-                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
-            <i class="ph ph-git-pull-request" aria-hidden="true"></i>
-            <span>Contribute</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="contributePanel" hidden>
-            <p class="default-header__learn-heading">Get Involved</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>GitHub</strong><small>Star &amp; fork the repo</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-bug" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Report a Bug</strong><small>Open a GitHub issue</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-git-pull-request" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Pull Request</strong><small>Submit improvements</small></span>
-              </a>
-              <a class="default-header__learn-item" href="/contact/?ref=write">
-                <span class="default-header__learn-icon"><i class="ph ph-pencil-line" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Write a Post</strong><small>Share your knowledge</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="https://github.com/imswarnil/Namaste-Salesforce" class="default-header__learn-all" target="_blank" rel="noopener noreferrer">
-                View on GitHub <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Products dropdown --}}
-        <div class="default-header__learn-wrap is-hidden-touch" id="productsWrap">
-          <button class="default-header__learn-btn" type="button" id="productsBtn"
-                  aria-haspopup="true" aria-expanded="false" data-sound="pop">
-            <i class="ph ph-squares-four" aria-hidden="true"></i>
-            <span>Products</span>
-            <i class="ph ph-caret-down default-header__learn-caret" aria-hidden="true"></i>
-          </button>
-          <div class="default-header__learn-panel" id="productsPanel" hidden>
-            <p class="default-header__learn-heading">Tools I Use</p>
-            <div class="default-header__learn-grid">
-              <a class="default-header__learn-item" href="https://ghost.org" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-ghost" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Ghost CMS</strong><small>This site is built on Ghost</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://cursor.sh" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-cursor" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Cursor</strong><small>AI-powered code editor</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://vercel.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-triangle" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Vercel</strong><small>Deployment &amp; hosting</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://www.figma.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-figma-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Figma</strong><small>Design &amp; prototyping</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://notion.so" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-note-blank" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Notion</strong><small>Notes &amp; planning</small></span>
-              </a>
-              <a class="default-header__learn-item" href="https://phosphoricons.com" target="_blank" rel="noopener noreferrer">
-                <span class="default-header__learn-icon"><i class="ph ph-phosphor-logo" aria-hidden="true"></i></span>
-                <span class="default-header__learn-label"><strong>Phosphor Icons</strong><small>Icon set used across site</small></span>
-              </a>
-            </div>
-            <div class="default-header__learn-footer">
-              <a href="/resources/?filter=tool" class="default-header__learn-all">
-                All resources <i class="ph ph-arrow-right" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {{!-- Mobile tools --}}
         <div class="default-header__mobile-tools is-hidden-desktop">
-          <button class="default-header__icon-btn" type="button" aria-label="Search"
-                  data-ghost-search data-sound="swoosh">
+          <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search data-sound="swoosh">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </button>
           <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
             <i class="ph ph-moon" aria-hidden="true"></i>
           </button>
           <button class="default-header__burger" type="button" id="defaultNavBurger"
-                  aria-label="Toggle menu" aria-expanded="false" aria-controls="defaultNavMenu"
-                  data-sound="tok">
+                  aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="defaultNavMenu" data-sound="click">
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
             <span class="default-header__burger-bar" aria-hidden="true"></span>
           </button>
         </div>
       </div>
-
       <div id="defaultNavMenu" class="navbar-menu default-header__menu" aria-hidden="true">
         <div class="navbar-start default-header__nav" id="defaultNavLinks">{{navigation}}</div>
         <div class="navbar-end default-header__actions">
-          <div class="navbar-item is-hidden-touch">
-            <button class="default-header__icon-btn" type="button" aria-label="Search"
-                    data-ghost-search data-sound="swoosh">
+          {{!-- More --}}
+          <div class="navbar-item">
+            <div class="dh-more-wrap" id="moreWrap">
+              <button class="dh-more-btn" type="button" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="morePanel" data-sound="pop">
+                <i class="ph ph-dots-three-bold" aria-hidden="true"></i><span>More</span>
+                <i class="ph ph-caret-down dh-more-caret" aria-hidden="true"></i>
+              </button>
+              <div class="dh-more-panel" id="morePanel" hidden>
+                <div class="dh-more-body">
+                  <div class="dh-more-section">
+                    <p class="dh-more-section__label"><i class="ph ph-git-pull-request" aria-hidden="true"></i> Contribute</p>
+                    <ul class="dh-more-list">
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon"><i class="ph ph-github-logo"></i></span><span class="dh-more-text"><strong>GitHub Repo</strong><small>Star &amp; fork</small></span></a></li>
+                      <li><a class="dh-more-item" href="/docs/"><span class="dh-more-icon"><i class="ph ph-book-open-text"></i></span><span class="dh-more-text"><strong>Documentation</strong><small>Guides &amp; references</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce/issues/new" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon"><i class="ph ph-bug"></i></span><span class="dh-more-text"><strong>Report a Bug</strong><small>Open an issue</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://github.com/imswarnil/Namaste-Salesforce/pulls" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon"><i class="ph ph-git-pull-request"></i></span><span class="dh-more-text"><strong>Pull Request</strong><small>Submit improvements</small></span></a></li>
+                      <li><a class="dh-more-item" href="/contact/?ref=author"><span class="dh-more-icon"><i class="ph ph-pencil-line"></i></span><span class="dh-more-text"><strong>Become an Author</strong><small>Write for us</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon dh-more-icon--sponsor"><i class="ph ph-currency-dollar"></i></span><span class="dh-more-text"><strong>Become a Sponsor</strong><small>Support open source learning</small></span></a></li>
+                    </ul>
+                  </div>
+                  <div class="dh-more-section">
+                    <p class="dh-more-section__label"><i class="ph ph-users-three" aria-hidden="true"></i> Community</p>
+                    <ul class="dh-more-list">
+                      <li><a class="dh-more-item" href="https://trailhead.salesforce.com/en/trailblazer-community" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon dh-more-icon--sf"><i class="ph ph-cloud"></i></span><span class="dh-more-text"><strong>Trailblazer</strong><small>Official SF community</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://discord.gg/imswarnil" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon dh-more-icon--discord"><i class="ph ph-discord-logo"></i></span><span class="dh-more-text"><strong>Discord</strong><small>Chat with us</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://instagram.com/imswarnil" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon dh-more-icon--ig"><i class="ph ph-instagram-logo"></i></span><span class="dh-more-text"><strong>Instagram</strong><small>Behind the scenes</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://twitter.com/imswarnil" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon"><i class="ph ph-x-logo"></i></span><span class="dh-more-text"><strong>Twitter / X</strong><small>Follow for updates</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://linkedin.com/in/imswarnil" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon dh-more-icon--li"><i class="ph ph-linkedin-logo"></i></span><span class="dh-more-text"><strong>LinkedIn</strong><small>Connect professionally</small></span></a></li>
+                      <li><a class="dh-more-item" href="https://youtube.com/@imswarnil" target="_blank" rel="noopener noreferrer"><span class="dh-more-icon dh-more-icon--yt"><i class="ph ph-youtube-logo"></i></span><span class="dh-more-text"><strong>YouTube</strong><small>Video tutorials</small></span></a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="dh-more-footer">
+                  <a class="dh-more-footer__link" href="/products/"><i class="ph ph-squares-four" aria-hidden="true"></i> Products I Use</a>
+                  <a class="dh-more-footer__sponsor" href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener noreferrer"><i class="ph ph-currency-dollar" aria-hidden="true"></i> Sponsor</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {{!-- Search --}}
+          <div class="navbar-item">
+            <button class="default-header__icon-btn" type="button" aria-label="Search" data-ghost-search data-sound="swoosh">
               <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
             </button>
           </div>
-          <div class="navbar-item is-hidden-touch">
+          {{!-- Theme --}}
+          <div class="navbar-item">
             <button class="default-header__icon-btn" type="button" aria-label="Switch to dark mode" data-theme-toggle>
               <i class="ph ph-moon" aria-hidden="true"></i>
             </button>
           </div>
+          {{!-- Donate $ --}}
+          <div class="navbar-item">
+            <a class="default-header__icon-btn default-header__donate-btn" href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener noreferrer" aria-label="Sponsor" data-donate>
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+            </a>
+          </div>
+          {{!-- Auth --}}
           {{#if @site.members_enabled}}
             {{#if @member}}
               <div class="navbar-item">
                 <div class="default-header__account-wrap" id="accountWrap">
-                  <button class="default-header__account-btn" type="button" id="accountBtn"
-                          aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
-                    {{#if @member.avatar_image}}
-                      <img src="{{@member.avatar_image}}" alt="{{@member.name}}"
-                           class="default-header__account-avatar" width="28" height="28">
-                    {{else}}
-                      <i class="ph-fill ph-user-circle default-header__account-icon" aria-hidden="true"></i>
-                    {{/if}}
+                  <button class="default-header__account-btn" type="button" id="accountBtn" aria-label="Account menu" aria-expanded="false" aria-haspopup="true" data-sound="pop">
+                    {{#if @member.avatar_image}}<img src="{{@member.avatar_image}}" alt="{{@member.name}}" class="default-header__account-avatar" width="28" height="28">
+                    {{else}}<i class="ph-fill ph-user-circle default-header__account-icon" aria-hidden="true"></i>{{/if}}
                     <span class="default-header__account-name-label is-hidden-mobile">{{@member.name}}</span>
                     <i class="ph ph-caret-down default-header__account-caret" aria-hidden="true"></i>
                   </button>
@@ -792,499 +796,317 @@
                       <p class="default-header__account-email">{{@member.email}}</p>
                     </div>
                     <hr class="default-header__divider">
-                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account">
-                      <i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span>
-                    </a>
-                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters">
-                      <i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span>
-                    </a>
+                    <a class="default-header__dropdown-item" href="#/portal/account" data-portal="account"><i class="ph ph-user" aria-hidden="true"></i><span>Manage account</span></a>
+                    <a class="default-header__dropdown-item" href="#/portal/account/newsletters" data-portal="account/newsletters"><i class="ph ph-envelope" aria-hidden="true"></i><span>Newsletters</span></a>
                     <hr class="default-header__divider">
-                    <a class="default-header__dropdown-item default-header__dropdown-item--danger"
-                       href="javascript:void(0)" data-members-signout>
-                      <i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span>
-                    </a>
+                    <a class="default-header__dropdown-item default-header__dropdown-item--danger" href="javascript:void(0)" data-members-signout><i class="ph ph-sign-out" aria-hidden="true"></i><span>Sign out</span></a>
                   </div>
                 </div>
               </div>
             {{else}}
               {{#unless @site.members_invite_only}}
                 <div class="navbar-item default-header__auth-pair">
-                  <a class="default-header__btn default-header__btn--ghost"
-                     href="#/portal/signin" data-portal="signin">
-                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
-                  </a>
-                  <a class="default-header__btn default-header__btn--primary"
-                     href="#/portal/signup" data-portal="signup">
-                    <i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span>
-                  </a>
+                  <a class="default-header__btn default-header__btn--ghost" href="#/portal/signin" data-portal="signin"><i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span></a>
+                  <a class="default-header__btn default-header__btn--primary" href="#/portal/signup" data-portal="signup"><i class="ph ph-user-plus" aria-hidden="true"></i><span>Join free</span></a>
                 </div>
               {{else}}
                 <div class="navbar-item">
-                  <a class="default-header__btn default-header__btn--primary"
-                     href="#/portal/signin" data-portal="signin">
-                    <i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span>
-                  </a>
+                  <a class="default-header__btn default-header__btn--primary" href="#/portal/signin" data-portal="signin"><i class="ph ph-sign-in" aria-hidden="true"></i><span>Sign in</span></a>
                 </div>
               {{/unless}}
             {{/if}}
           {{/if}}
           {{!-- GitHub --}}
-          <div class="navbar-item is-hidden-touch">
-            <a class="default-header__github-btn"
-               href="https://github.com/imswarnil/Namaste-Salesforce"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Star on GitHub">
-              <i class="ph ph-github-logo" aria-hidden="true"></i>
-              <i class="ph ph-star default-header__github-star" aria-hidden="true"></i>
-            </a>
-          </div>
-          {{!-- Donate --}}
-          <div class="navbar-item is-hidden-touch">
-            <a class="default-header__donate-btn" id="donateBtn"
-               href="https://github.com/sponsors/imswarnil"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Sponsor this project">
-              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+          <div class="navbar-item">
+            <a class="default-header__github-btn" href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer" aria-label="Star on GitHub">
+              <i class="ph ph-github-logo" aria-hidden="true"></i><span>Star on GitHub</span>
             </a>
           </div>
         </div>
       </div>
-
     </div>
   </nav>
 </header>
 
 {{/is}}
 
-{{!-- ════════════════════════════════════════════════════════════════════
-  SHARED JAVASCRIPT
-════════════════════════════════════════════════════════════════════════ --}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  SHARED JAVASCRIPT  — one block, handles all three variants
+════════════════════════════════════════════════════════════════════════════ --}}
 <script>
 (function () {
   'use strict';
+  var noMo = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ── Audio context factory ─────────────────────────────────────────────────
+  function ac() { try { return new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return null; } }
+  function rel(ctx, ms) { setTimeout(function(){ try { ctx.close(); } catch(e){} }, ms || 200); }
 
-  // ─── Web Audio helpers ────────────────────────────────────────────────────
-  function makeCtx() {
-    try { return new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
-  }
-
-  // Theme: rooster chirp (light) ← 3 ascending sine tones
-  function playRooster() {
-    if (noMotion) return;
-    var ctx = makeCtx(); if (!ctx) return;
-    [523, 659, 784].forEach(function (f, i) {
-      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.14;
-      o.type = 'sine';
-      o.frequency.setValueAtTime(f * 0.84, t);
-      o.frequency.exponentialRampToValueAtTime(f, t + 0.05);
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.14, t + 0.04);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(t); o.stop(t + 0.22);
-    });
-    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 800);
-  }
-
-  // Theme: owl hoot (dark) ← 2 descending sine hoots
-  function playOwl() {
-    if (noMotion) return;
-    var ctx = makeCtx(); if (!ctx) return;
-    [392, 294].forEach(function (f, i) {
-      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.3;
-      o.type = 'sine';
+  // Light mode → 3 soft ascending chime tones (gentle, quiet)
+  function chimeUp() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    [523, 659, 784].forEach(function(f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.16;
+      o.type = 'triangle';
       o.frequency.setValueAtTime(f, t);
-      o.frequency.exponentialRampToValueAtTime(f * 0.87, t + 0.22);
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.11, t + 0.06);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(t); o.stop(t + 0.36);
-    });
-    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 900);
+      g.gain.linearRampToValueAtTime(0.07, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.4);
+    }); rel(ctx, 1000);
   }
 
-  // Menu burger: soft "tok" click — short filtered noise burst
-  function playTok() {
-    if (noMotion) return;
-    var ctx = makeCtx(); if (!ctx) return;
-    var buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
-    var data = buf.getChannelData(0);
-    for (var i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (data.length * 0.15));
-    var src = ctx.createBufferSource(), g = ctx.createGain();
-    var filt = ctx.createBiquadFilter();
-    filt.type = 'bandpass'; filt.frequency.value = 1200; filt.Q.value = 1.5;
-    src.buffer = buf;
-    g.gain.setValueAtTime(0.35, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
-    src.connect(filt); filt.connect(g); g.connect(ctx.destination);
-    src.start(); src.stop(ctx.currentTime + 0.07);
-    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 200);
+  // Dark mode → 2 soft descending tones
+  function chimeDown() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    [440, 329].forEach(function(f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.22;
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(f, t);
+      o.frequency.linearRampToValueAtTime(f * 0.92, t + 0.25);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.06, t + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.42);
+    }); rel(ctx, 900);
   }
 
-  // Dropdown pop: very short high-freq tick
-  function playPop() {
-    if (noMotion) return;
-    var ctx = makeCtx(); if (!ctx) return;
-    var o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = 'sine'; o.frequency.setValueAtTime(900, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.04);
-    g.gain.setValueAtTime(0.08, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-    o.connect(g); g.connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime + 0.055);
-    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 200);
-  }
-
-  // Search swoosh: frequency-swept noise burst
-  function playSwoosh() {
-    if (noMotion) return;
-    var ctx = makeCtx(); if (!ctx) return;
-    var buf = ctx.createBuffer(1, ctx.sampleRate * 0.22, ctx.sampleRate);
+  // Burger click → brief soft click (short noise, bandpass, low gain)
+  function softClick() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    var len = Math.floor(ctx.sampleRate * 0.04);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
     var d = buf.getChannelData(0);
-    for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (d.length * 0.38));
-    var src = ctx.createBufferSource(), g = ctx.createGain();
-    var filt = ctx.createBiquadFilter();
-    filt.type = 'highpass';
-    filt.frequency.setValueAtTime(200, ctx.currentTime);
-    filt.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + 0.18);
-    src.buffer = buf;
-    g.gain.setValueAtTime(0.22, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
-    src.connect(filt); filt.connect(g); g.connect(ctx.destination);
-    src.start(); src.stop(ctx.currentTime + 0.25);
-    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 400);
+    for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.12));
+    var s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    f.type = 'bandpass'; f.frequency.value = 900; f.Q.value = 2;
+    s.buffer = buf; g.gain.value = 0.2;
+    s.connect(f); f.connect(g); g.connect(ctx.destination); s.start(); s.stop(ctx.currentTime + 0.05);
+    rel(ctx, 150);
   }
 
-  // Dollar hover: sparkly coins ← 4 short high pings at random pitches
-  function playCoins() {
-    if (noMotion) return;
-    var ctx = makeCtx(); if (!ctx) return;
-    [1800, 2200, 2600, 2000].forEach(function (f, i) {
-      var o = ctx.createOscillator(), g = ctx.createGain();
-      var t = ctx.currentTime + i * 0.045;
-      o.type = 'sine';
-      o.frequency.setValueAtTime(f + Math.random() * 300, t);
+  // Dropdown → gentle pop (very short sine)
+  function softPop() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(700, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(480, ctx.currentTime + 0.04);
+    g.gain.setValueAtTime(0.06, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.07);
+    rel(ctx, 150);
+  }
+
+  // Search → soft whoosh (noise, gentle)
+  function softSwoosh() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    var len = Math.floor(ctx.sampleRate * 0.18);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.4));
+    var s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    f.type = 'highpass'; f.frequency.setValueAtTime(300, ctx.currentTime); f.frequency.exponentialRampToValueAtTime(3500, ctx.currentTime + 0.15);
+    s.buffer = buf; g.gain.setValueAtTime(0.12, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+    s.connect(f); f.connect(g); g.connect(ctx.destination); s.start(); s.stop(ctx.currentTime + 0.2);
+    rel(ctx, 300);
+  }
+
+  // Nav click → subtle tick
+  function softTick() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(1100, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.02);
+    g.gain.setValueAtTime(0.04, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025);
+    o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.03);
+    rel(ctx, 100);
+  }
+
+  // $ hover → delicate coin ping (quiet, 4 high pings)
+  function coinPing() {
+    if (noMo) return; var ctx = ac(); if (!ctx) return;
+    [1600, 2000, 2400, 1800].forEach(function(f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.055;
+      o.type = 'sine'; o.frequency.setValueAtTime(f + Math.random() * 200, t);
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.09, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(t); o.stop(t + 0.13);
-    });
-    setTimeout(function () { try { ctx.close(); } catch (e) {} }, 600);
+      g.gain.linearRampToValueAtTime(0.05, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.15);
+    }); rel(ctx, 500);
   }
 
-  // Route data-sound attribute to the right sound function
-  function soundFor(type) {
-    if (type === 'tok')    return playTok;
-    if (type === 'pop')    return playPop;
-    if (type === 'swoosh') return playSwoosh;
-    return function () {};
-  }
-
-  // Wire data-sound clicks (burger, dropdown triggers, search)
-  document.addEventListener('click', function (e) {
+  // Route data-sound attribute
+  document.addEventListener('click', function(e) {
     var el = e.target.closest('[data-sound]');
-    if (el) soundFor(el.getAttribute('data-sound'))();
+    if (!el) return;
+    var s = el.getAttribute('data-sound');
+    if (s === 'click') softClick();
+    else if (s === 'pop')    softPop();
+    else if (s === 'swoosh') softSwoosh();
+    else if (s === 'tick')   softTick();
   });
 
-  // Dollar hover
-  document.querySelectorAll('.default-header__donate-btn').forEach(function (btn) {
-    btn.addEventListener('mouseenter', playCoins);
+  // Nav item tick on click
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.default-header__nav-item')) softTick();
   });
 
-  // ─── Theme toggle ─────────────────────────────────────────────────────────
-  var SK = 'site-color-scheme';
-  var doc = document.documentElement;
+  // $ hover → coin ping
+  document.querySelectorAll('[data-donate]').forEach(function(el) {
+    el.addEventListener('mouseenter', coinPing);
+  });
+
+  // ── Theme ─────────────────────────────────────────────────────────────────
+  var SK = 'site-color-scheme', doc = document.documentElement;
   function getTheme() { return doc.getAttribute('data-color-scheme') === 'dark' ? 'dark' : 'light'; }
   function applyTheme(t) { doc.setAttribute('data-color-scheme', t); localStorage.setItem(SK, t); syncUI(t); }
   function syncUI(t) {
     var dk = t === 'dark';
-    document.querySelectorAll('[data-theme-toggle]').forEach(function (b) {
-      var ic = b.querySelector('i');
-      if (ic) ic.className = dk ? 'ph ph-sun-dim' : 'ph ph-moon';
+    document.querySelectorAll('[data-theme-toggle]').forEach(function(b) {
+      var ic = b.querySelector('i'); if (ic) ic.className = dk ? 'ph ph-sun-dim' : 'ph ph-moon';
       b.setAttribute('aria-label', dk ? 'Switch to light mode' : 'Switch to dark mode');
     });
   }
   var sv = localStorage.getItem(SK);
   syncUI((sv === 'light' || sv === 'dark') ? sv : getTheme());
-  document.addEventListener('click', function (e) {
+  document.addEventListener('click', function(e) {
     if (!e.target.closest('[data-theme-toggle]')) return;
     var next = getTheme() === 'dark' ? 'light' : 'dark';
     applyTheme(next);
-    if (next === 'light') playRooster(); else playOwl();
+    if (next === 'light') chimeUp(); else chimeDown();
   });
 
-  // ─── Brand title animation ────────────────────────────────────────────────
-  // 10 languages cycling fast with wobble. Each title instance gets
-  // the same animation; JS finds the first .default-header__title on page.
-  var langVersions = [
-    'Namaste Salesforce',   // English
-    'नमस्ते Salesforce',     // Hindi
-    'नमस्कार Salesforce',   // Marathi
-    'ナマステ Salesforce',   // Japanese
-    '안녕 Salesforce',       // Korean
-    'مرحبا Salesforce',     // Arabic
-    'Bonjour Salesforce',   // French
-    'Hola Salesforce',      // Spanish
-    'Olá Salesforce',       // Portuguese
-    'Привет Salesforce',    // Russian
-  ];
-
-  var brandEl = document.getElementById('brandTitle');
-  if (brandEl) {
-    var langIdx = 0;
-    var isAnimating = false;
-
-    function wobbleTo(nextText) {
-      if (isAnimating) return;
-      isAnimating = true;
-      brandEl.classList.add('brand-title--wobble-out');
-      setTimeout(function () {
-        brandEl.textContent = nextText;
-        brandEl.classList.remove('brand-title--wobble-out');
-        brandEl.classList.add('brand-title--wobble-in');
-        setTimeout(function () {
-          brandEl.classList.remove('brand-title--wobble-in');
-          isAnimating = false;
-        }, 220);
-      }, 180);
-    }
-
-    // Auto-cycle every 2.4 s
-    setInterval(function () {
-      langIdx = (langIdx + 1) % langVersions.length;
-      wobbleTo(langVersions[langIdx]);
-    }, 2400);
-  }
-
-  // ─── Brand speak button ───────────────────────────────────────────────────
-  // Cycles through different voices / pitches on each click
-  var speakIdx = 0;
-  var speakVariants = [
-    { pitch: 1.0, rate: 0.95, volume: 1 },
-    { pitch: 1.4, rate: 1.1,  volume: 0.9 },
-    { pitch: 0.7, rate: 0.85, volume: 1 },
-    { pitch: 1.8, rate: 1.3,  volume: 0.85 },
-    { pitch: 0.5, rate: 0.75, volume: 1 },
-  ];
-
-  var speakBtn = document.getElementById('brandSpeakBtn');
-  if (speakBtn && 'speechSynthesis' in window) {
-    speakBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      playPop();
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance('Namaste Salesforce');
-      var v = speakVariants[speakIdx % speakVariants.length];
-      u.lang   = 'en-IN';
-      u.pitch  = v.pitch;
-      u.rate   = v.rate;
-      u.volume = v.volume;
-      // Try to use an Indian English voice if available
-      var voices = window.speechSynthesis.getVoices();
-      var preferred = voices.find(function (vo) { return /en.IN|en.US/i.test(vo.lang); });
-      if (preferred) u.voice = preferred;
-      window.speechSynthesis.speak(u);
-      speakIdx++;
-      // Wiggle the icon as feedback
-      var icon = speakBtn.querySelector('i');
-      if (icon) {
-        icon.classList.add('brand-speak--active');
-        setTimeout(function () { icon.classList.remove('brand-speak--active'); }, 500);
-      }
-    });
-    // Load voices (some browsers need this)
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = function () {};
-    }
-  } else if (speakBtn) {
-    speakBtn.hidden = true; // hide if TTS not supported
-  }
-
-  // ─── Mobile burger ────────────────────────────────────────────────────────
-  function initBurger(burgerId, menuId) {
-    var burger = document.getElementById(burgerId);
-    var menu   = document.getElementById(menuId);
-    var hdr    = document.getElementById('siteHeader');
-    if (!burger || !menu) return;
-    function toggle(force) {
-      var open = force !== undefined ? force : !burger.classList.contains('is-open');
-      burger.classList.toggle('is-open', open);
-      burger.setAttribute('aria-expanded', String(open));
-      menu.classList.toggle('is-open', open);
-      menu.setAttribute('aria-hidden', String(!open));
-      if (hdr) hdr.classList.toggle('menu-is-open', open);
+  // ── Burger ────────────────────────────────────────────────────────────────
+  function initBurger(bid, mid) {
+    var b = document.getElementById(bid), m = document.getElementById(mid), h = document.getElementById('siteHeader');
+    if (!b || !m) return;
+    function tog(force) {
+      var open = force !== undefined ? force : !b.classList.contains('is-open');
+      b.classList.toggle('is-open', open); b.setAttribute('aria-expanded', String(open));
+      m.classList.toggle('is-open', open); m.setAttribute('aria-hidden', String(!open));
+      if (h) h.classList.toggle('menu-is-open', open);
       document.body.style.overflow = open ? 'hidden' : '';
     }
-    burger.addEventListener('click', function () { toggle(); });
-    document.addEventListener('click', function (e) {
-      if (menu.classList.contains('is-open') &&
-          !menu.contains(e.target) && !burger.contains(e.target)) toggle(false);
+    b.addEventListener('click', function() { tog(); });
+    document.addEventListener('click', function(e) {
+      if (m.classList.contains('is-open') && !m.contains(e.target) && !b.contains(e.target)) tog(false);
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && menu.classList.contains('is-open')) { toggle(false); burger.focus(); }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && m.classList.contains('is-open')) { tog(false); b.focus(); }
     });
   }
   initBurger('defaultNavBurger', 'defaultNavMenu');
-  initBurger('blogNavBurger',    'blogNavMenu');
+  initBurger('blogNavBurger', 'blogNavMenu');
 
-  // ─── Generic dropdown factory ─────────────────────────────────────────────
-  function makeDropdown(btnId, panelId, wrapId) {
-    var btn   = document.getElementById(btnId);
-    var panel = document.getElementById(panelId);
-    var wrap  = document.getElementById(wrapId);
+  // ── Dropdown factory ──────────────────────────────────────────────────────
+  function mkDD(btnId, panelId, wrapId) {
+    var btn = document.getElementById(btnId), panel = document.getElementById(panelId), wrap = document.getElementById(wrapId);
     if (!btn || !panel) return;
-    btn.addEventListener('click', function (e) {
+    btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      var open = panel.hidden;
-      panel.hidden = !open;
-      btn.setAttribute('aria-expanded', String(open));
-      btn.classList.toggle('is-open', open);
+      var open = panel.hidden; panel.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open)); btn.classList.toggle('is-open', open);
     });
-    document.addEventListener('click', function (e) {
-      if (wrap && !wrap.contains(e.target)) {
-        panel.hidden = true;
-        btn.setAttribute('aria-expanded', 'false');
-        btn.classList.remove('is-open');
-      }
+    document.addEventListener('click', function(e) {
+      if (wrap && !wrap.contains(e.target)) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('is-open'); }
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !panel.hidden) {
-        panel.hidden = true;
-        btn.setAttribute('aria-expanded', 'false');
-        btn.classList.remove('is-open');
-        btn.focus();
-      }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !panel.hidden) { panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.classList.remove('is-open'); btn.focus(); }
     });
   }
-  makeDropdown('contributeBtn', 'contributePanel', 'contributeWrap');
-  makeDropdown('productsBtn',   'productsPanel',   'productsWrap');
-  makeDropdown('accountBtn',    'accountDropdown', 'accountWrap');
+  mkDD('moreBtn', 'morePanel', 'moreWrap');
+  mkDD('accountBtn', 'accountDropdown', 'accountWrap');
 
-  // ─── Member initials ──────────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function () {
+  // ── Member initials ───────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
     var el = document.getElementById('memberInitials');
-    if (el) {
-      var n = document.querySelector('.default-header__account-name');
-      if (n) el.textContent = n.textContent.trim()
-        .split(/\s+/).map(function (w) { return w[0] || ''; }).slice(0, 2).join('').toUpperCase();
-    }
+    if (!el) return;
+    var n = document.querySelector('.default-header__account-name');
+    if (n) el.textContent = n.textContent.trim().split(/\s+/).map(function(w){ return w[0] || ''; }).slice(0, 2).join('').toUpperCase();
   });
 
-  // ─── Nav dropdown builder ─────────────────────────────────────────────────
-  document.addEventListener('DOMContentLoaded', function () {
-    ['defaultNavLinks', 'blogNavLinks'].forEach(function (id) {
-      var nav = document.getElementById(id);
-      if (!nav) return;
-      var items = Array.from(nav.querySelectorAll('.default-header__nav-item'));
-      var cur = null;
-      items.forEach(function (el) {
+  // ── Nav dropdown builder ("- " prefix → child item) ───────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    ['defaultNavLinks', 'blogNavLinks'].forEach(function(id) {
+      var nav = document.getElementById(id); if (!nav) return;
+      var items = Array.from(nav.querySelectorAll('.default-header__nav-item')), cur = null;
+      items.forEach(function(el) {
         if (el.getAttribute('data-child') === 'true' && cur) {
           var lbl = el.querySelector('.default-header__nav-label');
           if (lbl) lbl.textContent = lbl.textContent.replace(/^[-–]\s*/, '').trim();
-          var li = document.createElement('li');
-          li.appendChild(el);
-          cur.list.appendChild(li);
+          var li = document.createElement('li'); li.appendChild(el); cur.list.appendChild(li);
         } else {
-          var wrap = document.createElement('div');
-          wrap.className = 'default-header__dropdown-wrap';
-          el.parentNode.insertBefore(wrap, el);
-          wrap.appendChild(el);
-          var list = document.createElement('ul');
-          list.className = 'default-header__dropdown-menu';
-          list.setAttribute('role', 'menu');
-          wrap.appendChild(list);
-          cur = { wrap: wrap, trigger: el, list: list };
+          var wrap = document.createElement('div'); wrap.className = 'default-header__dropdown-wrap';
+          el.parentNode.insertBefore(wrap, el); wrap.appendChild(el);
+          var list = document.createElement('ul'); list.className = 'default-header__dropdown-menu'; list.setAttribute('role', 'menu');
+          wrap.appendChild(list); cur = { wrap: wrap, trigger: el, list: list };
         }
       });
-      nav.querySelectorAll('.default-header__dropdown-wrap').forEach(function (wrap) {
+      nav.querySelectorAll('.default-header__dropdown-wrap').forEach(function(wrap) {
         var list = wrap.querySelector('.default-header__dropdown-menu');
         var item = wrap.querySelector('.default-header__nav-item');
-        if (!list || !list.children.length) {
-          if (item) wrap.parentNode.insertBefore(item, wrap);
-          wrap.remove(); return;
-        }
+        if (!list || !list.children.length) { if (item) wrap.parentNode.insertBefore(item, wrap); wrap.remove(); return; }
         wrap.classList.add('has-dropdown');
         if (item) {
-          item.classList.add('has-dropdown-trigger');
-          item.setAttribute('aria-haspopup', 'true');
-          item.setAttribute('aria-expanded', 'false');
-          var chev = document.createElement('i');
-          chev.className = 'ph ph-caret-down default-header__dropdown-chevron';
-          chev.setAttribute('aria-hidden', 'true');
+          item.classList.add('has-dropdown-trigger'); item.setAttribute('aria-haspopup', 'true'); item.setAttribute('aria-expanded', 'false');
+          var chev = document.createElement('i'); chev.className = 'ph ph-caret-down default-header__dropdown-chevron'; chev.setAttribute('aria-hidden', 'true');
           item.appendChild(chev);
         }
       });
-      nav.addEventListener('click', function (e) {
-        var t = e.target.closest('.has-dropdown-trigger');
-        if (!t || window.innerWidth >= 1024) return;
+      nav.addEventListener('click', function(e) {
+        var t = e.target.closest('.has-dropdown-trigger'); if (!t || window.innerWidth >= 1024) return;
         e.preventDefault();
         var w = t.closest('.has-dropdown'), isOpen = w.classList.contains('is-open');
-        nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) {
-          d.classList.remove('is-open');
-          var dt = d.querySelector('.has-dropdown-trigger');
-          if (dt) dt.setAttribute('aria-expanded', 'false');
+        nav.querySelectorAll('.has-dropdown.is-open').forEach(function(d) {
+          d.classList.remove('is-open'); var dt = d.querySelector('.has-dropdown-trigger'); if (dt) dt.setAttribute('aria-expanded', 'false');
         });
         if (!isOpen) { w.classList.add('is-open'); t.setAttribute('aria-expanded', 'true'); }
       });
-      document.addEventListener('click', function (e) {
-        if (!nav.contains(e.target)) {
-          nav.querySelectorAll('.has-dropdown.is-open').forEach(function (d) { d.classList.remove('is-open'); });
-        }
+      document.addEventListener('click', function(e) {
+        if (!nav.contains(e.target)) nav.querySelectorAll('.has-dropdown.is-open').forEach(function(d) { d.classList.remove('is-open'); });
       });
     });
   });
 
-  // ─── Course header ────────────────────────────────────────────────────────
-  (function () {
-    var tb = document.getElementById('coursePanelBurger');
-    var bb = document.getElementById('courseBurgerBtn');
-    var p  = document.getElementById('courseLessonPanel');
+  // ── Course header — mobile lesson panel toggle ────────────────────────────
+  (function() {
+    var tb = document.getElementById('coursePanelBurger'), bb = document.getElementById('courseBurgerBtn');
+    var p = document.getElementById('courseLessonPanel');
     if (!p) return;
     function tp(force) {
       var open = force !== undefined ? force : !p.classList.contains('is-open');
-      p.classList.toggle('is-open', open);
-      p.setAttribute('aria-hidden', String(!open));
-      [tb, bb].forEach(function (b) { if (b) b.setAttribute('aria-expanded', String(open)); });
+      p.classList.toggle('is-open', open); p.setAttribute('aria-hidden', String(!open));
+      [tb, bb].forEach(function(b) { if (b) b.setAttribute('aria-expanded', String(open)); });
       if (tb) { var c = tb.querySelector('.course-header__title-caret'); if (c) c.style.transform = open ? 'rotate(180deg)' : ''; }
       if (bb) bb.classList.toggle('is-open', open);
     }
-    [tb, bb].forEach(function (b) { if (b) b.addEventListener('click', function () { playPop(); tp(); }); });
-    document.addEventListener('click', function (e) {
-      if (p.classList.contains('is-open') && !p.contains(e.target) && !(tb&&tb.contains(e.target)) && !(bb&&bb.contains(e.target))) tp(false);
+    [tb, bb].forEach(function(b) { if (b) b.addEventListener('click', function() { softPop(); tp(); }); });
+    document.addEventListener('click', function(e) {
+      if (p.classList.contains('is-open') && !p.contains(e.target) && !(tb && tb.contains(e.target)) && !(bb && bb.contains(e.target))) tp(false);
     });
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && p.classList.contains('is-open')) { tp(false); if (bb) bb.focus(); }
     });
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
       var a = document.querySelector('.course-header__lesson-link.is-active');
-      var bx = document.getElementById('lessonBadgeText');
-      if (a && bx) bx.textContent = (a.getAttribute('data-lesson-num')||'?') + ' / ' + (a.getAttribute('data-lesson-total')||'?');
       if (a) a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
   })();
 
-  // ─── Blog reading progress ────────────────────────────────────────────────
-  (function () {
-    var fill  = document.getElementById('blogReadingFill');
-    var strip = document.getElementById('blogReadingStrip');
+  // ── Blog reading progress ─────────────────────────────────────────────────
+  (function() {
+    var fill = document.getElementById('blogReadingFill'), strip = document.getElementById('blogReadingStrip');
     if (!fill) return;
     function upd() {
-      var c = document.querySelector('.gh-content, .js-post-content');
-      var pct;
+      var c = document.querySelector('.gh-content, .js-post-content'), pct;
       if (c) {
-        var s = c.getBoundingClientRect().top + window.scrollY;
-        var e = s + c.offsetHeight - window.innerHeight;
+        var s = c.getBoundingClientRect().top + window.scrollY, e = s + c.offsetHeight - window.innerHeight;
         pct = Math.min(100, Math.max(0, Math.round(((window.scrollY - s) / Math.max(1, e - s)) * 100)));
       } else {
         pct = Math.min(100, Math.round(window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight) * 100));
       }
-      fill.style.width = pct + '%';
-      if (strip) strip.setAttribute('aria-valuenow', pct);
+      fill.style.width = pct + '%'; if (strip) strip.setAttribute('aria-valuenow', pct);
     }
     window.addEventListener('scroll', upd, { passive: true });
     window.addEventListener('resize', upd, { passive: true });
