@@ -1,28 +1,41 @@
 {{!< default}}
 
-{{!-- Ghost doesn't do code injection for pages used as data source in routes.yaml, so we do it manually here --}}
 {{#contentFor "head-after"}} 
     {{#page}}{{#if codeinjection_head}}{{{codeinjection_head}}}{{/if}}{{/page}}
 {{/contentFor}}
-
 {{#contentFor "foot-after"}}
     {{#page}}{{#if codeinjection_foot}}{{{codeinjection_foot}}}{{/if}}{{/page}}
 {{/contentFor}}
 
-<main>
-    {{!-- 1. BLOG HERO SECTION (Uses the Blog page data) --}}
+<main class="site-main page-blog">
+    {{!-- 1. HERO WITH 728x90 AD --}}
     {{#page}}
-    <section class="hero is-medium has-background-white-ter mb-6" style="border-bottom: 1px solid #DDDBDA;">
+    <section class="hero is-small hero-blog mb-6">
         <div class="hero-body">
-            <div class="container is-max-widescreen has-text-centered">
-                <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark">
-                    {{title}}
-                </h1>
-                {{#if custom_excerpt}}
-                    <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-4 mx-auto" style="max-width: 800px; line-height: 1.5;">
-                        {{custom_excerpt}}
-                    </p>
-                {{/if}}
+            <div class="container is-max-widescreen">
+                <div class="columns is-vcentered is-multiline">
+                    <div class="column is-5-desktop is-12-tablet">
+                        <h1 class="title is-1 is-size-2-mobile has-text-weight-bold">
+                            {{title}}
+                        </h1>
+                        {{#if custom_excerpt}}
+                            <p class="subtitle is-4 is-size-5-mobile custom-excerpt mt-4">
+                                {{custom_excerpt}}
+                            </p>
+                        {{/if}}
+                    </div>
+                    <div class="column is-7-desktop is-12-tablet has-text-centered">
+                        <div class="ad-container hero-ad">
+                            <span class="ad-label">- Advertisement -</span>
+                            <ins class="adsbygoogle"
+                                 style="display:inline-block; width:728px; height:90px; max-width: 100%;"
+                                 data-ad-client="ca-pub-XXXXXXXXXXXXXX"
+                                 data-ad-slot="XXXXXXXXXX"
+                                 data-ad-format="horizontal"></ins>
+                            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -30,19 +43,16 @@
 
     {{!-- 2. FEATURED POSTS GRID --}}
     {{#match pagination.page "=" 1}}
-        {{!-- Queries posts tagged with the internal #blog-col tag AND featured --}}
         {{#get "posts" filter="tags:hash-blog+featured:true" include="tags,authors" limit="3" as |featured_posts|}}
             {{#if featured_posts}}
                 <section class="section pt-0 pb-6">
                     <div class="container is-max-widescreen">
-                        
-                        <div class="is-flex is-align-items-center mb-5">
-                            <h2 class="title is-4 mb-0 has-text-weight-bold" style="color: #0176D3;">
+                        <div class="section-heading is-flex is-align-items-center mb-5">
+                            <h2 class="title is-4 mb-0 has-text-weight-bold featured-title">
                                 <i class="ph-fill ph-star mr-2"></i> Featured
                             </h2>
-                            <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
+                            <div class="heading-line is-flex-grow-1 ml-4"></div>
                         </div>
-                        
                         <div class="columns is-multiline">
                             {{#foreach featured_posts}}
                                 <div class="column is-4-desktop is-6-tablet">
@@ -50,37 +60,120 @@
                                 </div>
                             {{/foreach}}
                         </div>
-
                     </div>
                 </section>
             {{/if}}
         {{/get}}
     {{/match}}
 
-    {{!-- 3. LATEST POSTS FEED --}}
+    {{!-- 3. MAIN CONTENT: FEED + SIDEBAR --}}
     <section class="section pt-0">
         <div class="container is-max-widescreen">
-            
-            <div class="is-flex is-align-items-center mb-5">
-                <h2 class="title is-4 mb-0 has-text-weight-bold has-text-grey-dark">
-                    <i class="ph-fill ph-clock-counter-clockwise mr-2"></i> Latest Posts
-                </h2>
-                <div class="is-flex-grow-1 ml-4" style="height: 1px; background-color: #DDDBDA;"></div>
-            </div>
-
-            <div class="columns is-multiline">
-                {{#foreach posts}}
-                    <div class="column is-4-desktop is-6-tablet mb-4">
-                        {{> "post-card"}}
+            <div class="columns is-variable is-6-desktop">
+                
+                {{!-- LEFT: POSTS FEED --}}
+                <div class="column is-8-desktop">
+                    <div class="section-heading is-flex is-align-items-center mb-5">
+                        <h2 class="title is-4 mb-0 has-text-weight-bold latest-title">
+                            <i class="ph-fill ph-clock-counter-clockwise mr-2"></i> Latest Posts
+                        </h2>
+                        <div class="heading-line is-flex-grow-1 ml-4"></div>
                     </div>
-                {{/foreach}}
-            </div>
 
-            {{!-- 4. PAGINATION --}}
-            <div class="is-flex is-justify-content-center mt-6">
-                {{pagination}}
+                    <div class="columns is-multiline">
+                        {{#foreach posts}}
+                            {{!-- Post Card --}}
+                            <div class="column is-12-mobile is-6-tablet is-6-desktop">
+                                {{> "post-card"}}
+                            </div>
+
+                            {{!-- AdSense Injection after posts 4, 8 (assuming 2 columns, it breaks nicely) --}}
+                            {{#has number="4,8,12"}}
+                                <div class="column is-12">
+                                    <div class="ad-container feed-ad has-text-centered my-4">
+                                        <span class="ad-label">- Advertisement -</span>
+                                        <ins class="adsbygoogle"
+                                             style="display:block; text-align:center;"
+                                             data-ad-layout="in-article"
+                                             data-ad-format="fluid"
+                                             data-ad-client="ca-pub-XXXXXXXXXXXXXX"
+                                             data-ad-slot="XXXXXXXXXX"></ins>
+                                        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                                    </div>
+                                </div>
+                            {{/has}}
+                        {{/foreach}}
+                    </div>
+
+                    {{!-- Pagination --}}
+                    <div class="is-flex is-justify-content-center mt-6">
+                        {{pagination}}
+                    </div>
+                </div>
+
+                {{!-- RIGHT: SIDEBAR --}}
+                <div class="column is-4-desktop">
+                    <aside class="sidebar">
+                        
+                        {{!-- Widget: Become Author --}}
+                        <div class="sidebar-widget widget-author">
+                            <h3 class="widget-title">Write for Us</h3>
+                            <p class="widget-desc">Share your Salesforce knowledge with our community. Write guest posts and get featured.</p>
+                            <a href="/author-signup/" class="button is-info is-fullwidth mt-4 has-text-weight-bold">Get Started</a>
+                        </div>
+
+                        {{!-- Widget: Sidebar Ad --}}
+                        <div class="sidebar-widget widget-ad has-text-centered">
+                            <span class="ad-label">- Advertisement -</span>
+                            <div class="ad-container">
+                                <ins class="adsbygoogle"
+                                     style="display:inline-block; width:300px; height:250px"
+                                     data-ad-client="ca-pub-XXXXXXXXXXXXXX"
+                                     data-ad-slot="XXXXXXXXXX"></ins>
+                                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                            </div>
+                        </div>
+
+                        {{!-- Widget: Become Sponsor --}}
+                        <div class="sidebar-widget widget-sponsor">
+                            <h3 class="widget-title">Partner with Us</h3>
+                            <p class="widget-desc">Promote your brand to thousands of Salesforce professionals and developers.</p>
+                            <a href="/sponsor/" class="button is-success is-fullwidth mt-4 has-text-weight-bold">Become a Sponsor</a>
+                        </div>
+
+                        {{!-- Widget: Tag Cloud --}}
+                        {{#get "tags" limit="20" include="count.posts" order="count.posts DESC"}}
+                            <div class="sidebar-widget widget-tagcloud">
+                                <h3 class="widget-title">Popular Topics</h3>
+                                <div class="tags are-medium mt-3">
+                                    {{#foreach tags}}
+                                        <a href="{{url}}" class="tag">
+                                            {{name}} <span class="tag-count">({{count.posts}})</span>
+                                        </a>
+                                    {{/foreach}}
+                                </div>
+                            </div>
+                        {{/get}}
+
+                        {{!-- Widget: Recent Posts --}}
+                        {{#get "posts" limit="5" as |recent|}}
+                            <div class="sidebar-widget widget-recent">
+                                <h3 class="widget-title">Recent Posts</h3>
+                                <ul class="recent-posts-list mt-3">
+                                    {{#foreach recent}}
+                                        <li>
+                                            <a href="{{url}}" class="recent-post-link">{{title}}</a>
+                                            <div class="recent-post-date">{{date format="MMM D, YYYY"}}</div>
+                                        </li>
+                                    {{/foreach}}
+                                </ul>
+                            </div>
+                        {{/get}}
+
+                    </aside>
+                </div>
+
             </div>
-            
         </div>
     </section>
 </main>

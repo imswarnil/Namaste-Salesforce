@@ -1,17 +1,22 @@
 {{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
-{{!-- The main content area --}}
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
+{{!-- The tag above means: insert everything in this file into the {body} of the default.hbs template --}}
 
-    <div class="post-feed">
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
+{{!-- Main content area --}}
+<section class="section">
+    <div class="container">
+        {{!-- Posts grid --}}
+        <div class="columns is-multiline is-variable is-3">
+            {{#foreach posts}}
+                <div class="column is-one-third-desktop is-half-tablet is-full-mobile">
+                    {{!-- The post-card partial should use Bulma's card component --}}
+                    {{> "post-card"}}
+                </div>
+            {{/foreach}}
+        </div>
+
+        {{!-- Pagination --}}
+        <div class="container" style="margin-top: 2rem;">
+            {{pagination}}
+        </div>
     </div>
-    {{pagination}}
-
-</div>
-</main>
+</section>

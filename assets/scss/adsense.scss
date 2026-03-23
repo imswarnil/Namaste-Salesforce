@@ -1,0 +1,312 @@
+// =============================================================================
+//  adsense.scss  ·  Namaste Salesforce
+//  Styles for partials/adsense.hbs.
+//  All slots: leaderboard, in-article, rectangle, skyscraper,
+//             half-page, sponsored, sticky-bottom, in-feed.
+//  Placeholder styles double as actual ad container sizes in production.
+//  Replace .ns-ad__placeholder content with real AdSense <ins> tags.
+// =============================================================================
+
+@use "variables" as v;
+@use "mixins"    as mx;
+
+// =============================================================================
+//  BASE  —  shared across all slots
+// =============================================================================
+
+.ns-ad {
+  position:   relative;
+  text-align: center;
+  margin-bottom: v.$space-2xl;
+}
+
+.ns-ad__label {
+  display:        flex;
+  align-items:    center;
+  justify-content:center;
+  gap:            v.$space-xs;
+  font-size:      .5625rem;
+  font-weight:    700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color:          var(--theme-text-weak);
+  margin-bottom:  v.$space-xs;
+  i { font-size: .625rem; }
+
+  // Sponsored variant
+  &--sponsored {
+    color:   v.$warning-color;
+    i { color: v.$warning-color; }
+  }
+}
+
+// Placeholder box (replace with <ins> in production)
+.ns-ad__placeholder {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      var(--theme-surface-subtle);
+  border:          1px dashed var(--theme-border);
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-weak);
+  font-size:       v.$font-size-xs;
+  font-weight:     500;
+  width:           100%;
+  overflow:        hidden;
+
+  span {
+    padding: v.$space-md;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+}
+
+
+// =============================================================================
+//  LEADERBOARD  —  728x90
+// =============================================================================
+
+.ns-ad--leaderboard {
+  .ns-ad__placeholder {
+    max-width: 728px;
+    height:    90px;
+    margin:    0 auto;
+  }
+
+  @media screen and (max-width: #{v.$bp-tablet - 1px}) {
+    .ns-ad__placeholder { max-width: 100%; height: 60px; }
+  }
+}
+
+
+// =============================================================================
+//  IN-ARTICLE  —  responsive
+// =============================================================================
+
+.ns-ad--in-article {
+  .ns-ad__placeholder {
+    width:     100%;
+    min-height: 100px;
+    max-height: 280px;
+  }
+}
+
+
+// =============================================================================
+//  RECTANGLE  —  300x250
+// =============================================================================
+
+.ns-ad--rectangle {
+  .ns-ad__placeholder {
+    width:  300px;
+    height: 250px;
+    margin: 0 auto;
+  }
+}
+
+
+// =============================================================================
+//  SKYSCRAPER  —  160x600
+// =============================================================================
+
+.ns-ad--skyscraper {
+  .ns-ad__placeholder {
+    width:  160px;
+    height: 600px;
+    margin: 0 auto;
+  }
+}
+
+
+// =============================================================================
+//  HALF-PAGE  —  300x600
+// =============================================================================
+
+.ns-ad--half-page {
+  .ns-ad__placeholder {
+    width:  300px;
+    height: 600px;
+    margin: 0 auto;
+  }
+}
+
+
+// =============================================================================
+//  SPONSORED  —  horizontal strip
+// =============================================================================
+
+.ns-ad--sponsored {
+  border:        1px solid v.$border-soft;
+  border-radius: v.$radius-md;
+  overflow:      hidden;
+  padding:       v.$space-sm 0;
+
+  .ns-ad__placeholder {
+    border:        none;
+    border-radius: 0;
+    background:    transparent;
+    min-height:    80px;
+  }
+}
+
+
+// =============================================================================
+//  STICKY BOTTOM  —  320x50 mobile
+// =============================================================================
+
+.ns-ad--sticky-bottom {
+  position:   fixed;
+  bottom:     0;
+  left:       0;
+  right:      0;
+  z-index:    200;
+  margin:     0;
+  background: var(--theme-surface-card);
+  border-top: 1px solid var(--theme-border);
+  box-shadow: 0 -2px 12px rgba(0,0,0,.1);
+  padding:    v.$space-xs v.$space-lg;
+
+  .ns-ad__placeholder {
+    width:     320px;
+    height:    50px;
+    margin:    0 auto;
+    border:    1px dashed var(--theme-border);
+    max-width: 100%;
+  }
+}
+
+.ns-ad__close {
+  position:   absolute;
+  top:        v.$space-xs;
+  right:      v.$space-sm;
+  background: none;
+  border:     none;
+  cursor:     pointer;
+  color:      var(--theme-text-weak);
+  font-size:  1rem;
+  line-height: 1;
+  padding:    0;
+  z-index:    1;
+  &:hover { color: var(--theme-text-strong); }
+}
+
+
+// =============================================================================
+//  IN-FEED  —  native card
+// =============================================================================
+
+.ns-ad--in-feed {
+  border:        1px solid var(--theme-border-soft);
+  border-radius: v.$radius-md;
+  overflow:      hidden;
+  padding:       v.$space-sm;
+
+  .ns-ad__placeholder {
+    border:        none;
+    background:    transparent;
+    min-height:    90px;
+  }
+}
+
+
+// =============================================================================
+//  BLOG SIDEBAR STICKY  —  .ns-blog-sticky-sidebar
+//  (Keeps TOC + ads sticky while main content scrolls)
+// =============================================================================
+
+.ns-blog-sticky-sidebar {
+  position:   sticky;
+  top:        calc(var(--slds-header-height, #{v.$nav-height}) + 1rem);
+  max-height: calc(100vh - var(--slds-header-height, #{v.$nav-height}) - 2rem);
+  overflow-y: auto;
+  @include mx.scrollbar;
+}
+
+
+// =============================================================================
+//  TOC WIDGET  —  desktop sidebar box populated by toc.js
+// =============================================================================
+
+#nsBlogTocWidget {
+  border:        1px solid var(--theme-border) !important;
+  border-radius: v.$radius-md !important;
+
+  .ns-toc-nav { padding: 0; }  // TOC partial injects nav here
+
+  // Hide if JS has no headings to show
+  &.is-empty { display: none !important; }
+}
+
+
+// =============================================================================
+//  BLOG LAYOUT  —  .ns-blog-main, .ns-blog-cover etc.
+// =============================================================================
+
+.ns-blog-main { padding: v.$space-2xl 0 5rem; }
+
+.ns-blog-cover {
+  border-radius: v.$radius-lg;
+  overflow:      hidden;
+  border:        1px solid var(--theme-border-soft);
+
+  img {
+    width:      100%;
+    height:     auto;
+    display:    block;
+    max-height: 520px;
+    object-fit: cover;
+  }
+}
+
+.ns-blog-author {
+  text-decoration: none;
+  color:           var(--theme-text);
+  @include mx.motion;
+  &:hover { color: var(--theme-brand); }
+}
+
+.ns-blog-author-bio {
+  border-left: 3px solid var(--theme-brand);
+}
+
+.ns-blog-footer-bar {
+  border-top: 1px solid var(--theme-border-soft);
+  padding-top: v.$space-xl;
+}
+
+.ns-blog-comments {
+  border-top: 2px solid var(--theme-brand);
+}
+
+.ns-blog-related {
+  border-top: 1px solid var(--theme-border-soft);
+  padding-top: v.$space-2xl;
+}
+
+.ns-blog-newsletter {
+  background: var(--theme-brand) !important;
+  border:     none !important;
+
+  input.input {
+    background:   rgba(255,255,255,.15);
+    border-color: rgba(255,255,255,.3);
+    color:        #fff;
+    &::placeholder { color: rgba(255,255,255,.7); }
+    &:focus { background: rgba(255,255,255,.25); }
+  }
+}
+
+
+// =============================================================================
+//  RESPONSIVE
+// =============================================================================
+
+@media screen and (max-width: #{v.$bp-mobile - 1px}) {
+  .ns-blog-main { padding: v.$space-xl 0 4rem; }
+  .ns-ad--leaderboard .ns-ad__placeholder { height: 50px; }
+  .ns-ad--rectangle .ns-ad__placeholder   { width: 100%; max-width: 300px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-blog-author { transition: none; }
+}
