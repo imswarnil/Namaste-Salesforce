@@ -1,115 +1,116 @@
 {{!< default}}
-{{!-- =========================================================================
-  training.hbs  ·  /training/  (collection index)
-
-  CONTEXT:
-    data: page.training  → Ghost page slug "training" supplies hero copy
-    {{posts}}            → paginated #training posts (published_at asc)
-    {{pagination}}       → Ghost pagination object
-
-  PURPOSE:
-    Lists every training post as a card.
-    Each training post is an overview page for one structured course.
-    Individual training posts → post.hbs → post-training partial (hero + modules).
-    Training content posts   → post.hbs → post-training-content partial (reader).
-========================================================================== --}}
-
-{{!-- ── HERO ──────────────────────────────────────────────────────────────── --}}
-<section class="tr-index-hero">
+{{!-- training.hbs  /training/  curriculum index --}}
+{{!-- Hero --}}
+<section class="tr-hero">
+  <div class="tr-hero__backdrop" aria-hidden="true"></div>
   <div class="container">
-    <div class="tr-index-hero__inner">
-      <span class="tr-index-hero__eyebrow">
+    <div class="tr-hero__inner">
+      <span class="tr-hero__eyebrow">
         <i class="ph ph-graduation-cap" aria-hidden="true"></i>
         Salesforce Training
       </span>
-      <h1 class="tr-index-hero__title">
+      <h1 class="tr-hero__title">
         {{#if title}}{{title}}{{else}}All Training Courses{{/if}}
       </h1>
-      <p class="tr-index-hero__lead">
-        {{#if custom_excerpt}}
-          {{custom_excerpt}}
-        {{else}}
-          Structured, step-by-step training paths for every Salesforce role.
-          Free to access — built by practitioners, not marketers.
-        {{/if}}
+      <p class="tr-hero__lead">
+        {{#if custom_excerpt}}{{custom_excerpt}}{{else}}Structured,
+        step-by-step training paths for every Salesforce role.
+        Free to access — built by practitioners, not marketers.{{/if}}
       </p>
-      <div class="tr-index-hero__ctas">
-        <button class="button is-white is-medium tr-index-hero__search"
-                type="button" data-ghost-search>
+      <div class="tr-hero__ctas">
+        <button class="button is-white is-medium" type="button" data-ghost-search>
           <span class="icon is-small">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </span>
           <span>Search training…</span>
         </button>
-        <a href="/courses/" class="button is-medium tr-index-hero__courses-link">
+        <a href="/courses/" class="button is-medium tr-hero__alt-btn">
           <span class="icon is-small">
             <i class="ph ph-book-open" aria-hidden="true"></i>
           </span>
           <span>Browse courses instead</span>
         </a>
       </div>
+      <div class="tr-hero__features">
+        <span class="tr-hero__feature">
+          <i class="ph ph-check-circle" aria-hidden="true"></i> Free forever
+        </span>
+        <span class="tr-hero__feature">
+          <i class="ph ph-arrows-clockwise" aria-hidden="true"></i> Updated regularly
+        </span>
+        <span class="tr-hero__feature">
+          <i class="ph ph-users-three" aria-hidden="true"></i> Community built
+        </span>
+        <span class="tr-hero__feature">
+          <i class="ph ph-certificate" aria-hidden="true"></i> Exam-aligned
+        </span>
+      </div>
     </div>
   </div>
 </section>
 
-{{!-- ── FILTER PILLS (static) ─────────────────────────────────────────────── --}}
-<div class="tr-index-filters">
+{{!-- Filter tabs --}}
+<div class="tr-filters">
   <div class="container">
-    <div class="tr-index-filters__inner">
-      <span class="tr-index-filters__label">Filter:</span>
-      <div class="tr-index-filters__tabs" role="tablist">
-        <button class="tr-index-filters__tab is-active" role="tab"
+    <div class="tr-filters__inner">
+      <span class="tr-filters__label">Filter:</span>
+      <div class="tr-filters__tabs" role="tablist">
+        <button class="tr-filters__tab is-active" role="tab"
                 aria-selected="true" data-filter="all">All levels</button>
-        <button class="tr-index-filters__tab" role="tab"
-                data-filter="beginner">Beginner</button>
-        <button class="tr-index-filters__tab" role="tab"
-                data-filter="intermediate">Intermediate</button>
-        <button class="tr-index-filters__tab" role="tab"
-                data-filter="advanced">Advanced</button>
+        <button class="tr-filters__tab" role="tab" data-filter="beginner">Beginner</button>
+        <button class="tr-filters__tab" role="tab" data-filter="intermediate">Intermediate</button>
+        <button class="tr-filters__tab" role="tab" data-filter="advanced">Advanced</button>
       </div>
     </div>
   </div>
 </div>
 
-{{!-- ── TRAINING CARDS ──────────────────────────────────────────────────────── --}}
-<section class="tr-index-body">
+{{!-- Card grid --}}
+<section class="tr-body section">
   <div class="container">
-
     {{#if posts}}
-      <div class="columns is-multiline tr-card-grid">
+      <div class="columns is-multiline tr-grid">
         {{#foreach posts}}
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
-            <a href="{{url}}" class="tr-card">
+            <article class="tr-card">
 
-              {{!-- Cover / thumbnail --}}
-              <div class="tr-card__cover">
+              {{!-- Cover --}}
+              <a href="{{url}}" class="tr-card__cover" tabindex="-1" aria-hidden="true">
                 {{#if feature_image}}
-                  <img src="{{img_url feature_image size="m"}}"
-                       alt="{{title}}" loading="lazy">
+                  <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy">
                 {{else}}
-                  <div class="tr-card__cover-placeholder" aria-hidden="true">
-                    <i class="ph ph-chalkboard-teacher"></i>
+                  <div class="tr-card__cover-ph">
+                    <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
                   </div>
                 {{/if}}
-                {{!-- Level badge from internal tags --}}
                 {{#foreach tags visibility="internal"}}
                   {{#match slug "~^" "hash-training-level-"}}
                     {{#if description}}
-                      <span class="tr-card__level-badge">{{description}}</span>
+                      <span class="tr-card__level">{{description}}</span>
                     {{/if}}
                   {{/match}}
                 {{/foreach}}
-              </div>
+              </a>
 
-              {{!-- Card body --}}
+              {{!-- Body --}}
               <div class="tr-card__body">
-
-                {{!-- Category label --}}
                 {{#if primary_tag}}
-                  <span class="tr-card__category">{{primary_tag.name}}</span>
+                  <div class="tr-card__cat">
+                    {{#if primary_tag.feature_image}}
+                      <img src="{{img_url primary_tag.feature_image size="xxs"}}"
+                           alt="" class="tr-card__cat-img" loading="lazy" aria-hidden="true">
+                    {{else}}
+                      <span class="tr-card__cat-icon" aria-hidden="true">
+                        <i class="ph ph-tag-simple"></i>
+                      </span>
+                    {{/if}}
+                    <span class="tr-card__cat-name">{{primary_tag.name}}</span>
+                  </div>
                 {{/if}}
 
-                <h2 class="tr-card__title">{{title}}</h2>
+                <h2 class="tr-card__title">
+                  <a href="{{url}}" class="tr-card__title-link">{{title}}</a>
+                </h2>
 
                 {{#if custom_excerpt}}
                   <p class="tr-card__excerpt">{{custom_excerpt}}</p>
@@ -117,24 +118,17 @@
                   <p class="tr-card__excerpt">{{excerpt words="18"}}…</p>
                 {{/if}}
 
-                {{!-- Meta row --}}
-                <div class="tr-card__meta">
-                  {{!-- Module count --}}
-                  <span class="tr-card__meta-item">
-                    <i class="ph ph-stack" aria-hidden="true"></i>
-                    {{#get "posts"
-                      filter="tag:hash-training-content+primary_tag:{{slug}}"
-                      limit="1"
-                    }}
-                      <span id="tc-{{../slug}}">Modules</span>
-                    {{/get}}
-                  </span>
-
-                  {{!-- Duration from internal tag --}}
+                <div class="tr-card__stats">
+                  {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="100"}}
+                    <span class="tr-card__stat">
+                      <i class="ph ph-stack" aria-hidden="true"></i>
+                      {{posts.length}} modules
+                    </span>
+                  {{/get}}
                   {{#foreach tags visibility="internal"}}
                     {{#match slug "~^" "hash-training-duration-"}}
                       {{#if description}}
-                        <span class="tr-card__meta-item">
+                        <span class="tr-card__stat">
                           <i class="ph ph-clock" aria-hidden="true"></i>
                           {{description}}
                         </span>
@@ -142,75 +136,92 @@
                     {{/match}}
                   {{/foreach}}
                 </div>
-
               </div>
 
-              {{!-- Card footer --}}
+              {{!-- Inline module list --}}
+              {{#get "posts"
+                filter="tag:hash-training-content+primary_tag:{{slug}}"
+                order="published_at asc"
+                limit="5"
+              }}
+                {{#if posts}}
+                  <div class="tr-card__modules">
+                    <p class="tr-card__modules-hd">
+                      <i class="ph ph-list-checks" aria-hidden="true"></i> Modules
+                    </p>
+                    <ol class="tr-card__modules-list">
+                      {{#foreach posts}}
+                        <li>
+                          <a href="{{url}}" class="tr-card__module">
+                            <span class="tr-card__mod-num" aria-hidden="true">{{@number}}</span>
+                            <span class="tr-card__mod-title">{{title}}</span>
+                            <span class="tr-card__mod-time">{{reading_time}}</span>
+                          </a>
+                        </li>
+                      {{/foreach}}
+                    </ol>
+                  </div>
+                {{/if}}
+              {{/get}}
+
+              {{!-- Footer --}}
               <div class="tr-card__footer">
                 {{#primary_author}}
                   <div class="tr-card__author">
                     {{#if profile_image}}
                       <img src="{{img_url profile_image size="xxs"}}"
-                           alt="{{name}}" loading="lazy"
-                           class="tr-card__author-img">
+                           alt="{{name}}" class="tr-card__author-img" loading="lazy">
                     {{else}}
-                      <span class="tr-card__author-placeholder">
-                        <i class="ph ph-user-circle" aria-hidden="true"></i>
-                      </span>
+                      <i class="ph ph-user-circle tr-card__author-ph" aria-hidden="true"></i>
                     {{/if}}
                     <span class="tr-card__author-name">{{name}}</span>
                   </div>
                 {{/primary_author}}
-                <span class="tr-card__cta">
-                  Start
-                  <i class="ph ph-arrow-right" aria-hidden="true"></i>
-                </span>
+                <a href="{{url}}" class="button is-primary is-small">
+                  <span>Start</span>
+                  <span class="icon is-small">
+                    <i class="ph ph-arrow-right" aria-hidden="true"></i>
+                  </span>
+                </a>
               </div>
 
-            </a>
+            </article>
           </div>
         {{/foreach}}
       </div>
-
-      {{!-- Pagination --}}
       {{#if pagination.pages}}
         {{pagination}}
       {{/if}}
-
     {{else}}
-      <div class="tr-index-empty">
-        <i class="ph ph-books tr-index-empty__icon" aria-hidden="true"></i>
-        <p class="tr-index-empty__title">No training courses yet</p>
-        <p class="tr-index-empty__body">
-          Create a post with the <code>#training</code> internal tag to
-          create a training course.
+      <div class="tr-empty has-text-centered py-6">
+        <i class="ph ph-books" style="font-size:3.5rem;opacity:.3;display:block;margin-bottom:1rem"
+           aria-hidden="true"></i>
+        <p class="title is-5 has-text-grey">No training courses yet</p>
+        <p class="subtitle is-6 has-text-grey-light">
+          Create a post with internal tag <code>#training</code>.
         </p>
       </div>
     {{/if}}
-
   </div>
 </section>
 
-{{!-- ── CONTRIBUTE BAND ─────────────────────────────────────────────────────── --}}
-<section class="tr-contribute">
+{{!-- Contribute band --}}
+<section class="tr-contribute section">
   <div class="container">
     <div class="tr-contribute__inner">
       <div class="tr-contribute__icon" aria-hidden="true">
         <i class="ph ph-chalkboard-teacher"></i>
       </div>
       <div class="tr-contribute__text">
-        <h2 class="tr-contribute__title">
-          Want to create a training course?
-        </h2>
+        <h2 class="tr-contribute__title">Want to create a training course?</h2>
         <p class="tr-contribute__lead">
-          If you have real Salesforce project experience, we'd love to
-          feature your training on this platform. All contributors get
-          credited and the course is free for the community.
+          If you have real Salesforce project experience, we'd love to feature
+          your training here. All contributors get credited and the course is
+          free for the community.
         </p>
       </div>
-      <div class="tr-contribute__actions">
-        <a href="/contact/?ref=training-author"
-           class="button is-primary is-medium">
+      <div class="tr-contribute__cta">
+        <a href="/contact/?ref=training-author" class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="ph ph-pencil-line" aria-hidden="true"></i>
           </span>

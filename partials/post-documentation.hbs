@@ -1,23 +1,14 @@
-{{!-- =========================================================================
-  partials/post-documentation.hbs  ·  /documentation/{slug}/
-  
-  CALLED FROM: post.hbs  via  {{#has tag="documentation"}}
-  
-  LAYOUT:
-    Left  is-3  — sticky timeline sidebar (ALL docs, active highlighted)
-    Right is-9  — breadcrumb, article body, prev/next navigation
-    
-  ACTIVE STATE:
-    {{#match id "=" @root.post.id}} — Ghost's built-in ID comparison.
-    Runs at render time — no JS needed for the active class.
-    
-  PREV/NEXT:
-    {{#prev_post filter="tag:documentation"}} stays within the docs set.
-    
-  JSON-LD: Article schema for the current post.
-========================================================================== --}}
+{{!--
+  partials/post-documentation.hbs
+  Single documentation article page.
+  Called from post.hbs when the post has the public tag: documentation
+--}}
+
+{{!-- Hidden span carries current post id for JS active-state matching --}}
+<span id="doc-current-id" data-id="{{id}}" hidden aria-hidden="true"></span>
 
 {{!-- ── JSON-LD ─────────────────────────────────────────────────────────── --}}
+{{!-- JSON-LD: Article schema. Image falls back to site icon when no feature image. --}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -27,13 +18,10 @@
   "datePublished": "{{date format="YYYY-MM-DD"}}",
   "dateModified": "{{date updated_at format="YYYY-MM-DD"}}",
   "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="30"}}{{/if}}",
-  {{#if feature_image}}
-  "image": "{{feature_image}}",
-  {{/if}}
+  "image": "{{#if feature_image}}{{feature_image}}{{else}}{{@site.icon}}{{/if}}",
   "publisher": {
     "@type": "Organization",
-    "name": "{{@site.title}}"{{#if @site.logo}},
-    "logo": { "@type": "ImageObject", "url": "{{@site.logo}}" }{{/if}}
+    "name": "{{@site.title}}"
   },
   "isPartOf": {
     "@type": "WebPage",
@@ -56,7 +44,6 @@
       <aside class="column is-3-desktop is-4-tablet is-hidden-touch doc-reader__aside">
         <nav class="doc-sidebar" aria-label="Documentation navigation">
 
-          {{!-- Back link --}}
           <a href="/documentation/" class="doc-sidebar__back">
             <i class="ph ph-arrow-left" aria-hidden="true"></i>
             Documentation
@@ -64,17 +51,19 @@
 
           <p class="doc-sidebar__label">Contents</p>
 
-          {{!-- Timeline list --}}
           <ul class="doc-tl">
+            {{!-- limit="100" replaces deprecated limit="all" --}}
             {{#get "posts"
               filter="tag:documentation"
-              limit="all"
+              limit="100"
               order="published_at asc"
             }}
               {{#foreach posts}}
                 <li class="doc-tl__item">
+                  {{!-- data-doc-id used by JS to set .is-active --}}
                   <a href="{{url}}"
-                     class="doc-tl__link{{#match id "=" @root.post.id}} is-active{{/match}}">
+                     class="doc-tl__link"
+                     data-doc-id="{{id}}">
                     <span class="doc-tl__node" aria-hidden="true"></span>
                     <span class="doc-tl__text">{{title}}</span>
                   </a>
@@ -83,7 +72,6 @@
             {{/get}}
           </ul>
 
-          {{!-- Contribute nudge --}}
           <div class="doc-sidebar__contribute">
             <p class="doc-sidebar__contribute-text">
               Found a mistake in this article?
@@ -114,18 +102,18 @@
           <i class="ph ph-caret-down doc-mob-toggle__caret"
              aria-hidden="true"></i>
         </button>
-
         <div class="doc-mob-panel" id="docMobPanel" aria-hidden="true">
           <ul class="doc-tl">
             {{#get "posts"
               filter="tag:documentation"
-              limit="all"
+              limit="100"
               order="published_at asc"
             }}
               {{#foreach posts}}
                 <li class="doc-tl__item">
                   <a href="{{url}}"
-                     class="doc-tl__link{{#match id "=" @root.post.id}} is-active{{/match}}">
+                     class="doc-tl__link"
+                     data-doc-id="{{id}}">
                     <span class="doc-tl__node" aria-hidden="true"></span>
                     <span class="doc-tl__text">{{title}}</span>
                   </a>
@@ -142,7 +130,6 @@
       <main class="column is-9-desktop is-8-tablet doc-reader__main" role="main">
         <article class="doc-article">
 
-          {{!-- Breadcrumb --}}
           <nav class="doc-breadcrumb" aria-label="Breadcrumb">
             <ol class="doc-breadcrumb__list">
               <li>
@@ -164,14 +151,11 @@
             </ol>
           </nav>
 
-          {{!-- Article header --}}
           <header class="doc-article__header">
             <h1 class="doc-article__title">{{title}}</h1>
-
             {{#if custom_excerpt}}
               <p class="doc-article__lead">{{custom_excerpt}}</p>
             {{/if}}
-
             <div class="doc-article__meta">
               <span class="doc-article__meta-item">
                 <i class="ph ph-timer" aria-hidden="true"></i>
@@ -201,7 +185,6 @@
             </div>
           </header>
 
-          {{!-- Feature image --}}
           {{#if feature_image}}
             <figure class="doc-article__cover">
               <img src="{{img_url feature_image size="l"}}"
@@ -210,12 +193,10 @@
             </figure>
           {{/if}}
 
-          {{!-- Article body --}}
           <div class="content gh-content doc-article__body">
             {{content}}
           </div>
 
-          {{!-- Tags --}}
           {{#if tags}}
             <div class="doc-article__tags">
               {{#foreach tags}}
@@ -229,9 +210,7 @@
             </div>
           {{/if}}
 
-          {{!-- Prev / Next --}}
           <nav class="doc-article__nav" aria-label="Article navigation">
-
             <div class="doc-article__nav-prev">
               {{#prev_post filter="tag:documentation"}}
                 <a href="{{url}}" class="doc-article__nav-card">
@@ -243,7 +222,6 @@
                 </a>
               {{/prev_post}}
             </div>
-
             <div class="doc-article__nav-next">
               {{#next_post filter="tag:documentation"}}
                 <a href="{{url}}"
@@ -268,12 +246,10 @@
                 </a>
               {{/next_post}}
             </div>
-
           </nav>
 
         </article>
       </main>
-
     </div>
   </div>
 </div>
@@ -281,6 +257,22 @@
 <script>
 (function () {
   'use strict';
+
+  // Active sidebar: read current post id from the hidden span rendered above,
+  // match against data-doc-id on each sidebar link, add .is-active class.
+  var currentEl = document.getElementById('doc-current-id');
+  var currentId = currentEl ? currentEl.getAttribute('data-id') : null;
+
+  if (currentId) {
+    document.querySelectorAll('.doc-tl__link[data-doc-id]').forEach(function (a) {
+      if (a.getAttribute('data-doc-id') === currentId) {
+        a.classList.add('is-active');
+        a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
+  }
+
+  // ── Mobile toggle ─────────────────────────────────────────────────────────
   var btn   = document.getElementById('docMobToggle');
   var panel = document.getElementById('docMobPanel');
   if (!btn || !panel) return;
@@ -305,9 +297,5 @@
       setOpen(false); btn.focus();
     }
   });
-
-  // Scroll active link into view inside sticky sidebar
-  var active = document.querySelector('.doc-tl__link.is-active');
-  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 })();
 </script>

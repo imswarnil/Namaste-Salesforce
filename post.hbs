@@ -1,30 +1,17 @@
 {{!< default}}
-{{!-- =========================================================================
-  post.hbs  ·  Post type dispatcher
-
-  PRIORITY ORDER — top wins:
-    1. documentation       public tag → post-documentation partial
-    2. #training-content   internal   → post-training-content partial
-    3. #training           internal   → post-training partial (overview + module grid)
-    4. #module             internal   → post-module partial
-    5. #course             internal   → post-course partial
-    6. #lesson             internal   → post-lesson partial
-    7. #blog               internal   → post-blog partial
-    8. (default)                      → post-default partial
-
-  NOTE: #training-content is checked BEFORE #training because content posts
-  should never accidentally render as an overview page.
-========================================================================== --}}
-
+{{!-- post.hbs  Post type dispatcher
+     Both #training and #training-content route to post-training partial.
+     The partial uses has helper internally to switch layouts.
+--}}
 {{#post}}
   {{#has tag="documentation"}}
     {{> "post-documentation"}}
   {{else has tag="#training-content"}}
-    {{> "post-training-content"}}
+    {{> "post-training"}}
   {{else has tag="#training"}}
     {{> "post-training"}}
   {{else has tag="#module"}}
-    {{> "post-module"}}
+    {{> "post-lesson"}}
   {{else has tag="#course"}}
     {{> "post-course"}}
   {{else has tag="#lesson"}}

@@ -1,111 +1,652 @@
 // =============================================================================
-//  layout/_post-training.scss  ·  Namaste Salesforce
-//  Styles specific to post-training.hbs (the training hub page per track).
-//  Uses var(--theme-*) directly — no --tp-* intermediary.
+//  post-training.scss  ·  post-training.hbs shared partial
+//  Covers both the training overview (.tc-overview) and module reader (.tc-reader).
+//  Sidebar (.tc-sidebar-*) is shared by both views.
+//  Uses var(--theme-*) for all colour values — dark mode handled automatically.
+//  Uses v.$ only for static tokens: radius, spacing, font sizes.
+//  No new $vars declared.
 // =============================================================================
 
 @use "variables" as v;
 @use "mixins"    as mx;
 
 
-// ── Enrol card ────────────────────────────────────────────────────────────────
+// =============================================================================
+//  MOBILE BAR + PANEL
+// =============================================================================
 
-.tp-enroll-card {
-  flex:          0 0 20rem;
-  background:    var(--theme-surface-card);
-  border:        1px solid var(--theme-border);
-  border-radius: v.$radius-sm;
-  box-shadow:    var(--theme-shadow-raised);
+.tc-mobile-bar {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             v.$space-lg;
+  padding:         .625rem v.$space-lg;
+  background:      var(--theme-surface-card);
+  border-bottom:   1px solid var(--theme-border);
+  position:        sticky;
+  top:             var(--slds-header-height, #{v.$nav-height});
+  z-index:         90;
+  box-shadow:      var(--theme-shadow-sm);
+
+  @media screen and (min-width: v.$bp-desktop) { display: none; }
+}
+
+.tc-mobile-bar__title {
+  font-size:     v.$font-size-sm;
+  font-weight:   600;
+  color:         var(--theme-text-strong);
   overflow:      hidden;
-  align-self:    flex-start;
-  position:      sticky;
-  top:           calc(var(--slds-header-height) + 1rem);
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+  flex:          1;
+}
 
-  @media screen and (max-width: 1023px) {
-    position: static;
-    width:    100%;
-    flex:     none;
+.tc-mobile-bar__btn {
+  display:     inline-flex;
+  align-items: center;
+  gap:         v.$space-sm;
+  padding:     .375rem v.$space-md;
+  border:      1px solid var(--theme-border);
+  border-radius: v.$radius-sm;
+  background:  transparent;
+  color:       var(--theme-text);
+  font-family: v.$font-body;
+  font-size:   v.$font-size-sm;
+  font-weight: 600;
+  cursor:      pointer;
+  white-space: nowrap;
+  @include mx.transition(all, 120ms, ease);
+  i { font-size: .875rem; }
+  &:hover { border-color: var(--theme-brand); color: var(--theme-brand); }
+}
+
+.tc-mobile-panel {
+  max-height:  0;
+  overflow:    hidden;
+  visibility:  hidden;
+  background:  var(--theme-surface-card);
+  border-bottom: 1px solid var(--theme-border);
+  transition: max-height 300ms cubic-bezier(.23,1,.32,1),
+              visibility 0ms linear 300ms;
+
+  @media screen and (min-width: v.$bp-desktop) { display: none; }
+
+  &.is-open {
+    max-height:  75dvh;
+    overflow-y:  auto;
+    visibility:  visible;
+    transition: max-height 300ms cubic-bezier(.23,1,.32,1),
+                visibility 0ms linear 0ms;
+    @include mx.scrollbar;
   }
 }
 
-.tp-enroll-card__badge {
+.tc-mobile-panel__inner { padding: v.$space-lg; }
+
+
+// =============================================================================
+//  OUTER WRAPPER + COLUMNS
+// =============================================================================
+
+.tc-wrapper { min-height: 60vh; }
+
+// Adjust the Bulma column gap to zero so sidebar bleeds to edge
+.tc-wrapper .columns.is-variable { --bulma-column-gap: 0; }
+
+
+// =============================================================================
+//  LEFT SIDEBAR  —  .tc-sidebar-col / .tc-sidebar-sticky
+// =============================================================================
+
+.tc-sidebar-col {
+  border-right: 1px solid var(--theme-border-soft);
+
+  @media screen and (min-width: v.$bp-desktop) {
+    position:   sticky;
+    top:        var(--slds-header-height, #{v.$nav-height});
+    max-height: calc(100vh - var(--slds-header-height, #{v.$nav-height}));
+    overflow-y: auto;
+    @include mx.scrollbar;
+  }
+}
+
+.tc-sidebar-sticky {
+  padding: v.$space-xl v.$space-lg v.$space-2xl;
+}
+
+.tc-sidebar__back {
+  display:         flex;
+  align-items:     center;
+  gap:             v.$space-sm;
+  padding:         v.$space-sm v.$space-sm;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-weak);
+  font-size:       v.$font-size-sm;
+  font-weight:     700;
+  text-decoration: none;
+  margin-bottom:   v.$space-xl;
+  @include mx.motion;
+  i { font-size: .875rem; }
+  &:hover { background: var(--slds-brand-tint-1); color: var(--theme-brand); }
+}
+
+
+// ── Training group (header + list) ────────────────────────────────────────────
+
+.tc-sidebar__group { margin-bottom: v.$space-sm; }
+
+.tc-sidebar__group-hd {
+  display:         flex;
+  align-items:     center;
+  gap:             v.$space-sm;
+  padding:         v.$space-sm v.$space-sm;
+  border-radius:   v.$radius-sm;
+  color:           var(--theme-text-weak);
+  font-size:       .5625rem;
+  font-weight:     700;
+  letter-spacing:  .08em;
+  text-transform:  uppercase;
+  text-decoration: none;
+  margin-bottom:   .125rem;
+  @include mx.transition(all, 80ms, ease);
+
+  &:hover { color: var(--theme-brand); background: var(--slds-brand-tint-1); }
+
+  &.is-active {
+    color:       var(--theme-brand);
+    background:  var(--slds-brand-tint-1);
+    font-weight: 700;
+    box-shadow:  inset 3px 0 0 var(--theme-brand);
+  }
+}
+
+.tc-sidebar__group-img {
+  width:         1.125rem;
+  height:        1.125rem;
+  border-radius: v.$radius-sm;
+  object-fit:    cover;
+  flex-shrink:   0;
+}
+
+.tc-sidebar__group-icon {
   display:         flex;
   align-items:     center;
   justify-content: center;
-  gap:             0.375rem;
-  padding:         0.5rem 1rem;
-  background:      var(--slds-brand-tint-1);
-  border-bottom:   1px solid var(--slds-brand-tint-2);
+  width:           1.125rem;
+  height:          1.125rem;
+  flex-shrink:     0;
   color:           var(--theme-brand);
-  font-size:       0.75rem;
-  font-weight:     700;
-  svg { width: 0.875rem; height: 0.875rem; }
+  i { font-size: .75rem; }
 }
 
-.tp-enroll-card__thumbnail {
-  background:    var(--theme-surface-muted);
+// Highlight the group when a child is active
+.tc-sidebar__group.is-current > .tc-sidebar__group-hd {
+  color:      var(--theme-brand);
+  background: var(--slds-brand-tint-1);
+}
+
+.tc-sidebar__list {
+  list-style: none !important;
+  margin:     0 0 v.$space-md !important;
+  padding:    0 !important;
+  li { margin: 0 !important; }
+}
+
+.tc-sidebar__link {
+  display:         flex !important;
+  align-items:     flex-start !important;
+  gap:             v.$space-sm !important;
+  padding:         .3125rem v.$space-sm !important;
+  border-radius:   v.$radius-sm !important;
+  color:           var(--theme-text) !important;
+  font-size:       v.$font-size-sm !important;
+  line-height:     1.4 !important;
+  text-decoration: none !important;
+  @include mx.motion;
+
+  &:hover {
+    background: var(--slds-brand-tint-1) !important;
+    color:      var(--theme-brand) !important;
+    .tc-sidebar__num { color: var(--theme-brand); }
+  }
+
+  &.is-active {
+    background:  var(--slds-brand-tint-2) !important;
+    color:       var(--theme-brand) !important;
+    font-weight: 600 !important;
+    box-shadow:  inset 3px 0 0 var(--theme-brand);
+    .tc-sidebar__num { color: var(--theme-brand); }
+  }
+}
+
+.tc-sidebar__num {
+  flex-shrink:     0;
+  font-size:       .5625rem;
+  font-weight:     700;
+  color:           var(--theme-text-weak);
+  min-width:       1rem;
+  font-variant-numeric: tabular-nums;
+  padding-top:     .125rem;
+  @include mx.transition(color, 80ms, ease);
+}
+
+.tc-sidebar__link-text { flex: 1; min-width: 0; }
+
+
+// =============================================================================
+//  MAIN COLUMN  —  padding + width management
+// =============================================================================
+
+.tc-main-col {
+  min-width:  0;
+  padding:    v.$space-2xl;
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
+    padding: v.$space-lg;
+  }
+}
+
+
+// =============================================================================
+//  TRAINING OVERVIEW  —  .tc-overview
+// =============================================================================
+
+.tc-overview { max-width: 860px; }
+
+.tc-breadcrumb {
+  display:     flex;
+  align-items: center;
+  flex-wrap:   wrap;
+  gap:         v.$space-xs;
+  font-size:   v.$font-size-xs;
+  color:       var(--theme-text-weak);
+  margin-bottom: v.$space-xl;
+  a { color: var(--theme-text-weak); text-decoration: none; &:hover { color: var(--theme-brand); } }
+  span { color: var(--theme-text-strong); font-weight: 600; }
+  i { font-size: .625rem; color: var(--theme-border-strong); }
+}
+
+.tc-overview__hero {
+  display:        flex;
+  gap:            v.$space-2xl;
+  align-items:    flex-start;
+  flex-wrap:      wrap;
+  background:     var(--theme-surface-card);
+  border:         1px solid var(--theme-border);
+  border-radius:  v.$radius-lg;
+  overflow:       hidden;
+  margin-bottom:  v.$space-2xl;
+  box-shadow:     var(--theme-shadow-sm);
+}
+
+.tc-overview__hero-cover {
+  flex:          0 0 22rem;
   aspect-ratio:  16/9;
   overflow:      hidden;
-  border-bottom: 1px solid var(--theme-border-soft);
-
   img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  @media screen and (max-width: #{v.$bp-tablet - 1px}) { flex: none; width: 100%; }
 }
 
-.tp-enroll-card__thumb-placeholder {
-  width:           100%;
-  height:          100%;
+.tc-overview__hero-body {
+  flex:    1;
+  min-width: 0;
+  padding: v.$space-xl;
+}
+
+.tc-overview__cat {
+  display:       flex;
+  align-items:   center;
+  gap:           v.$space-sm;
+  margin-bottom: v.$space-md;
+}
+
+.tc-overview__cat-img {
+  width: 1.375rem; height: 1.375rem;
+  border-radius: v.$radius-sm; object-fit: cover;
+}
+
+.tc-overview__cat-icon {
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem; height: 1.375rem;
+  border-radius: v.$radius-sm;
+  background: var(--slds-brand-tint-1); color: var(--theme-brand);
+  font-size: .875rem;
+}
+
+.tc-overview__cat-name {
+  font-size:      .5625rem;
+  font-weight:    700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color:          var(--theme-brand);
+}
+
+.tc-overview__stats {
+  display:       flex;
+  flex-wrap:     wrap;
+  gap:           v.$space-lg;
+  margin-bottom: v.$space-xl;
+  margin-top:    v.$space-md;
+}
+
+.tc-overview__stat {
+  display:     flex;
+  align-items: center;
+  gap:         v.$space-xs;
+  font-size:   v.$font-size-sm;
+  color:       var(--theme-text-weak);
+  i { font-size: .875rem; color: var(--theme-brand); }
+}
+
+.tc-overview__author {
+  display:     flex;
+  align-items: center;
+  gap:         v.$space-md;
+  margin-bottom: v.$space-xl;
+}
+
+.tc-overview__author-img {
+  width:         2.5rem;
+  height:        2.5rem;
+  border-radius: 50%;
+  object-fit:    cover;
+}
+
+.tc-overview__ctas { display: flex; flex-wrap: wrap; gap: v.$space-md; }
+
+.tc-overview__about {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: v.$radius-lg;
+  padding:       v.$space-2xl;
+  margin-bottom: v.$space-2xl;
+  box-shadow:    var(--theme-shadow-sm);
+}
+
+.tc-overview__modules { margin-bottom: v.$space-2xl; }
+
+
+// ── Module grid ───────────────────────────────────────────────────────────────
+
+.tc-mod-grid {
+  display: flex;
+  flex-direction: column;
+  gap: v.$space-sm;
+}
+
+.tc-mod-card {
   display:         flex;
-  flex-direction:  column;
+  align-items:     center;
+  gap:             v.$space-lg;
+  padding:         v.$space-md v.$space-xl;
+  background:      var(--theme-surface-card);
+  border:          1px solid var(--theme-border);
+  border-radius:   v.$radius-md;
+  text-decoration: none;
+  color:           var(--theme-text);
+  box-shadow:      var(--theme-shadow-sm);
+  @include mx.motion;
+
+  &:hover {
+    border-color: var(--theme-brand);
+    background:   var(--slds-brand-tint-1);
+    box-shadow:   var(--theme-shadow-card);
+    transform:    translateX(4px);
+    .tc-mod-card__num   { background: var(--theme-brand); color: #fff; }
+    .tc-mod-card__title { color: var(--theme-brand); }
+    .tc-mod-card__arrow { transform: translateX(4px); color: var(--theme-brand); }
+  }
+}
+
+.tc-mod-card__num {
+  flex-shrink:     0;
+  display:         flex;
   align-items:     center;
   justify-content: center;
-  gap:             0.5rem;
+  width:           2rem;
+  height:          2rem;
+  border-radius:   v.$radius-sm;
+  background:      var(--slds-brand-tint-1);
   color:           var(--theme-brand);
-  cursor:          pointer;
-  @include mx.transition(background, 80ms, linear);
-
-  &:hover { background: var(--slds-brand-tint-1); }
-  svg  { width: 2.5rem; height: 2.5rem; opacity: 0.6; }
-  span { font-size: 0.75rem; font-weight: 700; }
+  font-size:       .6875rem;
+  font-weight:     800;
+  font-variant-numeric: tabular-nums;
+  @include mx.transition(all, 100ms, ease);
 }
 
-.tp-enroll-card__body {
-  padding:        1.25rem;
+.tc-mod-card__body { flex: 1; min-width: 0; }
+
+.tc-mod-card__title {
+  font-size:   v.$font-size-sm;
+  font-weight: 700;
+  color:       var(--theme-text-strong);
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  @include mx.transition(color, 100ms, ease);
+}
+
+.tc-mod-card__excerpt {
+  font-size:     v.$font-size-xs;
+  color:         var(--theme-text-weak);
+  margin-top:    .1875rem;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+.tc-mod-card__meta {
+  flex-shrink: 0;
+  font-size:   v.$font-size-xs;
+  color:       var(--theme-text-weak);
+  white-space: nowrap;
+  display:     flex;
+  align-items: center;
+  gap:         v.$space-xs;
+  i { font-size: .875rem; }
+}
+
+.tc-mod-card__arrow {
+  flex-shrink: 0;
+  font-size:   1.125rem;
+  color:       var(--theme-text-weak);
+  @include mx.transition(all, 100ms, ease);
+}
+
+
+// =============================================================================
+//  MODULE READER  —  .tc-reader
+// =============================================================================
+
+.tc-reader {
+  max-width: 740px;
+  padding:   v.$space-2xl !important;
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
+    padding: v.$space-lg !important;
+  }
+}
+
+.tc-reader__header { margin-bottom: v.$space-xl; }
+
+.tc-reader__author {
+  display:     flex;
+  align-items: center;
+  gap:         v.$space-sm;
+  margin-top:  v.$space-lg;
+  flex-wrap:   wrap;
+}
+
+.tc-reader__author-img {
+  width: 1.625rem; height: 1.625rem;
+  border-radius: 50%; object-fit: cover;
+}
+
+.tc-reader__author-name {
+  font-size: v.$font-size-sm; font-weight: 600; color: var(--theme-text);
+}
+
+.tc-reader__author-date { font-size: v.$font-size-sm; color: var(--theme-text-weak); }
+
+.tc-reader__cover {
+  border-radius: v.$radius-md;
+  overflow:      hidden;
+  border:        1px solid var(--theme-border-soft);
+  margin-bottom: v.$space-2xl;
+  img { width: 100%; height: auto; display: block; max-height: 420px; object-fit: cover; }
+}
+
+.tc-reader__body {
+  font-size:  1rem;
+  line-height: 1.78;
+
+  h2, h3, h4 {
+    scroll-margin-top: calc(var(--slds-header-height, #{v.$nav-height}) + 1rem);
+    letter-spacing: -.02em;
+  }
+  code {
+    background:    var(--theme-surface-subtle);
+    border:        1px solid var(--theme-border-soft);
+    border-radius: v.$radius-sm;
+    padding:       .1em .35em;
+    font-size:     .875em;
+    color:         var(--theme-text-strong);
+  }
+  pre code { background: transparent; border: none; padding: 0; }
+  blockquote {
+    border-left:  3px solid var(--theme-brand);
+    padding-left: v.$space-lg;
+    color:        var(--theme-text-weak);
+  }
+  img {
+    border-radius: v.$radius-md;
+    border:        1px solid var(--theme-border-soft);
+    max-width:     100%;
+  }
+  a { color: var(--theme-brand); text-underline-offset: 2px; }
+}
+
+
+// ── Prev / Next pager ─────────────────────────────────────────────────────────
+
+.tc-reader__pager {
+  display:     flex;
+  gap:         v.$space-lg;
+  margin-top:  v.$space-2xl;
+  padding-top: v.$space-2xl;
+  border-top:  1px solid var(--theme-border-soft);
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) { flex-direction: column; }
+}
+
+.tc-reader__pager-prev,
+.tc-reader__pager-next { flex: 1; }
+.tc-reader__pager-next { text-align: right; }
+@media screen and (max-width: #{v.$bp-mobile - 1px}) {
+  .tc-reader__pager-next { text-align: left; }
+}
+
+.tc-reader__pager-link {
   display:        flex;
   flex-direction: column;
-  gap:            0.75rem;
-}
+  padding:        v.$space-lg v.$space-xl;
+  height:         100%;
+  min-height:     3.5rem;
+  border:         1px solid var(--theme-border);
+  border-radius:  v.$radius-md;
+  text-decoration: none;
+  color:          var(--theme-text);
+  @include mx.motion;
 
-.tp-enroll-card__status { display: flex; }
-
-.tp-enroll-card__features {
-  list-style:  none;
-  margin:      0;
-  padding:     0;
-  border-top:  1px solid var(--theme-border-soft);
-  padding-top: 0.75rem;
-  display:     flex;
-  flex-direction: column;
-  gap:         0.5rem;
-
-  li {
-    display:     flex;
-    align-items: center;
-    gap:         0.5rem;
-    font-size:   v.$font-size-xs;
-    color:       var(--theme-text-weak);
+  &:hover {
+    border-color: var(--theme-brand);
+    box-shadow:   0 2px 10px rgba(0,0,0,.1);
+    transform:    translateY(-2px);
   }
-  svg {
-    width:       0.875rem;
-    height:      0.875rem;
-    flex-shrink: 0;
-    color:       #{v.$success-color};
+
+  &--right { align-items: flex-end; }
+  &--done  {
+    border-style: dashed;
+    border-color: #{v.$success-color} !important;
+    color:        #{v.$success-color} !important;
+    .tc-reader__pager-dir { color: #{v.$success-color}; }
+  }
+
+  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
+    &--right { align-items: flex-start; }
   }
 }
 
-// ── Sticky footer navbar (training hub) ───────────────────────────────────────
+.tc-reader__pager-dir {
+  display:        flex;
+  align-items:    center;
+  gap:            .3rem;
+  font-size:      .5625rem;
+  font-weight:    700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color:          var(--theme-text-weak);
+  margin-bottom:  .3rem;
+  i { font-size: .875rem; }
+}
 
-#ns-training-sticky {
-  background:  var(--theme-surface-card) !important;
-  border-top:  1px solid var(--theme-border);
-  box-shadow:  0 -2px 8px rgba(0, 0, 0, 0.06);
+.tc-reader__pager-title {
+  font-size:   v.$font-size-base;
+  font-weight: 600;
+  color:       var(--theme-text-strong);
+  line-height: 1.3;
+}
+
+
+// =============================================================================
+//  RIGHT TOC COLUMN  —  .tc-toc-col / .tc-toc-sticky
+// =============================================================================
+
+.tc-toc-col {
+  border-left: 1px solid var(--theme-border-soft);
+
+  @media screen and (min-width: v.$bp-desktop) {
+    position:   sticky;
+    top:        var(--slds-header-height, #{v.$nav-height});
+    max-height: calc(100vh - var(--slds-header-height, #{v.$nav-height}));
+    overflow-y: auto;
+    @include mx.scrollbar;
+  }
+}
+
+.tc-toc-sticky { padding: v.$space-2xl v.$space-lg; }
+
+.tc-toc.js-toc a {
+  font-size:       v.$font-size-xs;
+  color:           var(--theme-text-weak);
+  text-decoration: none;
+  display:         block;
+  padding:         .2rem 0;
+  line-height:     1.4;
+  @include mx.transition(color, 80ms, ease);
+  &:hover { color: var(--theme-brand); }
+  &.is-active-link { color: var(--theme-brand); font-weight: 600; }
+}
+
+
+// =============================================================================
+//  RESPONSIVE
+// =============================================================================
+
+@media screen and (max-width: #{v.$bp-desktop - 1px}) {
+  .tc-overview__hero { flex-direction: column; }
+  .tc-overview__hero-cover { flex: none; width: 100%; }
+}
+
+@media screen and (max-width: #{v.$bp-mobile - 1px}) {
+  .tc-main-col { padding: v.$space-lg; }
+  .tc-reader    { padding: v.$space-lg !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tc-mod-card,
+  .tc-mobile-panel { transition: none; }
 }
