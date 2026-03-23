@@ -1,47 +1,50 @@
 {{!< default}}
-{{!-- training.hbs  /training/  curriculum index --}}
-{{!-- Hero --}}
-<section class="tr-hero">
-  <div class="tr-hero__backdrop" aria-hidden="true"></div>
-  <div class="container">
-    <div class="tr-hero__inner">
-      <span class="tr-hero__eyebrow">
+{{!-- training.hbs  /training/  curriculum listing --}}
+
+{{!-- HERO --}}
+<section class="hero is-primary is-medium ns-training-hero">
+  <div class="hero-body">
+    <div class="container">
+      <p class="ns-training-eyebrow">
         <i class="ph ph-graduation-cap" aria-hidden="true"></i>
         Salesforce Training
-      </span>
-      <h1 class="tr-hero__title">
+      </p>
+      <h1 class="title is-1 has-text-white ns-training-hero-title">
         {{#if title}}{{title}}{{else}}All Training Courses{{/if}}
       </h1>
-      <p class="tr-hero__lead">
-        {{#if custom_excerpt}}{{custom_excerpt}}{{else}}Structured,
-        step-by-step training paths for every Salesforce role.
-        Free to access — built by practitioners, not marketers.{{/if}}
+      <p class="subtitle is-4 ns-training-hero-lead">
+        {{#if custom_excerpt}}
+          {{custom_excerpt}}
+        {{else}}
+          Structured, step-by-step training paths for every Salesforce role.
+          Free to access — built by practitioners, not marketers.
+        {{/if}}
       </p>
-      <div class="tr-hero__ctas">
+      <div class="buttons">
         <button class="button is-white is-medium" type="button" data-ghost-search>
           <span class="icon is-small">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </span>
           <span>Search training…</span>
         </button>
-        <a href="/courses/" class="button is-medium tr-hero__alt-btn">
+        <a href="/courses/" class="button is-white is-outlined is-medium">
           <span class="icon is-small">
             <i class="ph ph-book-open" aria-hidden="true"></i>
           </span>
           <span>Browse courses instead</span>
         </a>
       </div>
-      <div class="tr-hero__features">
-        <span class="tr-hero__feature">
+      <div class="ns-training-features">
+        <span class="ns-training-feature">
           <i class="ph ph-check-circle" aria-hidden="true"></i> Free forever
         </span>
-        <span class="tr-hero__feature">
+        <span class="ns-training-feature">
           <i class="ph ph-arrows-clockwise" aria-hidden="true"></i> Updated regularly
         </span>
-        <span class="tr-hero__feature">
+        <span class="ns-training-feature">
           <i class="ph ph-users-three" aria-hidden="true"></i> Community built
         </span>
-        <span class="tr-hero__feature">
+        <span class="ns-training-feature">
           <i class="ph ph-certificate" aria-hidden="true"></i> Exam-aligned
         </span>
       </div>
@@ -49,78 +52,92 @@
   </div>
 </section>
 
-{{!-- Filter tabs --}}
-<div class="tr-filters">
+{{!-- FILTER TABS --}}
+<div class="ns-training-filters">
   <div class="container">
-    <div class="tr-filters__inner">
-      <span class="tr-filters__label">Filter:</span>
-      <div class="tr-filters__tabs" role="tablist">
-        <button class="tr-filters__tab is-active" role="tab"
-                aria-selected="true" data-filter="all">All levels</button>
-        <button class="tr-filters__tab" role="tab" data-filter="beginner">Beginner</button>
-        <button class="tr-filters__tab" role="tab" data-filter="intermediate">Intermediate</button>
-        <button class="tr-filters__tab" role="tab" data-filter="advanced">Advanced</button>
-      </div>
+    <div class="tabs is-boxed ns-training-tabs">
+      <ul role="tablist">
+        <li class="is-active" role="presentation" data-filter="all">
+          <a role="tab" aria-selected="true">All levels</a>
+        </li>
+        <li role="presentation" data-filter="beginner">
+          <a role="tab">Beginner</a>
+        </li>
+        <li role="presentation" data-filter="intermediate">
+          <a role="tab">Intermediate</a>
+        </li>
+        <li role="presentation" data-filter="advanced">
+          <a role="tab">Advanced</a>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
 
-{{!-- Card grid --}}
-<section class="tr-body section">
+{{!-- CURRICULUM CARDS --}}
+<section class="section ns-training-body">
   <div class="container">
+
     {{#if posts}}
-      <div class="columns is-multiline tr-grid">
+      <div class="columns is-multiline ns-training-grid">
         {{#foreach posts}}
           <div class="column is-12-mobile is-6-tablet is-4-desktop">
-            <article class="tr-card">
+            <div class="card ns-training-card">
 
               {{!-- Cover --}}
-              <a href="{{url}}" class="tr-card__cover" tabindex="-1" aria-hidden="true">
-                {{#if feature_image}}
-                  <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy">
-                {{else}}
-                  <div class="tr-card__cover-ph">
-                    <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
-                  </div>
-                {{/if}}
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-training-level-"}}
-                    {{#if description}}
-                      <span class="tr-card__level">{{description}}</span>
-                    {{/if}}
-                  {{/match}}
-                {{/foreach}}
-              </a>
+              <div class="card-image">
+                <a href="{{url}}" class="ns-training-card-cover-link" tabindex="-1" aria-hidden="true">
+                  {{#if feature_image}}
+                    <figure class="image is-16by9">
+                      <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy">
+                    </figure>
+                  {{else}}
+                    <figure class="image is-16by9 ns-training-cover-ph">
+                      <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
+                    </figure>
+                  {{/if}}
+                  {{#foreach tags visibility="internal"}}
+                    {{#match slug "~^" "hash-training-level-"}}
+                      {{#if description}}
+                        <span class="tag is-dark ns-training-level-badge">{{description}}</span>
+                      {{/if}}
+                    {{/match}}
+                  {{/foreach}}
+                </a>
+              </div>
 
-              {{!-- Body --}}
-              <div class="tr-card__body">
+              {{!-- Content --}}
+              <div class="card-content ns-training-card-content">
+
+                {{!-- Category row --}}
                 {{#if primary_tag}}
-                  <div class="tr-card__cat">
+                  <div class="ns-training-cat-row">
                     {{#if primary_tag.feature_image}}
                       <img src="{{img_url primary_tag.feature_image size="xxs"}}"
-                           alt="" class="tr-card__cat-img" loading="lazy" aria-hidden="true">
+                           alt="" class="ns-training-cat-img" loading="lazy" aria-hidden="true">
                     {{else}}
-                      <span class="tr-card__cat-icon" aria-hidden="true">
+                      <span class="ns-training-cat-icon" aria-hidden="true">
                         <i class="ph ph-tag-simple"></i>
                       </span>
                     {{/if}}
-                    <span class="tr-card__cat-name">{{primary_tag.name}}</span>
+                    <span class="ns-training-cat-name">{{primary_tag.name}}</span>
                   </div>
                 {{/if}}
 
-                <h2 class="tr-card__title">
-                  <a href="{{url}}" class="tr-card__title-link">{{title}}</a>
-                </h2>
+                <p class="title is-5 mb-2">
+                  <a href="{{url}}" class="ns-training-card-title">{{title}}</a>
+                </p>
 
                 {{#if custom_excerpt}}
-                  <p class="tr-card__excerpt">{{custom_excerpt}}</p>
+                  <p class="is-size-6 has-text-grey ns-training-excerpt">{{custom_excerpt}}</p>
                 {{else}}
-                  <p class="tr-card__excerpt">{{excerpt words="18"}}…</p>
+                  <p class="is-size-6 has-text-grey ns-training-excerpt">{{excerpt words="18"}}…</p>
                 {{/if}}
 
-                <div class="tr-card__stats">
+                {{!-- Stats --}}
+                <div class="ns-training-stats">
                   {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="100"}}
-                    <span class="tr-card__stat">
+                    <span class="ns-training-stat">
                       <i class="ph ph-stack" aria-hidden="true"></i>
                       {{posts.length}} modules
                     </span>
@@ -128,7 +145,7 @@
                   {{#foreach tags visibility="internal"}}
                     {{#match slug "~^" "hash-training-duration-"}}
                       {{#if description}}
-                        <span class="tr-card__stat">
+                        <span class="ns-training-stat">
                           <i class="ph ph-clock" aria-hidden="true"></i>
                           {{description}}
                         </span>
@@ -136,6 +153,7 @@
                     {{/match}}
                   {{/foreach}}
                 </div>
+
               </div>
 
               {{!-- Inline module list --}}
@@ -145,36 +163,32 @@
                 limit="5"
               }}
                 {{#if posts}}
-                  <div class="tr-card__modules">
-                    <p class="tr-card__modules-hd">
+                  <div class="ns-training-modules">
+                    <p class="ns-training-modules-label">
                       <i class="ph ph-list-checks" aria-hidden="true"></i> Modules
                     </p>
-                    <ol class="tr-card__modules-list">
-                      {{#foreach posts}}
-                        <li>
-                          <a href="{{url}}" class="tr-card__module">
-                            <span class="tr-card__mod-num" aria-hidden="true">{{@number}}</span>
-                            <span class="tr-card__mod-title">{{title}}</span>
-                            <span class="tr-card__mod-time">{{reading_time}}</span>
-                          </a>
-                        </li>
-                      {{/foreach}}
-                    </ol>
+                    {{#foreach posts}}
+                      <a href="{{url}}" class="ns-training-module-row">
+                        <span class="ns-training-mod-num" aria-hidden="true">{{@number}}</span>
+                        <span class="ns-training-mod-title">{{title}}</span>
+                        <span class="ns-training-mod-time">{{reading_time}}</span>
+                      </a>
+                    {{/foreach}}
                   </div>
                 {{/if}}
               {{/get}}
 
-              {{!-- Footer --}}
-              <div class="tr-card__footer">
+              {{!-- Card footer --}}
+              <footer class="card-footer ns-training-card-footer">
                 {{#primary_author}}
-                  <div class="tr-card__author">
+                  <div class="ns-training-author">
                     {{#if profile_image}}
                       <img src="{{img_url profile_image size="xxs"}}"
-                           alt="{{name}}" class="tr-card__author-img" loading="lazy">
+                           alt="{{name}}" class="ns-training-author-img" loading="lazy">
                     {{else}}
-                      <i class="ph ph-user-circle tr-card__author-ph" aria-hidden="true"></i>
+                      <i class="ph ph-user-circle ns-training-author-ph" aria-hidden="true"></i>
                     {{/if}}
-                    <span class="tr-card__author-name">{{name}}</span>
+                    <span class="ns-training-author-name">{{name}}</span>
                   </div>
                 {{/primary_author}}
                 <a href="{{url}}" class="button is-primary is-small">
@@ -183,50 +197,72 @@
                     <i class="ph ph-arrow-right" aria-hidden="true"></i>
                   </span>
                 </a>
-              </div>
+              </footer>
 
-            </article>
+            </div>
           </div>
         {{/foreach}}
       </div>
+
       {{#if pagination.pages}}
         {{pagination}}
       {{/if}}
+
     {{else}}
-      <div class="tr-empty has-text-centered py-6">
-        <i class="ph ph-books" style="font-size:3.5rem;opacity:.3;display:block;margin-bottom:1rem"
-           aria-hidden="true"></i>
+      <div class="has-text-centered py-6">
+        <i class="ph ph-books" style="font-size:3.5rem;opacity:.3;display:block;margin-bottom:1rem" aria-hidden="true"></i>
         <p class="title is-5 has-text-grey">No training courses yet</p>
         <p class="subtitle is-6 has-text-grey-light">
-          Create a post with internal tag <code>#training</code>.
+          Create a post with internal tag <code>#training</code> to create your first course.
         </p>
       </div>
     {{/if}}
+
   </div>
 </section>
 
-{{!-- Contribute band --}}
-<section class="tr-contribute section">
+{{!-- CONTRIBUTE BAND --}}
+<section class="section ns-contribute">
   <div class="container">
-    <div class="tr-contribute__inner">
-      <div class="tr-contribute__icon" aria-hidden="true">
-        <i class="ph ph-chalkboard-teacher"></i>
-      </div>
-      <div class="tr-contribute__text">
-        <h2 class="tr-contribute__title">Want to create a training course?</h2>
-        <p class="tr-contribute__lead">
-          If you have real Salesforce project experience, we'd love to feature
-          your training here. All contributors get credited and the course is
-          free for the community.
+    <div class="columns is-vcentered">
+      <div class="column">
+        <p class="ns-contribute-eyebrow">
+          <i class="ph ph-chalkboard-teacher" aria-hidden="true"></i>
+          Open to contributions
         </p>
-      </div>
-      <div class="tr-contribute__cta">
+        <h2 class="title is-3">Want to create a training course?</h2>
+        <p class="subtitle is-5 has-text-grey">
+          If you have real Salesforce project experience, we'd love to feature your training here.
+          All contributors get credited and the course is free for the community.
+        </p>
         <a href="/contact/?ref=training-author" class="button is-primary is-medium">
           <span class="icon is-small">
             <i class="ph ph-pencil-line" aria-hidden="true"></i>
           </span>
           <span>Become an instructor</span>
         </a>
+      </div>
+      <div class="column is-4 is-hidden-mobile">
+        <div class="ns-contribute-perks">
+          <div class="ns-contribute-perk">
+            <span class="ns-contribute-perk-icon">
+              <i class="ph ph-user-circle-plus" aria-hidden="true"></i>
+            </span>
+            <div>
+              <p class="has-text-weight-bold mb-1">Get credited as author</p>
+              <p class="is-size-6 has-text-grey">Listed in the project changelog.</p>
+            </div>
+          </div>
+          <div class="ns-contribute-perk">
+            <span class="ns-contribute-perk-icon">
+              <i class="ph ph-users-three" aria-hidden="true"></i>
+            </span>
+            <div>
+              <p class="has-text-weight-bold mb-1">Help thousands of learners</p>
+              <p class="is-size-6 has-text-grey">Your content stays free forever.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
