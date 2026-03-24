@@ -1,0 +1,114 @@
+{{!< default}}
+
+<main class="signin-page">
+    <section class="container">
+        <div class="columns is-centered is-vcentered" style="min-height: 90vh;">
+            <div class="column is-10-desktop is-12-tablet">
+                
+                <div class="column is-8 is-offset-2 register shadow-raised">
+                    <div class="columns is-gapless is-vcentered">
+                        <div class="column left">
+                            <h1 class="title is-1">{{@site.title}}</h1>
+                            <h2 class="subtitle colored is-4">Master Salesforce. Launch your career.</h2>
+                            <p>
+                                Join thousands of aspiring Salesforce Application Engineers learning 
+                                programmatic development through real‑world projects.
+                            </p>
+                        </div>
+
+                        <div class="column right has-text-centered">
+                            <div class="tabs is-centered is-boxed mb-5">
+                                <ul>
+                                    <li class="is-active" data-tab="signin"><a>Sign in</a></li>
+                                    <li data-tab="signup"><a>Sign up</a></li>
+                                </ul>
+                            </div>
+
+                            <div id="auth-form-container">
+                                <form data-members-form="signin" id="signin-form">
+                                    <h1 class="title is-4">Welcome Back</h1>
+                                    <p class="description mb-4">Enter your email for a magic link.</p>
+                                    
+                                    <div class="field">
+                                        <div class="control">
+                                            <input class="input is-medium" type="email" data-members-email placeholder="Email" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="button is-block is-primary is-fullwidth is-medium" type="submit">
+                                        <span class="is-loading-text">Send Magic Link</span>
+                                    </button>
+                                    
+                                    <div class="message-success has-text-success mt-3 is-size-7" style="display:none;">
+                                        <strong>Link sent!</strong> Check your inbox.
+                                    </div>
+                                    <div class="message-error has-text-danger mt-3 is-size-7" style="display:none;" data-members-error></div>
+                                </form>
+
+                                <form data-members-form="signup" id="signup-form" style="display:none;">
+                                    <h1 class="title is-4">Sign up today</h1>
+                                    <p class="description mb-4">Start your journey for free.</p>
+                                    
+                                    <div class="field">
+                                        <div class="control">
+                                            <input class="input is-medium" type="text" data-members-name placeholder="Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="control">
+                                            <input class="input is-medium" type="email" data-members-email placeholder="Email" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="button is-block is-primary is-fullwidth is-medium" type="submit">
+                                        <span class="is-loading-text">Register</span>
+                                    </button>
+
+                                    <div class="message-success has-text-success mt-3 is-size-7" style="display:none;">
+                                        <strong>Success!</strong> Check your email to confirm.
+                                    </div>
+                                </form>
+                            </div>
+
+                            <br>
+                            <small><em>No password required. We'll email you a secure link.</em></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-8 is-offset-2 mt-4">
+                    <nav class="level is-mobile">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <span class="icon mr-3"><i class="fab fa-twitter"></i></span>
+                                <span class="icon mr-3"><i class="fab fa-github"></i></span>
+                                <span class="icon"><i class="fas fa-envelope"></i></span>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <small class="has-text-grey-light">
+                                © {{date format="YYYY"}} {{@site.title}}. All Rights Reserved.
+                            </small>
+                        </div>
+                    </nav>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // Tab Switching Logic
+    const tabs = document.querySelectorAll('[data-tab]');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('is-active'));
+            tab.classList.add('is-active');
+            
+            const target = tab.getAttribute('data-tab');
+            document.getElementById('signin-form').style.display = (target === 'signin') ? 'block' : 'none';
+            document.getElementById('signup-form').style.display = (target === 'signup') ? 'block' : 'none';
+        });
+    });
+</script>
