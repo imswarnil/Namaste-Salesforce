@@ -1,0 +1,967 @@
+// =============================================================================
+//  home.scss  ·  Namaste Salesforce — Homepage styles
+//
+//  Load order in main.scss (or home-specific entry):
+//    @use "variables" as v;
+//    @use "mixins"    as mx;
+//    // … Bulma …
+//    // … overrides …
+//    @use "home";      ← this file
+//
+//  All selectors are prefixed ns-* to avoid collisions.
+//
+//  Sections:
+//    A) CSS-only entry animations
+//    B) Hero (video BG, copy, path card, stats)
+//    C) Platform Pillars
+//    D) Career Path Cards
+//    E) Course Cards
+//    F) Engineer Way (feature items + YT Short)
+//    G) Why-learn boxes
+//    H) About / Timeline
+//    I) Blog + Sidebar
+//    J) Testimonials
+//    K) CTA Banner
+//    L) Shared utilities (eyebrow, section alternates)
+//    M) Dark-mode patches
+// =============================================================================
+@use "variables" as v;
+@use "mixins"    as mx;
+
+
+// =============================================================================
+//  A) CSS-ONLY ENTRY ANIMATIONS
+//  Hero animates on page load via staggered @keyframes.
+//  No IntersectionObserver JS required.
+// =============================================================================
+
+@keyframes ns-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ns-fade-left {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.ns-anim {
+  animation-fill-mode: both;
+  animation-duration: .65s;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+}
+
+// Numbered stagger classes .ns-anim--1 … --6 used on hero children
+@for $i from 1 through 6 {
+  .ns-anim--#{$i} {
+    animation-name: ns-fade-up;
+    animation-duration: .65s;
+    animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+    animation-fill-mode: both;
+    animation-delay: #{($i - 1) * 0.09 + 0.05}s;
+  }
+}
+
+// Path card slides in from right
+.ns-anim--fade-left {
+  animation-name: ns-fade-left;
+  animation-duration: .7s;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  animation-fill-mode: both;
+  animation-delay: .18s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-anim,
+  [class*="ns-anim--"] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+
+// =============================================================================
+//  B) HERO
+// =============================================================================
+
+.ns-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  // ── Background layers ─────────────────────────────────────────────────────
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  &__yt-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    // Hide on mobile — autoplay is blocked and drains battery
+    @media (max-width: #{v.$bp-tablet - 1}) {
+      display: none;
+    }
+  }
+
+  &__yt-iframe {
+    // 16:9 cover — always fills the container regardless of viewport ratio
+    position: absolute;
+    top:  50%;
+    left: 50%;
+    width:      100vw;
+    height:     56.25vw;    // 100vw × 9/16
+    min-height: 100vh;
+    min-width:  177.78vh;   // 100vh × 16/9
+    transform:  translate(-50%, -50%);
+    border: 0;
+  }
+
+  // Static fallback image (always rendered, z-index below iframe on desktop)
+  &__img-fallback {
+    position: absolute;
+    inset: 0;
+    background-size:     cover;
+    background-position: center;
+    background-repeat:   no-repeat;
+
+    @media (min-width: #{v.$bp-tablet}) {
+      z-index: -1; // sits behind the iframe
+    }
+
+    &--default {
+      background: linear-gradient(160deg, #040d1a 0%, #0a1d36 55%, #080f1c 100%);
+    }
+  }
+
+  // Gradient overlay — legibility over any video or image
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0,0,0,.74) 0%,
+        rgba(0,0,0,.52) 50%,
+        rgba(0,0,0,.82) 100%
+      );
+
+    @media (min-width: #{v.$bp-desktop}) {
+      background:
+        linear-gradient(
+          to right,
+          rgba(0,0,0,.80) 0%,
+          rgba(0,0,0,.42) 55%,
+          rgba(0,0,0,.66) 100%
+        ),
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.18) 0%,
+          rgba(0,0,0,.58) 100%
+        );
+    }
+  }
+
+  // ── Hero body ─────────────────────────────────────────────────────────────
+
+  &__body {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-top: 7rem;
+    padding-bottom: 2rem;
+    padding-left:  1.25rem;
+    padding-right: 1.25rem;
+
+    @media (min-width: #{v.$bp-tablet}) {
+      padding-top: 8rem;
+      padding-left:  2rem;
+      padding-right: 2rem;
+    }
+
+    @media (min-width: #{v.$bp-desktop}) {
+      padding-top: 9rem;
+      padding-bottom: 3rem;
+    }
+  }
+
+  // ── Headline ──────────────────────────────────────────────────────────────
+
+  &__headline {
+    font-weight: 800;
+    letter-spacing: -.025em;
+    line-height: 1.1;
+    text-shadow: 0 2px 18px rgba(0,0,0,.45);
+  }
+
+  &__accent {
+    color: var(--ghost-accent-color, #{v.$brand-primary-dark});
+    font-style: italic;
+  }
+
+  // ── Ghost / outlined CTA ──────────────────────────────────────────────────
+
+  &__ghost-btn {
+    @include mx.btn-base;
+    background:   transparent !important;
+    border:       1.5px solid rgba(255,255,255,.48) !important;
+    color:        #fff !important;
+
+    &:hover {
+      background:   rgba(255,255,255,.12) !important;
+      border-color: rgba(255,255,255,.80) !important;
+    }
+  }
+
+  // ── Trusted-by logos ──────────────────────────────────────────────────────
+
+  &__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .625rem 1rem;
+    opacity: .70;
+
+    span {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.01em;
+    }
+  }
+
+  &__logo-dot {
+    width:  4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.38);
+    flex-shrink: 0;
+  }
+
+  // ── Stats bar ─────────────────────────────────────────────────────────────
+
+  &__stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,.12);
+
+    @media (max-width: #{v.$bp-tablet - 1}) {
+      gap: 1.25rem 2rem;
+    }
+  }
+
+  &__stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 120px;
+
+    @media (max-width: #{v.$bp-tablet - 1}) {
+      flex: 1 1 40%;
+    }
+  }
+
+  &__stats-num {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -.03em;
+    line-height: 1;
+  }
+
+  &__stats-label {
+    font-size: .6875rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.52);
+    margin-top: .25rem;
+  }
+
+  &__stats-div {
+    width:  1px;
+    height: 2.5rem;
+    background: rgba(255,255,255,.15);
+    flex-shrink: 0;
+
+    @media (max-width: #{v.$bp-tablet - 1}) {
+      display: none;
+    }
+  }
+}
+
+// ── Featured Path Card ────────────────────────────────────────────────────────
+
+.ns-path-card {
+  background:   rgba(8, 14, 26, .84);
+  border:       1px solid rgba(255,255,255,.12);
+  border-radius: 1rem;
+  padding:      1.75rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  @media (min-width: #{v.$bp-tablet}) and (max-width: #{v.$bp-desktop - 1}) {
+    max-width: 480px;
+    margin: 2.5rem auto 0;
+  }
+
+  @media (max-width: #{v.$bp-tablet - 1}) {
+    margin-top: 2.5rem;
+    border-radius: .75rem;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width:  2.75rem;
+    height: 2.75rem;
+    background: rgba(11, 92, 171, .18);
+    border:     1px solid rgba(11, 92, 171, .28);
+    border-radius: .625rem;
+    font-size:  1.375rem;
+    color: #fff;
+  }
+
+  &__progress-wrap {
+    background:   rgba(0,0,0,.32);
+    border-radius: .5rem;
+    padding: .875rem 1rem;
+  }
+
+  &__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      color: rgba(255,255,255,.65);
+      font-size: .9375rem;
+      margin-bottom: .75rem;
+
+      &:last-child { margin-bottom: 0; }
+
+      .icon { flex-shrink: 0; }
+    }
+  }
+}
+
+
+// =============================================================================
+//  C) PLATFORM PILLARS
+// =============================================================================
+
+.ns-section--pillars {
+  background:    var(--theme-surface-body);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.ns-pillar {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  height: 100%;
+  border:        1px solid var(--theme-border);
+  border-radius: var(--theme-radius-md);
+  background:    var(--theme-surface-card);
+  box-shadow:    var(--theme-shadow-sm);
+  @include mx.motion;
+
+  &:hover {
+    border-color: var(--theme-brand);
+    box-shadow:   var(--theme-shadow-card);
+    transform:    translateY(-2px);
+  }
+
+  &__icon {
+    font-size:     2rem;
+    margin-bottom: .75rem;
+    line-height: 1;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size:   .9375rem;
+    color:       var(--theme-text-strong);
+    margin-bottom: .375rem;
+  }
+
+  &__sub {
+    font-size:   .8125rem;
+    color:       var(--theme-text-weak);
+    line-height: 1.55;
+  }
+}
+
+
+// =============================================================================
+//  D) CAREER PATH CARDS
+// =============================================================================
+
+.ns-career-card {
+  position: relative;
+  background:    var(--theme-surface-card);
+  border:        1.5px solid var(--theme-border);
+  border-radius: var(--theme-radius-lg);
+  padding: 2rem 1.75rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  @include mx.motion;
+
+  &:hover {
+    box-shadow: var(--theme-shadow-raised);
+    transform:  translateY(-3px);
+  }
+
+  &--featured {
+    border-color: var(--theme-brand);
+    box-shadow: 0 0 0 1px var(--theme-brand), var(--theme-shadow-card);
+  }
+
+  &__badge {
+    position: absolute;
+    top:  -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background:    var(--theme-brand);
+    color:         #fff;
+    font-size:     .625rem;
+    font-weight:   800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding:       .25rem .875rem;
+    border-radius: 0 0 .5rem .5rem;
+    white-space:   nowrap;
+  }
+
+  &__icon-wrap {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    width:  3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    font-size:     1.75rem;
+    margin-bottom: 1.25rem;
+
+    &--warning { background: rgba(221, 122, 1, .10); color: #{v.$warning-color}; }
+    &--info    { background: rgba(11, 92, 171, .10); color: #{v.$info-color};    }
+    &--primary { background: rgba(1, 118, 211, .10); color: #{v.$brand-primary}; }
+  }
+
+  &__bullets {
+    list-style: none;
+    margin:  0;
+    padding: 0;
+    flex: 1;
+
+    li {
+      display:     flex;
+      align-items: center;
+      gap:         .5rem;
+      font-size:   .875rem;
+      color:       var(--theme-text);
+      margin-bottom: .625rem;
+
+      i { flex-shrink: 0; font-size: 1rem; }
+    }
+  }
+}
+
+
+// =============================================================================
+//  E) COURSE CARDS
+// =============================================================================
+
+.ns-course-card {
+  border:        1px solid var(--theme-border);
+  border-radius: var(--theme-radius-md);
+  overflow:      hidden;
+  display:       flex;
+  flex-direction: column;
+  @include mx.motion;
+
+  &:hover {
+    box-shadow: var(--theme-shadow-raised);
+    transform:  translateY(-2px);
+  }
+
+  .card-image img {
+    width:       100%;
+    height:      100%;
+    object-fit:  cover;
+    @include mx.motion;
+  }
+
+  &:hover .card-image img { transform: scale(1.03); }
+
+  &__footer {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    padding:         .75rem 1rem;
+    border-top:      1px solid var(--theme-border);
+    background:      var(--theme-surface-subtle);
+    margin-top:      auto;
+  }
+
+  &__cta {
+    font-size:       .8125rem;
+    font-weight:     700;
+    color:           var(--theme-brand);
+    display:         flex;
+    align-items:     center;
+    gap:             .25rem;
+    text-decoration: none;
+    @include mx.motion;
+
+    &:hover { color: var(--theme-brand-hover); gap: .5rem; }
+  }
+}
+
+
+// =============================================================================
+//  F) ENGINEER WAY — features + YouTube Short
+// =============================================================================
+
+.ns-feature-item {
+  display:     flex;
+  align-items: flex-start;
+  gap:         1rem;
+
+  &__icon {
+    flex-shrink: 0;
+    font-size:   1.75rem;
+    line-height: 1;
+    margin-top:  .125rem;
+  }
+}
+
+// Portrait 9:16 YouTube Short container
+.ns-yt-short {
+  position: relative;
+  display:  inline-block;
+  width:    100%;
+  max-width: 315px;
+  margin:   0 auto;
+
+  &::before {
+    content:     '';
+    display:     block;
+    padding-top: 177.78%; // 16 / 9 × 100
+  }
+
+  iframe {
+    position:      absolute;
+    inset:         0;
+    width:         100%;
+    height:        100%;
+    border:        0;
+    border-radius: .75rem;
+    box-shadow:    var(--theme-shadow-raised);
+  }
+
+  @media (max-width: #{v.$bp-tablet - 1}) {
+    max-width: 260px;
+  }
+}
+
+
+// =============================================================================
+//  G) WHY LEARN
+// =============================================================================
+
+.ns-why-icon {
+  font-size:    1.75rem;
+  line-height:  1;
+  display:      block;
+}
+
+.ns-why-box {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            .5rem;
+  padding:        1.25rem 1rem;
+  @include mx.motion;
+
+  &:hover {
+    box-shadow: var(--theme-shadow-raised);
+    transform:  translateY(-2px);
+  }
+
+  &__icon {
+    font-size:     1.75rem;
+    line-height:   1;
+    margin-bottom: .25rem;
+  }
+}
+
+
+// =============================================================================
+//  H) ABOUT / TIMELINE
+// =============================================================================
+
+.ns-avatar {
+  width:       64px;
+  height:      64px;
+  object-fit:  cover;
+  border-radius: 50%;
+  border: 2px solid var(--theme-border);
+}
+
+.ns-avatar-placeholder {
+  width:           64px;
+  height:          64px;
+  border-radius:   50%;
+  background:      var(--theme-brand);
+  color:           #fff;
+  font-weight:     800;
+  font-size:       1.5rem;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  border: 2px solid rgba(1, 118, 211, .3);
+}
+
+.ns-timeline {
+  position:    relative;
+  padding-left: 1.75rem;
+
+  // Vertical connector line
+  &::before {
+    content:   '';
+    position:  absolute;
+    left:      .5625rem;
+    top:       .875rem;
+    bottom:    .875rem;
+    width:     2px;
+    background: var(--theme-border);
+    border-radius: 2px;
+  }
+
+  &__item {
+    position:      relative;
+    margin-bottom: 1.625rem;
+
+    &:last-child { margin-bottom: 0; }
+  }
+
+  &__dot {
+    position:      absolute;
+    left:          -1.125rem;
+    top:           .375rem;
+    width:         .6875rem;
+    height:        .6875rem;
+    border-radius: 50%;
+    background:    var(--theme-border-strong);
+    border:        2px solid var(--theme-surface-card);
+    @include mx.motion;
+  }
+
+  &__item--active &__dot {
+    background:   var(--theme-brand);
+    border-color: var(--theme-surface-card);
+    box-shadow:   0 0 0 3px rgba(1, 118, 211, .22);
+    width:         .875rem;
+    height:        .875rem;
+    left:          -1.1875rem;
+    top:           .25rem;
+  }
+
+  &__title {
+    font-weight:   700;
+    font-size:     .9375rem;
+    color:         var(--theme-text-strong);
+    margin-bottom: .25rem;
+  }
+
+  &__sub {
+    font-size:   .875rem;
+    color:       var(--theme-text-weak);
+    line-height: 1.55;
+  }
+}
+
+
+// =============================================================================
+//  I) BLOG + SIDEBAR
+// =============================================================================
+
+.ns-blog-card {
+  @include mx.motion;
+
+  &:hover {
+    box-shadow: var(--theme-shadow-raised);
+    transform:  translateY(-2px);
+  }
+}
+
+.ns-sidebar {
+  position: sticky;
+  top: calc(#{v.$navbar-height} + 1.5rem);
+
+  &__box {
+    background:    var(--theme-surface-card);
+    border:        1px solid var(--theme-border);
+    border-radius: var(--theme-radius-md);
+    padding:       1.25rem;
+    box-shadow:    var(--theme-shadow-sm);
+  }
+}
+
+.ns-quicklinks {
+  display:        flex;
+  flex-direction: column;
+  gap:            .125rem;
+
+  &__item {
+    display:         flex;
+    align-items:     center;
+    gap:             .5rem;
+    padding:         .5rem .625rem;
+    border-radius:   v.$radius-sm;
+    font-size:       .875rem;
+    color:           var(--theme-text);
+    text-decoration: none;
+    @include mx.motion;
+
+    .ml-auto { margin-left: auto; }
+
+    &:hover {
+      background: var(--theme-surface-subtle);
+      color:      var(--theme-text-strong);
+    }
+
+    // Trailing arrow starts dim, appears on hover
+    .icon:last-of-type {
+      opacity: .32;
+      @include mx.transition(opacity, 150ms);
+    }
+
+    &:hover .icon:last-of-type { opacity: 1; }
+  }
+}
+
+
+// =============================================================================
+//  J) TESTIMONIALS
+// =============================================================================
+
+.ns-testimonial {
+  background:    var(--theme-surface-card);
+  border:        1px solid var(--theme-border);
+  border-radius: var(--theme-radius-lg);
+  padding:       1.75rem;
+  height:        100%;
+  display:       flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @include mx.motion;
+
+  &:hover { box-shadow: var(--theme-shadow-raised); }
+
+  &--featured {
+    border-color: var(--theme-brand);
+    box-shadow:   0 0 0 1px var(--theme-brand), var(--theme-shadow-card);
+  }
+
+  &__body {
+    font-size:    .9375rem;
+    line-height:  1.65;
+    color:        var(--theme-text);
+    margin-bottom: 1.5rem;
+
+    &::before {
+      content:      '\201C';
+      display:      block;
+      font-size:    2.5rem;
+      line-height:  1;
+      color:        var(--theme-brand);
+      opacity:      .60;
+      margin-bottom: .25rem;
+      font-family:  Georgia, serif;
+    }
+  }
+
+  &__author {
+    display:     flex;
+    align-items: center;
+    gap:         .875rem;
+  }
+
+  &__avatar {
+    width:           2.5rem;
+    height:          2.5rem;
+    border-radius:   50%;
+    background:      var(--theme-brand);
+    color:           #fff;
+    font-weight:     800;
+    font-size:       1rem;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+  }
+}
+
+
+// =============================================================================
+//  K) CTA BANNER
+// =============================================================================
+
+.ns-cta-banner {
+  background:
+    linear-gradient(135deg, #040d1a 0%, #0b1e38 55%, #060f1d 100%);
+  padding:   5rem 1.25rem;
+  position:  relative;
+  overflow:  hidden;
+
+  // Subtle brand-glow disc
+  &::before {
+    content:       '';
+    position:      absolute;
+    width:         640px;
+    height:        640px;
+    border-radius: 50%;
+    background:    radial-gradient(circle, rgba(1,118,211,.22) 0%, transparent 70%);
+    top:           -200px;
+    left:          -120px;
+    pointer-events: none;
+  }
+
+  @media (min-width: #{v.$bp-tablet}) {
+    padding: 6rem 2rem;
+  }
+}
+
+.ns-cta-box {
+  background:        rgba(255,255,255,.06);
+  border:            1px solid rgba(255,255,255,.12);
+  border-radius:     1rem;
+  padding:           1.75rem;
+  backdrop-filter:   blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  @media (max-width: #{v.$bp-tablet - 1}) {
+    margin-top: 2rem;
+  }
+}
+
+
+// =============================================================================
+//  L) SHARED UTILITIES
+// =============================================================================
+
+// Alternating section background
+.ns-section--alt {
+  background:    var(--theme-surface-subtle);
+  border-top:    1px solid var(--theme-border);
+  border-bottom: 1px solid var(--theme-border);
+}
+
+// Small uppercase label above headings
+.ns-eyebrow {
+  display:        block;
+  font-size:      .6875rem;
+  font-weight:    800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color:          var(--theme-brand);
+  margin-bottom:  .5rem;
+
+  &--light { color: rgba(255,255,255,.50); }
+}
+
+
+// =============================================================================
+//  M) DARK-MODE PATCHES
+// =============================================================================
+
+html[data-color-scheme="dark"] {
+
+  .ns-hero__overlay {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0,0,0,.60) 0%,
+        rgba(0,0,0,.38) 50%,
+        rgba(0,0,0,.72) 100%
+      );
+
+    @media (min-width: #{v.$bp-desktop}) {
+      background:
+        linear-gradient(
+          to right,
+          rgba(0,0,0,.72) 0%,
+          rgba(0,0,0,.32) 55%,
+          rgba(0,0,0,.58) 100%
+        ),
+        linear-gradient(to bottom, rgba(0,0,0,.14) 0%, rgba(0,0,0,.52) 100%);
+    }
+  }
+
+  .ns-path-card {
+    background:   rgba(4, 9, 18, .90);
+    border-color: rgba(255,255,255,.10);
+  }
+
+  .ns-pillar,
+  .ns-career-card,
+  .ns-why-box,
+  .ns-testimonial,
+  .ns-sidebar__box {
+    background:   var(--theme-surface-card);
+    border-color: var(--theme-border);
+  }
+
+  .ns-career-card--featured,
+  .ns-testimonial--featured {
+    border-color: var(--theme-brand);
+    box-shadow:   0 0 0 1px var(--theme-brand), var(--theme-shadow-card);
+  }
+
+  .ns-timeline::before          { background: var(--theme-border); }
+  .ns-timeline__dot             { background: var(--theme-border-strong); border-color: var(--theme-surface-card); }
+  .ns-timeline__item--active .ns-timeline__dot {
+    background:   var(--theme-brand);
+    border-color: var(--theme-surface-card);
+  }
+
+  .ns-quicklinks__item:hover   { background: var(--theme-surface-muted); }
+
+  .ns-cta-banner::before {
+    background: radial-gradient(circle, rgba(27,150,255,.18) 0%, transparent 70%);
+  }
+
+  .ns-cta-box {
+    background:   rgba(255,255,255,.04);
+    border-color: rgba(255,255,255,.10);
+  }
+}
