@@ -1,26 +1,28 @@
 {{!-- =========================================================================
   partials/navigation.hbs  ·  Namaste Salesforce
 
-  Outputs Ghost primary navigation as semantic anchor tags.
+  Renders Ghost primary navigation as semantic anchor tags.
 
-  CSS CLASS CONTRACT (must match _header.scss exactly):
-    .default-header__nav-item   — every link (top-level + child)
+  CSS CLASS CONTRACT (matches _header.scss):
+    .default-header__nav-item   — every link (top-level AND child)
     .default-header__nav-icon   — icon span (aria-hidden)
     .default-header__nav-label  — text label span
-    [data-child="true"]         — child item; JS moves it into a flyout
+    [data-child="true"]         — child item; JS wraps in flyout dropdown
+    [aria-current="page"]       — active page (set by Ghost {{#if current}})
 
   DROPDOWN CONVENTION:
-    Prefix any Ghost Admin nav label with "- " (dash + space) to make it
-    a dropdown child of the preceding item. JS in header.hbs:
-      • Strips the "- " prefix from the visible label
+    Prefix any Ghost Admin nav label with "- " (dash + space) to make it a
+    dropdown child of the preceding top-level item.
+    JS in header.hbs:
+      • Strips "- " prefix from the visible label
       • Wraps parent + children in .default-header__dropdown-wrap
-      • Desktop: hover-to-open flyout
-      • Mobile: tap-to-open accordion
+      • Desktop: hover-to-open flyout panel
+      • Mobile: tap-to-toggle accordion
 ========================================================================== --}}
 
 {{#foreach navigation}}
 
-  {{!-- ── CHILD ITEM — label starts with "- " ─────────────────────────────── --}}
+  {{!-- ── CHILD ITEM — label starts with "- " ──────────────────────────── --}}
   {{#match label "~^" "- "}}
     <a
       class="default-header__nav-item{{#if current}} is-active{{/if}}"
@@ -43,7 +45,7 @@
       <span class="default-header__nav-label">{{label}}</span>
     </a>
 
-  {{!-- ── TOP-LEVEL ITEM ──────────────────────────────────────────────────── --}}
+  {{!-- ── TOP-LEVEL ITEM ─────────────────────────────────────────────────── --}}
   {{else}}
     <a
       class="default-header__nav-item{{#if current}} is-active{{/if}}"
@@ -66,6 +68,7 @@
         {{else match slug "=" "tags"}}          <i class="ph ph-hash"></i>
         {{else match slug "=" "authors"}}       <i class="ph ph-users"></i>
         {{else match slug "=" "docs"}}          <i class="ph ph-file-text"></i>
+        {{else match slug "=" "documentation"}} <i class="ph ph-book-open-text"></i>
         {{else match slug "=" "community"}}     <i class="ph ph-users-three"></i>
         {{else match slug "=" "start"}}         <i class="ph ph-rocket-launch"></i>
         {{else}}                                <i class="ph ph-circle-dashed"></i>
@@ -77,23 +80,31 @@
 
 {{/foreach}}
 
+{{!-- ════════════════════════════════════════════════════════════════════════
+  SiteNavigationElement structured data
+  • @number is Ghost's 1-based loop counter — correct for schema.org position
+  • Labels prefixed "- " are stripped before output
+  • Rendered inline so it's loaded with the nav HTML (no extra request)
+════════════════════════════════════════════════════════════════════════════ --}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@graph": [
-
+  "@type": "SiteNavigationElement",
+  "@id": "{{@site.url}}/#site-navigation",
+  "name": "{{@site.title}} Main Navigation",
+  "url": "{{@site.url}}/",
+  "hasPart": [
     {{#foreach navigation}}
-
+    {{#unless @first}},{{/unless}}
     {
       "@type": "SiteNavigationElement",
-      "@id": "#nav-{{@index}}",
-      "position": {{@index}},
+      "@id": "{{url absolute="true"}}#nav-item-{{@number}}",
+      "position": {{@number}},
       "name": "{{#match label "~^" "- "}}{{replace label "- " ""}}{{else}}{{label}}{{/match}}",
-      "url": "{{url absolute="true"}}"
-    }{{#unless @last}},{{/unless}}
-
+      "url": "{{url absolute="true"}}",
+      "isPartOf": { "@id": "{{@site.url}}/#site-navigation" }
+    }
     {{/foreach}}
-
   ]
 }
 </script>

@@ -73,7 +73,7 @@ function js(done) {
             'assets/js/lib/*.js', // Pulled first so code can depend on it
             'assets/js/*.js'      // Then the rest
         ], {sourcemaps: true}),
-        concat('casper.js'),
+        concat('main.js'),
         uglify(),
         dest('assets/built/', {sourcemaps: '.'}),
         livereload()

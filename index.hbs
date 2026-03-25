@@ -1,22 +1,109 @@
 {{!< default}}
-{{!-- The tag above means: insert everything in this file into the {body} of the default.hbs template --}}
+{{!-- =========================================================================
+  index.hbs  ·  Default post listing
+  Used as fallback for any collection that doesn't have its own template.
+  In routes.yaml the / route uses template: home, so this renders only
+  when Ghost falls back to the default index (e.g. paginated home /page/2/).
 
-{{!-- Main content area --}}
+  Renders inside the <main> from default.hbs — no extra wrapping <main> here.
+  .site-main already has .main-home from default.hbs class logic.
+=========================================================================== --}}
+
 <section class="section">
-    <div class="container">
-        {{!-- Posts grid --}}
-        <div class="columns is-multiline is-variable is-3">
-            {{#foreach posts}}
-                <div class="column is-one-third-desktop is-half-tablet is-full-mobile">
-                    {{!-- The post-card partial should use Bulma's card component --}}
-                    {{> "post-card"}}
-                </div>
-            {{/foreach}}
-        </div>
+  <div class="container">
 
-        {{!-- Pagination --}}
-        <div class="container" style="margin-top: 2rem;">
-            {{pagination}}
+    {{!-- Section heading --}}
+    <div class="level mb-5">
+      <div class="level-left">
+        <div class="level-item">
+          <div>
+            <h1 class="title is-3 mb-1">
+              <span class="icon-text">
+                <span class="icon has-text-primary">
+                  <i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>
+                </span>
+                <span>Latest Posts</span>
+              </span>
+            </h1>
+            <p class="subtitle is-6 has-text-grey">
+              {{plural pagination.total
+                empty="No posts yet"
+                singular="% post"
+                plural="% posts"}}
+            </p>
+          </div>
         </div>
+      </div>
     </div>
+
+    {{!-- Posts grid --}}
+    {{#if posts}}
+      <div class="columns is-multiline is-variable is-4" role="list">
+        {{#foreach posts}}
+          <div class="column is-12-mobile is-6-tablet is-4-desktop" role="listitem">
+            {{> "post-card"}}
+          </div>
+        {{/foreach}}
+      </div>
+
+      {{!-- Pagination --}}
+      {{#if pagination}}
+        <nav
+          class="pagination is-centered mt-6 pt-5"
+          role="navigation"
+          aria-label="Pagination"
+          style="border-top: 1px solid var(--theme-border);"
+        >
+          {{#if pagination.prev}}
+            <a
+              class="pagination-previous button is-light"
+              href="{{page_url pagination.prev}}"
+              aria-label="Go to page {{pagination.prev}}"
+            >
+              <span class="icon"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
+              <span>Newer</span>
+            </a>
+          {{else}}
+            <span class="pagination-previous button is-light" disabled aria-disabled="true">
+              <span class="icon"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
+              <span>Newer</span>
+            </span>
+          {{/if}}
+
+          <span class="pagination-list has-text-grey is-size-7 is-flex is-align-items-center">
+            Page {{pagination.page}} of {{pagination.pages}}
+          </span>
+
+          {{#if pagination.next}}
+            <a
+              class="pagination-next button is-light"
+              href="{{page_url pagination.next}}"
+              aria-label="Go to page {{pagination.next}}"
+            >
+              <span>Older</span>
+              <span class="icon"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+            </a>
+          {{else}}
+            <span class="pagination-next button is-light" disabled aria-disabled="true">
+              <span>Older</span>
+              <span class="icon"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+            </span>
+          {{/if}}
+        </nav>
+      {{/if}}
+
+    {{else}}
+      {{!-- Empty state --}}
+      <div class="has-text-centered py-6">
+        <span class="icon is-large has-text-grey-light mb-4" style="font-size: 4rem; display: block;">
+          <i class="ph ph-note-blank" aria-hidden="true"></i>
+        </span>
+        <p class="title is-5 has-text-grey">No posts yet</p>
+        <p class="subtitle is-6 has-text-grey-light mt-2">
+          Check back soon — content is on the way.
+        </p>
+      </div>
+    {{/if}}
+
+  </div>
 </section>
