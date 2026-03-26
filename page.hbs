@@ -1,107 +1,54 @@
 {{!< default}}
-{{!-- =========================================================================
-  page.hbs  ·  Static Ghost pages (/contact/, /about/, custom pages etc.)
 
-  Renders inside default.hbs → <main id="site-main" class="site-main main-page">.
-  Do NOT add a second <main> here — that creates invalid nested landmarks.
-  Use <article> as the semantic content wrapper (it IS a named document).
-=========================================================================== --}}
+{{!-- The tag above means: insert everything in this file
+into the {body} tag of the default.hbs template --}}
 
-{{#page}}
+{{#post}}
+{{!-- Everything inside the #post block pulls data from the page --}}
 
-{{!-- ════════════════════════════════════════════════════════════════════════
-  PAGE ARTICLE
-  itemscope / itemtype provide microdata for search engines.
-  Bulma .content on the body prose enables full typography rendering.
-════════════════════════════════════════════════════════════════════════════ --}}
-<article
-  class="gh-page {{post_class}}"
-  itemscope
-  itemtype="https://schema.org/WebPage"
->
+<main>
+    <article class="{{post_class}}">
 
-  {{!-- ── Microdata (invisible — readable by crawlers) ──────────────────── --}}
-  <meta itemprop="name"   content="{{title}}" />
-  <meta itemprop="url"    content="{{url absolute="true"}}" />
-  {{#if feature_image}}<meta itemprop="image" content="{{feature_image}}" />{{/if}}
-  {{#if updated_at}}<meta itemprop="dateModified" content="{{date updated_at format="YYYY-MM-DDTHH:mm:ssZ"}}" />{{/if}}
+        {{!-- 1. PAGE HEADER & FEATURE IMAGE --}}
+        {{#match @page.show_title_and_feature_image}}
+            <header class="section pb-4">
+                <div class="container is-max-desktop">
+                    
+                    <h1 class="title is-1 is-size-2-mobile has-text-weight-bold mb-5" style="line-height: 1.2;">
+                        {{title}}
+                    </h1>
 
-  {{!-- ════════════════════════════════════════════════════════════════
-    PAGE HEADER
-    Conditionally shown based on Ghost Admin custom setting
-    @custom.show_title_and_feature_image (boolean, default true).
-    Falls back to always showing if the setting is absent.
-  ════════════════════════════════════════════════════════════════== --}}
-  {{#unless @custom.hide_title}}
-  <header class="section pb-0">
-    <div class="container is-max-desktop">
+                    {{#if feature_image}}
+                        <figure class="image mt-5">
+                            <img
+                                srcset="{{img_url feature_image size="s"}} 300w,
+                                        {{img_url feature_image size="m"}} 600w,
+                                        {{img_url feature_image size="l"}} 1000w,
+                                        {{img_url feature_image size="xl"}} 2000w"
+                                sizes="(min-width: 1400px) 1400px, 92vw"
+                                src="{{img_url feature_image size="xl"}}"
+                                alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                                style="border-radius: 0.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"
+                            />
+                            {{#if feature_image_caption}}
+                                <figcaption class="has-text-centered is-size-7 has-text-grey mt-3">
+                                    {{feature_image_caption}}
+                                </figcaption>
+                            {{/if}}
+                        </figure>
+                    {{/if}}
 
-      {{!-- Title --}}
-      <h1
-        class="title is-1 is-size-2-mobile has-text-weight-bold mb-5"
-        itemprop="headline"
-        style="line-height: 1.15; letter-spacing: -0.02em;"
-      >
-        {{title}}
-      </h1>
+                </div>
+            </header>
+        {{/match}}
 
-      {{!-- Custom excerpt as subtitle --}}
-      {{#if custom_excerpt}}
-        <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-0 mb-5" style="line-height: 1.65;">
-          {{custom_excerpt}}
-        </p>
-      {{/if}}
+        {{!-- 2. PAGE CONTENT --}}
+        <section class="section pt-4">
+            <div class="container is-max-desktop content is-medium gh-content">
+                {{content}}
+            </div>
+        </section>
 
-      {{!-- Feature image --}}
-      {{#if feature_image}}
-        <figure class="image mb-0" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
-          <img
-            srcset="
-              {{img_url feature_image size="s"}}  300w,
-              {{img_url feature_image size="m"}}  600w,
-              {{img_url feature_image size="l"}}  1000w,
-              {{img_url feature_image size="xl"}} 2000w"
-            sizes="(min-width: 1280px) 1000px, (min-width: 1024px) 75vw, 92vw"
-            src="{{img_url feature_image size="l"}}"
-            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-            width="1000"
-            height="563"
-            loading="eager"
-            decoding="async"
-            style="border-radius: var(--theme-radius-lg); width: 100%; height: auto;"
-            itemprop="url"
-          />
-          {{#if feature_image_caption}}
-            <figcaption
-              class="has-text-centered is-size-7 has-text-grey mt-3"
-              itemprop="caption"
-            >
-              {{feature_image_caption}}
-            </figcaption>
-          {{/if}}
-          <meta itemprop="width"  content="1000" />
-          <meta itemprop="height" content="563" />
-        </figure>
-      {{/if}}
-
-    </div>
-  </header>
-  {{/unless}}
-
-  {{!-- ════════════════════════════════════════════════════════════════
-    PAGE BODY
-    .content   → Bulma typography class (headings, lists, tables, code)
-    .gh-content → theme hook for Ghost Koenig card sizing + dark mode
-    .is-medium  → Bulma content size modifier
-  ════════════════════════════════════════════════════════════════== --}}
-  <section class="section pt-5" itemprop="articleBody">
-    <div class="container is-max-desktop">
-      <div class="content is-medium gh-content">
-        {{content}}
-      </div>
-    </div>
-  </section>
-
-</article>
-
+    </article>
+</main>
 {{/post}}
