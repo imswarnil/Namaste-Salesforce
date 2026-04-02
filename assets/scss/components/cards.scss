@@ -1,682 +1,510 @@
 // =============================================================================
-//  layout/_cards.scss  ·  Namaste Salesforce
-//
-//  Post card system — all 5 variants in one file.
-//  Prefix: pc-  (post card)
-//
-//  STRUCTURE
-//  ─────────
-//  1.  Base shell              .pc
-//  2.  Image wrapper           .pc__img-wrap  (.--wide  = 16:9)
-//  3.  Body                    .pc__body
-//  4.  Tags row                .pc__tags  /  .pc__tag--*
-//  5.  Title                   .pc__title  /  .pc__title-link
-//  6.  Excerpt                 .pc__excerpt  (.--2line  .--1line)
-//  7.  Meta footer             .pc__meta  /  .pc__meta-dot
-//  8.  Locked state            .pc__locked-overlay  /  .pc__locked-badge
-//  9.  Access badge            .pc__access-badge--*   (course only)
-// 10.  Placeholder             .pc__placeholder--*
-// 11.  Variant: course         .pc--course
-// 12.  Variant: blog           .pc--blog
-// 13.  Variant: video          .pc--video
-// 14.  Variant: training       .pc--training
-// 15.  Variant: default        .pc--default
-// 16.  Bulma column helpers
-// 17.  Dark mode
-//
-//  All colours via var(--theme-*) custom properties — zero hardcoded hex.
-//  $vars from _variables.scss for radii, spacing, font-sizes only.
+//  _cards.scss  ·  Namaste Salesforce
+//  Post-card variant styles.
+//  Base:     Bulma .card, .card-image, .card-content, .card-footer
+//  Variants: .card-course / .card-blog / .card-video / .card-training / .card-default
+//  Each variant class acts as a parent scope — all child overrides live under it.
+//  Zero rules are emitted for the base .card (handled in _overrides.scss).
 // =============================================================================
-
-@use "../variables" as v;
-@use "../mixins"    as mx;
-
+@use "variables" as v;
+@use "mixins"    as mx;
 
 // =============================================================================
-//  1. BASE SHELL
+//  SHARED FOUNDATION
+//  Applied to all 5 variant parents so we don't repeat ourselves.
 // =============================================================================
-
-.pc {
-  // Layout
+.card-course,
+.card-blog,
+.card-video,
+.card-training,
+.card-default {
+  // Cards in a grid should all reach the same height
   display:        flex;
   flex-direction: column;
   height:         100%;
-  min-width:      0;
   overflow:       hidden;
-  position:       relative;   // needed for ::after full-card click trick
-
-  // Appearance
-  background:    var(--theme-surface-card);
-  border:        1px solid var(--theme-border);
-  border-radius: v.$radius-md;
-  box-shadow:    var(--theme-shadow-sm);
-
   @include mx.motion;
 
-  &:hover {
-    box-shadow:   var(--theme-shadow-card);
-    border-color: var(--theme-brand);
-    transform:    translateY(-2px);
-  }
+  // ── card-image as <a> ─────────────────────────────────────────────────────
+  // Ghost template wraps the image in an anchor. Strip link chrome,
+  // keep Bulma's .card-image positioning rules intact.
+  a.card-image {
+    display:         block;
+    text-decoration: none;
+    flex-shrink:     0;
 
-  &:focus-within {
-    outline:        2px solid var(--theme-brand);
-    outline-offset: 2px;
-  }
-}
-
-
-// =============================================================================
-//  2. IMAGE WRAPPER
-// =============================================================================
-
-.pc__img-wrap {
-  display:         block;
-  position:        relative;
-  flex-shrink:     0;
-  overflow:        hidden;
-  background:      var(--theme-surface-muted);
-  text-decoration: none;
-  aspect-ratio:    2 / 1;   // default: 2:1 (most posts)
-
-  &--wide {
-    aspect-ratio: 16 / 9;   // blog + video
-  }
-}
-
-.pc__img {
-  width:      100%;
-  height:     100%;
-  object-fit: cover;
-  display:    block;
-  @include mx.transition(transform, 400ms, ease);
-
-  .pc:hover & { transform: scale(1.04); }
-}
-
-
-// =============================================================================
-//  3. BODY
-// =============================================================================
-
-.pc__body {
-  padding:        v.$space-lg v.$space-lg v.$space-md;
-  display:        flex;
-  flex-direction: column;
-  gap:            0.5rem;
-  flex:           1 1 auto;
-  min-width:      0;
-}
-
-
-// =============================================================================
-//  4. TAGS ROW
-// =============================================================================
-
-.pc__tags {
-  display:     flex;
-  flex-wrap:   wrap;
-  align-items: center;
-  gap:         0.3rem;
-  min-height:  1.375rem;
-}
-
-// Base tag pill
-.pc__tag {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.2rem;
-  height:          1.25rem;
-  padding:         0 0.5rem;
-  border-radius:   v.$radius-pill;
-  border:          1px solid transparent;
-  font-size:       0.6875rem;
-  font-weight:     700;
-  letter-spacing:  0.02em;
-  text-decoration: none;
-  white-space:     nowrap;
-  @include mx.motion;
-
-  i { font-size: 0.75rem; }
-
-  // Primary: brand tint
-  &--primary {
-    background:   var(--slds-brand-tint-1);
-    border-color: var(--slds-brand-tint-2);
-    color:        var(--theme-brand);
-    &:hover {
-      background:  var(--theme-brand);
-      color:       #ffffff;
-      border-color: var(--theme-brand);
+    // Zoom on hover — only the img, so overlays stay crisp
+    img {
+      @include mx.transition(transform, 320ms, ease);
+    }
+    &:hover img {
+      transform: scale(1.04);
     }
   }
 
-  // Featured: amber
-  &--featured {
-    background:   rgba(221, 122, 1, 0.08);
-    border-color: rgba(221, 122, 1, 0.2);
-    color:        #{v.$warning-color};
+  // ── card-content grows to fill remaining height ────────────────────────────
+  .card-content {
+    flex:           1 1 auto;
+    display:        flex;
+    flex-direction: column;
+    padding:        1rem;
   }
 
-  // Locked: red
-  &--locked {
-    background:   rgba(186, 5, 23, 0.06);
-    border-color: rgba(186, 5, 23, 0.15);
-    color:        #{v.$danger-color};
+  // ── Title link ────────────────────────────────────────────────────────────
+  .title a {
+    color:           var(--theme-text-strong);
+    text-decoration: none;
+    @include mx.motion;
+
+    &:hover { color: var(--theme-brand); }
   }
 
-  // Section / training badge
-  &--section {
-    background:   var(--theme-surface-subtle);
-    border-color: var(--theme-border);
-    color:        var(--theme-text-weak);
+  // ── Tags row ─────────────────────────────────────────────────────────────
+  // Let .tags + .tag from Bulma handle layout; we only tweak specifics
+  .tags {
+    flex-wrap: wrap;
+    gap:       0.25rem;
+    margin-bottom: 0.5rem !important;
+
+    .tag {
+      font-size:      v.$font-size-xs;
+      font-weight:    600;
+      letter-spacing: 0.025em;
+      gap:            0.25rem;
+    }
+  }
+
+  // ── Subtitle / excerpt ────────────────────────────────────────────────────
+  .subtitle {
+    color:         var(--theme-text);
+    font-size:     v.$font-size-sm;
+    font-weight:   400;
+    line-height:   1.55;
+    margin-bottom: 0.75rem;
+  }
+
+  // ── Shared meta row ───────────────────────────────────────────────────────
+  .card-footer-item {
+    font-size:  v.$font-size-xs;
+    color:      var(--theme-text-weak);
+    padding:    0.625rem 1rem;
+
+    // Bulma puts a left-border between sibling footer items; keep it themed
+    & + .card-footer-item { border-left: 1px solid var(--theme-border); }
   }
 }
 
-
 // =============================================================================
-//  5. TITLE
+//  SHARED ELEMENTS  (used across multiple variants)
 // =============================================================================
 
-.pc__title {
-  font-size:          v.$font-size-sm;
-  font-weight:        700;
-  line-height:        1.35;
-  margin:             0;
-  color:              var(--theme-text-strong);
+// ── Placeholder (no feature image) ───────────────────────────────────────────
+.card__placeholder {
+  // Positioned absolute inside Bulma's .image.is-16by9 wrapper
+  position:        absolute;
+  inset:           0;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      var(--theme-surface-muted);
+  color:           var(--theme-text-weak);
+
+  i { font-size: 2.5rem; opacity: 0.45; }
+
+  &--course {
+    background: color-mix(in srgb, var(--theme-brand) 6%, var(--theme-surface-muted));
+  }
+
+  &--video {
+    background: #080c14;
+    color:      rgba(255, 255, 255, 0.20);
+  }
+}
+
+// ── Lock overlay (blurred dark veil over image) ───────────────────────────────
+.card__locked-overlay {
+  position:        absolute;
+  inset:           0;
+  z-index:         3;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.card__locked-badge {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             0.375rem;
+  padding:         0.375rem 0.875rem;
+  border-radius:   v.$radius-pill;
+  background:      rgba(255, 255, 255, 0.14);
+  border:          1px solid rgba(255, 255, 255, 0.28);
+  color:           #fff;
+  font-size:       v.$font-size-xs;
+  font-weight:     700;
+  letter-spacing:  0.04em;
+  text-transform:  uppercase;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 0.8125rem; }
+}
+
+// ── Lock tag (no-image fallback in the tag row) ────────────────────────────
+.card__tag--locked {
+  // Override Bulma .tag colours
+  background:   rgba(186, 5, 23, 0.08) !important;
+  border-color: rgba(186, 5, 23, 0.22) !important;
+  color:        #{v.$danger-color} !important;
+}
+
+// ── Meta dot separator ────────────────────────────────────────────────────
+.card__meta-dot {
+  display:       inline-block;
+  width:         3px;
+  height:        3px;
+  border-radius: 50%;
+  background:    var(--theme-border-strong);
+  vertical-align: middle;
+  flex-shrink:   0;
+  margin:        0 0.125rem;
+}
+
+// ── Excerpt line-clamp helpers ────────────────────────────────────────────
+.card__excerpt--1line {
+  display:            -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow:           hidden;
+}
+
+.card__excerpt--2line {
   display:            -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow:           hidden;
-
-  &--sm { font-size: v.$font-size-xs; }
 }
 
-.pc__title-link {
-  color:           var(--theme-text-strong);
-  text-decoration: none;
-  @include mx.motion;
-
-  // Full-card click zone
-  &::after {
-    content:  "";
-    position: absolute;
-    inset:    0;
-    z-index:  0;
-  }
-
-  &:hover { color: var(--theme-brand); }
-}
-
-
-// =============================================================================
-//  6. EXCERPT
-// =============================================================================
-
-.pc__excerpt {
-  font-size:          v.$font-size-xs;
-  color:              var(--theme-text-weak);
-  line-height:        1.6;
-  margin:             0;
+.card__excerpt {
   display:            -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow:           hidden;
-
-  &--2line { -webkit-line-clamp: 2; }
-  &--1line { -webkit-line-clamp: 1; }
 }
 
-
 // =============================================================================
-//  7. META FOOTER
+//  A) COURSE CARD
 // =============================================================================
-
-.pc__meta {
-  display:     flex;
-  align-items: center;
-  flex-wrap:   wrap;
-  gap:         0.375rem;
-  font-size:   v.$font-size-xs;
-  color:       var(--theme-text-weak);
-  margin-top:  auto;
-  padding-top: v.$space-sm;
-  border-top:  1px solid var(--theme-border-soft);
-
-  i { font-size: 0.875rem; vertical-align: -0.1em; }
-
-  // No top border on training (horizontal row)
-  &--flush {
-    border-top:  0;
-    padding-top: 0;
-  }
-}
-
-.pc__meta-dot {
-  width:         3px;
-  height:        3px;
-  border-radius: v.$radius-pill;
-  background:    var(--theme-border-strong);
-  flex-shrink:   0;
-}
-
-
-// =============================================================================
-//  8. LOCKED STATE
-// =============================================================================
-
-.pc__locked-overlay {
-  position:        absolute;
-  inset:           0;
-  z-index:         2;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  background:      rgba(0, 0, 0, 0.60);
-  backdrop-filter: blur(3px);
-}
-
-.pc__locked-badge {
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.375rem;
-  height:          2rem;
-  padding:         0 0.875rem;
-  background:      rgba(0, 0, 0, 0.5);
-  border:          1px solid rgba(255, 255, 255, 0.18);
-  border-radius:   v.$radius-pill;
-  color:           #ffffff;
-  font-size:       v.$font-size-xs;
-  font-weight:     700;
-  backdrop-filter: blur(4px);
-  i { font-size: 0.875rem; }
-}
-
-
-// =============================================================================
-//  9. ACCESS BADGE  (course only — top-right of image)
-// =============================================================================
-
-.pc__access-badge {
-  position:        absolute;
-  top:             v.$space-sm;
-  right:           v.$space-sm;
-  z-index:         3;
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.2rem;
-  height:          1.375rem;
-  padding:         0 0.5rem;
-  border-radius:   v.$radius-pill;
-  font-size:       0.625rem;
-  font-weight:     800;
-  letter-spacing:  0.04em;
-  text-transform:  uppercase;
-  backdrop-filter: blur(4px);
-  i { font-size: 0.6875rem; }
-
-  &--free    { background: rgba(46, 132, 74, 0.9);  color: #ffffff; }
-  &--members { background: rgba(1, 118, 211, 0.88); color: #ffffff; }
-  &--paid    { background: rgba(221, 122, 1, 0.9);  color: #ffffff; }
-}
-
-
-// =============================================================================
-//  10. PLACEHOLDERS  (no feature image fallback)
-// =============================================================================
-
-.pc__placeholder {
-  width:           100%;
-  height:          100%;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-
-  i {
-    font-size: 2.75rem;
-    opacity:   0.45;
+.card-course {
+  // Brand accent bar across the top
+  &::before {
+    content:    "";
+    display:    block;
+    height:     3px;
+    background: var(--theme-brand);
+    flex-shrink: 0;
   }
 
-  &--course {
-    background: var(--slds-brand-tint-1);
-    i { color: var(--theme-brand); }
+  // ── Access badge (top-right corner of image) ────────────────────────────
+  .card__access-badge {
+    position:       absolute;
+    top:            0.5rem;
+    right:          0.5rem;
+    z-index:        2;
+    font-weight:    700;
+    font-size:      v.$font-size-xs;
+    letter-spacing: 0.03em;
+    border:         none;
+
+    &--free    { background: #{v.$success-color}; color: #fff; }
+    &--members { background: var(--theme-brand);  color: #fff; }
+    &--paid    { background: #{v.$warning-color}; color: #fff; }
+
+    i { margin-right: 0.1em; }
   }
 
-  &--video {
-    background: #0f1115;
-    i { color: rgba(255, 255, 255, 0.3); }
+  // ── Course meta row (level + duration internal tags) ────────────────────
+  .card__course-meta {
+    display:       flex;
+    flex-wrap:     wrap;
+    gap:           0.375rem;
+    margin-bottom: 0.75rem !important;
+    margin-top:    auto; // pushes meta + CTA toward bottom when excerpt is short
+
+    .tag {
+      background:  var(--theme-surface-subtle);
+      border-color: var(--theme-border);
+      color:       var(--theme-text);
+      font-weight: 500;
+
+      i { font-size: 0.75rem; }
+    }
   }
+
+  // ── CTA button ────────────────────────────────────────────────────────
+  // .button.is-primary already styled in _overrides.scss; we add icon gap
+  .button.is-primary {
+    gap:         0.375rem;
+    font-weight: 600;
+    margin-top:  0;
+
+    .icon { margin: 0 !important; }
+  }
+
+  // ── Hover lift ────────────────────────────────────────────────────────
+  &:hover { transform: translateY(-2px); }
 }
 
-
 // =============================================================================
-//  11. VARIANT: COURSE  .pc--course
+//  B) BLOG CARD
 // =============================================================================
+.card-blog {
+  // ── 2-line excerpt already applied via .card__excerpt--2line ──────────
 
-.pc--course {
-  border-top: 3px solid var(--theme-brand);
+  // ── Author link (first footer item) ──────────────────────────────────
+  .card__author {
+    display:         flex;
+    align-items:     center;
+    gap:             0.5rem;
+    flex:            1 1 auto;
+    text-decoration: none;
+    color:           var(--theme-text);
+    font-size:       v.$font-size-sm;
+    font-weight:     500;
+    @include mx.motion;
 
-  .pc__img-wrap { aspect-ratio: 16 / 9; }
+    &:hover { color: var(--theme-brand); }
+  }
+
+  .card__author-img {
+    width:         1.75rem;
+    height:        1.75rem;
+    border-radius: 50%;
+    object-fit:    cover;
+    flex-shrink:   0;
+    border:        2px solid var(--theme-border);
+  }
+
+  .card__author-fallback {
+    width:           1.75rem;
+    height:          1.75rem;
+    border-radius:   50%;
+    background:      var(--slds-brand-tint-2);
+    color:           var(--theme-brand);
+    font-size:       v.$font-size-xs;
+    font-weight:     700;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    text-transform:  uppercase;
+    flex-shrink:     0;
+    border:          2px solid var(--slds-brand-tint-3);
+  }
+
+  .card__author-name {
+    white-space:   nowrap;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    max-width:     10rem;
+  }
+
+  // ── Meta (date + reading time, right side) ────────────────────────────
+  .card__blog-meta {
+    display:     flex;
+    align-items: center;
+    flex-wrap:   wrap;
+    gap:         0.25rem;
+    flex:        0 0 auto;
+    white-space: nowrap;
+
+    i { font-size: 0.75rem; }
+  }
+
+  // ── Hover lift ────────────────────────────────────────────────────────
+  &:hover { transform: translateY(-2px); }
 }
 
-// Course meta row (level + duration)
-.pc__course-meta {
-  display:     flex;
-  align-items: center;
-  flex-wrap:   wrap;
-  gap:         v.$space-md;
-  font-size:   v.$font-size-xs;
-  color:       var(--theme-text-weak);
+// =============================================================================
+//  C) VIDEO CARD
+// =============================================================================
+.card-video {
+  a.card-image {
+    // ── Play button (appears on hover) ───────────────────────────────────
+    .card__play {
+      position:        absolute;
+      inset:           0;
+      z-index:         2;
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+      background:      rgba(0, 0, 0, 0.28);
+      opacity:         0;
+      @include mx.transition(opacity, 200ms, ease);
 
-  span {
-    display:     inline-flex;
+      i {
+        font-size:  3.5rem;
+        color:      #fff;
+        filter:     drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+        transform:  scale(0.88);
+        @include mx.transition(transform, 200ms, ease);
+      }
+    }
+
+    &:hover .card__play {
+      opacity: 1;
+
+      i { transform: scale(1); }
+    }
+
+    // ── Duration badge (bottom-right, always visible) ─────────────────────
+    .card__duration {
+      position:        absolute;
+      bottom:          0.5rem;
+      right:           0.5rem;
+      z-index:         2;
+      background:      rgba(0, 0, 0, 0.68);
+      border:          none;
+      color:           #fff;
+      font-size:       v.$font-size-xs;
+      font-weight:     600;
+      gap:             0.25rem;
+      backdrop-filter: blur(4px);
+
+      i { font-size: 0.75rem; }
+    }
+  }
+
+  // ── Footer meta ──────────────────────────────────────────────────────
+  .card__video-meta {
+    display:     flex;
     align-items: center;
     gap:         0.25rem;
-  }
-  i { font-size: 0.875rem; color: var(--theme-brand); }
-}
-
-// CTA button — full-width, above meta baseline z-index
-.pc__cta-btn {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  gap:             0.4rem;
-  width:           100%;
-  min-height:      2.125rem;
-  padding:         0 1rem;
-  margin-top:      auto;
-  background:      var(--theme-brand);
-  border:          1px solid var(--theme-brand);
-  border-radius:   v.$radius-sm;
-  color:           #ffffff;
-  font-size:       v.$font-size-xs;
-  font-weight:     700;
-  text-decoration: none;
-  position:        relative;
-  z-index:         1;   // sit above ::after click zone
-  @include mx.motion;
-
-  i { font-size: 1rem; }
-
-  &:hover {
-    background:  var(--theme-brand-hover);
-    border-color:var(--theme-brand-hover);
-    color:       #ffffff;
-    transform:   none;
-  }
-}
-
-
-// =============================================================================
-//  12. VARIANT: BLOG  .pc--blog
-// =============================================================================
-
-.pc--blog {
-  .pc__img-wrap { aspect-ratio: 16 / 9; }
-}
-
-.pc__blog-footer {
-  display:         flex;
-  align-items:     center;
-  justify-content: space-between;
-  gap:             v.$space-sm;
-  flex-wrap:       wrap;
-  margin-top:      auto;
-  padding-top:     v.$space-sm;
-  border-top:      1px solid var(--theme-border-soft);
-  font-size:       v.$font-size-xs;
-  color:           var(--theme-text-weak);
-}
-
-.pc__blog-meta {
-  display:     flex;
-  align-items: center;
-  gap:         0.375rem;
-  i { font-size: 0.875rem; }
-}
-
-.pc__author {
-  display:         flex;
-  align-items:     center;
-  gap:             0.4rem;
-  text-decoration: none;
-  position:        relative;
-  z-index:         1;
-  @include mx.motion;
-  &:hover { color: var(--theme-brand); }
-}
-
-.pc__author-img {
-  width:         1.5rem;
-  height:        1.5rem;
-  border-radius: v.$radius-pill;
-  object-fit:    cover;
-  flex-shrink:   0;
-  border:        1px solid var(--theme-border-soft);
-}
-
-.pc__author-fallback {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           1.5rem;
-  height:          1.5rem;
-  border-radius:   v.$radius-pill;
-  background:      var(--theme-brand);
-  color:           #ffffff;
-  font-size:       0.6875rem;
-  font-weight:     800;
-  flex-shrink:     0;
-}
-
-.pc__author-name {
-  font-size:   v.$font-size-xs;
-  font-weight: 600;
-  color:       var(--theme-text-strong);
-}
-
-
-// =============================================================================
-//  13. VARIANT: VIDEO  .pc--video
-// =============================================================================
-
-// Play button — fades in on hover
-.pc__video-play {
-  position:        absolute;
-  inset:           0;
-  z-index:         2;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  opacity:         0;
-  @include mx.transition(opacity, 200ms, ease);
-  pointer-events: none;
-
-  i {
-    font-size: 3.25rem;
-    color:     #ffffff;
-    filter:    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+    border:      none !important;
   }
 
-  .pc:hover & { opacity: 1; }
+  // ── Hover lift ────────────────────────────────────────────────────────
+  &:hover { transform: translateY(-2px); }
 }
-
-// Darken thumbnail on hover (via pseudo)
-.pc--video .pc__img-wrap::before {
-  content:    "";
-  position:   absolute;
-  inset:      0;
-  z-index:    1;
-  background: rgba(0, 0, 0, 0);
-  @include mx.transition(background, 200ms, ease);
-}
-.pc--video:hover .pc__img-wrap::before {
-  background: rgba(0, 0, 0, 0.32);
-}
-
-// Duration badge — bottom-right of thumbnail
-.pc__video-dur {
-  position:        absolute;
-  bottom:          v.$space-sm;
-  right:           v.$space-sm;
-  z-index:         3;
-  display:         inline-flex;
-  align-items:     center;
-  gap:             0.25rem;
-  height:          1.375rem;
-  padding:         0 0.5rem;
-  background:      rgba(0, 0, 0, 0.70);
-  border-radius:   v.$radius-sm;
-  color:           #ffffff;
-  font-size:       0.6875rem;
-  font-weight:     700;
-  backdrop-filter: blur(4px);
-  i { font-size: 0.75rem; }
-}
-
 
 // =============================================================================
-//  14. VARIANT: TRAINING  .pc--training
-//  Horizontal row layout — no image, slides right on hover.
+//  D) TRAINING CARD  (horizontal row — overrides vertical flex)
 // =============================================================================
-
-.pc--training {
+.card-training {
+  // Switch to horizontal layout
   flex-direction: row;
-  align-items:    center;
-  gap:            v.$space-md;
-  padding:        v.$space-md v.$space-lg;
-  border-radius:  v.$radius-md;
+  align-items:    stretch;
+  cursor:         pointer;
+  min-height:     5rem;
 
-  &:hover { transform: translateX(4px) translateY(0); }
-
-  .pc__body {
-    padding: 0;
-    gap:     0.25rem;
+  // ── Left: icon column ─────────────────────────────────────────────────
+  .card__training-icon {
+    flex-shrink:     0;
+    width:           3.25rem;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    background:      var(--slds-brand-tint-1);
+    border-right:    1px solid var(--theme-border);
+    color:           var(--theme-brand);
+    font-size:       1.375rem;
+    @include mx.transition(background, 150ms, ease);
   }
 
-  .pc__meta {
-    border-top:  0;
-    padding-top: 0;
-    margin-top:  0.125rem;
-  }
-}
+  // ── Middle: content ───────────────────────────────────────────────────
+  .card-content {
+    flex:      1 1 auto;
+    padding:   0.75rem 1rem;
+    flex-direction: column;
+    gap:       0;
+    min-width: 0; // prevent text overflow
 
-// Icon circle
-.pc__training-icon {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           2.5rem;
-  height:          2.5rem;
-  min-width:       2.5rem;
-  border-radius:   v.$radius-pill;
-  background:      var(--slds-brand-tint-1);
-  border:          1px solid var(--slds-brand-tint-2);
+    .title {
+      margin-bottom: 0.25rem !important;
+      font-size: v.$font-size-sm;
+    }
 
-  i { font-size: 1.125rem; color: var(--theme-brand); }
-}
-
-// Arrow — slides on card hover
-.pc__training-arrow {
-  font-size:   1rem;
-  color:       var(--theme-border-strong);
-  flex-shrink: 0;
-  @include mx.transition(all, 140ms, ease);
-
-  .pc--training:hover & {
-    transform: translateX(3px);
-    color:     var(--theme-brand);
-  }
-}
-
-
-// =============================================================================
-//  15. VARIANT: DEFAULT  .pc--default
-//  General purpose — 2:1 image, standard body.
-//  No additional overrides needed beyond the base.
-// =============================================================================
-
-
-// =============================================================================
-//  16. BULMA COLUMN HELPERS
-//  Drop .pc inside Bulma .column.is-flex for equal-height rows.
-//  The column already has flex; just ensure .pc stretches.
-// =============================================================================
-
-.column.is-flex > .pc,
-.is-flex > .pc {
-  flex: 1 1 auto;
-}
-
-// Responsive grid when not using Bulma columns directly
-// (e.g. inside a plain .pc-grid wrapper)
-.pc-grid {
-  display:               grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  gap:                   1.25rem;
-  align-items:           start;
-
-  @media screen and (max-width: #{v.$bp-tablet - 1px}) {
-    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-    gap:                   1rem;
+    .subtitle {
+      font-size:     v.$font-size-xs;
+      margin-bottom: 0.375rem;
+    }
   }
 
-  @media screen and (max-width: #{v.$bp-mobile - 1px}) {
-    grid-template-columns: 1fr;
-    gap:                   0.875rem;
+  // ── Training meta (date / duration) ──────────────────────────────────
+  .card__training-meta {
+    display:     flex;
+    align-items: center;
+    flex-wrap:   wrap;
+    gap:         0.25rem;
+    font-size:   v.$font-size-xs;
+    color:       var(--theme-text-weak);
+    margin-top:  auto;
+  }
+
+  // ── Right: chevron arrow ──────────────────────────────────────────────
+  .card__training-arrow {
+    flex-shrink: 0;
+    width:       2.5rem;
+    display:     flex;
+    align-items: center;
+    justify-content: center;
+    color:       var(--theme-text-weak);
+    font-size:   1.0625rem;
+    @include mx.transition(transform color, 160ms, ease);
+  }
+
+  // ── Hover: tint icon bg, slide arrow ──────────────────────────────────
+  &:hover {
+    .card__training-icon  { background: var(--slds-brand-tint-2); }
+    .card__training-arrow { transform: translateX(4px); color: var(--theme-brand); }
   }
 }
 
-// Training cards need full-width in grids (horizontal layout doesn't shrink well)
-.pc-grid .pc--training,
-.columns .pc--training {
-  grid-column: 1 / -1;
+// =============================================================================
+//  E) DEFAULT CARD
+// =============================================================================
+.card-default {
+  // ── Footer meta row ───────────────────────────────────────────────────
+  .card__default-meta {
+    display:     flex;
+    align-items: center;
+    flex-wrap:   wrap;
+    gap:         0.25rem;
+    border:      none !important;
 
-  @media screen and (min-width: v.$bp-tablet) {
-    grid-column: auto;
+    i { font-size: 0.75rem; }
   }
+
+  // ── Hover lift ────────────────────────────────────────────────────────
+  &:hover { transform: translateY(-2px); }
 }
 
-// Reduce motion — no lift animation
-@media (prefers-reduced-motion: reduce) {
-  .pc,
-  .pc--training { transition: none; }
-  .pc:hover,
-  .pc--training:hover { transform: none; }
-  .pc__img { transition: none; }
-}
-
-
 // =============================================================================
-//  17. DARK MODE
+//  DARK MODE PATCHES
 // =============================================================================
-
 html[data-color-scheme="dark"] {
-
-  .pc {
-    background:   var(--theme-surface-card);
+  .card-course,
+  .card-blog,
+  .card-video,
+  .card-training,
+  .card-default {
+    // Border colour already pulled from --theme-border via _overrides.scss;
+    // these are extra guard-rails for any hard-coded values above.
     border-color: var(--theme-border);
   }
 
-  .pc__img-wrap {
-    background: var(--theme-surface-muted);
+  .card__placeholder--video {
+    background: #04060a;
   }
 
-  .pc__placeholder--course {
-    background: var(--slds-brand-tint-1);
+  .card__locked-badge {
+    background:  rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.18);
   }
 
-  .pc__placeholder--video {
-    background: #0a0c10;
-  }
-
-  .pc__training-icon {
-    background:   var(--slds-brand-tint-1);
-    border-color: var(--slds-brand-tint-2);
-  }
-
-  .pc__author-img {
-    border-color: var(--theme-border);
+  .card-training {
+    .card__training-icon {
+      border-right-color: var(--theme-border);
+    }
   }
 }

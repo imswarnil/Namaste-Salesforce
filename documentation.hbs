@@ -1,6 +1,19 @@
 {{!< default}}
+{{!-- =========================================================================
+  documentation.hbs  ·  /documentation/
+  
+  INDEX PAGE — no sidebar, full-width layout.
+  
+  CONTEXT via  data: tag.documentation  in routes.yaml:
+    {{name}}         tag name   ("Documentation")
+    {{description}}  tag description
+    {{posts}}        collection posts  (published_at asc)
+    {{pagination}}   Ghost pagination object
+    
+  JSON-LD: one WebPage + ItemList for all docs posts.
+========================================================================== --}}
 
-{{!-- JSON-LD (unchanged) --}}
+{{!-- ── JSON-LD ─────────────────────────────────────────────────────────── --}}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -31,260 +44,328 @@
 }
 </script>
 
-{{!-- ============================================================
-  Hero – uses Bulma hero + custom gradient class
-============================================================ --}}
-<section class="hero is-medium docs-hero">
-  <div class="hero-body">
-    <div class="container">
-      <div class="columns is-vcentered is-variable is-8-desktop">
-        {{!-- Left column --}}
-        <div class="column is-7-desktop">
-          <span class="tag is-white is-light mb-4">
-            <i class="ph ph-book-open-text mr-1"></i> Namaste Salesforce Docs
-          </span>
-          <h1 class="title is-1 has-text-white">
-            Learn Salesforce,<br>
-            <span class="has-text-white is-italic">the right way.</span>
-          </h1>
-          <p class="subtitle is-5 has-text-white">
-            Free, community-maintained guides for every Salesforce topic —
-            from first login to certified expert. Clear explanations, real
-            examples, zero fluff.
-          </p>
-          <div class="buttons">
-            {{#foreach posts}}
-              {{#if @first}}
-                <a href="{{url}}" class="button is-light is-medium">
-                  <span class="icon"><i class="ph ph-rocket-launch"></i></span>
-                  <span>Start from the beginning</span>
-                </a>
-              {{/if}}
-            {{/foreach}}
-            <button class="button is-white is-outlined is-medium" data-ghost-search>
-              <span class="icon"><i class="ph ph-magnifying-glass"></i></span>
-              <span>Search docs</span>
-              <kbd class="ml-1 is-size-7">⌘K</kbd>
-            </button>
-          </div>
-          <div class="tags">
-            <span class="tag is-white is-light"><i class="ph ph-check-circle mr-1"></i>100% free, always</span>
-            <span class="tag is-white is-light"><i class="ph ph-arrows-clockwise mr-1"></i>Updated regularly</span>
-            <span class="tag is-white is-light"><i class="ph ph-users-three mr-1"></i>Community maintained</span>
-            <span class="tag is-white is-light"><i class="ph ph-certificate mr-1"></i>Exam-prep friendly</span>
-          </div>
+{{!-- ══════════════════════════════════════════════════════════════════════════
+  HERO — full width, hardcoded copy, no sidebar
+══════════════════════════════════════════════════════════════════════════════ --}}
+<section class="doc-hero">
+  <div class="doc-hero__glow" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="columns is-vcentered is-variable is-8-desktop">
+
+      {{!-- Left: headline + CTAs --}}
+      <div class="column is-7-desktop">
+        <span class="doc-hero__eyebrow">
+          <i class="ph ph-book-open-text" aria-hidden="true"></i>
+          Namaste Salesforce Docs
+        </span>
+
+        <h1 class="doc-hero__title">
+          Learn Salesforce,<br>
+          <span class="doc-hero__title-accent">the right way.</span>
+        </h1>
+
+        <p class="doc-hero__lead">
+          Free, community-maintained guides for every Salesforce topic —
+          from first login to certified expert. Clear explanations, real
+          examples, zero fluff.
+        </p>
+
+        <div class="doc-hero__ctas">
+          {{!-- Jump straight into reading --}}
+          {{#foreach posts}}
+            {{#if @first}}
+              <a href="{{url}}"
+                 class="button is-primary is-medium doc-hero__cta-primary">
+                <span class="icon is-small">
+                  <i class="ph ph-rocket-launch" aria-hidden="true"></i>
+                </span>
+                <span>Start from the beginning</span>
+              </a>
+            {{/if}}
+          {{/foreach}}
+
+          <button class="button is-white is-medium doc-hero__cta-search"
+                  type="button" data-ghost-search>
+            <span class="icon is-small">
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+            </span>
+            <span>Search docs</span>
+            <kbd class="doc-hero__kbd">⌘K</kbd>
+          </button>
         </div>
 
-        {{!-- Right column – stat cards (desktop only) --}}
-        <div class="column is-5-desktop is-hidden-mobile">
-          <div class="columns is-multiline">
-            <div class="column is-12">
-              <div class="card docs-hero-card">
-                <div class="card-content">
-                  <div class="media">
-                    <div class="media-left"><i class="ph ph-files is-size-2"></i></div>
-                    <div class="media-content">
-                      <p class="title is-4">{{posts.length}}</p>
-                      <p class="subtitle is-6">Articles published</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="column is-6">
-              <div class="card docs-hero-card">
-                <div class="card-content">
-                  <div class="media">
-                    <div class="media-left"><i class="ph ph-currency-dollar is-size-3"></i></div>
-                    <div class="media-content">
-                      <p class="title is-4">Free</p>
-                      <p class="subtitle is-6">No paywall, ever</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="column is-6">
-              <div class="card docs-hero-card">
-                <div class="card-content">
-                  <div class="media">
-                    <div class="media-left"><i class="ph ph-graduation-cap is-size-3"></i></div>
-                    <div class="media-content">
-                      <p class="title is-4">All levels</p>
-                      <p class="subtitle is-6">Beginner to advanced</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="column is-12">
-              <div class="card docs-hero-card">
-                <div class="card-content">
-                  <div class="media">
-                    <div class="media-left"><i class="ph ph-git-branch is-size-2"></i></div>
-                    <div class="media-content">
-                      <p class="title is-4">Open source</p>
-                      <p class="subtitle is-6">Contribute on GitHub</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {{!-- Feature bullets --}}
+        <ul class="doc-hero__features">
+          <li class="doc-hero__feature">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            100% free, always
+          </li>
+          <li class="doc-hero__feature">
+            <i class="ph ph-arrows-clockwise" aria-hidden="true"></i>
+            Updated regularly
+          </li>
+          <li class="doc-hero__feature">
+            <i class="ph ph-users-three" aria-hidden="true"></i>
+            Community maintained
+          </li>
+          <li class="doc-hero__feature">
+            <i class="ph ph-certificate" aria-hidden="true"></i>
+            Exam-prep friendly
+          </li>
+        </ul>
+      </div>
+
+      {{!-- Right: stat cards (desktop/tablet only) --}}
+      <div class="column is-5-desktop is-hidden-mobile">
+        <div class="doc-hero__stats-panel">
+
+          <div class="doc-hero__stat-card doc-hero__stat-card--primary">
+            <i class="ph ph-files" aria-hidden="true"></i>
+            <div class="doc-hero__stat-text">
+              <strong>{{posts.length}}</strong>
+              <span>Articles published</span>
             </div>
           </div>
+
+          <div class="doc-hero__stat-card">
+            <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+            <div class="doc-hero__stat-text">
+              <strong>Free</strong>
+              <span>No paywall, ever</span>
+            </div>
+          </div>
+
+          <div class="doc-hero__stat-card">
+            <i class="ph ph-graduation-cap" aria-hidden="true"></i>
+            <div class="doc-hero__stat-text">
+              <strong>All levels</strong>
+              <span>Beginner to advanced</span>
+            </div>
+          </div>
+
+          <div class="doc-hero__stat-card">
+            <i class="ph ph-git-branch" aria-hidden="true"></i>
+            <div class="doc-hero__stat-text">
+              <strong>Open source</strong>
+              <span>Contribute on GitHub</span>
+            </div>
+          </div>
+
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
-{{!-- ============================================================
-  Topic Chips – Bulma tags
-============================================================ --}}
-<section class="section is-paddingless">
+{{!-- ══════════════════════════════════════════════════════════════════════════
+  QUICK LINKS / TOPIC CHIPS (hardcoded)
+══════════════════════════════════════════════════════════════════════════════ --}}
+<div class="doc-topics">
   <div class="container">
-    <div class="tags are-medium">
-      <span class="tag is-light"><i class="ph ph-layout mr-1"></i> Overview</span>
-      <a href="https://trailhead.salesforce.com" target="_blank" class="tag is-light"><i class="ph ph-cloud mr-1"></i> Trailhead</a>
-      <a href="/courses/" class="tag is-light"><i class="ph ph-book-open mr-1"></i> Courses</a>
-      <a href="/training/" class="tag is-light"><i class="ph ph-graduation-cap mr-1"></i> Training</a>
-      <a href="/blog/" class="tag is-light"><i class="ph ph-note-pencil mr-1"></i> Blog</a>
-      <button class="tag is-light" data-ghost-search><i class="ph ph-magnifying-glass mr-1"></i> Search all</button>
+    <p class="doc-topics__label">Jump to a topic</p>
+    <div class="doc-topics__chips">
+      <a href="#doc-list" class="doc-topics__chip">
+        <i class="ph ph-layout" aria-hidden="true"></i> Overview
+      </a>
+      <a href="https://trailhead.salesforce.com" target="_blank"
+         rel="noopener noreferrer" class="doc-topics__chip">
+        <i class="ph ph-cloud" aria-hidden="true"></i> Trailhead
+      </a>
+      <a href="/courses/" class="doc-topics__chip">
+        <i class="ph ph-book-open" aria-hidden="true"></i> Courses
+      </a>
+      <a href="/training/" class="doc-topics__chip">
+        <i class="ph ph-graduation-cap" aria-hidden="true"></i> Training
+      </a>
+      <a href="/blog/" class="doc-topics__chip">
+        <i class="ph ph-note-pencil" aria-hidden="true"></i> Blog
+      </a>
+      <button class="doc-topics__chip doc-topics__chip--search"
+              type="button" data-ghost-search>
+        <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+        Search all
+      </button>
     </div>
   </div>
-</section>
+</div>
 
-{{!-- ============================================================
-  Articles list – Bulma columns + cards
-============================================================ --}}
-<section class="section">
+{{!-- ══════════════════════════════════════════════════════════════════════════
+  ARTICLE LIST — full width, no sidebar
+══════════════════════════════════════════════════════════════════════════════ --}}
+<section class="doc-list" id="doc-list">
   <div class="container">
-    <div class="block">
-      <h2 class="title is-3">{{#if name}}{{name}}{{else}}All articles{{/if}}</h2>
-      <p class="subtitle is-5">
-        {{#if description}}{{description}}{{else}}Read in order to build a solid foundation, or jump to any article.{{/if}}
+
+    <div class="doc-list__header">
+      <h2 class="doc-list__title">
+        {{#if name}}{{name}}{{else}}All articles{{/if}}
+      </h2>
+      <p class="doc-list__sub">
+        {{#if description}}
+          {{description}}
+        {{else}}
+          Read in order to build a solid foundation, or jump to any article.
+        {{/if}}
       </p>
     </div>
 
-    <div class="columns is-multiline">
+    {{!-- Cards grid --}}
+    <div class="columns is-multiline doc-cards">
       {{#foreach posts}}
+
         <div class="column is-12-mobile is-6-tablet is-4-desktop">
-          <a href="{{url}}" class="card docs-card">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-left">
-                  {{#if feature_image}}
-                    <figure class="image is-48x48">
-                      <img src="{{img_url feature_image size="xs"}}" alt="" loading="lazy">
-                    </figure>
-                  {{else}}
-                    <span class="icon is-large"><i class="ph ph-file-text is-size-3"></i></span>
-                  {{/if}}
-                </div>
-                <div class="media-content">
-                  <p class="title is-6">{{title}}</p>
-                  <p class="subtitle is-7">{{reading_time}}</p>
-                </div>
-                <span class="tag is-light is-rounded">{{@number}}</span>
+          <a href="{{url}}" class="doc-card">
+
+            {{!-- Icon + number --}}
+            <div class="doc-card__top">
+              <div class="doc-card__icon-wrap">
+                {{#if feature_image}}
+                  <img class="doc-card__icon-img"
+                       src="{{img_url feature_image size="xs"}}"
+                       alt="" loading="lazy" aria-hidden="true">
+                {{else}}
+                  <i class="ph ph-file-text doc-card__icon-fallback"
+                     aria-hidden="true"></i>
+                {{/if}}
               </div>
+              <span class="doc-card__index" aria-hidden="true">
+                {{@number}}
+              </span>
+            </div>
+
+            {{!-- Content --}}
+            <div class="doc-card__body">
+              <h3 class="doc-card__title">{{title}}</h3>
               {{#if custom_excerpt}}
-                <p class="has-text-grey">{{custom_excerpt}}</p>
+                <p class="doc-card__excerpt">{{custom_excerpt}}</p>
               {{else}}
-                <p class="has-text-grey">{{excerpt words="18"}}…</p>
+                <p class="doc-card__excerpt">{{excerpt words="18"}}…</p>
               {{/if}}
             </div>
-            <footer class="card-footer">
-              <span class="card-footer-item">
-                <i class="ph ph-timer mr-1"></i> {{reading_time}}
+
+            {{!-- Footer --}}
+            <div class="doc-card__footer">
+              <span class="doc-card__reading-time">
+                <i class="ph ph-timer" aria-hidden="true"></i>
+                {{reading_time}}
               </span>
-              <span class="card-footer-item">
-                Read <i class="ph ph-arrow-right ml-1"></i>
+              <span class="doc-card__read-cta">
+                Read
+                <i class="ph ph-arrow-right" aria-hidden="true"></i>
               </span>
-            </footer>
+            </div>
+
           </a>
         </div>
+
       {{else}}
-        <div class="column has-text-centered">
-          <div class="notification is-warning is-light">
-            <i class="ph ph-books is-size-2"></i>
-            <p class="title is-5">No articles yet</p>
-            <p>Create a post and tag it <code>documentation</code> to see it here.</p>
+        <div class="column">
+          <div class="doc-empty">
+            <i class="ph ph-books doc-empty__icon" aria-hidden="true"></i>
+            <p class="doc-empty__title">No articles yet</p>
+            <p class="doc-empty__body">
+              Create a post and tag it
+              <code>documentation</code> to see it here.
+            </p>
           </div>
         </div>
       {{/foreach}}
     </div>
 
+    {{!-- ── PAGINATION ─────────────────────────────────────────────────── --}}
     {{#if pagination.pages}}
-      <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        {{#if pagination.prev}}<a class="pagination-previous" href="{{pagination.prev}}">Previous</a>{{/if}}
-        {{#if pagination.next}}<a class="pagination-next" href="{{pagination.next}}">Next page</a>{{/if}}
-        <ul class="pagination-list">
-          {{#foreach pagination.pages}}
-            <li><a class="pagination-link{{#if current}} is-current{{/if}}" href="{{url}}">{{page}}</a></li>
-          {{/foreach}}
-        </ul>
-      </nav>
+      {{pagination}}
     {{/if}}
+
   </div>
 </section>
 
-{{!-- ============================================================
-  Contribute section – Bulma columns + cards
-============================================================ --}}
-<section class="section has-background-light">
+{{!-- ══════════════════════════════════════════════════════════════════════════
+  CONTRIBUTE SECTION — hardcoded, full width
+══════════════════════════════════════════════════════════════════════════════ --}}
+<section class="doc-contribute">
   <div class="container">
-    <div class="columns is-vcentered is-variable is-8">
-      <div class="column is-7">
-        <span class="tag is-warning is-light mb-4">
-          <i class="ph ph-git-pull-request mr-1"></i> Open to contributions
+
+    <div class="columns is-variable is-8-desktop is-vcentered">
+      <div class="column is-7-desktop">
+        <span class="tag is-warning is-light mb-4" style="display:inline-flex">
+          <i class="ph ph-git-pull-request mr-1" aria-hidden="true"></i>
+          Open to contributions
         </span>
-        <h2 class="title is-2">Help us improve the docs</h2>
-        <p class="subtitle is-5">
+        <h2 class="doc-contribute__title">
+          Help us improve the docs
+        </h2>
+        <p class="doc-contribute__lead">
           Found a mistake? Have something to add? Every correction,
           new article, or clarification helps thousands of Salesforce
           learners. Submit a PR, open an issue, or reach out directly.
         </p>
-        <div class="buttons">
+        <div class="buttons mt-5">
           <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new"
-             target="_blank" class="button is-primary is-medium">
-            <span class="icon"><i class="ph ph-github-logo"></i></span>
+             target="_blank" rel="noopener noreferrer"
+             class="button is-primary is-medium">
+            <span class="icon is-small">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+            </span>
             <span>Open an issue</span>
           </a>
-          <a href="/contact/?ref=docs-write" class="button is-light is-medium">
-            <span class="icon"><i class="ph ph-pencil-line"></i></span>
+          <a href="/contact/?ref=docs-write"
+             class="button is-medium doc-contribute__btn-outline">
+            <span class="icon is-small">
+              <i class="ph ph-pencil-line" aria-hidden="true"></i>
+            </span>
             <span>Write an article</span>
           </a>
-          <a href="https://github.com/sponsors/imswarnil" target="_blank" class="button is-success is-light is-medium">
-            <span class="icon"><i class="ph ph-currency-dollar"></i></span>
+          <a href="https://github.com/sponsors/imswarnil"
+             target="_blank" rel="noopener noreferrer"
+             class="button is-medium doc-contribute__btn-sponsor">
+            <span class="icon is-small">
+              <i class="ph ph-currency-dollar" aria-hidden="true"></i>
+            </span>
             <span>Sponsor</span>
           </a>
         </div>
       </div>
 
-      <div class="column is-5 is-hidden-mobile">
-        <div class="box">
-          <div class="media">
-            <div class="media-left"><span class="icon is-medium"><i class="ph ph-pencil-simple-line is-size-3"></i></span></div>
-            <div class="media-content">
-              <p class="title is-6">Fix anything instantly</p>
-              <p class="subtitle is-7">Spot a typo or outdated detail — open a PR and it's live fast.</p>
+      <div class="column is-5-desktop is-hidden-mobile">
+        <div class="doc-contribute__perks">
+          <div class="doc-contribute__perk">
+            <span class="doc-contribute__perk-icon">
+              <i class="ph ph-pencil-simple-line" aria-hidden="true"></i>
+            </span>
+            <div>
+              <p class="doc-contribute__perk-name">Fix anything instantly</p>
+              <p class="doc-contribute__perk-desc">
+                Spot a typo or outdated detail — open a PR and it's live fast.
+              </p>
             </div>
           </div>
-          <div class="media">
-            <div class="media-left"><span class="icon is-medium"><i class="ph ph-user-circle-plus is-size-3"></i></span></div>
-            <div class="media-content">
-              <p class="title is-6">Get credited as an author</p>
-              <p class="subtitle is-7">All contributors are listed in the project changelog.</p>
+          <div class="doc-contribute__perk">
+            <span class="doc-contribute__perk-icon">
+              <i class="ph ph-user-circle-plus" aria-hidden="true"></i>
+            </span>
+            <div>
+              <p class="doc-contribute__perk-name">Get credited as an author</p>
+              <p class="doc-contribute__perk-desc">
+                All contributors are listed in the project changelog.
+              </p>
             </div>
           </div>
-          <div class="media">
-            <div class="media-left"><span class="icon is-medium"><i class="ph ph-discord-logo is-size-3"></i></span></div>
-            <div class="media-content">
-              <p class="title is-6">Join the community</p>
-              <p class="subtitle is-7">Chat with other Salesforce learners in our Discord.</p>
+          <div class="doc-contribute__perk">
+            <span class="doc-contribute__perk-icon">
+              <i class="ph ph-discord-logo" aria-hidden="true"></i>
+            </span>
+            <div>
+              <p class="doc-contribute__perk-name">Join the community</p>
+              <p class="doc-contribute__perk-desc">
+                Chat with other Salesforce learners in our Discord.
+              </p>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>

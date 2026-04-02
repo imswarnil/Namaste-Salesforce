@@ -1,0 +1,308 @@
+// =============================================================================
+//  _components.scss
+//  Targeted overrides / extensions that sit ON TOP of Bulma.
+//  Bulma's HTML API (.button.is-primary, .card, .navbar, etc.) stays intact —
+//  we just refine spacing, shadows, and tokens that Bulma doesn't expose
+//  as Sass-compile-time variables.
+// =============================================================================
+@use "variables" as v;
+@use "mixins" as m;
+
+// ─── BUTTON ──────────────────────────────────────────────────────────────────
+
+.button {
+  height: auto;
+  padding: 0.4375rem v.$space-lg;  // 7px 16px
+  font-size: v.$font-size-sm;
+  line-height: 1.5;
+  @include m.transition(background-color color border-color box-shadow);
+
+  // Ghost accent / primary CTA
+  &.is-primary {
+    background-color: v.$brand-primary;
+    border-color: v.$brand-primary;
+    color: v.$text-inverse;
+
+    &:hover, &.is-hovered { background-color: v.$brand-primary-hover; border-color: v.$brand-primary-hover; }
+    &:active, &.is-active { background-color: v.$brand-primary-active; border-color: v.$brand-primary-active; }
+    &:focus-visible { box-shadow: 0 0 0 3px v.$focus-ring; }
+  }
+
+  // Small nav-pill variant
+  &.is-nav-pill {
+    height: v.$nav-pill-h;
+    padding-inline: v.$space-md;
+    border-radius: v.$radius-pill;
+    font-size: v.$font-size-xs;
+    font-weight: v.$weight-semibold;
+  }
+}
+
+// ─── CARD ────────────────────────────────────────────────────────────────────
+
+.card {
+  border: 1px solid v.$border-color;
+  @include m.transition(box-shadow);
+
+  &:hover { box-shadow: v.$shadow-raised; }
+
+  .card-header {
+    padding: v.$card-header-padding;
+    .card-header-title { padding: 0; }
+  }
+
+  .card-content {
+    padding: v.$card-content-padding;
+  }
+}
+
+// ─── BOX ─────────────────────────────────────────────────────────────────────
+
+.box {
+  border: 1px solid v.$border-color-soft;
+}
+
+// ─── NAVBAR ──────────────────────────────────────────────────────────────────
+
+.navbar {
+  height: v.$nav-height;
+  border-bottom: 1px solid v.$border-color;
+
+  .navbar-brand .navbar-item {
+    padding-inline: 0;
+  }
+
+  // Nav link pills
+  .navbar-item,
+  .navbar-link {
+    border-radius: v.$radius-sm;
+    font-size: v.$font-size-sm;
+    font-weight: v.$weight-medium;
+    @include m.transition(background-color color);
+  }
+
+  .navbar-dropdown {
+    border-top-width: 2px;
+    border-top-color: v.$brand-primary;
+    border-radius: v.$radius-md;
+    box-shadow: v.$shadow-popover;
+
+    .navbar-item {
+      font-size: v.$font-size-sm;
+      padding: v.$space-sm v.$space-lg;
+    }
+  }
+}
+
+// ─── HERO ────────────────────────────────────────────────────────────────────
+// Ghost "is-primary" hero must use brand colour, not a grey.
+
+.hero {
+  &.is-primary {
+    background-color: v.$brand-primary;
+    color: v.$text-inverse;
+
+    .title, .subtitle { color: v.$text-inverse; }
+
+    // Dark-mode: shift to the lighter brand shade
+    [data-theme="dark"] & {
+      background-color: v.$brand-primary-dark;
+      .title, .subtitle { color: v.$dark-text-inverse; }
+    }
+  }
+}
+
+// ─── TAG / BADGE ─────────────────────────────────────────────────────────────
+
+.tag {
+  font-size: v.$font-size-xs;
+  font-weight: v.$weight-medium;
+  height: auto;
+  padding: 0.125rem v.$space-sm;
+
+  &.is-primary {
+    background-color: rgba(1, 118, 211, 0.1);
+    color: v.$brand-primary;
+    border: 1px solid rgba(1, 118, 211, 0.2);
+  }
+}
+
+// ─── INPUT / SELECT / TEXTAREA ───────────────────────────────────────────────
+
+.input,
+.textarea,
+.select select {
+  height: auto;
+  padding: 0.4375rem v.$space-md; // 7px 12px
+  font-size: v.$font-size-sm;
+  @include m.transition(border-color box-shadow);
+
+  &:focus,
+  &:focus-visible {
+    border-color: v.$brand-primary;
+    box-shadow: 0 0 0 3px v.$focus-ring;
+    outline: none;
+  }
+}
+
+// ─── TABLE ───────────────────────────────────────────────────────────────────
+
+.table {
+  font-size: v.$font-size-sm;
+
+  th { font-weight: v.$weight-semibold; }
+
+  &.is-striped tbody tr:not(.is-selected):nth-child(even) {
+    background-color: v.$surface-row-alt;
+  }
+
+  &.is-hoverable tbody tr:not(.is-selected):hover {
+    background-color: rgba(1, 118, 211, 0.04);
+  }
+}
+
+// ─── NOTIFICATION ────────────────────────────────────────────────────────────
+
+.notification {
+  border-left: 4px solid v.$border-color;
+
+  &.is-primary { border-left-color: v.$brand-primary; }
+  &.is-info    { border-left-color: v.$info-color; }
+  &.is-success { border-left-color: v.$success-color; }
+  &.is-warning { border-left-color: v.$warning-color; }
+  &.is-danger  { border-left-color: v.$danger-color; }
+}
+
+// ─── PAGINATION ──────────────────────────────────────────────────────────────
+
+.pagination-link,
+.pagination-previous,
+.pagination-next {
+  font-size: v.$font-size-sm;
+  @include m.transition(border-color color background-color);
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+
+.tabs {
+  a {
+    font-size: v.$font-size-sm;
+    font-weight: v.$weight-medium;
+    @include m.transition(color border-color);
+  }
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+
+.modal-card {
+  border-radius: v.$radius-lg;
+  overflow: hidden;
+  box-shadow: v.$shadow-raised;
+
+  .modal-card-title { font-size: 1.125rem; font-weight: v.$weight-semibold; }
+}
+
+// ─── DROPDOWN ────────────────────────────────────────────────────────────────
+
+.dropdown-content {
+  .dropdown-item { font-size: v.$font-size-sm; }
+  .dropdown-divider { margin-block: v.$space-xs; }
+}
+
+// ─── BREADCRUMB ──────────────────────────────────────────────────────────────
+
+.breadcrumb {
+  font-size: v.$font-size-sm;
+  li + li::before { color: v.$border-color-strong; }
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────────────────────
+
+.progress {
+  height: 0.375rem;  // slim by default
+
+  &.is-primary::-webkit-progress-value { background-color: v.$brand-primary; }
+  &.is-primary::-moz-progress-bar      { background-color: v.$brand-primary; }
+}
+
+// ─── MENU (sidebar nav) ───────────────────────────────────────────────────────
+
+.menu-label {
+  font-size: v.$font-size-xs;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.menu-list a {
+  font-size: v.$font-size-sm;
+  border-radius: v.$radius-sm;
+  @include m.transition(background-color color);
+}
+
+// ─── PANEL ───────────────────────────────────────────────────────────────────
+
+.panel-heading {
+  font-size: v.$font-size-xs;
+  font-weight: v.$weight-bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+// ─── GHOST POST CARD ─────────────────────────────────────────────────────────
+// Common Ghost template structure (.gh-card, .post-card, etc.)
+
+.gh-card,
+.post-card {
+  @include m.card-surface;
+  overflow: hidden;
+  @include m.transition(box-shadow);
+
+  &:hover { box-shadow: v.$shadow-raised; }
+
+  .gh-card-link,
+  .post-card-image-link {
+    display: block;
+  }
+
+  .gh-card-meta,
+  .post-card-meta {
+    font-size: v.$font-size-xs;
+    color: v.$text-weak;
+  }
+
+  .gh-card-title,
+  .post-card-title {
+    font-size: v.$font-size-lg;
+    font-weight: v.$weight-semibold;
+    color: v.$text-strong;
+    @include m.truncate(2);
+  }
+
+  .gh-card-excerpt,
+  .post-card-excerpt {
+    font-size: v.$font-size-sm;
+    color: v.$text-default;
+    @include m.truncate(3);
+  }
+}
+
+// ─── GHOST ARTICLE CONTENT ───────────────────────────────────────────────────
+
+.gh-content,
+.post-full-content {
+  font-size: v.$font-size-base;
+  line-height: 1.7;
+  color: v.$text-default;
+
+  h1, h2, h3, h4, h5, h6 { color: v.$text-strong; margin-top: v.$space-2xl; }
+  p   { margin-bottom: v.$space-lg; }
+  a   { color: v.$link-color; text-decoration: underline; text-underline-offset: 2px; }
+  img { border-radius: v.$radius-md; }
+
+  blockquote {
+    border-left: 3px solid v.$brand-primary;
+    padding-left: v.$space-lg;
+    color: v.$text-weak;
+    font-style: italic;
+  }
+}
