@@ -1,0 +1,75 @@
+{{!--
+    header/course.hbs — #course post pages
+    ============================================================
+    Used when viewing a course overview page.
+    Shows standard nav + a prominent "Start course" CTA button.
+    ============================================================
+--}}
+<header id="gh-head" class="gh-head gh-head-default gh-head-course outer">
+    <div class="gh-head-inner inner">
+
+        <div class="gh-head-brand">
+            <a class="gh-head-logo{{#unless @site.logo}} no-image{{/unless}}" href="{{@site.url}}" aria-label="{{@site.title}} — home">
+                {{#if @site.logo}}<img class="gh-head-logo-img" src="{{@site.logo}}" alt="{{@site.title}}" loading="eager" />{{/if}}
+                <span class="gh-head-logo-text">{{@site.title}}</span>
+            </a>
+            <div class="gh-head-divider" aria-hidden="true"></div>
+        </div>
+
+        <nav class="gh-head-menu" aria-label="{{t "Primary navigation"}}">
+            {{navigation}}
+        </nav>
+
+        <div class="gh-head-actions">
+            <button class="gh-search gh-icon-btn" aria-label="{{t "Search"}}" data-ghost-search>{{> "icons/search"}}</button>
+            <button class="gh-dark-toggle gh-icon-btn" id="gh-dark-toggle" aria-label="{{t "Toggle dark mode"}}">
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            {{!-- Enroll / Start CTA specific to course pages --}}
+            {{#if @site.members_enabled}}
+                {{#unless @member}}
+                    <a class="gh-head-button gh-course-cta" href="#/portal/signup" data-portal="signup">
+                        {{t "Enroll free"}}
+                    </a>
+                {{else}}
+                    {{!-- Member: link to first lesson (JS fills this) --}}
+                    <a class="gh-head-button gh-course-cta" href="#course-lessons" id="gh-course-start-btn">
+                        {{t "Continue learning"}}
+                    </a>
+                {{/unless}}
+            {{else}}
+                <a class="gh-head-button gh-course-cta" href="#course-lessons">{{t "Start course"}}</a>
+            {{/if}}
+            <button class="gh-burger" aria-label="{{t "Open menu"}}" aria-expanded="false" aria-controls="gh-head-mobile">
+                <span class="gh-burger-bar" aria-hidden="true"></span>
+                <span class="gh-burger-bar" aria-hidden="true"></span>
+                <span class="gh-burger-bar" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+{{!-- Shared mobile overlay (same structure as default) --}}
+<div id="gh-head-mobile" class="gh-head-mobile" role="dialog" aria-modal="true" aria-label="{{t "Site menu"}}" aria-hidden="true">
+    <div class="gh-head-mobile-inner">
+        <nav class="gh-head-mobile-nav" aria-label="{{t "Mobile navigation"}}">{{navigation}}</nav>
+        <div class="gh-head-mobile-bottom">
+            <div class="gh-mobile-members">
+                {{#if @site.members_enabled}}
+                    {{#unless @member}}
+                        <a class="gh-head-button" href="#/portal/signup" data-portal="signup">{{t "Enroll free"}}</a>
+                        <a class="gh-mobile-signin" href="#/portal/signin" data-portal="signin">{{t "Sign in"}}</a>
+                    {{else}}
+                        <a class="gh-head-button" href="#course-lessons">{{t "Continue learning"}}</a>
+                    {{/unless}}
+                {{/if}}
+            </div>
+            <div class="gh-mobile-dark-row">
+                <span class="gh-mobile-dark-label">{{t "Dark mode"}}</span>
+                <button class="gh-dark-pill" id="gh-dark-pill" role="switch" aria-checked="false" aria-label="{{t "Toggle dark mode"}}"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="gh-head-backdrop" aria-hidden="true"></div>

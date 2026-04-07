@@ -1,0 +1,1012 @@
+/*
+ * Namaste Salesforce — Theme Variables
+ * Inspired by Salesforce Lightning Design System (SLDS)
+ * --------------------------------------------------------
+ * All custom properties use the --sfdc- prefix.
+ * Ghost accent color is bridged into the brand token so
+ * whatever is set in Ghost Admin > Settings > Brand
+ * flows through the entire design system automatically.
+ * --------------------------------------------------------
+ * Table of Contents
+ * 1.  Ghost Accent Bridge
+ * 2.  Brand / Primary
+ * 3.  Neutral Palette
+ * 4.  Semantic Colors (Success / Warning / Error / Info)
+ * 5.  Text Colors
+ * 6.  Background Colors
+ * 7.  Border Colors
+ * 8.  Typography — Font Families
+ * 9.  Typography — Font Sizes
+ * 10. Typography — Font Weights
+ * 11. Typography — Line Heights & Letter Spacing
+ * 12. Spacing Scale
+ * 13. Border Radius
+ * 14. Border Width
+ * 15. Shadows / Elevation
+ * 16. Z-index Scale
+ * 17. Transitions & Motion
+ * 18. Breakpoints (for reference in JS / container queries)
+ * 19. Layout — Widths & Grid
+ * 20. Component Tokens — Buttons
+ * 21. Component Tokens — Inputs / Forms
+ * 22. Component Tokens — Cards
+ * 23. Component Tokens — Badges / Pills
+ * 24. Component Tokens — Navigation / Header
+ * 25. Component Tokens — Post Feed & Cards
+ * 26. Component Tokens — Article / Post
+ * 27. Component Tokens — Footer
+ * 28. Dark Mode Overrides
+ */
+
+/* ============================================================
+   1. Ghost Accent Bridge
+   The --ghost-accent-color is set by Ghost CMS automatically.
+   We bridge it here so all brand tokens inherit from it.
+   ============================================================ */
+:root {
+    /*
+     * Ghost sets --ghost-accent-color in the <head>.
+     * We fall back to SFDC brand blue if it is not set.
+     */
+    --sfdc-color-brand-base: var(--ghost-accent-color, #0176d3);
+}
+
+/* ============================================================
+   2. Brand / Primary Colors
+   Mirrors the Salesforce SLDS brand palette.
+   ============================================================ */
+:root {
+    --sfdc-color-brand-lightest:   #cce5f6;   /* color-mod(#0176d3 l(+38%)) */
+    --sfdc-color-brand-lighter:    #99ccee;   /* color-mod(#0176d3 l(+24%)) */
+    --sfdc-color-brand-light:      #3399dd;   /* color-mod(#0176d3 l(+12%)) */
+    --sfdc-color-brand:            #0176d3;   /* base                        */
+    --sfdc-color-brand-dark:       #0160ab;   /* color-mod(#0176d3 l(-12%)) */
+    --sfdc-color-brand-darker:     #014a84;   /* color-mod(#0176d3 l(-24%)) */
+    --sfdc-color-brand-darkest:    #01345c;   /* color-mod(#0176d3 l(-36%)) */
+
+    /* SLDS static brand blues (used when the accent cannot be computed) */
+    --sfdc-color-blue-10:               #032d60;
+    --sfdc-color-blue-20:               #014486;
+    --sfdc-color-blue-30:               #0b5cab;
+    --sfdc-color-blue-40:               #0176d3;
+    --sfdc-color-blue-50:               #1b96ff;
+    --sfdc-color-blue-60:               #57a3fd;
+    --sfdc-color-blue-70:               #9dc9fd;
+    --sfdc-color-blue-80:               #cfe4fe;
+    --sfdc-color-blue-90:               #e8f4ff;
+    --sfdc-color-blue-95:               #f3f9ff;
+}
+
+/* ============================================================
+   3. Neutral Palette
+   Full SLDS-style gray ramp — 10 (darkest) → 100 (lightest)
+   ============================================================ */
+:root {
+    --sfdc-color-gray-10:               #080707;
+    --sfdc-color-gray-20:               #181818;
+    --sfdc-color-gray-30:               #2e2e2e;
+    --sfdc-color-gray-40:               #444444;
+    --sfdc-color-gray-50:               #5c5c5c;
+    --sfdc-color-gray-60:               #747474;
+    --sfdc-color-gray-70:               #8c8c8c;
+    --sfdc-color-gray-80:               #adadad;
+    --sfdc-color-gray-85:               #c9c9c9;
+    --sfdc-color-gray-90:               #dddbda;
+    --sfdc-color-gray-95:               #ecebea;
+    --sfdc-color-gray-97:               #f3f2f2;
+    --sfdc-color-gray-100:              #ffffff;
+
+    /* Alias for common use */
+    --sfdc-color-white:                 #ffffff;
+    --sfdc-color-black:                 #080707;
+}
+
+/* ============================================================
+   4. Semantic Colors
+   Success / Warning / Error / Info
+   Each has: base, text, background, border variants
+   ============================================================ */
+:root {
+    /* --- Success (SLDS Green) --- */
+    --sfdc-color-success:               #2e844a;
+    --sfdc-color-success-dark:          #194e31;
+    --sfdc-color-success-light:         #91db8b;
+    --sfdc-color-success-lightest:      #eaf5ea;
+    --sfdc-color-success-text:          #194e31;
+    --sfdc-color-success-bg:            #eaf5ea;
+    --sfdc-color-success-border:        #91db8b;
+
+    /* --- Warning (SLDS Orange) --- */
+    --sfdc-color-warning:               #dd7a01;
+    --sfdc-color-warning-dark:          #8e4c00;
+    --sfdc-color-warning-light:         #ffc370;
+    --sfdc-color-warning-lightest:      #fff3e0;
+    --sfdc-color-warning-text:          #8e4c00;
+    --sfdc-color-warning-bg:            #fff3e0;
+    --sfdc-color-warning-border:        #ffc370;
+
+    /* --- Error / Destructive (SLDS Red) --- */
+    --sfdc-color-error:                 #ba0517;
+    --sfdc-color-error-dark:            #8e030f;
+    --sfdc-color-error-light:           #fe9b99;
+    --sfdc-color-error-lightest:        #fef1f1;
+    --sfdc-color-error-text:            #8e030f;
+    --sfdc-color-error-bg:              #fef1f1;
+    --sfdc-color-error-border:          #fe9b99;
+
+    /* --- Info (SLDS Blue) --- */
+    --sfdc-color-info:                  #0176d3;
+    --sfdc-color-info-dark:             #014486;
+    --sfdc-color-info-light:            #9dc9fd;
+    --sfdc-color-info-lightest:         #e8f4ff;
+    --sfdc-color-info-text:             #014486;
+    --sfdc-color-info-bg:               #e8f4ff;
+    --sfdc-color-info-border:           #9dc9fd;
+
+    /* --- Neutral / Offline --- */
+    --sfdc-color-neutral:               #747474;
+    --sfdc-color-neutral-dark:          #444444;
+    --sfdc-color-neutral-light:         #c9c9c9;
+    --sfdc-color-neutral-lightest:      #f3f2f2;
+    --sfdc-color-neutral-text:          #444444;
+    --sfdc-color-neutral-bg:            #f3f2f2;
+    --sfdc-color-neutral-border:        #dddbda;
+
+    /* --- Inverse (for dark backgrounds) --- */
+    --sfdc-color-inverse:               #032d60;
+    --sfdc-color-inverse-text:          #ffffff;
+    --sfdc-color-inverse-text-weak:     rgba(255, 255, 255, 0.7);
+    --sfdc-color-inverse-bg:            #032d60;
+
+    /* --- Brand semantic aliases --- */
+    --sfdc-color-brand-accessible:      #0176d3;
+    --sfdc-color-brand-accessible-active: #014486;
+}
+
+/* ============================================================
+   5. Text Colors
+   ============================================================ */
+:root {
+    --sfdc-text-color-default:          #181818;   /* highest contrast body text      */
+    --sfdc-text-color-secondary:        #444444;   /* supporting / label text          */
+    --sfdc-text-color-placeholder:      #747474;   /* input placeholders               */
+    --sfdc-text-color-weak:             #8c8c8c;   /* timestamps, captions, meta       */
+    --sfdc-text-color-inverse:          #ffffff;   /* text on dark/brand backgrounds   */
+    --sfdc-text-color-inverse-weak:     rgba(255, 255, 255, 0.7);
+    --sfdc-text-color-link:             var(--sfdc-color-brand-base);
+    --sfdc-text-color-link-active:      var(--sfdc-color-brand-dark);
+    --sfdc-text-color-heading:          #080707;
+    --sfdc-text-color-action:           var(--sfdc-color-brand-base);
+    --sfdc-text-color-success:          var(--sfdc-color-success-text);
+    --sfdc-text-color-warning:          var(--sfdc-color-warning-text);
+    --sfdc-text-color-error:            var(--sfdc-color-error-text);
+}
+
+/* ============================================================
+   6. Background Colors
+   ============================================================ */
+:root {
+    --sfdc-bg-color-page:               #f3f2f2;   /* overall page canvas              */
+    --sfdc-bg-color-container:          #ffffff;   /* cards, panels, modals            */
+    --sfdc-bg-color-header:             #ffffff;   /* site header / nav bar            */
+    --sfdc-bg-color-footer:             #032d60;   /* site footer (SLDS inverse)       */
+    --sfdc-bg-color-alt:                #f3f2f2;   /* zebra rows, sidebar bg           */
+    --sfdc-bg-color-highlight:          #e8f4ff;   /* hover highlight                  */
+    --sfdc-bg-color-hover:              #f3f2f2;   /* generic hover                    */
+    --sfdc-bg-color-active:             #e8f4ff;   /* active/selected row              */
+    --sfdc-bg-color-selected:           var(--sfdc-color-brand-lightest);
+    --sfdc-bg-color-backdrop:           rgba(0, 0, 0, 0.5);
+    --sfdc-bg-color-brand:              var(--sfdc-color-brand-base);
+    --sfdc-bg-color-brand-dark:         var(--sfdc-color-brand-dark);
+    --sfdc-bg-color-inverse:            #032d60;
+    --sfdc-bg-color-success:            var(--sfdc-color-success-bg);
+    --sfdc-bg-color-warning:            var(--sfdc-color-warning-bg);
+    --sfdc-bg-color-error:              var(--sfdc-color-error-bg);
+    --sfdc-bg-color-info:               var(--sfdc-color-info-bg);
+    --sfdc-bg-color-code:               #f3f2f2;
+    --sfdc-bg-color-code-block:         #1b1b1b;
+
+    /* Darkmode override surface — defined here, applied in section 28 */
+    --sfdc-bg-color-dark-page:          #16191c;
+    --sfdc-bg-color-dark-container:     #1d2025;
+    --sfdc-bg-color-dark-alt:           #22262b;
+}
+
+/* ============================================================
+   7. Border Colors
+   ============================================================ */
+:root {
+    --sfdc-border-color-default:        #dddbda;
+    --sfdc-border-color-strong:         #c9c9c9;
+    --sfdc-border-color-weak:           #ecebea;
+    --sfdc-border-color-brand:          var(--sfdc-color-brand-base);
+    --sfdc-border-color-focus:          var(--sfdc-color-brand-base);
+    --sfdc-border-color-error:          var(--sfdc-color-error-border);
+    --sfdc-border-color-warning:        var(--sfdc-color-warning-border);
+    --sfdc-border-color-success:        var(--sfdc-color-success-border);
+    --sfdc-border-color-info:           var(--sfdc-color-info-border);
+    --sfdc-border-color-inverse:        rgba(255, 255, 255, 0.15);
+    --sfdc-border-color-divider:        #ecebea;
+}
+
+/* ============================================================
+   8. Typography — Font Families
+   UPDATED: All three families are now self-hosted.
+   Replace the existing section 8 in 1.variables.css
+   with this block.
+   ============================================================ */
+:root {
+    --sfdc-font-family-sans:
+        "Plus Jakarta Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
+    --sfdc-font-family-serif:
+        "Literata",
+        Georgia,
+        "Times New Roman",
+        Times,
+        serif;
+
+    --sfdc-font-family-serif-text:       "Literata Text",       "Literata", Georgia, serif;
+    --sfdc-font-family-serif-reading:    "Literata Reading",    "Literata", Georgia, serif;
+    --sfdc-font-family-serif-subheading: "Literata Subheading", "Literata", Georgia, serif;
+    --sfdc-font-family-serif-display:    "Literata Display",    "Literata", Georgia, serif;
+
+    --sfdc-font-family-mono:
+        "JetBrains Mono",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        Courier,
+        monospace;
+
+    --sfdc-font-body:    var(--gh-font-body,    var(--sfdc-font-family-sans));
+    --sfdc-font-heading: var(--gh-font-heading, var(--sfdc-font-family-sans));
+}
+
+/* ============================================================
+   9. Typography — Font Sizes
+   Base is 62.5% on <html> (set in global.css) so 1rem = 10px.
+   All values therefore follow: Xrem = X×10px.
+   ============================================================ */
+:root {
+    /* Micro / utility */
+    --sfdc-font-size-2xs:   1.0rem;   /*  10px */
+    --sfdc-font-size-xs:    1.1rem;   /*  11px */
+
+    /* Body scale */
+    --sfdc-font-size-sm:    1.2rem;   /*  12px — captions, labels        */
+    --sfdc-font-size-md:    1.4rem;   /*  14px — secondary text, meta    */
+    --sfdc-font-size-base:  1.6rem;   /*  16px — base body text          */
+    --sfdc-font-size-lg:    1.8rem;   /*  18px — large body / lead       */
+
+    /* Heading scale */
+    --sfdc-font-size-h6:    1.6rem;   /*  16px */
+    --sfdc-font-size-h5:    1.8rem;   /*  18px */
+    --sfdc-font-size-h4:    2.0rem;   /*  20px */
+    --sfdc-font-size-h3:    2.4rem;   /*  24px */
+    --sfdc-font-size-h2:    2.8rem;   /*  28px */
+    --sfdc-font-size-h1:    3.6rem;   /*  36px */
+
+    /* Display / hero */
+    --sfdc-font-size-display-sm:   4.0rem;  /*  40px */
+    --sfdc-font-size-display-md:   4.8rem;  /*  48px */
+    --sfdc-font-size-display-lg:   5.6rem;  /*  56px */
+    --sfdc-font-size-display-xl:   6.4rem;  /*  64px */
+}
+
+/* ============================================================
+   10. Typography — Font Weights
+   ============================================================ */
+:root {
+    --sfdc-font-weight-thin:        100;
+    --sfdc-font-weight-light:       300;
+    --sfdc-font-weight-regular:     400;
+    --sfdc-font-weight-medium:      500;
+    --sfdc-font-weight-semibold:    600;
+    --sfdc-font-weight-bold:        700;
+    --sfdc-font-weight-extrabold:   800;
+    --sfdc-font-weight-black:       900;
+}
+
+/* ============================================================
+   11. Typography — Line Heights & Letter Spacing
+   ============================================================ */
+:root {
+    --sfdc-line-height-none:         1;
+    --sfdc-line-height-tighter:      1.15;
+    --sfdc-line-height-tight:        1.3;
+    --sfdc-line-height-normal:       1.5;
+    --sfdc-line-height-relaxed:      1.6;
+    --sfdc-line-height-loose:        1.75;
+    --sfdc-line-height-body:         1.6em;
+    --sfdc-letter-spacing-tighter:  -0.03em;
+    --sfdc-letter-spacing-tight:    -0.015em;
+    --sfdc-letter-spacing-normal:    0;
+    --sfdc-letter-spacing-wide:      0.025em;
+    --sfdc-letter-spacing-wider:     0.05em;
+    --sfdc-letter-spacing-widest:    0.1em;
+}
+
+/* ============================================================
+   12. Spacing Scale
+   Follows an 8-point base grid (multiples of 0.8rem / 8px).
+   ============================================================ */
+:root {
+    --sfdc-spacing-none:     0;
+    --sfdc-spacing-2xs:      0.2rem;    /*  2px */
+    --sfdc-spacing-xs:       0.4rem;    /*  4px */
+    --sfdc-spacing-sm:       0.8rem;    /*  8px */
+    --sfdc-spacing-md:       1.2rem;    /* 12px */
+    --sfdc-spacing-base:     1.6rem;    /* 16px — 1 unit           */
+    --sfdc-spacing-lg:       2.0rem;    /* 20px */
+    --sfdc-spacing-xl:       2.4rem;    /* 24px */
+    --sfdc-spacing-2xl:      3.2rem;    /* 32px */
+    --sfdc-spacing-3xl:      4.0rem;    /* 40px */
+    --sfdc-spacing-4xl:      4.8rem;    /* 48px */
+    --sfdc-spacing-5xl:      6.4rem;    /* 64px */
+    --sfdc-spacing-6xl:      8.0rem;    /* 80px */
+    --sfdc-spacing-7xl:      9.6rem;    /* 96px */
+    --sfdc-spacing-8xl:     12.8rem;    /* 128px */
+
+    /* Semantic spacing aliases */
+    --sfdc-spacing-section:          max(8vmin, 4.8rem);
+    --sfdc-spacing-section-sm:       max(4.8vmin, 3.2rem);
+    --sfdc-spacing-page-horizontal:  max(4vmin, 2.0rem);
+    --sfdc-spacing-page-vertical:    max(4.8vmin, 3.6rem);
+}
+
+/* ============================================================
+   13. Border Radius
+   ============================================================ */
+:root {
+    --sfdc-radius-none:      0;
+    --sfdc-radius-xs:        0.2rem;    /*  2px */
+    --sfdc-radius-sm:        0.4rem;    /*  4px */
+    --sfdc-radius-md:        0.8rem;    /*  8px — inputs, tags       */
+    --sfdc-radius-lg:        1.2rem;    /* 12px — cards              */
+    --sfdc-radius-xl:        1.6rem;    /* 16px — modals             */
+    --sfdc-radius-2xl:       2.4rem;    /* 24px — panels             */
+    --sfdc-radius-full:      9999px;    /* pill / circle             */
+
+    /* Component radius tokens */
+    --sfdc-radius-button:    var(--sfdc-radius-full);   /* SLDS uses pill buttons */
+    --sfdc-radius-input:     var(--sfdc-radius-md);
+    --sfdc-radius-card:      var(--sfdc-radius-lg);
+    --sfdc-radius-badge:     var(--sfdc-radius-full);
+    --sfdc-radius-avatar:    var(--sfdc-radius-full);
+    --sfdc-radius-dropdown:  var(--sfdc-radius-md);
+    --sfdc-radius-tooltip:   var(--sfdc-radius-sm);
+    --sfdc-radius-modal:     var(--sfdc-radius-xl);
+    --sfdc-radius-tag:       var(--sfdc-radius-sm);
+    --sfdc-radius-post-card: var(--sfdc-radius-sm);
+}
+
+/* ============================================================
+   14. Border Width
+   ============================================================ */
+:root {
+    --sfdc-border-width-none:    0;
+    --sfdc-border-width-thin:    1px;
+    --sfdc-border-width-base:    1px;
+    --sfdc-border-width-thick:   2px;
+    --sfdc-border-width-focus:   2px;
+    --sfdc-border-width-accent:  4px;   /* left-border accent on callouts */
+}
+
+/* ============================================================
+   15. Shadows / Elevation
+   SLDS uses subtle layered shadows rather than heavy drop shadows.
+   ============================================================ */
+:root {
+    --sfdc-shadow-none:     none;
+    --sfdc-shadow-xs:       0 1px 2px 0 rgba(0, 0, 0, 0.08);
+    --sfdc-shadow-sm:       0 2px 4px 0 rgba(0, 0, 0, 0.10);
+    --sfdc-shadow-md:       0 4px 8px 0 rgba(0, 0, 0, 0.12);
+    --sfdc-shadow-lg:       0 8px 16px 0 rgba(0, 0, 0, 0.14);
+    --sfdc-shadow-xl:       0 16px 32px 0 rgba(0, 0, 0, 0.16);
+
+    /* Focus ring — brand color outline */
+    --sfdc-shadow-focus:    0 0 0 3px rgba(1, 118, 211, 0.25);
+    --sfdc-shadow-focus-error: 0 0 0 3px rgba(186, 5, 23, 0.25);
+
+    /* Card elevation levels */
+    --sfdc-shadow-card:         var(--sfdc-shadow-sm);
+    --sfdc-shadow-card-hover:   var(--sfdc-shadow-md);
+    --sfdc-shadow-dropdown:     var(--sfdc-shadow-lg);
+    --sfdc-shadow-modal:        var(--sfdc-shadow-xl);
+    --sfdc-shadow-header:       0 2px 6px -2px rgba(0, 0, 0, 0.10), 0 0 1px rgba(0, 0, 0, 0.20);
+}
+
+/* ============================================================
+   16. Z-index Scale
+   ============================================================ */
+:root {
+    --sfdc-z-below:          -1;
+    --sfdc-z-base:            0;
+    --sfdc-z-sticky:        100;
+    --sfdc-z-header:        150;
+    --sfdc-z-dropdown:      200;
+    --sfdc-z-overlay:       300;
+    --sfdc-z-modal:         400;
+    --sfdc-z-toast:         500;
+    --sfdc-z-tooltip:       600;
+    --sfdc-z-lightbox:    3999999;   /* keeps parity with original .pswp */
+}
+
+/* ============================================================
+   17. Transitions & Motion
+   ============================================================ */
+:root {
+    /* Duration */
+    --sfdc-duration-instant:     0ms;
+    --sfdc-duration-fast:        100ms;
+    --sfdc-duration-base:        150ms;
+    --sfdc-duration-slow:        300ms;
+    --sfdc-duration-slower:      500ms;
+    --sfdc-duration-animation:   600ms;
+
+    /* Easing */
+    --sfdc-easing-standard:      cubic-bezier(0.4, 0, 0.2, 1);
+    --sfdc-easing-decelerate:    cubic-bezier(0, 0, 0.2, 1);
+    --sfdc-easing-accelerate:    cubic-bezier(0.4, 0, 1, 1);
+    --sfdc-easing-sharp:         cubic-bezier(0.4, 0, 0.6, 1);
+
+    /* Shorthand transition tokens */
+    --sfdc-transition-base:      all var(--sfdc-duration-base) var(--sfdc-easing-standard);
+    --sfdc-transition-color:     color var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                                 background-color var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                                 border-color var(--sfdc-duration-base) var(--sfdc-easing-standard);
+    --sfdc-transition-opacity:   opacity var(--sfdc-duration-base) var(--sfdc-easing-standard);
+    --sfdc-transition-transform: transform var(--sfdc-duration-slow) var(--sfdc-easing-standard);
+    --sfdc-transition-shadow:    box-shadow var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+/* ============================================================
+   18. Breakpoints (reference values — use in media queries)
+   ============================================================ */
+:root {
+    /* Not used directly in CSS but good as documentation */
+    --sfdc-breakpoint-xs:   320px;    /* extra small phones           */
+    --sfdc-breakpoint-sm:   480px;    /* small phones                 */
+    --sfdc-breakpoint-md:   768px;    /* tablets / large phones       */
+    --sfdc-breakpoint-lg:   992px;    /* small laptops                */
+    --sfdc-breakpoint-xl:  1200px;    /* desktop                      */
+    --sfdc-breakpoint-2xl: 1440px;    /* large desktop                */
+    --sfdc-breakpoint-3xl: 1920px;    /* wide / 4K                    */
+}
+
+/* ============================================================
+   19. Layout — Widths & Grid
+   ============================================================ */
+:root {
+    /* Content container widths */
+    --sfdc-width-xs:        480px;    /* narrow panels, modals        */
+    --sfdc-width-sm:        640px;    /* reading column               */
+    --sfdc-width-md:        768px;    /* default content width        */
+    --sfdc-width-lg:       1040px;    /* content + sidebar            */
+    --sfdc-width-xl:       1200px;    /* max inner width              */
+    --sfdc-width-2xl:      1440px;    /* wide layout                  */
+
+    /* Semantic width aliases */
+    --sfdc-content-width:       720px;    /* post / article body      */
+    --sfdc-container-width:    1200px;    /* .inner max-width          */
+    --sfdc-header-height:        60px;
+    --sfdc-header-height-mobile: 45px;
+
+    /* Grid */
+    --sfdc-grid-columns:         12;
+    --sfdc-grid-gutter:     var(--sfdc-spacing-2xl);   /* 32px        */
+    --sfdc-grid-gutter-sm:  var(--sfdc-spacing-xl);    /* 24px        */
+    --sfdc-page-padding:    max(4vmin, var(--sfdc-spacing-base));
+}
+
+/* ============================================================
+   20. Component Tokens — Buttons
+   ============================================================ */
+:root {
+    /* Sizes */
+    --sfdc-button-height-sm:        2.8rem;   /* 28px */
+    --sfdc-button-height-base:      3.2rem;   /* 32px — SLDS default  */
+    --sfdc-button-height-lg:        4.0rem;   /* 40px */
+    --sfdc-button-height-xl:        4.8rem;   /* 48px */
+
+    --sfdc-button-padding-x-sm:     var(--sfdc-spacing-sm);
+    --sfdc-button-padding-x-base:   var(--sfdc-spacing-lg);
+    --sfdc-button-padding-x-lg:     var(--sfdc-spacing-xl);
+
+    --sfdc-button-font-size-sm:     var(--sfdc-font-size-sm);
+    --sfdc-button-font-size-base:   var(--sfdc-font-size-md);
+    --sfdc-button-font-size-lg:     var(--sfdc-font-size-base);
+
+    --sfdc-button-font-weight:      var(--sfdc-font-weight-semibold);
+    --sfdc-button-radius:           var(--sfdc-radius-button);
+    --sfdc-button-border-width:     var(--sfdc-border-width-base);
+    --sfdc-button-transition:       var(--sfdc-transition-color), box-shadow var(--sfdc-duration-base) var(--sfdc-easing-standard);
+
+    /* Brand (primary) */
+    --sfdc-button-brand-bg:         var(--sfdc-color-brand-base);
+    --sfdc-button-brand-bg-hover:   var(--sfdc-color-brand-dark);
+    --sfdc-button-brand-bg-active:  var(--sfdc-color-brand-darker);
+    --sfdc-button-brand-text:       var(--sfdc-color-white);
+    --sfdc-button-brand-border:     transparent;
+
+    /* Neutral */
+    --sfdc-button-neutral-bg:       var(--sfdc-color-white);
+    --sfdc-button-neutral-bg-hover: var(--sfdc-bg-color-alt);
+    --sfdc-button-neutral-text:     var(--sfdc-color-brand-base);
+    --sfdc-button-neutral-border:   var(--sfdc-border-color-default);
+
+    /* Destructive */
+    --sfdc-button-destructive-bg:   var(--sfdc-color-error);
+    --sfdc-button-destructive-text: var(--sfdc-color-white);
+    --sfdc-button-destructive-border: transparent;
+
+    /* Inverse */
+    --sfdc-button-inverse-bg:       transparent;
+    --sfdc-button-inverse-bg-hover: rgba(255, 255, 255, 0.1);
+    --sfdc-button-inverse-text:     var(--sfdc-color-white);
+    --sfdc-button-inverse-border:   var(--sfdc-color-white);
+}
+
+/* ============================================================
+   21. Component Tokens — Inputs / Forms
+   ============================================================ */
+:root {
+    --sfdc-input-height-sm:       var(--sfdc-button-height-sm);
+    --sfdc-input-height-base:     var(--sfdc-button-height-base);
+    --sfdc-input-height-lg:       var(--sfdc-button-height-lg);
+
+    --sfdc-input-padding-x:       var(--sfdc-spacing-md);
+    --sfdc-input-padding-y:       var(--sfdc-spacing-sm);
+
+    --sfdc-input-font-size:       var(--sfdc-font-size-base);
+    --sfdc-input-font-weight:     var(--sfdc-font-weight-regular);
+    --sfdc-input-line-height:     var(--sfdc-line-height-normal);
+    --sfdc-input-radius:          var(--sfdc-radius-input);
+    --sfdc-input-border-width:    var(--sfdc-border-width-base);
+
+    --sfdc-input-bg:              var(--sfdc-color-white);
+    --sfdc-input-bg-disabled:     var(--sfdc-bg-color-alt);
+    --sfdc-input-color:           var(--sfdc-text-color-default);
+    --sfdc-input-color-placeholder: var(--sfdc-text-color-placeholder);
+    --sfdc-input-border:          var(--sfdc-border-color-strong);
+    --sfdc-input-border-focus:    var(--sfdc-border-color-focus);
+    --sfdc-input-border-error:    var(--sfdc-border-color-error);
+    --sfdc-input-shadow-focus:    var(--sfdc-shadow-focus);
+
+    --sfdc-label-font-size:       var(--sfdc-font-size-md);
+    --sfdc-label-font-weight:     var(--sfdc-font-weight-semibold);
+    --sfdc-label-color:           var(--sfdc-text-color-secondary);
+    --sfdc-label-margin-bottom:   var(--sfdc-spacing-xs);
+}
+
+/* ============================================================
+   22. Component Tokens — Cards
+   ============================================================ */
+:root {
+    --sfdc-card-bg:               var(--sfdc-bg-color-container);
+    --sfdc-card-border:           var(--sfdc-border-color-default);
+    --sfdc-card-border-width:     var(--sfdc-border-width-base);
+    --sfdc-card-radius:           var(--sfdc-radius-card);
+    --sfdc-card-shadow:           var(--sfdc-shadow-card);
+    --sfdc-card-shadow-hover:     var(--sfdc-shadow-card-hover);
+    --sfdc-card-padding:          var(--sfdc-spacing-2xl);
+    --sfdc-card-padding-sm:       var(--sfdc-spacing-lg);
+    --sfdc-card-header-bg:        var(--sfdc-bg-color-alt);
+    --sfdc-card-header-border:    var(--sfdc-border-color-divider);
+    --sfdc-card-transition:       box-shadow var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                                  transform var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+/* ============================================================
+   23. Component Tokens — Badges / Pills
+   ============================================================ */
+:root {
+    --sfdc-badge-font-size:       var(--sfdc-font-size-xs);
+    --sfdc-badge-font-weight:     var(--sfdc-font-weight-semibold);
+    --sfdc-badge-letter-spacing:  var(--sfdc-letter-spacing-wide);
+    --sfdc-badge-padding-x:       var(--sfdc-spacing-sm);
+    --sfdc-badge-padding-y:       var(--sfdc-spacing-2xs);
+    --sfdc-badge-radius:          var(--sfdc-radius-badge);
+    --sfdc-badge-text-transform:  uppercase;
+
+    /* Badge color variants */
+    --sfdc-badge-brand-bg:        var(--sfdc-color-brand-lightest);
+    --sfdc-badge-brand-text:      var(--sfdc-color-brand-dark);
+    --sfdc-badge-brand-border:    var(--sfdc-color-brand-light);
+
+    --sfdc-badge-success-bg:      var(--sfdc-color-success-bg);
+    --sfdc-badge-success-text:    var(--sfdc-color-success-text);
+    --sfdc-badge-success-border:  var(--sfdc-color-success-border);
+
+    --sfdc-badge-warning-bg:      var(--sfdc-color-warning-bg);
+    --sfdc-badge-warning-text:    var(--sfdc-color-warning-text);
+    --sfdc-badge-warning-border:  var(--sfdc-color-warning-border);
+
+    --sfdc-badge-error-bg:        var(--sfdc-color-error-bg);
+    --sfdc-badge-error-text:      var(--sfdc-color-error-text);
+    --sfdc-badge-error-border:    var(--sfdc-color-error-border);
+
+    --sfdc-badge-neutral-bg:      var(--sfdc-color-neutral-bg);
+    --sfdc-badge-neutral-text:    var(--sfdc-color-neutral-text);
+    --sfdc-badge-neutral-border:  var(--sfdc-color-neutral-border);
+}
+
+/* ============================================================
+   24. Component Tokens — Navigation / Header
+   ============================================================ */
+:root {
+    --sfdc-nav-height:                  var(--sfdc-header-height);
+    --sfdc-nav-height-mobile:           var(--sfdc-header-height-mobile);
+    --sfdc-nav-bg:                      var(--sfdc-bg-color-header);
+    --sfdc-nav-bg-cover:                transparent;   /* when over a cover image     */
+    --sfdc-nav-border:                  var(--sfdc-border-color-divider);
+    --sfdc-nav-shadow:                  var(--sfdc-shadow-header);
+
+    --sfdc-nav-logo-max-height:         40px;
+    --sfdc-nav-logo-max-height-mobile:  28px;
+    --sfdc-nav-font-size:               var(--sfdc-font-size-base);
+    --sfdc-nav-font-weight:             var(--sfdc-font-weight-semibold);
+    --sfdc-nav-link-color:              var(--sfdc-text-color-default);
+    --sfdc-nav-link-color-hover:        var(--sfdc-text-color-action);
+    --sfdc-nav-link-color-active:       var(--sfdc-text-color-action);
+    --sfdc-nav-link-gap:                var(--sfdc-spacing-2xl);
+
+    /* Navigation on cover/dark backgrounds */
+    --sfdc-nav-link-color-inverse:      var(--sfdc-color-white);
+    --sfdc-nav-link-color-inverse-hover: rgba(255, 255, 255, 0.85);
+
+    /* Dropdown */
+    --sfdc-dropdown-bg:                 var(--sfdc-bg-color-container);
+    --sfdc-dropdown-border:             var(--sfdc-border-color-default);
+    --sfdc-dropdown-radius:             var(--sfdc-radius-dropdown);
+    --sfdc-dropdown-shadow:             var(--sfdc-shadow-dropdown);
+    --sfdc-dropdown-item-padding:       var(--sfdc-spacing-sm) var(--sfdc-spacing-lg);
+    --sfdc-dropdown-item-hover-bg:      var(--sfdc-bg-color-hover);
+}
+
+/* ============================================================
+   25. Component Tokens — Post Feed & Cards
+   ============================================================ */
+:root {
+    /* Feed grid */
+    --sfdc-feed-columns:            repeat(6, 1fr);
+    --sfdc-feed-gap-x:              4vmin;
+    --sfdc-feed-gap-y:              4.8vmin;
+    --sfdc-feed-padding-top:        max(4.8vmin, var(--sfdc-spacing-3xl));
+
+    /* Post card */
+    --sfdc-post-card-bg:            var(--sfdc-bg-color-container);
+    --sfdc-post-card-radius:        var(--sfdc-radius-post-card);
+    --sfdc-post-card-shadow:        none;
+    --sfdc-post-card-shadow-hover:  var(--sfdc-shadow-sm);
+    --sfdc-post-card-transition:    var(--sfdc-card-transition);
+    --sfdc-post-card-image-ratio:   55%;          /* padding-bottom trick           */
+    --sfdc-post-card-image-mb:      var(--sfdc-spacing-2xl);
+
+    --sfdc-post-card-tag-font-size:    var(--sfdc-font-size-md);
+    --sfdc-post-card-tag-font-weight:  var(--sfdc-font-weight-semibold);
+    --sfdc-post-card-tag-color:        var(--sfdc-text-color-secondary);
+
+    --sfdc-post-card-title-font-size:  2.6rem;
+    --sfdc-post-card-title-weight:     var(--sfdc-font-weight-extrabold);
+    --sfdc-post-card-title-line-height: var(--sfdc-line-height-tight);
+
+    --sfdc-post-card-excerpt-font-size: var(--sfdc-font-size-base);
+    --sfdc-post-card-excerpt-line-height: var(--sfdc-line-height-relaxed);
+    --sfdc-post-card-excerpt-lines:    3;
+
+    --sfdc-post-card-meta-font-size:   var(--sfdc-font-size-sm);
+    --sfdc-post-card-meta-color:       var(--sfdc-text-color-weak);
+    --sfdc-post-card-meta-mt:          var(--sfdc-spacing-md);
+
+    /* Large / featured card overrides */
+    --sfdc-post-card-large-title-size: 4.4rem;
+    --sfdc-post-card-full-title-size:  6.4rem;
+    --sfdc-post-card-dynamic-title-size: 3.0rem;
+}
+
+/* ============================================================
+   26. Component Tokens — Article / Post
+   ============================================================ */
+:root {
+    --sfdc-article-content-width:      var(--sfdc-content-width);
+    --sfdc-article-padding-y:          max(8vmin, var(--sfdc-spacing-4xl));
+    --sfdc-article-header-pb:          max(6.4vmin, var(--sfdc-spacing-4xl));
+
+    --sfdc-article-title-size:         clamp(3.2rem, 5vw, 5.2rem);
+    --sfdc-article-title-weight:       var(--sfdc-font-weight-extrabold);
+    --sfdc-article-title-color:        var(--sfdc-text-color-heading);
+    --sfdc-article-title-line-height:  var(--sfdc-line-height-tighter);
+
+    --sfdc-article-excerpt-size:       2.0rem;
+    --sfdc-article-excerpt-color:      var(--sfdc-text-color-default);
+    --sfdc-article-excerpt-line-height: var(--sfdc-line-height-tight);
+
+    --sfdc-article-body-size:          2.0rem;
+    --sfdc-article-body-line-height:   var(--sfdc-line-height-relaxed);
+    --sfdc-article-body-font:          var(--sfdc-font-body);
+
+    --sfdc-article-heading-font:       var(--sfdc-font-heading);
+    --sfdc-article-link-color:         var(--sfdc-text-color-action);
+
+    /* Blockquote accent */
+    --sfdc-article-blockquote-border:  var(--sfdc-color-brand-base);
+    --sfdc-article-blockquote-color:   var(--sfdc-text-color-secondary);
+
+    /* Code blocks */
+    --sfdc-article-code-bg:            var(--sfdc-bg-color-code-block);
+    --sfdc-article-code-color:         #e5eff5;
+    --sfdc-article-code-radius:        var(--sfdc-radius-sm);
+    --sfdc-article-inline-code-bg:     var(--sfdc-bg-color-code);
+    --sfdc-article-inline-code-border: var(--sfdc-border-color-default);
+
+    /* Byline */
+    --sfdc-byline-avatar-size:         min(56px, 13.6vmin);
+    --sfdc-byline-author-font-size:    var(--sfdc-font-size-lg);
+    --sfdc-byline-author-weight:       var(--sfdc-font-weight-bold);
+    --sfdc-byline-meta-size:           var(--sfdc-font-size-md);
+    --sfdc-byline-meta-color:          var(--sfdc-text-color-weak);
+}
+
+/* ============================================================
+   27. Component Tokens — Footer
+   ============================================================ */
+:root {
+    --sfdc-footer-bg:               var(--sfdc-bg-color-inverse);
+    --sfdc-footer-color:            rgba(255, 255, 255, 0.7);
+    --sfdc-footer-link-color:       rgba(255, 255, 255, 0.7);
+    --sfdc-footer-link-hover:       rgba(255, 255, 255, 1.0);
+    --sfdc-footer-copyright-color:  var(--sfdc-color-white);
+    --sfdc-footer-font-size:        var(--sfdc-font-size-sm);
+    --sfdc-footer-padding-top:      var(--sfdc-spacing-4xl);
+    --sfdc-footer-padding-bottom:   var(--sfdc-spacing-7xl);
+    --sfdc-footer-margin-top:       max(12vmin, var(--sfdc-spacing-5xl));
+}
+/*
+ * REPLACE section 28 in 1.variables.css with this entire block.
+ *
+ * WHY THE ORIGINAL WAS BROKEN:
+ *   html.dark-mode,
+ *   @media (prefers-color-scheme: dark) { ... }
+ *
+ *   CSS does NOT allow combining a selector with an @media rule
+ *   using a comma. The browser silently discards the whole block.
+ *   Result: --sfdc-* variables never update in dark mode.
+ *
+ * FIX: Two completely separate, valid blocks.
+ * ============================================================
+ */
+
+/* ============================================================
+   28a. Dark Mode — Manual (.dark-mode class on <html>)
+   Applied when:
+     - Ghost Admin > Design > Color scheme = "Dark"
+     - OR visitor clicks the dark mode toggle button
+       (JS adds .dark-mode to <html> and saves to localStorage)
+   ============================================================ */
+html.dark-mode {
+    color-scheme: dark;
+
+    /* Brand — brighter blue for dark surfaces */
+    --sfdc-color-brand-base:            #1b96ff;
+
+    /* Text */
+    --sfdc-text-color-default:          rgba(255, 255, 255, 0.90);
+    --sfdc-text-color-secondary:        rgba(255, 255, 255, 0.65);
+    --sfdc-text-color-placeholder:      rgba(255, 255, 255, 0.40);
+    --sfdc-text-color-weak:             rgba(255, 255, 255, 0.38);
+    --sfdc-text-color-heading:          rgba(255, 255, 255, 0.95);
+    --sfdc-text-color-link:             #57a3fd;
+    --sfdc-text-color-link-active:      #9dc9fd;
+
+    /* Backgrounds */
+    --sfdc-bg-color-page:               #16191c;
+    --sfdc-bg-color-container:          #1d2025;
+    --sfdc-bg-color-header:             #1d2025;
+    --sfdc-bg-color-alt:                #22262b;
+    --sfdc-bg-color-hover:              #22262b;
+    --sfdc-bg-color-highlight:          rgba(27, 150, 255, 0.12);
+    --sfdc-bg-color-active:             rgba(27, 150, 255, 0.16);
+    --sfdc-bg-color-code:               #2a2e33;
+    --sfdc-bg-color-code-block:         #0e1013;
+
+    /* Borders */
+    --sfdc-border-color-default:        rgba(255, 255, 255, 0.14);
+    --sfdc-border-color-strong:         rgba(255, 255, 255, 0.22);
+    --sfdc-border-color-weak:           rgba(255, 255, 255, 0.07);
+    --sfdc-border-color-divider:        rgba(255, 255, 255, 0.09);
+
+    /* Cards */
+    --sfdc-card-bg:                     #1d2025;
+    --sfdc-card-border:                 rgba(255, 255, 255, 0.10);
+
+    /* Inputs */
+    --sfdc-input-bg:                    #1d2025;
+    --sfdc-input-bg-disabled:           #22262b;
+    --sfdc-input-color:                 rgba(255, 255, 255, 0.90);
+    --sfdc-input-border:                rgba(255, 255, 255, 0.22);
+
+    /* Shadows — more contrast on dark bg */
+    --sfdc-shadow-xs:                   0 1px 2px 0 rgba(0, 0, 0, 0.30);
+    --sfdc-shadow-sm:                   0 2px 4px 0 rgba(0, 0, 0, 0.40);
+    --sfdc-shadow-md:                   0 4px 8px 0 rgba(0, 0, 0, 0.50);
+    --sfdc-shadow-lg:                   0 8px 16px 0 rgba(0, 0, 0, 0.60);
+    --sfdc-shadow-xl:                   0 16px 32px 0 rgba(0, 0, 0, 0.70);
+    --sfdc-shadow-focus:                0 0 0 3px rgba(27, 150, 255, 0.30);
+
+    /* Nav */
+    --sfdc-nav-bg:                      #1d2025;
+    --sfdc-nav-link-color:              rgba(255, 255, 255, 0.80);
+    --sfdc-nav-link-color-hover:        rgba(255, 255, 255, 1.00);
+
+    /* Dropdown */
+    --sfdc-dropdown-bg:                 #1d2025;
+    --sfdc-dropdown-border:             rgba(255, 255, 255, 0.12);
+
+    /* Post card */
+    --sfdc-post-card-bg:                #1d2025;
+
+    /* Article */
+    --sfdc-article-title-color:         rgba(255, 255, 255, 0.95);
+    --sfdc-article-excerpt-color:       rgba(255, 255, 255, 0.70);
+    --sfdc-article-inline-code-bg:      #2a2e33;
+    --sfdc-article-inline-code-border:  rgba(255, 255, 255, 0.12);
+
+    /* Footer */
+    --sfdc-footer-bg:                   #0a1526;
+
+    /* Selection */
+    --sfdc-selection-bg:                rgba(27, 150, 255, 0.25);
+    --sfdc-selection-color:             rgba(255, 255, 255, 0.95);
+
+    /* Legacy bridge tokens — keep in sync */
+    --color-darkgrey:                   #e8e8e8;
+    --color-secondary-text:             rgba(255, 255, 255, 0.55);
+    --color-midgrey:                    rgba(255, 255, 255, 0.45);
+    --color-wash:                       #1d2d3e;
+}
+
+
+/* ============================================================
+   28b. Dark Mode — System Preference (auto-color)
+   Applied when:
+     - Ghost Admin > Design > Color scheme = "Auto"
+     - AND the visitor's OS is set to dark mode
+   Identical variable set to 28a.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+    html.auto-color {
+        color-scheme: dark;
+
+        --sfdc-color-brand-base:            #1b96ff;
+
+        --sfdc-text-color-default:          rgba(255, 255, 255, 0.90);
+        --sfdc-text-color-secondary:        rgba(255, 255, 255, 0.65);
+        --sfdc-text-color-placeholder:      rgba(255, 255, 255, 0.40);
+        --sfdc-text-color-weak:             rgba(255, 255, 255, 0.38);
+        --sfdc-text-color-heading:          rgba(255, 255, 255, 0.95);
+        --sfdc-text-color-link:             #57a3fd;
+        --sfdc-text-color-link-active:      #9dc9fd;
+
+        --sfdc-bg-color-page:               #16191c;
+        --sfdc-bg-color-container:          #1d2025;
+        --sfdc-bg-color-header:             #1d2025;
+        --sfdc-bg-color-alt:                #22262b;
+        --sfdc-bg-color-hover:              #22262b;
+        --sfdc-bg-color-highlight:          rgba(27, 150, 255, 0.12);
+        --sfdc-bg-color-active:             rgba(27, 150, 255, 0.16);
+        --sfdc-bg-color-code:               #2a2e33;
+        --sfdc-bg-color-code-block:         #0e1013;
+
+        --sfdc-border-color-default:        rgba(255, 255, 255, 0.14);
+        --sfdc-border-color-strong:         rgba(255, 255, 255, 0.22);
+        --sfdc-border-color-weak:           rgba(255, 255, 255, 0.07);
+        --sfdc-border-color-divider:        rgba(255, 255, 255, 0.09);
+
+        --sfdc-card-bg:                     #1d2025;
+        --sfdc-card-border:                 rgba(255, 255, 255, 0.10);
+
+        --sfdc-input-bg:                    #1d2025;
+        --sfdc-input-bg-disabled:           #22262b;
+        --sfdc-input-color:                 rgba(255, 255, 255, 0.90);
+        --sfdc-input-border:                rgba(255, 255, 255, 0.22);
+
+        --sfdc-shadow-xs:                   0 1px 2px 0 rgba(0, 0, 0, 0.30);
+        --sfdc-shadow-sm:                   0 2px 4px 0 rgba(0, 0, 0, 0.40);
+        --sfdc-shadow-md:                   0 4px 8px 0 rgba(0, 0, 0, 0.50);
+        --sfdc-shadow-lg:                   0 8px 16px 0 rgba(0, 0, 0, 0.60);
+        --sfdc-shadow-xl:                   0 16px 32px 0 rgba(0, 0, 0, 0.70);
+        --sfdc-shadow-focus:                0 0 0 3px rgba(27, 150, 255, 0.30);
+
+        --sfdc-nav-bg:                      #1d2025;
+        --sfdc-nav-link-color:              rgba(255, 255, 255, 0.80);
+        --sfdc-nav-link-color-hover:        rgba(255, 255, 255, 1.00);
+
+        --sfdc-dropdown-bg:                 #1d2025;
+        --sfdc-dropdown-border:             rgba(255, 255, 255, 0.12);
+
+        --sfdc-post-card-bg:                #1d2025;
+
+        --sfdc-article-title-color:         rgba(255, 255, 255, 0.95);
+        --sfdc-article-excerpt-color:       rgba(255, 255, 255, 0.70);
+        --sfdc-article-inline-code-bg:      #2a2e33;
+        --sfdc-article-inline-code-border:  rgba(255, 255, 255, 0.12);
+
+        --sfdc-footer-bg:                   #0a1526;
+
+        --color-darkgrey:                   #e8e8e8;
+        --color-secondary-text:             rgba(255, 255, 255, 0.55);
+        --color-midgrey:                    rgba(255, 255, 255, 0.45);
+        --color-wash:                       #1d2d3e;
+    }
+}
+/* ============================================================
+   29. Casper Legacy Bridge
+   ============================================================ */
+:root {
+    --color-darkgrey:       #15171A;   /* exact Casper value — sfdc uses #080707 */
+    --color-midgrey:        #738a94;   /* exact — blue-grey, no sfdc equivalent  */
+    --color-lightgrey:      var(--sfdc-color-gray-97);
+    --color-secondary-text: #979797;   /* exact — sfdc secondary is darker       */
+    --color-border:         var(--sfdc-border-color-default);
+    --color-wash:           #e5eff5;   /* exact — keep distinct from info colors */
+    --color-darkmode:       var(--sfdc-bg-color-dark-page);
+    --color-green:          #a4d037;   /* exact — Casper green, not SLDS green   */
+    --color-yellow:         #fecd35;   /* exact — no sfdc equivalent             */
+    --color-red:            #f05230;   /* exact — Casper red, not SLDS red       */
+    --font-sans:            var(--sfdc-font-family-sans);
+    --font-serif:           var(--sfdc-font-family-serif);
+    --font-mono:            var(--sfdc-font-family-mono);
+}
+
+
+/* ============================================================
+   Section 30 — Animation Variables
+   Add these to the bottom of 1.variables.css
+   ============================================================ */
+:root {
+    /* Animation durations */
+    --sfdc-animate-duration-fastest: 100ms;
+    --sfdc-animate-duration-fast:    200ms;
+    --sfdc-animate-duration-base:    350ms;
+    --sfdc-animate-duration-slow:    600ms;
+    --sfdc-animate-duration-slower:  900ms;
+    --sfdc-animate-duration-slowest: 1200ms;
+
+    /* Animation easings */
+    --sfdc-animate-easing-default:  cubic-bezier(0.4, 0, 0.2, 1);
+    --sfdc-animate-easing-in:       cubic-bezier(0.4, 0, 1, 1);
+    --sfdc-animate-easing-out:      cubic-bezier(0, 0, 0.2, 1);
+    --sfdc-animate-easing-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
+    --sfdc-animate-easing-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+    --sfdc-animate-easing-sharp:    cubic-bezier(0.4, 0, 0.6, 1);
+    --sfdc-animate-easing-bounce:   cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Animation delays */
+    --sfdc-animate-delay-1:  100ms;
+    --sfdc-animate-delay-2:  200ms;
+    --sfdc-animate-delay-3:  300ms;
+    --sfdc-animate-delay-4:  400ms;
+    --sfdc-animate-delay-5:  500ms;
+    --sfdc-animate-delay-6:  600ms;
+    --sfdc-animate-delay-7:  700ms;
+    --sfdc-animate-delay-8:  800ms;
+
+    /* Stagger step — used in JS for nth-child staggering */
+    --sfdc-animate-stagger:  80ms;
+
+    /* Transform distances */
+    --sfdc-animate-distance-sm:   8px;
+    --sfdc-animate-distance-md:   20px;
+    --sfdc-animate-distance-lg:   40px;
+    --sfdc-animate-distance-xl:   60px;
+}

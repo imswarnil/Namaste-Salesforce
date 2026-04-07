@@ -1,0 +1,822 @@
+/*
+ * 5.typography.css — Namaste Salesforce Theme
+ * ============================================================
+ * Full site typography system built on --sfdc-* tokens.
+ * Import order: fonts.css → 1.variables → 2.reset → 3.base
+ *               → 4.default-layout → 5.typography (this file)
+ *
+ * SECTIONS
+ *  1.  Root scale
+ *  2.  Headings  (h1 – h6 + display sizes)
+ *  3.  Body text
+ *  4.  Lead / intro paragraph
+ *  5.  Small / helper text
+ *  6.  Links
+ *  7.  Blockquote
+ *  8.  Inline code + kbd
+ *  9.  Code blocks (pre)
+ * 10.  Lists
+ * 11.  Tables
+ * 12.  Horizontal rule
+ * 13.  Ghost post content (.gh-content) — article body
+ * 14.  Ghost Koenig card overrides
+ * 15.  Reading container utilities
+ * 16.  Text utility classes
+ * 17.  Responsive
+ * ============================================================
+ */
+
+
+/* ============================================================
+   1. ROOT SCALE
+   Ghost sets html { font-size: 62.5% } so 1rem = 10px.
+   We target 1.6rem (16px) as the base body font.
+   ============================================================ */
+html {
+    font-size: 62.5%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+    font-family: var(--sfdc-font-family-sans);
+    font-size: var(--sfdc-font-size-base);  /* 1.6rem = 16px */
+    font-weight: var(--sfdc-font-weight-regular);
+    font-style: normal;
+    line-height: var(--sfdc-line-height-normal);  /* 1.6 */
+    letter-spacing: var(--sfdc-letter-spacing-normal);
+    color: var(--sfdc-text-color-default);
+    background-color: var(--sfdc-bg-color-page);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -moz-font-feature-settings: "liga" on;
+    text-rendering: optimizeLegibility;
+}
+
+/* Selection */
+::selection {
+    background-color: var(--sfdc-selection-bg, rgba(1, 118, 211, 0.15));
+    color: var(--sfdc-selection-color, var(--sfdc-text-color-default));
+    text-shadow: none;
+}
+
+
+/* ============================================================
+   2. HEADINGS
+   All headings use the heading font. Sizes are rem-based
+   and scale down at mobile breakpoint.
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--sfdc-font-heading);
+    font-weight: var(--sfdc-font-weight-bold);
+    line-height: var(--sfdc-line-height-tight);     /* 1.2 */
+    letter-spacing: var(--sfdc-letter-spacing-tight);
+    color: var(--sfdc-text-color-heading);
+    margin-top: 0;
+    margin-bottom: 0;
+    text-rendering: optimizeLegibility;
+}
+
+/* Display sizes — for hero sections, not content headings */
+.text-display-xl {
+    font-size: var(--sfdc-font-size-display-xl);
+    line-height: var(--sfdc-line-height-none);
+    letter-spacing: -0.03em;
+    font-weight: var(--sfdc-font-weight-extrabold);
+}
+.text-display-lg {
+    font-size: var(--sfdc-font-size-display-lg);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: var(--sfdc-font-weight-extrabold);
+}
+.text-display-md {
+    font-size: var(--sfdc-font-size-display-md);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: var(--sfdc-font-weight-bold);
+}
+.text-display-sm {
+    font-size: var(--sfdc-font-size-display-sm);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: var(--sfdc-font-weight-bold);
+}
+
+h1 {
+    font-size: var(--sfdc-font-size-h1);       /* 4.8rem */
+    font-weight: var(--sfdc-font-weight-extrabold);
+    letter-spacing: -0.02em;
+    line-height: var(--sfdc-line-height-tighter);
+}
+
+h2 {
+    font-size: var(--sfdc-font-size-h2);       /* 3.6rem */
+    font-weight: var(--sfdc-font-weight-bold);
+    letter-spacing: -0.015em;
+}
+
+h3 {
+    font-size: var(--sfdc-font-size-h3);       /* 2.8rem */
+    font-weight: var(--sfdc-font-weight-bold);
+    letter-spacing: -0.01em;
+}
+
+h4 {
+    font-size: var(--sfdc-font-size-h4);       /* 2.2rem */
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: -0.005em;
+}
+
+h5 {
+    font-size: var(--sfdc-font-size-h5);       /* 1.8rem */
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: 0;
+}
+
+h6 {
+    font-size: var(--sfdc-font-size-h6);       /* 1.6rem */
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: 0;
+    color: var(--sfdc-text-color-secondary);
+}
+
+
+/* ============================================================
+   3. BODY TEXT
+   ============================================================ */
+p {
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: var(--sfdc-line-height-normal);
+}
+
+/* Vertical rhythm — paragraphs inside content regions */
+.content-flow p + p,
+.content-flow p + ul,
+.content-flow p + ol,
+.content-flow ul + p,
+.content-flow ol + p {
+    margin-top: var(--sfdc-spacing-lg);
+}
+
+/* ============================================================
+   4. LEAD / INTRO PARAGRAPH
+   ============================================================ */
+.lead,
+.article-excerpt,
+.course-excerpt,
+.lesson-excerpt {
+    font-size: var(--sfdc-font-size-lg);        /* 2rem */
+    font-weight: var(--sfdc-font-weight-regular);
+    line-height: var(--sfdc-line-height-relaxed);
+    color: var(--sfdc-text-color-default);
+    letter-spacing: -0.003em;
+}
+
+.lead-sm {
+    font-size: var(--sfdc-font-size-md);        /* 1.8rem */
+    line-height: var(--sfdc-line-height-relaxed);
+    color: var(--sfdc-text-color-secondary);
+}
+
+
+/* ============================================================
+   5. SMALL / HELPER TEXT
+   ============================================================ */
+small, .text-sm {
+    font-size: var(--sfdc-font-size-sm);        /* 1.4rem */
+    line-height: var(--sfdc-line-height-normal);
+}
+
+.text-xs {
+    font-size: var(--sfdc-font-size-xs);        /* 1.2rem */
+    line-height: var(--sfdc-line-height-normal);
+}
+
+/* Eyebrow / overline label */
+.label-overline {
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--sfdc-text-color-secondary);
+}
+
+/* Caption text (beneath images, figures) */
+figcaption,
+.caption {
+    font-family: var(--sfdc-font-family-sans);
+    font-size: var(--sfdc-font-size-sm);
+    font-style: normal;
+    line-height: var(--sfdc-line-height-relaxed);
+    color: var(--sfdc-text-color-secondary);
+    text-align: center;
+    padding: var(--sfdc-spacing-sm) var(--sfdc-spacing-xl);
+}
+
+figcaption strong { color: var(--sfdc-text-color-default); font-weight: var(--sfdc-font-weight-semibold); }
+figcaption a { text-decoration: underline; color: inherit; }
+
+
+/* ============================================================
+   6. LINKS
+   ============================================================ */
+a {
+    color: var(--sfdc-text-color-link);
+    text-decoration: none;
+    transition: color var(--sfdc-duration-fast) var(--sfdc-easing-standard);
+}
+
+a:hover {
+    color: var(--sfdc-color-brand-dark);
+    text-decoration: underline;
+}
+
+a:focus-visible {
+    outline: 2px solid var(--sfdc-color-brand-base);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Inline content links (inside articles) */
+.gh-content a,
+.content-flow a {
+    color: var(--sfdc-color-brand-base);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-word;
+}
+
+.gh-content a:hover,
+.content-flow a:hover {
+    color: var(--sfdc-color-brand-dark);
+}
+
+
+/* ============================================================
+   7. BLOCKQUOTE
+   ============================================================ */
+blockquote {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 var(--sfdc-spacing-2xl);
+    font-style: italic;
+    color: var(--sfdc-text-color-secondary);
+}
+
+blockquote::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: var(--sfdc-color-brand-base);
+    border-radius: 2px;
+}
+
+blockquote p {
+    font-size: var(--sfdc-font-size-lg);
+    line-height: var(--sfdc-line-height-relaxed);
+    margin: 0;
+}
+
+blockquote cite,
+blockquote footer {
+    display: block;
+    margin-top: var(--sfdc-spacing-md);
+    font-size: var(--sfdc-font-size-sm);
+    font-style: normal;
+    font-weight: var(--sfdc-font-weight-medium);
+    color: var(--sfdc-text-color-weak);
+}
+
+blockquote cite::before { content: "— "; }
+
+/* Alt blockquote (kg-blockquote-alt) */
+.kg-blockquote-alt {
+    border-left: none;
+    padding: 0;
+    font-family: var(--sfdc-font-family-serif);
+    font-size: var(--sfdc-font-size-h4);
+    font-style: italic;
+    color: var(--sfdc-text-color-secondary);
+    text-align: center;
+}
+
+.kg-blockquote-alt::before { display: none; }
+
+
+/* ============================================================
+   8. INLINE CODE + KBD
+   ============================================================ */
+code, samp {
+    font-family: var(--sfdc-font-family-mono);
+    font-size: 0.875em;          /* relative to surrounding text */
+    font-style: normal;
+}
+
+:not(pre) > code {
+    padding: 0.15em 0.4em;
+    background-color: var(--sfdc-bg-color-code, var(--sfdc-bg-color-alt));
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-default);
+    border-radius: var(--sfdc-radius-sm);
+    color: var(--sfdc-text-color-default);
+    font-weight: var(--sfdc-font-weight-regular);
+    line-height: 1;
+    word-break: break-word;
+}
+
+kbd {
+    display: inline-block;
+    padding: 0.2em 0.5em 0.15em;
+    font-family: var(--sfdc-font-family-mono);
+    font-size: var(--sfdc-font-size-sm);
+    font-weight: var(--sfdc-font-weight-medium);
+    line-height: 1;
+    color: var(--sfdc-text-color-default);
+    background-color: var(--sfdc-bg-color-alt);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-strong);
+    border-bottom-width: 2px;
+    border-radius: var(--sfdc-radius-sm);
+    box-shadow: 0 1px 0 var(--sfdc-border-color-strong);
+}
+
+
+/* ============================================================
+   9. CODE BLOCKS (pre)
+   ============================================================ */
+pre {
+    overflow: auto;
+    margin: 0;
+    padding: var(--sfdc-spacing-xl) var(--sfdc-spacing-2xl);
+    font-family: var(--sfdc-font-family-mono);
+    font-size: var(--sfdc-font-size-md);
+    line-height: var(--sfdc-line-height-relaxed);
+    color: var(--sfdc-color-gray-97);
+    background-color: var(--sfdc-bg-color-code-block, #16191c);
+    border-radius: var(--sfdc-radius-lg);
+    -webkit-overflow-scrolling: touch;
+    tab-size: 2;
+}
+
+pre code {
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    font-size: inherit;
+    color: inherit;
+    word-break: normal;
+    line-height: inherit;
+}
+
+/* Syntax highlight highlight */
+pre .token.comment,
+pre .token.prolog,
+pre .token.doctype,
+pre .token.cdata { color: #6a8795; }
+
+pre .token.string,
+pre .token.attr-value { color: #9ece6a; }
+
+pre .token.keyword,
+pre .token.selector,
+pre .token.important { color: #bb9af7; }
+
+pre .token.function { color: #7aa2f7; }
+
+pre .token.number,
+pre .token.boolean { color: #ff9e64; }
+
+pre .token.class-name,
+pre .token.attr-name { color: #2ac3de; }
+
+pre .token.tag { color: #f7768e; }
+
+
+/* ============================================================
+   10. LISTS
+   ============================================================ */
+ul, ol {
+    margin: 0;
+    padding: 0;
+    padding-left: var(--sfdc-spacing-2xl);
+}
+
+li {
+    line-height: var(--sfdc-line-height-normal);
+    padding-left: var(--sfdc-spacing-xs);
+}
+
+li + li { margin-top: var(--sfdc-spacing-xs); }
+
+ul ul, ol ol, ul ol, ol ul {
+    margin-top: var(--sfdc-spacing-xs);
+    margin-bottom: 0;
+}
+
+/* Definition list */
+dl { margin: 0; }
+dt {
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-text-color-default);
+}
+dd {
+    margin: 0 0 var(--sfdc-spacing-md);
+    color: var(--sfdc-text-color-secondary);
+}
+
+
+/* ============================================================
+   11. TABLES
+   ============================================================ */
+table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    font-family: var(--sfdc-font-family-sans);
+    font-size: var(--sfdc-font-size-base);
+}
+
+th {
+    font-weight: var(--sfdc-font-weight-semibold);
+    text-align: left;
+    color: var(--sfdc-text-color-default);
+    background-color: var(--sfdc-bg-color-alt);
+    border-bottom: 2px solid var(--sfdc-border-color-strong);
+}
+
+th, td {
+    padding: var(--sfdc-spacing-sm) var(--sfdc-spacing-md);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background-color: var(--sfdc-bg-color-alt);
+}
+
+/* Scrollable table wrapper */
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: var(--sfdc-spacing-xl);
+}
+
+
+/* ============================================================
+   12. HORIZONTAL RULE
+   ============================================================ */
+hr {
+    display: block;
+    width: 100%;
+    height: 0;
+    margin: var(--sfdc-spacing-3xl) 0;
+    padding: 0;
+    border: 0;
+    border-top: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+}
+
+/* Decorative rule with dots */
+hr.fancy {
+    border: none;
+    text-align: center;
+    color: var(--sfdc-text-color-weak);
+    font-size: var(--sfdc-font-size-lg);
+    letter-spacing: var(--sfdc-spacing-lg);
+}
+hr.fancy::before { content: "···"; }
+
+
+/* ============================================================
+   13. GHOST POST CONTENT (.gh-content)
+   The content wrapper around Ghost/Koenig editor output.
+   Sets reading typography for article body text.
+   ============================================================ */
+.gh-content {
+    /* Base reading font — serif by default for readability */
+    font-family: var(--sfdc-font-family-serif);
+    font-size: var(--sfdc-font-size-lg);     /* 2rem = 20px */
+    line-height: var(--sfdc-line-height-loose);  /* 1.8 */
+    color: var(--sfdc-text-color-default);
+}
+
+/* Vertical spacing between all direct children */
+.gh-content > * + * {
+    margin-top: max(3.2vmin, var(--sfdc-spacing-2xl));
+    margin-bottom: 0;
+}
+
+/* Remove space between consecutive full-width cards */
+.gh-content > .kg-width-full + .kg-width-full:not(.kg-card-hascaption + .kg-width-full) {
+    margin-top: 0;
+}
+
+/* Headings inside content */
+.gh-content > h1,
+.gh-content > h2,
+.gh-content > h3,
+.gh-content > h4,
+.gh-content > h5,
+.gh-content > h6 {
+    font-family: var(--sfdc-font-heading);
+    color: var(--sfdc-text-color-heading);
+    margin-bottom: 0;
+}
+
+.gh-content > h1 { font-size: var(--sfdc-font-size-h1); }
+.gh-content > h2 { font-size: var(--sfdc-font-size-h2); margin-top: 2em; }
+.gh-content > h3 { font-size: var(--sfdc-font-size-h3); margin-top: 1.8em; }
+.gh-content > h4 { font-size: var(--sfdc-font-size-h4); margin-top: 1.6em; }
+.gh-content > h5 { font-size: var(--sfdc-font-size-h5); margin-top: 1.4em; }
+.gh-content > h6 { font-size: var(--sfdc-font-size-h6); margin-top: 1.2em; }
+
+/* First heading needs no top margin */
+.gh-content > h1:first-child,
+.gh-content > h2:first-child,
+.gh-content > h3:first-child { margin-top: 0; }
+
+/* Small gap from heading to its following content */
+.gh-content > h1 + *,
+.gh-content > h2 + *,
+.gh-content > h3 + *,
+.gh-content > h4 + *,
+.gh-content > h5 + *,
+.gh-content > h6 + * {
+    margin-top: var(--sfdc-spacing-lg) !important;
+}
+
+/* Paragraphs, lists, blockquotes */
+.gh-content > p,
+.gh-content > ol,
+.gh-content > ul,
+.gh-content > dl,
+.gh-content > blockquote:not([class]) {
+    font-family: var(--sfdc-font-family-serif);
+    font-size: var(--sfdc-font-size-lg);
+    line-height: var(--sfdc-line-height-loose);
+    font-weight: var(--sfdc-font-weight-regular);
+}
+
+.gh-content > p img { margin: 0 auto; }
+
+/* Lists in content */
+.gh-content > ul,
+.gh-content > ol {
+    padding-left: 1.9em;
+}
+
+.gh-content > ol ol li { list-style-type: lower-alpha; }
+.gh-content > ol ol ol li { list-style-type: lower-roman; }
+
+/* Blockquote in content */
+.gh-content > blockquote:not([class]) {
+    position: relative;
+    padding: 0 0 0 var(--sfdc-spacing-2xl);
+    font-style: italic;
+}
+
+.gh-content > blockquote:not([class])::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--sfdc-color-brand-base);
+    border-radius: 2px;
+}
+
+/* Large spacing before/after hrs and blockquotes */
+.gh-content > hr,
+.gh-content > blockquote {
+    margin-top: max(4.8vmin, var(--sfdc-spacing-3xl));
+}
+
+.gh-content > hr + *,
+.gh-content > blockquote + * {
+    margin-top: max(4.8vmin, var(--sfdc-spacing-3xl)) !important;
+}
+
+/* Links in content */
+.gh-content a {
+    color: var(--sfdc-color-brand-base);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-word;
+}
+
+.gh-content a:hover { color: var(--sfdc-color-brand-dark); }
+
+/* Inline code in content */
+.gh-content :not(pre) > code {
+    background-color: var(--sfdc-bg-color-code, var(--sfdc-bg-color-alt));
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-default);
+    color: var(--sfdc-text-color-default);
+    border-radius: var(--sfdc-radius-sm);
+    padding: 0.15em 0.4em;
+    font-size: 0.875em;
+    font-weight: var(--sfdc-font-weight-regular);
+}
+
+/* Code blocks in content */
+.gh-content pre {
+    background-color: var(--sfdc-bg-color-code-block, #16191c);
+    color: var(--sfdc-color-gray-97);
+    border-radius: var(--sfdc-radius-lg);
+    padding: var(--sfdc-spacing-xl) var(--sfdc-spacing-2xl);
+    font-size: var(--sfdc-font-size-md);
+    line-height: var(--sfdc-line-height-relaxed);
+    overflow: auto;
+    box-shadow: var(--sfdc-shadow-sm);
+}
+
+/* Koenig toggle, callout, product font override */
+.gh-content .kg-callout-card .kg-callout-text,
+.gh-content .kg-toggle-card .kg-toggle-content > p,
+.gh-content .kg-toggle-card .kg-toggle-content > ol,
+.gh-content .kg-toggle-card .kg-toggle-content > ul {
+    font-family: var(--sfdc-font-family-serif);
+    font-size: var(--sfdc-font-size-md);
+    line-height: var(--sfdc-line-height-relaxed);
+}
+
+.gh-content .kg-toggle-card .kg-toggle-heading-text {
+    font-size: var(--sfdc-font-size-lg);
+    font-weight: var(--sfdc-font-weight-semibold);
+}
+
+
+/* ============================================================
+   14. GHOST KOENIG CARD OVERRIDES
+   ============================================================ */
+/* Extra vertical space before and after cards */
+.gh-content :not(.kg-card):not([id]) + .kg-card { margin-top: 6vmin; }
+.gh-content .kg-card + :not(.kg-card) { margin-top: 6vmin; }
+
+/* Center small embeds */
+.kg-embed-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Ghost header card dark style */
+.kg-card.kg-header-card.kg-style-dark {
+    background-color: var(--sfdc-bg-color-code-block, #16191c);
+}
+
+/* Bookmark card */
+.gh-content .kg-bookmark-card a.kg-bookmark-container {
+    background-color: var(--sfdc-bg-color-container) !important;
+    color: var(--sfdc-text-color-default) !important;
+    border-color: var(--sfdc-border-color-default) !important;
+}
+
+/* Card captions */
+.kg-width-full.kg-card-hascaption {
+    display: grid;
+    grid-template-columns: inherit;
+}
+.kg-width-wide.kg-card-hascaption img { grid-column: wide-start / wide-end; }
+.kg-width-full.kg-card-hascaption img { grid-column: 1 / -1; }
+.kg-width-full.kg-card-hascaption figcaption { grid-column: main-start / main-end; }
+
+/* Images clickable */
+.kg-image[width][height],
+.kg-gallery-image { cursor: pointer; }
+
+/* Footnotes */
+.footnotes-sep { margin-bottom: var(--sfdc-spacing-xl); }
+.footnotes { font-size: var(--sfdc-font-size-sm); }
+.footnotes p { margin: 0; }
+.footnote-backref {
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-bold);
+    text-decoration: none;
+}
+
+
+/* ============================================================
+   15. READING CONTAINER UTILITIES
+   ============================================================ */
+/* Constrain text to readable line length */
+.reading-width {
+    max-width: var(--sfdc-content-width);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Article-level reading container */
+.article-body {
+    max-width: var(--sfdc-content-width);
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: max(4vmin, var(--sfdc-spacing-xl));
+    padding-left: max(4vmin, var(--sfdc-spacing-xl));
+}
+
+/* Sidebar doc reading */
+.doc-reading-width {
+    max-width: 68ch;
+}
+
+/* Optimal character line length (60-75ch) */
+.line-length-optimal { max-width: 72ch; }
+.line-length-wide    { max-width: 90ch; }
+.line-length-narrow  { max-width: 55ch; }
+
+
+/* ============================================================
+   16. TEXT UTILITY CLASSES
+   ============================================================ */
+.text-heading   { color: var(--sfdc-text-color-heading); }
+.text-default   { color: var(--sfdc-text-color-default); }
+.text-secondary { color: var(--sfdc-text-color-secondary); }
+.text-weak      { color: var(--sfdc-text-color-weak); }
+.text-brand     { color: var(--sfdc-color-brand-base); }
+.text-success   { color: var(--sfdc-color-success); }
+.text-warning   { color: var(--sfdc-color-warning); }
+.text-error     { color: var(--sfdc-color-error); }
+.text-info      { color: var(--sfdc-color-info); }
+
+.font-serif  { font-family: var(--sfdc-font-family-serif); }
+.font-sans   { font-family: var(--sfdc-font-family-sans); }
+.font-mono   { font-family: var(--sfdc-font-family-mono); }
+
+.weight-regular  { font-weight: var(--sfdc-font-weight-regular); }
+.weight-medium   { font-weight: var(--sfdc-font-weight-medium); }
+.weight-semibold { font-weight: var(--sfdc-font-weight-semibold); }
+.weight-bold     { font-weight: var(--sfdc-font-weight-bold); }
+.weight-extra    { font-weight: var(--sfdc-font-weight-extrabold); }
+
+.text-balance { text-wrap: balance; }  /* Evenly wraps short headings */
+.text-pretty  { text-wrap: pretty; }   /* Avoids orphans in paragraphs */
+
+/* Truncate single line */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Line clamp helpers */
+.clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Mark / highlight */
+mark {
+    background-color: rgba(254, 205, 53, 0.35);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 2px;
+}
+html.dark-mode mark { background-color: rgba(254, 205, 53, 0.20); }
+
+
+/* ============================================================
+   17. RESPONSIVE TYPOGRAPHY
+   ============================================================ */
+@media (max-width: 767px) {
+    .gh-content {
+        font-size: var(--sfdc-font-size-md);  /* 1.8rem on mobile */
+        line-height: var(--sfdc-line-height-relaxed);
+    }
+
+    .gh-content > p,
+    .gh-content > ol,
+    .gh-content > ul,
+    .gh-content > dl,
+    .gh-content > blockquote:not([class]),
+    .gh-content .kg-callout-card .kg-callout-text,
+    .gh-content .kg-toggle-card .kg-toggle-content > p {
+        font-size: var(--sfdc-font-size-md);
+    }
+
+    h1 { font-size: var(--sfdc-font-size-h2); }
+    h2 { font-size: var(--sfdc-font-size-h3); }
+    h3 { font-size: var(--sfdc-font-size-h4); }
+    h4 { font-size: var(--sfdc-font-size-h5); }
+
+    .text-display-xl { font-size: var(--sfdc-font-size-display-md); }
+    .text-display-lg { font-size: var(--sfdc-font-size-display-sm); }
+    .text-display-md { font-size: var(--sfdc-font-size-h1); }
+
+    .lead { font-size: var(--sfdc-font-size-md); }
+
+    pre {
+        font-size: var(--sfdc-font-size-sm);
+        padding: var(--sfdc-spacing-lg);
+        border-radius: var(--sfdc-radius-md);
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: var(--sfdc-font-size-h3); }
+    h2 { font-size: var(--sfdc-font-size-h4); }
+}
+
+/* Dark mode typography overrides (all via variables — nothing needed here) */

@@ -1,0 +1,535 @@
+/*
+ * _base.css — Namaste Salesforce Theme
+ * ============================================================
+ * PURPOSE:
+ *   Applies design tokens from _variables.css to raw HTML
+ *   elements. This is the page DNA — everything component-
+ *   specific builds on top of what is established here.
+ *
+ * WHAT BELONGS HERE:
+ *   html, body, ::selection, a (base), img, hr, focus-visible,
+ *   mark, basic Ghost body class hooks, scroll behaviour.
+ *
+ * WHAT DOES NOT BELONG HERE:
+ *   Heading sizes/margins   → _typography.css
+ *   Nav / header            → _header.css
+ *   Footer                  → _footer.css
+ *   Post feed / cards       → _post-feed.css
+ *   Article / post body     → _article.css
+ *   Dark mode overrides     → _dark-mode.css
+ *   Component styles        → their own files
+ *
+ * IMPORT ORDER IN screen.css:
+ *   @import "general/fonts.css";
+ *   @import "1.variables.css";
+ *   @import "2.reset.css";
+ *   @import "3.base.css";       ← this file
+ *   @import "4.typography.css";
+ *   ...
+ * ============================================================
+ */
+
+/* ============================================================
+   1. HTML Root
+   Sets the rem base (62.5% → 1rem = 10px) so every rem
+   value in the theme maps cleanly to a pixel multiple.
+   Also controls scroll behaviour and tap feedback.
+   ============================================================ */
+html {
+    font-size: 62.5%;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* ============================================================
+   2. Body
+   The single source of truth for page-level font, color,
+   and background. Every element inherits from here unless
+   explicitly overridden in a component file.
+   ============================================================ */
+body {
+    /* Font — Plus Jakarta Sans via --sfdc-font-body which
+       bridges to --gh-font-body so Ghost Admin typography
+       settings still work */
+    font-family: var(--sfdc-font-body);
+    font-size: var(--sfdc-font-size-base);      /* 1.6rem = 16px */
+    font-weight: var(--sfdc-font-weight-regular);
+    font-style: normal;
+    line-height: var(--sfdc-line-height-relaxed);
+    letter-spacing: var(--sfdc-letter-spacing-normal);
+
+    /* Color */
+    color: var(--sfdc-text-color-default);
+    background-color: var(--sfdc-bg-color-page);
+
+    /* Text rendering — prioritise legibility over speed */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -moz-font-feature-settings: "liga" on;
+
+    /* Prevent horizontal overflow on mobile */
+    overflow-x: hidden;
+}
+
+/* ============================================================
+   3. Text Selection
+   Uses brand info-lightest as selection background so it
+   respects the Ghost accent color indirectly.
+   ============================================================ */
+::selection {
+    text-shadow: none;
+    background-color: var(--sfdc-selection-bg, var(--sfdc-color-info-lightest));
+    color: var(--sfdc-selection-color, var(--sfdc-color-info-dark));
+}
+/* ============================================================
+   4. Links — Base
+   Sets the bare minimum. Component files (.gh-head a,
+   .gh-content a, etc.) override these as needed.
+   ============================================================ */
+a {
+    color: var(--sfdc-text-color-link);
+    text-decoration: none;
+    transition: var(--sfdc-transition-color);
+}
+
+a:hover {
+    color: var(--sfdc-text-color-link-active);
+    text-decoration: none;
+}
+
+a:active {
+    color: var(--sfdc-text-color-link-active);
+}
+
+/* ============================================================
+   5. Headings — Base Font Contract
+   Sets font-family, weight, and rendering for all headings.
+   Sizes, margins, and line-heights live in _typography.css.
+   ============================================================ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--sfdc-font-heading);
+    font-weight: var(--sfdc-font-weight-bold);
+    color: var(--sfdc-text-color-heading);
+    text-rendering: optimizeLegibility;
+    letter-spacing: var(--sfdc-letter-spacing-tight);
+    line-height: var(--sfdc-line-height-tighter);
+}
+
+/* ============================================================
+   6. Paragraphs & Block Text
+   Base spacing for paragraphs outside .gh-content.
+   Inside post content, _article.css takes over.
+   ============================================================ */
+p {
+    margin: 0 0 var(--sfdc-spacing-base) 0;
+    line-height: var(--sfdc-line-height-relaxed);
+}
+
+/* Last child never needs bottom margin */
+p:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   7. Horizontal Rule
+   Styled divider using border tokens.
+   ============================================================ */
+hr {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 1px;
+    margin: var(--sfdc-spacing-3xl) 0 var(--sfdc-spacing-4xl);
+    padding: 0;
+    border: 0;
+    border-top: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+    background: none;
+}
+
+/* ============================================================
+   8. Images & Media
+   Ensures all media is responsive by default and renders
+   inline with surrounding text cleanly.
+   ============================================================ */
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+img {
+    border-style: none;
+}
+
+/* Inline SVG icons should not overflow their container */
+svg:not([class]) {
+    overflow: hidden;
+}
+
+/* Audio/canvas/iframe/video should align with text */
+audio,
+canvas,
+iframe,
+embed,
+video {
+    vertical-align: middle;
+}
+
+/* ============================================================
+   9. Mark / Highlight
+   Brand-aware text highlight for <mark> elements.
+   ============================================================ */
+mark {
+    background-color: var(--sfdc-color-warning-bg);
+    color: var(--sfdc-color-warning-text);
+    border-radius: var(--sfdc-radius-xs);
+    padding: 0 0.2em;
+}
+
+/* ============================================================
+   10. Strong & Emphasis
+   ============================================================ */
+strong,
+b {
+    font-weight: var(--sfdc-font-weight-bold);
+}
+
+em,
+i,
+dfn {
+    font-style: italic;
+}
+
+small {
+    font-size: var(--sfdc-font-size-sm);
+}
+
+/* ============================================================
+   11. Code — Base
+   Inline code base styles. Block pre/code gets fuller
+   treatment in _article.css for post content context.
+   ============================================================ */
+code,
+kbd,
+samp,
+pre {
+    font-family: var(--sfdc-font-family-mono);
+    font-size: 0.9em;
+}
+
+code {
+    vertical-align: middle;
+    padding: 0.15em 0.4em;
+    background: var(--sfdc-bg-color-code);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-default);
+    border-radius: var(--sfdc-radius-xs);
+    color: var(--sfdc-text-color-default);
+}
+
+kbd {
+    padding: 3px 5px;
+    font-family: var(--sfdc-font-family-mono);
+    font-size: var(--sfdc-font-size-md);
+    background: var(--sfdc-bg-color-alt);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-default);
+    border-radius: var(--sfdc-radius-sm);
+    box-shadow: inset 0 -1px 0 var(--sfdc-border-color-default);
+}
+
+@media (max-width: 600px) {
+    kbd {
+        font-size: var(--sfdc-font-size-sm);
+    }
+}
+
+/* ============================================================
+   12. Blockquote — Base
+   Base structural styles only. Visual accent (border-left
+   color, italic treatment) lives in _article.css where the
+   Ghost content context is defined.
+   ============================================================ */
+blockquote {
+    margin: var(--sfdc-spacing-xl) 0;
+    padding: 0 var(--sfdc-spacing-xl);
+    color: var(--sfdc-text-color-secondary);
+    border-left: var(--sfdc-border-width-accent) solid var(--sfdc-border-color-brand);
+}
+
+blockquote cite {
+    font-weight: var(--sfdc-font-weight-semibold);
+    font-style: normal;
+}
+
+blockquote cite a {
+    font-weight: var(--sfdc-font-weight-regular);
+}
+
+/* ============================================================
+   13. Lists — Base
+   Bare minimum — _typography.css handles content list
+   spacing, _reset.css already stripped list-style globally,
+   and _reset.css restores it inside .gh-content.
+   ============================================================ */
+ul,
+ol {
+    max-width: 100%;
+}
+
+li {
+    line-height: var(--sfdc-line-height-relaxed);
+}
+
+li + li {
+    margin-top: var(--sfdc-spacing-xs);
+}
+
+/* ============================================================
+   14. Tables — Base
+   Column layout reset. Full table styling (scroll shadows,
+   header backgrounds) lives in _article.css.
+   ============================================================ */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+th,
+td {
+    text-align: left;
+    vertical-align: top;
+}
+
+/* ============================================================
+   15. Forms — Base
+   Ensures form elements inherit the page font so they don't
+   fall back to browser defaults. Full component form styles
+   live in a future _forms.css.
+   ============================================================ */
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled,
+input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+textarea {
+    resize: vertical;
+}
+
+fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* ============================================================
+   16. Focus Visible — Accessibility
+   CRITICAL: Must be defined in _base.css so every interactive
+   element inherits it before component files override.
+   Uses a brand-colored outline — never remove, only restyle.
+   ============================================================ */
+
+/* Remove default outline for mouse/touch users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Show clear focus ring for keyboard users only */
+:focus-visible {
+    outline: var(--sfdc-border-width-focus) solid var(--sfdc-border-color-focus);
+    outline-offset: 2px;
+    border-radius: var(--sfdc-radius-xs);
+}
+
+/* Buttons and links get the shadow-based ring instead
+   so it wraps the element shape more naturally */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+    outline: none;
+    box-shadow: var(--sfdc-shadow-focus);
+    border-radius: var(--sfdc-radius-sm);
+}
+
+/* ============================================================
+   17. Figcaption
+   Base caption styling. Used under images in Ghost posts.
+   ============================================================ */
+figcaption {
+    padding: var(--sfdc-spacing-md) var(--sfdc-spacing-md) 0;
+    text-align: center;
+    color: var(--sfdc-text-color-weak);
+    font-size: var(--sfdc-font-size-sm);
+    line-height: var(--sfdc-line-height-normal);
+}
+
+figcaption strong {
+    color: var(--sfdc-text-color-secondary);
+}
+
+figcaption a {
+    text-decoration: underline;
+}
+
+/* ============================================================
+   18. Sub / Sup
+   ============================================================ */
+sub,
+sup {
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+}
+
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+/* ============================================================
+   19. Abbreviations
+   ============================================================ */
+abbr[title] {
+    border-bottom: none;
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
+/* ============================================================
+   20. Ghost Body Class Hooks
+   Ghost adds utility classes to <body> based on template,
+   content, and settings. We establish the base behaviour
+   here so component files can safely build on top.
+   ============================================================ */
+
+/* Ensure viewport always fills at minimum full screen height */
+.viewport {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--sfdc-bg-color-page);
+}
+
+/* Main content area grows to fill available space
+   between header and footer */
+.site-content {
+    flex-grow: 1;
+}
+
+/* When Ghost sets a cover image Ghost adds .has-cover
+   to <body>. This hook lets component files respond. */
+.has-cover {
+    /* intentionally empty here —
+       component files use .has-cover as a modifier */
+}
+
+/* Ghost adds this when the page is a home template */
+.home-template {
+    /* intentionally empty here */
+}
+
+/* ============================================================
+   21. Scrollbar Styling (Webkit)
+   Subtle scrollbar that matches the brand palette.
+   Does not affect Firefox (uses scrollbar-color instead).
+   ============================================================ */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--sfdc-bg-color-alt);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--sfdc-color-gray-85);
+    border-radius: var(--sfdc-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--sfdc-color-gray-70);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sfdc-color-gray-85) var(--sfdc-bg-color-alt);
+}
+
+/* ============================================================
+   22. Print
+   Minimal print base — force white background, black text,
+   remove decorative elements that waste ink.
+   ============================================================ */
+@media print {
+    *,
+    *::before,
+    *::after {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: var(--sfdc-font-size-sm);
+    }
+
+    /* Don't print href for internal anchor links */
+    a[href^="#"]::after,
+    a[href^="javascript:"]::after {
+        content: "";
+    }
+
+    img {
+        max-width: 100% !important;
+        page-break-inside: avoid;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+}

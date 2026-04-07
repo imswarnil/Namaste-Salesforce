@@ -1,0 +1,129 @@
+/*
+ * toc.css — Namaste Salesforce Theme
+ * Table of Contents — sidebar + mobile accordion variant.
+ * ============================================================ */
+
+.toc {
+    --toc-indent: var(--sfdc-spacing-xl);
+}
+
+/* Header row (label + collapse caret) */
+.toc__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    gap: var(--sfdc-spacing-sm);
+    padding: 2px 0;
+}
+
+.toc__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-sm);
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--sfdc-text-color-weak);
+    margin: 0;
+}
+
+.toc__heading i { font-size: 1.4rem; }
+
+.toc__caret {
+    font-size: 1.2rem;
+    color: var(--sfdc-text-color-weak);
+    flex-shrink: 0;
+    transition: transform var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+/* Nav list */
+.toc__nav { margin-top: var(--sfdc-spacing-md); }
+
+.toc__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.toc__item { margin: 0; padding: 0; }
+.toc__item--sub { padding-left: var(--toc-indent); }
+
+.toc__link {
+    display: block;
+    padding: var(--sfdc-spacing-xs) var(--sfdc-spacing-sm);
+    font-size: var(--sfdc-font-size-sm);
+    font-weight: var(--sfdc-font-weight-medium);
+    color: var(--sfdc-text-color-secondary);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 var(--sfdc-radius-sm) var(--sfdc-radius-sm) 0;
+    line-height: var(--sfdc-line-height-normal);
+    transition: color var(--sfdc-duration-fast) var(--sfdc-easing-standard),
+                border-color var(--sfdc-duration-fast) var(--sfdc-easing-standard),
+                background-color var(--sfdc-duration-fast) var(--sfdc-easing-standard);
+}
+
+.toc__link:hover {
+    color: var(--sfdc-color-brand-base);
+    border-left-color: var(--sfdc-color-brand-base);
+    background-color: var(--sfdc-color-info-lightest);
+    text-decoration: none;
+}
+
+.toc__link.is-active {
+    color: var(--sfdc-color-brand-base);
+    font-weight: var(--sfdc-font-weight-semibold);
+    border-left-color: var(--sfdc-color-brand-base);
+    background-color: var(--sfdc-color-info-lightest);
+}
+
+.toc__item--sub .toc__link { font-size: var(--sfdc-font-size-xs); }
+
+.toc__empty {
+    font-size: var(--sfdc-font-size-sm);
+    color: var(--sfdc-text-color-weak);
+    padding: var(--sfdc-spacing-sm) var(--sfdc-spacing-sm);
+    margin: 0;
+}
+
+/* Sidebar variant — caret always shown, no collapse by default */
+.toc--sidebar .toc__header { cursor: default; }
+.toc--sidebar .toc__caret  { display: none; }
+.toc--sidebar .toc__nav    { display: block !important; }
+
+/* Mobile inline variant — collapsible */
+.toc-mobile {
+    display: none;
+    margin-bottom: var(--sfdc-spacing-2xl);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+    border-radius: var(--sfdc-radius-lg);
+    padding: var(--sfdc-spacing-lg);
+}
+
+.toc-mobile .toc__nav { display: none; }
+.toc-mobile .toc__nav.is-open { display: block; }
+
+/* Dark mode — all via variables, nothing extra needed */
+html.dark-mode .toc__link.is-active,
+html.dark-mode .toc__link:hover {
+    background-color: rgba(27, 150, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .toc--sidebar { display: none; }  /* hide sidebar TOC, mobile one shows */
+}
+
+@media (max-width: 767px) {
+    .toc-mobile { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toc__caret, .toc__link { transition: none; }
+}

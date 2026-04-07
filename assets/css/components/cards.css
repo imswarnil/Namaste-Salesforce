@@ -1,0 +1,892 @@
+/*
+ * cards.css — Namaste Salesforce Theme
+ * ============================================================
+ * All post card styles. Import after typography.css.
+ *
+ * SECTIONS
+ *  1.  Post feed grid (the container)
+ *  2.  Base card shared styles
+ *  3.  Feed layout modifiers (large, dynamic, keep-ratio)
+ *  4.  Card image link + image
+ *  5.  Card content area
+ *  6.  Tags / category badge
+ *  7.  Card title
+ *  8.  Card excerpt
+ *  9.  Card meta (date, reading time)
+ * 10.  Hover effect — lift + subtle shadow
+ * 11.  Access / paywall badge
+ * 12.  Default card (card-default)
+ * 13.  Blog card (card-blog)
+ * 14.  Course card (card-course)
+ * 15.  Lesson card (card-lesson)
+ * 16.  Training card (card-training)
+ * 17.  Documentation card (card-doc)
+ * 18.  Video card (card-video)
+ * 19.  Pagination
+ * 20.  Responsive
+ * 21.  Dark mode (all via variables — nothing extra needed)
+ * ============================================================
+ */
+
+
+/* ============================================================
+   1. POST FEED GRID CONTAINER
+   ============================================================ */
+.post-feed {
+    position: relative;
+    display: grid;
+    gap: 4.8vmin 4vmin;
+    grid-template-columns: repeat(6, 1fr);
+    padding: max(4.8vmin, 36px) 0 0;
+}
+
+.tag-template .post-feed,
+.author-template .post-feed {
+    margin-top: 4vmin;
+}
+
+@media (max-width: 991px) {
+    .post-feed { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 767px) {
+    .post-feed { grid-template-columns: 1fr; gap: 40px; }
+}
+
+
+/* ============================================================
+   2. BASE CARD — shared by all card types
+   ============================================================ */
+.post-card {
+    position: relative;
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--sfdc-card-bg, var(--sfdc-bg-color-container));
+    border: var(--sfdc-border-width-base) solid var(--sfdc-card-border, var(--sfdc-border-color-divider));
+    border-radius: var(--sfdc-card-radius);
+    overflow: hidden;
+    word-break: break-word;
+    /* Hover transition */
+    transition:
+        transform  var(--sfdc-duration-base) var(--sfdc-easing-standard),
+        box-shadow var(--sfdc-duration-base) var(--sfdc-easing-standard),
+        border-color var(--sfdc-duration-base) var(--sfdc-easing-standard);
+    will-change: transform;
+}
+
+
+/* ============================================================
+   3. FEED LAYOUT MODIFIERS
+   ============================================================ */
+
+/* Large — spans full width, two-column layout */
+@media (min-width: 1001px) {
+    .post-card-large {
+        grid-column: span 6;
+        display: grid;
+        grid-gap: 4vmin;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .post-card-large .post-card-image-link {
+        position: relative;
+        grid-column: span 2;
+        margin-bottom: 0;
+    }
+
+    .post-card-large:not(.no-image) .post-card-header { margin-top: 0; }
+
+    .post-card-large .post-card-image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .post-card-large .post-card-content { grid-column: span 1; }
+    .post-card-large.no-image .post-card-content { grid-column: span 2; }
+
+    .post-card-large .post-card-title {
+        font-size: var(--sfdc-font-size-h2);
+        line-height: var(--sfdc-line-height-tight);
+    }
+
+    .post-card-large .post-card-excerpt {
+        -webkit-line-clamp: 5;
+        margin-top: var(--sfdc-spacing-md);
+    }
+
+    /* Alternating large cards */
+    .post-card-large + .post-card-large:nth-child(even) { margin: var(--sfdc-spacing-3xl) 0; }
+    .post-card-large + .post-card-large:nth-child(even) .post-card-content { order: -1; }
+
+    /* Dynamic — medium card */
+    .post-card.dynamic { grid-column: span 3; }
+    .post-card.dynamic .post-card-title { font-size: var(--sfdc-font-size-h4); }
+
+    /* Full-width card */
+    .post-card-full { grid-column: span 6; }
+}
+
+/* Keep-ratio — fixed aspect ratio for Grid layout */
+.post-card.keep-ratio .post-card-image-link::after { padding-bottom: 0; }
+.post-card.keep-ratio .post-card-image { position: static; }
+
+
+/* ============================================================
+   4. CARD IMAGE LINK + IMAGE
+   ============================================================ */
+.post-card-image-link {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    flex-shrink: 0;
+    background-color: var(--sfdc-bg-color-alt);
+}
+
+.post-card-image-link::after {
+    content: "";
+    display: block;
+    padding-bottom: 55%;    /* 16:9 ish */
+}
+
+/* When card has no image the ::after is not shown */
+.no-image .post-card-image-link::after { display: none; }
+
+.post-card-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--sfdc-duration-slow) var(--sfdc-easing-standard);
+}
+
+/* Image zoom on card hover */
+.post-card:hover .post-card-image {
+    transform: scale(1.03);
+}
+
+/* Post access overlay — on image */
+[class*="post-access-"] .post-card-image-link::after {
+    background-color: rgba(0, 0, 0, 0.48);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+
+/* ============================================================
+   5. CARD CONTENT AREA
+   ============================================================ */
+.post-card-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--sfdc-spacing-xl);
+}
+
+.post-card-content-link {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+}
+
+.post-card-content-link:hover { text-decoration: none; }
+
+
+/* ============================================================
+   6. CATEGORY / TAG BADGES
+   ============================================================ */
+.post-card-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sfdc-spacing-sm);
+    margin-bottom: var(--sfdc-spacing-sm);
+}
+
+.post-card-primary-tag {
+    display: inline-block;
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--sfdc-color-brand-base);
+    text-decoration: none;
+    transition: color var(--sfdc-duration-fast) var(--sfdc-easing-standard);
+}
+
+.post-card-primary-tag:hover {
+    color: var(--sfdc-color-brand-dark);
+    text-decoration: none;
+}
+
+.post-card-featured {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-color-warning-dark);
+}
+
+.post-card-featured svg { width: 12px; height: 12px; }
+
+/* Post card header */
+.post-card-header { flex-grow: 1; }
+
+
+/* ============================================================
+   7. CARD TITLE
+   ============================================================ */
+.post-card-title {
+    margin: 0;
+    font-family: var(--sfdc-font-heading);
+    font-size: var(--sfdc-font-size-h5);
+    font-weight: var(--sfdc-font-weight-bold);
+    line-height: var(--sfdc-line-height-tight);
+    letter-spacing: var(--sfdc-letter-spacing-tight);
+    color: var(--sfdc-text-color-heading);
+    word-break: break-word;
+    transition: color var(--sfdc-duration-fast) var(--sfdc-easing-standard);
+}
+
+.post-card-content-link:hover .post-card-title {
+    color: var(--sfdc-color-brand-base);
+}
+
+.post-card-title svg {
+    display: inline;
+    width: 1em;
+    height: 1em;
+    margin-right: 4px;
+    vertical-align: middle;
+    opacity: 0.6;
+}
+
+
+/* ============================================================
+   8. CARD EXCERPT
+   ============================================================ */
+.post-card-excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: var(--sfdc-spacing-sm);
+    font-size: var(--sfdc-font-size-base);
+    font-weight: var(--sfdc-font-weight-regular);
+    line-height: var(--sfdc-line-height-relaxed);
+    color: var(--sfdc-text-color-secondary);
+}
+
+.post-card-large .post-card-excerpt,
+.post-card-full  .post-card-excerpt {
+    -webkit-line-clamp: 4;
+}
+
+
+/* ============================================================
+   9. CARD META (date, reading time, comments)
+   ============================================================ */
+.post-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-xs);
+    margin-top: var(--sfdc-spacing-lg);
+    padding-top: var(--sfdc-spacing-md);
+    border-top: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-medium);
+    color: var(--sfdc-text-color-weak);
+}
+
+.post-card-meta-sep { color: var(--sfdc-text-color-weak); }
+.post-card-meta-date { color: var(--sfdc-text-color-weak); }
+
+
+/* ============================================================
+   10. HOVER EFFECT — clean lift + shadow
+       No dramatic transforms. Subtle, professional.
+   ============================================================ */
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--sfdc-shadow-md);
+    border-color: var(--sfdc-border-color-default);
+}
+
+.post-card:active {
+    transform: translateY(-1px);
+    box-shadow: var(--sfdc-shadow-sm);
+}
+
+/* Disable on post-card-large (already prominent) */
+.post-card-large:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ============================================================
+   11. ACCESS / PAYWALL BADGE
+   ============================================================ */
+.post-card-access {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sfdc-spacing-xs);
+    font-size: var(--sfdc-font-size-sm);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-color-white);
+}
+
+.post-card-access svg { width: 18px; height: 18px; }
+
+
+/* ============================================================
+   12. DEFAULT CARD (card-default)
+   Standard article — no extra styles needed beyond base.
+   ============================================================ */
+.card-default .post-card-content { padding: var(--sfdc-spacing-xl); }
+
+
+/* ============================================================
+   13. BLOG CARD (card-blog)
+   Author group left, date right in meta row.
+   ============================================================ */
+.post-card-meta-blog {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--sfdc-spacing-sm);
+}
+
+.post-card-author-group {
+    display: flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-sm);
+}
+
+.post-card-author-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--sfdc-radius-full);
+    object-fit: cover;
+    border: 2px solid var(--sfdc-bg-color-container);
+    flex-shrink: 0;
+}
+
+.post-card-author-avatar + .post-card-author-avatar { margin-left: -10px; }
+
+.post-card-author-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--sfdc-radius-full);
+    background-color: var(--sfdc-bg-color-alt);
+    color: var(--sfdc-text-color-weak);
+}
+
+.post-card-author-placeholder svg { width: 14px; height: 14px; }
+
+.post-card-author-name {
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-text-color-secondary);
+}
+
+.post-card-meta-right {
+    display: flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-xs);
+    font-size: var(--sfdc-font-size-xs);
+    color: var(--sfdc-text-color-weak);
+}
+
+
+/* ============================================================
+   14. COURSE CARD (card-course)
+   ============================================================ */
+.card-course {
+    /* Slightly taller to accommodate instructor row */
+}
+
+.card-course-badge {
+    position: absolute;
+    top: var(--sfdc-spacing-md);
+    left: var(--sfdc-spacing-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-xs);
+    padding: var(--sfdc-spacing-2xs) var(--sfdc-spacing-sm);
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--sfdc-color-white);
+    background-color: var(--sfdc-color-brand-base);
+    border-radius: var(--sfdc-radius-full);
+    z-index: 5;
+}
+
+.card-course-no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 160px;
+    background: linear-gradient(135deg, var(--sfdc-color-brand-dark), var(--sfdc-color-brand-base));
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.card-course-title { font-size: var(--sfdc-font-size-h5); }
+
+.card-course-excerpt {
+    -webkit-line-clamp: 3;
+    margin-top: var(--sfdc-spacing-sm);
+}
+
+.card-course-meta {
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sfdc-spacing-md);
+}
+
+.card-course-instructor {
+    display: flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-sm);
+    min-width: 0;
+    flex-grow: 1;
+}
+
+.card-course-instructor-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--sfdc-radius-full);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.card-course-instructor-name {
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-medium);
+    color: var(--sfdc-text-color-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-course-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--sfdc-spacing-xs) var(--sfdc-spacing-md);
+    font-size: var(--sfdc-font-size-sm);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-color-brand-base);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-color-brand-base);
+    border-radius: var(--sfdc-radius-full);
+    text-decoration: none;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition:
+        background-color var(--sfdc-duration-base) var(--sfdc-easing-standard),
+        color            var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.card-course-cta:hover {
+    background-color: var(--sfdc-color-brand-base);
+    color: var(--sfdc-color-white);
+    text-decoration: none;
+}
+
+.card-course-cta svg { width: 12px; height: 12px; }
+
+/* Card-level hover shows the CTA more visibly */
+.card-course:hover .card-course-cta {
+    background-color: var(--sfdc-color-brand-base);
+    color: var(--sfdc-color-white);
+}
+
+
+/* ============================================================
+   15. LESSON CARD (card-lesson)
+   Compact horizontal card with numbered position.
+   ============================================================ */
+.card-lesson {
+    border-radius: var(--sfdc-radius-md);
+}
+
+.card-lesson-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.post-card-content.card-lesson-content {
+    padding: 0;
+}
+
+.card-lesson-content .post-card-content-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sfdc-spacing-lg);
+    padding: var(--sfdc-spacing-lg) var(--sfdc-spacing-xl);
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-lesson-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--sfdc-radius-full);
+    background-color: var(--sfdc-color-info-lightest);
+    color: var(--sfdc-color-brand-base);
+    transition: background-color var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                color            var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.card-lesson-num svg { width: 18px; height: 18px; }
+
+.card-lesson:hover .card-lesson-num {
+    background-color: var(--sfdc-color-brand-base);
+    color: var(--sfdc-color-white);
+}
+
+/* Done state */
+.card-lesson.card-lesson-done .card-lesson-num {
+    background-color: var(--sfdc-color-success);
+    color: var(--sfdc-color-white);
+}
+
+.card-lesson-body { flex-grow: 1; min-width: 0; }
+
+.card-lesson-course {
+    display: block;
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--sfdc-color-brand-base);
+    margin-bottom: 4px;
+}
+
+.card-lesson-title {
+    font-size: var(--sfdc-font-size-h6);
+    font-weight: var(--sfdc-font-weight-semibold);
+    margin-bottom: var(--sfdc-spacing-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-lesson-excerpt {
+    -webkit-line-clamp: 1;
+    font-size: var(--sfdc-font-size-sm);
+    margin-top: 0;
+}
+
+.card-lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-md);
+    margin-top: var(--sfdc-spacing-xs);
+}
+
+.card-lesson-time {
+    font-size: var(--sfdc-font-size-xs);
+    color: var(--sfdc-text-color-weak);
+}
+
+.card-lesson-complete-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-color-success);
+}
+
+.card-lesson-arrow {
+    flex-shrink: 0;
+    color: var(--sfdc-text-color-weak);
+    transition: transform var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                color    var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.card-lesson:hover .card-lesson-arrow {
+    transform: translateX(3px);
+    color: var(--sfdc-color-brand-base);
+}
+
+
+/* ============================================================
+   16. TRAINING CARD (card-training)
+   ============================================================ */
+.card-training-badge {
+    position: absolute;
+    top: var(--sfdc-spacing-md);
+    left: var(--sfdc-spacing-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sfdc-spacing-xs);
+    padding: var(--sfdc-spacing-2xs) var(--sfdc-spacing-sm);
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--sfdc-color-white);
+    background-color: var(--sfdc-color-success);
+    border-radius: var(--sfdc-radius-full);
+    z-index: 5;
+}
+
+
+/* ============================================================
+   17. DOCUMENTATION CARD (card-doc)
+   Minimal — no image, horizontal layout.
+   ============================================================ */
+.card-doc {
+    border-radius: var(--sfdc-radius-md);
+}
+
+.card-doc-content {
+    padding: 0;
+}
+
+.post-card-content.card-doc-content {
+    padding: 0;
+}
+
+.card-doc-content .post-card-content-link {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sfdc-spacing-lg);
+    padding: var(--sfdc-spacing-lg) var(--sfdc-spacing-xl);
+    color: inherit;
+    text-decoration: none;
+}
+
+.card-doc-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--sfdc-radius-md);
+    background-color: var(--sfdc-color-info-lightest);
+    color: var(--sfdc-color-brand-base);
+    transition: background-color var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.card-doc:hover .card-doc-icon {
+    background-color: var(--sfdc-color-brand-base);
+    color: var(--sfdc-color-white);
+}
+
+.card-doc-body { flex-grow: 1; min-width: 0; }
+
+.card-doc-category {
+    display: block;
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    letter-spacing: var(--sfdc-letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--sfdc-color-brand-base);
+    margin-bottom: 4px;
+}
+
+.card-doc-title {
+    font-size: var(--sfdc-font-size-h6);
+    font-weight: var(--sfdc-font-weight-semibold);
+    margin-bottom: var(--sfdc-spacing-xs);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-doc-excerpt {
+    -webkit-line-clamp: 2;
+    font-size: var(--sfdc-font-size-sm);
+    margin-top: 0;
+}
+
+.card-doc-arrow {
+    flex-shrink: 0;
+    align-self: center;
+    color: var(--sfdc-text-color-weak);
+    transition: transform var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                color    var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.card-doc:hover .card-doc-arrow {
+    transform: translateX(3px);
+    color: var(--sfdc-color-brand-base);
+}
+
+.card-doc-meta {
+    padding: var(--sfdc-spacing-sm) var(--sfdc-spacing-xl);
+    border-top: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+    margin-top: 0;
+}
+
+
+/* ============================================================
+   18. VIDEO CARD (card-video)
+   ============================================================ */
+.card-video-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.32);
+    transition: background-color var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.card-video-play svg {
+    width: 52px;
+    height: 52px;
+    color: var(--sfdc-color-white);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    transition: transform var(--sfdc-duration-base) var(--sfdc-easing-spring);
+}
+
+.card-video:hover .card-video-play {
+    background-color: rgba(0, 0, 0, 0.20);
+}
+
+.card-video:hover .card-video-play svg {
+    transform: scale(1.12);
+}
+
+.card-video-duration {
+    position: absolute;
+    bottom: var(--sfdc-spacing-sm);
+    right: var(--sfdc-spacing-sm);
+    padding: 2px var(--sfdc-spacing-xs);
+    font-size: var(--sfdc-font-size-xs);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-color-white);
+    background-color: rgba(0, 0, 0, 0.72);
+    border-radius: var(--sfdc-radius-sm);
+    z-index: 5;
+}
+
+
+/* ============================================================
+   19. PAGINATION
+   ============================================================ */
+.pagination {
+    display: none;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin-top: 8vmin;
+    padding: var(--sfdc-spacing-xl) 0;
+    border-top: var(--sfdc-border-width-base) solid var(--sfdc-border-color-divider);
+}
+
+html.no-infinite-scroll .pagination { display: grid; }
+
+.pagination a {
+    font-size: var(--sfdc-font-size-base);
+    font-weight: var(--sfdc-font-weight-semibold);
+    color: var(--sfdc-text-color-default);
+    text-decoration: none;
+    padding: var(--sfdc-spacing-sm) var(--sfdc-spacing-lg);
+    border: var(--sfdc-border-width-base) solid var(--sfdc-border-color-default);
+    border-radius: var(--sfdc-radius-md);
+    transition: border-color var(--sfdc-duration-base) var(--sfdc-easing-standard),
+                color        var(--sfdc-duration-base) var(--sfdc-easing-standard);
+}
+
+.pagination a:hover {
+    border-color: var(--sfdc-color-brand-base);
+    color: var(--sfdc-color-brand-base);
+    text-decoration: none;
+}
+
+.pagination .page-number {
+    grid-column-start: 2;
+    font-size: var(--sfdc-font-size-sm);
+    color: var(--sfdc-text-color-weak);
+    text-align: center;
+}
+
+.pagination .older-posts {
+    grid-column-start: 3;
+    text-align: right;
+}
+
+@media (max-width: 767px) {
+    .pagination .page-number { display: none; }
+}
+
+
+/* ============================================================
+   20. RESPONSIVE
+   ============================================================ */
+@media (max-width: 991px) {
+    .post-feed { grid-template-columns: 1fr 1fr; }
+    .post-card { grid-column: span 1; }
+    .post-card-large { grid-column: span 2; }
+}
+
+@media (max-width: 767px) {
+    .post-feed { grid-template-columns: 1fr; }
+    .post-card { grid-column: span 1; }
+    .post-card-large { grid-column: span 1; }
+
+    /* Disable lift hover on touch devices */
+    .post-card:hover { transform: none; box-shadow: none; }
+
+    .card-lesson-content .post-card-content-link,
+    .card-doc-content .post-card-content-link {
+        padding: var(--sfdc-spacing-md) var(--sfdc-spacing-lg);
+    }
+
+    .card-course-meta { flex-wrap: wrap; }
+    .card-course-cta { width: 100%; justify-content: center; }
+}
+
+
+/* ============================================================
+   21. DARK MODE
+   All via --sfdc-* variables — no overrides needed here.
+   --sfdc-card-bg, --sfdc-card-border, --sfdc-text-color-*,
+   and --sfdc-bg-color-* all update automatically.
+   ============================================================ */
+
+/* One exception: course card gradient needs dark version */
+html.dark-mode .card-course-no-image {
+    background: linear-gradient(135deg, #040d18, var(--sfdc-color-blue-20));
+}
+
+html.dark-mode .card-doc-icon,
+html.dark-mode .card-lesson-num {
+    background-color: rgba(27, 150, 255, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    html.auto-color .card-course-no-image {
+        background: linear-gradient(135deg, #040d18, var(--sfdc-color-blue-20));
+    }
+    html.auto-color .card-doc-icon,
+    html.auto-color .card-lesson-num {
+        background-color: rgba(27, 150, 255, 0.12);
+    }
+}

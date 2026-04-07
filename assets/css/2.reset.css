@@ -1,0 +1,445 @@
+/*
+ * _reset.css — Namaste Salesforce Theme
+ * ============================================================
+ * WHAT THIS FILE IS:
+ *   A single unified browser reset that replaces both the
+ *   original Casper global.css reset section AND normalize.css.
+ *
+ * WHY WE MERGED THEM:
+ *   Casper shipped with its own Eric Meyer–style hard reset
+ *   (margin:0, padding:0 on every element) plus a second block
+ *   of "opinionated defaults". normalize.css takes a softer
+ *   approach — it corrects browser inconsistencies without
+ *   stripping everything. Running both caused conflicts:
+ *   - normalize sets hr { box-sizing: content-box }
+ *     while global.css sets * { box-sizing: border-box }
+ *   - normalize preserves button/input display quirks;
+ *     global.css wipes them out and re-adds them differently
+ *   - h1 font-size was declared three times across the two files
+ *
+ * APPROACH TAKEN HERE:
+ *   1. Keep the aggressive element reset (margin/padding/border
+ *      zeroing) from Casper — it's intentional for a CMS theme
+ *      where Ghost injects arbitrary HTML.
+ *   2. Take the cross-browser form / interactive element fixes
+ *      from normalize where Casper's version was incomplete.
+ *   3. Replace all hardcoded color/font values with --sfdc-
+ *      custom properties from _variables.css.
+ *   4. Keep the html { font-size: 62.5% } trick — the entire
+ *      theme uses rem values based on 1rem = 10px.
+ *   5. Remove IE-only hacks (applet, tt, big, strike etc.) that
+ *      are irrelevant in 2024+ but keep the element list clean.
+ *
+ * IMPORT ORDER IN screen.css:
+ *   @import "_reset.css";       ← this file (first, always)
+ *   @import "_variables.css";   ← already done
+ *   @import "_base.css";        ← typography defaults (next step)
+ *   ...
+ * ============================================================
+ */
+
+/* ============================================================
+   1. Box Sizing
+   Set universally first so everything below inherits cleanly.
+   ============================================================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   2. Hard Element Reset
+   Zeroes margin / padding / border on every presentational
+   element. Ghost injects post content with arbitrary nesting
+   so we need a clean slate before our own styles apply.
+   ============================================================ */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6,
+p, blockquote, pre,
+a, abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strong, sub, sup, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+
+/* ============================================================
+   3. Document Root
+   62.5% trick: makes 1rem = 10px when browser default is 16px.
+   All rem values in the theme are written as multiples of 10px
+   (e.g. 1.6rem = 16px, 2.4rem = 24px). This must come before
+   any element that uses rem units.
+   ============================================================ */
+html {
+    font-size: 62.5%;
+    line-height: 1.15;                      /* normalize: correct line-height in all browsers  */
+    -webkit-text-size-adjust: 100%;         /* normalize: prevent iOS font scaling on rotate   */
+    -ms-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent; /* Casper: remove tap flash on mobile            */
+}
+
+/* ============================================================
+   4. Body
+   Bare minimum — actual theme styles live in _base.css.
+   ============================================================ */
+body {
+    margin: 0;
+    line-height: 1;
+}
+
+/* ============================================================
+   5. Sections & Semantic Layout
+   ============================================================ */
+main {
+    display: block;    /* normalize: correct IE rendering of <main> */
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+/* ============================================================
+   6. Typography — Headings
+   ============================================================ */
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;    /* normalize: correct Chrome/Firefox/Safari margin */
+}
+
+/* ============================================================
+   7. Typography — Inline Elements
+   ============================================================ */
+b,
+strong {
+    font-weight: bolder;    /* normalize: correct Chrome/Edge/Safari weight */
+}
+
+i,
+em,
+dfn {
+    font-style: italic;
+}
+
+small {
+    font-size: 80%;
+}
+
+sub,
+sup {
+    position: relative;
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
+}
+
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+
+abbr[title] {
+    border-bottom: none;                /* normalize: remove Chrome 57- bottom border */
+    text-decoration: underline;
+    text-decoration: underline dotted;  /* normalize: correct Edge/IE/Opera/Safari   */
+}
+
+mark {
+    background-color: #fdffb6;
+    color: inherit;
+}
+
+/* ============================================================
+   8. Links
+   ============================================================ */
+a {
+    background-color: transparent;    /* normalize: remove IE 10 gray background */
+    color: inherit;
+    text-decoration: none;
+}
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ============================================================
+   9. Lists
+   ============================================================ */
+ol,
+ul {
+    list-style: none;
+    max-width: 100%;
+}
+
+/* Preserve list-style inside .gh-content (Ghost post body).
+   The hard reset above strips it globally; this restores it
+   where Ghost-authored content expects browser defaults. */
+.gh-content ol,
+.gh-content ul {
+    list-style: revert;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+    content: "";
+    content: none;
+}
+
+/* ============================================================
+   10. Grouping Content
+   ============================================================ */
+hr {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 1px;
+    margin: 2.5em 0 3.5em;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--sfdc-border-color-divider, #ecebea);
+    overflow: visible;          /* normalize: show overflow in Edge/IE */
+}
+
+pre {
+    font-family: monospace, monospace;    /* normalize: correct inheritance/scaling */
+    font-size: 1em;
+    overflow: auto;
+}
+
+/* ============================================================
+   11. Embedded Content
+   ============================================================ */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 0;              /* normalize: remove IE 10 border on linked images */
+    border-style: none;
+}
+
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+    vertical-align: middle;
+}
+
+svg:not(:root),
+svg:not([class]) {
+    overflow: hidden;    /* Casper: prevent SVG overflow in older browsers */
+}
+
+/* ============================================================
+   12. Code & Keyboard
+   ============================================================ */
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, monospace;    /* normalize: correct inheritance */
+    font-size: 1em;
+}
+
+kbd {
+    padding: 3px 5px;
+    font-family: var(--sfdc-font-family-mono);
+    font-size: var(--sfdc-font-size-md, 1.4rem);
+    background: var(--sfdc-bg-color-alt, #f3f2f2);
+    border: 1px solid var(--sfdc-border-color-default, #dddbda);
+    border-radius: var(--sfdc-radius-sm, 0.4rem);
+    box-shadow: inset 0 -1px 0 var(--sfdc-border-color-default, #dddbda);
+}
+
+@media (max-width: 600px) {
+    kbd {
+        font-size: var(--sfdc-font-size-sm, 1.2rem);
+    }
+}
+
+/* ============================================================
+   13. Forms
+   Merges Casper + normalize form resets.
+   Normalize has better cross-browser coverage; we keep the
+   Casper additions that normalize doesn't cover (outline, etc).
+   ============================================================ */
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;    /* normalize: change font styles in all browsers */
+    font-size: 100%;
+    line-height: 1.15;
+    margin: 0;
+    color: inherit;
+}
+
+button,
+input {
+    overflow: visible;    /* normalize: show overflow in IE / Edge */
+}
+
+button,
+select {
+    text-transform: none;    /* normalize: remove text-transform inheritance */
+}
+
+/* normalize: correct inability to style clickable types in iOS/Safari */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+
+button {
+    border: none;
+    background: none;
+}
+
+button[disabled],
+input[disabled] {
+    cursor: default;
+}
+
+/* normalize: remove inner border and padding in Firefox */
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
+}
+
+/* normalize: restore focus styles unset by previous rule */
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+    outline: 1px dotted ButtonText;
+}
+
+input {
+    line-height: normal;
+}
+
+input:focus {
+    outline: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+input[type="search"] {
+    -webkit-appearance: textfield;
+    outline-offset: -2px;    /* normalize: correct outline style in Safari */
+    box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/* normalize: correct the padding in Firefox */
+fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+legend {
+    box-sizing: border-box;
+    color: inherit;
+    display: table;
+    max-width: 100%;
+    padding: 0;
+    white-space: normal;
+}
+
+progress {
+    vertical-align: baseline;    /* normalize: correct Chrome/Firefox/Opera alignment */
+}
+
+textarea {
+    overflow: auto;
+    resize: vertical;
+}
+
+::-webkit-file-upload-button {
+    -webkit-appearance: button;    /* normalize: correct iOS/Safari styling */
+    font: inherit;
+}
+
+/* ============================================================
+   14. Tables
+   ============================================================ */
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+td,
+th {
+    padding: 0;
+}
+
+/* ============================================================
+   15. Interactive Elements (normalize)
+   ============================================================ */
+details {
+    display: block;
+}
+
+summary {
+    display: list-item;
+}
+
+/* ============================================================
+   16. Hidden & Template (normalize)
+   ============================================================ */
+template {
+    display: none;
+}
+
+[hidden] {
+    display: none;
+}
+
+/* ============================================================
+   17. Text Selection
+   ============================================================ */
+::selection {
+    text-shadow: none;
+    background: var(--sfdc-color-info-lightest, #e8f4ff);
+    color: var(--sfdc-color-info-dark, #014486);
+}

@@ -1,0 +1,86 @@
+{{!--
+    header/documentation.hbs — documentation tagged posts
+    ============================================================
+    Documentation pages get a specialized header:
+    - "Docs" context pill next to logo
+    - Prominent search (docs-specific label)
+    - Dark toggle
+    - "Edit on GitHub" link (visible, not hidden in icon)
+    - No member subscription CTA (docs are public)
+    ============================================================
+--}}
+<header id="gh-head" class="gh-head gh-head-default gh-head-docs outer">
+    <div class="gh-head-inner inner">
+
+        <div class="gh-head-brand">
+            <a class="gh-head-logo{{#unless @site.logo}} no-image{{/unless}}" href="{{@site.url}}" aria-label="{{@site.title}}">
+                {{#if @site.logo}}<img class="gh-head-logo-img" src="{{@site.logo}}" alt="{{@site.title}}" loading="eager" />{{/if}}
+                <span class="gh-head-logo-text">{{@site.title}}</span>
+            </a>
+            <div class="gh-head-divider" aria-hidden="true"></div>
+            <span class="gh-head-context-label gh-head-context-docs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                {{t "Docs"}}
+            </span>
+        </div>
+
+        <nav class="gh-head-menu" aria-label="{{t "Documentation navigation"}}">
+            {{navigation}}
+        </nav>
+
+        <div class="gh-head-actions">
+            {{!-- Labeled search button for docs --}}
+            <button class="gh-docs-search gh-icon-btn" aria-label="{{t "Search documentation"}}" data-ghost-search>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span class="gh-docs-search-label">{{t "Search docs"}}</span>
+            </button>
+
+            <button class="gh-dark-toggle gh-icon-btn" id="gh-dark-toggle" aria-label="{{t "Toggle dark mode"}}">
+                <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+
+            {{!-- Edit on GitHub — visible text link --}}
+            <a
+                href="https://github.com/namastesalesforce/namaste-salesforce/edit/main/docs/{{slug}}.md"
+                class="gh-docs-edit"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="{{t "Edit this page on GitHub"}}"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <span>{{t "Edit"}}</span>
+            </a>
+
+            <a href="https://github.com/namastesalesforce" class="gh-star-btn" target="_blank" rel="noopener noreferrer" aria-label="Star on GitHub">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                <span class="gh-star-label">Star</span>
+            </a>
+
+            <button class="gh-burger" aria-label="{{t "Open menu"}}" aria-expanded="false" aria-controls="gh-head-mobile">
+                <span class="gh-burger-bar" aria-hidden="true"></span>
+                <span class="gh-burger-bar" aria-hidden="true"></span>
+                <span class="gh-burger-bar" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div id="gh-head-mobile" class="gh-head-mobile" role="dialog" aria-modal="true" aria-label="{{t "Site menu"}}" aria-hidden="true">
+    <div class="gh-head-mobile-inner">
+        <nav class="gh-head-mobile-nav" aria-label="{{t "Mobile navigation"}}">{{navigation}}</nav>
+        <div class="gh-head-mobile-bottom">
+            <div class="gh-mobile-extras">
+                <a href="https://github.com/namastesalesforce/namaste-salesforce/edit/main/docs/{{slug}}.md" class="gh-mobile-extra-link" target="_blank" rel="noopener">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    {{t "Edit on GitHub"}}
+                </a>
+            </div>
+            <div class="gh-mobile-dark-row">
+                <span class="gh-mobile-dark-label">{{t "Dark mode"}}</span>
+                <button class="gh-dark-pill" id="gh-dark-pill" role="switch" aria-checked="false" aria-label="{{t "Toggle dark mode"}}"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="gh-head-backdrop" aria-hidden="true"></div>

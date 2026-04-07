@@ -1,0 +1,60 @@
+{{!--
+    cards/lesson.hbs — Lesson card
+    Compact numbered card. Shows position within course,
+    completion state (via JS + localStorage), reading time.
+--}}
+
+<div class="post-card-content card-lesson-content">
+    <a class="post-card-content-link" href="{{url}}">
+
+        {{!-- Lesson number indicator --}}
+        <div class="card-lesson-num" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+
+        <div class="card-lesson-body">
+            {{#primary_tag}}
+                <span class="card-lesson-course" aria-label="{{t "From course:"}} {{name}}">{{name}}</span>
+            {{/primary_tag}}
+
+            <h2 class="post-card-title card-lesson-title">{{title}}</h2>
+
+            {{#if excerpt}}
+                <p class="post-card-excerpt card-lesson-excerpt">{{excerpt}}</p>
+            {{/if}}
+
+            <div class="card-lesson-meta">
+                {{#if reading_time}}
+                    <span class="card-lesson-time">
+                        {{reading_time minute=(t "1 min") minutes=(t "% min")}}
+                    </span>
+                {{/if}}
+                {{!-- Completion badge — toggled by JS reading localStorage --}}
+                <span class="card-lesson-complete-badge" data-lesson-slug="{{slug}}" data-course-slug="{{primary_tag.slug}}" hidden>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    {{t "Done"}}
+                </span>
+            </div>
+        </div>
+
+        {{!-- Chevron --}}
+        <svg class="card-lesson-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+
+    </a>
+</div>
+
+{{!-- Show completion state from localStorage --}}
+<script>
+(function () {
+    var badge = document.querySelector('.card-lesson-complete-badge[data-lesson-slug="{{slug}}"]');
+    if (!badge) return;
+    var key = 'sfdc-complete-' + badge.dataset.courseSlug;
+    try {
+        var done = JSON.parse(localStorage.getItem(key) || '[]');
+        if (done.indexOf(badge.dataset.lessonSlug) !== -1) {
+            badge.removeAttribute('hidden');
+            badge.closest('.post-card').classList.add('card-lesson-done');
+        }
+    } catch(e) {}
+})();
+</script>

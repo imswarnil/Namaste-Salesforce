@@ -1,169 +1,121 @@
-{{!-- =========================================================================
-  partials/post-lesson.hbs
-  3-col lesson layout: sidebar | content | toc
+{{!-- post-lesson.hbs — Lesson reader.
+     Embeds #gh-lesson-data so header/lesson.hbs JS
+     builds the panel without any API calls. --}}
 
-  Mobile: sidebar hidden, sticky bar + slide-down panel shows lessons.
-  JS at bottom: wires panel toggle open/close.
-========================================================================== --}}
-
-
-{{!-- Main 3-col wrapper --}}
-<div class="ns-lesson-wrapper py-5">
-  <div class="container is-fluid">
-    <div class="columns is-variable is-5">
-
-      {{!-- LEFT SIDEBAR (hidden on mobile) --}}
-      <aside class="column is-4-tablet is-3-desktop ns-lesson-sidebar">
-        <div class="ns-lesson-sidebar-sticky box is-shadowless">
-
-          {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
-            {{#foreach posts}}
-              <a href="{{url}}" class="button is-light is-small is-fullwidth ns-lesson-back-btn mb-4">
-                <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                <span class="has-text-weight-medium">Back to {{title}}</span>
-              </a>
-            {{/foreach}}
-          {{/get}}
-
-          <div class="ns-lesson-scroll-area menu">
-            <p class="menu-label ns-lesson-menu-label">Course Lessons</p>
-            <ul class="menu-list ns-lesson-list">
-              {{#get "posts"
-                filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
-                order="published_at asc"
-                limit="100"
-              }}
-                {{#foreach posts}}
-                  <li>
-                    <a href="{{url}}"
-                       class="ns-lesson-item{{#match id ../../id}} is-active{{/match}}">
-                      <span class="ns-lesson-number">{{@number}}.</span>
-                      <span class="ns-lesson-title">{{title}}</span>
-                    </a>
-                  </li>
-                {{/foreach}}
-              {{/get}}
-            </ul>
-          </div>
-
-        </div>
-      </aside>
-
-      {{!-- MAIN CONTENT --}}
-      <main class="column is-12-mobile is-8-tablet is-7-desktop ns-lesson-main">
-        <div class="box p-5 is-shadowless ns-lesson-document">
-          <article class="content gh-content">
-
-            <header class="ns-lesson-header mb-6">
-              <div class="tags mb-4">
-                <span class="tag is-primary is-light">Lesson</span>
-                <span class="tag is-white has-text-grey">
-                  <span class="icon is-small"><i class="ph ph-clock"></i></span>
-                  <span>{{reading_time}}</span>
-                </span>
-              </div>
-              <h1 class="title is-2 is-size-3-mobile mb-3">{{title}}</h1>
-              {{#if custom_excerpt}}
-                <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-3">{{custom_excerpt}}</p>
-              {{/if}}
-            </header>
-
-            {{#if feature_image}}
-              <figure class="image mb-6 ns-lesson-feature-image">
-                <img src="{{img_url feature_image size="xl"}}" alt="{{title}}">
-              </figure>
-            {{/if}}
-
-            <div class="ns-lesson-body js-toc-content">
-              {{content}}
-            </div>
-
-            <nav class="level is-mobile mt-6 ns-lesson-pagination" aria-label="Lesson navigation">
-              <div class="level-left">
-                <div class="level-item">
-                  {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
-                    <a href="{{url}}" class="button is-light">
-                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                      <span class="is-hidden-mobile">Previous Lesson</span>
-                      <span class="is-hidden-tablet">Prev</span>
-                    </a>
-                  {{/prev_post}}
-                </div>
-              </div>
-              <div class="level-right">
-                <div class="level-item">
-                  {{#next_post in="primary_tag" filter="tag:hash-lesson"}}
-                    <a href="{{url}}" class="button is-primary">
-                      <span class="is-hidden-mobile">Next Lesson</span>
-                      <span class="is-hidden-tablet">Next</span>
-                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                    </a>
-                  {{else}}
-                    {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
-                      {{#foreach posts}}
-                        <a href="{{url}}" class="button is-success">
-                          <span class="is-hidden-mobile">Finish Course</span>
-                          <span class="is-hidden-tablet">Finish</span>
-                          <span class="icon"><i class="ph ph-check-circle"></i></span>
-                        </a>
-                      {{/foreach}}
-                    {{/get}}
-                  {{/next_post}}
-                </div>
-              </div>
-            </nav>
-
-          </article>
-        </div>
-      </main>
-
-      {{!-- RIGHT SIDEBAR (desktop only) --}}
-      <aside class="column is-2-desktop ns-lesson-right-sidebar is-hidden-touch">
-        <div class="ns-lesson-right-sticky">
-          <div class="box is-shadowless ns-lesson-toc-box mb-5">
-            <p class="heading has-text-weight-bold has-text-grey mb-3">On this page</p>
-            <div class="ns-lesson-toc js-toc content is-small menu"></div>
-          </div>
-          <div class="box is-shadowless has-text-centered py-6 ns-lesson-ad-box">
-            <p class="heading has-text-grey mb-1">Advertisement</p>
-            <p class="is-size-7 has-text-grey-light">300 × 250</p>
-          </div>
-        </div>
-      </aside>
-
-    </div>
-  </div>
+{{!-- ── Lesson data for header panel JS ──────────────── --}}
+{{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}"
+    limit="all" order="published_at asc" as |lessons|}}
+<div id="gh-lesson-data" hidden aria-hidden="true">
+    {{#foreach lessons}}
+    <a href="{{url}}" data-id="{{id}}" data-slug="{{slug}}"{{#if (eq id @root.id)}} data-current="true"{{/if}}>{{title}}</a>
+    {{/foreach}}
 </div>
+{{/get}}
+
+{{!-- ── Main ─────────────────────────────────────────── --}}
+<main id="site-main" class="site-main lesson-page">
+<article class="lesson-article {{post_class}}">
+
+    <nav class="lesson-breadcrumb gh-canvas" aria-label="{{t "Breadcrumb"}}">
+        <a href="/courses/">{{t "Courses"}}</a>
+        <i class="ph ph-caret-right" aria-hidden="true"></i>
+        {{#if primary_tag}}<a href="/courses/{{primary_tag.slug}}/">{{primary_tag.name}}</a><i class="ph ph-caret-right" aria-hidden="true"></i>{{/if}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <header class="lesson-header gh-canvas">
+        <h1 class="lesson-title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="lesson-excerpt lead">{{custom_excerpt}}</p>{{/if}}
+        <div class="sfdc-flex sfdc-gap-md sfdc-items-center sfdc-mt-md">
+            {{#if reading_time}}<span class="sfdc-text-sm sfdc-text-weak sfdc-flex sfdc-gap-xs sfdc-items-center">
+                <i class="ph ph-clock" aria-hidden="true"></i>
+                {{reading_time minute=(t "1 min") minutes=(t "% min")}}
+            </span>{{/if}}
+            <time class="sfdc-text-sm sfdc-text-weak" datetime="{{date format="YYYY-MM-DD"}}">
+                {{t "Updated"}} {{date format="DD MMM YYYY"}}
+            </time>
+        </div>
+    </header>
+
+    {{#if feature_image}}
+        <figure class="lesson-feature-image gh-canvas">
+            <img srcset="{{img_url feature_image size="s"}} 300w,
+                         {{img_url feature_image size="m"}} 600w,
+                         {{img_url feature_image size="l"}} 1000w,
+                         {{img_url feature_image size="xl"}} 2000w"
+                 sizes="92vw"
+                 src="{{img_url feature_image size="xl"}}"
+                 alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                 loading="eager" />
+            {{#if feature_image_caption}}<figcaption>{{feature_image_caption}}</figcaption>{{/if}}
+        </figure>
+    {{/if}}
+
+    <section class="gh-content gh-canvas lesson-content js-toc-content">{{content}}</section>
+
+    {{!-- Mark complete + comments --}}
+    <footer class="lesson-footer gh-canvas">
+        <button class="btn btn-soft-success lesson-complete-btn" id="lesson-complete-btn"
+                data-lesson-slug="{{slug}}" data-course-slug="{{primary_tag.slug}}"
+                aria-pressed="false">
+            <i class="ph ph-check-circle btn-icon" aria-hidden="true"></i>
+            <span>{{t "Mark as complete"}}</span>
+        </button>
+        {{#if comments}}<section class="article-comments sfdc-mt-2xl">{{comments}}</section>{{/if}}
+    </footer>
+
+</article>
+</main>
+
+{{!-- ── Prev / Next nav ─────────────────────────────── --}}
+<nav class="lesson-nav outer" aria-label="{{t "Lesson navigation"}}">
+    <div class="lesson-nav__inner inner">
+        {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}+published_at:<{{published_at}}"
+            limit="1" order="published_at desc" as |prev_l|}}
+            {{#foreach prev_l}}
+                <a class="lesson-nav__card lesson-nav__card--prev" href="{{url}}" rel="prev">
+                    <span class="lesson-nav__dir"><i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Previous"}}</span>
+                    <span class="lesson-nav__title">{{title}}</span>
+                </a>
+            {{else}}
+                <a class="lesson-nav__card lesson-nav__card--prev" href="/courses/{{../primary_tag.slug}}/" rel="prev">
+                    <span class="lesson-nav__dir"><i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Course overview"}}</span>
+                    <span class="lesson-nav__title">{{../primary_tag.name}}</span>
+                </a>
+            {{/foreach}}
+        {{/get}}
+
+        {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}+published_at:>{{published_at}}"
+            limit="1" order="published_at asc" as |next_l|}}
+            {{#foreach next_l}}
+                <a class="lesson-nav__card lesson-nav__card--next" href="{{url}}" rel="next">
+                    <span class="lesson-nav__dir">{{t "Next"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+                    <span class="lesson-nav__title">{{title}}</span>
+                </a>
+            {{else}}
+                <a class="lesson-nav__card lesson-nav__card--next lesson-nav__card--done" href="/courses/{{../primary_tag.slug}}/">
+                    <span class="lesson-nav__dir">{{t "Course complete!"}}<i class="ph ph-check-circle" aria-hidden="true"></i></span>
+                    <span class="lesson-nav__title">{{t "Back to course"}}</span>
+                </a>
+            {{/foreach}}
+        {{/get}}
+    </div>
+</nav>
 
 <script>
-(function () {
-  'use strict';
-  var toggle = document.getElementById('lessonMobileToggle');
-  var panel  = document.getElementById('lessonMobilePanel');
-  if (!toggle || !panel) return;
-
-  function openPanel(open) {
-    panel.classList.toggle('is-open', open);
-    panel.setAttribute('aria-hidden', String(!open));
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.classList.toggle('is-open', open);
-  }
-
-  toggle.addEventListener('click', function () { openPanel(!panel.classList.contains('is-open')); });
-
-  document.addEventListener('click', function (e) {
-    if (panel.classList.contains('is-open') &&
-        !panel.contains(e.target) &&
-        !toggle.contains(e.target)) openPanel(false);
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
-      openPanel(false); toggle.focus();
+(function(){
+    var btn=document.getElementById('lesson-complete-btn');
+    if(!btn) return;
+    var slug=btn.dataset.lessonSlug, key='sfdc-complete-'+btn.dataset.courseSlug;
+    function get(){ try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch(e){ return []; } }
+    function set(l){ try{ localStorage.setItem(key,JSON.stringify(l)); }catch(e){} }
+    function sync(done){
+        var lbl=btn.querySelector('span');
+        btn.setAttribute('aria-pressed',done);
+        btn.classList.toggle('is-complete',done);
+        if(lbl) lbl.textContent=done?'{{t "Completed!"}}':'{{t "Mark as complete"}}';
     }
-  });
-
-  var active = panel.querySelector('.ns-lesson-item.is-active');
-  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    var l=get(); sync(l.indexOf(slug)!==-1);
+    btn.addEventListener('click',function(){ var l=get(),i=l.indexOf(slug); if(i!==-1){l.splice(i,1);sync(false);}else{l.push(slug);sync(true);} set(l); });
 })();
 </script>

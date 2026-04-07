@@ -1,0 +1,31 @@
+{{!-- cards/video.hbs — Video card with play button overlay on image --}}
+{{#if feature_image}}
+    <a class="post-card-image-link" href="{{url}}" aria-hidden="true" tabindex="-1">
+        <img class="post-card-image"
+            srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
+            sizes="(max-width: 1000px) 400px, 800px"
+            src="{{img_url feature_image size="m"}}"
+            alt="{{title}}" loading="lazy" />
+        {{!-- Play button overlay --}}
+        <div class="card-video-play" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        {{!-- Reading time as video duration badge --}}
+        {{#if reading_time}}
+            <span class="card-video-duration">{{reading_time minute="~1 min" minutes="~% min"}}</span>
+        {{/if}}
+    </a>
+{{/if}}
+
+<div class="post-card-content">
+    <a class="post-card-content-link" href="{{url}}">
+        <header class="post-card-header">
+            {{#primary_tag}}<a class="post-card-primary-tag" href="{{url}}" onclick="event.stopPropagation()">{{name}}</a>{{/primary_tag}}
+            <h2 class="post-card-title">{{title}}</h2>
+        </header>
+        {{#if excerpt}}<p class="post-card-excerpt">{{excerpt}}</p>{{/if}}
+    </a>
+    <footer class="post-card-meta">
+        <time class="post-card-meta-date" datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+    </footer>
+</div>

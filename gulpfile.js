@@ -4,7 +4,7 @@ const path = require('path');
 const releaseUtils = require('@tryghost/release-utils');
 const inquirer = require('inquirer');
 
-// Gulp plugins
+// gulp plugins and utils
 const livereload = require('gulp-livereload');
 const postcss = require('gulp-postcss');
 const zip = require('gulp-zip');
@@ -12,13 +12,15 @@ const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const beeper = require('beeper');
 const fs = require('fs');
-const sass = require('gulp-dart-sass'); // Our SCSS Compiler
 
-// PostCSS plugins
+// postcss plugins
 const autoprefixer = require('autoprefixer');
 const colorFunction = require('postcss-color-mod-function');
 const cssnano = require('cssnano');
 const easyimport = require('postcss-easy-import');
+
+// translations support
+const { mergeLocales } = require('@tryghost/theme-translations/build');
 
 const REPO = 'TryGhost/Casper';
 const REPO_READONLY = 'TryGhost/Casper';
@@ -32,7 +34,6 @@ function serve(done) {
 const handleError = (done) => {
     return function (err) {
         if (err) {
-            console.error(err.message);
             beeper();
         }
         return done(err);
@@ -46,15 +47,9 @@ function hbs(done) {
     ], handleError(done));
 }
 
-// THE SCSS PIPELINE
 function css(done) {
     pump([
-        src('assets/scss/main.scss', {sourcemaps: false}),
-        sass({
-            includePaths: ['node_modules'],
-            quietDeps: true, 
-            silenceDeprecations: ['import', 'global-builtin', 'color-functions'] // COMPLETELY silences the @import warnings
-        }).on('error', sass.logError),
+        src('assets/css/*.css', {sourcemaps: true}),
         postcss([
             easyimport,
             colorFunction(),
@@ -66,50 +61,58 @@ function css(done) {
     ], handleError(done));
 }
 
-// THE JS PIPELINE (Ensures scripts are minified & bundled exactly as before)
 function js(done) {
     pump([
         src([
-            'assets/js/lib/*.js', // Pulled first so code can depend on it
-            'assets/js/*.js'      // Then the rest
+            // pull in lib files first so our own code can depend on it
+            'assets/js/lib/*.js',
+            'assets/js/*.js'
         ], {sourcemaps: true}),
-        concat('main.js'),
+        concat('casper.js'),
         uglify(),
         dest('assets/built/', {sourcemaps: '.'}),
         livereload()
     ], handleError(done));
 }
 
-// THE ZIPPER (For Ghost Production)
 function zipper(done) {
     const filename = require('./package.json').name + '.zip';
+
     pump([
         src([
             '**',
             '!node_modules', '!node_modules/**',
             '!dist', '!dist/**',
-            '!assets/scss/**', // Exclude source SCSS from the final Ghost zip
-            '!yarn-error.log', '!yarn.lock', '!gulpfile.js'
+            '!yarn-error.log',
+            '!yarn.lock',
+            '!gulpfile.js'
         ]),
         zip(filename),
         dest('dist/')
     ], handleError(done));
 }
 
-// WATCHERS
-const cssWatcher = () => watch('assets/scss/**/*.scss', css); // Watches all SCSS files
-const jsWatcher = () => watch('assets/js/**/*.js', js);
-const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], hbs);
-const watcher = parallel(cssWatcher, jsWatcher, hbsWatcher);
+function locales(done) {
+    mergeLocales({
+        local: './locales-local',
+        output: './locales'
+    })(done);
+}
 
-// COMMANDS
-const build = series(css, js);
+const cssWatcher = () => watch('assets/css/**', css);
+const jsWatcher = () => watch('assets/js/**', js);
+const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], hbs);
+const localesWatcher = () => watch('./locales-local/**/*.json', locales);
+const watcher = parallel(cssWatcher, jsWatcher, hbsWatcher, localesWatcher);
+const build = series(css, js, locales);
+
 exports.build = build;
 exports.zip = series(build, zipper);
 exports.default = series(build, serve, watcher);
 
-// RELEASE (Kept from your original file)
 exports.release = async () => {
+    // @NOTE: https://yarnpkg.com/lang/en/docs/cli/version/
+    // require(./package.json) can run into caching issues, this re-reads from file everytime on release
     let packageJSON = JSON.parse(fs.readFileSync('./package.json'));
     const newVersion = packageJSON.version;
 
@@ -128,7 +131,8 @@ exports.release = async () => {
     }
 
     try {
-        const result = await inquirer.prompt([{
+        const prompt = inquirer.createPromptModule();
+        const result = await prompt([{
             type: 'input',
             name: 'compatibleWithGhost',
             message: 'Which version of Ghost is it compatible with?',

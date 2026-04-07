@@ -1,465 +1,244 @@
-{{!-- =========================================================
-  PARTIAL: partials/post-course.hbs
-  PURPOSE: Course landing + curriculum (FLAT ONLY)
-  TAG LOGIC:
-    - Course post: #course (hash-course)
-    - Lesson posts: #lesson (hash-lesson)
-  LINKING:
-    - Course primary_tag.slug = course bucket
-    - Lesson primary_tag.slug must match same bucket
-========================================================= --}}
+{{!-- post-course.hbs — Course landing page --}}
 
+{{!-- ── Hero ───────────────────────────────────────────── --}}
+<section class="course-hero outer">
+    <div class="inner">
+        <div class="course-hero__grid">
 
+            {{!-- Left --}}
+            <div class="course-hero__content">
+                <nav class="course-breadcrumb" aria-label="{{t "Breadcrumb"}}">
+                    <a href="/">{{t "Home"}}</a>
+                    <i class="ph ph-caret-right" aria-hidden="true"></i>
+                    <a href="/courses/">{{t "Courses"}}</a>
+                    {{#if primary_tag}}
+                        <i class="ph ph-caret-right" aria-hidden="true"></i>
+                        <a href="{{primary_tag.url}}">{{primary_tag.name}}</a>
+                    {{/if}}
+                    <i class="ph ph-caret-right" aria-hidden="true"></i>
+                    <span aria-current="page">{{title}}</span>
+                </nav>
 
-{{!-- Full Width Course Hero --}}
-<section id="ns-hero" class="hero  is-small {{hero_class}} {{post_class}}">
-  <div class="hero-body">
-    <div class="container">
-      <div class="columns is-vcentered is-variable is-8 {{#has tag="#temp-media-start"}}is-flex-direction-row-reverse{{/has}}">
-
-        {{!-- Left Hero Content --}}
-        <div class="column {{#if feature_image}}is-8{{else}}is-10{{/if}}">
-
-          {{!-- Breadcrumbs --}}
-          <nav class="breadcrumb is-small" aria-label="breadcrumbs">
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/courses/">Courses</a></li>
-              {{#if primary_tag}}
-                <li><a href="{{primary_tag.url}}">{{primary_tag.name}}</a></li>
-              {{/if}}
-              <li class="is-active">
-                <a href="{{url}}" aria-current="page">{{title}}</a>
-              </li>
-            </ul>
-          </nav>
-
-          {{!-- Tags --}}
-          <div class="field is-grouped is-grouped-multiline mb-4">
-            {{#if primary_tag}}
-              <div class="control">
-                <a href="{{primary_tag.url}}" class="tag is-light is-medium ns-pill has-text-weight-semibold">
-                  {{primary_tag.name}}
-                </a>
-              </div>
-            {{/if}}
-
-            {{#foreach tags visibility="public" limit="2" from="2"}}
-              <div class="control">
-                <a href="{{url}}" class="tag is-light is-medium ns-pill has-text-weight-semibold">
-                  {{name}}
-                </a>
-              </div>
-            {{/foreach}}
-
-            {{#if featured}}
-              <div class="control">
-                <span class="tag is-warning is-medium ns-pill">
-                  {{t "Featured"}}
-                </span>
-              </div>
-            {{/if}}
-          </div>
-
-          {{!-- Title --}}
-          <h1 class="title is-1 has-text-weight-bold">{{title}}</h1>
-
-          {{!-- Excerpt --}}
-          {{#if custom_excerpt}}
-            <p class="subtitle is-4 mt-4 ns-muted" style="line-height: 1.5;">
-              {{custom_excerpt}}
-            </p>
-          {{else}}
-            <p class="subtitle is-4 mt-4 ns-muted" style="line-height: 1.5;">
-              {{excerpt words="26"}}
-            </p>
-          {{/if}}
-
-          {{!-- Meta --}}
-          <div id="ns-hero-meta" class="is-flex is-align-items-center mt-5 is-flex-wrap-wrap" style="gap: 18px;">
-            <span id="ns-hero-meta-count" class="is-flex is-align-items-center has-text-weight-bold">
-              <i class="ph ph-list-checks mr-2"></i>
-              {{t "Structured course"}}
-            </span>
-
-            {{#foreach tags visibility="internal"}}
-              {{#match slug "~^" "hash-course-duration-"}}
-                {{#if description}}
-                  <span class="is-flex is-align-items-center">
-                    <i class="ph ph-clock mr-2"></i>{{description}}
-                  </span>
-                {{/if}}
-              {{/match}}
-            {{/foreach}}
-
-            {{#foreach tags visibility="internal"}}
-              {{#match slug "~^" "hash-course-level-"}}
-                {{#if description}}
-                  <span class="is-flex is-align-items-center">
-                    <i class="ph ph-signal-high mr-2"></i>{{description}}
-                  </span>
-                {{/if}}
-              {{/match}}
-            {{/foreach}}
-
-            <span class="is-flex is-align-items-center">
-              <i class="ph ph-calendar mr-2"></i>
-              Last updated {{date updated_at format="MMM YYYY"}}
-            </span>
-          </div>
-
-          {{!-- Author --}}
-          {{#primary_author}}
-            <div class="is-flex is-align-items-center mt-5">
-              {{#if profile_image}}
-                <figure class="image is-48x48 mr-3">
-                  <img class="is-rounded" src="{{img_url profile_image size="xs"}}" alt="{{name}}">
-                </figure>
-              {{/if}}
-              <div>
-                <p class="is-size-6 m-0">Created by <strong>{{name}}</strong></p>
-                {{#if bio}}
-                  <p class="is-size-7" style="opacity: 0.85;">{{bio}}</p>
-                {{/if}}
-              </div>
-            </div>
-          {{/primary_author}}
-
-        </div>
-
-        {{!-- Right Hero Media --}}
-        {{^has tag="#temp-no-media"}}
-          {{#if feature_image}}
-            <div class="column is-4">
-              <figure class="image is-4by3 box p-0 is-clipped is-shadowless has-background-black-ter ns-hero-media">
-                <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
-
-                {{#has tag="#temp-video"}}
-                  <div class="is-overlay is-flex is-justify-content-center is-align-items-center" style="background: rgba(0,0,0,0.35);">
-                    <button type="button" class="button is-white is-rounded is-medium">
-                      <span class="icon"><i class="ph-fill ph-play"></i></span>
-                      <span>{{t "Watch Intro"}}</span>
-                    </button>
-                  </div>
-                {{/has}}
-              </figure>
-
-              {{#if feature_image_caption}}
-                {{^has tag="#temp-video"}}
-                  <p class="help has-text-centered mt-2 has-text-white-bis">{{feature_image_caption}}</p>
-                {{/has}}
-              {{/if}}
-            </div>
-          {{/if}}
-        {{/has}}
-
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr>
-
-{{!-- Main Layout --}}
-<section class="section">
-  <div class="container">
-    <div class="columns is-variable is-8 ns-gap">
-
-      {{!-- Left Main Column --}}
-      <div class="column is-7-tablet is-8-desktop">
-
-        {{!-- No AI badge (placeholder) --}}
-        <div class="ns-badge ns-no-ai box">
-          <span class="icon"><i class="ph-fill ph-seal-check"></i></span>
-          <div>
-            <strong>No AI content</strong>
-            <p class="mb-0">Placeholder: This course content is crafted by humans with real project experience.</p>
-          </div>
-        </div>
-
-        {{!-- What you'll learn (hardcoded placeholder) --}}
-        <div class="box ns-section">
-          <h3 class="title is-4 mb-4">What you'll learn</h3>
-          <div class="columns is-multiline">
-            <div class="column is-half is-flex is-align-items-flex-start">
-              <i class="ph ph-check has-text-primary is-size-5 mr-2"></i>
-              <span>Understand the full CRM Analytics workflow end-to-end</span>
-            </div>
-            <div class="column is-half is-flex is-align-items-flex-start">
-              <i class="ph ph-check has-text-primary is-size-5 mr-2"></i>
-              <span>Build dashboards with clean UX and fast performance</span>
-            </div>
-            <div class="column is-half is-flex is-align-items-flex-start">
-              <i class="ph ph-check has-text-primary is-size-5 mr-2"></i>
-              <span>Data prep patterns (recipes/dataflows) you can reuse</span>
-            </div>
-            <div class="column is-half is-flex is-align-items-flex-start">
-              <i class="ph ph-check has-text-primary is-size-5 mr-2"></i>
-              <span>Deployment + maintenance checklist for real teams</span>
-            </div>
-          </div>
-        </div>
-
-        {{!-- About --}}
-        <div class="content box ns-section">
-          <h2 class="title is-3">About this course</h2>
-          {{content}}
-        </div>
-
-        {{!-- In-content ad placeholder --}}
-        <div class="ns-ad">
-          <small>AdSense Placeholder</small>
-          In-content responsive unit (paste script later)
-        </div>
-
-        {{!-- Curriculum (FLAT ONLY) --}}
-        <h2 id="ns-curriculum" class="title is-3 mt-6 mb-4">Course Curriculum</h2>
-
-        <nav class="panel is-primary has-background-white box p-0 is-shadowless ns-soft ns-section">
-
-          <div class="panel-heading is-flex is-justify-content-space-between is-align-items-center has-background-white has-text-dark" style="border-bottom: 1px solid #dbdbdb;">
-            <h2 class="title is-4 mb-0">{{t "Course content"}}</h2>
-            <span class="tag is-light is-medium ns-pill">Structured learning path</span>
-          </div>
-
-          {{#if primary_tag}}
-
-            {{#get "posts"
-              filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson"
-              include="tags"
-              order="published_at asc"
-              limit="100"
-              as |lessons|
-            }}
-
-              {{!-- Used by JS to update hero lesson count --}}
-              <span class="is-hidden" id="ns-lessons-count" data-count="{{lessons.length}}"></span>
-
-              {{#foreach lessons}}
-                <a data-ns-lesson href="{{url absolute="true"}}" class="panel-block ns-panel-block is-flex is-justify-content-space-between">
-                  <div class="is-flex is-align-items-center">
-                    <span class="panel-icon has-text-primary">
-                      <i class="ph ph-play-circle is-size-5"></i>
-                    </span>
-                    <span class="has-text-weight-semibold has-text-dark">{{title}}</span>
-                  </div>
-
-                  <span class="is-size-7 has-text-grey">
+                <div class="sfdc-flex sfdc-gap-sm sfdc-flex-wrap sfdc-mb-lg">
+                    {{#primary_tag}}<a href="{{url}}" class="article-tag-link">{{name}}</a>{{/primary_tag}}
+                    {{#if featured}}<span class="article-featured-badge">{{t "Featured"}}</span>{{/if}}
                     {{#foreach tags visibility="internal"}}
-                      {{#match slug "~^" "hash-lesson-duration-"}}
-                        {{#if description}}<span>{{description}}</span>{{/if}}
-                      {{/match}}
+                        {{#match slug "~^" "hash-course-level-"}}{{#if description}}
+                            <span class="course-hero__meta-chip"><i class="ph ph-signal-high" aria-hidden="true"></i>{{description}}</span>
+                        {{/if}}{{/match}}
+                        {{#match slug "~^" "hash-course-duration-"}}{{#if description}}
+                            <span class="course-hero__meta-chip"><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</span>
+                        {{/if}}{{/match}}
                     {{/foreach}}
-                  </span>
-                </a>
-              {{else}}
-                <div class="panel-block p-5 has-text-grey">{{t "No lessons yet"}}</div>
-              {{/foreach}}
+                </div>
 
-            {{/get}}
-
-          {{else}}
-            <div class="panel-block p-5 has-text-grey">
-              Primary tag not found for this course. Please assign a primary tag to this post.
-            </div>
-          {{/if}}
-        </nav>
-
-        {{!-- Extra placeholders (hardcoded sections) --}}
-        <div class="columns is-variable is-5 mt-5">
-          <div class="column">
-            <div class="box ns-section">
-              <h3 class="title is-5 mb-2">Prerequisites</h3>
-              <ul>
-                <li>Basic Salesforce navigation</li>
-                <li>Comfort with data concepts (rows/columns)</li>
-                <li>Optional: basic SQL mindset</li>
-              </ul>
-            </div>
-          </div>
-          <div class="column">
-            <div class="box ns-section">
-              <h3 class="title is-5 mb-2">Downloads</h3>
-              <p class="has-text-grey">Placeholder for cheatsheets, templates, and sample datasets.</p>
-              <a class="button is-light is-fullwidth mt-3" href="#">
-                <span class="icon"><i class="ph ph-download"></i></span>
-                <span>Download bundle</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="box ns-section">
-          <h3 class="title is-5 mb-2">Project you’ll build</h3>
-          <p class="has-text-grey mb-3">Placeholder: describe the capstone dashboard/project.</p>
-          <div class="tags">
-            <span class="tag is-light ns-pill">Dataset</span>
-            <span class="tag is-light ns-pill">Recipe</span>
-            <span class="tag is-light ns-pill">Dashboard</span>
-            <span class="tag is-light ns-pill">Story</span>
-          </div>
-        </div>
-
-        <div class="ns-ad">
-          <small>AdSense Placeholder</small>
-          Second in-article unit
-        </div>
-
-        <div class="box ns-section">
-          <h3 class="title is-5 mb-2">Student reviews</h3>
-          <p class="has-text-grey">Placeholder for testimonials/reviews.</p>
-        </div>
-
-        <div class="box ns-section">
-          <h3 class="title is-5 mb-2">FAQ</h3>
-          <div class="content">
-            <details class="mb-3">
-              <summary class="has-text-weight-semibold">Is this course beginner friendly?</summary>
-              <p class="mt-2">Placeholder answer.</p>
-            </details>
-            <details class="mb-3">
-              <summary class="has-text-weight-semibold">Do I get lifetime access?</summary>
-              <p class="mt-2">Placeholder answer.</p>
-            </details>
-            <details>
-              <summary class="has-text-weight-semibold">Will this help for interviews?</summary>
-              <p class="mt-2">Placeholder answer.</p>
-            </details>
-          </div>
-        </div>
-
-        <div class="box ns-section">
-          <h3 class="title is-5 mb-2">Related posts</h3>
-          <ul>
-            <li><a href="#">Placeholder: CRM Analytics basics</a></li>
-            <li><a href="#">Placeholder: Dashboard performance checklist</a></li>
-            <li><a href="#">Placeholder: Recipes vs Dataflows</a></li>
-          </ul>
-        </div>
-
-      </div>
-
-      {{!-- Right Sidebar --}}
-      <div class="column is-5-tablet is-4-desktop">
-
-        <div class="ns-sticky">
-
-          <div class="card ns-card">
-            {{#if feature_image}}
-              <div class="card-image">
-                <figure class="image is-16by9">
-                  <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
-                </figure>
-              </div>
-            {{/if}}
-
-            <div class="card-content">
-              <div class="mb-4">
-                <span class="title is-2">Free</span>
-                <span class="tag is-success is-light ml-2 ns-pill">Placeholder</span>
-                <p class="has-text-grey is-size-7 mt-2">
-                  Replace with pricing, membership, or bundle info later.
+                <h1 class="course-hero__title">{{title}}</h1>
+                <p class="course-hero__excerpt lead">
+                    {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="28"}}{{/if}}
                 </p>
-              </div>
 
-              <a id="ns-hero-cta" href="#ns-curriculum" class="button is-primary is-fullwidth is-medium has-text-weight-bold mb-3">
-                Start Course
-              </a>
+                <div class="sfdc-flex sfdc-gap-md sfdc-items-center sfdc-mb-2xl sfdc-mt-xl">
+                    <time class="sfdc-text-weak sfdc-text-sm" datetime="{{date updated_at format="YYYY-MM-DD"}}">
+                        <i class="ph ph-calendar" aria-hidden="true"></i>
+                        {{t "Updated"}} {{date updated_at format="MMM YYYY"}}
+                    </time>
+                    <span class="sfdc-text-weak sfdc-text-sm">
+                        <i class="ph ph-list-checks" aria-hidden="true"></i>
+                        <span id="course-lesson-count">{{t "Structured course"}}</span>
+                    </span>
+                </div>
 
-              <a href="/courses/" class="button is-light is-fullwidth mb-5">
-                Back to Courses
-              </a>
-
-              <h4 class="title is-6 mb-3">This course includes:</h4>
-              <ul class="is-size-6" style="line-height: 2.2; list-style: none; margin-left: 0;">
-                <li class="is-flex is-align-items-center">
-                  <i class="ph ph-list-checks has-text-grey mr-3 is-size-5"></i>
-                  Structured curriculum
-                </li>
-
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-course-duration-"}}
-                    <li class="is-flex is-align-items-center">
-                      <i class="ph ph-clock has-text-grey mr-3 is-size-5"></i>
-                      {{#if description}}{{description}}{{else}}{{name}}{{/if}}
-                    </li>
-                  {{/match}}
-                {{/foreach}}
-
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-course-level-"}}
-                    <li class="is-flex is-align-items-center">
-                      <i class="ph ph-signal-high has-text-grey mr-3 is-size-5"></i>
-                      {{#if description}}{{description}}{{else}}{{name}}{{/if}}
-                    </li>
-                  {{/match}}
-                {{/foreach}}
-
-                <li class="is-flex is-align-items-center">
-                  <i class="ph ph-infinity has-text-grey mr-3 is-size-5"></i>
-                  Lifetime access placeholder
-                </li>
-
-                <li class="is-flex is-align-items-center">
-                  <i class="ph ph-calendar has-text-grey mr-3 is-size-5"></i>
-                  Updated {{date updated_at format="DD MMM YYYY"}}
-                </li>
-              </ul>
-
-              <hr style="background-color: #DDDBDA; margin: 1.25rem 0;">
-
-              <div class="is-flex is-justify-content-space-between is-align-items-center" style="gap: 1rem; flex-wrap: wrap;">
-                <a href="https://twitter.com/intent/tweet?text={{encode title}}&amp;url={{url absolute="true"}}" target="_blank" rel="noopener"
-                  class="has-text-grey has-text-weight-semibold is-flex is-align-items-center">
-                  <i class="ph ph-share-network mr-2 is-size-5"></i> Share
-                </a>
-
-                <a href="/contact/" class="has-text-grey has-text-weight-semibold is-flex is-align-items-center">
-                  <i class="ph ph-envelope mr-2 is-size-5"></i> Contact
-                </a>
-              </div>
+                {{#primary_author}}
+                    <div class="sfdc-flex sfdc-gap-md sfdc-items-center">
+                        {{#if profile_image}}
+                            <img class="course-hero__author-avatar" src="{{img_url profile_image size="xs"}}" alt="{{name}}" loading="lazy" />
+                        {{/if}}
+                        <div>
+                            <p class="sfdc-text-sm sfdc-text-weak" style="margin:0">{{t "Instructor"}}</p>
+                            <strong>{{name}}</strong>
+                        </div>
+                    </div>
+                {{/primary_author}}
             </div>
-          </div>
 
-          <div class="ns-ad mt-4">
-            <small>Sidebar AdSense</small>
-            300×250 / Responsive
-          </div>
+            {{!-- Right: sticky sidebar card (desktop) --}}
+            <div class="course-hero__card-wrap">
+                <div class="course-sidebar-card" id="course-sidebar-card">
+                    {{#if feature_image}}
+                        <div class="course-sidebar-card__image-wrap">
+                            <img src="{{img_url feature_image size="l"}}" alt="{{title}}" loading="lazy" />
+                        </div>
+                    {{/if}}
+                    <div class="course-sidebar-card__body">
+                        <div class="sfdc-flex sfdc-items-center sfdc-gap-sm sfdc-mb-lg">
+                            <span class="course-sidebar-card__price">{{t "Free"}}</span>
+                            <span class="sfdc-text-sm sfdc-text-weak">{{t "Placeholder — update with membership info"}}</span>
+                        </div>
+                        <a href="#course-curriculum" class="btn btn-primary btn-block btn-lg sfdc-mb-sm">
+                            <i class="ph ph-rocket-launch btn-icon" aria-hidden="true"></i>
+                            {{t "Start Course"}}
+                        </a>
+                        <a href="/courses/" class="btn btn-neutral btn-block sfdc-mb-xl">{{t "Back to Courses"}}</a>
 
-          <div class="box mt-4 ns-section">
-            <h4 class="title is-6 mb-3">Coming later</h4>
-            <div class="content has-text-grey">
-              <ul>
-                <li>Instructor bio card</li>
-                <li>Certificate details</li>
-                <li>Community CTA</li>
-                <li>Course roadmap</li>
-              </ul>
+                        <h4 class="sfdc-text-sm sfdc-font-semibold sfdc-mb-md">{{t "This course includes:"}}</h4>
+                        <ul class="course-sidebar-card__includes">
+                            <li><i class="ph ph-list-checks" aria-hidden="true"></i>{{t "Structured curriculum"}}</li>
+                            {{#foreach tags visibility="internal"}}
+                                {{#match slug "~^" "hash-course-duration-"}}{{#if description}}
+                                    <li><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</li>
+                                {{/if}}{{/match}}
+                                {{#match slug "~^" "hash-course-level-"}}{{#if description}}
+                                    <li><i class="ph ph-signal-high" aria-hidden="true"></i>{{description}}</li>
+                                {{/if}}{{/match}}
+                            {{/foreach}}
+                            <li><i class="ph ph-infinity" aria-hidden="true"></i>{{t "Lifetime access"}}</li>
+                            <li><i class="ph ph-calendar" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</li>
+                        </ul>
+                        <div class="sfdc-flex sfdc-gap-xl sfdc-mt-lg" style="border-top:1px solid var(--sfdc-border-color-divider);padding-top:var(--sfdc-spacing-lg)">
+                            <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute="true"}}" target="_blank" rel="noopener" class="sfdc-flex sfdc-gap-xs sfdc-items-center sfdc-text-sm sfdc-text-secondary">
+                                <i class="ph ph-share-network" aria-hidden="true"></i>{{t "Share"}}
+                            </a>
+                            <a href="/contact/" class="sfdc-flex sfdc-gap-xs sfdc-items-center sfdc-text-sm sfdc-text-secondary">
+                                <i class="ph ph-envelope" aria-hidden="true"></i>{{t "Contact"}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-
         </div>
-
-      </div>
-
     </div>
-  </div>
 </section>
 
-{{!-- Sticky Footer CTA --}}
-<nav id="ns-course-link-sticky" class="navbar is-fixed-bottom has-shadow is-hidden-mobile py-2" role="navigation">
-  <div class="container">
-    <div class="navbar-brand is-align-items-center">
-      <span class="navbar-item has-text-weight-bold is-size-6">{{title}}</span>
-    </div>
+{{!-- ── Main content grid ────────────────────────────── --}}
+<div class="outer"><div class="inner">
+<div class="course-main-grid">
 
-    <div class="navbar-end">
-      <div class="navbar-item">
-        <a href="#ns-curriculum" class="button is-primary is-rounded has-text-weight-semibold">
-          <span>{{t "Start Course"}}</span>
-          <span class="icon is-small ml-1"><i class="ph ph-arrow-right"></i></span>
-        </a>
-      </div>
-    </div>
-  </div>
-</nav>
+    {{!-- Left/main content column --}}
+    <main class="course-main-col">
+
+        {{!-- What you'll learn --}}
+        <div class="course-section">
+            <h2 class="course-section__title">{{t "What you'll learn"}}</h2>
+            <div class="course-learn-grid">
+                {{!-- Placeholders — override via post code injection or content --}}
+                <div class="course-learn-item"><i class="ph ph-check" aria-hidden="true"></i><span>{{t "Full workflow understanding end-to-end"}}</span></div>
+                <div class="course-learn-item"><i class="ph ph-check" aria-hidden="true"></i><span>{{t "Build dashboards with clean UX and performance"}}</span></div>
+                <div class="course-learn-item"><i class="ph ph-check" aria-hidden="true"></i><span>{{t "Reusable data patterns you can apply anywhere"}}</span></div>
+                <div class="course-learn-item"><i class="ph ph-check" aria-hidden="true"></i><span>{{t "Deployment and maintenance best practices"}}</span></div>
+            </div>
+        </div>
+
+        {{!-- About the course --}}
+        <div class="course-section">
+            <h2 class="course-section__title">{{t "About this course"}}</h2>
+            <div class="gh-content">{{content}}</div>
+        </div>
+
+        {{!-- Curriculum --}}
+        <div class="course-section" id="course-curriculum">
+            <div class="sfdc-flex sfdc-justify-between sfdc-items-center sfdc-mb-xl">
+                <h2 class="course-section__title" style="margin:0">{{t "Course Curriculum"}}</h2>
+                <span class="sfdc-text-sm sfdc-text-secondary">{{t "Structured learning path"}}</span>
+            </div>
+            {{#if primary_tag}}
+                {{#get "posts"
+                    filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson"
+                    order="published_at asc"
+                    limit="100"
+                    as |lessons|
+                }}
+                    <span hidden id="course-lesson-total" data-count="{{lessons.length}}"></span>
+                    {{#if lessons}}
+                        <div class="course-curriculum">
+                            {{#foreach lessons}}
+                                <a href="{{url}}" class="course-curriculum-item">
+                                    <span class="course-curriculum-item__num">{{@number}}</span>
+                                    <span class="course-curriculum-item__title">{{title}}</span>
+                                    {{#foreach tags visibility="internal"}}
+                                        {{#match slug "~^" "hash-lesson-duration-"}}{{#if description}}
+                                            <span class="course-curriculum-item__dur sfdc-text-weak sfdc-text-xs">{{description}}</span>
+                                        {{/if}}{{/match}}
+                                    {{/foreach}}
+                                    <i class="ph ph-arrow-right course-curriculum-item__arrow" aria-hidden="true"></i>
+                                </a>
+                            {{/foreach}}
+                        </div>
+                    {{else}}
+                        <p class="sfdc-text-weak">{{t "No lessons yet — tag posts with #lesson and set primary tag to this course's slug."}}</p>
+                    {{/if}}
+                {{/get}}
+            {{/if}}
+        </div>
+
+        {{!-- Prerequisites + Downloads --}}
+        <div class="sfdc-grid" style="grid-template-columns:1fr 1fr;gap:var(--sfdc-spacing-xl)">
+            <div class="course-section">
+                <h3 class="course-section__title" style="font-size:var(--sfdc-font-size-h5)">{{t "Prerequisites"}}</h3>
+                <ul style="padding-left:1.4em;color:var(--sfdc-text-color-secondary);font-size:var(--sfdc-font-size-base)">
+                    <li>{{t "Basic Salesforce navigation"}}</li>
+                    <li>{{t "Comfort with data concepts"}}</li>
+                    <li>{{t "Optional: basic SQL mindset"}}</li>
+                </ul>
+            </div>
+            <div class="course-section">
+                <h3 class="course-section__title" style="font-size:var(--sfdc-font-size-h5)">{{t "Downloads"}}</h3>
+                <p class="sfdc-text-secondary sfdc-text-sm sfdc-mb-md">{{t "Cheatsheets, templates, and sample datasets."}}</p>
+                <a href="#" class="btn btn-neutral btn-block btn-sm">
+                    <i class="ph ph-download btn-icon" aria-hidden="true"></i>{{t "Download bundle"}}
+                </a>
+            </div>
+        </div>
+
+        {{!-- FAQ --}}
+        <div class="course-section">
+            <h2 class="course-section__title">{{t "FAQ"}}</h2>
+            <div class="course-faq">
+                <details class="course-faq__item">
+                    <summary>{{t "Is this course beginner friendly?"}}</summary>
+                    <p>{{t "Yes — each lesson starts from first principles before building to advanced topics."}}</p>
+                </details>
+                <details class="course-faq__item">
+                    <summary>{{t "Do I get lifetime access?"}}</summary>
+                    <p>{{t "All content is available as long as Namaste Salesforce is live — and it will be."}}</p>
+                </details>
+                <details class="course-faq__item">
+                    <summary>{{t "Will this help for interviews?"}}</summary>
+                    <p>{{t "The practical, implementation-first approach is exactly what interviewers test."}}</p>
+                </details>
+            </div>
+        </div>
+
+    </main>
+
+    {{!-- Right placeholder column (mirrors sidebar card on scroll) --}}
+    <div class="course-sidebar-spacer" aria-hidden="true"></div>
+
+</div>
+</div></div>
+
+{{!-- Sticky footer CTA --}}
+<div class="course-sticky-bar" id="course-sticky-bar" aria-label="{{t "Course CTA bar"}}">
+    <span class="course-sticky-bar__title">{{title}}</span>
+    <a href="#course-curriculum" class="btn btn-primary btn-sm btn-pill">
+        {{t "Start Course"}} <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
+    </a>
+</div>
+
+<script>
+(function(){
+    var countEl = document.getElementById('course-lesson-total');
+    var heroCount = document.getElementById('course-lesson-count');
+    if(countEl && heroCount){
+        var n = parseInt(countEl.getAttribute('data-count'), 10) || 0;
+        heroCount.textContent = n + ' {{t "lessons"}}';
+    }
+    /* Show sticky bar after scrolling past sidebar card */
+    var card = document.getElementById('course-sidebar-card');
+    var bar  = document.getElementById('course-sticky-bar');
+    if(card && bar && 'IntersectionObserver' in window){
+        new IntersectionObserver(function(entries){
+            bar.classList.toggle('is-visible', !entries[0].isIntersecting);
+        }).observe(card);
+    }
+})();
+</script>

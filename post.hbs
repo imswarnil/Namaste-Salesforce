@@ -1,21 +1,56 @@
 {{!< default}}
 
+{{!--
+    post.hbs — Namaste Salesforce Theme
+    ============================================================
+    This file is a DISPATCHER only. It contains no markup.
+    Based on the post's tags it includes the appropriate
+    partial from the partials/ directory.
+
+    ROUTING ORDER (most-specific first):
+      documentation       → post-documentation.hbs
+      #training-content   → post-training.hbs
+      #training           → post-training.hbs
+      #lesson             → post-lesson.hbs
+      #course             → post-course.hbs
+      #blog               → post-blog.hbs
+      (fallback)          → post-default.hbs
+
+    NOTE ON INTERNAL TAGS:
+      Ghost internal tags (prefixed with #) are matched using
+      the tag name including the # in the {{#has}} helper.
+      e.g. tag="#lesson" matches the internal tag "#lesson"
+           whose slug is "hash-lesson".
+
+    ADDING NEW TYPES:
+      Add a new {{else has tag="..."}} block above the fallback
+      and create the matching partial file.
+    ============================================================
+--}}
+
 {{#post}}
-  {{#has tag="documentation"}}
-    {{> "post-documentation"}}
-  {{else has tag="#training-content"}}
-    {{> "post-training"}}
-  {{else has tag="#training"}}
-    {{> "post-training"}}
-  {{else has tag="#lesson"}}
-    {{> "post-lesson"}}
-  {{else has tag="#course"}}
-    {{> "post-course"}}
-  {{else has tag="#lesson"}}
-    {{> "post-lesson"}}
-  {{else has tag="#blog"}}
-    {{> "post-blog"}}
-  {{else}}
-    {{> "post-default"}}
-  {{/has}}
+
+    {{#has tag="documentation"}}
+        {{> "post-documentation"}}
+
+    {{else has tag="#training-content"}}
+        {{> "post-training"}}
+
+    {{else has tag="#training"}}
+        {{> "post-training"}}
+
+    {{else has tag="#lesson"}}
+        {{> "post-lesson"}}
+
+    {{else has tag="#course"}}
+        {{> "post-course"}}
+
+    {{else has tag="#blog"}}
+        {{> "post-blog"}}
+
+    {{else}}
+        {{> "post-default"}}
+
+    {{/has}}
+
 {{/post}}
