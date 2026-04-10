@@ -1,566 +1,331 @@
-{{!-- partials/post-training.hbs
-     LMS player layout for both training overview and module reader.
-     Dispatched from post.hbs for tag "#training" and tag "#training-content".
-     Uses has helper to branch layouts. Sidebar is shared.
---}}
 
-{{!-- Mobile top bar --}}
-<div class="ns-player-mob-bar is-hidden-desktop" id="nsPlayerMobBar">
-  <span class="ns-player-mob-title">{{title}}</span>
-  <button class="button is-light is-small ns-player-mob-btn"
-          type="button"
-          id="nsPlayerMobToggle"
-          aria-expanded="false"
-          aria-controls="nsPlayerMobPanel">
+
+{{!-- =========================================================================
+      1. MOBILE NAVIGATION & OFF-CANVAS PANEL
+========================================================================= --}}
+<div class="is-hidden-desktop has-background-white has-shadow is-flex is-justify-content-space-between is-align-items-center px-4 py-3" style="position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #eaeaea;" id="playerMobBar">
+  <span class="has-text-weight-bold is-size-6 has-text-dark" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">{{title}}</span>
+  <button class="button is-light is-small is-rounded has-text-weight-bold" type="button" id="playerMobToggle" aria-expanded="false" aria-controls="playerMobPanel">
     <span class="icon is-small"><i class="ph ph-list-bullets" aria-hidden="true"></i></span>
     <span>Modules</span>
-    <span class="icon is-small"><i class="ph ph-caret-down" aria-hidden="true"></i></span>
+    <span class="icon is-small"><i class="ph ph-caret-down js-caret" aria-hidden="true"></i></span>
   </button>
 </div>
 
-{{!-- Mobile panel --}}
-<div class="ns-player-mob-panel is-hidden-desktop" id="nsPlayerMobPanel" aria-hidden="true">
-  <nav class="panel ns-mob-panel-nav">
-    <p class="panel-heading">Course Content</p>
-    <a href="/training/" class="panel-block">
-      <span class="panel-icon"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
-      All training
+<div class="is-hidden has-background-white p-4" id="playerMobPanel" aria-hidden="true" style="position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 40; overflow-y: auto;">
+  <aside class="menu">
+    <p class="menu-label has-text-weight-bold has-text-grey">Course Content</p>
+    <a href="/training/" class="button is-white is-fullwidth is-justify-content-flex-start has-text-link has-text-weight-bold mb-4">
+      <span class="icon mr-2"><i class="ph ph-arrow-left" aria-hidden="true"></i></span> All training
     </a>
-    {{#get "posts"
-      filter="tag:hash-training"
-      order="published_at asc"
-      limit="100"
-    }}
-      {{#foreach posts}}
-        <div class="ns-mob-group">
-          <a href="{{url}}"
-             class="panel-block ns-mob-group-hd{{#match id ../../id}} is-active{{/match}}">
-            {{#if feature_image}}
-              <img src="{{img_url feature_image size="xxs"}}"
-                   alt="" class="ns-mob-group-img" aria-hidden="true">
-            {{else}}
-              <span class="panel-icon"><i class="ph ph-stack" aria-hidden="true"></i></span>
-            {{/if}}
-            <span class="has-text-weight-semibold">{{title}}</span>
-          </a>
-          {{#get "posts"
-            filter="tag:hash-training-content+primary_tag:{{slug}}"
-            order="published_at asc"
-            limit="100"
-          }}
-            {{#if posts}}
-              {{#foreach posts}}
-                <a href="{{url}}"
-                   class="panel-block ns-mob-lesson{{#match id ../../../../id}} is-active{{/match}}">
-                  <span class="panel-icon is-size-7 has-text-grey ns-mob-lesson-num">{{@number}}</span>
-                  <span class="is-size-7">{{title}}</span>
-                  <span class="ml-auto is-size-7 has-text-grey-light">{{reading_time}}</span>
-                </a>
-              {{/foreach}}
-            {{/if}}
-          {{/get}}
-        </div>
-      {{/foreach}}
-    {{/get}}
-  </nav>
+    
+    <ul class="menu-list">
+      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="100"}}
+        {{#foreach posts}}
+          <li>
+            <a href="{{url}}" class="{{#match id ../../id}}is-active has-background-link has-text-white{{else}}has-text-dark has-background-light{{/match}} is-flex is-align-items-center has-text-weight-bold mb-2 p-3" style="border-radius: 8px;">
+              {{#if feature_image}}
+                <figure class="image is-24x24 mr-2"><img src="{{img_url feature_image size="xxs"}}" alt="" class="is-rounded"></figure>
+              {{else}}
+                <span class="icon mr-2"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
+              {{/if}}
+              <span>{{title}}</span>
+            </a>
+            
+            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100"}}
+              {{#if posts}}
+                <ul class="ml-3 pl-3 mb-4" style="border-left: 2px solid #eaeaea;">
+                  {{#foreach posts}}
+                    <li>
+                      <a href="{{url}}" class="{{#match id ../../../../id}}is-active has-background-link-light has-text-link has-text-weight-bold{{else}}has-text-grey-dark{{/match}} is-flex is-align-items-center is-justify-content-space-between py-2 mb-1" style="border-radius: 6px;">
+                        <div class="is-flex is-align-items-center" style="min-width: 0;">
+                          <span class="is-size-7 has-text-grey mr-2">{{@number}}.</span>
+                          <span class="is-size-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{title}}</span>
+                        </div>
+                        <span class="is-size-7 has-text-grey-light ml-2 flex-shrink-0">{{reading_time minute="1m" minutes="%m"}}</span>
+                      </a>
+                    </li>
+                  {{/foreach}}
+                </ul>
+              {{/if}}
+            {{/get}}
+          </li>
+        {{/foreach}}
+      {{/get}}
+    </ul>
+  </aside>
 </div>
 
-{{!-- PLAYER SHELL --}}
-<div class="ns-player">
-
-  {{!-- Player top navbar --}}
-  <nav class="navbar ns-player-nav" role="navigation" aria-label="Player navigation">
+{{!-- =========================================================================
+      2. DESKTOP PLAYER SHELL NAVBAR (Uses SLDS Blue via Bulma's is-link)
+========================================================================= --}}
+<nav class="navbar is-link has-shadow is-hidden-touch" role="navigation" aria-label="Player navigation" style="height: 60px; z-index: 50;">
+  <div class="container is-fluid px-4">
+    
     <div class="navbar-brand">
-      <a href="/training/" class="navbar-item ns-player-back">
-        <span class="icon is-small"><i class="ph ph-caret-left" aria-hidden="true"></i></span>
-        <span class="is-hidden-mobile">All training</span>
-        <span class="is-hidden-tablet">Back</span>
+      <a href="/training/" class="navbar-item has-text-white hover-text-light is-flex is-align-items-center mr-2">
+        <span class="icon is-medium mr-1"><i class="ph ph-caret-left is-size-4"></i></span> Back
       </a>
-      {{#has tag="#training-content"}}
-        <div class="navbar-item is-hidden-mobile">
-          {{#get "posts"
-            filter="tag:hash-training+slug:{{primary_tag.slug}}"
-            limit="1"
-          }}
+      <div class="navbar-item is-flex is-align-items-center">
+        {{#has tag="#training-content"}}
+          {{#get "posts" filter="tag:hash-training+slug:{{primary_tag.slug}}" limit="1"}}
             {{#foreach posts}}
-              <span class="has-text-weight-semibold ns-player-course-name">{{title}}</span>
-              <span class="mx-2 has-text-grey-light">/</span>
+              <span class="has-text-weight-bold is-size-5 has-text-white">{{title}}</span>
             {{/foreach}}
           {{/get}}
-          <span class="has-text-grey-dark">{{title}}</span>
-        </div>
-      {{else has tag="#training"}}
-        <div class="navbar-item is-hidden-mobile">
-          <span class="has-text-weight-bold">{{title}}</span>
-        </div>
-      {{/has}}
+        {{else}}
+          <span class="has-text-weight-bold is-size-5 has-text-white">{{title}}</span>
+        {{/has}}
+      </div>
     </div>
+
     <div class="navbar-end">
-      <div class="navbar-item">
-        <span class="tag is-primary is-light">
-          <i class="ph ph-graduation-cap mr-1" aria-hidden="true"></i>
-          Training
-        </span>
+      <div class="navbar-item is-flex is-align-items-center">
+        <div class="mr-4 has-text-right">
+          <div class="is-size-7 has-text-weight-bold has-text-white mb-1">Your Progress: 0%</div>
+          <progress class="progress is-success is-small m-0" value="0" max="100" style="height: 6px; width: 150px;">0%</progress>
+        </div>
+        <a href="#" class="button is-link is-inverted is-outlined is-small has-text-weight-bold">
+          <span class="icon"><i class="ph-fill ph-trophy"></i></span>
+          <span>Get Certificate</span>
+        </a>
       </div>
     </div>
-  </nav>
-
-  {{!-- Player body: main + sidebar --}}
-  <div class="ns-player-body">
-
-    {{!-- =========================================================
-      LEFT MAIN CONTENT
-    ========================================================= --}}
-    <main class="ns-player-main">
-
-      {{!-- TRAINING OVERVIEW --}}
-      {{#has tag="#training"}}
-        <div class="container ns-overview py-5">
-
-          {{!-- Bulma breadcrumb --}}
-          <nav class="breadcrumb is-small mb-5" aria-label="breadcrumbs">
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/training/">Training</a></li>
-              <li class="is-active">
-                <a href="{{url}}" aria-current="page">{{title}}</a>
-              </li>
-            </ul>
-          </nav>
-
-          {{!-- Hero card --}}
-          <div class="card ns-overview-hero mb-5">
-            {{#if feature_image}}
-              <div class="card-image">
-                <figure class="image is-16by9">
-                  <img src="{{img_url feature_image size="l"}}"
-                       alt="{{title}}" loading="lazy">
-                </figure>
-              </div>
-            {{/if}}
-            <div class="card-content">
-              {{#if primary_tag}}
-                <div class="ns-overview-cat mb-3">
-                  {{#if primary_tag.feature_image}}
-                    <img src="{{img_url primary_tag.feature_image size="xxs"}}"
-                         alt="" class="ns-overview-cat-img" aria-hidden="true" loading="lazy">
-                  {{else}}
-                    <span class="ns-overview-cat-icon" aria-hidden="true">
-                      <i class="ph ph-tag-simple"></i>
-                    </span>
-                  {{/if}}
-                  <span class="tag is-primary is-light">{{primary_tag.name}}</span>
-                </div>
-              {{/if}}
-              <h1 class="title is-2 mb-3">{{title}}</h1>
-              {{#if custom_excerpt}}
-                <p class="subtitle is-5 has-text-grey">{{custom_excerpt}}</p>
-              {{/if}}
-              <div class="ns-overview-stats mt-4 mb-5">
-                {{#get "posts"
-                  filter="tag:hash-training-content+primary_tag:{{slug}}"
-                  limit="100"
-                }}
-                  <span class="ns-overview-stat">
-                    <i class="ph ph-stack" aria-hidden="true"></i>
-                    {{posts.length}} modules
-                  </span>
-                {{/get}}
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-training-duration-"}}
-                    {{#if description}}
-                      <span class="ns-overview-stat">
-                        <i class="ph ph-clock" aria-hidden="true"></i>
-                        {{description}}
-                      </span>
-                    {{/if}}
-                  {{/match}}
-                {{/foreach}}
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-training-level-"}}
-                    {{#if description}}
-                      <span class="ns-overview-stat">
-                        <i class="ph ph-signal-high" aria-hidden="true"></i>
-                        {{description}}
-                      </span>
-                    {{/if}}
-                  {{/match}}
-                {{/foreach}}
-                <span class="ns-overview-stat">
-                  <i class="ph ph-calendar" aria-hidden="true"></i>
-                  Updated {{date updated_at format="MMM YYYY"}}
-                </span>
-              </div>
-              {{#primary_author}}
-                <div class="media mb-4">
-                  <figure class="media-left">
-                    {{#if profile_image}}
-                      <p class="image is-48x48">
-                        <img src="{{img_url profile_image size="xs"}}"
-                             alt="{{name}}" class="is-rounded" loading="lazy">
-                      </p>
-                    {{else}}
-                      <p class="image is-48x48" style="display:flex;align-items:center;justify-content:center">
-                        <i class="ph ph-user-circle" style="font-size:3rem;color:var(--theme-text-weak)"></i>
-                      </p>
-                    {{/if}}
-                  </figure>
-                  <div class="media-content">
-                    <p class="is-size-7 has-text-grey mb-0">Instructor</p>
-                    <p class="has-text-weight-bold mb-0">{{name}}</p>
-                  </div>
-                </div>
-              {{/primary_author}}
-              {{#get "posts"
-                filter="tag:hash-training-content+primary_tag:{{slug}}"
-                order="published_at asc"
-                limit="1"
-              }}
-                {{#foreach posts}}
-                  <div class="buttons">
-                    <a href="{{url}}" class="button is-primary is-medium">
-                      <span class="icon is-small">
-                        <i class="ph ph-rocket-launch" aria-hidden="true"></i>
-                      </span>
-                      <span>Start Training</span>
-                    </a>
-                    <a href="/training/" class="button is-light is-medium">
-                      <span class="icon is-small">
-                        <i class="ph ph-arrow-left" aria-hidden="true"></i>
-                      </span>
-                      <span>All courses</span>
-                    </a>
-                  </div>
-                {{else}}
-                  <button class="button is-primary is-medium" disabled>Coming soon</button>
-                {{/foreach}}
-              {{/get}}
-            </div>
-          </div>
-
-          {{!-- About / post content --}}
-          {{#if content}}
-            <div class="box mb-5">
-              <h2 class="title is-4 mb-4">About this training</h2>
-              <div class="content gh-content">{{content}}</div>
-            </div>
-          {{/if}}
-
-          {{!-- Module accordion list --}}
-          {{#get "posts"
-            filter="tag:hash-training-content+primary_tag:{{slug}}"
-            order="published_at asc"
-            limit="100"
-            include="tags"
-          }}
-            {{#if posts}}
-              <div class="box">
-                <div class="level mb-4">
-                  <div class="level-left">
-                    <div class="level-item">
-                      <h2 class="title is-4 mb-0">Course Modules</h2>
-                    </div>
-                    <div class="level-item">
-                      <span class="tag is-light">{{posts.length}} modules</span>
-                    </div>
-                  </div>
-                </div>
-                {{#foreach posts}}
-                  <a href="{{url}}" class="ns-mod-row">
-                    <div class="ns-mod-row-num">{{@number}}</div>
-                    <div class="ns-mod-row-body">
-                      <p class="ns-mod-row-title">{{title}}</p>
-                      {{#if custom_excerpt}}
-                        <p class="ns-mod-row-excerpt">{{custom_excerpt}}</p>
-                      {{/if}}
-                    </div>
-                    <div class="ns-mod-row-meta">
-                      <span class="tag is-light is-small">
-                        <i class="ph ph-timer mr-1" aria-hidden="true"></i>
-                        {{reading_time}}
-                      </span>
-                    </div>
-                    <i class="ph ph-arrow-right ns-mod-row-arrow" aria-hidden="true"></i>
-                  </a>
-                {{/foreach}}
-              </div>
-            {{else}}
-              <div class="notification is-light">No modules published yet.</div>
-            {{/if}}
-          {{/get}}
-
-        </div>
-
-      {{!-- MODULE READER --}}
-      {{else has tag="#training-content"}}
-
-        {{!-- Lesson action bar --}}
-        <div class="ns-lesson-bar">
-          {{#prev_post in="primary_tag" filter="tag:hash-training-content"}}
-            <a href="{{url}}" class="button is-white has-text-grey-dark">
-              <span class="icon"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
-              <span class="is-hidden-mobile">Previous</span>
-            </a>
-          {{else}}
-            <button class="button is-white" disabled>
-              <span class="icon"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
-              <span class="is-hidden-mobile">Previous</span>
-            </button>
-          {{/prev_post}}
-          <span class="ns-lesson-bar-title is-hidden-mobile">{{title}}</span>
-          {{#next_post in="primary_tag" filter="tag:hash-training-content"}}
-            <a href="{{url}}" class="button is-primary">
-              <span class="is-hidden-mobile">Continue</span>
-              <span class="is-hidden-tablet">Next</span>
-              <span class="icon"><i class="ph ph-arrow-right" aria-hidden="true"></i></span>
-            </a>
-          {{else}}
-            {{#get "posts"
-              filter="tag:hash-training+slug:{{primary_tag.slug}}"
-              limit="1"
-            }}
-              {{#foreach posts}}
-                <a href="{{url}}" class="button is-success">
-                  <span class="icon"><i class="ph ph-check-circle" aria-hidden="true"></i></span>
-                  <span>Finish</span>
-                </a>
-              {{else}}
-                <a href="/training/" class="button is-success">
-                  <span class="icon"><i class="ph ph-check-circle" aria-hidden="true"></i></span>
-                  <span>Done</span>
-                </a>
-              {{/foreach}}
-            {{/get}}
-          {{/next_post}}
-        </div>
-
-        {{!-- Feature image as lesson cover --}}
-        {{#if feature_image}}
-          <div class="ns-lesson-cover">
-            <figure class="image is-16by9">
-              <img src="{{img_url feature_image size="xl"}}"
-                   alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-                   loading="lazy">
-            </figure>
-          </div>
-        {{/if}}
-
-        {{!-- Content area --}}
-        <div class="container is-fluid py-5">
-          <div class="box ns-lesson-box">
-
-            {{!-- Content tabs --}}
-            <div class="tabs">
-              <ul>
-                <li class="is-active"><a>Overview</a></li>
-              </ul>
-            </div>
-
-            <div class="content gh-content mt-4">
-
-              {{!-- Article header --}}
-              <header class="ns-reader-header mb-5">
-                <div class="tags mb-3">
-                  <span class="tag is-primary is-light">Module</span>
-                  {{#if primary_tag}}
-                    <a href="{{primary_tag.url}}" class="tag is-light">
-                      {{primary_tag.name}}
-                    </a>
-                  {{/if}}
-                  <span class="tag is-white has-text-grey">
-                    <span class="icon is-small">
-                      <i class="ph ph-clock" aria-hidden="true"></i>
-                    </span>
-                    <span>{{reading_time}}</span>
-                  </span>
-                </div>
-                <h1 class="title is-2 is-size-3-mobile">{{title}}</h1>
-                {{#if custom_excerpt}}
-                  <p class="subtitle is-5 has-text-grey">{{custom_excerpt}}</p>
-                {{/if}}
-                {{#primary_author}}
-                  <div class="is-flex is-align-items-center mt-4" style="gap:.5rem;flex-wrap:wrap">
-                    {{#if profile_image}}
-                      <figure class="image is-32x32">
-                        <img src="{{img_url profile_image size="xxs"}}"
-                             alt="{{name}}" class="is-rounded" loading="lazy">
-                      </figure>
-                    {{else}}
-                      <i class="ph ph-user-circle has-text-grey" style="font-size:2rem"></i>
-                    {{/if}}
-                    <span class="is-size-7 has-text-grey">{{name}}</span>
-                    {{#if updated_at}}
-                      <span class="is-size-7 has-text-grey-light">
-                        · Updated {{date updated_at format="MMM D, YYYY"}}
-                      </span>
-                    {{/if}}
-                  </div>
-                {{/primary_author}}
-              </header>
-
-              {{!-- Article body --}}
-              <div class="ns-reader-body js-toc-content">{{content}}</div>
-
-              {{!-- Prev / Next pager --}}
-              <div class="ns-reader-pager mt-6 pt-5">
-                <div class="ns-reader-pager-prev">
-                  {{#prev_post in="primary_tag" filter="tag:hash-training-content"}}
-                    <a href="{{url}}" class="ns-pager-card">
-                      <p class="ns-pager-dir">
-                        <i class="ph ph-arrow-left" aria-hidden="true"></i> Previous
-                      </p>
-                      <p class="ns-pager-title">{{title}}</p>
-                    </a>
-                  {{/prev_post}}
-                </div>
-                <div class="ns-reader-pager-next">
-                  {{#next_post in="primary_tag" filter="tag:hash-training-content"}}
-                    <a href="{{url}}" class="ns-pager-card ns-pager-card--right">
-                      <p class="ns-pager-dir">
-                        Next <i class="ph ph-arrow-right" aria-hidden="true"></i>
-                      </p>
-                      <p class="ns-pager-title">{{title}}</p>
-                    </a>
-                  {{else}}
-                    {{#get "posts"
-                      filter="tag:hash-training+slug:{{primary_tag.slug}}"
-                      limit="1"
-                    }}
-                      {{#foreach posts}}
-                        <a href="{{url}}"
-                           class="ns-pager-card ns-pager-card--right ns-pager-card--done">
-                          <p class="ns-pager-dir">
-                            <i class="ph ph-check-circle" aria-hidden="true"></i> Finish training
-                          </p>
-                          <p class="ns-pager-title">{{title}}</p>
-                        </a>
-                      {{else}}
-                        <a href="/training/"
-                           class="ns-pager-card ns-pager-card--right ns-pager-card--done">
-                          <p class="ns-pager-dir">
-                            <i class="ph ph-check-circle" aria-hidden="true"></i> All done
-                          </p>
-                          <p class="ns-pager-title">Back to training</p>
-                        </a>
-                      {{/foreach}}
-                    {{/get}}
-                  {{/next_post}}
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-      {{/has}}
-    </main>
-
-    {{!-- =========================================================
-      RIGHT SIDEBAR — shared for both views
-    ========================================================= --}}
-    <aside class="ns-player-sidebar is-hidden-touch">
-
-      <div class="ns-sidebar-head">
-        <h2 class="title is-5 mb-0">Course Content</h2>
-      </div>
-
-      <div class="ns-sidebar-body">
-        {{!-- All trainings grouped with their modules --}}
-        {{#get "posts"
-          filter="tag:hash-training"
-          order="published_at asc"
-          limit="100"
-        }}
-          {{#foreach posts}}
-            <div class="ns-sidebar-group">
-
-              {{!-- Group header: training title + icon --}}
-              <a href="{{url}}"
-                 class="ns-sidebar-group-hd{{#match id ../../id}} is-active{{/match}}">
-                <span class="ns-sidebar-group-hd-left">
-                  {{#if feature_image}}
-                    <img src="{{img_url feature_image size="xxs"}}"
-                         alt="" class="ns-sidebar-group-img" aria-hidden="true">
-                  {{else}}
-                    <span class="ns-sidebar-group-icon" aria-hidden="true">
-                      <i class="ph ph-stack"></i>
-                    </span>
-                  {{/if}}
-                  <span class="ns-sidebar-group-title">{{title}}</span>
-                </span>
-                <i class="ph ph-caret-down ns-sidebar-group-caret" aria-hidden="true"></i>
-              </a>
-
-              {{!-- Module list --}}
-              {{#get "posts"
-                filter="tag:hash-training-content+primary_tag:{{slug}}"
-                order="published_at asc"
-                limit="100"
-              }}
-                {{#if posts}}
-                  <div class="ns-sidebar-lessons">
-                    {{#foreach posts}}
-                      <a href="{{url}}"
-                         class="ns-sidebar-lesson{{#match id ../../../../id}} is-active{{/match}}">
-                        <i class="ph ph-play-circle ns-sidebar-lesson-icon" aria-hidden="true"></i>
-                        <div class="ns-sidebar-lesson-body">
-                          <p class="ns-sidebar-lesson-title">{{title}}</p>
-                          <p class="ns-sidebar-lesson-meta">
-                            <i class="ph ph-timer" aria-hidden="true"></i>
-                            {{reading_time}}
-                          </p>
-                        </div>
-                      </a>
-                    {{/foreach}}
-                  </div>
-                {{/if}}
-              {{/get}}
-
-            </div>
-          {{/foreach}}
-        {{/get}}
-      </div>
-
-    </aside>
 
   </div>
+</nav>
+
+{{!-- =========================================================================
+      3. FULL-SCREEN APP LAYOUT
+========================================================================= --}}
+<div class="columns is-gapless is-marginless" style="height: calc(100vh - 60px);">
+
+  {{!-- LEFT SIDE: SCROLLABLE MAIN CONTENT --}}
+  <main class="column is-12-tablet is-8-desktop is-9-widescreen has-background-white-bis" style="overflow-y: auto; height: 100%;">
+    
+    {{!-- 🔀 BRANCH A: TRAINING OVERVIEW (#training) --}}
+    {{#has tag="#training"}}
+      <div class="container is-fluid py-6">
+        <div class="box is-shadowless p-6" style="border-radius: 12px; border: 1px solid #eaeaea; max-width: 900px; margin: 0 auto;">
+          <h1 class="title is-2 has-text-dark mb-4">{{title}}</h1>
+          <p class="subtitle is-4 has-text-grey">{{custom_excerpt}}</p>
+          <hr class="has-background-light">
+          <div class="content gh-content mt-5">{{content}}</div>
+        </div>
+      </div>
+    {{/has}}
+
+    {{!-- 🔀 BRANCH B: MODULE READER (#training-content) --}}
+    {{#has tag="#training-content"}}
+
+      {{!-- 16:9 Video Wrapper --}}
+      <div class="has-background-black is-relative" style="width: 100%; aspect-ratio: 16 / 9;">
+        {{#if feature_image}}
+          <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
+          <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
+            <button class="button is-white is-rounded is-large" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: none;">
+              <span class="icon is-large has-text-white"><i class="ph-fill ph-play is-size-1"></i></span>
+            </button>
+          </div>
+        {{else}}
+          <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
+            <span class="icon is-large has-text-grey-dark"><i class="ph ph-video-camera is-size-1"></i></span>
+          </div>
+        {{/if}}
+      </div>
+
+      {{!-- Action Bar --}}
+      <div class="is-flex is-justify-content-space-between is-align-items-center px-5 py-4 has-background-white" style="border-bottom: 1px solid #eaeaea;">
+        {{#prev_post in="primary_tag" filter="tag:hash-training-content"}}
+          <a href="{{url}}" class="button is-white has-text-grey-dark has-text-weight-semibold">
+            <span class="icon"><i class="ph ph-arrow-left"></i></span>
+            <span class="is-hidden-mobile">Previous Lesson</span>
+          </a>
+        {{else}}
+          <button class="button is-white has-text-grey-light" disabled><span class="icon"><i class="ph ph-arrow-left"></i></span> Previous Lesson</button>
+        {{/prev_post}}
+
+        <div class="buttons mb-0">
+          <button class="button is-light has-text-weight-bold">
+            <span class="icon"><i class="ph ph-bookmark-simple"></i></span>
+            <span class="is-hidden-mobile">Bookmark</span>
+          </button>
+          {{#next_post in="primary_tag" filter="tag:hash-training-content"}}
+            <a href="{{url}}" class="button is-primary has-text-weight-bold">
+              <span class="is-hidden-mobile">Complete & Continue</span>
+              <span class="is-hidden-tablet">Next</span>
+              <span class="icon"><i class="ph ph-arrow-right"></i></span>
+            </a>
+          {{else}}
+            <a href="/training/" class="button is-success has-text-weight-bold">
+              <span class="icon"><i class="ph-fill ph-check-circle"></i></span> Finish Course
+            </a>
+          {{/next_post}}
+        </div>
+      </div>
+
+      {{!-- Content Area --}}
+      <div class="container is-fluid mt-5 mb-6">
+        
+        {{!-- Horizontal Ad Placeholder --}}
+        <div class="box is-shadowless has-background-white-ter is-flex is-align-items-center is-justify-content-center mx-auto mb-5" style="border: 2px dashed #b5b5b5; max-width: 728px; height: 90px;">
+          <span class="has-text-grey has-text-weight-bold">Advertisement (Google AdSense / Sponsorship slot)</span>
+        </div>
+
+        {{!-- Article Box --}}
+        <div class="box is-shadowless p-6" style="max-width: 900px; margin: 0 auto; border-radius: 8px; border: 1px solid #eaeaea;">
+          
+          <div class="tabs is-medium mb-5" style="border-bottom: 1px solid #eaeaea;">
+            <ul>
+              <li class="is-active"><a class="has-text-link has-text-weight-bold" style="border-bottom-color: #0176D3;">Overview</a></li>
+              <li><a class="has-text-grey">Resources (2)</a></li>
+              <li><a class="has-text-grey">Q & A</a></li>
+            </ul>
+          </div>
+
+          <div class="content gh-content has-text-dark is-medium mt-5">
+            <h1 class="title is-3 mb-2">{{title}}</h1>
+            <p class="has-text-grey is-size-6 mb-5">
+              {{#if primary_tag}}{{primary_tag.name}} &bull;{{/if}} {{reading_time minute="1 min read" minutes="% min read"}}
+            </p>
+            {{content}}
+          </div>
+
+        </div>
+      </div>
+    {{/has}}
+
+  </main>
+
+  {{!-- =========================================================
+        RIGHT SIDEBAR: CURRICULUM ACCORDION (Desktop Only)
+  ========================================================= --}}
+  <aside class="column is-4-desktop is-3-widescreen has-background-white is-hidden-touch" style="overflow-y: auto; height: 100%; border-left: 1px solid #eaeaea;">
+    
+    <div class="p-4 has-background-white-bis" style="position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #eaeaea;">
+      <h2 class="title is-5 mb-0 has-text-dark">Course Content</h2>
+    </div>
+
+    <div>
+      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="100"}}
+        {{#foreach posts}}
+          
+          <div class="js-sidebar-group" style="border-bottom: 1px solid #eaeaea;">
+            
+            {{!-- Track Header --}}
+            <a class="is-flex is-justify-content-space-between is-align-items-center p-4 has-background-white-ter has-text-dark has-text-weight-bold hover-background-light js-sidebar-group-hd">
+              <span>{{title}}</span>
+              <span class="icon has-text-grey"><i class="ph ph-caret-down js-caret"></i></span>
+            </a>
+            
+            {{!-- Lessons List --}}
+            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100"}}
+              {{#if posts}}
+                <div class="js-sidebar-list is-hidden">
+                  {{#foreach posts}}
+                    <a href="{{url}}" class="is-flex is-align-items-flex-start p-3 pl-5 has-text-dark hover-background-white-ter js-sidebar-lesson {{#match id ../../../../id}}is-active has-background-info-light has-text-link has-text-weight-bold{{/match}}" {{#match id ../../../../id}}style="border-left: 4px solid #0176D3; padding-left: calc(1.25rem - 4px);"{{/match}}>
+                      <span class="icon is-small mr-3 mt-1 {{#match id ../../../../id}}has-text-link{{else}}has-text-grey-light{{/match}}">
+                        <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else}}ph ph-circle{{/match}} is-size-5"></i>
+                      </span>
+                      <div>
+                        <div class="{{#match id ../../../../id}}has-text-link has-text-weight-bold{{else}}has-text-weight-medium{{/match}} mb-1">{{title}}</div>
+                        <div class="has-text-grey is-size-7"><i class="ph ph-video-camera mr-1"></i> {{reading_time minute="1m" minutes="%m"}}</div>
+                      </div>
+                    </a>
+                  {{/foreach}}
+                </div>
+              {{/if}}
+            {{/get}}
+
+          </div>
+
+        {{/foreach}}
+      {{/get}}
+    </div>
+
+    {{!-- Sidebar Ad Placeholder --}}
+    <div class="p-4 has-background-white-bis mt-5">
+      <div class="box is-shadowless has-background-white-ter is-flex is-align-items-center is-justify-content-center mx-auto" style="border: 2px dashed #b5b5b5; width: 300px; height: 250px;">
+        <span class="has-text-grey has-text-weight-bold has-text-centered">Sidebar Ad<br>(300x250)</span>
+      </div>
+    </div>
+
+  </aside>
+
 </div>
 
+{{!-- =========================================================================
+      JS: ACCORDION & MOBILE MENU LOGIC
+========================================================================= --}}
 <script>
 (function () {
   'use strict';
-  var toggle = document.getElementById('nsPlayerMobToggle');
-  var panel  = document.getElementById('nsPlayerMobPanel');
-  if (!toggle || !panel) return;
 
-  function setOpen(open) {
-    panel.classList.toggle('is-open', open);
-    panel.setAttribute('aria-hidden', String(!open));
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.classList.toggle('is-open', open);
-    var caret = toggle.querySelector('.ph-caret-down');
-    if (caret) caret.style.transform = open ? 'rotate(180deg)' : '';
-  }
+  // 1. Mobile Menu Toggle
+  var toggle = document.getElementById('playerMobToggle');
+  var panel  = document.getElementById('playerMobPanel');
+  
+  if (toggle && panel) {
+    function setOpen(open) {
+      panel.classList.toggle('is-hidden', !open);
+      panel.setAttribute('aria-hidden', String(!open));
+      toggle.setAttribute('aria-expanded', String(open));
+      
+      if(open) {
+        toggle.classList.remove('is-light');
+        toggle.classList.add('is-link');
+      } else {
+        toggle.classList.remove('is-link');
+        toggle.classList.add('is-light');
+      }
 
-  toggle.addEventListener('click', function () {
-    setOpen(!panel.classList.contains('is-open'));
-  });
-  document.addEventListener('click', function (e) {
-    if (panel.classList.contains('is-open') &&
-        !panel.contains(e.target) && !toggle.contains(e.target)) setOpen(false);
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
-      setOpen(false); toggle.focus();
+      var caret = toggle.querySelector('.js-caret');
+      if (caret) caret.style.transform = open ? 'rotate(180deg)' : '';
     }
+
+    toggle.addEventListener('click', function () {
+      setOpen(panel.classList.contains('is-hidden'));
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!panel.classList.contains('is-hidden') && !panel.contains(e.target) && !toggle.contains(e.target)) {
+        setOpen(false);
+      }
+    });
+  }
+
+  // 2. Sidebar Accordion Initialization
+  var activeLesson = document.querySelector('.js-sidebar-lesson.is-active');
+  
+  if (activeLesson) {
+    activeLesson.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    var grp = activeLesson.closest('.js-sidebar-group');
+    if (grp) {
+      var list = grp.querySelector('.js-sidebar-list');
+      var caret = grp.querySelector('.js-caret');
+      var hd = grp.querySelector('.js-sidebar-group-hd');
+      if(list) list.classList.remove('is-hidden');
+      if(caret) caret.style.transform = 'rotate(180deg)';
+      if(hd) hd.classList.replace('has-background-white-ter', 'has-background-white');
+    }
+  }
+
+  // 3. Make Group Headers toggleable on click
+  var groupHeaders = document.querySelectorAll('.js-sidebar-group-hd');
+  groupHeaders.forEach(function(hd) {
+    hd.addEventListener('click', function(e) {
+      var grp = this.closest('.js-sidebar-group');
+      var list = grp.querySelector('.js-sidebar-list');
+      var caret = this.querySelector('.js-caret');
+      
+      if(list) {
+        var isHidden = list.classList.contains('is-hidden');
+        list.classList.toggle('is-hidden', !isHidden);
+        if (caret) caret.style.transform = isHidden ? 'rotate(180deg)' : '';
+      }
+    });
   });
 
-  var active = document.querySelector(
-    '.ns-sidebar-lesson.is-active, .ns-sidebar-group-hd.is-active');
-  if (active) {
-    active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    var grp = active.closest('.ns-sidebar-group');
-    if (grp) grp.classList.add('is-open');
-  }
 })();
 </script>
+
