@@ -1,532 +1,789 @@
 {{!< default}}
-{{!--
-    home.hbs — Namaste Salesforce
-    ============================================================
-    Homepage template. Sections:
-      1.  Hero (dark gradient, featured path card, stats)
-      2.  Platform pillars (4 features)
-      3.  Career paths (Admin / Developer / Architect)
-      4.  Featured courses (Ghost {{#get}} tag:hash-course)
-      5.  "Engineer Way" (features + YouTube video)
-      6.  Why learn (2 columns)
-      7.  About me (creator + timeline)
-      8.  Blog + sidebar
-      9.  Testimonials
-      10. Final CTA banner
 
-    USES: --sfdc-* CSS variables (no Bulma, no Bootstrap).
-    ICONS: Phosphor Icons (ph ph-*). Ensure the Phosphor CDN
-           script is loaded in default.hbs <head>.
-    ============================================================
---}}
 
-{{!-- ═══════════════════════════════════════════════════════════
-     1. HERO
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-hero  outer" aria-label="{{t "Site hero"}}">
 
-    {{!-- Optional video background (or fallback gradient) --}}
-    <div class="home-hero__bg" aria-hidden="true"></div>
-    <div class="home-hero__overlay" aria-hidden="true"></div>
-
-    <div class="home-hero__body inner">
-        <div class="home-hero__grid">
-
-            {{!-- Left column: headline + CTAs + logos --}}
-            <div class="home-hero__content">
-
-                <div class="home-hero__badge">
-                    <i class="ph ph-lightning-fill" aria-hidden="true"></i>
-                    <span>{{t "Hands-on Salesforce Learning Platform"}}</span>
-                </div>
-
-                <h1 class="home-hero__title">
-                    {{t "Become a"}} <em class="home-hero__accent">{{t "Salesforce Application Engineer"}}</em>.
-                </h1>
-
-                <p class="home-hero__description">
-                    {{#if @site.description}}
-                        {{@site.description}}
-                    {{else}}
-                        {{t "Go beyond the basics. Master programmatic development, complex architecture, LWC, and integrations through a real-world, project-based curriculum."}}
-                    {{/if}}
-                </p>
-
-                <div class="home-hero__actions btn-group-gap">
-                    <a href="/courses/" class="btn btn-white btn-lg btn-pill">
-                        <i class="ph ph-book-open btn-icon" aria-hidden="true"></i>
-                        <span>{{t "Explore Curriculum"}}</span>
-                    </a>
-                    {{#if @site.members_enabled}}
-                        {{#unless @member}}
-                            <a href="#/portal/signup" data-portal="signup" class="btn btn-outline-white btn-lg btn-pill">
-                                <i class="ph ph-sparkle btn-icon" aria-hidden="true"></i>
-                                <span>{{t "Start for Free"}}</span>
+ <!-- Hero Section (The Mission) -->
+    <section class="hero is-link is-large">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-vcentered">
+                    <div class="column is-7">
+                        <span class="tag is-warning is-light is-medium mb-4 has-text-weight-bold">
+                            <i class="ph-fill ph-code mr-1"></i> Open Source Project
+                        </span>
+                        <h1 class="title is-1 has-text-weight-bold mb-4 is-size-2-mobile">
+                            Learning in Public.<br>Building for the Ecosystem.
+                        </h1>
+                        <p class="subtitle is-4 mb-6" style="line-height: 1.5;">
+                            Follow my journey from the absolute basics to cracking a <strong>Salesforce Application Engineer</strong> role at a top Product-Based Company. 
+                        </p>
+                        <div class="buttons are-medium">
+                            <a href="#training" class="button is-white has-text-link has-text-weight-bold px-6">
+                                Start Learning
                             </a>
-                        {{else}}
-                            <a href="/courses/" class="btn btn-outline-white btn-lg btn-pill">
-                                <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
-                                <span>{{t "Continue Learning"}}</span>
+                            <a href="#story" class="button is-link is-inverted is-outlined px-5">
+                                Read My Story
                             </a>
-                        {{/unless}}
-                    {{/if}}
-                </div>
-
-                {{!-- Hired by --}}
-                <div class="home-hero__hired">
-                    <p class="home-hero__hired-label">{{t "Application Engineers from our platform are hired by"}}</p>
-                    <div class="home-hero__hired-logos">
-                        <span>Salesforce</span>
-                        <span>Deloitte</span>
-                        <span>Accenture</span>
-                        <span>IBM</span>
-                        <span>Cognizant</span>
+                        </div>
+                    </div>
+                    <div class="column is-5 has-text-centered is-hidden-mobile">
+                        <!-- Pure Bulma Box used as a floating decorative element -->
+                        <div class="box has-text-left px-5 py-5 ml-6" style="border-radius: 1rem;">
+                            <div class="is-flex is-align-items-center mb-4">
+                                <span class="icon is-large has-text-link has-background-link-light is-rounded px-4 py-4 mr-3">
+                                    <i class="ph-fill ph-target is-size-3"></i>
+                                </span>
+                                <div>
+                                    <p class="is-size-7 has-text-grey has-text-weight-bold is-uppercase">Current Goal</p>
+                                    <p class="is-size-5 has-text-weight-bold has-text-dark mt-1">Cracking GTM / App Engineer</p>
+                                </div>
+                            </div>
+                            <progress class="progress is-link is-small mb-2" value="65" max="100">65%</progress>
+                            <p class="is-size-7 has-text-grey"><i class="ph ph-trend-up"></i> Mastering LWC & Integrations</p>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            {{!-- Right column: featured path card --}}
-            <div class="home-hero__card-wrap">
-                <div class="home-featured-card">
-                    <div class="home-featured-card__header">
-                        <div class="home-featured-card__icon" aria-hidden="true">
-                            <i class="ph ph-code" style="font-size: 2rem;"></i>
-                        </div>
-                        <span class="home-featured-card__badge">{{t "Featured Path"}}</span>
+    <!-- Swarnil's Story (About the Author) -->
+    <section id="story" class="section py-6 has-background-white">
+        <div class="container py-6">
+            <div class="columns is-vcentered">
+                <div class="column is-4 has-text-centered">
+                    <figure class="image is-square is-inline-block" style="width: 80%;">
+                        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="is-rounded shadow" alt="Swarnil">
+                    </figure>
+                </div>
+                <div class="column is-8 pl-6-desktop">
+                    <p class="is-size-7 has-text-link has-text-weight-bold is-uppercase mb-2">About The Author</p>
+                    <h2 class="title is-2 has-text-weight-bold mb-4">Hi, I'm Swarnil.</h2>
+                    <div class="content is-medium has-text-grey">
+                        <p>I am on a mission to become a top-tier <strong>Salesforce Application Engineer</strong>. To hold myself accountable, I decided to build in public. That's how <em>Namaste Salesforce</em> was born.</p>
+                        <p>This is an open-source Ghost theme and learning platform where I document everything I learn—from the absolute basics of Salesforce Administration to complex Apex architectures, LWC, and third-party integrations.</p>
+                        <p>By breaking down complex concepts into simple, end-to-end training modules and custom courses, I'm not just preparing for my dream role at a GTM product company—I'm building a free resource for the entire Ohana.</p>
                     </div>
-                    <h3 class="home-featured-card__title">{{t "Salesforce Developer Path"}}</h3>
-                    <p class="home-featured-card__desc">
-                        {{t "Master programmatic development. Cover Apex fundamentals, Lightning Web Components, SOQL, and REST integrations through real builds."}}
+                    <a class="button is-link is-outlined mt-2">
+                        <span class="icon"><i class="ph-fill ph-linkedin-logo"></i></span>
+                        <span>Connect on LinkedIn</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Pillars (What's inside) -->
+    <section class="section py-6 has-background-light">
+        <div class="container">
+            <div class="has-text-centered mb-6">
+                <h2 class="title is-2 has-text-weight-bold">How I am structuring my learning</h2>
+                <p class="subtitle is-5 has-text-grey mt-3">Everything is open-source and free to access.</p>
+            </div>
+
+            <div class="columns is-multiline">
+                <!-- Training -->
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="box has-text-centered py-6 h-100">
+                        <span class="icon is-large has-text-warning has-background-warning-light is-rounded mb-4 px-5 py-5">
+                            <i class="ph-fill ph-map-trifold is-size-2"></i>
+                        </span>
+                        <h3 class="title is-4 mb-3">End-to-End Training</h3>
+                        <p class="has-text-grey is-size-6">Structured, step-by-step modules starting from zero. Perfect for grasping the complete lifecycle of Salesforce.</p>
+                    </div>
+                </div>
+                <!-- Courses -->
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="box has-text-centered py-6 h-100 border-link">
+                        <span class="icon is-large has-text-link has-background-link-light is-rounded mb-4 px-5 py-5">
+                            <i class="ph-fill ph-graduation-cap is-size-2"></i>
+                        </span>
+                        <h3 class="title is-4 mb-3">Targeted Courses</h3>
+                        <p class="has-text-grey is-size-6">Deep-dive custom courses focusing purely on complex topics like Asynchronous Apex, LWC, and APIs.</p>
+                    </div>
+                </div>
+                <!-- Blog -->
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="box has-text-centered py-6 h-100">
+                        <span class="icon is-large has-text-primary has-background-primary-light is-rounded mb-4 px-5 py-5">
+                            <i class="ph-fill ph-article is-size-2"></i>
+                        </span>
+                        <h3 class="title is-4 mb-3">My Dev Blog</h3>
+                        <p class="has-text-grey is-size-6">My daily notes, interview prep questions, bug fixes, and thoughts on cracking product-based companies.</p>
+                    </div>
+                </div>
+                <!-- Docs -->
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="box has-text-centered py-6 h-100">
+                        <span class="icon is-large has-text-dark has-background-grey-light is-rounded mb-4 px-5 py-5">
+                            <i class="ph-fill ph-folder-open is-size-2"></i>
+                        </span>
+                        <h3 class="title is-4 mb-3">Docs & Resources</h3>
+                        <p class="has-text-grey is-size-6">Cheat sheets, open-source documentation, and contribution guidelines for the Namaste Salesforce theme.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- End-to-End Training Modules -->
+    <section id="training" class="section py-6 has-background-white">
+        <div class="container py-4">
+            <div class="is-flex is-justify-content-space-between is-align-items-flex-end mb-6">
+                <div>
+                    <h2 class="title is-2 has-text-weight-bold">End-to-End Training</h2>
+                    <p class="subtitle is-5 has-text-grey mt-2">The core foundation. We start from the absolute basics.</p>
+                </div>
+                <a class="button is-ghost has-text-link has-text-weight-bold is-hidden-mobile">View All Training &rarr;</a>
+            </div>
+
+            <div class="columns">
+                <div class="column is-4">
+                    <div class="card is-shadowless has-background-light">
+                        <div class="card-content py-5">
+                            <span class="tag is-warning is-light mb-3 has-text-weight-bold is-uppercase">Phase 1</span>
+                            <h3 class="title is-4 mb-2">Salesforce Admin Basics</h3>
+                            <p class="has-text-grey mb-4">Data modeling, security, UI, and Flows. The bedrock of any Application Engineer.</p>
+                            <a class="has-text-link has-text-weight-bold">Start Module &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="card is-shadowless has-background-link-light">
+                        <div class="card-content py-5">
+                            <span class="tag is-link is-light mb-3 has-text-weight-bold is-uppercase">Phase 2</span>
+                            <h3 class="title is-4 mb-2">Apex Programming</h3>
+                            <p class="has-text-grey mb-4">Moving into code. Triggers, SOQL, and bulkification. Building programmatic logic.</p>
+                            <a class="has-text-link has-text-weight-bold">Start Module &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="card is-shadowless has-background-primary-light">
+                        <div class="card-content py-5">
+                            <span class="tag is-primary is-light mb-3 has-text-weight-bold is-uppercase">Phase 3</span>
+                            <h3 class="title is-4 mb-2">LWC & Integrations</h3>
+                            <p class="has-text-grey mb-4">Building modern UIs and connecting Salesforce to external GTM tech stacks via APIs.</p>
+                            <a class="has-text-link has-text-weight-bold">Start Module &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Targeted Custom Courses -->
+    <section id="courses" class="section py-6 has-background-light">
+        <div class="container py-4">
+            <h2 class="title is-2 has-text-weight-bold mb-2">Targeted Custom Courses</h2>
+            <p class="subtitle is-5 has-text-grey mb-6">Deep dives into specific topics required for top product companies.</p>
+
+            <div class="columns is-multiline">
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-16by9">
+                                <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=80" alt="LWC">
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <span class="tag is-info is-light mb-2">Development</span>
+                            <h4 class="title is-5 mb-2">Mastering Lightning Web Components</h4>
+                            <p class="is-size-7 has-text-grey mb-4">Going beyond the basics. Wire adapters, LMS, and Shadow DOM.</p>
+                            <a class="button is-link is-outlined is-fullwidth">View Course</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-16by9">
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" alt="Apex">
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <span class="tag is-info is-light mb-2">Development</span>
+                            <h4 class="title is-5 mb-2">Asynchronous Apex & Limits</h4>
+                            <p class="is-size-7 has-text-grey mb-4">Future methods, Batch Apex, Queueable, and surviving governor limits.</p>
+                            <a class="button is-link is-outlined is-fullwidth">View Course</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-16by9">
+                                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&q=80" alt="API">
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <span class="tag is-primary is-light mb-2">Architecture</span>
+                            <h4 class="title is-5 mb-2">Salesforce REST API Integrations</h4>
+                            <p class="is-size-7 has-text-grey mb-4">Connecting to third-party tools, handling JSON, and OAuth flows.</p>
+                            <a class="button is-link is-outlined is-fullwidth">View Course</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                    <div class="card">
+                        <div class="card-image">
+                            <figure class="image is-16by9">
+                                <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80" alt="GTM">
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <span class="tag is-warning is-light mb-2">GTM Strategy</span>
+                            <h4 class="title is-5 mb-2">Designing for GTM Teams</h4>
+                            <p class="is-size-7 has-text-grey mb-4">Lead routing, territory management, and CPQ basics for engineers.</p>
+                            <a class="button is-link is-outlined is-fullwidth">View Course</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Source & Docs CTA -->
+    <section id="docs" class="section py-6 has-background-dark">
+        <div class="container py-5 has-text-centered">
+            <span class="icon is-large has-text-white mb-3">
+                <i class="ph-fill ph-github-logo is-size-1"></i>
+            </span>
+            <h2 class="title is-2 has-text-white mb-4">Contribute to Namaste Salesforce</h2>
+            <p class="subtitle is-5 has-text-grey-light mx-auto mb-5" style="max-width: 600px;">
+                This entire platform is built as an open-source Ghost Theme. Whether you want to fix a bug, improve the documentation, or use the theme for yourself, I welcome all contributions!
+            </p>
+            <div class="buttons is-centered">
+                <a class="button is-link is-medium has-text-weight-bold">Read the Docs</a>
+                <a class="button is-white is-medium is-outlined">View Repository</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Blog / Notes -->
+    <section id="blog" class="section py-6 has-background-white">
+        <div class="container py-4">
+            <h2 class="title is-2 has-text-weight-bold mb-5">Latest Notes & Interview Prep</h2>
+            <div class="columns is-multiline">
+                <div class="column is-4">
+                    <div class="box is-shadowless has-background-light">
+                        <p class="is-size-7 has-text-grey mb-2"><i class="ph ph-calendar-blank"></i> Oct 24, 2024</p>
+                        <h4 class="title is-5 mb-2"><a class="has-text-dark">Top 10 LWC Interview Questions asked at Product Companies</a></h4>
+                        <p class="has-text-grey is-size-7">Breaking down the tricky lifecycle hook questions and shadow DOM concepts.</p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="box is-shadowless has-background-light">
+                        <p class="is-size-7 has-text-grey mb-2"><i class="ph ph-calendar-blank"></i> Oct 20, 2024</p>
+                        <h4 class="title is-5 mb-2"><a class="has-text-dark">Why standardizing Trigger Handlers is crucial for scaling</a></h4>
+                        <p class="has-text-grey is-size-7">My thoughts on why enterprise companies demand strict trigger frameworks.</p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="box is-shadowless has-background-light">
+                        <p class="is-size-7 has-text-grey mb-2"><i class="ph ph-calendar-blank"></i> Oct 15, 2024</p>
+                        <h4 class="title is-5 mb-2"><a class="has-text-dark">Day 1 of building Namaste Salesforce: Why Ghost & Bulma?</a></h4>
+                        <p class="has-text-grey is-size-7">Documenting the tech stack choices for this open-source learning platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{{! ══════════════════════════════════════════════════════════════════════════
+    HERO
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="hero is-medium home-hero">
+    <div class="hero-body">
+        <div class="container is-fluid">
+            <div class="columns is-vcentered is-variable is-8">
+
+                <div class="column is-7-desktop is-8-widescreen">
+                    <div class="tags mb-5">
+                        <span class="tag is-warning is-light">
+                            <span class="icon"><i class="ph ph-lightning"></i></span>
+                            <span>Hands-on Salesforce learning platform</span>
+                        </span>
+                    </div>
+
+                    <h1 class="title is-1 mb-4">
+                        {{@site.title}}
+                    </h1>
+
+                    <p class="subtitle is-4  mb-5">
+                        {{#if @site.description}}
+                            {{@site.description}}
+                        {{else}}
+                            Master Salesforce administration, development, analytics, and architecture with practical, real-world lessons.
+                        {{/if}}
                     </p>
 
-                    <div class="home-featured-card__progress-block">
-                        <div class="home-featured-card__progress-label">
-                            <span>{{t "Curriculum Style"}}</span>
-                            <strong>{{t "100% Practical"}}</strong>
-                        </div>
-                        <div class="home-featured-card__progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-                            <div class="home-featured-card__progress-fill" style="width: 100%"></div>
-                        </div>
+                    <div class="buttons are-medium mb-5">
+                        <a href="/courses/" class="button is-light">
+                            <span class="icon"><i class="ph ph-book-open"></i></span>
+                            <span>Explore Courses</span>
+                        </a>
+                        {{#if @site.members_enabled}}
+                            <a href="#/portal/signup" data-portal="signup" class="button is-primary">
+                                <span class="icon"><i class="ph ph-sparkle"></i></span>
+                                <span>Join Now</span>
+                            </a>
+                        {{/if}}
                     </div>
 
-                    <ul class="home-featured-card__list">
-                        <li>
-                            <i class="ph ph-check-circle" aria-hidden="true"></i>
-                            {{t "Zero to Advanced Progression"}}
-                        </li>
-                        <li>
-                            <i class="ph ph-check-circle" aria-hidden="true"></i>
-                            {{t "Build 5 Real-world Projects"}}
-                        </li>
-                        <li>
-                            <i class="ph ph-check-circle" aria-hidden="true"></i>
-                            {{t "Platform Developer I & II Aligned"}}
-                        </li>
-                    </ul>
+                    <div class="level is-mobile" style="max-width: 40rem;">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Tracks</p>
+                                <p class="title is-4 has-text-white">3+</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Courses</p>
+                                <p class="title is-4 has-text-white">20+</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Guides</p>
+                                <p class="title is-4 has-text-white">100+</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading has-text-white-ter">Community</p>
+                                <p class="title is-4 has-text-white">Growing</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <a href="/courses/" class="btn btn-secondary btn-block">
-                        <span>{{t "View Curriculum Path"}}</span>
-                        <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
+                <div class="column is-5-desktop is-4-widescreen">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <span class="icon is-large has-text-warning">
+                                    <i class="ph ph-certificate" style="font-size: 2rem;"></i>
+                                </span>
+                            </div>
+                            <div class="media-content">
+                                <p class="heading">Featured learning path</p>
+                                <p class="title is-5">Salesforce Developer Path</p>
+                                <p class="subtitle is-6">LWC, Apex, SOQL, integrations, and real builds.</p>
+                            </div>
+                        </article>
+                        <progress class="progress is-success mb-4" value="72" max="100">72%</progress>
+                        <div class="content mb-4">
+                            <ul>
+                                <li>Beginner to advanced progression</li>
+                                <li>Project-based lessons</li>
+                                <li>Certification-oriented roadmap</li>
+                            </ul>
+                        </div>
+                        <div class="buttons">
+                            <a href="/courses/" class="button is-primary is-fullwidth">
+                                <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                                <span>View Path</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    PLATFORM PILLARS
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section">
+    <div class="container is-fluid">
+        <div class="columns is-multiline is-variable is-4">
+
+            <div class="column is-6-mobile is-3-desktop reveal delay-1">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-link mb-3"><i class="ph ph-book-open-text" style="font-size: 2rem;"></i></span>
+                    <p class="heading">Structured Curriculum</p>
+                    <p class="title is-5">Step-by-step learning</p>
+                </div>
+            </div>
+
+            <div class="column is-6-mobile is-3-desktop reveal delay-2">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-warning mb-3"><i class="ph ph-code" style="font-size: 2rem;"></i></span>
+                    <p class="heading">Hands-on Projects</p>
+                    <p class="title is-5">Build while learning</p>
+                </div>
+            </div>
+
+            <div class="column is-6-mobile is-3-desktop reveal delay-3">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-primary mb-3"><i class="ph ph-exam" style="font-size: 2rem;"></i></span>
+                    <p class="heading">Certification Prep</p>
+                    <p class="title is-5">Career-focused training</p>
+                </div>
+            </div>
+
+            <div class="column is-6-mobile is-3-desktop reveal delay-4">
+                <div class="box has-text-centered">
+                    <span class="icon is-large has-text-success mb-3"><i class="ph ph-users-three" style="font-size: 2rem;"></i></span>
+                    <p class="heading">Community Support</p>
+                    <p class="title is-5">Learn together</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    CAREER PATHS
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section section-alt">
+    <div class="container is-fluid">
+        <div class="has-text-centered mb-6 reveal">
+            <h2 class="title is-2">Choose your career path</h2>
+            <p class="subtitle is-5">Pick the Salesforce route that matches your goal.</p>
+        </div>
+
+        <div class="columns is-variable is-5">
+
+            <div class="column is-4 reveal delay-1">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <span class="icon is-large has-text-warning mb-4">
+                            <i class="ph ph-gear-six" style="font-size: 3rem;"></i>
+                        </span>
+                        <h3 class="title is-4">Salesforce Admin</h3>
+                        <p class="content">Security, flows, reports, automation, setup, and day-to-day platform ownership.</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/courses/" class="card-footer-item">View Admin Path</a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-4 reveal delay-2">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <span class="icon is-large has-text-link mb-4">
+                            <i class="ph ph-code" style="font-size: 3rem;"></i>
+                        </span>
+                        <h3 class="title is-4">Salesforce Developer</h3>
+                        <p class="content">Apex, LWC, APIs, triggers, testing, packaging, and scalable custom app builds.</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/courses/" class="card-footer-item">View Developer Path</a>
+                    </footer>
+                </div>
+            </div>
+
+            <div class="column is-4 reveal delay-3">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <span class="icon is-large has-text-primary mb-4">
+                            <i class="ph ph-tree-structure" style="font-size: 3rem;"></i>
+                        </span>
+                        <h3 class="title is-4">Salesforce Architect</h3>
+                        <p class="content">Solution design, integrations, data strategy, governance, and enterprise scale thinking.</p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/courses/" class="card-footer-item">View Architect Path</a>
+                    </footer>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    FEATURED COURSES
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section">
+    <div class="container is-fluid">
+        <div class="level mb-6 reveal">
+            <div class="level-left">
+                <div class="level-item">
+                    <div>
+                        <h2 class="title is-2">Featured Courses</h2>
+                        <p class="subtitle is-5">Practical courses built for real outcomes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="level-right is-hidden-mobile">
+                <div class="level-item">
+                    <a href="/courses/" class="button is-light">
+                        <span>View All Courses</span>
+                        <span class="icon"><i class="ph ph-arrow-right"></i></span>
                     </a>
                 </div>
             </div>
-
-        </div>
-
-        {{!-- Stats row --}}
-        <div class="home-stats">
-            <div class="home-stat">
-                <span class="home-stat__number">3+</span>
-                <span class="home-stat__label">{{t "Learning Tracks"}}</span>
-            </div>
-            <div class="home-stat">
-                <span class="home-stat__number">20+</span>
-                <span class="home-stat__label">{{t "In-depth Courses"}}</span>
-            </div>
-            <div class="home-stat">
-                <span class="home-stat__number">100+</span>
-                <span class="home-stat__label">{{t "Step-by-step Guides"}}</span>
-            </div>
-            <div class="home-stat">
-                <span class="home-stat__number">1k+</span>
-                <span class="home-stat__label">{{t "Community Members"}}</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{{!-- ═══════════════════════════════════════════════════════════
-     2. PLATFORM PILLARS
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-pillars" aria-label="{{t "Platform features"}}">
-    <div class="inner">
-        <div class="home-pillars__grid">
-            <div class="home-pillar reveal">
-                <div class="home-pillar__icon home-pillar__icon--blue">
-                    <i class="ph ph-book-open-text" aria-hidden="true"></i>
-                </div>
-                <h3 class="home-pillar__title">{{t "Structured Curriculum"}}</h3>
-                <p class="home-pillar__desc">{{t "Step-by-step learning paths built for progression, not just consumption."}}</p>
-            </div>
-            <div class="home-pillar reveal delay-1">
-                <div class="home-pillar__icon home-pillar__icon--orange">
-                    <i class="ph ph-code" aria-hidden="true"></i>
-                </div>
-                <h3 class="home-pillar__title">{{t "Hands-on Projects"}}</h3>
-                <p class="home-pillar__desc">{{t "Build real Salesforce applications, not just follow along with screenshots."}}</p>
-            </div>
-            <div class="home-pillar reveal delay-2">
-                <div class="home-pillar__icon home-pillar__icon--purple">
-                    <i class="ph ph-exam" aria-hidden="true"></i>
-                </div>
-                <h3 class="home-pillar__title">{{t "Certification Prep"}}</h3>
-                <p class="home-pillar__desc">{{t "Career-focused training aligned to Admin, PD1, PD2, and Architect certifications."}}</p>
-            </div>
-            <div class="home-pillar reveal delay-3">
-                <div class="home-pillar__icon home-pillar__icon--green">
-                    <i class="ph ph-users-three" aria-hidden="true"></i>
-                </div>
-                <h3 class="home-pillar__title">{{t "Community Support"}}</h3>
-                <p class="home-pillar__desc">{{t "Learn alongside a growing ecosystem of Salesforce builders and future architects."}}</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{{!-- ═══════════════════════════════════════════════════════════
-     3. CAREER PATHS
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-section--alt home-paths outer" aria-label="{{t "Career paths"}}">
-    <div class="inner">
-        <div class="home-section__header has-text-center reveal">
-            <p class="home-section__overline">{{t "Choose your direction"}}</p>
-            <h2 class="home-section__title">{{t "Choose your career path"}}</h2>
-            <p class="home-section__subtitle">{{t "Pick the Salesforce route that matches your goal and ambition."}}</p>
-        </div>
-
-        <div class="home-paths__grid">
-            <div class="home-path-card reveal delay-1">
-                <div class="home-path-card__icon home-path-card__icon--gold" aria-hidden="true">
-                    <i class="ph ph-gear-six"></i>
-                </div>
-                <h3 class="home-path-card__title">{{t "Salesforce Admin"}}</h3>
-                <p class="home-path-card__desc">{{t "Security, flows, reports, automation, setup, and day-to-day platform ownership."}}</p>
-                <ul class="home-path-card__skills">
-                    <li>{{t "Automation & Flows"}}</li>
-                    <li>{{t "Security Model"}}</li>
-                    <li>{{t "Reports & Dashboards"}}</li>
-                </ul>
-                <a href="/courses/" class="btn btn-ghost-brand btn-sm btn-pill">
-                    {{t "View Admin Path"}}
-                    <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
-                </a>
-            </div>
-
-            <div class="home-path-card home-path-card--featured reveal delay-2">
-                <div class="home-path-card__popular-badge">{{t "Most Popular"}}</div>
-                <div class="home-path-card__icon home-path-card__icon--blue" aria-hidden="true">
-                    <i class="ph ph-code"></i>
-                </div>
-                <h3 class="home-path-card__title">{{t "Salesforce Developer"}}</h3>
-                <p class="home-path-card__desc">{{t "Apex, LWC, APIs, triggers, testing, packaging, and scalable custom app builds."}}</p>
-                <ul class="home-path-card__skills">
-                    <li>{{t "Apex & LWC"}}</li>
-                    <li>{{t "SOQL & Integrations"}}</li>
-                    <li>{{t "DevOps & Testing"}}</li>
-                </ul>
-                <a href="/courses/" class="btn btn-primary btn-sm btn-pill">
-                    {{t "View Developer Path"}}
-                    <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
-                </a>
-            </div>
-
-            <div class="home-path-card reveal delay-3">
-                <div class="home-path-card__icon home-path-card__icon--purple" aria-hidden="true">
-                    <i class="ph ph-tree-structure"></i>
-                </div>
-                <h3 class="home-path-card__title">{{t "Salesforce Architect"}}</h3>
-                <p class="home-path-card__desc">{{t "Solution design, integrations, data strategy, governance, and enterprise scale thinking."}}</p>
-                <ul class="home-path-card__skills">
-                    <li>{{t "Solution Design"}}</li>
-                    <li>{{t "Data Architecture"}}</li>
-                    <li>{{t "Enterprise Governance"}}</li>
-                </ul>
-                <a href="/courses/" class="btn btn-ghost-brand btn-sm btn-pill">
-                    {{t "View Architect Path"}}
-                    <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-{{!-- ═══════════════════════════════════════════════════════════
-     4. FEATURED COURSES
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-courses outer" aria-label="{{t "Featured courses"}}">
-    <div class="inner">
-        <div class="home-section__header-inline reveal">
-            <div>
-                <p class="home-section__overline">{{t "Learn by doing"}}</p>
-                <h2 class="home-section__title">{{t "Featured Courses"}}</h2>
-                <p class="home-section__subtitle">{{t "Practical courses built for real outcomes."}}</p>
-            </div>
-            <a href="/courses/" class="btn btn-neutral">
-                {{t "View All Courses"}}
-                <i class="ph ph-arrow-right btn-icon" aria-hidden="true"></i>
-            </a>
         </div>
 
         {{#get "posts" filter="tag:hash-course" limit="4" include="tags,authors"}}
-            {{#if posts}}
-                <div class="home-courses__grid">
-                    {{#foreach posts}}
-    {{> "post-card"}}
-                    {{/foreach}}
-                </div>
-            {{else}}
-                <div class="home-empty-state">
-                    <i class="ph ph-books" aria-hidden="true"></i>
-                    <p>{{t "No courses yet — tag posts with"}} <code>#course</code> {{t "to show them here."}}</p>
-                </div>
-            {{/if}}
+            <div class="columns is-multiline is-variable is-5">
+                {{#foreach posts}}
+                    <div class="column is-12-mobile is-6-tablet is-3-desktop reveal delay-{{@index}}">
+                        <article class="card is-fullheight">
+                            {{#if feature_image}}
+                                <div class="card-image">
+                                    <figure class="image is-16by9">
+                                        <a href="{{url}}">
+                                            <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy">
+                                        </a>
+                                    </figure>
+                                </div>
+                            {{/if}}
+                            <div class="card-content">
+                                {{#if primary_tag}}
+                                    <div class="mb-3">
+                                        <a href="{{primary_tag.url}}" class="tag is-light">{{primary_tag.name}}</a>
+                                    </div>
+                                {{/if}}
+                                <h3 class="title is-5">
+                                    <a href="{{url}}">{{title}}</a>
+                                </h3>
+                                <p class="content">
+                                    {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="18"}}{{/if}}
+                                </p>
+                                <p class="is-size-7 has-text-grey">
+                                    {{#if primary_author}}{{primary_author.name}}{{else}}{{@site.title}}{{/if}} &bull; {{reading_time}}
+                                </p>
+                            </div>
+                            <footer class="card-footer">
+                                <a href="{{url}}" class="card-footer-item">View Course</a>
+                            </footer>
+                        </article>
+                    </div>
+                {{else}}
+                    <div class="column is-12">
+                        <div class="notification is-light">
+                            No courses found yet. Tag posts with <strong>#course</strong> to show them here.
+                        </div>
+                    </div>
+                {{/foreach}}
+            </div>
         {{/get}}
 
-        <div class="home-courses__view-all-mobile">
-            <a href="/courses/" class="btn btn-neutral btn-block">{{t "View All Courses"}}</a>
+        <div class="has-text-centered is-hidden-tablet mt-5">
+            <a href="/courses/" class="button is-primary is-fullwidth">View All Courses</a>
         </div>
     </div>
 </section>
 
-
-{{!-- ═══════════════════════════════════════════════════════════
-     5. THE ENGINEER WAY (features + YouTube)
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-section--alt home-engineer outer" aria-label="{{t "How we teach"}}">
-    <div class="inner">
-        <div class="home-section__header has-text-center reveal">
-            <p class="home-section__overline">{{t "Our approach"}}</p>
-            <h2 class="home-section__title">{{t "Learn the \"Engineer\" Way"}}</h2>
-            <p class="home-section__subtitle">{{t "We don't just teach syntax — we teach problem-solving for enterprise scale."}}</p>
+<section class="section section-alt">
+    <div class="container">
+        <div class="mb-6 pb-3 columns is-multiline">
+            <div class="column is-12 is-8-desktop mx-auto has-text-centered">
+                <h2 class="mb-4 title is-1 has-text-weight-bold">Learn the "Engineer" Way</h2>
+                <p class="subtitle has-text-grey mb-5">We don't just teach syntax; we teach problem-solving for enterprise scale.</p>
+            </div>
         </div>
-
-        <div class="home-engineer__layout">
-
-            {{!-- Left features --}}
-            <div class="home-engineer__features">
-                <div class="home-feature reveal delay-1">
-                    <div class="home-feature__icon home-feature__icon--blue" aria-hidden="true">
-                        <i class="ph ph-lightning-fill"></i>
-                    </div>
-                    <div class="home-feature__body">
-                        <h4 class="home-feature__title">{{t "Instant Setup"}}</h4>
-                        <p class="home-feature__desc">{{t "One-click scratch org deployments for every lesson. No config hell."}}</p>
+        <div class="columns is-vcentered is-multiline">
+            {{! Left Features }}
+            <div class="column is-12 is-4-desktop">
+                <div class="mb-6 is-flex">
+                    <span class="icon is-large has-text-primary"><i class="ph ph-lightning-fill is-size-3"></i></span>
+                    <div class="ml-3">
+                        <h4 class="is-size-4 has-text-weight-bold mb-2">Instant Setup</h4>
+                        <p class="subtitle has-text-grey is-6">One-click scratch org deployments for every lesson.</p>
                     </div>
                 </div>
-                <div class="home-feature reveal delay-2">
-                    <div class="home-feature__icon home-feature__icon--purple" aria-hidden="true">
-                        <i class="ph ph-users-three-fill"></i>
-                    </div>
-                    <div class="home-feature__body">
-                        <h4 class="home-feature__title">{{t "Code Reviews"}}</h4>
-                        <p class="home-feature__desc">{{t "Get feedback on your PRs from experienced Salesforce developers."}}</p>
-                    </div>
-                </div>
-                <div class="home-feature reveal delay-3">
-                    <div class="home-feature__icon home-feature__icon--green" aria-hidden="true">
-                        <i class="ph ph-certificate-fill"></i>
-                    </div>
-                    <div class="home-feature__body">
-                        <h4 class="home-feature__title">{{t "PDII & Beyond"}}</h4>
-                        <p class="home-feature__desc">{{t "Curriculum aligned with Advanced Developer certifications."}}</p>
-                    </div>
-                </div>
-                <div class="home-feature reveal delay-4">
-                    <div class="home-feature__icon home-feature__icon--orange" aria-hidden="true">
-                        <i class="ph ph-git-branch-fill"></i>
-                    </div>
-                    <div class="home-feature__body">
-                        <h4 class="home-feature__title">{{t "DevOps Focus"}}</h4>
-                        <p class="home-feature__desc">{{t "Learn Git, SFDX, and Automated Testing from Day 1."}}</p>
+                <div class="mb-6 is-flex">
+                    <span class="icon is-large has-text-primary"><i class="ph ph-users-fill is-size-3"></i></span>
+                    <div class="ml-3">
+                        <h4 class="is-size-4 has-text-weight-bold mb-2">Code Reviews</h4>
+                        <p class="subtitle has-text-grey is-6">Get feedback on your PRs from experienced developers.</p>
                     </div>
                 </div>
             </div>
-
-            {{!-- Center video --}}
-            <div class="home-engineer__video reveal">
-                <div class="home-video-phone">
-                    <iframe
-                        class="home-video-phone__frame"
-                        src="https://www.youtube.com/embed/VlIu7K52Moo"
-                        title="{{t "Salesforce Tips"}}"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen
-                        loading="lazy"
-                    ></iframe>
+            
+            {{! Center Video (YouTube Short) }}
+            <div class="column is-4-desktop has-text-centered">
+                <div class="video-container-short">
+                    <iframe width="315" height="560" src="https://www.youtube.com/embed/VlIu7K52Moo" title="Salesforce Tips" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
 
+            {{! Right Features }}
+            <div class="column is-12 is-4-desktop">
+                <div class="mb-6 is-flex">
+                    <span class="icon is-large has-text-primary"><i class="ph ph-certificate-fill is-size-3"></i></span>
+                    <div class="ml-3">
+                        <h4 class="is-size-4 has-text-weight-bold mb-2">PDII & Beyond</h4>
+                        <p class="subtitle has-text-grey is-6">Curriculum aligned with Advanced Developer certifications.</p>
+                    </div>
+                </div>
+                <div class="mb-6 is-flex">
+                    <span class="icon is-large has-text-primary"><i class="ph ph-git-branch-fill is-size-3"></i></span>
+                    <div class="ml-3">
+                        <h4 class="is-size-4 has-text-weight-bold mb-2">DevOps Focus</h4>
+                        <p class="subtitle has-text-grey is-6">Learn Git, SFDX, and Automated Testing from Day 1.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
+{{! ══════════════════════════════════════════════════════════════════════════
+    WHY LEARN
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section section-alt">
+    <div class="container is-fluid">
+        <div class="columns is-vcentered is-variable is-8">
 
-{{!-- ═══════════════════════════════════════════════════════════
-     6. WHY LEARN
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-why outer" aria-label="{{t "Why learn with us"}}">
-    <div class="inner">
-        <div class="home-why__grid">
+            <div class="column is-6 reveal">
+                <h2 class="title is-2 mb-5">Why learn with {{@site.title}}?</h2>
 
-            <div class="home-why__left reveal">
-                <p class="home-section__overline">{{t "Our promise"}}</p>
-                <h2 class="home-section__title">{{t "Why learn with"}} {{@site.title}}?</h2>
+                <article class="media mb-5">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-link">
+                            <i class="ph ph-chalkboard-teacher" style="font-size: 1.75rem;"></i>
+                        </span>
+                    </div>
+                    <div class="media-content">
+                        <h4 class="title is-5 mb-2">Expert-led guidance</h4>
+                        <p>Learn from people who build in Salesforce, not just people who repeat docs with dramatic confidence.</p>
+                    </div>
+                </article>
 
-                <div class="home-why__reason">
-                    <div class="home-why__reason-icon" aria-hidden="true">
-                        <i class="ph ph-chalkboard-teacher"></i>
+                <article class="media mb-5">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-warning">
+                            <i class="ph ph-laptop" style="font-size: 1.75rem;"></i>
+                        </span>
                     </div>
-                    <div class="home-why__reason-body">
-                        <h4>{{t "Expert-led guidance"}}</h4>
-                        <p>{{t "Learn from people who build in Salesforce, not just people who repeat docs with dramatic confidence."}}</p>
+                    <div class="media-content">
+                        <h4 class="title is-5 mb-2">100% practical learning</h4>
+                        <p>Every course is designed around implementation, exercises, and project-based outcomes.</p>
                     </div>
-                </div>
-                <div class="home-why__reason">
-                    <div class="home-why__reason-icon" aria-hidden="true">
-                        <i class="ph ph-laptop"></i>
+                </article>
+
+                <article class="media">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-primary">
+                            <i class="ph ph-users-three" style="font-size: 1.75rem;"></i>
+                        </span>
                     </div>
-                    <div class="home-why__reason-body">
-                        <h4>{{t "100% practical learning"}}</h4>
-                        <p>{{t "Every course is designed around implementation, exercises, and project-based outcomes."}}</p>
+                    <div class="media-content">
+                        <h4 class="title is-5 mb-2">Community and momentum</h4>
+                        <p>Stay consistent with a growing ecosystem of learners, builders, and future architects.</p>
                     </div>
-                </div>
-                <div class="home-why__reason">
-                    <div class="home-why__reason-icon" aria-hidden="true">
-                        <i class="ph ph-users-three"></i>
-                    </div>
-                    <div class="home-why__reason-body">
-                        <h4>{{t "Community and momentum"}}</h4>
-                        <p>{{t "Stay consistent with a growing ecosystem of learners, builders, and future architects."}}</p>
-                    </div>
-                </div>
+                </article>
             </div>
 
-            <div class="home-why__right reveal delay-2">
-                <div class="home-why__feature-grid">
-                    <div class="home-why__feature">
-                        <i class="ph ph-video-camera" aria-hidden="true"></i>
-                        <h5>{{t "Video Lessons"}}</h5>
-                        <p>{{t "Clear walkthroughs and guided builds."}}</p>
+            <div class="column is-6 reveal delay-2">
+                <div class="columns is-multiline is-variable is-4">
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="ph ph-video-camera" style="font-size: 1.75rem;"></i></span>
+                            <p class="title is-5">Video Lessons</p>
+                            <p class="is-size-7 has-text-grey">Clear walkthroughs and guided builds.</p>
+                        </div>
                     </div>
-                    <div class="home-why__feature">
-                        <i class="ph ph-files" aria-hidden="true"></i>
-                        <h5>{{t "Docs & Notes"}}</h5>
-                        <p>{{t "Supporting references and written guides."}}</p>
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-success mb-3"><i class="ph ph-files" style="font-size: 1.75rem;"></i></span>
+                            <p class="title is-5">Docs &amp; Notes</p>
+                            <p class="is-size-7 has-text-grey">Supporting references and written guides.</p>
+                        </div>
                     </div>
-                    <div class="home-why__feature">
-                        <i class="ph ph-briefcase" aria-hidden="true"></i>
-                        <h5>{{t "Career Ready"}}</h5>
-                        <p>{{t "Skills with portfolio and job value."}}</p>
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-warning mb-3"><i class="ph ph-briefcase" style="font-size: 1.75rem;"></i></span>
+                            <p class="title is-5">Career Ready</p>
+                            <p class="is-size-7 has-text-grey">Skills with portfolio and job value.</p>
+                        </div>
                     </div>
-                    <div class="home-why__feature">
-                        <i class="ph ph-lifebuoy" aria-hidden="true"></i>
-                        <h5>{{t "Supportive"}}</h5>
-                        <p>{{t "Less confusion, more clarity and direction."}}</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-
-{{!-- ═══════════════════════════════════════════════════════════
-     7. ABOUT ME
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-section--alt home-about outer" aria-label="{{t "About"}}">
-    <div class="inner">
-        <div class="home-about__grid">
-
-            <div class="home-about__left reveal">
-                <p class="home-section__overline">{{t "The person behind this"}}</p>
-                <h2 class="home-section__title">{{t "About me"}}</h2>
-
-                <div class="home-about__creator">
-                    {{#if @site.icon}}
-                        <img class="home-about__avatar" src="{{@site.icon}}" alt="Swarnil" />
-                    {{else}}
-                        <div class="home-about__avatar-placeholder" aria-hidden="true">S</div>
-                    {{/if}}
-                    <div class="home-about__creator-meta">
-                        <strong class="home-about__name">Swarnil</strong>
-                        <span class="home-about__role">{{t "Salesforce Developer — Building in public"}}</span>
-                        <div class="home-about__socials btn-group-gap">
-                            <a href="https://twitter.com/imswarnil" target="_blank" rel="noopener noreferrer" class="btn btn-neutral btn-xs">
-                                <i class="ph ph-twitter-logo btn-icon" aria-hidden="true"></i>
-                                Twitter
-                            </a>
-                            <a href="https://github.com/imswarnil" target="_blank" rel="noopener noreferrer" class="btn btn-neutral btn-xs">
-                                <i class="ph ph-github-logo btn-icon" aria-hidden="true"></i>
-                                GitHub
-                            </a>
+                    <div class="column is-6">
+                        <div class="box has-text-centered">
+                            <span class="icon is-large has-text-primary mb-3"><i class="ph ph-lifebuoy" style="font-size: 1.75rem;"></i></span>
+                            <p class="title is-5">Supportive</p>
+                            <p class="is-size-7 has-text-grey">Less confusion, more clarity.</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="home-about__bio">
-                    <p>{{t "I'm on a mission to become a"}} <strong>{{t "Salesforce Application Engineer"}}</strong> {{t "at a top product company. This site is where I document that journey — and help others walk the same path."}}</p>
-                    <p>{{t "No exam dumps, no recycled slides. Just practical builds and honest notes from the road."}}</p>
+        </div>
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    ABOUT ME
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section">
+    <div class="container is-fluid">
+        <div class="columns is-vcentered is-variable is-8">
+
+            <div class="column is-5 reveal">
+                <h2 class="title is-2 mb-5">About me</h2>
+
+                <article class="media mb-5">
+                    <div class="media-left">
+                        {{#if @site.icon}}
+                            <figure class="image is-64x64">
+                                <img class="about-avatar" src="{{@site.icon}}" alt="Swarnil">
+                            </figure>
+                        {{else}}
+                            <div class="about-avatar-placeholder">S</div>
+                        {{/if}}
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-5 mb-1">Swarnil</p>
+                        <p class="subtitle is-6 has-text-grey mb-2">Salesforce Developer &mdash; Building in public</p>
+                        <div class="buttons are-small">
+                            <a href="https://twitter.com/imswarnil" target="_blank" rel="noopener" class="button is-light is-small">
+                                <span class="icon is-small"><i class="ph ph-twitter-logo"></i></span>
+                                <span>Twitter</span>
+                            </a>
+                            <a href="https://github.com/imswarnil" target="_blank" rel="noopener" class="button is-light is-small">
+                                <span class="icon is-small"><i class="ph ph-github-logo"></i></span>
+                                <span>GitHub</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <div class="content mb-5">
+                    <p>I'm on a mission to become a <strong>Salesforce Application Engineer</strong> at a top product company. This site is where I document that journey — and help others walk the same path.</p>
+                    <p>No exam dumps, no recycled slides. Just practical builds and honest notes from the road.</p>
                 </div>
 
-                <a href="/contact/" class="btn btn-secondary btn-pill">
-                    <i class="ph ph-chat-circle-dots btn-icon" aria-hidden="true"></i>
-                    {{t "Get in touch"}}
+                <a href="/contact/" class="button is-primary is-outlined">
+                    <span class="icon"><i class="ph ph-chat-circle-dots"></i></span>
+                    <span>Get in touch</span>
                 </a>
             </div>
 
-            <div class="home-about__right reveal delay-2">
-                <h3 class="home-about__timeline-heading">{{t "The journey so far"}}</h3>
-                <ol class="home-timeline">
-                    <li class="home-timeline__item">
-                        <div class="home-timeline__dot" aria-hidden="true"></div>
-                        <div class="home-timeline__body">
-                            <h4 class="home-timeline__title">{{t "Started with Salesforce Admin"}}</h4>
-                            <p class="home-timeline__sub">{{t "Learning the platform from the ground up — flows, automation, security model."}}</p>
-                        </div>
-                    </li>
-                    <li class="home-timeline__item">
-                        <div class="home-timeline__dot" aria-hidden="true"></div>
-                        <div class="home-timeline__body">
-                            <h4 class="home-timeline__title">{{t "Moved into Salesforce Development"}}</h4>
-                            <p class="home-timeline__sub">{{t "Apex, LWC, SOQL, integrations — building real things, not just reading docs."}}</p>
-                        </div>
-                    </li>
-                    <li class="home-timeline__item">
-                        <div class="home-timeline__dot" aria-hidden="true"></div>
-                        <div class="home-timeline__body">
-                            <h4 class="home-timeline__title">{{t "Launched Namaste Salesforce"}}</h4>
-                            <p class="home-timeline__sub">{{t "Open source learning portal — built in public, for the community."}}</p>
-                        </div>
-                    </li>
-                    <li class="home-timeline__item home-timeline__item--current">
-                        <div class="home-timeline__dot" aria-hidden="true"></div>
-                        <div class="home-timeline__body">
-                            <h4 class="home-timeline__title">{{t "Goal: Salesforce Application Engineer"}}</h4>
-                            <p class="home-timeline__sub">{{t "Top product-based company — documenting the whole path here."}}</p>
-                        </div>
-                    </li>
-                </ol>
+            <div class="column is-7 reveal delay-2">
+                <h3 class="title is-5 mb-4">The journey so far</h3>
+                <div class="ns-timeline mb-5">
+                    <div class="ns-timeline__item">
+                        <p class="ns-timeline__title">Started with Salesforce Admin</p>
+                        <p class="ns-timeline__sub">Learning the platform from the ground up — flows, automation, security model</p>
+                    </div>
+                    <div class="ns-timeline__item">
+                        <p class="ns-timeline__title">Moved into Salesforce Development</p>
+                        <p class="ns-timeline__sub">Apex, LWC, SOQL, integrations — building real things, not just reading docs</p>
+                    </div>
+                    <div class="ns-timeline__item">
+                        <p class="ns-timeline__title">Launched Namaste Salesforce</p>
+                        <p class="ns-timeline__sub">Open source learning portal — built in public, for the community</p>
+                    </div>
+                    <div class="ns-timeline__item">
+                        <p class="ns-timeline__title">Goal: Salesforce Application Engineer</p>
+                        <p class="ns-timeline__sub">Top product-based company — documenting the whole path here</p>
+                    </div>
+                </div>
 
-                <div class="home-about__open-source">
-                    <i class="ph ph-info" aria-hidden="true"></i>
-                    <p>{{t "This site is fully open source. Theme, content structure, and build approach are all public on"}}
-                        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">GitHub</a>.
-                    </p>
+                <div class="notification is-info is-light">
+                    <span class="icon has-text-info"><i class="ph ph-info"></i></span>
+                    This site is fully open source. The theme, content structure, and build approach are all public on
+                    <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener">GitHub</a>.
                 </div>
             </div>
 
@@ -534,202 +791,283 @@
     </div>
 </section>
 
+{{! ══════════════════════════════════════════════════════════════════════════
+    BLOG + SIDEBAR
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section section-alt">
+    <div class="container is-fluid">
+        <div class="columns is-variable is-6">
 
-{{!-- ═══════════════════════════════════════════════════════════
-     8. BLOG + SIDEBAR
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-blog outer" aria-label="{{t "Latest from the blog"}}">
-    <div class="inner">
-        <div class="home-blog__layout">
-
-            {{!-- Main: blog posts --}}
-            <div class="home-blog__main">
-                <div class="home-section__header-inline reveal">
-                    <div>
-                        <p class="home-section__overline">{{t "Fresh content"}}</p>
-                        <h2 class="home-section__title">{{t "Latest from the blog"}}</h2>
-                        <p class="home-section__subtitle">{{t "Tutorials, breakdowns, and explainers."}}</p>
+            <div class="column is-8">
+                <div class="level mb-5 reveal">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <div>
+                                <h2 class="title is-2">Latest from the blog</h2>
+                                <p class="subtitle is-5">Fresh tutorials, breakdowns, and explainers.</p>
+                            </div>
+                        </div>
                     </div>
-                    <a href="/blog/" class="btn btn-neutral">{{t "Visit Blog"}}</a>
+                    <div class="level-right is-hidden-mobile">
+                        <div class="level-item">
+                            <a href="/blog/" class="button is-light">Visit Blog</a>
+                        </div>
+                    </div>
                 </div>
 
                 {{#get "posts" filter="tag:hash-blog" limit="3" include="tags,authors"}}
-                    {{#if posts}}
-                        <div class="home-blog__grid">
-                            {{#foreach posts}}
-                                 {{> "post-card"}}
-                            {{/foreach}}
-                        </div>
-                    {{else}}
-                        <div class="home-empty-state">
-                            <i class="ph ph-pencil-line" aria-hidden="true"></i>
-                            <p>{{t "No blog posts yet — tag posts with"}} <code>#blog</code> {{t "to show them here."}}</p>
-                        </div>
-                    {{/if}}
+                    <div class="columns is-multiline is-variable is-5">
+                        {{#foreach posts}}
+                            <div class="column is-12-tablet is-4-desktop reveal delay-{{@index}}">
+                                <article class="card is-fullheight">
+                                    {{#if feature_image}}
+                                        <div class="card-image">
+                                            <figure class="image is-16by9">
+                                                <a href="{{url}}">
+                                                    <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy">
+                                                </a>
+                                            </figure>
+                                        </div>
+                                    {{/if}}
+                                    <div class="card-content">
+                                        {{#if primary_tag}}
+                                            <div class="mb-3">
+                                                <a href="{{primary_tag.url}}" class="tag is-light">{{primary_tag.name}}</a>
+                                            </div>
+                                        {{/if}}
+                                        <h3 class="title is-5">
+                                            <a href="{{url}}">{{title}}</a>
+                                        </h3>
+                                        <p class="content">
+                                            {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="16"}}{{/if}}
+                                        </p>
+                                        <p class="is-size-7 has-text-grey">
+                                            {{date format="DD MMM YYYY"}} &bull; {{reading_time}}
+                                        </p>
+                                    </div>
+                                    <footer class="card-footer">
+                                        <a href="{{url}}" class="card-footer-item">Read Article</a>
+                                    </footer>
+                                </article>
+                            </div>
+                        {{else}}
+                            <div class="column is-12">
+                                <div class="notification is-light">No blog posts yet. Tag posts with <strong>#blog</strong> to show them here.</div>
+                            </div>
+                        {{/foreach}}
+                    </div>
                 {{/get}}
 
-                <div class="home-blog__view-all-mobile">
-                    <a href="/blog/" class="btn btn-neutral btn-block">{{t "Visit Blog"}}</a>
+                <div class="has-text-centered is-hidden-tablet mt-5">
+                    <a href="/blog/" class="button is-light is-fullwidth">Visit Blog</a>
                 </div>
             </div>
 
-            {{!-- Sidebar --}}
-            <aside class="home-sidebar" aria-label="{{t "Sidebar"}}">
+            <div class="column is-4">
+                <div class="sidebar-sticky">
 
-                {{!-- Newsletter --}}
-                {{#if @site.members_enabled}}
-                    <div class="home-sidebar__card reveal">
-                        <h3 class="home-sidebar__heading">{{t "Join the newsletter"}}</h3>
-                        <p class="home-sidebar__text">{{t "Salesforce tips, updates, and practical notes in your inbox."}}</p>
-                        {{#unless @member}}
-                            <a href="#/portal/signup" data-portal="signup" class="btn btn-primary btn-block btn-pill">
-                                <i class="ph ph-envelope-simple btn-icon" aria-hidden="true"></i>
-                                {{t "Subscribe Free"}}
+                    {{#if @site.members_enabled}}
+                        <div class="box mb-5 reveal">
+                            <h3 class="title is-4">Join the newsletter</h3>
+                            <p class="content">Get Salesforce tips, updates, launches, and practical notes in your inbox.</p>
+                            <a href="#/portal/signup" data-portal="signup" class="button is-primary is-fullwidth mb-3">
+                                <span class="icon"><i class="ph ph-envelope-simple"></i></span>
+                                <span>Subscribe Free</span>
                             </a>
-                            <a href="#/portal/signin" data-portal="signin" class="btn btn-ghost btn-block btn-sm" style="margin-top: var(--sfdc-spacing-sm);">
-                                {{t "Already a member? Sign in"}}
+                            <a href="#/portal/signin" data-portal="signin" class="button is-light is-fullwidth">
+                                Already a member? Sign in
                             </a>
-                        {{else}}
-                            <div class="home-sidebar__member-msg">
-                                <i class="ph ph-check-circle" aria-hidden="true"></i>
-                                {{t "You're subscribed. Thank you!"}}
-                            </div>
-                        {{/unless}}
+                        </div>
+                    {{/if}}
+
+                    <div class="box reveal delay-1">
+                        <h3 class="title is-5">Quick Links</h3>
+                        <div class="content">
+                            <ul>
+                                <li><a href="/courses/">All Courses</a></li>
+                                <li><a href="/training/">Training</a></li>
+                                <li><a href="/videos/">Videos</a></li>
+                                <li><a href="/blog/">Blog</a></li>
+                                <li><a href="/tags/">Topics</a></li>
+                                <li><a href="/contact/">Contact</a></li>
+                            </ul>
+                        </div>
                     </div>
-                {{/if}}
 
-                {{!-- Quick links --}}
-                <div class="home-sidebar__card reveal delay-1">
-                    <h3 class="home-sidebar__heading">{{t "Quick Links"}}</h3>
-                    <nav class="home-sidebar__links" aria-label="{{t "Quick links"}}">
-                        <a href="/courses/" class="home-sidebar__link">
-                            <i class="ph ph-book-open" aria-hidden="true"></i> {{t "All Courses"}}
-                        </a>
-                        <a href="/training/" class="home-sidebar__link">
-                            <i class="ph ph-graduation-cap" aria-hidden="true"></i> {{t "Training"}}
-                        </a>
-                        <a href="/videos/" class="home-sidebar__link">
-                            <i class="ph ph-video" aria-hidden="true"></i> {{t "Videos"}}
-                        </a>
-                        <a href="/blog/" class="home-sidebar__link">
-                            <i class="ph ph-pencil-line" aria-hidden="true"></i> {{t "Blog"}}
-                        </a>
-                        <a href="/documentation/" class="home-sidebar__link">
-                            <i class="ph ph-file-text" aria-hidden="true"></i> {{t "Documentation"}}
-                        </a>
-                        <a href="/tags/" class="home-sidebar__link">
-                            <i class="ph ph-tag" aria-hidden="true"></i> {{t "Topics"}}
-                        </a>
-                        <a href="/contact/" class="home-sidebar__link">
-                            <i class="ph ph-chat-circle-dots" aria-hidden="true"></i> {{t "Contact"}}
-                        </a>
-                    </nav>
                 </div>
-
-            </aside>
-        </div>
-    </div>
-</section>
-
-
-{{!-- ═══════════════════════════════════════════════════════════
-     9. TESTIMONIALS
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-section home-section--alt home-testimonials outer" aria-label="{{t "Testimonials"}}">
-    <div class="inner">
-        <div class="home-section__header has-text-center reveal">
-            <p class="home-section__overline">{{t "Community voices"}}</p>
-            <h2 class="home-section__title">{{t "What learners say"}}</h2>
-            <p class="home-section__subtitle">{{t "From people on the same Salesforce journey."}}</p>
-        </div>
-
-        <div class="home-testimonials__grid">
-            <blockquote class="home-testimonial reveal delay-1">
-                <p class="home-testimonial__quote">{{t "The developer path actually makes sense — builds stuff and explains the decisions, not just the syntax. Best Salesforce resource I've found."}}</p>
-                <footer class="home-testimonial__author">
-                    <div class="home-testimonial__avatar" aria-hidden="true">A</div>
-                    <div>
-                        <cite class="home-testimonial__name">Aditya R.</cite>
-                        <span class="home-testimonial__role">{{t "Salesforce Developer"}}</span>
-                    </div>
-                </footer>
-            </blockquote>
-
-            <blockquote class="home-testimonial reveal delay-2">
-                <p class="home-testimonial__quote">{{t "I passed my Admin cert after following the structured path here. The way flows, security, and reports are sequenced just clicks."}}</p>
-                <footer class="home-testimonial__author">
-                    <div class="home-testimonial__avatar" aria-hidden="true">P</div>
-                    <div>
-                        <cite class="home-testimonial__name">Priya S.</cite>
-                        <span class="home-testimonial__role">{{t "Salesforce Admin"}}</span>
-                    </div>
-                </footer>
-            </blockquote>
-
-            <blockquote class="home-testimonial reveal delay-3">
-                <p class="home-testimonial__quote">{{t "Love that this is open source and built in public. You can see the thinking behind every lesson — feels like learning alongside someone."}}</p>
-                <footer class="home-testimonial__author">
-                    <div class="home-testimonial__avatar" aria-hidden="true">K</div>
-                    <div>
-                        <cite class="home-testimonial__name">Karan M.</cite>
-                        <span class="home-testimonial__role">{{t "Aspiring SF Architect"}}</span>
-                    </div>
-                </footer>
-            </blockquote>
-        </div>
-    </div>
-</section>
-
-
-{{!-- ═══════════════════════════════════════════════════════════
-     10. FINAL CTA BANNER
-══════════════════════════════════════════════════════════════ --}}
-<section class="home-cta outer" aria-label="{{t "Call to action"}}">
-    <div class="inner">
-        <div class="home-cta__grid reveal">
-            <div class="home-cta__content">
-                <h2 class="home-cta__title">{{t "Ready to build your Salesforce edge?"}}</h2>
-                <p class="home-cta__desc">{{t "Start with courses, sharpen with docs, and stay current with the blog."}}</p>
             </div>
-            <div class="home-cta__actions btn-group-gap">
-                <a href="/courses/" class="btn btn-white btn-lg btn-pill">
-                    <i class="ph ph-book-open btn-icon" aria-hidden="true"></i>
-                    {{t "Start Learning"}}
-                </a>
-                {{#if @site.members_enabled}}
-                    {{#unless @member}}
-                        <a href="#/portal/signup" data-portal="signup" class="btn btn-outline-white btn-lg btn-pill">
-                            <i class="ph ph-sparkle btn-icon" aria-hidden="true"></i>
-                            {{t "Join Free"}}
+
+        </div>
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    TESTIMONIALS
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section">
+    <div class="container is-fluid">
+        <div class="has-text-centered mb-6 reveal">
+            <h2 class="title is-2">What learners say</h2>
+            <p class="subtitle is-5">From people on the same Salesforce journey.</p>
+        </div>
+
+        <div class="columns is-variable is-5">
+
+            <div class="column is-4 reveal delay-1">
+                <div class="box">
+                    <p class="testimonial-quote mb-4">
+                        The developer path actually makes sense — Swarnil builds stuff and explains the decisions, not just the syntax. Best Salesforce resource I've found.
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">A</div>
+                        <div>
+                            <p class="has-text-weight-semibold is-size-6 mb-0">Aditya R.</p>
+                            <p class="is-size-7 has-text-grey">Salesforce Developer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-4 reveal delay-2">
+                <div class="box">
+                    <p class="testimonial-quote mb-4">
+                        I passed my Admin cert after following the structured path here. The way flows, security, and reports are sequenced just clicks.
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">P</div>
+                        <div>
+                            <p class="has-text-weight-semibold is-size-6 mb-0">Priya S.</p>
+                            <p class="is-size-7 has-text-grey">Salesforce Admin</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-4 reveal delay-3">
+                <div class="box">
+                    <p class="testimonial-quote mb-4">
+                        Love that this is open source and built in public. You can see the thinking behind every lesson — feels like learning alongside someone.
+                    </p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">K</div>
+                        <div>
+                            <p class="has-text-weight-semibold is-size-6 mb-0">Karan M.</p>
+                            <p class="is-size-7 has-text-grey">Aspiring SF Architect</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    OUTCOMES
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="section section-alt">
+    <div class="container is-fluid">
+        <div class="has-text-centered mb-6 reveal">
+            <h2 class="title is-2">What learners are here for</h2>
+            <p class="subtitle is-5">Clear outcomes, practical execution, and less fluff.</p>
+        </div>
+
+        <div class="columns is-variable is-5">
+
+            <div class="column is-4 reveal delay-1">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <span class="icon has-text-link"><i class="ph ph-target" style="font-size: 1.25rem;"></i></span>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-5">Job-ready skills</p>
+                            <p>Learn what helps in real implementations and interviews, not just keyword collecting.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="column is-4 reveal delay-2">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <span class="icon has-text-warning"><i class="ph ph-stack" style="font-size: 1.25rem;"></i></span>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-5">Layered progression</p>
+                            <p>Move from beginner concepts to advanced builds with a path that actually makes sense.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="column is-4 reveal delay-3">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <span class="icon has-text-primary"><i class="ph ph-rocket-launch" style="font-size: 1.25rem;"></i></span>
+                        </div>
+                        <div class="media-content">
+                            <p class="title is-5">Momentum</p>
+                            <p>Stay consistent with guided tracks, practical lessons, and meaningful next steps.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="section has-background-primary">
+      <div class="container">
+        <div class="is-vcentered columns is-multiline">
+          <div class="column is-6 is-5-desktop mb-4">
+            <span class="has-text-white">Lorem ipsum</span>
+            <h2 class="has-text-white mt-2 mb-3 is-size-1 is-size-3-mobile has-text-weight-bold">Lorem ipsum dolor sit
+              amet consectutar</h2>
+            <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque massa nibh,
+              pulvinar vitae aliquet nec, accumsan aliquet orci.</p>
+          </div>
+          <div class="column is-5 ml-auto">
+            <div class="mx-auto box p-6 has-background-light has-text-centered">
+              <h4 class="is-size-5 mb-2 has-text-weight-bold">Join Our Mailing List!</h4>
+              <p class="has-text-grey-dark mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <form action="#">
+                <input class="input mb-3" type="email" placeholder="Type your e-mail"><button class="button is-primary is-fullwidth">Action</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+{{! ══════════════════════════════════════════════════════════════════════════
+    CTA BANNER
+══════════════════════════════════════════════════════════════════════════ }}
+<section class="hero is-light">
+    <div class="hero-body">
+        <div class="container is-fluid">
+            <div class="columns is-vcentered is-variable is-6">
+                <div class="column is-8 reveal">
+                    <h2 class="title is-2">Ready to build your Salesforce edge?</h2>
+                    <p class="subtitle is-5">Start with courses, sharpen with docs, and stay current with the blog.</p>
+                </div>
+                <div class="column is-4 reveal delay-2">
+                    <div class="buttons is-right">
+                        <a href="/courses/" class="button is-primary">
+                            <span class="icon"><i class="ph ph-book-open"></i></span>
+                            <span>Start Learning</span>
                         </a>
-                    {{/unless}}
-                {{/if}}
-                <a href="/contact/" class="btn btn-outline-white btn-lg btn-pill">
-                    <i class="ph ph-chat-circle-dots btn-icon" aria-hidden="true"></i>
-                    {{t "Contact"}}
-                </a>
+                        <a href="/contact/" class="button is-light">
+                            <span class="icon"><i class="ph ph-chat-circle-dots"></i></span>
+                            <span>Contact</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-
-{{!-- ══ Scroll-reveal script ═════════════════════════════════ --}}
-<script>
-(function () {
-    var els = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-        els.forEach(function (el) { el.classList.add('is-visible'); });
-        return;
-    }
-    var obs = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-            if (e.isIntersecting) {
-                e.target.classList.add('is-visible');
-                obs.unobserve(e.target);
-            }
-        });
-    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
-    els.forEach(function (el) { obs.observe(el); });
-}());
-</script>

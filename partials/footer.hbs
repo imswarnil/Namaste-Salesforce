@@ -1,159 +1,66 @@
-{{!-- footer.hbs — Namaste Salesforce
-     Replace the <footer> block in default.hbs with:
-       {{> "footer"}}
-     ============================================================
-     LAYOUT
-       Top band   : logo + tagline + socials | 3 nav cols | newsletter
-       Divider
-       Bottom bar : copyright | secondary nav | GitHub | dark toggle
-     ============================================================ --}}
-
-<footer class="site-footer outer" role="contentinfo" aria-label="{{t "Site footer"}}">
-
-    {{!-- Dot-grid decoration --}}
-    <div class="site-footer__noise" aria-hidden="true"></div>
-
-    <div class="site-footer__inner inner">
-
-        {{!-- ── Column 1: Brand ──────────────────────────── --}}
-        <div class="site-footer__brand">
-
-            <a class="site-footer__logo" href="{{@site.url}}" aria-label="{{@site.title}} — home">
-                {{#if @site.logo}}
-                    <img src="{{@site.logo}}" alt="{{@site.title}}" class="site-footer__logo-img" loading="lazy" />
-                {{else}}
-                    <span class="site-footer__logo-text">{{@site.title}}</span>
-                {{/if}}
-            </a>
-
-            <p class="site-footer__tagline">
-                {{#if @site.description}}
-                    {{@site.description}}
-                {{else}}
-                    {{t "Master Salesforce development through practical, real-world learning paths."}}
-                {{/if}}
-            </p>
-
-            {{!-- Social icons --}}
-            <div class="site-footer__socials" aria-label="{{t "Social links"}}">
-                <a href="https://twitter.com/imswarnil" class="site-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                <a href="https://github.com/imswarnil" class="site-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-                </a>
-                <a href="https://linkedin.com/in/imswarnil" class="site-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-                </a>
-                <a href="https://youtube.com/@imswarnil" class="site-footer__social-link" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
-                </a>
-                <a href="https://trailblazer.salesforce.com/id/imswarnil" class="site-footer__social-link site-footer__social-link--trailhead" target="_blank" rel="noopener noreferrer" aria-label="Trailhead">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                </a>
-            </div>
-
-            {{!-- Open source note --}}
-            <div class="site-footer__oss">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-                <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener noreferrer">{{t "Open source on GitHub"}} →</a>
-            </div>
-
-        </div>
-
-        {{!-- ── Column 2: Learning ────────────────────────── --}}
-        <div class="site-footer__nav-col">
-            <h3 class="site-footer__nav-heading">{{t "Learning"}}</h3>
-            <ul class="site-footer__nav-list">
-                <li><a href="/courses/" class="site-footer__nav-link"><i class="ph ph-book-open" aria-hidden="true"></i>{{t "All Courses"}}</a></li>
-                <li><a href="/training/" class="site-footer__nav-link"><i class="ph ph-graduation-cap" aria-hidden="true"></i>{{t "Training"}}</a></li>
-                <li><a href="/documentation/" class="site-footer__nav-link"><i class="ph ph-file-text" aria-hidden="true"></i>{{t "Documentation"}}</a></li>
-                <li><a href="/videos/" class="site-footer__nav-link"><i class="ph ph-video" aria-hidden="true"></i>{{t "Videos"}}</a></li>
-                <li><a href="/blog/" class="site-footer__nav-link"><i class="ph ph-pencil-line" aria-hidden="true"></i>{{t "Blog"}}</a></li>
-            </ul>
-        </div>
-
-        {{!-- ── Column 3: Explore (secondary nav from Ghost admin) ── --}}
-        <div class="site-footer__nav-col">
-            <h3 class="site-footer__nav-heading">{{t "Explore"}}</h3>
-            <ul class="site-footer__nav-list">
-                {{#foreach navigation}}
-                    <li><a href="{{url}}" class="site-footer__nav-link">{{label}}</a></li>
-                {{/foreach}}
-            </ul>
-        </div>
-
-        {{!-- ── Column 4: Connect (secondary nav) ───────── --}}
-        <div class="site-footer__nav-col">
-            <h3 class="site-footer__nav-heading">{{t "Connect"}}</h3>
-            <ul class="site-footer__nav-list">
-                {{navigation type="secondary"}}
-                <li><a href="/tags/" class="site-footer__nav-link"><i class="ph ph-tag" aria-hidden="true"></i>{{t "Topics"}}</a></li>
-                <li><a href="/contact/" class="site-footer__nav-link"><i class="ph ph-chat-circle-dots" aria-hidden="true"></i>{{t "Contact"}}</a></li>
-                <li><a href="/rss/" class="site-footer__nav-link"><i class="ph ph-rss" aria-hidden="true"></i>RSS</a></li>
-            </ul>
-        </div>
-
-        {{!-- ── Column 5: Newsletter ─────────────────────── --}}
-        {{#if @site.members_enabled}}
-            <div class="site-footer__newsletter">
-                <h3 class="site-footer__nav-heading">{{t "Stay in the loop"}}</h3>
-                <p class="site-footer__newsletter-desc">
-                    {{t "Salesforce tips, course updates, and practical notes — straight to your inbox."}}
-                </p>
-                {{#unless @member}}
-                    <a href="#/portal/signup" data-portal="signup" class="btn btn-primary btn-pill btn-sm site-footer__newsletter-btn">
-                        <i class="ph ph-envelope-simple btn-icon" aria-hidden="true"></i>
-                        {{t "Subscribe Free"}}
-                    </a>
-                    <p class="site-footer__newsletter-note">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        {{t "No spam. Unsubscribe anytime."}}
-                    </p>
-                {{else}}
-                    <div class="site-footer__member-msg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        {{t "You're subscribed — thank you!"}}
-                    </div>
-                {{/unless}}
-            </div>
-        {{/if}}
-
-    </div>
-
-    {{!-- ── Divider ─────────────────────────────────────── --}}
-    <div class="site-footer__divider" aria-hidden="true"></div>
-
-    {{!-- ── Bottom bar ───────────────────────────────────── --}}
-    <div class="site-footer__bottom inner">
-
-        {{!-- Copyright --}}
-        <p class="site-footer__copyright">
-            © {{date format="YYYY"}}
-            <a href="{{@site.url}}">{{@site.title}}</a>
-            · {{t "Made with"}}
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="site-footer__heart" aria-label="love" role="img"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
-            {{t "in India"}} ·
-            <a href="https://ghost.org" target="_blank" rel="noopener noreferrer">{{t "Published with Ghost"}}</a>
+<footer class="footer has-background-black-ter has-text-grey-light pb-6 pt-6">
+  <div class="container">
+    <div class="columns is-multiline">
+      
+      <div class="column is-12-mobile is-6-tablet is-4-desktop pr-6-desktop">
+        <h3 class="title is-4 has-text-white mb-4">Namaste Salesforce</h3>
+        <p class="is-size-6 mb-4 has-text-grey-light">
+          An open-source Learning Management System dedicated to mastering the Salesforce ecosystem. Empowering developers to learn and build together.
         </p>
+        <p class="is-size-7">
+          Built with 💻 by <a href="https://www.iamswarnil.com" class="has-text-primary has-text-weight-bold" target="_blank" rel="noopener">Swarnil</a>.
+        </p>
+      </div>
 
-        {{!-- Secondary nav in bottom bar --}}
-        <nav class="site-footer__bottom-nav" aria-label="{{t "Footer navigation"}}">
-            {{navigation type="secondary"}}
-        </nav>
-
-        {{!-- Right actions --}}
-        <div class="site-footer__bottom-actions">
-            <a href="https://github.com/imswarnil/Namaste-Salesforce"
-               class="site-footer__github-star"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Star on GitHub">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-                <span>Star</span>
-            </a>
+      <div class="column is-12-mobile is-6-tablet is-2-desktop">
+        <h4 class="title is-6 has-text-white is-uppercase has-text-weight-semibold tracking-wide mb-4">{{t "Navigation"}}</h4>
+        <div class="content is-small">
+          {{navigation}}
         </div>
+      </div>
 
+      <div class="column is-12-mobile is-6-tablet is-2-desktop">
+        <h4 class="title is-6 has-text-white is-uppercase has-text-weight-semibold tracking-wide mb-4">{{t "Connect"}}</h4>
+        <div class="content is-small">
+          {{> social-media}}
+        </div>
+      </div>
+
+      <div class="column is-12-mobile is-6-tablet is-4-desktop">
+        <h4 class="title is-6 has-text-white is-uppercase has-text-weight-semibold tracking-wide mb-4">{{t "Stay Updated"}}</h4>
+        <p class="is-size-7 mb-4 has-text-grey-light">{{t "Get the latest Salesforce tutorials and platform updates delivered directly to your inbox." }}</p>
+        
+        <form data-members-form="subscribe">
+          <div class="field">
+            <div class="control is-expanded mb-3">
+              <input class="input has-background-dark has-text-white has-text-centered-mobile" style="border-color: #363636;" aria-labelledby="footer-subscribe" data-members-email type="email" placeholder="Your email address" required/>
+            </div>
+            <div class="control">
+              <button class="button is-primary is-fullwidth has-text-weight-bold" type="submit" title="{{t "Subscribe"}}" aria-label="{{t "Subscribe"}}">
+                {{t "Subscribe"}}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      
     </div>
 
-</footer>
+    <div class="column is-12 px-0">
+      <hr class="has-background-grey-darker my-5">
+      <div class="level is-size-7 mt-5">
+        <div class="level-left">
+          <div class="level-item has-text-centered-mobile">
+            <p>&copy; {{date format="YYYY"}} <a href="{{@site.url}}" class="has-text-white has-text-weight-bold">{{@site.title}}</a>. All rights reserved.</p>
+          </div>
+        </div>
+        <div class="level-right">
+          <div class="level-item has-text-centered-mobile mt-3-mobile">
+            <p>Published with <a href="https://ghost.org" class="has-text-grey hover-text-white">Ghost</a> & <a href="https://bulma.io/" class="has-text-grey hover-text-white">Bulma</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
 
+  </div>
+</footer>

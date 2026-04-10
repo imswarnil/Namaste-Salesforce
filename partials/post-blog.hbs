@@ -1,109 +1,146 @@
-{{!-- post-blog.hbs — Blog post: 2-col (content + sticky sidebar) --}}
-<main class="site-main post-blog-page">
-<div class="post-blog-wrap outer">
-<div class="inner">
-<div class="post-blog-grid">
+{{!< default}}
 
-    {{!-- ── MAIN COLUMN ──────────────────────────────────── --}}
-    <article class="post-blog-main article {{post_class}}">
+<main class="section pt-5 pb-6 has-background-white">
+  <div class="container is-max-widescreen">
+    <div class="columns is-variable is-8">
+      
+      {{!-- ==========================================
+            LEFT COLUMN: MAIN CONTENT
+      ========================================== --}}
+      <div class="column is-8-desktop">
 
-        {{!-- Meta bar: tag + date + reading time --}}
-        <div class="sfdc-flex sfdc-gap-sm sfdc-items-center sfdc-flex-wrap sfdc-mb-xl">
-            {{#primary_tag}}<a class="article-tag-link" href="{{url}}">{{name}}</a>{{/primary_tag}}
-            {{#if featured}}<span class="article-featured-badge">{{> "icons/fire"}} {{t "Featured"}}</span>{{/if}}
-            <time class="sfdc-text-weak sfdc-text-sm" datetime="{{date format="YYYY-MM-DD"}}">
-                <i class="ph ph-calendar-blank" aria-hidden="true"></i> {{date format="DD MMM YYYY"}}
-            </time>
-            {{#if reading_time}}
-                <span class="sfdc-text-weak sfdc-text-sm">
-                    <i class="ph ph-clock" aria-hidden="true"></i>
-                    {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}
-                </span>
-            {{/if}}
+        {{!-- Top Ad Space --}}
+        <div class="box has-background-white-ter is-shadowless is-flex is-align-items-center is-justify-content-center mb-6" style="border: 1px dashed #ccc; min-height: 90px; width: 100%;">
+          <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Leaderboard Ad (728x90)</span>
         </div>
 
-        {{!-- Title + excerpt --}}
-        <h1 class="article-title sfdc-mb-md">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="lead sfdc-mb-xl">{{custom_excerpt}}</p>{{/if}}
+        {{!-- Meta & Titles --}}
+        <div class="is-flex is-align-items-center is-flex-wrap-wrap mb-4">
+          {{#if primary_tag}}
+            <a href="{{primary_tag.url}}" class="tag is-link is-light is-medium is-rounded has-text-weight-bold mr-4 mb-2">
+              {{primary_tag.name}}
+            </a>
+          {{/if}}
+          <div class="is-flex is-align-items-center has-text-grey is-size-7 mr-4 mb-2">
+            <span class="icon is-small mr-1"><i class="ph ph-calendar-blank"></i></span>
+            <span>{{date format="MMMM DD, YYYY"}}</span>
+          </div>
+          <div class="is-flex is-align-items-center has-text-grey is-size-7 mb-2">
+            <span class="icon is-small mr-1"><i class="ph ph-clock"></i></span>
+            <span>{{reading_time}}</span>
+          </div>
+        </div>
 
-        {{!-- Author byline --}}
-        {{> "components/author-inline"}}
+        <h1 class="title is-1 is-size-2-mobile has-text-weight-bold has-text-dark mb-4" style="line-height: 1.2; letter-spacing: -1px;">
+          {{title}}
+        </h1>
 
-        {{!-- Feature image --}}
-        {{#if feature_image}}
-            <figure class="post-blog-hero-image sfdc-mt-2xl">
-                <img srcset="{{img_url feature_image size="s"}} 300w,
-                             {{img_url feature_image size="m"}} 600w,
-                             {{img_url feature_image size="l"}} 1000w,
-                             {{img_url feature_image size="xl"}} 2000w"
-                     sizes="92vw"
-                     src="{{img_url feature_image size="xl"}}"
-                     alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-                     loading="eager" />
-                {{#if feature_image_caption}}<figcaption>{{feature_image_caption}}</figcaption>{{/if}}
-            </figure>
+        {{#if custom_excerpt}}
+          <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-2 mb-5" style="line-height: 1.5;">
+            {{custom_excerpt}}
+          </p>
         {{/if}}
 
-        {{!-- Mobile TOC (shown on mobile only, below image) --}}
-        <div class="toc-mobile">
-            {{> "components/toc"}}
+        {{!-- Feature Image --}}
+        {{#if feature_image}}
+          <figure class="image is-16by9 mb-4" style="border-radius: 12px; overflow: hidden; border: 1px solid #ededed;">
+            <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" style="object-fit: cover;">
+          </figure>
+          {{#if feature_image_caption}}
+            <p class="is-size-7 has-text-centered has-text-grey mb-6">{{feature_image_caption}}</p>
+          {{/if}}
+        {{/if}}
+
+        {{!-- MOBILE TOC (Hidden on Desktop) --}}
+        <div class="box is-hidden-desktop mb-6 has-background-white-ter is-shadowless" style="border: 1px solid #ededed; border-radius: 12px;">
+          <div class="is-flex is-justify-content-space-between is-align-items-center is-clickable" id="mobile-toc-toggle">
+            <h3 class="title is-6 mb-0 is-flex is-align-items-center has-text-dark">
+              <span class="icon has-text-primary mr-2"><i class="ph-fill ph-list-dashes is-size-5"></i></span>
+              <span class="has-text-weight-bold">{{t "Table of Contents"}}</span>
+            </h3>
+            <span class="icon has-text-grey"><i class="ph ph-caret-down" id="mobile-toc-icon"></i></span>
+          </div>
+          <div id="mobile-toc-menu" class="menu mt-4 is-hidden">
+            <ul class="menu-list js-toc-list has-text-weight-medium"></ul>
+          </div>
         </div>
 
-        {{!-- Content --}}
-        <section class="gh-content js-toc-content sfdc-mt-2xl">{{content}}</section>
-
-        {{!-- Tags + Share --}}
-        <div class="post-blog-footer sfdc-mt-3xl">
-            {{#if tags}}<div class="article-tags sfdc-mb-xl">
-                <span class="article-tags-label">{{t "Topics"}}</span>
-                {{#foreach tags}}{{#unless internal}}<a href="{{url}}" class="article-tag-pill">{{name}}</a>{{/unless}}{{/foreach}}
-            </div>{{/if}}
-            {{> "components/share"}}
+        {{!-- Post Content (Ghost handles internal typography via gh-content) --}}
+        <div class="content is-medium has-text-grey-dark gh-content js-post-content mb-6">
+          {{content}}
         </div>
 
-        {{!-- Author card(s) --}}
-        <div class="sfdc-mt-3xl">{{> "components/author-card"}}</div>
+        {{!-- Bottom Ad Space --}}
+        <div class="box has-background-white-ter is-shadowless is-flex is-align-items-center is-justify-content-center mt-6 mb-6" style="border: 1px dashed #ccc; min-height: 90px; width: 100%;">
+          <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Bottom Content Ad (728x90)</span>
+        </div>
 
-        {{!-- Comments --}}
-        {{#if comments}}<section class="article-comments sfdc-mt-3xl">{{comments}}</section>{{/if}}
-
-    </article>
-
-    {{!-- ── SIDEBAR ─────────────────────────────────────── --}}
-    <aside class="post-blog-sidebar" aria-label="{{t "Sidebar"}}">
-        <div class="post-blog-sidebar__sticky">
-
-            {{!-- Newsletter --}}
-            {{#if @site.members_enabled}}{{#unless @member}}
-                <div class="post-blog-sidebar__card sfdc-mb-xl">
-                    <h3 class="sfdc-mb-xs" style="font-size:var(--sfdc-font-size-h5)">{{t "Join the community"}}</h3>
-                    <p class="sfdc-text-secondary sfdc-text-sm sfdc-mb-lg">{{t "Get weekly tips and exclusive tutorials."}}</p>
-                    <a href="#/portal/signup" data-portal="signup" class="btn btn-primary btn-block btn-pill sfdc-mb-sm">
-                        <i class="ph ph-envelope-simple btn-icon" aria-hidden="true"></i>{{t "Subscribe Free"}}
-                    </a>
-                    <a href="#/portal/signin" data-portal="signin" class="btn btn-ghost btn-block btn-sm">{{t "Already a member? Sign in"}}</a>
-                </div>
-            {{/unless}}{{/if}}
-
-            {{!-- Desktop TOC --}}
-            <div class="post-blog-sidebar__card toc--sidebar">
-                {{> "components/toc"}}
+        {{!-- Social Share --}}
+        <div class="level is-mobile py-5" style="border-top: 1px solid #ededed; border-bottom: 1px solid #ededed;">
+          <div class="level-left">
+            <div class="level-item">
+              <p class="has-text-weight-bold has-text-dark is-size-6 mr-3">Share:</p>
+              <div class="buttons">
+                <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" class="button is-light is-rounded has-text-info">
+                  <span class="icon"><i class="ph-fill ph-twitter-logo"></i></span>
+                </a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{url absolute='true'}}&title={{encode title}}" target="_blank" class="button is-light is-rounded has-text-link">
+                  <span class="icon"><i class="ph-fill ph-linkedin-logo"></i></span>
+                </a>
+              </div>
             </div>
-
+          </div>
         </div>
-    </aside>
 
-</div>
-</div>
-</div>
+      </div>
+
+      {{!-- ==========================================
+            RIGHT COLUMN: STICKY SIDEBAR & TOC
+      ========================================== --}}
+      <div class="column is-4-desktop is-hidden-touch">
+        
+        {{!-- Newsletter Widget (Scrolls away) --}}
+        <div class="box has-background-link has-text-white is-shadowless p-5 mb-6" style="border-radius: 16px;">
+          <h3 class="title is-4 has-text-white mb-2">{{t "Join the Community"}}</h3>
+          <p class="is-size-6 mb-4" style="opacity: 0.9;">{{t "Get weekly tips and exclusive tutorials."}}</p>
+          <form data-members-form="subscribe">
+            <div class="field">
+              <div class="control is-expanded mb-3">
+                <input data-members-email class="input is-medium is-rounded" type="email" placeholder="Email address" required>
+              </div>
+              <div class="control">
+                <button class="button is-white is-medium is-rounded is-fullwidth has-text-link has-text-weight-bold" type="submit">
+                  {{t "Subscribe"}}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {{!-- STICKY AREA --}}
+        <aside style="position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto; padding-right: 4px;">
+          
+          {{!-- Desktop TOC Widget --}}
+          <div class="box mb-5 is-shadowless" style="border: 1px solid #ededed; border-radius: 12px;">
+            <h3 class="title is-6 mb-4 is-flex is-align-items-center has-text-dark">
+              <span class="icon has-text-link mr-2"><i class="ph-fill ph-list-bullets is-size-5"></i></span>
+              <span class="has-text-weight-bold">{{t "Table of Contents"}}</span>
+            </h3>
+            <div class="menu">
+              <ul class="menu-list js-toc-list has-text-weight-medium"></ul>
+            </div>
+          </div>
+
+          {{!-- Sticky Sidebar Ad --}}
+          <div class="box has-background-white-ter is-shadowless is-flex is-align-items-center is-justify-content-center" style="border: 1px dashed #ccc; min-height: 600px; width: 100%; border-radius: 12px;">
+            <span class="has-text-grey is-size-7"><i class="ph ph-ad mr-1"></i> Sticky Rail Ad (300x600)</span>
+          </div>
+
+        </aside>
+      </div>
+
+    </div>
+  </div>
 </main>
 
-{{!-- Related blog posts --}}
-{{#if @custom.show_recent_posts_footer}}
-    {{#get "posts" filter="tag:hash-blog+id:-{{id}}" limit="3" as |related|}}
-        {{#if related}}<aside class="read-more-wrap outer" aria-label="{{t "More from the blog"}}">
-            <h3 class="read-more-title inner">{{t "More from the blog"}}</h3>
-            <div class="read-more inner">{{#foreach related}}{{> "post-card"}}{{/foreach}}</div>
-        </aside>{{/if}}
-    {{/get}}
-{{/if}}
+{{!-- Keep your exact TOC Script from your uploaded file here --}}

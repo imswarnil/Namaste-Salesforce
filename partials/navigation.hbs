@@ -1,32 +1,4 @@
-{{!--
-    navigation.hbs — Namaste Salesforce Theme
-    ============================================================
-    Ghost automatically looks for partials/navigation.hbs and
-    uses it instead of the built-in {{navigation}} helper output.
-
-    ACTIVE STATE:
-      Ghost sets `current = true` on the nav item whose URL
-      matches the current request URL. We add .current-menu-item
-      to the <li> and aria-current="page" to the <a>.
-
-    FIRE ICON:
-      Applied via CSS mask-image on a::before in header.css.
-      No inline SVG needed here.
-
-    USAGE:
-      {{navigation}}              primary nav
-      {{navigation type="secondary"}}  footer nav
-    ============================================================
---}}
-<ul class="nav" role="list">
-    {{#foreach navigation}}
-    <li class="nav-item{{#if current}} current-menu-item{{/if}}">
-        <a
-            href="{{url absolute="true"}}"
-            {{#if current}}aria-current="page"{{/if}}
-        >
-            {{label}}
-        </a>
-    </li>
-    {{/foreach}}
-</ul>
+<!-- Loop through the navigation items -->
+{{#foreach navigation}}
+  <a class="navbar-item nav-{{slug}}{{#if current}} is-active{{/if}}" href="{{url absolute="true"}}">{{label}}</a>
+{{/foreach}}

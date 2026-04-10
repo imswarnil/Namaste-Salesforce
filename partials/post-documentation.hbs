@@ -1,162 +1,301 @@
-{{!-- post-documentation.hbs — Documentation reader: sidebar | article | toc --}}
+{{!--
+  partials/post-documentation.hbs
+  Single documentation article page.
+  Called from post.hbs when the post has the public tag: documentation
+--}}
+
+{{!-- Hidden span carries current post id for JS active-state matching --}}
 <span id="doc-current-id" data-id="{{id}}" hidden aria-hidden="true"></span>
 
+{{!-- ── JSON-LD ─────────────────────────────────────────────────────────── --}}
+{{!-- JSON-LD: Article schema. Image falls back to site icon when no feature image. --}}
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"{{title}}","url":"{{url absolute="true"}}","datePublished":"{{date format="YYYY-MM-DD"}}","dateModified":"{{date updated_at format="YYYY-MM-DD"}}","description":"{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="30"}}{{/if}}","image":"{{#if feature_image}}{{feature_image}}{{else}}{{@site.icon}}{{/if}}","publisher":{"@type":"Organization","name":"{{@site.title}}"}}
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{title}}",
+  "url": "{{url absolute="true"}}",
+  "datePublished": "{{date format="YYYY-MM-DD"}}",
+  "dateModified": "{{date updated_at format="YYYY-MM-DD"}}",
+  "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="30"}}{{/if}}",
+  "image": "{{#if feature_image}}{{feature_image}}{{else}}{{@site.icon}}{{/if}}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{@site.title}}"
+  },
+  "isPartOf": {
+    "@type": "WebPage",
+    "name": "Documentation",
+    "url": "{{@site.url}}/documentation/"
+  }
+}
 </script>
 
-{{!-- Mobile nav toggle --}}
-<div class="doc-mob-bar outer">
-    <div class="inner sfdc-flex sfdc-justify-between sfdc-items-center">
-        <nav class="doc-breadcrumb" aria-label="{{t "Breadcrumb"}}">
-            <a href="/documentation/">{{t "Documentation"}}</a>
-            <i class="ph ph-caret-right" aria-hidden="true"></i>
-            <span>{{title}}</span>
-        </nav>
-        <button class="btn btn-neutral btn-sm" id="docMobToggle" aria-expanded="false" aria-controls="docMobPanel">
-            <i class="ph ph-list-bullets btn-icon" aria-hidden="true"></i>{{t "All articles"}}
-            <i class="ph ph-caret-down btn-icon doc-mob-caret" aria-hidden="true"></i>
-        </button>
-    </div>
-</div>
+{{!-- ══════════════════════════════════════════════════════════════════════
+  READING LAYOUT
+══════════════════════════════════════════════════════════════════════════ --}}
+<div class="doc-reader">
+  <div class="container doc-reader__container">
+    <div class="columns is-variable is-6-desktop doc-reader__columns">
 
-{{!-- Mobile panel --}}
-<div class="doc-mob-panel outer" id="docMobPanel" aria-hidden="true">
-    <div class="inner">
-        {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
-            <nav class="doc-sidebar__list" aria-label="{{t "Documentation"}}">
-                {{#foreach posts}}
-                    <a href="{{url}}" class="doc-sidebar__link" data-doc-id="{{id}}">
-                        <span class="doc-sidebar__node" aria-hidden="true"></span>
-                        {{title}}
-                    </a>
-                {{/foreach}}
-            </nav>
-        {{/get}}
-    </div>
-</div>
+      {{!-- ══════════════════════════════════════════════════════════════
+        LEFT SIDEBAR — sticky timeline, all docs, current highlighted
+      ══════════════════════════════════════════════════════════════════ --}}
+      <aside class="column is-3-desktop is-4-tablet is-hidden-touch doc-reader__aside">
+        <nav class="doc-sidebar" aria-label="Documentation navigation">
 
-{{!-- 3-col shell --}}
-<div class="doc-reader outer">
-<div class="inner doc-reader__inner">
+          <a href="/documentation/" class="doc-sidebar__back">
+            <i class="ph ph-arrow-left" aria-hidden="true"></i>
+            Documentation
+          </a>
 
-    {{!-- LEFT sidebar --}}
-    <aside class="doc-sidebar" aria-label="{{t "Documentation navigation"}}">
-        <a href="/documentation/" class="doc-sidebar__back">
-            <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Documentation"}}
-        </a>
-        <p class="doc-sidebar__label">{{t "Contents"}}</p>
-        {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
-            <nav class="doc-sidebar__list" aria-label="{{t "All docs"}}">
-                {{#foreach posts}}
-                    <a href="{{url}}" class="doc-sidebar__link" data-doc-id="{{id}}">
-                        <span class="doc-sidebar__node" aria-hidden="true"></span>
-                        <span>{{title}}</span>
-                    </a>
-                {{/foreach}}
-            </nav>
-        {{/get}}
-        <div class="doc-sidebar__contribute">
+          <p class="doc-sidebar__label">Contents</p>
+
+          <ul class="doc-tl">
+            {{!-- limit="100" replaces deprecated limit="all" --}}
+            {{#get "posts"
+              filter="tag:documentation"
+              limit="100"
+              order="published_at asc"
+            }}
+              {{#foreach posts}}
+                <li class="doc-tl__item">
+                  {{!-- data-doc-id used by JS to set .is-active --}}
+                  <a href="{{url}}"
+                     class="doc-tl__link"
+                     data-doc-id="{{id}}">
+                    <span class="doc-tl__node" aria-hidden="true"></span>
+                    <span class="doc-tl__text">{{title}}</span>
+                  </a>
+                </li>
+              {{/foreach}}
+            {{/get}}
+          </ul>
+
+          <div class="doc-sidebar__contribute">
+            <p class="doc-sidebar__contribute-text">
+              Found a mistake in this article?
+            </p>
             <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?title=Docs+feedback:+{{encode title}}"
-               target="_blank" rel="noopener noreferrer">
-                <i class="ph ph-github-logo" aria-hidden="true"></i>{{t "Edit on GitHub"}}
+               target="_blank" rel="noopener noreferrer"
+               class="doc-sidebar__contribute-link">
+              <i class="ph ph-github-logo" aria-hidden="true"></i>
+              Edit on GitHub
             </a>
+          </div>
+
+        </nav>
+      </aside>
+
+      {{!-- ══════════════════════════════════════════════════════════════
+        MOBILE NAV ACCORDION
+      ══════════════════════════════════════════════════════════════════ --}}
+      <div class="is-hidden-desktop doc-reader__mobile-nav">
+        <button class="doc-mob-toggle" type="button"
+                id="docMobToggle"
+                aria-expanded="false"
+                aria-controls="docMobPanel">
+          <span class="doc-mob-toggle__left">
+            <i class="ph ph-list-bullets" aria-hidden="true"></i>
+            All articles
+          </span>
+          <i class="ph ph-caret-down doc-mob-toggle__caret"
+             aria-hidden="true"></i>
+        </button>
+        <div class="doc-mob-panel" id="docMobPanel" aria-hidden="true">
+          <ul class="doc-tl">
+            {{#get "posts"
+              filter="tag:documentation"
+              limit="100"
+              order="published_at asc"
+            }}
+              {{#foreach posts}}
+                <li class="doc-tl__item">
+                  <a href="{{url}}"
+                     class="doc-tl__link"
+                     data-doc-id="{{id}}">
+                    <span class="doc-tl__node" aria-hidden="true"></span>
+                    <span class="doc-tl__text">{{title}}</span>
+                  </a>
+                </li>
+              {{/foreach}}
+            {{/get}}
+          </ul>
         </div>
-    </aside>
+      </div>
 
-    {{!-- MAIN article --}}
-    <main class="doc-article-col">
-    <article class="doc-article">
+      {{!-- ══════════════════════════════════════════════════════════════
+        ARTICLE COLUMN
+      ══════════════════════════════════════════════════════════════════ --}}
+      <main class="column is-9-desktop is-8-tablet doc-reader__main" role="main">
+        <article class="doc-article">
 
-        <nav class="doc-breadcrumb doc-breadcrumb--full" aria-label="{{t "Breadcrumb"}}">
-            <a href="/">{{t "Home"}}</a><i class="ph ph-caret-right" aria-hidden="true"></i>
-            <a href="/documentation/">{{t "Documentation"}}</a><i class="ph ph-caret-right" aria-hidden="true"></i>
-            <span aria-current="page">{{title}}</span>
-        </nav>
+          <nav class="doc-breadcrumb" aria-label="Breadcrumb">
+            <ol class="doc-breadcrumb__list">
+              <li>
+                <a href="/" class="doc-breadcrumb__link">Home</a>
+              </li>
+              <li class="doc-breadcrumb__sep" aria-hidden="true">
+                <i class="ph ph-caret-right"></i>
+              </li>
+              <li>
+                <a href="/documentation/"
+                   class="doc-breadcrumb__link">Documentation</a>
+              </li>
+              <li class="doc-breadcrumb__sep" aria-hidden="true">
+                <i class="ph ph-caret-right"></i>
+              </li>
+              <li aria-current="page">
+                <span class="doc-breadcrumb__current">{{title}}</span>
+              </li>
+            </ol>
+          </nav>
 
-        <header class="doc-article__header">
+          <header class="doc-article__header">
             <h1 class="doc-article__title">{{title}}</h1>
-            {{#if custom_excerpt}}<p class="doc-article__lead lead">{{custom_excerpt}}</p>{{/if}}
-            <div class="doc-article__meta sfdc-flex sfdc-gap-lg sfdc-flex-wrap">
-                {{#if reading_time}}
-                    <span class="sfdc-text-sm sfdc-text-weak sfdc-flex sfdc-gap-xs sfdc-items-center">
-                        <i class="ph ph-timer" aria-hidden="true"></i>{{reading_time}}
-                    </span>
-                {{/if}}
-                {{#primary_author}}
-                    <span class="sfdc-text-sm sfdc-text-weak sfdc-flex sfdc-gap-xs sfdc-items-center">
-                        {{#if profile_image}}<img class="doc-article__author-avatar" src="{{img_url profile_image size="xxs"}}" alt="{{name}}" loading="lazy" />{{/if}}
-                        {{name}}
-                    </span>
-                {{/primary_author}}
-                {{#if updated_at}}
-                    <time class="sfdc-text-sm sfdc-text-weak sfdc-flex sfdc-gap-xs sfdc-items-center" datetime="{{date updated_at format="YYYY-MM-DD"}}">
-                        <i class="ph ph-clock-clockwise" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="MMM D, YYYY"}}
-                    </time>
-                {{/if}}
+            {{#if custom_excerpt}}
+              <p class="doc-article__lead">{{custom_excerpt}}</p>
+            {{/if}}
+            <div class="doc-article__meta">
+              <span class="doc-article__meta-item">
+                <i class="ph ph-timer" aria-hidden="true"></i>
+                {{reading_time}}
+              </span>
+              {{#primary_author}}
+                <span class="doc-article__meta-item">
+                  {{#if profile_image}}
+                    <img class="doc-article__avatar"
+                         src="{{img_url profile_image size="xxs"}}"
+                         alt="{{name}}" width="20" height="20"
+                         loading="lazy">
+                  {{else}}
+                    <i class="ph ph-user-circle" aria-hidden="true"></i>
+                  {{/if}}
+                  {{name}}
+                </span>
+              {{/primary_author}}
+              {{#if updated_at}}
+                <span class="doc-article__meta-item">
+                  <i class="ph ph-clock-clockwise" aria-hidden="true"></i>
+                  <time datetime="{{date updated_at format="YYYY-MM-DD"}}">
+                    Updated {{date updated_at format="MMM D, YYYY"}}
+                  </time>
+                </span>
+              {{/if}}
             </div>
-        </header>
+          </header>
 
-        {{#if feature_image}}
+          {{#if feature_image}}
             <figure class="doc-article__cover">
-                <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="lazy" />
+              <img src="{{img_url feature_image size="l"}}"
+                   alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                   loading="lazy">
             </figure>
-        {{/if}}
+          {{/if}}
 
-        <div class="gh-content doc-article__body js-toc-content">{{content}}</div>
+          <div class="content gh-content doc-article__body">
+            {{content}}
+          </div>
 
-        {{#if tags}}<div class="article-tags sfdc-mt-2xl">
-            {{#foreach tags}}{{#match visibility "!=" "internal"}}<a href="{{url}}" class="article-tag-pill">{{name}}</a>{{/match}}{{/foreach}}
-        </div>{{/if}}
-
-        <nav class="doc-article__nav" aria-label="{{t "Article navigation"}}">
-            <div>
-                {{#prev_post filter="tag:documentation"}}
-                    <a href="{{url}}" class="doc-article__nav-card">
-                        <span class="doc-article__nav-dir"><i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Previous"}}</span>
-                        <span class="doc-article__nav-title">{{title}}</span>
-                    </a>
-                {{/prev_post}}
+          {{#if tags}}
+            <div class="doc-article__tags">
+              {{#foreach tags}}
+                {{#match visibility "!=" "internal"}}
+                  <a href="{{url}}"
+                     class="tag is-light doc-article__tag">
+                    {{name}}
+                  </a>
+                {{/match}}
+              {{/foreach}}
             </div>
-            <div>
-                {{#next_post filter="tag:documentation"}}
-                    <a href="{{url}}" class="doc-article__nav-card doc-article__nav-card--next">
-                        <span class="doc-article__nav-dir">{{t "Next"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></span>
-                        <span class="doc-article__nav-title">{{title}}</span>
-                    </a>
-                {{else}}
-                    <a href="/documentation/" class="doc-article__nav-card doc-article__nav-card--next doc-article__nav-card--done">
-                        <span class="doc-article__nav-dir"><i class="ph ph-check-circle" aria-hidden="true"></i>{{t "You've reached the end"}}</span>
-                        <span class="doc-article__nav-title">{{t "Back to all documentation"}}</span>
-                    </a>
-                {{/next_post}}
+          {{/if}}
+
+          <nav class="doc-article__nav" aria-label="Article navigation">
+            <div class="doc-article__nav-prev">
+              {{#prev_post filter="tag:documentation"}}
+                <a href="{{url}}" class="doc-article__nav-card">
+                  <span class="doc-article__nav-dir">
+                    <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                    Previous
+                  </span>
+                  <span class="doc-article__nav-title">{{title}}</span>
+                </a>
+              {{/prev_post}}
             </div>
-        </nav>
-    </article>
-    </main>
+            <div class="doc-article__nav-next">
+              {{#next_post filter="tag:documentation"}}
+                <a href="{{url}}"
+                   class="doc-article__nav-card doc-article__nav-card--next">
+                  <span class="doc-article__nav-dir">
+                    Next
+                    <i class="ph ph-arrow-right" aria-hidden="true"></i>
+                  </span>
+                  <span class="doc-article__nav-title">{{title}}</span>
+                </a>
+              {{else}}
+                <a href="/documentation/"
+                   class="doc-article__nav-card doc-article__nav-card--next
+                          doc-article__nav-card--done">
+                  <span class="doc-article__nav-dir">
+                    <i class="ph ph-check-circle" aria-hidden="true"></i>
+                    You've reached the end
+                  </span>
+                  <span class="doc-article__nav-title">
+                    Back to all documentation
+                  </span>
+                </a>
+              {{/next_post}}
+            </div>
+          </nav>
 
-    {{!-- RIGHT in-page TOC --}}
-    <aside class="doc-toc-col" aria-label="{{t "On this page"}}">
-        <div class="toc toc--sidebar">{{> "components/toc"}}</div>
-    </aside>
-
-</div>
+        </article>
+      </main>
+    </div>
+  </div>
 </div>
 
 <script>
-(function(){
-    'use strict';
-    var cur = document.getElementById('doc-current-id');
-    var id  = cur ? cur.getAttribute('data-id') : null;
-    if(id){ document.querySelectorAll('.doc-sidebar__link[data-doc-id]').forEach(function(a){
-        if(a.getAttribute('data-doc-id')===id){ a.classList.add('is-active'); a.scrollIntoView({block:'nearest',behavior:'smooth'}); }
-    }); }
-    var btn   = document.getElementById('docMobToggle');
-    var panel = document.getElementById('docMobPanel');
-    if(!btn||!panel) return;
-    function set(open){ panel.classList.toggle('is-open',open); panel.setAttribute('aria-hidden',!open); btn.setAttribute('aria-expanded',open); var c=btn.querySelector('.doc-mob-caret'); if(c) c.style.transform=open?'rotate(180deg)':''; }
-    btn.addEventListener('click',function(){ set(!panel.classList.contains('is-open')); });
-    document.addEventListener('click',function(e){ if(panel.classList.contains('is-open')&&!panel.contains(e.target)&&!btn.contains(e.target)) set(false); });
-    document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&panel.classList.contains('is-open')){ set(false); btn.focus(); } });
+(function () {
+  'use strict';
+
+  // Active sidebar: read current post id from the hidden span rendered above,
+  // match against data-doc-id on each sidebar link, add .is-active class.
+  var currentEl = document.getElementById('doc-current-id');
+  var currentId = currentEl ? currentEl.getAttribute('data-id') : null;
+
+  if (currentId) {
+    document.querySelectorAll('.doc-tl__link[data-doc-id]').forEach(function (a) {
+      if (a.getAttribute('data-doc-id') === currentId) {
+        a.classList.add('is-active');
+        a.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
+  }
+
+  // ── Mobile toggle ─────────────────────────────────────────────────────────
+  var btn   = document.getElementById('docMobToggle');
+  var panel = document.getElementById('docMobPanel');
+  if (!btn || !panel) return;
+
+  function setOpen(open) {
+    panel.classList.toggle('is-open', open);
+    panel.setAttribute('aria-hidden', String(!open));
+    btn.setAttribute('aria-expanded', String(open));
+    var c = btn.querySelector('.doc-mob-toggle__caret');
+    if (c) c.style.transform = open ? 'rotate(180deg)' : '';
+  }
+
+  btn.addEventListener('click', function () {
+    setOpen(!panel.classList.contains('is-open'));
+  });
+  document.addEventListener('click', function (e) {
+    if (panel.classList.contains('is-open') &&
+        !panel.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+      setOpen(false); btn.focus();
+    }
+  });
 })();
 </script>

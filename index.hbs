@@ -1,148 +1,17 @@
 {{!< default}}
-{{!-- The tag above means: insert everything in this file
-into the {body} of the default.hbs template --}}
-<section class="site-hero outer {{#if @site.cover_image}}has-cover{{/if}}">
-    
-    {{!-- 1. Background Cover Image --}}
-    {{#if @site.cover_image}}
-        <img class="site-hero-cover"
-            srcset="{{img_url @site.cover_image size="s"}} 300w,
-                    {{img_url @site.cover_image size="m"}} 600w,
-                    {{img_url @site.cover_image size="l"}} 1000w,
-                    {{img_url @site.cover_image size="xl"}} 2000w"
-            sizes="100vw"
-            src="{{img_url @site.cover_image size="xl"}}"
-            alt="{{@site.title}}"
-        />
-        {{!-- Optional dark overlay so text remains readable over images --}}
-        <div class="site-hero-overlay"></div>
-    {{/if}}
 
-    {{!-- 2. Hero Content --}}
-    <div class="site-hero-inner inner">
-        <div class="site-hero-content">
-            {{#if @site.logo}}
-                <img class="site-hero-logo" src="{{@site.logo}}" alt="{{@site.title}}">
-            {{else}}
-                <h1 class="site-hero-title">{{@site.title}}</h1>
-            {{/if}}
 
-            {{#if @site.description}}
-                <p class="site-hero-description">{{@site.description}}</p>
-            {{/if}}
+  <div class="container">
+    {{!-- Latest Posts --}}
+    <div class="columns is-multiline">
+      {{#foreach posts }}
+        <div class="column is-12-mobile is-6-tablet is-4-widescreen is-6-desktop">
+          {{> post-card class="bottom-border"}}
         </div>
-    </div>
-
-</section><style>
-    /*
- * _hero.css — Namaste Salesforce Theme
- * ============================================================
- * Styles for the universal site hero component.
- * ============================================================
- */
-
-.site-hero {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 40vh; /* Gives it presence on the page */
-    padding-top: var(--sfdc-spacing-6xl);
-    padding-bottom: var(--sfdc-spacing-6xl);
-    background-color: var(--sfdc-bg-color-inverse);
-    color: var(--sfdc-color-white);
-    text-align: center;
-    overflow: hidden;
-}
-
-/* Background Image Formatting */
-.site-hero-cover {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-}
-
-/* Overlay to ensure text readability against any image */
-.site-hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--sfdc-bg-color-backdrop); /* Uses your rgba(0,0,0,0.5) token */
-    z-index: 2;
-}
-
-/* Elevate content above the image and overlay */
-.site-hero-inner {
-    position: relative;
-    z-index: 3;
-    display: flex;
-    justify-content: center;
-}
-
-.site-hero-content {
-    max-width: var(--sfdc-content-width); /* Keeps text from stretching too wide */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--sfdc-spacing-lg);
-}
-
-/* Typography */
-.site-hero-title {
-    font-size: var(--sfdc-font-size-display-md);
-    color: var(--sfdc-color-white);
-    margin: 0;
-    line-height: var(--sfdc-line-height-tighter);
-}
-
-.site-hero-logo {
-    max-height: 80px; /* Adjust based on your logo proportions */
-    width: auto;
-    display: block;
-}
-
-.site-hero-description {
-    font-size: var(--sfdc-font-size-lg);
-    color: var(--sfdc-color-white);
-    opacity: 0.9;
-    margin: 0;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-    .site-hero {
-        min-height: 30vh;
-        padding-top: var(--sfdc-spacing-4xl);
-        padding-bottom: var(--sfdc-spacing-4xl);
-    }
-    
-    .site-hero-title {
-        font-size: var(--sfdc-font-size-h1);
-    }
-    
-    .site-hero-description {
-        font-size: var(--sfdc-font-size-base);
-    }
-}
-</style>
-{{!-- The main content area --}}
-<main id="site-main" class="site-main outer">
-<div class="inner posts">
-
-    <div class="post-feed">
-        {{#foreach posts}}
-            {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-            {{> "post-card"}}
-        {{/foreach}}
+      {{/foreach}}
     </div>
 
     {{pagination}}
+  </div>
 
-</div>
-</main>
+

@@ -1,71 +1,100 @@
-{{!--
-    post-card.hbs — Namaste Salesforce
-    ============================================================
-    DISPATCHER — renders the <article> wrapper with all layout
-    modifier classes, then includes the correct card partial
-    based on post tags. Card partials render inner content only.
+{{!-- partials/post-card.hbs --}}
 
-    LAYOUT CLASSES (Casper feed_layout system):
-      Classic + home + index 0 → post-card-large
-      Classic + home + index 1,2 → dynamic
-      Grid → keep-ratio
-      List (not tag/author) → post-card-large
+<article class="card is-flex is-flex-direction-column is-shadowless" style="height: 100%; border-radius: 12px; border: 1px solid #eaeaea; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.06)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
 
-    CARD TYPE ROUTING:
-      #course          → cards/course
-      #lesson          → cards/lesson
-      #training        → cards/training
-      #training-content → cards/training
-      documentation    → cards/documentation
-      #blog            → cards/blog
-      #videos          → cards/video
-      (fallback)       → cards/default
-    ============================================================
---}}
-
-<article class="post-card {{post_class}}
-    {{!-- Feed layout modifiers --}}
-    {{#match @custom.feed_layout "Classic"}}
-        {{#is "home"}}
-            {{#has index="0"}} post-card-large{{/has}}
-            {{#has index="1,2"}} dynamic{{/has}}
-        {{/is}}
-    {{/match}}
-    {{#match @custom.feed_layout "Grid"}} keep-ratio{{/match}}
-    {{#match @custom.feed_layout "List"}}
-        {{^is "tag, author"}} post-card-large{{/is}}
-    {{/match}}
-    {{!-- Card type class for CSS targeting --}}
-    {{#has tag="#course"}} card-course
-    {{else has tag="#lesson"}} card-lesson
-    {{else has tag="#training-content"}} card-training
-    {{else has tag="#training"}} card-training
-    {{else has tag="documentation"}} card-doc
-    {{else has tag="#blog"}} card-blog
-    {{else has tag="#videos"}} card-video
-    {{else}} card-default
-    {{/has}}
-    {{!-- Access modifier --}}
-    {{#unless access}} post-access-{{visibility}}{{/unless}}"
->
-
-    {{!-- Route to the correct card partial --}}
-    {{#has tag="#course"}}
-        {{> "cards/course"}}
-    {{else has tag="#lesson"}}
-        {{> "cards/lesson"}}
-    {{else has tag="#training-content"}}
-        {{> "cards/training"}}
-    {{else has tag="#training"}}
-        {{> "cards/training"}}
-    {{else has tag="documentation"}}
-        {{> "cards/documentation"}}
-    {{else has tag="#blog"}}
-        {{> "cards/blog"}}
-    {{else has tag="#videos"}}
-        {{> "cards/video"}}
+  {{!-- CARD IMAGE WITH DYNAMIC OVERLAYS --}}
+  <a href="{{url}}" class="card-image is-relative is-block" tabindex="-1">
+    {{#if feature_image}}
+      <figure class="image is-16by9" style="border-radius: 12px 12px 0 0; overflow: hidden;">
+        <img src="{{img_url feature_image size="m"}}" alt="{{title}}" style="object-fit: cover; height: 100%; width: 100%;">
+      </figure>
     {{else}}
-        {{> "cards/default"}}
-    {{/has}}
+      <figure class="image is-16by9 has-background-light is-flex is-align-items-center is-justify-content-center" style="border-radius: 12px 12px 0 0;">
+        <span class="icon is-large has-text-grey-light"><i class="ph ph-image is-size-2"></i></span>
+      </figure>
+    {{/if}}
 
+    {{!-- Access / Lock Overlay --}}
+    {{#unless access}}
+      {{^has visibility="public"}}
+        <div class="is-overlay is-flex is-align-items-center is-justify-content-center" style="background: rgba(0,0,0,0.6); border-radius: 12px 12px 0 0; backdrop-filter: blur(2px);">
+          <span class="tag is-dark is-medium is-rounded has-text-weight-bold">
+            <span class="icon is-small mr-1"><i class="ph-fill ph-lock"></i></span>
+            {{#has visibility="members"}}Members{{else}}Premium{{/has}}
+          </span>
+        </div>
+      {{/has}}
+    {{/unless}}
+
+    {{!-- Video Play Overlay --}}
+    {{#has tag="#video"}}
+      {{#if access}}
+        <div class="is-overlay is-flex is-align-items-center is-justify-content-center">
+          <span class="icon is-large has-text-white" style="background: rgba(0,0,0,0.4); border-radius: 50%; width: 64px; height: 64px;">
+            <i class="ph-fill ph-play-circle is-size-1"></i>
+          </span>
+        </div>
+      {{/if}}
+    {{/has}}
+  </a>
+
+  {{!-- CARD CONTENT --}}
+  <div class="card-content is-flex-grow-1 is-flex is-flex-direction-column p-4">
+    
+    <div class="tags mb-3">
+      {{#primary_tag}}
+        <a href="{{url}}" class="tag is-light is-rounded has-text-weight-bold 
+          {{#has tag="#course"}}is-primary{{/has}}
+          {{#has tag="#video"}}is-danger{{/has}}
+          {{#has tag="#blog"}}is-link{{/has}}">
+          {{name}}
+        </a>
+      {{/primary_tag}}
+      
+      {{#if featured}}
+        <span class="tag is-warning is-light is-rounded has-text-weight-bold">
+          <span class="icon is-small mr-1"><i class="ph-fill ph-star"></i></span> Featured
+        </span>
+      {{/if}}
+    </div>
+
+    <h2 class="title is-5 mb-2" style="line-height: 1.3;">
+      <a href="{{url}}" class="has-text-dark">{{title}}</a>
+    </h2>
+
+    <div class="content is-size-6 has-text-grey is-flex-grow-1 mb-4" style="line-height: 1.5;">
+      {{excerpt words="20"}}&hellip;
+    </div>
+
+    {{!-- DYNAMIC FOOTERS BASED ON TAG --}}
+    <div class="mt-auto pt-4" style="border-top: 1px solid #f5f5f5;">
+      
+      {{!-- Course Footer: Heavy Call to Action --}}
+      {{#has tag="#course"}}
+        <a href="{{url}}" class="button is-primary is-fullwidth is-rounded has-text-weight-bold">
+          {{#unless access}}
+            <span class="icon is-small mr-1"><i class="ph ph-lock"></i></span> Enroll to Access
+          {{else}}
+            Start Course
+          {{/unless}}
+        </a>
+      
+      {{!-- Standard Footer: Meta Info --}}
+      {{else}}
+        <div class="level is-mobile is-size-7 has-text-grey has-text-weight-semibold">
+          <div class="level-left">
+            <div class="level-item">
+              <span class="icon is-small mr-1"><i class="ph ph-calendar-blank"></i></span> {{date format="MMM DD, YYYY"}}
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <span class="icon is-small mr-1"><i class="ph ph-clock"></i></span> {{reading_time}}
+            </div>
+          </div>
+        </div>
+      {{/has}}
+
+    </div>
+  </div>
 </article>

@@ -1,188 +1,120 @@
-const {series, watch, src, dest, parallel} = require('gulp');
-const pump = require('pump');
-const path = require('path');
-const releaseUtils = require('@tryghost/release-utils');
-const inquirer = require('inquirer');
-
-// gulp plugins and utils
-const livereload = require('gulp-livereload');
-const postcss = require('gulp-postcss');
-const zip = require('gulp-zip');
+const gulp = require('gulp');
 const concat = require('gulp-concat');
+const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
-const beeper = require('beeper');
-const fs = require('fs');
-
-// postcss plugins
-const autoprefixer = require('autoprefixer');
-const colorFunction = require('postcss-color-mod-function');
+const postcss = require('gulp-postcss');
+const cssnext = require('postcss-cssnext');
+const colorRgbaFallback = require('postcss-color-rgba-fallback');
+const opacity = require('postcss-opacity');
+// const pseudoelements = require('postcss-pseudoelements');
+const vmin = require('postcss-vmin');
+const willChange = require('postcss-will-change');
+const sass = require('gulp-sass')(require('sass'));
 const cssnano = require('cssnano');
-const easyimport = require('postcss-easy-import');
+const zindex = require('postcss-zindex');
+const removeComments = require('postcss-discard-comments');
+const browserSync = require('browser-sync').create();
+const plumber = require('gulp-plumber');
+const gutil = require('gulp-util');
+const babel = require('gulp-babel');
 
-// translations support
-const { mergeLocales } = require('@tryghost/theme-translations/build');
+// Define base folders
+const asset_src = 'assets/';
+const npm_src   = 'node_modules/';
+const dest      = 'assets/';
 
-const REPO = 'TryGhost/Casper';
-const REPO_READONLY = 'TryGhost/Casper';
-const CHANGELOG_PATH = path.join(process.cwd(), '.', 'changelog.md');
-
-function serve(done) {
-    livereload.listen();
-    done();
-}
-
-const handleError = (done) => {
-    return function (err) {
-        if (err) {
-            beeper();
-        }
-        return done(err);
-    };
+const onError = function( err ) {
+  console.log('An error occurred:', gutil.colors.magenta(err.message));
+  gutil.beep();
+  this.emit('end');
 };
 
-function hbs(done) {
-    pump([
-        src(['*.hbs', 'partials/**/*.hbs']),
-        livereload()
-    ], handleError(done));
-}
+gulp.task('fonts', function() {
+  return gulp
+    .src([
+      npm_src + 'feather-icons/dist/feather-sprite.svg'
+    ])
+    .pipe(gulp.dest('partials'));
+});
 
-function css(done) {
-    pump([
-        src('assets/css/*.css', {sourcemaps: true}),
-        postcss([
-            easyimport,
-            colorFunction(),
-            autoprefixer(),
-            cssnano()
-        ]),
-        dest('assets/built/', {sourcemaps: '.'}),
-        livereload()
-    ], handleError(done));
-}
+// Concatenate & Minify JS
+gulp.task('scripts', function() {
+  return gulp
+    .src([
+      npm_src   + 'lazysizes/lazysizes.min.js',
+      npm_src   + 'fitvids/dist/fitvids.min.js',
+      asset_src + 'js/scripts/prism.js',
+      asset_src + 'js/scripts/script.js'
+    ])
+    .pipe(concat('app.js'))
+    .pipe(rename({suffix: '.min'}))
+    .pipe(uglify())
+    .pipe(gulp.dest(dest + 'js'));
+});
 
-function js(done) {
-    pump([
-        src([
-            // pull in lib files first so our own code can depend on it
-            'assets/js/lib/*.js',
-            'assets/js/*.js'
-        ], {sourcemaps: true}),
-        concat('casper.js'),
-        uglify(),
-        dest('assets/built/', {sourcemaps: '.'}),
-        livereload()
-    ], handleError(done));
-}
+// Css processors
+var processors = [
+  removeComments,
+  zindex,
+  willChange,
+  colorRgbaFallback,
+  opacity,
+  // pseudoelements,
+  vmin,
+  cssnano
+];
 
-function zipper(done) {
-    const filename = require('./package.json').name + '.zip';
+// Build styles from sass
+gulp.task('sass', function () {
+  return gulp
+    .src(asset_src + '/sass/app.scss')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(sass())
+    .pipe(postcss(processors))
+    .pipe(rename({suffix: '.min'}))
+    .pipe(gulp.dest(dest + 'css'));
+});
 
-    pump([
-        src([
-            '**',
-            '!node_modules', '!node_modules/**',
-            '!dist', '!dist/**',
-            '!yarn-error.log',
-            '!yarn.lock',
-            '!gulpfile.js'
-        ]),
-        zip(filename),
-        dest('dist/')
-    ], handleError(done));
-}
+// Browsersync init and reload
+gulp.task('browsersync', function (callback) {
+  browserSync.init({
+    port: 3368,
+    proxy: 'http://localhost:2368/'
+  });
+  callback();
+});
 
-function locales(done) {
-    mergeLocales({
-        local: './locales-local',
-        output: './locales'
-    })(done);
-}
+gulp.task('reload', function (callback) {
+  browserSync.reload();
+  callback();
+});
 
-const cssWatcher = () => watch('assets/css/**', css);
-const jsWatcher = () => watch('assets/js/**', js);
-const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], hbs);
-const localesWatcher = () => watch('./locales-local/**/*.json', locales);
-const watcher = parallel(cssWatcher, jsWatcher, hbsWatcher, localesWatcher);
-const build = series(css, js, locales);
+// Watch for changes in files
 
-exports.build = build;
-exports.zip = series(build, zipper);
-exports.default = series(build, serve, watcher);
+gulp.task('watch:scripts', function () {
+  gulp.watch(asset_src + 'js/scripts/*.js', gulp.series('scripts', 'reload'));
+});
 
-exports.release = async () => {
-    // @NOTE: https://yarnpkg.com/lang/en/docs/cli/version/
-    // require(./package.json) can run into caching issues, this re-reads from file everytime on release
-    let packageJSON = JSON.parse(fs.readFileSync('./package.json'));
-    const newVersion = packageJSON.version;
+gulp.task('watch:sass', function () {
+  gulp.watch(asset_src + 'sass/*.scss', gulp.series('sass', 'reload'));
+});
 
-    if (!newVersion || newVersion === '') {
-        console.log(`Invalid version: ${newVersion}`);
-        return;
-    }
+gulp.task('watch:hbs', function () {
+  gulp.watch('**/*.hbs', gulp.series('reload'));
+});
 
-    console.log(`\nCreating release for ${newVersion}...`);
+gulp.task('watch',
+  gulp.parallel('watch:scripts', 'watch:sass', 'watch:hbs')
+);
 
-    const githubToken = process.env.GST_TOKEN;
-
-    if (!githubToken) {
-        console.log('Please configure your environment with a GitHub token located in GST_TOKEN');
-        return;
-    }
-
-    try {
-        const prompt = inquirer.createPromptModule();
-        const result = await prompt([{
-            type: 'input',
-            name: 'compatibleWithGhost',
-            message: 'Which version of Ghost is it compatible with?',
-            default: '5.0.0'
-        }]);
-
-        const compatibleWithGhost = result.compatibleWithGhost;
-
-        const releasesResponse = await releaseUtils.releases.get({
-            userAgent: 'Casper',
-            uri: `https://api.github.com/repos/${REPO_READONLY}/releases`
-        });
-
-        if (!releasesResponse || !releasesResponse) {
-            console.log('No releases found. Skipping...');
-            return;
-        }
-
-        let previousVersion = releasesResponse[0].tag_name || releasesResponse[0].name;
-        console.log(`Previous version: ${previousVersion}`);
-
-        const changelog = new releaseUtils.Changelog({
-            changelogPath: CHANGELOG_PATH,
-            folder: path.join(process.cwd(), '.')
-        });
-
-        changelog
-            .write({
-                githubRepoPath: `https://github.com/${REPO}`,
-                lastVersion: previousVersion
-            })
-            .sort()
-            .clean();
-
-        const newReleaseResponse = await releaseUtils.releases.create({
-            draft: true,
-            preRelease: false,
-            tagName: 'v' + newVersion,
-            releaseName: newVersion,
-            userAgent: 'Casper',
-            uri: `https://api.github.com/repos/${REPO}/releases`,
-            github: {
-                token: githubToken
-            },
-            content: [`**Compatible with Ghost ≥ ${compatibleWithGhost}**\n\n`],
-            changelogPath: CHANGELOG_PATH
-        });
-        console.log(`\nRelease draft generated: ${newReleaseResponse.releaseUrl}\n`);
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
-    }
-};
+// // Default Task
+gulp.task('default',
+  gulp.series(
+    gulp.parallel(
+      'scripts',
+      'sass'
+    ),
+    'browsersync',
+    'watch'
+  ),
+);
