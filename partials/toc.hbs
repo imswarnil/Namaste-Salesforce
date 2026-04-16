@@ -1,0 +1,61 @@
+{{!--
+  toc.hbs — Universal Table of Contents partial
+  Namaste Salesforce Ghost Theme
+
+  USAGE: {{> toc}} inside any post/page template.
+
+  Logic:
+  - If the post has the internal tag #hide-toc  → renders nothing.
+  - Otherwise renders a <nav class="ns-toc"> shell;
+    toc.js populates it from the live DOM headings at runtime.
+--}}
+
+{{^has tag="#hide-toc"}}
+<aside class="ns-toc" id="ns-toc" aria-label="Table of contents" role="navigation">
+
+  {{!-- ── Header row ── --}}
+  <div class="ns-toc__header">
+    <span class="ns-toc__title">
+      {{!-- book-open icon (inline SVG, no external dependency) --}}
+      <svg class="ns-toc__icon" aria-hidden="true" focusable="false"
+           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      On this page
+    </span>
+
+    <button class="ns-toc__toggle"
+            id="ns-toc-toggle"
+            type="button"
+            aria-expanded="true"
+            aria-controls="ns-toc-body">
+      <svg class="ns-toc__chevron" aria-hidden="true" focusable="false"
+           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"/>
+      </svg>
+      <span class="is-sr-only">Toggle table of contents</span>
+    </button>
+  </div>
+
+  {{!-- ── Body (collapsible) ── --}}
+  <div class="ns-toc__body" id="ns-toc-body" role="region">
+    {{!-- Populated entirely by toc.js --}}
+    <nav class="ns-toc__nav" aria-label="Article headings">
+      <ul class="ns-toc__list" id="ns-toc-list">
+        {{!-- toc.js injects <li> items here --}}
+      </ul>
+    </nav>
+
+    {{!-- Progress bar (optional visual) --}}
+    <div class="ns-toc__progress" aria-hidden="true">
+      <div class="ns-toc__progress-bar" id="ns-toc-progress"></div>
+    </div>
+  </div>
+
+</aside>
+{{/has}}

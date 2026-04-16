@@ -1,0 +1,81 @@
+{{!-- 
+  partials/doc-sidebar.hbs 
+  Shared left-hand navigation and mobile dropdown for Documentation 
+--}}
+
+{{!-- Desktop Left Sidebar --}}
+<aside class="column is-3-desktop is-4-tablet is-hidden-touch" style="position: sticky; top: 2rem; align-self: flex-start;">
+  <nav class="menu" aria-label="Documentation navigation">
+
+    <a href="/documentation/" class="button is-ghost is-small is-justify-content-flex-start pl-0 mb-4 has-text-grey">
+      <span class="icon"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
+      <span>Docs Home</span>
+    </a>
+
+    {{!-- Optional: Simple Search Input --}}
+    <div class="field mb-4">
+      <p class="control has-icons-left">
+        <input class="input is-small is-rounded has-background-light is-shadowless" type="text" placeholder="Search docs...">
+        <span class="icon is-small is-left has-text-grey">
+          <i class="ph ph-magnifying-glass"></i>
+        </span>
+      </p>
+    </div>
+
+    <p class="menu-label">Contents</p>
+    <ul class="menu-list">
+      {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
+        {{#foreach posts}}
+          <li>
+            <a href="{{url}}" class="doc-tl__link" data-doc-id="{{id}}">
+              {{title}}
+            </a>
+          </li>
+        {{/foreach}}
+      {{else}}
+        <li><a class="has-text-grey-light">Loading docs...</a></li>
+      {{/get}}
+    </ul>
+
+    <div class="box mt-6 has-background-light is-shadowless">
+      <p class="is-size-7 mb-3">Found a mistake?</p>
+      <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?title=Docs+feedback" target="_blank" rel="noopener noreferrer" class="button is-small is-fullwidth">
+        <span class="icon"><i class="ph ph-github-logo" aria-hidden="true"></i></span>
+        <span>Edit on GitHub</span>
+      </a>
+    </div>
+
+  </nav>
+</aside>
+
+{{!-- Mobile Nav Accordion (Bulma Dropdown) --}}
+<div class="column is-12 is-hidden-desktop pt-0 mb-4">
+  <div class="dropdown is-fullwidth" id="docMobDropdown">
+    <div class="dropdown-trigger is-fullwidth" style="width: 100%;">
+      <button class="button is-fullwidth is-justify-content-space-between" aria-haspopup="true" aria-controls="dropdown-menu">
+        <span>
+          <i class="ph ph-list-bullets mr-2" aria-hidden="true"></i>
+          All articles
+        </span>
+        <span class="icon is-small">
+          <i class="ph ph-caret-down doc-mob-toggle__caret" aria-hidden="true"></i>
+        </span>
+      </button>
+    </div>
+    <div class="dropdown-menu is-fullwidth" id="dropdown-menu" role="menu" style="width: 100%;">
+      <div class="dropdown-content">
+        <aside class="menu px-3 py-2">
+          <ul class="menu-list">
+            {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
+              {{#foreach posts}}
+                <li>
+                  <a href="{{url}}" class="doc-tl__link" data-doc-id="{{id}}">{{title}}</a>
+                </li>
+              {{/foreach}}
+            {{/get}}
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>

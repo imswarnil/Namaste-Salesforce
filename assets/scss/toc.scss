@@ -1,0 +1,290 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// _toc.scss — Namaste Salesforce
+// Universal Table of Contents — Bulma-native, no inline styles.
+//
+// Import inside screen.scss:
+//   @use "toc";
+//
+// Design targets:
+//   • Sticky sidebar on ≥ desktop (1024 px +)
+//   • Collapsible inline card on tablet / mobile
+//   • Full dark-mode support via CSS custom properties
+//   • Zero inline styles — all presentation lives here
+// ═══════════════════════════════════════════════════════════════════════════
+@use "variables" as v;
+@use "sass:color";
+
+// ─── Local design tokens ────────────────────────────────────────────────────
+// These map to your existing CSS custom properties so dark mode is free.
+
+.ns-toc {
+  // ── Colours (light mode; dark overrides at bottom) ──
+  --toc-bg:              var(--bulma-card-background-color, #{v.$sf-white});
+  --toc-border:          var(--bulma-border, #{v.$sf-border});
+  --toc-radius:          var(--bulma-card-radius, #{v.$sf-radius-lg});
+  --toc-shadow:          var(--bulma-card-shadow, #{v.$sf-shadow-sm});
+  --toc-title-color:     var(--bulma-body-color, #{v.$sf-text});
+  --toc-link-color:      var(--bulma-body-color, #{v.$sf-text-weak});
+  --toc-link-hover:      var(--ns-accent, #{v.$sf-blue});
+  --toc-link-active:     var(--ns-accent, #{v.$sf-blue});
+  --toc-active-bg:       var(--ns-accent-light, #{v.$sf-blue-lighter});
+  --toc-icon-color:      var(--ns-accent, #{v.$sf-blue});
+  --toc-progress-bg:     var(--bulma-border, #{v.$sf-border-light});
+  --toc-progress-fill:   var(--ns-accent, #{v.$sf-blue});
+  --toc-toggle-hover-bg: #{v.$sf-blue-lighter};
+  --toc-indent-step:     1rem;
+  --toc-font-size:       0.875rem;          // 14 px
+  --toc-line-height:     1.5;
+  --toc-transition:      #{v.$sf-transition};
+}
+
+// ─── Layout — sticky sidebar (desktop) ──────────────────────────────────────
+// The aside lives inside a layout column; position:sticky keeps it in view.
+
+.ns-toc {
+  position: sticky;
+  top: calc(var(--bulma-navbar-height, 4rem) + 1.5rem);
+  max-height: calc(100vh - var(--bulma-navbar-height, 4rem) - 3rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Bulma card aesthetics
+  background-color: var(--toc-bg);
+  border: 1px solid var(--toc-border);
+  border-radius: var(--toc-radius);
+  box-shadow: var(--toc-shadow);
+
+  // Smooth scroll inside the TOC itself
+  scroll-behavior: smooth;
+
+  // Thin scrollbar (Webkit)
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--toc-border);
+    border-radius: 99px;
+  }
+
+  // ── Tablet / mobile: become a full-width card, no sticky ──
+  @media (max-width: #{v.$sf-desktop - 1px}) {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-bottom: 2rem;
+  }
+}
+
+// ─── Header row ─────────────────────────────────────────────────────────────
+
+.ns-toc__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--toc-border);
+  gap: 0.5rem;
+}
+
+// ─── Title ──────────────────────────────────────────────────────────────────
+
+.ns-toc__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;           // 13 px
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--toc-title-color);
+  user-select: none;
+}
+
+// ─── Icon ───────────────────────────────────────────────────────────────────
+
+.ns-toc__icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--toc-icon-color);
+}
+
+// ─── Toggle button ──────────────────────────────────────────────────────────
+
+.ns-toc__toggle {
+  // Reset
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: v.$sf-radius;
+  color: var(--toc-title-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--toc-transition);
+
+  &:hover {
+    background-color: var(--toc-toggle-hover-bg);
+    color: var(--toc-link-hover);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--toc-link-active);
+    outline-offset: 2px;
+  }
+}
+
+// ─── Chevron rotation ───────────────────────────────────────────────────────
+
+.ns-toc__chevron {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.25s v.$sf-ease;
+
+  // When the panel is collapsed, aria-expanded="false" is set on the button
+  .ns-toc__toggle[aria-expanded="false"] & {
+    transform: rotate(180deg);
+  }
+}
+
+// ─── Collapsible body ───────────────────────────────────────────────────────
+
+.ns-toc__body {
+  overflow: hidden;
+  // Height is animated by toc.js toggling .is-collapsed
+  transition: max-height 0.3s v.$sf-ease, opacity 0.25s v.$sf-ease;
+  max-height: 2000px;   // generous ceiling; JS overrides to 0 when collapsed
+  opacity: 1;
+
+  &.is-collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+// ─── Nav wrapper ────────────────────────────────────────────────────────────
+
+.ns-toc__nav {
+  padding: 0.625rem 0;
+}
+
+// ─── List ───────────────────────────────────────────────────────────────────
+
+.ns-toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  // Nested lists (h3, h4…)
+  .ns-toc__list {
+    padding-left: var(--toc-indent-step);
+    border-left: 2px solid var(--toc-border);
+    margin-left: 1rem;
+  }
+}
+
+// ─── List item ──────────────────────────────────────────────────────────────
+
+.ns-toc__item {
+  margin: 0;
+}
+
+// ─── Link ───────────────────────────────────────────────────────────────────
+
+.ns-toc__link {
+  display: block;
+  padding: 0.3125rem 1rem;
+  font-size: var(--toc-font-size);
+  line-height: var(--toc-line-height);
+  color: var(--toc-link-color);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  margin-left: -1px;          // aligns border with card border
+  border-radius: 0 v.$sf-radius v.$sf-radius 0;
+  transition: var(--toc-transition);
+  word-break: break-word;
+
+  &:hover {
+    color: var(--toc-link-hover);
+    background-color: var(--toc-active-bg);
+    border-left-color: var(--toc-link-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--toc-link-active);
+    outline-offset: -2px;
+    border-radius: v.$sf-radius;
+  }
+
+  // ── Active / in-view heading ──
+  &.is-active {
+    color: var(--toc-link-active);
+    background-color: var(--toc-active-bg);
+    border-left-color: var(--toc-link-active);
+    font-weight: 600;
+  }
+}
+
+// Depth-based indentation classes injected by toc.js
+// h2 → depth-1 (no extra indent), h3 → depth-2, h4 → depth-3
+.ns-toc__link--depth-1 { padding-left: 1rem; }
+.ns-toc__link--depth-2 { padding-left: 1.75rem; }
+.ns-toc__link--depth-3 { padding-left: 2.5rem; }
+.ns-toc__link--depth-4 { padding-left: 3.25rem; }
+
+// ─── Progress bar ───────────────────────────────────────────────────────────
+
+.ns-toc__progress {
+  height: 3px;
+  background-color: var(--toc-progress-bg);
+  margin: 0;
+  border-radius: 0 0 var(--toc-radius) var(--toc-radius);
+  overflow: hidden;
+}
+
+.ns-toc__progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: var(--toc-progress-fill);
+  transition: width 0.1s linear;
+}
+
+// ─── Empty state (when article has no headings) ─────────────────────────────
+
+.ns-toc--empty {
+  display: none;   // toc.js adds this class when no headings found
+}
+
+// ─── Dark mode ──────────────────────────────────────────────────────────────
+// Matches your _dark.scss approach: a data-theme or .is-dark on <html>
+
+[data-theme="dark"],
+.is-dark {
+  .ns-toc {
+    --toc-bg:              #{v.$sf-dark-surface};
+    --toc-border:          #{v.$sf-dark-border};
+    --toc-shadow:          0 1px 4px rgba(0, 0, 0, 0.4);
+    --toc-title-color:     #{v.$sf-dark-text};
+    --toc-link-color:      #{v.$sf-dark-text-muted};
+    --toc-link-hover:      #{v.$sf-dark-link};
+    --toc-link-active:     #{v.$sf-dark-link};
+    --toc-active-bg:       #{rgba(v.$sf-dark-link, 0.12)};
+    --toc-icon-color:      #{v.$sf-dark-link};
+    --toc-progress-bg:     #{v.$sf-dark-border};
+    --toc-progress-fill:   #{v.$sf-dark-link};
+    --toc-toggle-hover-bg: #{rgba(v.$sf-dark-link, 0.1)};
+  }
+}
+
+// ─── Print ──────────────────────────────────────────────────────────────────
+
+@media print {
+  .ns-toc {
+    display: none;
+  }
+}

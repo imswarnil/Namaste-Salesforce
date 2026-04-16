@@ -1,0 +1,702 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// ghost.scss — Ghost CMS components as first-class Bulma citizens
+// Fully responsive, uses Bulma mixins, no layout-breaking hacks.
+// ═══════════════════════════════════════════════════════════════════════════
+
+@use "bulma/sass/utilities/css-variables" as cv;
+@use "bulma/sass/utilities/initial-variables" as iv;
+@use "bulma/sass/utilities/mixins" as mx;
+@use "bulma/sass/utilities/extends" as ext;
+
+// ───────────────────────────────────────────────────────────────────────────
+// 1. Variables (all !default for easy overrides)
+// ───────────────────────────────────────────────────────────────────────────
+
+// Ghost content container max-width (matches Bulma’s $container-max-width)
+$ghost-content-max-width: cv.getVar("container-max-width") !default;
+$ghost-content-padding: 1rem !default;
+
+// Full‑width image handling – use negative margin only on large screens
+$ghost-wide-image-offset-desktop: -2rem !default;
+$ghost-full-image-offset-desktop: -4rem !default;
+
+// Video aspect ratio (16:9)
+$ghost-video-aspect-ratio: 16 / 9 !default;
+
+// Blockquotes
+$ghost-quote-border-width: 0.25rem !default;
+$ghost-quote-border-color: cv.getVar("primary") !default;
+$ghost-quote-padding: 1rem 1.5rem !default;
+$ghost-quote-background: cv.getVar("scheme-main-bis") !default;
+$ghost-quote-radius: cv.getVar("radius") !default;
+$ghost-quote-font-style: normal !default; // Bulma uses normal, not italic
+
+// Header card
+$ghost-header-min-height: 50vh !default;
+$ghost-header-overlay: linear-gradient(0deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2)) !default;
+
+// Bookmark card
+$ghost-bookmark-radius: cv.getVar("radius-large") !default;
+$ghost-bookmark-shadow: cv.getVar("shadow") !default;
+
+// Callout card
+$ghost-callout-radius: cv.getVar("radius") !default;
+$ghost-callout-padding: 1.25rem 1.5rem !default;
+
+// Toggle card
+$ghost-toggle-radius: cv.getVar("radius") !default;
+
+// Product card
+$ghost-product-radius: cv.getVar("radius-large") !default;
+$ghost-product-padding: 1.5rem !default;
+
+// Button card
+$ghost-button-radius: cv.getVar("radius") !default;
+$ghost-button-padding: 0.75rem 1.5rem !default;
+
+// Member gate (paywall)
+$ghost-cta-radius: cv.getVar("radius-large") !default;
+$ghost-cta-padding: 3rem 2rem !default;
+
+// Reading progress bar
+$ghost-progress-height: 0.25rem !default;
+$ghost-progress-gradient: linear-gradient(90deg, var(--ns-accent), cv.getVar("primary-light")) !default;
+
+// ───────────────────────────────────────────────────────────────────────────
+// 2. Register CSS custom properties (Bulma style)
+// ───────────────────────────────────────────────────────────────────────────
+
+:root {
+  @include cv.register-vars(
+    (
+      // Ghost accent (falls back to Bulma primary)
+      "ns-accent": var(--ghost-accent-color, #{cv.getVar("primary")}),
+      "ns-accent-light": color-mix(in srgb, var(--ns-accent) 85%, white),
+      "ns-accent-dark": color-mix(in srgb, var(--ns-accent) 85%, black),
+
+      // Ghost fonts
+      "ns-font-body": var(--gh-font-body, #{cv.getVar("family-primary")}),
+      "ns-font-heading": var(--gh-font-heading, #{cv.getVar("family-primary")}),
+
+      // Content container
+      "ghost-content-max-width": #{$ghost-content-max-width},
+      "ghost-content-padding": #{$ghost-content-padding},
+
+      // Wide/full image offsets
+      "ghost-wide-offset-desktop": #{$ghost-wide-image-offset-desktop},
+      "ghost-full-offset-desktop": #{$ghost-full-image-offset-desktop},
+
+      // Video
+      "ghost-video-aspect-ratio": #{$ghost-video-aspect-ratio},
+
+      // Quotes
+      "ghost-quote-border-width": #{$ghost-quote-border-width},
+      "ghost-quote-border-color": #{$ghost-quote-border-color},
+      "ghost-quote-padding": #{$ghost-quote-padding},
+      "ghost-quote-background": #{$ghost-quote-background},
+      "ghost-quote-radius": #{$ghost-quote-radius},
+      "ghost-quote-font-style": #{$ghost-quote-font-style},
+
+      // Header card
+      "ghost-header-min-height": #{$ghost-header-min-height},
+      "ghost-header-overlay": #{$ghost-header-overlay},
+
+      // Cards
+      "ghost-bookmark-radius": #{$ghost-bookmark-radius},
+      "ghost-bookmark-shadow": #{$ghost-bookmark-shadow},
+      "ghost-callout-radius": #{$ghost-callout-radius},
+      "ghost-callout-padding": #{$ghost-callout-padding},
+      "ghost-toggle-radius": #{$ghost-toggle-radius},
+      "ghost-product-radius": #{$ghost-product-radius},
+      "ghost-product-padding": #{$ghost-product-padding},
+      "ghost-button-radius": #{$ghost-button-radius},
+      "ghost-button-padding": #{$ghost-button-padding},
+      "ghost-cta-radius": #{$ghost-cta-radius},
+      "ghost-cta-padding": #{$ghost-cta-padding},
+      "ghost-progress-height": #{$ghost-progress-height},
+      "ghost-progress-gradient": #{$ghost-progress-gradient},
+    )
+  );
+}
+
+// Apply Ghost fonts
+body {
+  font-family: cv.getVar("ns-font-body");
+}
+
+h1, h2, h3, h4, h5, h6,
+.title,
+.subtitle {
+  font-family: cv.getVar("ns-font-heading");
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 3. Core Ghost content wrapper (like Bulma’s container)
+// ───────────────────────────────────────────────────────────────────────────
+
+.gh-content {
+  max-width: cv.getVar("ghost-content-max-width");
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: cv.getVar("ghost-content-padding");
+  padding-right: cv.getVar("ghost-content-padding");
+  @extend %block;
+
+  // Links
+  a {
+    color: cv.getVar("link");
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, cv.getVar("link") 40%, transparent);
+    transition: 0.2s ease;
+
+    &:hover {
+      color: cv.getVar("link-hover");
+      text-decoration-color: cv.getVar("link-hover");
+    }
+  }
+
+  // Horizontal rule
+  hr {
+    background: linear-gradient(90deg, transparent, cv.getVar("border") 20%, cv.getVar("border") 80%, transparent);
+    height: 1px;
+    border: 0;
+    margin: 2rem 0;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 4. Full‑width images (Bulma‑compatible, responsive)
+// ───────────────────────────────────────────────────────────────────────────
+
+// Base image card styling
+.kg-image-card,
+.kg-gallery-card {
+  img {
+    border-radius: cv.getVar("radius");
+    box-shadow: cv.getVar("shadow");
+    width: 100%;
+    height: auto;
+  }
+
+  figcaption {
+    font-size: cv.getVar("size-small");
+    color: cv.getVar("text-light");
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+}
+
+// Wide and full images: only break out on desktop+ to avoid mobile issues
+@include mx.desktop {
+  .kg-image-card.kg-width-wide {
+    margin-left: cv.getVar("ghost-wide-offset-desktop");
+    margin-right: cv.getVar("ghost-wide-offset-desktop");
+    width: calc(100% + (cv.getVar("ghost-wide-offset-desktop") * 2));
+    max-width: none;
+  }
+
+  .kg-image-card.kg-width-full {
+    margin-left: cv.getVar("ghost-full-offset-desktop");
+    margin-right: cv.getVar("ghost-full-offset-desktop");
+    width: calc(100% + (cv.getVar("ghost-full-offset-desktop") * 2));
+    max-width: none;
+  }
+}
+
+// Gallery: ensure inline images don't overflow
+.kg-gallery-card .kg-gallery-image img {
+  border-radius: cv.getVar("radius");
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 5. Responsive video (16:9)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-video-card {
+  position: relative;
+  padding-bottom: calc(100% / cv.getVar("ghost-video-aspect-ratio"));
+  height: 0;
+  overflow: hidden;
+  border-radius: cv.getVar("radius-large");
+
+  video,
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 6. Blockquotes (standard + Ghost variant)
+// ───────────────────────────────────────────────────────────────────────────
+
+.gh-content blockquote,
+.kg-blockquote-alt {
+  background-color: cv.getVar("ghost-quote-background");
+  border-left: cv.getVar("ghost-quote-border-width") solid cv.getVar("ghost-quote-border-color");
+  padding: cv.getVar("ghost-quote-padding");
+  border-radius: cv.getVar("ghost-quote-radius");
+  font-style: cv.getVar("ghost-quote-font-style");
+  margin: 1.5rem 0;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 7. Header card (full-width background)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-header-card {
+  position: relative;
+  min-height: cv.getVar("ghost-header-min-height");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  border-radius: cv.getVar("radius-large");
+  overflow: hidden;
+  margin: 2rem 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: cv.getVar("ghost-header-overlay");
+    z-index: 1;
+  }
+
+  > * {
+    position: relative;
+    z-index: 2;
+    color: white;
+  }
+
+  h1, h2, h3, .title {
+    color: white;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 8. Embed card (iframes, etc.)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-embed-card {
+  iframe,
+  embed,
+  object {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 9. Bookmark card
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-bookmark-card {
+  background-color: cv.getVar("scheme-main");
+  border: 1px solid cv.getVar("border");
+  border-radius: cv.getVar("ghost-bookmark-radius");
+  overflow: hidden;
+  transition: 0.2s ease;
+
+  &:hover {
+    box-shadow: cv.getVar("ghost-bookmark-shadow");
+  }
+
+  .kg-bookmark-title {
+    font-weight: cv.getVar("weight-semibold");
+    color: cv.getVar("text");
+  }
+
+  .kg-bookmark-description {
+    color: cv.getVar("text-light");
+    font-size: 0.9em;
+  }
+
+  .kg-bookmark-publisher {
+    font-size: 0.8em;
+    color: cv.getVar("text-light");
+  }
+
+  .kg-bookmark-icon {
+    border-radius: cv.getVar("radius-small");
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 10. Callout card (like Bulma message)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-callout-card {
+  background-color: color-mix(in srgb, var(--ns-accent) 8%, cv.getVar("scheme-main-bis"));
+  border: 1px solid color-mix(in srgb, var(--ns-accent) 20%, transparent);
+  border-radius: cv.getVar("ghost-callout-radius");
+  padding: cv.getVar("ghost-callout-padding");
+}
+
+.kg-callout-card-accent {
+  background-color: var(--ns-accent-light);
+  border-color: var(--ns-accent);
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 11. Toggle card
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-toggle-card {
+  border: 1px solid cv.getVar("border");
+  border-radius: cv.getVar("ghost-toggle-radius");
+  background-color: cv.getVar("scheme-main");
+  padding: 0.5rem 1rem;
+
+  .kg-toggle-heading {
+    font-weight: cv.getVar("weight-bold");
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 12. Product card (Bulma card style)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-product-card {
+  border: 1px solid cv.getVar("border");
+  border-radius: cv.getVar("ghost-product-radius");
+  padding: cv.getVar("ghost-product-padding");
+  background-color: cv.getVar("scheme-main");
+
+  .kg-product-card-button a {
+    background-color: var(--ns-accent);
+    color: white;
+    border-radius: cv.getVar("radius");
+    padding: 0.5rem 1.25rem;
+    font-weight: cv.getVar("weight-semibold");
+    display: inline-block;
+    text-decoration: none;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: var(--ns-accent-dark);
+    }
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 13. Audio card
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-audio-card {
+  border: 1px solid cv.getVar("border");
+  border-radius: cv.getVar("radius-large");
+  overflow: hidden;
+  background-color: cv.getVar("scheme-main");
+
+  .kg-audio-player-container {
+    background-color: cv.getVar("background");
+    padding: 1rem;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 14. Button card (pure Bulma button style)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-button-card {
+  text-align: center;
+  margin: 1.5rem 0;
+
+  a {
+    background-color: var(--ns-accent);
+    color: white;
+    border-radius: cv.getVar("ghost-button-radius");
+    padding: cv.getVar("ghost-button-padding");
+    font-weight: cv.getVar("weight-bold");
+    display: inline-block;
+    text-decoration: none;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: var(--ns-accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    }
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 15. Code card
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-code-card pre {
+  border-radius: cv.getVar("radius-large");
+  background-color: cv.getVar("code-background");
+  color: cv.getVar("code");
+  padding: 1.25rem;
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 16. NFT card (passthrough)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-nft-card {
+  border-radius: cv.getVar("radius-large");
+  overflow: hidden;
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 17. Member gate / paywall
+// ───────────────────────────────────────────────────────────────────────────
+
+.gh-post-upgrade-cta {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--ns-accent) 8%, cv.getVar("scheme-main-bis")) 0%,
+    color-mix(in srgb, var(--ns-accent) 4%, cv.getVar("scheme-main-bis")) 100%);
+  border: 1px solid color-mix(in srgb, var(--ns-accent) 20%, transparent);
+  border-radius: cv.getVar("ghost-cta-radius");
+  padding: cv.getVar("ghost-cta-padding");
+  text-align: center;
+  margin: 3rem 0;
+
+  h2 {
+    color: var(--ns-accent-dark);
+    font-weight: cv.getVar("weight-extrabold");
+  }
+
+  p {
+    color: cv.getVar("text-light");
+  }
+
+  .gh-post-upgrade-cta-content a.button {
+    background-color: var(--ns-accent);
+    color: white;
+    border-radius: cv.getVar("radius-rounded");
+    font-weight: cv.getVar("weight-bold");
+    padding: 0.75rem 2rem;
+    margin-top: 1rem;
+    display: inline-block;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: var(--ns-accent-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1);
+    }
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 18. Newsletter signup form (Bulma form structure)
+// ───────────────────────────────────────────────────────────────────────────
+
+[data-members-form] {
+  .field:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+
+  .input {
+    border-radius: cv.getVar("radius");
+    box-shadow: none;
+    border-color: cv.getVar("border");
+  }
+
+  button[type="submit"] {
+    background-color: var(--ns-accent);
+    color: white;
+    border: none;
+    border-radius: cv.getVar("radius");
+    font-weight: cv.getVar("weight-bold");
+    padding: 0.65rem 1.5rem;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    &:hover {
+      background-color: var(--ns-accent-dark);
+    }
+  }
+
+  .message-success {
+    color: cv.getVar("success");
+    font-weight: cv.getVar("weight-semibold");
+    margin-top: 0.5rem;
+  }
+
+  .message-error {
+    color: cv.getVar("danger");
+    font-weight: cv.getVar("weight-semibold");
+    margin-top: 0.5rem;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 19. Portal button (Ghost subscribe)
+// ───────────────────────────────────────────────────────────────────────────
+
+#ghost-portal-root {
+  .gh-portal-btn-main {
+    background-color: var(--ns-accent) !important;
+
+    &:hover {
+      background-color: var(--ns-accent-dark) !important;
+    }
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 20. Search modal
+// ───────────────────────────────────────────────────────────────────────────
+
+.ghost-search-modal {
+  border-radius: cv.getVar("radius-large");
+  box-shadow: cv.getVar("shadow");
+  border: 1px solid cv.getVar("border");
+  background-color: cv.getVar("scheme-main");
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 21. Comments
+// ───────────────────────────────────────────────────────────────────────────
+
+.gh-comments {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid cv.getVar("border");
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 22. Error pages
+// ───────────────────────────────────────────────────────────────────────────
+
+.error-template {
+  padding: 6rem 1.5rem;
+  text-align: center;
+
+  .error-code {
+    font-size: 6rem;
+    font-weight: cv.getVar("weight-extrabold");
+    color: cv.getVar("primary");
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .error-description {
+    font-size: 1.25rem;
+    color: cv.getVar("text-light");
+    margin: 1rem 0 2rem;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 23. Reading progress bar
+// ───────────────────────────────────────────────────────────────────────────
+
+.ns-reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: cv.getVar("ghost-progress-height");
+  z-index: 9999;
+  pointer-events: none;
+
+  .ns-reading-progress__bar {
+    height: 100%;
+    width: 0%;
+    background: cv.getVar("ghost-progress-gradient");
+    transition: width 0.1s linear;
+    will-change: width;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 24. Sync Bulma .is-primary with Ghost accent
+// ───────────────────────────────────────────────────────────────────────────
+
+.button.is-primary,
+.tag.is-primary {
+  background-color: var(--ns-accent) !important;
+}
+
+.button.is-primary:hover {
+  background-color: var(--ns-accent-dark) !important;
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// 25. Dark theme (automatically adapts to Bulma’s dark scheme)
+// ───────────────────────────────────────────────────────────────────────────
+
+[data-theme="dark"] {
+  .gh-post-upgrade-cta {
+    background: linear-gradient(135deg, rgba(var(--ns-accent), 0.12) 0%, rgba(var(--ns-accent), 0.06) 100%);
+    border-color: rgba(var(--ns-accent), 0.25);
+
+    h2 {
+      color: cv.getVar("link");
+    }
+  }
+
+  .kg-callout-card {
+    background-color: rgba(var(--ns-accent), 0.08);
+    border-color: rgba(var(--ns-accent), 0.2);
+  }
+
+  .kg-bookmark-card,
+  .kg-toggle-card,
+  .kg-product-card,
+  .kg-audio-card {
+    background-color: cv.getVar("scheme-main");
+    border-color: cv.getVar("border");
+  }
+
+  .gh-content blockquote,
+  .kg-blockquote-alt {
+    background-color: cv.getVar("scheme-main-bis");
+    border-left-color: cv.getVar("primary");
+  }
+
+  [data-members-form] .input {
+    background-color: cv.getVar("scheme-main");
+    color: cv.getVar("text");
+    border-color: cv.getVar("border");
+  }
+
+  .gh-comments {
+    border-top-color: cv.getVar("border");
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Responsive YouTube / embed card (overrides hardcoded width/height)
+// ───────────────────────────────────────────────────────────────────────────
+
+.kg-embed-card {
+  position: relative;
+  padding-bottom: 56.25%; // 16:9 aspect ratio (change to 75% for 4:3 if needed)
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
+  margin: 1.5rem 0;
+
+  iframe,
+  video,
+  embed,
+  object {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;   // override inline width
+    height: 100% !important;  // override inline height
+    border: 0;
+  }
+}
+

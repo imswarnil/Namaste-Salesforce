@@ -1,412 +1,250 @@
+{{!-- ═══════════════════════════════════════════════════════════════════════
+  partials/post-training.hbs — Namaste Salesforce 
+  (Strictly Pure Bulma: No Inline CSS, No Custom SCSS)
+═══════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- =========================================================================
-      1. MOBILE NAVIGATION & OFF-CANVAS PANEL
-========================================================================= --}}
-<div class="is-hidden-desktop has-background-white has-shadow is-flex is-justify-content-space-between is-align-items-center px-4 py-3" style="position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #eaeaea;" id="playerMobBar">
-  <span class="has-text-weight-bold is-size-6 has-text-dark" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">{{title}}</span>
-  <button class="button is-light is-small is-rounded has-text-weight-bold" type="button" id="playerMobToggle" aria-expanded="false" aria-controls="playerMobPanel">
-    <span class="icon is-small"><i class="ph ph-list-bullets" aria-hidden="true"></i></span>
-    <span>Modules</span>
-    <span class="icon is-small"><i class="ph ph-caret-down js-caret" aria-hidden="true"></i></span>
-  </button>
-</div>
+<div class="columns is-marginless is-multiline has-background-white-ter">
 
-<div class="is-hidden has-background-white p-4" id="playerMobPanel" aria-hidden="true" style="position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 40; overflow-y: auto;">
-  <aside class="menu">
-    <p class="menu-label has-text-weight-bold has-text-grey">Course Content</p>
-    <a href="/training/" class="button is-white is-fullwidth is-justify-content-flex-start has-text-link has-text-weight-bold mb-4">
-      <span class="icon mr-2"><i class="ph ph-arrow-left" aria-hidden="true"></i></span> All training
-    </a>
-    
-    <ul class="menu-list">
-      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="100"}}
-        {{#foreach posts}}
-          <li>
-            <a href="{{url}}" class="{{#match id ../../id}}is-active has-background-link has-text-white{{else}}has-text-dark has-background-light{{/match}} is-flex is-align-items-center has-text-weight-bold mb-2 p-3" style="border-radius: 8px;">
-              {{#if feature_image}}
-                <figure class="image is-24x24 mr-2"><img src="{{img_url feature_image size="xxs"}}" alt="" class="is-rounded"></figure>
-              {{else}}
-                <span class="icon mr-2"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
-              {{/if}}
-              <span>{{title}}</span>
-            </a>
-            
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100"}}
-              {{#if posts}}
-                <ul class="ml-3 pl-3 mb-4" style="border-left: 2px solid #eaeaea;">
-                  {{#foreach posts}}
-                    <li>
-                      <a href="{{url}}" class="{{#match id ../../../../id}}is-active has-background-link-light has-text-link has-text-weight-bold{{else}}has-text-grey-dark{{/match}} is-flex is-align-items-center is-justify-content-space-between py-2 mb-1" style="border-radius: 6px;">
-                        <div class="is-flex is-align-items-center" style="min-width: 0;">
-                          <span class="is-size-7 has-text-grey mr-2">{{@number}}.</span>
-                          <span class="is-size-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{title}}</span>
-                        </div>
-                        <span class="is-size-7 has-text-grey-light ml-2 flex-shrink-0">{{reading_time minute="1m" minutes="%m"}}</span>
-                      </a>
-                    </li>
-                  {{/foreach}}
-                </ul>
-              {{/if}}
-            {{/get}}
-          </li>
-        {{/foreach}}
-      {{/get}}
-    </ul>
-  </aside>
-</div>
+  {{!-- ═══ LEFT: MAIN CONTENT AREA ═══ --}}
+  <main class="column is-12-touch is-8-desktop is-9-widescreen py-6 px-4 px-6-desktop">
+    <div class="container is-max-desktop">
 
-{{!-- =========================================================================
-      2. DESKTOP PLAYER SHELL NAVBAR 
-========================================================================= --}}
-<nav class="navbar is-link has-shadow is-hidden-touch" role="navigation" aria-label="Player navigation" style="height: 60px; z-index: 50;">
-  <div class="container is-fluid px-4">
-    
-    <div class="navbar-brand">
-      <a href="/training/" class="navbar-item has-text-white hover-text-light is-flex is-align-items-center mr-2">
-        <span class="icon is-medium mr-1"><i class="ph ph-caret-left is-size-4"></i></span> Back
-      </a>
-      <div class="navbar-item is-flex is-align-items-center">
-        {{#has tag="#training-content"}}
-          {{#get "posts" filter="tag:hash-training+slug:{{primary_tag.slug}}" limit="1"}}
-            {{#foreach posts}}
-              <span class="has-text-weight-bold is-size-5 has-text-white">{{title}}</span>
-            {{/foreach}}
-          {{/get}}
-        {{else}}
-          <span class="has-text-weight-bold is-size-5 has-text-white">{{title}}</span>
-        {{/has}}
-      </div>
-    </div>
-
-    <div class="navbar-end">
-      <div class="navbar-item is-flex is-align-items-center">
-        <a href="#" class="button is-link is-inverted is-outlined is-small has-text-weight-bold">
-          <span class="icon"><i class="ph-fill ph-trophy"></i></span>
-          <span>Get Certificate</span>
-        </a>
-      </div>
-    </div>
-
-  </div>
-</nav>
-
-{{!-- =========================================================================
-      3. FULL-SCREEN APP LAYOUT
-========================================================================= --}}
-<div class="columns is-gapless is-marginless" style="height: calc(100vh - 60px);">
-
-  {{!-- LEFT SIDE: SCROLLABLE MAIN CONTENT --}}
-  <main class="column is-12-tablet is-8-desktop is-9-widescreen has-background-white-bis" style="overflow-y: auto; height: 100%;">
-    
-    {{!-- 🔀 BRANCH A: TRAINING OVERVIEW (#training) --}}
-    {{#has tag="#training"}}
-      <div class="container is-fluid py-6">
+      {{!-- ─── BRANCH A: COURSE OVERVIEW (#training) ─── --}}
+      {{#has tag="#training"}}
         
-        {{!-- Title Hero --}}
-        <div class="box is-shadowless p-6 mb-5" style="border-radius: 12px; border: 1px solid #eaeaea; max-width: 950px; margin: 0 auto;">
-          <div class="is-flex is-align-items-center mb-3">
-            {{#if primary_tag}}
-              <span class="tag is-primary is-light is-rounded has-text-weight-bold px-3 py-1">
-                <i class="ph-fill ph-tag mr-2"></i> {{primary_tag.name}}
-              </span>
-            {{/if}}
-          </div>
-          <h1 class="title is-1 has-text-dark mb-4">{{title}}</h1>
-          <p class="subtitle is-4 has-text-grey">{{custom_excerpt}}</p>
+        {{!-- Hero Box --}}
+        <div class="box p-6 mb-6 is-shadowless">
+          {{#if primary_tag}}
+            <span class="tag is-primary is-light is-rounded has-text-weight-bold mb-4 px-3 py-2">
+              <span class="icon is-small mr-1"><i class="ph-fill ph-tag"></i></span>
+              <span>{{primary_tag.name}}</span>
+            </span>
+          {{/if}}
+
+          <h1 class="title is-1 is-size-2-mobile has-text-weight-bold mb-4">{{title}}</h1>
           
-          <hr class="has-background-light my-5">
-          
-          {{!-- Action Area --}}
-          <div class="is-flex is-align-items-center is-justify-content-space-between">
-            {{#primary_author}}
-              <div class="is-flex is-align-items-center">
-                {{#if profile_image}}
-                  <figure class="image is-48x48 mr-3"><img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="is-rounded"></figure>
-                {{else}}
-                  <span class="icon is-large has-text-grey-light mr-3"><i class="ph-fill ph-user-circle is-size-1"></i></span>
-                {{/if}}
-                <div>
-                  <p class="is-size-7 has-text-grey mb-0 is-uppercase tracking-wide">Instructor</p>
-                  <p class="has-text-weight-bold has-text-dark is-size-6 mb-0">{{name}}</p>
+          {{#if custom_excerpt}}
+            <p class="subtitle is-4 is-size-5-mobile has-text-grey">{{custom_excerpt}}</p>
+          {{/if}}
+
+          <hr class="has-background-grey-lighter my-5">
+
+          <nav class="level">
+            <div class="level-left">
+              {{#primary_author}}
+                <div class="level-item">
+                  <figure class="image is-48x48 mr-3">
+                    {{#if profile_image}}
+                      <img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="is-rounded">
+                    {{else}}
+                      <i class="ph-fill ph-user-circle is-size-1 has-text-grey-light"></i>
+                    {{/if}}
+                  </figure>
+                  <div>
+                    <p class="heading mb-0 has-text-grey">Instructor</p>
+                    <p class="title is-6">{{name}}</p>
+                  </div>
                 </div>
-              </div>
-            {{/primary_author}}
-
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="1"}}
-              {{#foreach posts}}
-                <a href="{{url}}" class="button is-primary is-medium is-rounded has-text-weight-bold px-6">
-                  <span class="icon"><i class="ph-fill ph-rocket-launch"></i></span>
-                  <span>Start Training</span>
-                </a>
-              {{else}}
-                <button class="button is-primary is-medium is-rounded px-6" disabled>Coming Soon</button>
-              {{/foreach}}
-            {{/get}}
-          </div>
-        </div>
-
-        {{!-- Content Container (UI Improved) --}}
-        <div class="box is-shadowless p-6" style="border-radius: 12px; border: 1px solid #eaeaea; max-width: 950px; margin: 0 auto;">
-          <h2 class="title is-4 mb-5">About this training</h2>
-          
-          {{!-- CONTENT UI FIX: Centered reading width, medium text, clear line height --}}
-          <div class="content gh-content is-medium has-text-grey-dark mx-auto" style="max-width: 800px; line-height: 1.8; letter-spacing: 0.1px;">
-            {{content}}
-          </div>
-
-        </div>
-
-      </div>
-    {{/has}}
-
-    {{!-- 🔀 BRANCH B: MODULE READER (#training-content) --}}
-    {{#has tag="#training-content"}}
-
-      {{!-- 16:9 Video Wrapper --}}
-      <div class="has-background-black is-relative" style="width: 100%; aspect-ratio: 16 / 9;">
-        {{#if feature_image}}
-          <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-          <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
-            <button class="button is-white is-rounded is-large" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: none;">
-              <span class="icon is-large has-text-white"><i class="ph-fill ph-play is-size-1"></i></span>
-            </button>
-          </div>
-        {{else}}
-          <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
-            <span class="icon is-large has-text-grey-dark"><i class="ph ph-video-camera is-size-1"></i></span>
-          </div>
-        {{/if}}
-      </div>
-
-      {{!-- Action Bar --}}
-      <div class="is-flex is-justify-content-space-between is-align-items-center px-5 py-4 has-background-white" style="border-bottom: 1px solid #eaeaea;">
-        
-        {{!-- PAGINATION FIX: Removed strict filter, just checking primary_tag --}}
-        {{#prev_post in="primary_tag"}}
-          <a href="{{url}}" class="button is-white has-text-grey-dark has-text-weight-semibold">
-            <span class="icon"><i class="ph ph-arrow-left"></i></span>
-            <span class="is-hidden-mobile">Previous Lesson</span>
-          </a>
-        {{else}}
-          <button class="button is-white has-text-grey-light" disabled><span class="icon"><i class="ph ph-arrow-left"></i></span> Previous Lesson</button>
-        {{/prev_post}}
-
-        <div class="buttons mb-0">
-          <button class="button is-light has-text-weight-bold">
-            <span class="icon"><i class="ph ph-bookmark-simple"></i></span>
-            <span class="is-hidden-mobile">Bookmark</span>
-          </button>
-          
-          {{!-- PAGINATION FIX: Removed strict filter, just checking primary_tag --}}
-          {{#next_post in="primary_tag"}}
-            <a href="{{url}}" class="button is-primary has-text-weight-bold">
-              <span class="is-hidden-mobile">Complete & Continue</span>
-              <span class="is-hidden-tablet">Next</span>
-              <span class="icon"><i class="ph ph-arrow-right"></i></span>
-            </a>
-          {{else}}
-            <a href="/training/" class="button is-success has-text-weight-bold">
-              <span class="icon"><i class="ph-fill ph-check-circle"></i></span> Finish Course
-            </a>
-          {{/next_post}}
-        </div>
-      </div>
-
-      {{!-- Content Area --}}
-      <div class="container is-fluid mt-5 mb-6">
-        
-        {{!-- Horizontal Ad Placeholder --}}
-        <div class="box is-shadowless has-background-white-ter is-flex is-align-items-center is-justify-content-center mx-auto mb-5" style="border: 2px dashed #b5b5b5; max-width: 728px; height: 90px;">
-          <span class="has-text-grey has-text-weight-bold">Advertisement (Google AdSense / Sponsorship slot)</span>
-        </div>
-
-        {{!-- Article Box --}}
-        <div class="box is-shadowless p-6" style="max-width: 950px; margin: 0 auto; border-radius: 8px; border: 1px solid #eaeaea;">
-          
-          <div class="tabs is-medium mb-5" style="border-bottom: 1px solid #eaeaea;">
-            <ul>
-              <li class="is-active"><a class="has-text-link has-text-weight-bold" style="border-bottom-color: #0176D3;">Overview</a></li>
-              <li><a class="has-text-grey">Resources (2)</a></li>
-              <li><a class="has-text-grey">Q & A</a></li>
-            </ul>
-          </div>
-
-          <h1 class="title is-3 mb-2">{{title}}</h1>
-          <p class="has-text-grey is-size-6 mb-5">
-            {{#if primary_tag}}{{primary_tag.name}} &bull;{{/if}} {{reading_time minute="1 min read" minutes="% min read"}}
-          </p>
-
-          <hr class="has-background-light">
-
-          {{!-- CONTENT UI FIX: Structured for perfect technical reading --}}
-          <div class="content gh-content has-text-dark is-medium mt-5 pb-6 mx-auto" style="max-width: 800px; line-height: 1.8;">
-            {{content}}
-          </div>
-
-          {{!-- LARGE BOTTOM PAGINATION (Re-enforced fix) --}}
-          <div class="columns is-mobile mt-6 pt-5 mx-auto" style="border-top: 1px solid #eaeaea; max-width: 800px;">
-            <div class="column is-half">
-              {{#prev_post in="primary_tag"}}
-                <a href="{{url}}" class="box is-shadowless has-background-white-ter is-flex is-flex-direction-column" style="border: 1px solid #eaeaea; border-radius: 8px;">
-                  <span class="is-size-7 has-text-grey has-text-weight-bold is-uppercase mb-2"><i class="ph ph-arrow-left"></i> Previous</span>
-                  <span class="has-text-link has-text-weight-bold is-size-5-desktop is-size-6-mobile">{{title}}</span>
-                </a>
-              {{/prev_post}}
+              {{/primary_author}}
             </div>
-            <div class="column is-half">
-              {{#next_post in="primary_tag"}}
-                <a href="{{url}}" class="box is-shadowless has-background-white-ter is-flex is-flex-direction-column has-text-right" style="border: 1px solid #eaeaea; border-radius: 8px;">
-                  <span class="is-size-7 has-text-grey has-text-weight-bold is-uppercase mb-2">Next <i class="ph ph-arrow-right"></i></span>
-                  <span class="has-text-link has-text-weight-bold is-size-5-desktop is-size-6-mobile">{{title}}</span>
-                </a>
-              {{else}}
-                {{#get "posts" filter="tag:hash-training+slug:{{primary_tag.slug}}" limit="1"}}
+            
+            <div class="level-right">
+              <div class="level-item">
+                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="1"}}
                   {{#foreach posts}}
-                    <a href="{{url}}" class="box is-shadowless has-background-success-light is-flex is-flex-direction-column has-text-right" style="border: 1px solid #48c774; border-radius: 8px;">
-                      <span class="is-size-7 has-text-success-dark has-text-weight-bold is-uppercase mb-2"><i class="ph-fill ph-check-circle"></i> Finish Track</span>
-                      <span class="has-text-success-dark has-text-weight-bold is-size-5-desktop is-size-6-mobile">{{title}}</span>
+                    <a href="{{url}}" class="button is-primary is-medium is-rounded has-text-weight-bold">
+                      <span class="icon"><i class="ph-fill ph-play"></i></span>
+                      <span>Start Learning</span>
                     </a>
+                  {{else}}
+                    <button class="button is-light is-medium is-rounded" disabled>Coming Soon</button>
                   {{/foreach}}
                 {{/get}}
-              {{/next_post}}
+              </div>
             </div>
+          </nav>
+        </div>
+
+        {{!-- About Box --}}
+        <div class="box p-6 is-shadowless">
+          <h2 class="title is-4 mb-5">About this track</h2>
+          <div class="content is-medium">
+            {{content}}
+          </div>
+        </div>
+
+      {{/has}}
+
+
+      {{!-- ─── BRANCH B: LESSON PLAYER (#training-content) ─── --}}
+      {{#has tag="#training-content"}}
+
+        {{!-- Video Player Wrapper --}}
+        <div class="box p-0 mb-5 has-background-black is-clipped is-shadowless">
+          <figure class="image is-16by9 is-marginless">
+            {{#if feature_image}}
+              <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="has-ratio">
+              <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
+                <button class="button is-large is-rounded is-primary">
+                  <span class="icon is-large"><i class="ph-fill ph-play"></i></span>
+                </button>
+              </div>
+            {{else}}
+              <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
+                <span class="icon is-large has-text-grey-dark"><i class="ph ph-video-camera is-size-1"></i></span>
+              </div>
+            {{/if}}
+          </figure>
+          
+          {{!-- Top Pagination & Action Bar --}}
+          <div class="has-background-white p-4">
+            <nav class="level is-mobile mb-0">
+              <div class="level-left">
+                <div class="level-item">
+                  {{#prev_post in="primary_tag"}}
+                    <a href="{{url}}" class="button is-light is-rounded has-text-weight-medium">
+                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
+                      <span class="is-hidden-mobile">Previous</span>
+                    </a>
+                  {{else}}
+                    <button class="button is-light is-rounded" disabled><span class="icon"><i class="ph ph-arrow-left"></i></span></button>
+                  {{/prev_post}}
+                </div>
+              </div>
+              
+              <div class="level-right">
+                <div class="level-item">
+                  <button class="button is-light is-rounded mr-2">
+                    <span class="icon"><i class="ph ph-bookmark-simple"></i></span>
+                  </button>
+                  {{#next_post in="primary_tag"}}
+                    <a href="{{url}}" class="button is-link is-rounded has-text-weight-bold">
+                      <span class="is-hidden-mobile">Next Lesson</span>
+                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
+                    </a>
+                  {{else}}
+                    <a href="/training/" class="button is-success is-rounded has-text-weight-bold">
+                      <span class="icon"><i class="ph-fill ph-check-circle"></i></span>
+                      <span class="is-hidden-mobile">Finish</span>
+                    </a>
+                  {{/next_post}}
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        {{!-- Ad Slot --}}
+        <div class="notification is-warning is-light has-text-centered mb-5">
+          <p class="heading has-text-grey mb-2">Advertisement</p>
+          <p class="is-size-6">Place your sponsor or AdSense block here.</p>
+        </div>
+
+        {{!-- Main Lesson Content --}}
+        <div class="box p-6 is-shadowless">
+          <h1 class="title is-2 mb-4">{{title}}</h1>
+          
+          <div class="is-flex is-align-items-center mb-6">
+            {{#if primary_tag}}
+              <span class="tag is-light is-rounded mr-3 has-text-weight-medium">{{primary_tag.name}}</span>
+            {{/if}}
+            <span class="has-text-grey is-size-7">
+              <span class="icon"><i class="ph ph-clock"></i></span> {{reading_time minute="1 min read" minutes="% min read"}}
+            </span>
           </div>
 
-        </div>
-      </div>
-    {{/has}}
+          {{!-- Table of Contents Partial --}}
+          <div class="notification is-info is-light mb-6">
+            <p class="has-text-weight-bold mb-3 is-size-5">Table of Contents</p>
+            {{> "toc"}}
+          </div>
 
+          {{!-- Article Body --}}
+          <div class="content is-medium">
+            {{content}}
+          </div>
+        </div>
+
+        {{!-- Large Bottom Pagination --}}
+        <div class="columns is-mobile mt-6">
+          <div class="column is-half is-flex">
+            {{#prev_post in="primary_tag"}}
+              <a href="{{url}}" class="box has-background-white-ter is-shadowless is-flex-grow-1 is-flex is-flex-direction-column is-justify-content-center">
+                <p class="heading has-text-grey mb-1"><i class="ph ph-arrow-left"></i> Previous</p>
+                <p class="has-text-link has-text-weight-bold mb-0">{{title}}</p>
+              </a>
+            {{/prev_post}}
+          </div>
+          <div class="column is-half is-flex">
+            {{#next_post in="primary_tag"}}
+              <a href="{{url}}" class="box has-background-white-ter is-shadowless is-flex-grow-1 is-flex is-flex-direction-column is-justify-content-center has-text-right">
+                <p class="heading has-text-grey mb-1">Next <i class="ph ph-arrow-right"></i></p>
+                <p class="has-text-link has-text-weight-bold mb-0">{{title}}</p>
+              </a>
+            {{else}}
+               <a href="/training/" class="box has-background-success-light is-shadowless is-flex-grow-1 is-flex is-flex-direction-column is-justify-content-center has-text-right">
+                <p class="heading has-text-success mb-1"><i class="ph-fill ph-check-circle"></i> Course Complete</p>
+                <p class="has-text-success has-text-weight-bold mb-0">Return to Track</p>
+              </a>
+            {{/next_post}}
+          </div>
+        </div>
+
+      {{/has}}
+
+    </div>
   </main>
 
-  {{!-- =========================================================
-        RIGHT SIDEBAR: CURRICULUM ACCORDION (Desktop Only)
-  ========================================================= --}}
-  <aside class="column is-4-desktop is-3-widescreen has-background-white is-hidden-touch" style="overflow-y: auto; height: 100%; border-left: 1px solid #eaeaea;">
+
+  {{!-- ═══ RIGHT: CURRICULUM SIDEBAR ═══ --}}
+  <aside class="column is-12-touch is-4-desktop is-3-widescreen has-background-white py-6 px-5">
     
-    <div class="p-4 has-background-white-bis" style="position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #eaeaea;">
-      <h2 class="title is-5 mb-0 has-text-dark">Course Content</h2>
+    <div class="is-flex is-align-items-center mb-6">
+      <span class="icon has-text-link mr-2 is-medium"><i class="ph-fill ph-books is-size-4"></i></span>
+      <h3 class="title is-5 mb-0">Course Content</h3>
     </div>
 
-    <div>
-      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="100"}}
+    <aside class="menu">
+      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="50"}}
         {{#foreach posts}}
           
-          <div class="js-sidebar-group" style="border-bottom: 1px solid #eaeaea;">
-            
-            {{!-- Track Header --}}
-            <a class="is-flex is-justify-content-space-between is-align-items-center p-4 has-background-white-ter has-text-dark has-text-weight-bold hover-background-light js-sidebar-group-hd" style="cursor: pointer;">
-              <span>{{title}}</span>
-              <span class="icon has-text-grey"><i class="ph ph-caret-down js-caret"></i></span>
-            </a>
-            
-            {{!-- Lessons List --}}
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100"}}
-              {{#if posts}}
-                <div class="js-sidebar-list is-hidden">
-                  {{#foreach posts}}
-                    <a href="{{url}}" class="is-flex is-align-items-flex-start p-3 pl-5 has-text-dark hover-background-white-ter js-sidebar-lesson {{#match id ../../../../id}}is-active has-background-info-light has-text-link has-text-weight-bold{{/match}}" {{#match id ../../../../id}}style="border-left: 4px solid #0176D3; padding-left: calc(1.25rem - 4px);"{{/match}}>
-                      <span class="icon is-small mr-3 mt-1 {{#match id ../../../../id}}has-text-link{{else}}has-text-grey-light{{/match}}">
-                        <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else}}ph ph-circle{{/match}} is-size-5"></i>
-                      </span>
-                      <div>
-                        <div class="{{#match id ../../../../id}}has-text-link has-text-weight-bold{{else}}has-text-weight-medium{{/match}} mb-1">{{title}}</div>
-                        <div class="has-text-grey is-size-7"><i class="ph ph-video-camera mr-1"></i> {{reading_time minute="1m" minutes="%m"}}</div>
+          <p class="menu-label has-text-weight-bold has-text-grey-dark mt-6 mb-3">
+            {{title}}
+          </p>
+          
+          <ul class="menu-list">
+            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100" as |lessons|}}
+              {{#if lessons}}
+                {{#foreach lessons}}
+                  <li>
+                    <a href="{{url}}" class="{{#match id ../../../../id}}is-active{{/match}} is-flex is-align-items-center is-justify-content-space-between py-3">
+                      
+                      <div class="is-flex is-align-items-center is-clipped">
+                        <span class="icon mr-2 is-flex-shrink-0">
+                          <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else}}ph ph-circle{{/match}}"></i>
+                        </span>
+                        <span>{{title}}</span>
                       </div>
+
+                      <span class="is-size-7 ml-3 is-flex-shrink-0 {{#match id ../../../../id}}has-text-white{{else}}has-text-grey-light{{/match}}">
+                        {{reading_time minute="1m" minutes="%m"}}
+                      </span>
+                      
                     </a>
-                  {{/foreach}}
-                </div>
+                  </li>
+                {{/foreach}}
+              {{else}}
+                <li><a class="has-text-grey-light" disabled>No lessons yet.</a></li>
               {{/if}}
             {{/get}}
-
-          </div>
+          </ul>
 
         {{/foreach}}
+      {{else}}
+        <p class="has-text-grey">No training courses found.</p>
       {{/get}}
-    </div>
-
-    {{!-- Sidebar Ad Placeholder --}}
-    <div class="p-4 has-background-white-bis mt-5">
-      <div class="box is-shadowless has-background-white-ter is-flex is-align-items-center is-justify-content-center mx-auto" style="border: 2px dashed #b5b5b5; width: 300px; height: 250px;">
-        <span class="has-text-grey has-text-weight-bold has-text-centered">Sidebar Ad<br>(300x250)</span>
-      </div>
-    </div>
+    </aside>
 
   </aside>
 
 </div>
-
-{{!-- =========================================================================
-      JS: ACCORDION & MOBILE MENU LOGIC
-========================================================================= --}}
-<script>
-(function () {
-  'use strict';
-
-  // 1. Mobile Menu Toggle
-  var toggle = document.getElementById('playerMobToggle');
-  var panel  = document.getElementById('playerMobPanel');
-  
-  if (toggle && panel) {
-    function setOpen(open) {
-      panel.classList.toggle('is-hidden', !open);
-      panel.setAttribute('aria-hidden', String(!open));
-      toggle.setAttribute('aria-expanded', String(open));
-      
-      if(open) {
-        toggle.classList.remove('is-light');
-        toggle.classList.add('is-link');
-      } else {
-        toggle.classList.remove('is-link');
-        toggle.classList.add('is-light');
-      }
-
-      var caret = toggle.querySelector('.js-caret');
-      if (caret) caret.style.transform = open ? 'rotate(180deg)' : '';
-    }
-
-    toggle.addEventListener('click', function () {
-      setOpen(panel.classList.contains('is-hidden'));
-    });
-
-    document.addEventListener('click', function (e) {
-      if (!panel.classList.contains('is-hidden') && !panel.contains(e.target) && !toggle.contains(e.target)) {
-        setOpen(false);
-      }
-    });
-  }
-
-  // 2. Sidebar Accordion Initialization
-  var activeLesson = document.querySelector('.js-sidebar-lesson.is-active');
-  
-  if (activeLesson) {
-    activeLesson.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    var grp = activeLesson.closest('.js-sidebar-group');
-    if (grp) {
-      var list = grp.querySelector('.js-sidebar-list');
-      var caret = grp.querySelector('.js-caret');
-      var hd = grp.querySelector('.js-sidebar-group-hd');
-      if(list) list.classList.remove('is-hidden');
-      if(caret) caret.style.transform = 'rotate(180deg)';
-      if(hd) hd.classList.replace('has-background-white-ter', 'has-background-white');
-    }
-  }
-
-  // 3. Make Group Headers toggleable on click
-  var groupHeaders = document.querySelectorAll('.js-sidebar-group-hd');
-  groupHeaders.forEach(function(hd) {
-    hd.addEventListener('click', function(e) {
-      var grp = this.closest('.js-sidebar-group');
-      var list = grp.querySelector('.js-sidebar-list');
-      var caret = this.querySelector('.js-caret');
-      
-      if(list) {
-        var isHidden = list.classList.contains('is-hidden');
-        list.classList.toggle('is-hidden', !isHidden);
-        if (caret) caret.style.transform = isHidden ? 'rotate(180deg)' : '';
-      }
-    });
-  });
-
-})();
-</script>
-

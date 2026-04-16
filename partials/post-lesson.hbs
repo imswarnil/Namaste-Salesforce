@@ -1,58 +1,21 @@
-
-
-{{!-- MOBILE TOP BAR (Toggle for Lesson List) --}}
-<div class="is-hidden-desktop has-background-white has-shadow is-flex is-justify-content-space-between is-align-items-center px-4 py-3" style="position: sticky; top: 0; z-index: 30; border-bottom: 1px solid #eaeaea;">
-  <span class="has-text-weight-bold is-size-6 has-text-dark" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{title}}</span>
-  <button id="lessonMobileToggle" class="button is-light is-small is-rounded has-text-weight-bold">
-    <span class="icon"><i class="ph ph-list-bullets"></i></span>
-    <span>Lessons</span>
-  </button>
-</div>
-
-{{!-- MOBILE OFF-CANVAS / DROPDOWN PANEL --}}
-<div id="lessonMobilePanel" class="is-hidden has-background-white p-4" style="position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 29; overflow-y: auto;">
-  <p class="heading has-text-weight-bold has-text-grey mb-3">Course Curriculum</p>
-  <ul class="menu-list">
-    {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
-      {{#foreach posts}}
-        <li>
-          <a href="{{url}}" class="{{#match id ../../id}}has-background-link-light has-text-link has-text-weight-bold{{else}}has-text-grey-dark{{/match}} py-3 mb-2" style="border-radius: 8px;">
-            <span class="mr-2 has-text-grey">{{@number}}.</span> {{title}}
-          </a>
-        </li>
-      {{/foreach}}
-    {{/get}}
-  </ul>
-</div>
-
-
-<div class="has-background-white pt-5 pb-6">
+<div class="section is-small">
   <div class="container is-fluid">
     <div class="columns is-variable is-6">
 
       {{!-- ==========================================
-            LEFT SIDEBAR: COURSE INDEX (Desktop Only)
+            LEFT SIDEBAR: COURSE INDEX 
+            (Stacks to the top on Mobile/Tablet automatically)
       ========================================== --}}
-      <aside class="column is-3-desktop is-hidden-touch">
-        <div style="position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto; padding-right: 10px;">
-          
-          {{!-- Back to Course --}}
-          {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
-            {{#foreach posts}}
-              <a href="{{url}}" class="button is-white is-fullwidth is-justify-content-flex-start has-text-link has-text-weight-bold mb-4 px-0">
-                <span class="icon mr-2"><i class="ph ph-arrow-left"></i></span> Back to {{title}}
-              </a>
-            {{/foreach}}
-          {{/get}}
-
-          <div class="menu mt-5">
-            <p class="menu-label has-text-weight-bold has-text-grey tracking-wide">Course Lessons</p>
+      <aside class="column is-12-mobile is-12-tablet is-3-desktop">
+        <div class="box is-shadowless  mb-5">
+          <div class="menu">
+            <p class="menu-label has-text-weight-bold has-text-grey">Course Lessons</p>
             <ul class="menu-list is-size-6">
               {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
                 {{#foreach posts}}
                   <li>
-                    <a href="{{url}}" class="{{#match id ../../id}}is-active has-background-link has-text-white has-text-weight-bold{{else}}has-text-grey-dark{{/match}} is-flex is-align-items-flex-start mb-1" style="border-radius: 8px; line-height: 1.4; padding: 0.75em 1em;">
-                      <span class="mr-2" style="opacity: 0.7;">{{@number}}.</span>
+                    <a href="{{url}}" class="{{#match id ../../id}}is-active has-background-link has-text-white has-text-weight-bold{{else}}has-text-grey-dark{{/match}} is-flex is-align-items-flex-start mb-2 py-3 px-4">
+                      <span class="mr-2 has-text-weight-light">{{@number}}.</span>
                       <span>{{title}}</span>
                     </a>
                   </li>
@@ -78,26 +41,26 @@
               </span>
             </div>
             
-            <h1 class="title is-2 is-size-3-mobile has-text-weight-bold mb-4" style="line-height: 1.2; letter-spacing: -1px;">{{title}}</h1>
+            <h1 class="title is-2 is-size-3-mobile has-text-weight-bold mb-4">{{title}}</h1>
             
             {{#if custom_excerpt}}
-              <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-3" style="line-height: 1.5;">{{custom_excerpt}}</p>
+              <p class="subtitle is-4 is-size-5-mobile has-text-grey mt-3">{{custom_excerpt}}</p>
             {{/if}}
           </header>
 
           {{#if feature_image}}
-            <figure class="image mb-6" style="border-radius: 12px; overflow: hidden; border: 1px solid #eaeaea;">
-              <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" style="object-fit: cover;">
+            <figure class="image mb-6">
+              <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="has-background-light">
             </figure>
           {{/if}}
 
-          {{!-- The Content Area (Includes your js-toc-content hook) --}}
+          {{!-- The Content Area --}}
           <div class="content is-medium has-text-grey-dark gh-content js-toc-content">
             {{content}}
           </div>
 
           {{!-- Pagination (Prev/Next) --}}
-          <nav class="level is-mobile mt-6 pt-5" style="border-top: 1px solid #eaeaea;" aria-label="Lesson navigation">
+          <nav class="level is-mobile mt-6 pt-6" aria-label="Lesson navigation">
             <div class="level-left">
               <div class="level-item">
                 {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
@@ -137,53 +100,25 @@
       </main>
 
       {{!-- ==========================================
-            RIGHT SIDEBAR: TOC & ADS (Desktop Only)
+            RIGHT SIDEBAR: TOC & ADS
+            (Stacks to the bottom on Mobile/Tablet)
       ========================================== --}}
-      <aside class="column is-2-desktop is-hidden-touch">
-        <div style="position: sticky; top: 2rem;">
-          
-          {{!-- Dynamic Table of Contents --}}
-          <div class="box is-shadowless mb-5" style="border: 1px solid #eaeaea; border-radius: 12px;">
-            <p class="heading has-text-weight-bold has-text-grey mb-3">On this page</p>
-            <div class="menu">
-              {{!-- The script from your default blog template expects .js-toc-list --}}
-              <ul class="menu-list js-toc-list is-size-7 has-text-weight-medium"></ul>
-            </div>
-          </div>
-          
-          {{!-- Ad Placeholder --}}
-          <div class="box has-background-white-ter is-shadowless is-flex is-align-items-center is-justify-content-center has-text-centered" style="border: 1px dashed #ccc; min-height: 250px; border-radius: 12px;">
-            <div>
-              <p class="heading has-text-grey mb-1">Advertisement</p>
-              <p class="is-size-7 has-text-grey-light">300 × 250</p>
-            </div>
-          </div>
+      <aside class="column is-12-mobile is-12-tablet is-2-desktop">
+        
+        {{!-- Dynamic Table of Contents --}}
+                  {{>"toc"}}
 
+        
+        {{!-- Ad Placeholder --}}
+        <div class="box has-background-white-ter is-shadowless is-flex is-align-items-center is-justify-content-center has-text-centered py-6">
+          <div>
+            <p class="heading has-text-grey mb-1">Advertisement</p>
+            <p class="is-size-7 has-text-grey-light">300 &times; 250</p>
+          </div>
         </div>
+
       </aside>
 
     </div>
   </div>
 </div>
-
-{{!-- Mobile Toggle Script --}}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const toggleBtn = document.getElementById('lessonMobileToggle');
-  const panel = document.getElementById('lessonMobilePanel');
-  
-  if (toggleBtn && panel) {
-    toggleBtn.addEventListener('click', function() {
-      panel.classList.toggle('is-hidden');
-      if(panel.classList.contains('is-hidden')) {
-        toggleBtn.classList.remove('is-link');
-        toggleBtn.classList.add('is-light');
-      } else {
-        toggleBtn.classList.remove('is-light');
-        toggleBtn.classList.add('is-link');
-      }
-    });
-  }
-});
-</script>
-

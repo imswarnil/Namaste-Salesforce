@@ -1,56 +1,96 @@
 <!DOCTYPE html>
-<html lang="{{@site.locale}}">
+<html lang="{{@site.locale}}" data-theme="light">
   <head>
-    {{!-- Document Settings --}}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-    {{!-- Page Meta --}}
     <title>{{meta_title}}</title>
-
-    {{!-- Mobile Meta --}}
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    {{!-- Styles'n'Scripts --}}
-    <link rel="stylesheet" type="text/css" href="{{asset 'css/app.min.css'}}" />
-        <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    
-    {{!-- Ghost outputs important style and meta data with this tag --}}
+    <link rel="preload" as="style" href="{{asset "built/screen.css"}}" />
+    <link rel="preload" as="script" href="{{asset "built/casper.js"}}" />
+    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}" />
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    {{!-- Apply saved theme BEFORE paint — prevents flash --}}
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('ns-theme');
+          if (t === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     {{ghost_head}}
   </head>
-  
-  {{!-- 
-    1. is-flex & is-flex-direction-column: Turns the body into a flex container flowing downward.
-    2. min-height: 100vh ensures the body is always at least the height of the browser window.
-  --}}
-  <body class="{{body_class}} is-flex is-flex-direction-column" style="min-height: 100vh;">
-    
-    {{!-- Icons --}}
-    <div class="is-hidden">
-      {{> icon-sprite}}
-    </div>
+
+  <body class="{{body_class}} is-flex is-flex-direction-column" style="min-height:100vh;">
+
+    <div class="is-hidden">{{> icon-sprite}}</div>
 
     {{> header}}
 
-    {{!-- 
-      is-flex-grow-1: This Bulma helper is the magic part. It forces the main 
-      content wrapper to stretch and fill all available empty space, automatically 
-      pushing your {{> footer}} perfectly to the bottom edge.
-    --}}
     <main class="main is-flex-grow-1">
-      {{!-- All the main content gets inserted here, index.hbs, post.hbs, etc --}}
       {{{body}}}
     </main>
 
-    {{!-- The footer at the very bottom --}}
     {{> footer}}
 
-    {{!-- Ghost outputs important scripts and data with this tag --}}
     {{ghost_foot}}
 
-    {{!-- Main theme scripts --}}
-    <script async src="{{asset 'js/app.min.js'}}"></script>
+    <script src="{{asset "built/casper.js"}}"></script>
+
+    {{!-- ── Theme switcher ──────────────────────────────────────────────────
+      Works with any .ns-theme-toggle button on the page.
+      Toggles data-theme on <html>.
+      Swaps .ph-moon ↔ .ph-sun on .ns-theme-icon elements.
+      Persists choice to localStorage.
+    ─────────────────────────────────────────────────────────────────────── --}}
+    <script>
+    (function () {
+      'use strict';
+
+      var html   = document.documentElement;
+      var DARK   = 'dark';
+      var LIGHT  = 'light';
+      var KEY    = 'ns-theme';
+
+      function isDark() {
+        return html.getAttribute('data-theme') === DARK;
+      }
+
+      function applyTheme(dark) {
+        html.setAttribute('data-theme', dark ? DARK : LIGHT);
+        try { localStorage.setItem(KEY, dark ? DARK : LIGHT); } catch (e) {}
+
+        // Swap icons
+        document.querySelectorAll('.ns-theme-icon').forEach(function (el) {
+          el.classList.toggle('ph-moon', !dark);
+          el.classList.toggle('ph-sun',  dark);
+        });
+
+        // Swap button appearance (keep contrast readable)
+        document.querySelectorAll('.ns-theme-toggle').forEach(function (btn) {
+          btn.classList.toggle('is-dark',  dark);
+          btn.classList.toggle('is-light', !dark);
+        });
+      }
+
+      // Sync icon state on page load (theme may already be dark from pre-paint script)
+      applyTheme(isDark());
+
+      // Wire all toggle buttons
+      document.querySelectorAll('.ns-theme-toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          applyTheme(!isDark());
+        });
+      });
+    })();
+    </script>
+
   </body>
 </html>
