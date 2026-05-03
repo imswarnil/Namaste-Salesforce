@@ -2,7 +2,7 @@
 // _toc.scss — Namaste Salesforce
 // Universal Table of Contents — Bulma-native, no inline styles.
 //
-// Import inside screen.scss:
+// Import inside main.scss:
 //   @use "toc";
 //
 // Design targets:
@@ -11,7 +11,7 @@
 //   • Full dark-mode support via CSS custom properties
 //   • Zero inline styles — all presentation lives here
 // ═══════════════════════════════════════════════════════════════════════════
-@use "variables" as v;
+@use "variables" as sf;
 @use "sass:color";
 
 // ─── Local design tokens ────────────────────────────────────────────────────
@@ -19,23 +19,23 @@
 
 .ns-toc {
   // ── Colours (light mode; dark overrides at bottom) ──
-  --toc-bg:              var(--bulma-card-background-color, #{v.$sf-white});
-  --toc-border:          var(--bulma-border, #{v.$sf-border});
-  --toc-radius:          var(--bulma-card-radius, #{v.$sf-radius-lg});
-  --toc-shadow:          var(--bulma-card-shadow, #{v.$sf-shadow-sm});
-  --toc-title-color:     var(--bulma-body-color, #{v.$sf-text});
-  --toc-link-color:      var(--bulma-body-color, #{v.$sf-text-weak});
-  --toc-link-hover:      var(--ns-accent, #{v.$sf-blue});
-  --toc-link-active:     var(--ns-accent, #{v.$sf-blue});
-  --toc-active-bg:       var(--ns-accent-light, #{v.$sf-blue-lighter});
-  --toc-icon-color:      var(--ns-accent, #{v.$sf-blue});
-  --toc-progress-bg:     var(--bulma-border, #{v.$sf-border-light});
-  --toc-progress-fill:   var(--ns-accent, #{v.$sf-blue});
-  --toc-toggle-hover-bg: #{v.$sf-blue-lighter};
+  --toc-bg:              var(--bulma-card-background-color, #{sf.$sf-white});
+  --toc-border:          var(--bulma-border, #{sf.$sf-border});
+  --toc-radius:          var(--bulma-card-radius, #{sf.$sf-radius-lg});
+  --toc-shadow:          var(--bulma-card-shadow, #{sf.$sf-shadow-sm});
+  --toc-title-color:     var(--bulma-body-color, #{sf.$sf-text});
+  --toc-link-color:      var(--bulma-body-color, #{sf.$sf-text-weak});
+  --toc-link-hover:      var(--ns-accent, #{sf.$sf-blue});
+  --toc-link-active:     var(--ns-accent, #{sf.$sf-blue});
+  --toc-active-bg:       var(--ns-accent-light, #{sf.$sf-blue-lighter});
+  --toc-icon-color:      var(--ns-accent, #{sf.$sf-blue});
+  --toc-progress-bg:     var(--bulma-border, #{sf.$sf-border-light});
+  --toc-progress-fill:   var(--ns-accent, #{sf.$sf-blue});
+  --toc-toggle-hover-bg: #{sf.$sf-blue-lighter};
   --toc-indent-step:     1rem;
   --toc-font-size:       0.875rem;          // 14 px
   --toc-line-height:     1.5;
-  --toc-transition:      #{v.$sf-transition};
+  --toc-transition:      #{sf.$sf-transition};
 }
 
 // ─── Layout — sticky sidebar (desktop) ──────────────────────────────────────
@@ -70,7 +70,7 @@
   }
 
   // ── Tablet / mobile: become a full-width card, no sticky ──
-  @media (max-width: #{v.$sf-desktop - 1px}) {
+  @media (max-width: #{sf.$sf-desktop - 1px}) {
     position: static;
     max-height: none;
     overflow: visible;
@@ -95,7 +95,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.8125rem;           // 13 px
+  font-size: 0.8125rem;            // 13 px
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -121,7 +121,7 @@
   background: transparent;
   cursor: pointer;
   padding: 0.25rem;
-  border-radius: v.$sf-radius;
+  border-radius: sf.$sf-radius;
   color: var(--toc-title-color);
   display: flex;
   align-items: center;
@@ -144,7 +144,7 @@
 .ns-toc__chevron {
   width: 1rem;
   height: 1rem;
-  transition: transform 0.25s v.$sf-ease;
+  transition: transform 0.25s sf.$sf-ease;
 
   // When the panel is collapsed, aria-expanded="false" is set on the button
   .ns-toc__toggle[aria-expanded="false"] & {
@@ -157,7 +157,7 @@
 .ns-toc__body {
   overflow: hidden;
   // Height is animated by toc.js toggling .is-collapsed
-  transition: max-height 0.3s v.$sf-ease, opacity 0.25s v.$sf-ease;
+  transition: max-height 0.3s sf.$sf-ease, opacity 0.25s sf.$sf-ease;
   max-height: 2000px;   // generous ceiling; JS overrides to 0 when collapsed
   opacity: 1;
 
@@ -205,7 +205,7 @@
   text-decoration: none;
   border-left: 2px solid transparent;
   margin-left: -1px;          // aligns border with card border
-  border-radius: 0 v.$sf-radius v.$sf-radius 0;
+  border-radius: 0 sf.$sf-radius sf.$sf-radius 0;
   transition: var(--toc-transition);
   word-break: break-word;
 
@@ -218,7 +218,7 @@
   &:focus-visible {
     outline: 2px solid var(--toc-link-active);
     outline-offset: -2px;
-    border-radius: v.$sf-radius;
+    border-radius: sf.$sf-radius;
   }
 
   // ── Active / in-view heading ──
@@ -231,7 +231,6 @@
 }
 
 // Depth-based indentation classes injected by toc.js
-// h2 → depth-1 (no extra indent), h3 → depth-2, h4 → depth-3
 .ns-toc__link--depth-1 { padding-left: 1rem; }
 .ns-toc__link--depth-2 { padding-left: 1.75rem; }
 .ns-toc__link--depth-3 { padding-left: 2.5rem; }
@@ -266,18 +265,18 @@
 [data-theme="dark"],
 .is-dark {
   .ns-toc {
-    --toc-bg:              #{v.$sf-dark-surface};
-    --toc-border:          #{v.$sf-dark-border};
+    --toc-bg:              #{sf.$sf-dark-surface};
+    --toc-border:          #{sf.$sf-dark-border};
     --toc-shadow:          0 1px 4px rgba(0, 0, 0, 0.4);
-    --toc-title-color:     #{v.$sf-dark-text};
-    --toc-link-color:      #{v.$sf-dark-text-muted};
-    --toc-link-hover:      #{v.$sf-dark-link};
-    --toc-link-active:     #{v.$sf-dark-link};
-    --toc-active-bg:       #{rgba(v.$sf-dark-link, 0.12)};
-    --toc-icon-color:      #{v.$sf-dark-link};
-    --toc-progress-bg:     #{v.$sf-dark-border};
-    --toc-progress-fill:   #{v.$sf-dark-link};
-    --toc-toggle-hover-bg: #{rgba(v.$sf-dark-link, 0.1)};
+    --toc-title-color:     #{sf.$sf-dark-text};
+    --toc-link-color:      #{sf.$sf-dark-text-muted};
+    --toc-link-hover:      #{sf.$sf-dark-link};
+    --toc-link-active:     #{sf.$sf-dark-link};
+    --toc-active-bg:       #{rgba(sf.$sf-dark-link, 0.12)};
+    --toc-icon-color:      #{sf.$sf-dark-link};
+    --toc-progress-bg:     #{sf.$sf-dark-border};
+    --toc-progress-fill:   #{sf.$sf-dark-link};
+    --toc-toggle-hover-bg: #{rgba(sf.$sf-dark-link, 0.1)};
   }
 }
 

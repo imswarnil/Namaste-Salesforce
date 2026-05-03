@@ -1,58 +1,203 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// screen.scss — Namaste Salesforce
+// Single-file theme entry point.
+//
+// A complete, global, universal SLDS (Salesforce Lightning Design System)
+// override layer on top of Bulma 1.x.
+//
+// Sections:
+//   1. Salesforce design tokens (Sass variables)
+//   2. Bulma Sass-level overrides (@use ... with)
+//   3. Forward Bulma layers
+//   4. Helper namespaces + project partials
+//   5. Web fonts
+//   6. SLDS theme overrides:
+//        6.1  Root tokens (CSS custom properties)
+//        6.2  Reset & global rules
+//        6.3  Typography
+//        6.4  Layout (container, section, hero, footer, level)
+//        6.5  Navbar
+//        6.6  Buttons
+//        6.7  Forms (input / textarea / select / file / check / radio)
+//        6.8  Card
+//        6.9  Box
+//        6.10 Tag
+//        6.11 Notification
+//        6.12 Message
+//        6.13 Modal
+//        6.14 Dropdown
+//        6.15 Tabs
+//        6.16 Pagination
+//        6.17 Breadcrumb
+//        6.18 Menu
+//        6.19 Panel
+//        6.20 Table
+//        6.21 Progress
+//        6.22 Media object
+//        6.23 Title / subtitle
+//        6.24 Content (prose / article body)
+//        6.25 Helpers
+//        6.26 Animations
+//        6.27 Dark mode
+//        6.28 Accessibility & print
+// ═══════════════════════════════════════════════════════════════════════════
 
-$salesforce-blue: #0176d3 !default;       
-$salesforce-blue-dark: #0b5cab !default;   
-$salesforce-cloud: #f3f3f3 !default;      
-$salesforce-border: #dddbda !default;     
-$salesforce-text: #181818 !default;     
-$salesforce-text-light: #444444 !default;  
 
-// Status colors
-$salesforce-success: #2e844a !default;
-$salesforce-warning: #fe9339 !default;
-$salesforce-danger: #ea001e !default;
+// ─── 1. SALESFORCE DESIGN TOKENS ────────────────────────────────────────────
 
-$section-padding-sf : 2rem 1rem ;
+// Brand palette
+$salesforce-blue:         #0176D3 !default;
+$salesforce-blue-dark:    #014486 !default;
+$salesforce-blue-deeper:  #001A3E !default;
+$salesforce-blue-light:   #EAF5FF !default;
+$salesforce-blue-lighter: #D8EDFF !default;
+$salesforce-blue-mid:     #1B96FF !default;
 
-// 3. Override global Sass variables from the /utilities folder
+// Surface colours
+$salesforce-cloud:        #F3F3F3 !default;
+$salesforce-cloud-warm:   #F8F8F8 !default;
+$salesforce-cloud-cool:   #FAFAFA !default;
+$salesforce-white:        #FFFFFF !default;
+
+// Borders
+$salesforce-border:       #DDDBDA !default;
+$salesforce-border-light: #E8E8E8 !default;
+$salesforce-border-dark:  #C9C7C5 !default;
+
+// Text
+$salesforce-text:         #181818 !default;
+$salesforce-text-strong:  #080707 !default;
+$salesforce-text-light:   #444444 !default;
+$salesforce-text-weak:    #706E6B !default;
+$salesforce-text-muted:   #9B9B9B !default;
+$salesforce-text-inverse: #FFFFFF !default;
+
+// Status
+$salesforce-success:      #2E844A !default;
+$salesforce-success-light:#CDEFC4 !default;
+$salesforce-warning:      #FE9339 !default;
+$salesforce-warning-light:#FEF1EE !default;
+$salesforce-danger:       #EA001E !default;
+$salesforce-danger-light: #FEDED7 !default;
+$salesforce-info:         #0176D3 !default;
+$salesforce-info-light:   #EAF5FF !default;
+
+// Dark mode palette
+$slds-dark-bg:            #0D1117 !default;
+$slds-dark-surface:       #161B22 !default;
+$slds-dark-surface-2:     #21262D !default;
+$slds-dark-surface-3:     #2D333B !default;
+$slds-dark-border:        #30363D !default;
+$slds-dark-border-light:  #21262D !default;
+$slds-dark-text:          #E6EDF3 !default;
+$slds-dark-text-light:    #B1BAC4 !default;
+$slds-dark-text-muted:    #8B949E !default;
+$slds-dark-text-weak:     #6E7681 !default;
+$slds-dark-link:          #58A6FF !default;
+$slds-dark-success:       #3FB950 !default;
+$slds-dark-warning:       #D29922 !default;
+$slds-dark-danger:        #F85149 !default;
+
+// Layout
+$section-padding-sf:      2rem 1rem;
+$navbar-height-sf:        3.75rem;
+$content-max-width-sf:    72rem;
+
+// Radius — SLDS uses sharper corners than Bulma defaults
+$radius-xs-sf:            0.125rem;
+$radius-sf:               0.25rem;
+$radius-md-sf:            0.5rem;
+$radius-lg-sf:            0.75rem;
+$radius-xl-sf:            1rem;
+$radius-pill-sf:          9999px;
+
+// Shadows — softer SLDS feel
+$shadow-xs-sf:            0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-sm-sf:            0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md-sf:            0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+$shadow-lg-sf:            0 10px 25px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl-sf:            0 20px 40px -5px rgba(0, 0, 0, 0.12), 0 8px 16px -4px rgba(0, 0, 0, 0.06);
+$shadow-focus-sf:         0 0 0 3px rgba($salesforce-blue, 0.25);
+$shadow-focus-danger-sf:  0 0 0 3px rgba($salesforce-danger, 0.25);
+$shadow-focus-success-sf: 0 0 0 3px rgba($salesforce-success, 0.25);
+
+// Easings & transitions
+$ease-sf:                 cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out-sf:             cubic-bezier(0, 0, 0.2, 1);
+$ease-in-sf:              cubic-bezier(0.4, 0, 1, 1);
+$ease-spring-sf:          cubic-bezier(0.34, 1.56, 0.64, 1);
+$transition-fast-sf:      all 0.15s $ease-sf;
+$transition-sf:           all 0.2s $ease-sf;
+$transition-slow-sf:      all 0.3s $ease-sf;
+
+// Z-index scale
+$z-base-sf:               1;
+$z-dropdown-sf:           20;
+$z-sticky-sf:             30;
+$z-overlay-sf:            40;
+$z-modal-sf:              50;
+$z-popover-sf:            60;
+$z-toast-sf:              70;
+$z-tooltip-sf:            80;
+
+// Typography scale
+$font-size-xs-sf:         0.75rem;
+$font-size-sm-sf:         0.875rem;
+$font-size-base-sf:       1rem;
+$font-size-md-sf:         1.125rem;
+$font-size-lg-sf:         1.25rem;
+$font-size-xl-sf:         1.5rem;
+$font-size-2xl-sf:        2rem;
+$font-size-3xl-sf:        2.5rem;
+$font-size-4xl-sf:        3rem;
+$font-size-5xl-sf:        3.75rem;
+
+$line-height-tight-sf:    1.15;
+$line-height-snug-sf:     1.35;
+$line-height-normal-sf:   1.6;
+$line-height-relaxed-sf:  1.75;
+$line-height-loose-sf:    2;
+
+
+// ─── 2. BULMA OVERRIDES (Sass-level — must come before any CSS rules) ──────
 @use "bulma/sass/utilities" with (
-  // Color Palette
-  $primary: $salesforce-blue,
-  $success: $salesforce-success,
-  $warning: $salesforce-warning,
-  $danger: $salesforce-danger,
+  // Color palette
+  $primary:    $salesforce-blue,
+  $info:       $salesforce-info,
+  $success:    $salesforce-success,
+  $warning:    $salesforce-warning,
+  $danger:     $salesforce-danger,
   $background: $salesforce-cloud,
-  $text: $salesforce-text,
-  $border: $salesforce-border,
-  
+  $text:       $salesforce-text,
+  $border:     $salesforce-border,
+
   // Links
   $link: $salesforce-blue,
-  
+
   // Typography
   $family-primary: '"Plus Jakarta Sans", sans-serif',
-  
-  // Structural (SLDS uses sharper 4px borders instead of Bulma's rounded defaults)
-  $radius: 0.25rem,
-  $control-radius: 0.25rem
+
+  // Structural — sharper SLDS-style corners
+  $radius:         $radius-sf,
+  $control-radius: $radius-sf
 );
 
-// 4. Override Sass variables from the /form folder
 @use "bulma/sass/form" with (
-  $input-shadow: none,
+  $input-shadow:       none,
   $input-border-color: $salesforce-border
 );
 
-// 5. Override Sass variables from the /elements folder
 @use "bulma/sass/elements" with (
   $button-border-color: $salesforce-border
 );
 
-
 @use "bulma/sass" with (
- $section-padding : $section-padding-sf,
- $section-padding-desktop :  $section-padding-sf
+  $section-padding:         $section-padding-sf,
+  $section-padding-desktop: $section-padding-sf
 );
 
-// 6. Forward the components you need to build the CSS
+
+// ─── 3. FORWARD BULMA LAYERS ────────────────────────────────────────────────
 @forward "bulma/sass/base";
 @forward "bulma/sass/components";
 @forward "bulma/sass/elements";
@@ -63,9 +208,2480 @@ $section-padding-sf : 2rem 1rem ;
 @forward "bulma/sass/themes";
 @forward "bulma/sass/utilities";
 
+
+// ─── 4. HELPER NAMESPACES + PROJECT PARTIALS ────────────────────────────────
+@use "bulma/sass/utilities/mixins" as mx;
+
 @use "toc";
-
 @use "ghost";
-@use "components/step";
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+// ─── 5. WEB FONTS ───────────────────────────────────────────────────────────
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 6. SLDS THEME OVERRIDES — universal coverage
+// ═══════════════════════════════════════════════════════════════════════════
+
+
+// ─── 6.1 ROOT TOKENS ────────────────────────────────────────────────────────
+:root {
+  // Brand
+  --slds-blue:             #{$salesforce-blue};
+  --slds-blue-dark:        #{$salesforce-blue-dark};
+  --slds-blue-deeper:      #{$salesforce-blue-deeper};
+  --slds-blue-light:       #{$salesforce-blue-light};
+  --slds-blue-lighter:     #{$salesforce-blue-lighter};
+  --slds-blue-mid:         #{$salesforce-blue-mid};
+
+  // Surfaces
+  --slds-bg:               #{$salesforce-white};
+  --slds-bg-alt:           #{$salesforce-cloud-warm};
+  --slds-bg-muted:         #{$salesforce-cloud};
+  --slds-cloud:            #{$salesforce-cloud};
+  --slds-cloud-warm:       #{$salesforce-cloud-warm};
+  --slds-cloud-cool:       #{$salesforce-cloud-cool};
+
+  // Borders
+  --slds-border:           #{$salesforce-border};
+  --slds-border-light:     #{$salesforce-border-light};
+  --slds-border-dark:      #{$salesforce-border-dark};
+
+  // Text
+  --slds-text:             #{$salesforce-text};
+  --slds-text-strong:      #{$salesforce-text-strong};
+  --slds-text-light:       #{$salesforce-text-light};
+  --slds-text-weak:        #{$salesforce-text-weak};
+  --slds-text-muted:       #{$salesforce-text-muted};
+  --slds-text-inverse:     #{$salesforce-text-inverse};
+
+  // Status
+  --slds-success:          #{$salesforce-success};
+  --slds-success-light:    #{$salesforce-success-light};
+  --slds-warning:          #{$salesforce-warning};
+  --slds-warning-light:    #{$salesforce-warning-light};
+  --slds-danger:           #{$salesforce-danger};
+  --slds-danger-light:     #{$salesforce-danger-light};
+  --slds-info:             #{$salesforce-info};
+  --slds-info-light:       #{$salesforce-info-light};
+
+  // Radius
+  --slds-radius-xs:        #{$radius-xs-sf};
+  --slds-radius:           #{$radius-sf};
+  --slds-radius-md:        #{$radius-md-sf};
+  --slds-radius-lg:        #{$radius-lg-sf};
+  --slds-radius-xl:        #{$radius-xl-sf};
+  --slds-radius-pill:      #{$radius-pill-sf};
+
+  // Shadows
+  --slds-shadow-xs:        #{$shadow-xs-sf};
+  --slds-shadow-sm:        #{$shadow-sm-sf};
+  --slds-shadow-md:        #{$shadow-md-sf};
+  --slds-shadow-lg:        #{$shadow-lg-sf};
+  --slds-shadow-xl:        #{$shadow-xl-sf};
+  --slds-shadow-focus:     #{$shadow-focus-sf};
+  --slds-shadow-focus-danger:  #{$shadow-focus-danger-sf};
+  --slds-shadow-focus-success: #{$shadow-focus-success-sf};
+
+  // Transitions
+  --slds-transition-fast:  #{$transition-fast-sf};
+  --slds-transition:       #{$transition-sf};
+  --slds-transition-slow:  #{$transition-slow-sf};
+  --slds-ease:             #{$ease-sf};
+  --slds-ease-spring:      #{$ease-spring-sf};
+
+  // Typography
+  --slds-font-body:        "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont,
+                            "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --slds-font-heading:     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont,
+                            "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --slds-font-mono:        "JetBrains Mono", "SFMono-Regular", Consolas,
+                            "Liberation Mono", Menlo, monospace;
+
+  // Type scale
+  --slds-fs-xs:            #{$font-size-xs-sf};
+  --slds-fs-sm:            #{$font-size-sm-sf};
+  --slds-fs-base:          #{$font-size-base-sf};
+  --slds-fs-md:            #{$font-size-md-sf};
+  --slds-fs-lg:            #{$font-size-lg-sf};
+  --slds-fs-xl:            #{$font-size-xl-sf};
+  --slds-fs-2xl:           #{$font-size-2xl-sf};
+  --slds-fs-3xl:           #{$font-size-3xl-sf};
+  --slds-fs-4xl:           #{$font-size-4xl-sf};
+  --slds-fs-5xl:           #{$font-size-5xl-sf};
+
+  // Line height
+  --slds-lh-tight:         #{$line-height-tight-sf};
+  --slds-lh-snug:          #{$line-height-snug-sf};
+  --slds-lh-normal:        #{$line-height-normal-sf};
+  --slds-lh-relaxed:       #{$line-height-relaxed-sf};
+  --slds-lh-loose:         #{$line-height-loose-sf};
+
+  // Layout
+  --slds-navbar-height:    #{$navbar-height-sf};
+  --slds-content-max:      #{$content-max-width-sf};
+
+  // Z-index
+  --slds-z-dropdown:       #{$z-dropdown-sf};
+  --slds-z-sticky:         #{$z-sticky-sf};
+  --slds-z-overlay:        #{$z-overlay-sf};
+  --slds-z-modal:          #{$z-modal-sf};
+  --slds-z-popover:        #{$z-popover-sf};
+  --slds-z-toast:          #{$z-toast-sf};
+  --slds-z-tooltip:        #{$z-tooltip-sf};
+}
+
+
+// ─── 6.2 RESET & GLOBAL ─────────────────────────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--slds-navbar-height) + 1rem);
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+
+body {
+  font-family: var(--slds-font-body);
+  font-size: var(--slds-fs-base);
+  line-height: var(--slds-lh-normal);
+  color: var(--slds-text);
+  background-color: var(--slds-bg);
+  min-height: 100vh;
+  margin: 0;
+}
+
+// Media defaults
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// Form-element font inheritance
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+// Lists used as nav (remove default styling)
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+// Hidden helper
+[hidden] {
+  display: none !important;
+}
+
+// Selection
+::selection {
+  background-color: var(--slds-blue-lighter);
+  color: var(--slds-text-strong);
+}
+
+::-moz-selection {
+  background-color: var(--slds-blue-lighter);
+  color: var(--slds-text-strong);
+}
+
+// Scrollbar styling (Webkit)
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--slds-cloud);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--slds-border-dark);
+  border-radius: var(--slds-radius-pill);
+  border: 2px solid var(--slds-cloud);
+
+  &:hover {
+    background: var(--slds-text-weak);
+  }
+}
+
+
+// ─── 6.3 TYPOGRAPHY ─────────────────────────────────────────────────────────
+
+// Headings
+h1, h2, h3, h4, h5, h6,
+.title,
+.subtitle {
+  font-family: var(--slds-font-heading);
+  color: var(--slds-text-strong);
+  letter-spacing: -0.01em;
+  line-height: var(--slds-lh-snug);
+  text-wrap: balance;
+  margin: 0 0 0.5em;
+}
+
+h1, .title.is-1 {
+  font-size: var(--slds-fs-4xl);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: var(--slds-lh-tight);
+
+  @include mx.until(769px) {
+    font-size: var(--slds-fs-3xl);
+  }
+}
+
+h2, .title.is-2 {
+  font-size: var(--slds-fs-3xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: var(--slds-lh-tight);
+
+  @include mx.until(769px) {
+    font-size: var(--slds-fs-2xl);
+  }
+}
+
+h3, .title.is-3 {
+  font-size: var(--slds-fs-2xl);
+  font-weight: 700;
+
+  @include mx.until(769px) {
+    font-size: var(--slds-fs-xl);
+  }
+}
+
+h4, .title.is-4 {
+  font-size: var(--slds-fs-xl);
+  font-weight: 700;
+}
+
+h5, .title.is-5 {
+  font-size: var(--slds-fs-lg);
+  font-weight: 600;
+}
+
+h6, .title.is-6 {
+  font-size: var(--slds-fs-md);
+  font-weight: 600;
+}
+
+.subtitle {
+  font-weight: 400;
+  color: var(--slds-text-light);
+
+  &.is-1 { font-size: var(--slds-fs-3xl); }
+  &.is-2 { font-size: var(--slds-fs-2xl); }
+  &.is-3 { font-size: var(--slds-fs-xl); }
+  &.is-4 { font-size: var(--slds-fs-lg); }
+  &.is-5 { font-size: var(--slds-fs-md); }
+  &.is-6 { font-size: var(--slds-fs-base); }
+}
+
+// Body paragraph
+p {
+  margin: 0 0 1rem;
+  text-wrap: pretty;
+  color: var(--slds-text-light);
+
+  &.lead {
+    font-size: var(--slds-fs-lg);
+    line-height: var(--slds-lh-relaxed);
+    color: var(--slds-text-light);
+    font-weight: 400;
+  }
+}
+
+// Links
+a {
+  color: var(--slds-blue);
+  text-decoration: none;
+  transition: var(--slds-transition-fast);
+
+  &:hover {
+    color: var(--slds-blue-dark);
+  }
+
+  &:active {
+    color: var(--slds-blue-deeper);
+  }
+}
+
+// Lists
+ul, ol {
+  margin: 0 0 1rem 1.25rem;
+  padding: 0;
+
+  li {
+    margin-bottom: 0.25rem;
+    color: var(--slds-text-light);
+  }
+}
+
+dl {
+  margin: 0 0 1rem;
+
+  dt {
+    font-weight: 600;
+    color: var(--slds-text-strong);
+    margin-top: 0.5rem;
+  }
+
+  dd {
+    margin-left: 1rem;
+    color: var(--slds-text-light);
+  }
+}
+
+// Blockquote
+blockquote {
+  background-color: var(--slds-cloud-warm);
+  border-left: 4px solid var(--slds-blue);
+  border-radius: var(--slds-radius);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  color: var(--slds-text-light);
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  cite {
+    display: block;
+    font-size: var(--slds-fs-sm);
+    color: var(--slds-text-weak);
+    margin-top: 0.5rem;
+
+    &::before {
+      content: "— ";
+    }
+  }
+}
+
+// Code & pre
+code,
+kbd,
+samp,
+pre,
+.code {
+  font-family: var(--slds-font-mono);
+  font-feature-settings: "calt", "ss01";
+}
+
+:not(pre) > code {
+  font-size: 0.875em;
+  background-color: var(--slds-cloud);
+  color: var(--slds-blue-dark);
+  padding: 0.15em 0.4em;
+  border-radius: var(--slds-radius);
+  border: 1px solid var(--slds-border-light);
+}
+
+pre {
+  background-color: $salesforce-blue-deeper;
+  color: #E6EDF3;
+  border-radius: var(--slds-radius-md);
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  font-size: var(--slds-fs-sm);
+  line-height: var(--slds-lh-relaxed);
+
+  code {
+    background: transparent;
+    color: inherit;
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+}
+
+// kbd
+kbd {
+  background-color: var(--slds-cloud);
+  border: 1px solid var(--slds-border);
+  border-bottom-width: 2px;
+  border-radius: var(--slds-radius);
+  padding: 0.1em 0.45em;
+  font-size: 0.85em;
+  color: var(--slds-text);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+
+// Mark / highlight
+mark {
+  background-color: rgba($salesforce-warning, 0.25);
+  color: var(--slds-text);
+  padding: 0.05em 0.25em;
+  border-radius: var(--slds-radius-xs);
+}
+
+// Small / abbr / sub / sup
+small {
+  font-size: var(--slds-fs-sm);
+}
+
+abbr[title] {
+  text-decoration: underline dotted var(--slds-text-weak);
+  text-underline-offset: 2px;
+  cursor: help;
+}
+
+sub, sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+// HR
+hr {
+  background-color: var(--slds-border-light);
+  border: 0;
+  height: 1px;
+  margin: 2rem 0;
+}
+
+.hr-fancy {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--slds-border) 20%,
+    var(--slds-border) 80%,
+    transparent
+  );
+}
+
+
+// ─── 6.4 LAYOUT ─────────────────────────────────────────────────────────────
+
+.container {
+  &.is-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.section {
+  padding: 3rem 1rem;
+
+  @include mx.tablet {
+    padding: 4rem 1.5rem;
+  }
+
+  &.is-medium {
+    padding: 4rem 1rem;
+
+    @include mx.tablet {
+      padding: 6rem 2rem;
+    }
+  }
+
+  &.is-large {
+    padding: 6rem 1rem;
+
+    @include mx.tablet {
+      padding: 8rem 2rem;
+    }
+  }
+
+  &.has-background-light,
+  &.is-alt {
+    background-color: var(--slds-cloud-warm);
+  }
+
+  &.is-muted {
+    background-color: var(--slds-cloud);
+  }
+}
+
+.hero {
+  background-color: var(--slds-bg);
+
+  .hero-body {
+    padding: 3rem 1.5rem;
+
+    @include mx.tablet {
+      padding: 5rem 2rem;
+    }
+  }
+
+  &.is-small .hero-body  { padding: 2rem 1.5rem; }
+  &.is-medium .hero-body {
+    @include mx.tablet { padding: 7rem 2rem; }
+  }
+  &.is-large .hero-body  {
+    @include mx.tablet { padding: 9rem 2rem; }
+  }
+
+  // Color variants
+  &.is-primary {
+    background: linear-gradient(135deg, var(--slds-blue) 0%, var(--slds-blue-dark) 100%);
+    color: var(--slds-text-inverse);
+
+    .title, .subtitle, h1, h2, h3, p {
+      color: var(--slds-text-inverse);
+    }
+  }
+
+  &.is-light {
+    background-color: var(--slds-cloud-warm);
+    color: var(--slds-text);
+  }
+
+  &.is-dark {
+    background: linear-gradient(135deg, var(--slds-text-strong) 0%, #1F2937 100%);
+    color: var(--slds-text-inverse);
+
+    .title, .subtitle { color: var(--slds-text-inverse); }
+  }
+
+  &.is-fullheight {
+    min-height: 100vh;
+  }
+}
+
+.footer {
+  background-color: var(--slds-cloud);
+  border-top: 1px solid var(--slds-border-light);
+  padding: 3rem 1.5rem 4rem;
+  color: var(--slds-text-light);
+
+  a {
+    color: var(--slds-text-light);
+
+    &:hover {
+      color: var(--slds-blue);
+    }
+  }
+
+  .title, .subtitle {
+    color: var(--slds-text-strong);
+  }
+}
+
+.level {
+  &:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Columns gap variants — make sure they don't introduce overflow
+.columns:last-child {
+  margin-bottom: 0;
+}
+
+
+// ─── 6.5 NAVBAR ─────────────────────────────────────────────────────────────
+.navbar {
+  background-color: var(--slds-bg);
+  min-height: var(--slds-navbar-height);
+  border-bottom: 1px solid var(--slds-border);
+  box-shadow: none;
+  position: sticky;
+  top: 0;
+  z-index: var(--slds-z-sticky);
+  transition: var(--slds-transition);
+
+  &.is-scrolled {
+    box-shadow: var(--slds-shadow-sm);
+  }
+
+  &.is-fixed-top {
+    position: fixed;
+    width: 100%;
+  }
+
+  // Color variants
+  &.is-primary {
+    background: linear-gradient(90deg, var(--slds-blue) 0%, var(--slds-blue-dark) 100%);
+    border-bottom-color: transparent;
+
+    .navbar-item, .navbar-link {
+      color: var(--slds-text-inverse);
+
+      &:hover, &.is-active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--slds-text-inverse);
+      }
+    }
+
+    .navbar-burger { color: var(--slds-text-inverse); }
+  }
+
+  &.is-dark {
+    background-color: var(--slds-text-strong);
+    border-bottom-color: transparent;
+
+    .navbar-item, .navbar-link {
+      color: var(--slds-text-inverse);
+
+      &:hover, &.is-active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--slds-text-inverse);
+      }
+    }
+
+    .navbar-burger { color: var(--slds-text-inverse); }
+  }
+}
+
+.navbar-brand {
+  align-items: center;
+  min-height: var(--slds-navbar-height);
+
+  .navbar-item {
+    font-weight: 700;
+    color: var(--slds-blue-dark);
+    letter-spacing: -0.01em;
+    font-size: var(--slds-fs-md);
+
+    img { max-height: 2.25rem; }
+
+    &:hover {
+      background-color: transparent;
+      color: var(--slds-blue);
+    }
+  }
+}
+
+.navbar-item,
+.navbar-link {
+  color: var(--slds-text);
+  font-weight: 500;
+  font-size: var(--slds-fs-sm);
+  border-radius: var(--slds-radius);
+  transition: var(--slds-transition-fast);
+  padding: 0.5rem 0.875rem;
+
+  @include mx.desktop {
+    margin: 0 0.125rem;
+  }
+
+  &:hover,
+  &.is-active,
+  &.is-current {
+    background-color: var(--slds-cloud);
+    color: var(--slds-blue);
+  }
+
+  &.is-active,
+  &.is-current {
+    color: var(--slds-blue-dark);
+    font-weight: 600;
+  }
+}
+
+.navbar-link:not(.is-arrowless)::after {
+  border-color: currentColor;
+  margin-top: -0.4em;
+  border-width: 1.5px;
+  border-radius: 1px;
+  transition: transform 0.2s var(--slds-ease);
+}
+
+.navbar-item.has-dropdown:hover .navbar-link::after,
+.navbar-item.has-dropdown.is-active .navbar-link::after {
+  transform: rotate(-135deg);
+}
+
+.navbar-dropdown {
+  background-color: var(--slds-bg);
+  border: 1px solid var(--slds-border-light);
+  border-top: 0;
+  border-radius: 0 0 var(--slds-radius-md) var(--slds-radius-md);
+  box-shadow: var(--slds-shadow-md);
+  padding: 0.5rem;
+  min-width: 14rem;
+
+  .navbar-item.has-dropdown.is-boxed & {
+    border-top: 1px solid var(--slds-border-light);
+    border-radius: var(--slds-radius-md);
+  }
+
+  .navbar-item {
+    border-radius: var(--slds-radius);
+    padding: 0.5rem 0.875rem;
+
+    &:hover {
+      background-color: var(--slds-cloud);
+      color: var(--slds-blue);
+    }
+
+    &.is-active {
+      background-color: var(--slds-blue-light);
+      color: var(--slds-blue-dark);
+      font-weight: 600;
+    }
+  }
+
+  .navbar-divider {
+    background-color: var(--slds-border-light);
+    margin: 0.375rem 0;
+    height: 1px;
+  }
+}
+
+.navbar-burger {
+  color: var(--slds-text);
+  height: var(--slds-navbar-height);
+  width: var(--slds-navbar-height);
+  border-radius: var(--slds-radius);
+
+  &:hover {
+    background-color: var(--slds-cloud);
+    color: var(--slds-blue);
+  }
+
+  span {
+    height: 2px;
+    border-radius: 1px;
+    transition: transform 0.25s var(--slds-ease), opacity 0.2s var(--slds-ease);
+  }
+}
+
+@include mx.touch {
+  .navbar-menu {
+    background-color: var(--slds-bg);
+    box-shadow: var(--slds-shadow-md);
+    padding: 0.75rem;
+
+    .navbar-item, .navbar-link {
+      padding: 0.75rem 1rem;
+      border-radius: var(--slds-radius);
+    }
+
+    .navbar-dropdown {
+      box-shadow: none;
+      border: 0;
+      padding-left: 1rem;
+      background-color: transparent;
+
+      .navbar-item {
+        border-left: 2px solid var(--slds-border-light);
+        border-radius: 0;
+
+        &:hover, &.is-active {
+          border-left-color: var(--slds-blue);
+        }
+      }
+    }
+  }
+}
+
+
+// ─── 6.6 BUTTONS ────────────────────────────────────────────────────────────
+.button {
+  font-weight: 600;
+  border-radius: var(--slds-radius);
+  border-color: var(--slds-border);
+  color: var(--slds-text);
+  background-color: var(--slds-bg);
+  transition: var(--slds-transition-fast);
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--slds-border-dark);
+    color: var(--slds-text);
+    background-color: var(--slds-cloud-warm);
+  }
+
+  &:focus,
+  &.is-focused,
+  &:focus-visible {
+    border-color: var(--slds-blue);
+    box-shadow: var(--slds-shadow-focus);
+    outline: 0;
+  }
+
+  &:active,
+  &.is-active {
+    transform: translateY(0);
+  }
+
+  &[disabled],
+  &.is-disabled,
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  // ── Color variants ─────────────────────────────────────────────────────
+  &.is-primary {
+    background-color: var(--slds-blue);
+    border-color: var(--slds-blue);
+    color: var(--slds-text-inverse);
+
+    &:hover {
+      background-color: var(--slds-blue-dark);
+      border-color: var(--slds-blue-dark);
+      color: var(--slds-text-inverse);
+      transform: translateY(-1px);
+      box-shadow: var(--slds-shadow-md);
+    }
+
+    &.is-light {
+      background-color: var(--slds-blue-light);
+      border-color: transparent;
+      color: var(--slds-blue-dark);
+
+      &:hover {
+        background-color: var(--slds-blue-lighter);
+        color: var(--slds-blue-dark);
+      }
+    }
+
+    &.is-outlined {
+      background-color: transparent;
+      border-color: var(--slds-blue);
+      color: var(--slds-blue);
+
+      &:hover {
+        background-color: var(--slds-blue);
+        color: var(--slds-text-inverse);
+      }
+    }
+  }
+
+  &.is-info {
+    background-color: var(--slds-info);
+    border-color: var(--slds-info);
+    color: var(--slds-text-inverse);
+
+    &:hover {
+      background-color: var(--slds-blue-dark);
+      border-color: var(--slds-blue-dark);
+    }
+
+    &.is-light {
+      background-color: var(--slds-info-light);
+      color: var(--slds-blue-dark);
+      border-color: transparent;
+    }
+  }
+
+  &.is-success {
+    background-color: var(--slds-success);
+    border-color: var(--slds-success);
+    color: var(--slds-text-inverse);
+
+    &:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+      box-shadow: var(--slds-shadow-md);
+    }
+
+    &.is-light {
+      background-color: var(--slds-success-light);
+      color: var(--slds-success);
+      border-color: transparent;
+    }
+
+    &.is-outlined {
+      background-color: transparent;
+      border-color: var(--slds-success);
+      color: var(--slds-success);
+
+      &:hover {
+        background-color: var(--slds-success);
+        color: var(--slds-text-inverse);
+      }
+    }
+  }
+
+  &.is-warning {
+    background-color: var(--slds-warning);
+    border-color: var(--slds-warning);
+    color: var(--slds-text-strong);
+
+    &:hover {
+      filter: brightness(0.94);
+      transform: translateY(-1px);
+      box-shadow: var(--slds-shadow-md);
+    }
+
+    &.is-light {
+      background-color: var(--slds-warning-light);
+      color: #B45309;
+      border-color: transparent;
+    }
+  }
+
+  &.is-danger {
+    background-color: var(--slds-danger);
+    border-color: var(--slds-danger);
+    color: var(--slds-text-inverse);
+
+    &:hover {
+      filter: brightness(0.92);
+      transform: translateY(-1px);
+      box-shadow: var(--slds-shadow-md);
+    }
+
+    &:focus,
+    &:focus-visible {
+      box-shadow: var(--slds-shadow-focus-danger);
+    }
+
+    &.is-light {
+      background-color: var(--slds-danger-light);
+      color: var(--slds-danger);
+      border-color: transparent;
+    }
+
+    &.is-outlined {
+      background-color: transparent;
+      border-color: var(--slds-danger);
+      color: var(--slds-danger);
+
+      &:hover {
+        background-color: var(--slds-danger);
+        color: var(--slds-text-inverse);
+      }
+    }
+  }
+
+  &.is-light {
+    background-color: var(--slds-cloud);
+    border-color: var(--slds-border);
+    color: var(--slds-text);
+
+    &:hover {
+      background-color: var(--slds-border-light);
+      color: var(--slds-text);
+    }
+  }
+
+  &.is-dark {
+    background-color: var(--slds-text-strong);
+    border-color: var(--slds-text-strong);
+    color: var(--slds-text-inverse);
+
+    &:hover {
+      background-color: #000;
+    }
+  }
+
+  &.is-text,
+  &.is-ghost {
+    background-color: transparent;
+    border-color: transparent;
+    text-decoration: none;
+    color: var(--slds-blue);
+
+    &:hover {
+      background-color: var(--slds-cloud);
+      color: var(--slds-blue-dark);
+      text-decoration: none;
+    }
+  }
+
+  &.is-link {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--slds-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      background-color: transparent;
+      color: var(--slds-blue-dark);
+    }
+  }
+
+  // ── Sizes ──────────────────────────────────────────────────────────────
+  &.is-small {
+    font-size: var(--slds-fs-sm);
+    padding: 0.35rem 0.75rem;
+    height: 1.875rem;
+  }
+
+  &.is-medium {
+    font-size: var(--slds-fs-md);
+    padding: 0.65rem 1.25rem;
+    height: 2.75rem;
+  }
+
+  &.is-large {
+    font-size: var(--slds-fs-lg);
+    padding: 0.875rem 1.75rem;
+    height: 3.25rem;
+  }
+
+  // ── Modifiers ──────────────────────────────────────────────────────────
+  &.is-rounded {
+    border-radius: var(--slds-radius-pill);
+    padding-left: 1.25em;
+    padding-right: 1.25em;
+  }
+
+  &.is-fullwidth {
+    width: 100%;
+  }
+
+  &.is-loading {
+    color: transparent !important;
+    pointer-events: none;
+
+    &::after {
+      border-color: transparent transparent currentColor currentColor;
+      border-width: 2px;
+    }
+  }
+
+  // Icons inside button
+  .icon {
+    height: 1em;
+    width: 1em;
+
+    &:first-child:not(:last-child) {
+      margin-right: 0.5em;
+      margin-left: -0.25em;
+    }
+
+    &:last-child:not(:first-child) {
+      margin-left: 0.5em;
+      margin-right: -0.25em;
+    }
+
+    &:first-child:last-child {
+      margin: 0;
+    }
+  }
+}
+
+// Button group container
+.buttons {
+  &.has-addons {
+    .button {
+      &:not(:first-child) {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+      }
+
+      &:not(:last-child) {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        border-right-width: 0;
+      }
+
+      &:hover {
+        z-index: 2;
+      }
+
+      &.is-selected,
+      &:focus {
+        z-index: 3;
+      }
+    }
+  }
+
+  &.is-centered {
+    justify-content: center;
+  }
+
+  &.is-right {
+    justify-content: flex-end;
+  }
+}
+
+
+// ─── 6.7 FORMS ──────────────────────────────────────────────────────────────
+.input,
+.textarea,
+.select select {
+  background-color: var(--slds-bg);
+  border-color: var(--slds-border);
+  color: var(--slds-text);
+  border-radius: var(--slds-radius);
+  box-shadow: none;
+  transition: var(--slds-transition-fast);
+
+  &::placeholder {
+    color: var(--slds-text-weak);
+    opacity: 1;
+  }
+
+  &:hover {
+    border-color: var(--slds-border-dark);
+  }
+
+  &:focus,
+  &.is-focused,
+  &:active,
+  &.is-active {
+    border-color: var(--slds-blue);
+    box-shadow: var(--slds-shadow-focus);
+    outline: 0;
+  }
+
+  &[disabled],
+  &:disabled {
+    background-color: var(--slds-cloud);
+    color: var(--slds-text-muted);
+    cursor: not-allowed;
+    border-color: var(--slds-border-light);
+  }
+
+  &[readonly] {
+    background-color: var(--slds-cloud-warm);
+    cursor: default;
+  }
+
+  // Color variants
+  &.is-primary,
+  &.is-info {
+    border-color: var(--slds-blue);
+
+    &:focus { box-shadow: var(--slds-shadow-focus); }
+  }
+
+  &.is-success {
+    border-color: var(--slds-success);
+
+    &:focus { box-shadow: var(--slds-shadow-focus-success); }
+  }
+
+  &.is-warning {
+    border-color: var(--slds-warning);
+  }
+
+  &.is-danger {
+    border-color: var(--slds-danger);
+
+    &:focus { box-shadow: var(--slds-shadow-focus-danger); }
+  }
+
+  // Sizes
+  &.is-small {
+    font-size: var(--slds-fs-sm);
+    height: 1.875rem;
+  }
+
+  &.is-medium {
+    font-size: var(--slds-fs-md);
+    height: 2.75rem;
+  }
+
+  &.is-large {
+    font-size: var(--slds-fs-lg);
+    height: 3.25rem;
+  }
+
+  &.is-rounded {
+    border-radius: var(--slds-radius-pill);
+    padding-left: 1.125em;
+    padding-right: 1.125em;
+  }
+}
+
+.textarea {
+  min-height: 6rem;
+  line-height: var(--slds-lh-normal);
+
+  &.has-fixed-size {
+    resize: none;
+  }
+}
+
+.select {
+  &::after {
+    border-color: var(--slds-text-light);
+    border-width: 1.5px;
+    border-radius: 1px;
+  }
+
+  &:hover::after {
+    border-color: var(--slds-blue);
+  }
+
+  &.is-multiple select {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+.label {
+  color: var(--slds-text);
+  font-weight: 600;
+  font-size: var(--slds-fs-sm);
+  margin-bottom: 0.4rem;
+
+  &.is-required::after,
+  &.required::after {
+    content: " *";
+    color: var(--slds-danger);
+  }
+}
+
+.help {
+  font-size: var(--slds-fs-xs);
+  color: var(--slds-text-weak);
+  margin-top: 0.4rem;
+
+  &.is-danger  { color: var(--slds-danger); }
+  &.is-success { color: var(--slds-success); }
+  &.is-warning { color: var(--slds-warning); }
+  &.is-info    { color: var(--slds-info); }
+}
+
+// Field & control
+.field {
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  &.has-addons {
+    .control:not(:last-child) .input,
+    .control:not(:last-child) .button,
+    .control:not(:last-child) .select select {
+      border-right: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .control:not(:first-child) .input,
+    .control:not(:first-child) .button,
+    .control:not(:first-child) .select select {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  &.is-grouped {
+    .control:not(:last-child) {
+      margin-right: 0.5rem;
+    }
+  }
+
+  &.is-horizontal {
+    @include mx.tablet {
+      display: flex;
+      align-items: flex-start;
+
+      .field-label {
+        flex-basis: 0;
+        flex-grow: 1;
+        margin-right: 1.5rem;
+        text-align: right;
+        padding-top: 0.5rem;
+      }
+
+      .field-body {
+        flex-basis: 0;
+        flex-grow: 5;
+      }
+    }
+  }
+}
+
+.control {
+  &.has-icons-left,
+  &.has-icons-right {
+    .input,
+    .select select {
+      &:focus ~ .icon {
+        color: var(--slds-blue);
+      }
+    }
+
+    .icon {
+      color: var(--slds-text-weak);
+      transition: color 0.15s var(--slds-ease);
+    }
+  }
+
+  &.is-loading::after {
+    border-color: transparent transparent var(--slds-blue) var(--slds-blue);
+  }
+}
+
+// Native checkbox & radio
+.checkbox,
+.radio {
+  font-size: var(--slds-fs-sm);
+  color: var(--slds-text);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--slds-blue);
+  }
+
+  & + & {
+    margin-left: 1rem;
+  }
+
+  input {
+    margin-right: 0.4rem;
+    accent-color: var(--slds-blue);
+  }
+
+  &[disabled],
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--slds-text-muted);
+  }
+}
+
+// File upload
+.file-cta {
+  background-color: var(--slds-cloud);
+  border-color: var(--slds-border);
+  color: var(--slds-text);
+  font-weight: 600;
+  border-radius: var(--slds-radius) 0 0 var(--slds-radius);
+}
+
+.file-name {
+  border-color: var(--slds-border);
+  border-left: 0;
+  background-color: var(--slds-bg);
+  color: var(--slds-text);
+}
+
+.file:hover .file-cta {
+  background-color: var(--slds-border-light);
+}
+
+.file.is-primary .file-cta {
+  background-color: var(--slds-blue);
+  border-color: var(--slds-blue);
+  color: var(--slds-text-inverse);
+}
+
+
+// ─── 6.8 CARD ───────────────────────────────────────────────────────────────
+.card {
+  background-color: var(--slds-bg);
+  border: 1px solid var(--slds-border-light);
+  border-radius: var(--slds-radius-lg);
+  box-shadow: none;
+  transition: var(--slds-transition);
+  overflow: hidden;
+  color: var(--slds-text);
+
+  &:hover {
+    box-shadow: var(--slds-shadow-md);
+  }
+
+  &.is-flat {
+    box-shadow: none !important;
+
+    &:hover { box-shadow: none !important; }
+  }
+
+  &.is-elevated {
+    box-shadow: var(--slds-shadow-md);
+
+    &:hover { box-shadow: var(--slds-shadow-lg); }
+  }
+}
+
+.card-header {
+  border-bottom: 1px solid var(--slds-border-light);
+  box-shadow: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+.card-header-title {
+  color: var(--slds-text-strong);
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  font-size: var(--slds-fs-base);
+}
+
+.card-header-icon {
+  padding: 1rem 1.25rem;
+  color: var(--slds-text-weak);
+
+  &:hover {
+    color: var(--slds-blue);
+  }
+}
+
+.card-content {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  border-top: 1px solid var(--slds-border-light);
+
+  .card-footer-item {
+    padding: 0.875rem 1rem;
+    border-right: 0;
+    color: var(--slds-blue);
+    font-weight: 600;
+    transition: var(--slds-transition-fast);
+
+    &:hover {
+      background-color: var(--slds-cloud);
+      color: var(--slds-blue-dark);
+    }
+
+    & + .card-footer-item {
+      border-left: 1px solid var(--slds-border-light);
+    }
+  }
+}
+
+.card-image {
+  position: relative;
+
+  img {
+    border-radius: var(--slds-radius-lg) var(--slds-radius-lg) 0 0;
+    width: 100%;
+    height: auto;
+  }
+}
+
+
+// ─── 6.9 BOX ────────────────────────────────────────────────────────────────
+.box {
+  background-color: var(--slds-bg);
+  border: 1px solid var(--slds-border-light);
+  border-radius: var(--slds-radius-lg);
+  box-shadow: none;
+  padding: 1.5rem;
+  color: var(--slds-text);
+  transition: var(--slds-transition);
+
+  &:hover {
+    box-shadow: var(--slds-shadow-sm);
+  }
+}
+
+
+// ─── 6.10 TAG ───────────────────────────────────────────────────────────────
+.tag:not(body) {
+  background-color: var(--slds-cloud);
+  color: var(--slds-text);
+  border-radius: var(--slds-radius);
+  font-weight: 600;
+  font-size: var(--slds-fs-xs);
+  letter-spacing: 0.02em;
+  padding: 0.4em 0.75em;
+  height: auto;
+  line-height: 1.4;
+
+  &.is-primary {
+    background-color: var(--slds-blue);
+    color: var(--slds-text-inverse);
+
+    &.is-light {
+      background-color: var(--slds-blue-light);
+      color: var(--slds-blue-dark);
+    }
+  }
+
+  &.is-info {
+    background-color: var(--slds-info);
+    color: var(--slds-text-inverse);
+
+    &.is-light {
+      background-color: var(--slds-info-light);
+      color: var(--slds-blue-dark);
+    }
+  }
+
+  &.is-success {
+    background-color: var(--slds-success);
+    color: var(--slds-text-inverse);
+
+    &.is-light {
+      background-color: var(--slds-success-light);
+      color: var(--slds-success);
+    }
+  }
+
+  &.is-warning {
+    background-color: var(--slds-warning);
+    color: var(--slds-text-strong);
+
+    &.is-light {
+      background-color: var(--slds-warning-light);
+      color: #B45309;
+    }
+  }
+
+  &.is-danger {
+    background-color: var(--slds-danger);
+    color: var(--slds-text-inverse);
+
+    &.is-light {
+      background-color: var(--slds-danger-light);
+      color: var(--slds-danger);
+    }
+  }
+
+  &.is-dark {
+    background-color: var(--slds-text-strong);
+    color: var(--slds-text-inverse);
+  }
+
+  &.is-rounded {
+    border-radius: var(--slds-radius-pill);
+    padding-left: 0.85em;
+    padding-right: 0.85em;
+  }
+
+  &.is-medium {
+    font-size: var(--slds-fs-sm);
+    padding: 0.5em 0.85em;
+  }
+
+  &.is-large {
+    font-size: var(--slds-fs-base);
+    padding: 0.6em 1em;
+  }
+}
+
+.tags {
+  &.has-addons {
+    .tag {
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+}
+
+
+// ─── 6.11 NOTIFICATION ──────────────────────────────────────────────────────
+.notification {
+  border-radius: var(--slds-radius-md);
+  border: 1px solid var(--slds-border-light);
+  padding: 1.25rem 1.5rem;
+  background-color: var(--slds-cloud-warm);
+  color: var(--slds-text);
+
+  .delete {
+    background-color: rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &.is-light {
+    background-color: var(--slds-cloud-warm);
+  }
+
+  &.is-primary {
+    background-color: var(--slds-blue);
+    color: var(--slds-text-inverse);
+    border-color: transparent;
+
+    &.is-light {
+      background-color: var(--slds-blue-light);
+      color: var(--slds-blue-dark);
+      border-color: rgba($salesforce-blue, 0.2);
+    }
+  }
+
+  &.is-info.is-light {
+    background-color: var(--slds-info-light);
+    color: var(--slds-blue-dark);
+    border-color: rgba($salesforce-info, 0.2);
+  }
+
+  &.is-success.is-light {
+    background-color: rgba($salesforce-success, 0.1);
+    color: $salesforce-success;
+    border-color: rgba($salesforce-success, 0.25);
+  }
+
+  &.is-warning.is-light {
+    background-color: rgba($salesforce-warning, 0.12);
+    color: darken($salesforce-warning, 18%);
+    border-color: rgba($salesforce-warning, 0.3);
+  }
+
+  &.is-danger.is-light {
+    background-color: rgba($salesforce-danger, 0.08);
+    color: $salesforce-danger;
+    border-color: rgba($salesforce-danger, 0.25);
+  }
+}
+
+
+// ─── 6.12 MESSAGE ───────────────────────────────────────────────────────────
+.message {
+  border-radius: var(--slds-radius-md);
+  background-color: var(--slds-bg);
+  box-shadow: var(--slds-shadow-sm);
+  border-left: 4px solid var(--slds-blue);
+
+  .message-header {
+    background-color: transparent;
+    color: var(--slds-text-strong);
+    border-bottom: 1px solid var(--slds-border-light);
+    border-radius: 0;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+  }
+
+  .message-body {
+    border: 0;
+    padding: 1.25rem;
+    color: var(--slds-text-light);
+
+    code {
+      background-color: var(--slds-cloud);
+      color: var(--slds-text);
+    }
+  }
+
+  &.is-primary { border-left-color: var(--slds-blue); }
+  &.is-info    { border-left-color: var(--slds-info); }
+  &.is-success { border-left-color: var(--slds-success); }
+  &.is-warning { border-left-color: var(--slds-warning); }
+  &.is-danger  { border-left-color: var(--slds-danger); }
+}
+
+
+// ─── 6.13 MODAL ─────────────────────────────────────────────────────────────
+.modal {
+  z-index: var(--slds-z-modal);
+}
+
+.modal-background {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  border-radius: var(--slds-radius-lg);
+  box-shadow: var(--slds-shadow-xl);
+  overflow: hidden;
+  background-color: var(--slds-bg);
+}
+
+.modal-card-head,
+.modal-card-foot {
+  background-color: var(--slds-bg);
+  border-color: var(--slds-border-light);
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-card-head {
+  border-bottom: 1px solid var(--slds-border-light);
+}
+
+.modal-card-foot {
+  border-top: 1px solid var(--slds-border-light);
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  .button + .button {
+    margin: 0;
+  }
+}
+
+.modal-card-title {
+  color: var(--slds-text-strong);
+  font-weight: 700;
+  font-size: var(--slds-fs-lg);
+}
+
+.modal-card-body {
+  padding: 1.75rem 1.5rem;
+  background-color: var(--slds-bg);
+  color: var(--slds-text-light);
+}
+
+.modal-close {
+  background-color: rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+
+// ─── 6.14 DROPDOWN ──────────────────────────────────────────────────────────
+.dropdown-menu {
+  z-index: var(--slds-z-dropdown);
+}
+
+.dropdown-content {
+  background-color: var(--slds-bg);
+  border: 1px solid var(--slds-border-light);
+  border-radius: var(--slds-radius-md);
+  box-shadow: var(--slds-shadow-md);
+  padding: 0.5rem;
+}
+
+.dropdown-item {
+  border-radius: var(--slds-radius);
+  padding: 0.5rem 0.875rem;
+  color: var(--slds-text);
+  transition: var(--slds-transition-fast);
+  font-size: var(--slds-fs-sm);
+
+  &:hover {
+    background-color: var(--slds-cloud);
+    color: var(--slds-blue);
+  }
+
+  &.is-active {
+    background-color: var(--slds-blue-light);
+    color: var(--slds-blue-dark);
+    font-weight: 600;
+  }
+}
+
+.dropdown-divider {
+  background-color: var(--slds-border-light);
+  margin: 0.4rem 0;
+  height: 1px;
+}
+
+
+// ─── 6.15 TABS ──────────────────────────────────────────────────────────────
+.tabs {
+  font-size: var(--slds-fs-sm);
+
+  ul {
+    border-bottom-color: var(--slds-border);
+  }
+
+  a {
+    color: var(--slds-text-light);
+    border-bottom-width: 2px;
+    margin-bottom: -1px;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    transition: var(--slds-transition-fast);
+
+    &:hover {
+      border-bottom-color: var(--slds-text-light);
+      color: var(--slds-text);
+      background-color: transparent;
+    }
+  }
+
+  li.is-active a {
+    color: var(--slds-blue-dark);
+    border-bottom-color: var(--slds-blue);
+    font-weight: 600;
+  }
+
+  // Boxed tabs
+  &.is-boxed {
+    a {
+      border-radius: var(--slds-radius) var(--slds-radius) 0 0;
+      border: 1px solid transparent;
+
+      &:hover {
+        background-color: var(--slds-cloud);
+        border-color: var(--slds-border-light);
+        border-bottom-color: var(--slds-border);
+      }
+    }
+
+    li.is-active a {
+      background-color: var(--slds-bg);
+      border-color: var(--slds-border);
+      border-bottom-color: transparent;
+    }
+  }
+
+  // Toggle tabs
+  &.is-toggle {
+    a {
+      border-color: var(--slds-border);
+
+      &:hover {
+        background-color: var(--slds-cloud);
+        border-color: var(--slds-border-dark);
+      }
+    }
+
+    li.is-active a {
+      background-color: var(--slds-blue);
+      border-color: var(--slds-blue);
+      color: var(--slds-text-inverse);
+    }
+
+    &.is-toggle-rounded li:first-child a {
+      border-radius: var(--slds-radius-pill) 0 0 var(--slds-radius-pill);
+    }
+
+    &.is-toggle-rounded li:last-child a {
+      border-radius: 0 var(--slds-radius-pill) var(--slds-radius-pill) 0;
+    }
+  }
+
+  &.is-fullwidth li {
+    flex-grow: 1;
+  }
+
+  &.is-centered ul { justify-content: center; }
+  &.is-right ul    { justify-content: flex-end; }
+}
+
+
+// ─── 6.16 PAGINATION ────────────────────────────────────────────────────────
+.pagination {
+  font-size: var(--slds-fs-sm);
+}
+
+.pagination-link,
+.pagination-previous,
+.pagination-next {
+  border-color: var(--slds-border);
+  border-radius: var(--slds-radius);
+  color: var(--slds-text);
+  font-weight: 600;
+  transition: var(--slds-transition-fast);
+  background-color: var(--slds-bg);
+
+  &:hover {
+    border-color: var(--slds-blue);
+    color: var(--slds-blue);
+    background-color: var(--slds-blue-light);
+  }
+
+  &:focus,
+  &:focus-visible {
+    box-shadow: var(--slds-shadow-focus);
+    outline: 0;
+  }
+
+  &.is-current {
+    background-color: var(--slds-blue);
+    border-color: var(--slds-blue);
+    color: var(--slds-text-inverse);
+  }
+
+  &[disabled],
+  &:disabled {
+    background-color: var(--slds-cloud);
+    color: var(--slds-text-muted);
+    border-color: var(--slds-border-light);
+    cursor: not-allowed;
+  }
+}
+
+.pagination-ellipsis {
+  color: var(--slds-text-weak);
+}
+
+
+// ─── 6.17 BREADCRUMB ────────────────────────────────────────────────────────
+.breadcrumb {
+  font-size: var(--slds-fs-sm);
+
+  a {
+    color: var(--slds-text-light);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--slds-radius);
+    transition: var(--slds-transition-fast);
+
+    &:hover {
+      color: var(--slds-blue);
+      background-color: var(--slds-cloud);
+    }
+  }
+
+  li.is-active a {
+    color: var(--slds-text-strong);
+    font-weight: 600;
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+      color: var(--slds-text-strong);
+    }
+  }
+
+  li + li::before {
+    color: var(--slds-text-weak);
+    content: "/";
+  }
+
+  &.has-arrow-separator li + li::before  { content: "→"; }
+  &.has-bullet-separator li + li::before { content: "•"; }
+  &.has-dot-separator li + li::before    { content: "·"; }
+  &.has-succeeds-separator li + li::before { content: "›"; }
+
+  &.is-centered ul { justify-content: center; }
+  &.is-right ul    { justify-content: flex-end; }
+}
+
+
+// ─── 6.18 MENU (sidebar / vertical) ─────────────────────────────────────────
+.menu-label {
+  color: var(--slds-text-weak);
+  font-size: var(--slds-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 0 0.5rem;
+}
+
+.menu-list {
+  a {
+    color: var(--slds-text);
+    border-radius: var(--slds-radius);
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    transition: var(--slds-transition-fast);
+
+    &:hover {
+      background-color: var(--slds-cloud);
+      color: var(--slds-blue);
+    }
+
+    &.is-active {
+      background-color: var(--slds-blue-light);
+      color: var(--slds-blue-dark);
+      font-weight: 600;
+    }
+  }
+
+  li ul {
+    border-left-color: var(--slds-border-light);
+    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+  }
+}
+
+
+// ─── 6.19 PANEL ─────────────────────────────────────────────────────────────
+.panel {
+  background-color: var(--slds-bg);
+  border-radius: var(--slds-radius-md);
+  box-shadow: none;
+  border: 1px solid var(--slds-border-light);
+  overflow: hidden;
+  font-size: var(--slds-fs-sm);
+
+  &.is-primary { .panel-heading { color: var(--slds-blue-dark); } }
+  &.is-info    { .panel-heading { color: var(--slds-blue-dark); } }
+  &.is-success { .panel-heading { color: var(--slds-success); } }
+  &.is-warning { .panel-heading { color: darken($salesforce-warning, 15%); } }
+  &.is-danger  { .panel-heading { color: var(--slds-danger); } }
+}
+
+.panel-heading {
+  background-color: var(--slds-cloud-warm);
+  border-bottom: 1px solid var(--slds-border-light);
+  color: var(--slds-text-strong);
+  font-weight: 700;
+  border-radius: 0;
+  padding: 0.875rem 1.25rem;
+  font-size: var(--slds-fs-base);
+}
+
+.panel-tabs {
+  border-bottom: 1px solid var(--slds-border-light);
+  font-size: var(--slds-fs-sm);
+
+  a {
+    color: var(--slds-text-light);
+    border-bottom-width: 2px;
+    margin-bottom: -1px;
+    padding: 0.5rem 0.75rem;
+
+    &:hover {
+      color: var(--slds-text);
+    }
+
+    &.is-active {
+      color: var(--slds-blue-dark);
+      border-bottom-color: var(--slds-blue);
+      font-weight: 600;
+    }
+  }
+}
+
+.panel-block {
+  border-color: var(--slds-border-light);
+  padding: 0.75rem 1.25rem;
+  color: var(--slds-text);
+  transition: var(--slds-transition-fast);
+
+  &:hover {
+    background-color: var(--slds-cloud);
+  }
+
+  &.is-active {
+    color: var(--slds-blue-dark);
+    border-left: 3px solid var(--slds-blue);
+    background-color: var(--slds-blue-light);
+
+    .panel-icon {
+      color: var(--slds-blue);
+    }
+  }
+
+  .control { width: 100%; }
+}
+
+.panel-icon {
+  color: var(--slds-text-weak);
+}
+
+
+// ─── 6.20 TABLE ─────────────────────────────────────────────────────────────
+.table {
+  background-color: transparent;
+  color: var(--slds-text);
+  font-size: var(--slds-fs-sm);
+
+  thead th {
+    color: var(--slds-text-strong);
+    font-weight: 600;
+    font-size: var(--slds-fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-color: var(--slds-border);
+    background-color: var(--slds-cloud-warm);
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+  }
+
+  td {
+    border-color: var(--slds-border-light);
+    padding: 0.875rem 1rem;
+    vertical-align: middle;
+  }
+
+  tfoot td,
+  tfoot th {
+    border-color: var(--slds-border);
+    color: var(--slds-text-strong);
+    font-weight: 600;
+  }
+
+  &.is-striped tbody tr:not(.is-selected):nth-child(even) {
+    background-color: var(--slds-cloud-cool);
+  }
+
+  &.is-hoverable tbody tr:not(.is-selected):hover {
+    background-color: var(--slds-blue-light);
+  }
+
+  &.is-bordered {
+    border: 1px solid var(--slds-border);
+
+    th, td {
+      border: 1px solid var(--slds-border-light);
+    }
+  }
+
+  &.is-narrow th,
+  &.is-narrow td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  tr.is-selected {
+    background-color: var(--slds-blue);
+    color: var(--slds-text-inverse);
+
+    td, th {
+      border-color: var(--slds-blue-dark);
+      color: var(--slds-text-inverse);
+    }
+
+    a {
+      color: var(--slds-text-inverse);
+      text-decoration: underline;
+    }
+  }
+}
+
+.table-container {
+  border-radius: var(--slds-radius-md);
+  border: 1px solid var(--slds-border-light);
+  overflow-x: auto;
+}
+
+
+// ─── 6.21 PROGRESS ──────────────────────────────────────────────────────────
+.progress {
+  height: 0.5rem;
+  border-radius: var(--slds-radius-pill);
+  background-color: var(--slds-border-light);
+  overflow: hidden;
+
+  &::-webkit-progress-bar { background-color: var(--slds-border-light); }
+  &::-webkit-progress-value { background-color: var(--slds-blue); transition: width 0.3s var(--slds-ease); }
+  &::-moz-progress-bar      { background-color: var(--slds-blue); }
+
+  &.is-primary::-webkit-progress-value { background-color: var(--slds-blue); }
+  &.is-info::-webkit-progress-value    { background-color: var(--slds-info); }
+  &.is-success::-webkit-progress-value { background-color: var(--slds-success); }
+  &.is-warning::-webkit-progress-value { background-color: var(--slds-warning); }
+  &.is-danger::-webkit-progress-value  { background-color: var(--slds-danger); }
+  &.is-dark::-webkit-progress-value    { background-color: var(--slds-text-strong); }
+
+  &.is-primary::-moz-progress-bar { background-color: var(--slds-blue); }
+  &.is-info::-moz-progress-bar    { background-color: var(--slds-info); }
+  &.is-success::-moz-progress-bar { background-color: var(--slds-success); }
+  &.is-warning::-moz-progress-bar { background-color: var(--slds-warning); }
+  &.is-danger::-moz-progress-bar  { background-color: var(--slds-danger); }
+  &.is-dark::-moz-progress-bar    { background-color: var(--slds-text-strong); }
+
+  &.is-small  { height: 0.25rem; }
+  &.is-medium { height: 0.875rem; }
+  &.is-large  { height: 1.25rem; }
+}
+
+
+// ─── 6.22 MEDIA OBJECT ──────────────────────────────────────────────────────
+.media {
+  border-top-color: var(--slds-border-light);
+
+  .media-content {
+    color: var(--slds-text);
+  }
+}
+
+
+// ─── 6.23 TITLE / SUBTITLE INSIDE COMPONENTS ───────────────────────────────
+.hero .title,
+.card .title,
+.box .title {
+  color: var(--slds-text-strong);
+}
+
+
+// ─── 6.24 CONTENT (article body) ────────────────────────────────────────────
+.content {
+  color: var(--slds-text-light);
+  line-height: var(--slds-lh-relaxed);
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--slds-text-strong);
+    margin-top: 2em;
+    margin-bottom: 0.6em;
+  }
+
+  > h1:first-child,
+  > h2:first-child,
+  > h3:first-child {
+    margin-top: 0;
+  }
+
+  p {
+    color: var(--slds-text-light);
+    margin-bottom: 1.25rem;
+  }
+
+  a {
+    color: var(--slds-blue);
+    text-decoration: underline;
+    text-decoration-color: rgba($salesforce-blue, 0.4);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: var(--slds-transition-fast);
+
+    &:hover {
+      color: var(--slds-blue-dark);
+      text-decoration-color: var(--slds-blue-dark);
+    }
+  }
+
+  ul, ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.25rem;
+
+    li {
+      margin-bottom: 0.4rem;
+    }
+
+    ul, ol {
+      margin-top: 0.4rem;
+    }
+  }
+
+  blockquote {
+    background-color: var(--slds-cloud-warm);
+    border-left: 4px solid var(--slds-blue);
+    border-radius: var(--slds-radius);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: var(--slds-text-light);
+  }
+
+  code {
+    background-color: var(--slds-cloud);
+    color: var(--slds-blue-dark);
+    border-radius: var(--slds-radius);
+    padding: 0.15em 0.4em;
+    font-size: 0.875em;
+    border: 1px solid var(--slds-border-light);
+  }
+
+  pre {
+    background-color: $salesforce-blue-deeper;
+    color: #E6EDF3;
+    border-radius: var(--slds-radius-md);
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+
+    th, td {
+      border-color: var(--slds-border-light);
+      padding: 0.75rem;
+    }
+
+    th {
+      background-color: var(--slds-cloud-warm);
+      color: var(--slds-text-strong);
+      font-weight: 600;
+    }
+  }
+
+  figure {
+    margin: 2rem 0;
+
+    img {
+      border-radius: var(--slds-radius-md);
+      box-shadow: var(--slds-shadow-sm);
+    }
+
+    figcaption {
+      color: var(--slds-text-weak);
+      font-size: var(--slds-fs-sm);
+      text-align: center;
+      margin-top: 0.75rem;
+      font-style: italic;
+    }
+  }
+
+  hr {
+    background-color: var(--slds-border-light);
+    margin: 2.5rem 0;
+  }
+}
+
+
+// ─── 6.25 HELPERS ───────────────────────────────────────────────────────────
+.has-text-primary,
+.has-text-link        { color: var(--slds-blue) !important; }
+.has-text-primary-dark { color: var(--slds-blue-dark) !important; }
+.has-text-success     { color: var(--slds-success) !important; }
+.has-text-warning     { color: var(--slds-warning) !important; }
+.has-text-danger      { color: var(--slds-danger) !important; }
+.has-text-info        { color: var(--slds-info) !important; }
+.has-text-grey,
+.has-text-grey-darker { color: var(--slds-text-light) !important; }
+.has-text-grey-light  { color: var(--slds-text-weak) !important; }
+.has-text-grey-lighter { color: var(--slds-text-muted) !important; }
+
+.has-background-primary { background-color: var(--slds-blue) !important; }
+.has-background-light   { background-color: var(--slds-cloud) !important; }
+.has-background-white   { background-color: var(--slds-bg) !important; }
+.has-background-info-light    { background-color: var(--slds-info-light) !important; }
+.has-background-success-light { background-color: var(--slds-success-light) !important; }
+.has-background-warning-light { background-color: var(--slds-warning-light) !important; }
+.has-background-danger-light  { background-color: var(--slds-danger-light) !important; }
+
+
+// ─── 6.26 ANIMATIONS ────────────────────────────────────────────────────────
+@keyframes slds-fade-in {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slds-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
+}
+
+@keyframes slds-spin {
+  to { transform: rotate(360deg); }
+}
+
+.slds-fade-in {
+  animation: slds-fade-in 0.4s var(--slds-ease) both;
+}
+
+.slds-pulse {
+  animation: slds-pulse 2s ease-in-out infinite;
+}
+
+
+// ─── 6.27 DARK MODE ─────────────────────────────────────────────────────────
+[data-theme="dark"],
+.is-dark-theme {
+  --slds-bg:               #{$slds-dark-bg};
+  --slds-bg-alt:           #{$slds-dark-surface};
+  --slds-bg-muted:         #{$slds-dark-surface-2};
+  --slds-cloud:            #{$slds-dark-surface-2};
+  --slds-cloud-warm:       #{$slds-dark-surface};
+  --slds-cloud-cool:       #{$slds-dark-surface-2};
+
+  --slds-border:           #{$slds-dark-border};
+  --slds-border-light:     #{$slds-dark-border-light};
+  --slds-border-dark:      #{$slds-dark-border};
+
+  --slds-text:             #{$slds-dark-text};
+  --slds-text-strong:      #{$salesforce-white};
+  --slds-text-light:       #{$slds-dark-text-light};
+  --slds-text-weak:        #{$slds-dark-text-muted};
+  --slds-text-muted:       #{$slds-dark-text-weak};
+
+  --slds-blue:             #{$slds-dark-link};
+  --slds-blue-dark:        #79B8FF;
+  --slds-blue-light:       #{rgba($slds-dark-link, 0.15)};
+  --slds-blue-lighter:     #{rgba($slds-dark-link, 0.08)};
+
+  --slds-success:          #{$slds-dark-success};
+  --slds-success-light:    #{rgba($slds-dark-success, 0.15)};
+  --slds-warning:          #{$slds-dark-warning};
+  --slds-warning-light:    #{rgba($slds-dark-warning, 0.15)};
+  --slds-danger:           #{$slds-dark-danger};
+  --slds-danger-light:     #{rgba($slds-dark-danger, 0.15)};
+
+  --slds-shadow-xs:        0 1px 2px rgba(0, 0, 0, 0.4);
+  --slds-shadow-sm:        0 1px 3px rgba(0, 0, 0, 0.5);
+  --slds-shadow-md:        0 4px 6px rgba(0, 0, 0, 0.5);
+  --slds-shadow-lg:        0 10px 25px rgba(0, 0, 0, 0.6);
+  --slds-shadow-xl:        0 20px 40px rgba(0, 0, 0, 0.7);
+  --slds-shadow-focus:     0 0 0 3px #{rgba($slds-dark-link, 0.4)};
+
+  // Dark-mode-specific tweaks
+  pre {
+    background-color: $slds-dark-bg;
+    border: 1px solid $slds-dark-border;
+  }
+
+  :not(pre) > code {
+    background-color: $slds-dark-surface-2;
+    color: $slds-dark-link;
+    border-color: $slds-dark-border;
+  }
+
+  .navbar.is-primary,
+  .navbar.is-dark {
+    background: linear-gradient(90deg, $slds-dark-surface 0%, $slds-dark-bg 100%);
+  }
+
+  ::-webkit-scrollbar-track { background: $slds-dark-surface; }
+  ::-webkit-scrollbar-thumb {
+    background: $slds-dark-border;
+    border-color: $slds-dark-surface;
+
+    &:hover { background: $slds-dark-text-weak; }
+  }
+}
+
+
+// ─── 6.28 ACCESSIBILITY & PRINT ─────────────────────────────────────────────
+:focus-visible {
+  outline: 2px solid var(--slds-blue);
+  outline-offset: 2px;
+  border-radius: var(--slds-radius);
+}
+
+// Skip link for keyboard users
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  background-color: var(--slds-blue);
+  color: var(--slds-text-inverse);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 var(--slds-radius) 0;
+  font-weight: 600;
+  z-index: var(--slds-z-tooltip);
+  transition: top 0.2s var(--slds-ease);
+
+  &:focus {
+    top: 0;
+  }
+}
+
+// Visually hidden (still accessible to screen readers)
+.is-sr-only,
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body {
+    background: $salesforce-white !important;
+    color: #000 !important;
+  }
+
+  .navbar,
+  .footer,
+  .hero.is-primary,
+  .button,
+  .pagination,
+  .modal,
+  .ns-toc,
+  [data-members-form] {
+    display: none !important;
+  }
+
+  .card,
+  .box,
+  .notification,
+  .message {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  pre, code {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+    border: 1px solid #ddd !important;
+  }
+}

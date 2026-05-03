@@ -1,66 +1,140 @@
-<footer class="footer has-background-black-ter has-text-grey-light pb-6 pt-6">
-  <div class="container">
-    <div class="columns is-multiline">
-      
-      <div class="column is-12-mobile is-6-tablet is-4-desktop pr-6-desktop">
-        <h3 class="title is-4 has-text-white mb-4">Namaste Salesforce</h3>
-        <p class="is-size-6 mb-4 has-text-grey-light">
-          An open-source Learning Management System dedicated to mastering the Salesforce ecosystem. Empowering developers to learn and build together.
-        </p>
-        <p class="is-size-7">
-          Built with 💻 by <a href="https://www.iamswarnil.com" class="has-text-primary has-text-weight-bold" target="_blank" rel="noopener">Swarnil</a>.
-        </p>
-      </div>
+{{!< default}}
 
-      <div class="column is-12-mobile is-6-tablet is-2-desktop">
-        <h4 class="title is-6 has-text-white is-uppercase has-text-weight-semibold tracking-wide mb-4">{{t "Navigation"}}</h4>
-        <div class="content is-small">
-          {{navigation}}
-        </div>
-      </div>
-
-      <div class="column is-12-mobile is-6-tablet is-2-desktop">
-        <h4 class="title is-6 has-text-white is-uppercase has-text-weight-semibold tracking-wide mb-4">{{t "Connect"}}</h4>
-        <div class="content is-small">
-          {{> social-media}}
-        </div>
-      </div>
-
-      <div class="column is-12-mobile is-6-tablet is-4-desktop">
-        <h4 class="title is-6 has-text-white is-uppercase has-text-weight-semibold tracking-wide mb-4">{{t "Stay Updated"}}</h4>
-        <p class="is-size-7 mb-4 has-text-grey-light">{{t "Get the latest Salesforce tutorials and platform updates delivered directly to your inbox." }}</p>
+<footer class="footer pt-6 pb-5">
+    <div class="container">
         
-        <form data-members-form="subscribe">
-          <div class="field">
-            <div class="control is-expanded mb-3">
-              <input class="input has-background-dark has-text-white has-text-centered-mobile" style="border-color: #363636;" aria-labelledby="footer-subscribe" data-members-email type="email" placeholder="Your email address" required/>
+        {{! ══════════════════════════════════════════════════════════════
+            MAIN FOOTER GRID 
+        ══════════════════════════════════════════════════════════════ }}
+        <div class="columns is-multiline is-variable is-6 mb-5">
+            
+            {{! 1. Brand & Bio (Mobile: 100% | Desktop: 4 Columns) }}
+            <div class="column is-12-mobile is-5-tablet is-4-desktop mb-4-mobile">
+                <a href="{{@site.url}}" class="is-block mb-4">
+                    {{#if @site.logo}}
+                        <figure class="image is-32x32 is-inline-block">
+                            <img src="{{@site.logo}}" alt="{{@site.title}}">
+                        </figure>
+                    {{else}}
+                        <span class="title is-4 has-text-dark">{{@site.title}}</span>
+                    {{/if}}
+                </a>
+                <p class="is-size-6 has-text-grey mb-4">
+                    {{#if @site.description}}
+                        {{@site.description}}
+                    {{else}}
+                        Master Salesforce engineering. Open-source learning paths, architecture breakdowns, and practical tutorials.
+                    {{/if}}
+                </p>
+                <div class="is-size-7 has-text-grey">
+                    <p class="mb-1"><strong class="has-text-grey-dark">HQ:</strong> Bengaluru, India</p>
+                    <p><strong class="has-text-grey-dark">Email:</strong> {{#if @site.email}}{{@site.email}}{{else}}hello@namastesf.com{{/if}}</p>
+                </div>
             </div>
-            <div class="control">
-              <button class="button is-primary is-fullwidth has-text-weight-bold" type="submit" title="{{t "Subscribe"}}" aria-label="{{t "Subscribe"}}">
-                {{t "Subscribe"}}
-              </button>
+
+            {{! 2. Platform Links (Mobile: 50% | Desktop: 2 Columns) }}
+            <div class="column is-6-mobile is-3-tablet is-2-desktop">
+                <p class="is-size-7 is-uppercase has-text-weight-bold has-text-grey-light mb-4">Platform</p>
+                <ul class="is-size-6">
+                    <li class="mb-3"><a href="/courses/" class="has-text-grey-dark">Courses</a></li>
+                    <li class="mb-3"><a href="/training/" class="has-text-grey-dark">Roadmaps</a></li>
+                    <li class="mb-3"><a href="/blog/" class="has-text-grey-dark">Dev Blog</a></li>
+                    <li class="mb-3"><a href="/about/" class="has-text-grey-dark">About Swarnil</a></li>
+                </ul>
             </div>
-          </div>
-        </form>
-      </div>
-      
-    </div>
 
-    <div class="column is-12 px-0">
-      <hr class="has-background-grey-darker my-5">
-      <div class="level is-size-7 mt-5">
-        <div class="level-left">
-          <div class="level-item has-text-centered-mobile">
-            <p>&copy; {{date format="YYYY"}} <a href="{{@site.url}}" class="has-text-white has-text-weight-bold">{{@site.title}}</a>. All rights reserved.</p>
-          </div>
-        </div>
-        <div class="level-right">
-          <div class="level-item has-text-centered-mobile mt-3-mobile">
-            <p>Published with <a href="https://ghost.org" class="has-text-grey hover-text-white">Ghost</a> & <a href="https://bulma.io/" class="has-text-grey hover-text-white">Bulma</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
+            {{! 3. Support Links (Mobile: 50% | Desktop: 2 Columns) }}
+            <div class="column is-6-mobile is-4-tablet is-2-desktop">
+                <p class="is-size-7 is-uppercase has-text-weight-bold has-text-grey-light mb-4">Support</p>
+                <ul class="is-size-6">
+                    <li class="mb-3"><a href="/contact/" class="has-text-grey-dark">Contact Us</a></li>
+                    <li class="mb-3"><a href="/privacy/" class="has-text-grey-dark">Privacy Policy</a></li>
+                    <li class="mb-3"><a href="/terms/" class="has-text-grey-dark">Terms of Service</a></li>
+                    <li class="mb-3"><a href="#sponsor" class="has-text-grey-dark">Sponsor Project</a></li>
+                </ul>
+            </div>
 
-  </div>
+            {{! 4. Newsletter (Mobile: 100% | Desktop: 4 Columns) }}
+            <div class="column is-12-mobile is-12-tablet is-4-desktop">
+                <div class="box is-shadowless has-background-white">
+                    <p class="is-size-6 has-text-weight-bold has-text-dark mb-1">Join the Ohana</p>
+                    <p class="is-size-7 has-text-grey mb-4">Level up your Salesforce game. Delivered directly to your inbox.</p>
+                    
+                    {{#if @site.members_enabled}}
+                        <form data-members-form>
+                            <div class="field has-addons">
+                                <div class="control is-expanded has-icons-left">
+                                    <input data-members-email class="input is-small" type="email" placeholder="Email address" required>
+                                    <span class="icon is-small is-left has-text-grey-light">
+                                        <i class="ph ph-envelope-simple"></i>
+                                    </span>
+                                </div>
+                                <div class="control">
+                                    <button class="button is-primary is-small has-text-weight-bold" type="submit">Subscribe</button>
+                                </div>
+                            </div>
+                            <div class="message-success has-text-success mt-2 is-size-7 is-hidden">
+                                <span class="icon-text">
+                                    <span class="icon is-small"><i class="ph-fill ph-check-circle"></i></span>
+                                    <span>Check your inbox to confirm!</span>
+                                </span>
+                            </div>
+                            <div class="message-error has-text-danger mt-2 is-size-7 is-hidden">
+                                <span class="icon-text">
+                                    <span class="icon is-small"><i class="ph-fill ph-warning"></i></span>
+                                    <span>Valid email required.</span>
+                                </span>
+                            </div>
+                        </form>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+
+        {{! ══════════════════════════════════════════════════════════════
+            BOTTOM STRIP 
+        ══════════════════════════════════════════════════════════════ }}
+        <hr class="has-background-grey-lighter mt-5 mb-5">
+        
+        <div class="columns is-vcentered is-mobile is-multiline">
+            
+            {{! Left Side: Copyright }}
+            <div class="column is-12-mobile is-6-tablet mb-3-mobile">
+                <p class="is-size-7 has-text-grey">
+                    &copy; {{date format="YYYY"}} <strong class="has-text-grey-dark">{{@site.title}}</strong>. All rights reserved.
+                </p>
+            </div>
+
+            {{! Right Side: Details, Tech Stack & Socials }}
+            <div class="column is-12-mobile is-6-tablet has-text-right-tablet">
+                <div class="is-inline-flex is-align-items-center is-flex-wrap-wrap is-size-7 has-text-grey">
+                    
+                    {{! Open Source Info }}
+                    <span class="icon-text mr-4">
+                        <span class="icon is-small has-text-dark"><i class="ph-fill ph-git-branch"></i></span>
+                        <span>Proudly <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="has-text-weight-bold has-text-dark">Open Source</a></span>
+                    </span>
+
+                    {{! Tech Stack }}
+                    <span class="is-hidden-mobile mr-4">
+                        Built with <a href="https://ghost.org" target="_blank" rel="noopener" class="has-text-weight-bold has-text-grey-dark">Ghost</a> & <a href="https://bulma.io" target="_blank" rel="noopener" class="has-text-weight-bold has-text-grey-dark">Bulma</a>
+                    </span>
+
+                    {{! Mini Social Icons }}
+                    <div class="buttons are-small mb-0 ml-2 is-hidden-mobile">
+                        {{#if @site.twitter}}
+                            <a href="{{twitter_url @site.twitter}}" class="button is-ghost has-text-grey px-2" target="_blank" rel="noopener" aria-label="Twitter">
+                                <span class="icon"><i class="ph-fill ph-twitter-logo is-size-5"></i></span>
+                            </a>
+                        {{/if}}
+                        <a href="https://www.linkedin.com/" class="button is-ghost has-text-grey px-2" target="_blank" rel="noopener" aria-label="LinkedIn">
+                            <span class="icon"><i class="ph-fill ph-linkedin-logo is-size-5"></i></span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
 </footer>

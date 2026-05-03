@@ -49,7 +49,7 @@ function hbs(done) {
 function css(done) {
     pump([
         src('assets/scss/screen.scss', {sourcemaps: true}),
-        sass({loadPaths: ['node_modules']}).on('error', sass.logError),
+        sass({loadPaths: ['node_modules'],quietDeps: true}).on('error', sass.logError),
         postcss([
             autoprefixer(),
             cssnano()
