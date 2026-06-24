@@ -2,7 +2,8 @@
 
 {{#page}}
 
-{{!-- 1. PAGE HEADER --}}
+{{!-- 1. PAGE HEADER (respects Beta-editor title/feature-image toggle) --}}
+{{#if @page.show_title_and_feature_image}}
 <section class="ns-section--tight">
   <div class="ns-container">
     <span class="ns-eyebrow ns-fade-up">Page</span>
@@ -14,6 +15,7 @@
     {{/if}}
   </div>
 </section>
+{{/if}}
 
 {{!-- 2. MAIN LAYOUT --}}
 <section class="ns-section" style="padding-top: 0;">
@@ -23,11 +25,13 @@
       {{!-- LEFT: MAIN PAGE CONTENT --}}
       <div class="column is-8-desktop">
 
-        {{!-- Optional Feature Image --}}
-        {{#if feature_image}}
-          <figure class="image is-16by9 mb-6 ns-scale-in" style="border-radius: 16px; overflow: hidden;">
-            <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover; height: 100%; width: 100%;">
-          </figure>
+        {{!-- Optional Feature Image (respects Beta-editor toggle) --}}
+        {{#if @page.show_title_and_feature_image}}
+          {{#if feature_image}}
+            <figure class="image is-16by9 mb-6 ns-scale-in" style="border-radius: 16px; overflow: hidden;">
+              <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover; height: 100%; width: 100%;">
+            </figure>
+          {{/if}}
         {{/if}}
 
         <div class="content is-medium gh-content">
