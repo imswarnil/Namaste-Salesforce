@@ -2,129 +2,122 @@
 
 {{!-- 1. COURSE CATALOG HERO --}}
 {{#page}}
-<section class="hero is-medium has-background-dark has-text-white position-relative" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)){{#if feature_image}}, url({{img_url feature_image size='xl'}}){{/if}}; background-size: cover; background-position: center;">
-  <div class="hero-body px-4-mobile">
-    <div class="container has-text-centered py-6">
-      <span class="icon is-large has-text-primary mb-3">
-        <i class="fas fa-2x fa-graduation-cap"></i>
-      </span>
-      <h1 class="title is-2-mobile is-1-tablet has-text-white has-text-weight-bold mb-4">{{title}}</h1>
-      {{#if custom_excerpt}}
-        <h2 class="subtitle is-5-mobile is-4-tablet has-text-grey-light mx-auto">
-          {{custom_excerpt}}
-        </h2>
-      {{/if}}
-    </div>
+<section class="ns-hero"{{#if feature_image}} style="background-image: linear-gradient(rgba(10,10,20,0.72), rgba(10,10,20,0.82)), url({{img_url feature_image size='xl'}}); background-size: cover; background-position: center;"{{/if}}>
+  <div class="ns-hero-mesh" aria-hidden="true">
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+  </div>
+  <div class="container ns-hero__content has-text-centered">
+    <span class="ns-eyebrow ns-fade-up"><i class="ph-fill ph-graduation-cap mr-1"></i> Learning Paths</span>
+    <h1 class="ns-hero__title ns-fade-up ns-stagger-1">{{title}}</h1>
+    {{#if custom_excerpt}}
+      <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">{{custom_excerpt}}</p>
+    {{/if}}
   </div>
 </section>
 {{else}}
-<section class="hero is-medium has-background-dark has-text-white">
-  <div class="hero-body px-4-mobile">
-    <div class="container has-text-centered py-6">
-      <h1 class="title is-2-mobile is-1-tablet has-text-white has-text-weight-bold mb-4">Course Catalog</h1>
-      <h2 class="subtitle is-5-mobile is-4-tablet has-text-grey-light mx-auto">
-        Structured learning paths to take you from beginner to Salesforce expert.
-      </h2>
-    </div>
+<section class="ns-hero">
+  <div class="ns-hero-mesh" aria-hidden="true">
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+  </div>
+  <div class="container ns-hero__content has-text-centered">
+    <span class="ns-eyebrow ns-fade-up"><i class="ph-fill ph-graduation-cap mr-1"></i> Learning Paths</span>
+    <h1 class="ns-hero__title ns-fade-up ns-stagger-1">Course Catalog</h1>
+    <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">
+      Structured learning paths to take you from beginner to Salesforce expert.
+    </p>
   </div>
 </section>
 {{/page}}
 
 {{!-- 2. COURSES GRID WITH EMBEDDED LESSONS --}}
-<section class="section has-background-white-ter py-6 px-4-mobile">
-  <div class="container">
-    
-    <div class="columns is-multiline">
+<section class="ns-section">
+  <div class="ns-container">
+
+    <div class="ns-grid ns-grid--3">
       {{!-- Loops through the PARENT COURSES (filter: tag:hash-course) --}}
       {{#foreach posts}}
-        <div class="column is-12-mobile is-6-tablet is-4-desktop">
-          
-          <div class="card is-flex is-flex-direction-column is-shadowless" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 25px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-            
-            {{!-- Course Image --}}
-            {{#if feature_image}}
-              <div class="card-image">
-                <a href="{{url}}">
-                  <figure class="image is-16by9">
-                    <img src="{{img_url feature_image size="m"}}" alt="{{title}}">
-                  </figure>
-                </a>
-              </div>
-            {{/if}}
+        <div class="ns-card is-hoverable ns-fade-up ns-stagger-{{@number}}" style="height: 100%; display: flex; flex-direction: column;">
 
-            {{!-- Course Content --}}
-            <div class="card-content is-flex-grow-1 is-flex is-flex-direction-column p-4-mobile p-5-tablet">
-              
-              <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
-                {{#if primary_tag}}
-                  <span class="tag is-primary is-light is-rounded has-text-weight-bold">
-                    {{primary_tag.name}}
-                  </span>
-                {{/if}}
-                <span class="is-size-7 has-text-grey has-text-weight-semibold">
-                  <i class="far fa-clock mr-1"></i> {{reading_time minute="1 min" minutes="% mins"}}
+          {{!-- Course Image --}}
+          {{#if feature_image}}
+            <a href="{{url}}" class="is-block is-clipped" style="border-radius: 12px 12px 0 0; overflow: hidden;">
+              <figure class="image is-16by9">
+                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" style="object-fit: cover; width: 100%; height: 100%;">
+              </figure>
+            </a>
+          {{/if}}
+
+          {{!-- Course Content --}}
+          <div class="ns-card__body" style="flex: 1; display: flex; flex-direction: column;">
+
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-3" style="gap: 0.5rem;">
+              {{#if primary_tag}}
+                <span class="tag ns-badge ns-badge--gradient is-rounded has-text-weight-bold">
+                  {{primary_tag.name}}
                 </span>
-              </div>
-
-              <h2 class="title is-4 mb-3">
-                <a href="{{url}}" class="has-text-dark">{{title}}</a>
-              </h2>
-
-              <p class="is-size-6 has-text-grey mb-4">
-                {{excerpt words="20"}}&hellip;
-              </p>
-
-              {{!-- ==============================================================
-                    DYNAMIC LESSONS SYLLABUS
-                    Fetches posts tagged with #lesson where the primary tag 
-                    matches the current course's slug.
-              ============================================================== --}}
-              <div class="is-flex-grow-1 mt-2 mb-4">
-                <p class="is-size-7 is-uppercase has-text-weight-bold has-text-grey-light tracking-wide mb-2">Syllabus</p>
-                
-                {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" order="published_at asc" limit="all"}}
-                  {{#if posts}}
-                    {{!-- Scrollable container for lessons so the card doesn't get too long --}}
-                    <div class="menu">
-                      <ul class="menu-list is-size-7">
-                        {{#foreach posts}}
-                          <li>
-                            <a href="{{url}}" class="is-flex is-align-items-center has-text-grey-dark py-2 px-3 mb-1">
-                              <span class="icon is-small has-text-primary mr-2"><i class="fas fa-play-circle"></i></span>
-                              <span >
-                                {{@number}}. {{title}}
-                              </span>
-                            </a>
-                          </li>
-                        {{/foreach}}
-                      </ul>
-                    </div>
-                  {{else}}
-                    <div class="has-background-light has-text-grey is-size-7 p-3">
-                      <i class="fas fa-tools mr-1"></i> Lessons are being added...
-                    </div>
-                  {{/if}}
-                {{/get}}
-              </div>
-
-              {{!-- Action Button --}}
-              <div class="mt-auto pt-4">
-                <a href="{{url}}" class="button is-primary is-fullwidth is-outlined has-text-weight-bold is-rounded">
-                  View Course Details
-                </a>
-              </div>
-
+              {{/if}}
+              <span class="is-size-7 has-text-weight-semibold" style="opacity: 0.6;">
+                <i class="ph ph-clock mr-1"></i> {{reading_time minute="1 min" minutes="% mins"}}
+              </span>
             </div>
+
+            <h2 class="title is-4 mb-3" style="line-height: 1.3;">
+              <a href="{{url}}" class="has-text-weight-bold">{{title}}</a>
+            </h2>
+
+            <p class="is-size-6 mb-4" style="opacity: 0.75;">
+              {{excerpt words="20"}}&hellip;
+            </p>
+
+            {{!-- ==============================================================
+                  DYNAMIC LESSONS SYLLABUS
+                  Fetches posts tagged with #lesson where the primary tag
+                  matches the current course's slug.
+            ============================================================== --}}
+            <div class="is-flex-grow-1 mt-2 mb-4" style="flex: 1;">
+              <p class="ns-eyebrow mb-2">Syllabus</p>
+
+              {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" order="published_at asc" limit="all"}}
+                {{#if posts}}
+                  <div class="menu">
+                    <ul class="menu-list is-size-7">
+                      {{#foreach posts}}
+                        <li>
+                          <a href="{{url}}" class="is-flex is-align-items-center py-2 px-3 mb-1" style="border-radius: 8px; gap: 0.5rem;">
+                            <span class="icon is-small has-text-primary"><i class="ph-fill ph-play-circle"></i></span>
+                            <span>{{@number}}. {{title}}</span>
+                          </a>
+                        </li>
+                      {{/foreach}}
+                    </ul>
+                  </div>
+                {{else}}
+                  <div class="ns-glass is-size-7 p-3" style="border-radius: 8px; opacity: 0.7;">
+                    <i class="ph ph-wrench mr-1"></i> Lessons are being added...
+                  </div>
+                {{/if}}
+              {{/get}}
+            </div>
+
+            {{!-- Action Button --}}
+            <div class="ns-card__footer">
+              <a href="{{url}}" class="button is-gradient ns-gradient-animated is-fullwidth has-text-weight-bold is-rounded">
+                <span>View Course Details</span>
+                <span class="icon is-small"><i class="ph ph-arrow-right"></i></span>
+              </a>
+            </div>
+
           </div>
-          
         </div>
       {{/foreach}}
     </div>
 
     {{!-- 3. PAGINATION --}}
-    <div class="mt-6 pt-4 is-flex is-justify-content-center">
-      {{pagination}}
-    </div>
+    {{pagination}}
 
   </div>
 </section>

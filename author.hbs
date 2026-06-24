@@ -1,32 +1,49 @@
 {{!< default}}
 
 {{#author}}
-  <section class="hero background-img is-large" style="background-image: url('{{cover_image}}')">
-    <!-- Hero content: will be in the middle -->
-    <div class="hero-body">
-      <div class="container has-text-centered">
-        {{#if profile_image}}
-          <figure class="author-image image is-128x128" style="background-image: url({{img_url profile_image}})">
-            <img src="">
-          </figure>
+  <section class="ns-hero"{{#if cover_image}} style="background-image: linear-gradient(rgba(10,10,20,0.7), rgba(10,10,20,0.82)), url('{{cover_image}}'); background-size: cover; background-position: center;"{{/if}}>
+    <div class="ns-hero-mesh" aria-hidden="true">
+      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+    </div>
+    <div class="container ns-hero__content has-text-centered">
+      {{#if profile_image}}
+        <figure class="image is-128x128 mx-auto mb-4 ns-scale-in" style="border-radius: 50%; overflow: hidden; border: 3px solid rgba(255,255,255,0.25); box-shadow: 0 12px 32px rgba(0,0,0,0.3);">
+          <img src="{{img_url profile_image size='m'}}" alt="{{name}}" style="object-fit: cover; width: 100%; height: 100%;">
+        </figure>
+      {{/if}}
+      <span class="ns-eyebrow ns-fade-up">Author</span>
+      <h1 class="ns-hero__title ns-fade-up ns-stagger-1">{{name}}</h1>
+      {{#if bio}}
+        <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">{{bio}}</p>
+      {{else if description}}
+        <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">{{description}}</p>
+      {{/if}}
+
+      {{!-- Author meta / social --}}
+      <div class="is-flex is-justify-content-center is-align-items-center mt-4 ns-fade-up ns-stagger-3" style="gap: 0.75rem; flex-wrap: wrap;">
+        <span class="tag ns-badge is-rounded">{{plural ../pagination.total empty="No posts" singular="% post" plural="% posts"}}</span>
+        {{#if location}}
+          <span class="is-size-7" style="opacity: 0.8;"><i class="ph ph-map-pin mr-1"></i>{{location}}</span>
         {{/if}}
-        <h1 class="title has-text-white is-size-1 has-text-weight-bold">
-          {{name}}
-        </h1>
-        <h2 class="subtitle has-text-white">
-          {{description}}
-        </h2>
+        {{#if website}}
+          <a href="{{website}}" target="_blank" rel="noopener" class="is-size-7 has-text-white" style="opacity: 0.85;"><i class="ph ph-globe mr-1"></i>Website</a>
+        {{/if}}
+        {{#if twitter}}
+          <a href="https://twitter.com/{{twitter}}" target="_blank" rel="noopener" class="is-size-7 has-text-white" style="opacity: 0.85;"><i class="ph-fill ph-twitter-logo mr-1"></i>Twitter</a>
+        {{/if}}
       </div>
     </div>
   </section>
 {{/author}}
 
-<section class="posts">
-  <div class="container">
+<section class="ns-section">
+  <div class="ns-container">
     {{!-- Latest Posts --}}
-    <div class="columns is-multiline">
+    <div class="ns-grid ns-grid--3">
       {{#foreach posts }}
-        <div class="column is-12-mobile is-6-tablet is-4-widescreen is-6-desktop">
+        <div class="ns-fade-up ns-stagger-{{@number}}">
           {{> post-card class="bottom-border"}}
         </div>
       {{/foreach}}

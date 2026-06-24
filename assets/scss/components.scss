@@ -1,0 +1,849 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// components.scss — Namaste Salesforce
+// Reusable ns- prefixed components + Bulma modifier extensions.
+// Dark-mode overrides via [data-theme="dark"] at the end of each section.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "variables" as sf;
+@use "mixins" as mx;
+@use "bulma/sass/utilities/css-variables" as cv;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 0. CSS Custom Properties (design-system tokens exposed as CSS vars)
+// ═══════════════════════════════════════════════════════════════════════════
+:root {
+  // Gradient tokens
+  --ns-gradient-primary:  #{sf.$sf-gradient-primary};
+  --ns-gradient-hero:     #{sf.$sf-gradient-hero};
+  --ns-gradient-surface:  #{sf.$sf-gradient-surface};
+  --ns-gradient-shine:    #{sf.$sf-gradient-shine};
+
+  // Glow tokens
+  --ns-glow-blue:    #{sf.$sf-glow-blue};
+  --ns-glow-indigo:  #{sf.$sf-glow-indigo};
+  --ns-glow-violet:  #{sf.$sf-glow-violet};
+  --ns-shadow-blue:  #{sf.$sf-shadow-blue};
+
+  // Glass tokens (light)
+  --ns-glass-bg:      #{sf.$sf-glass-bg};
+  --ns-glass-border:  #{sf.$sf-glass-border};
+  --ns-glass-blur:    #{sf.$sf-glass-blur};
+  --ns-glass-shadow:  #{sf.$sf-glass-shadow};
+
+  // Radius shortcuts
+  --ns-radius-pill: #{sf.$sf-radius-pill};
+  --ns-radius-xl:   #{sf.$sf-radius-xl};
+  --ns-radius-lg:   #{sf.$sf-radius-lg};
+
+  // Brand colors
+  --ns-blue:    #{sf.$sf-blue};
+  --ns-indigo:  #{sf.$sf-indigo};
+  --ns-violet:  #{sf.$sf-violet};
+  --ns-mid:     #{sf.$sf-blue-mid};
+}
+
+// Dark mode CSS var overrides
+[data-theme="dark"] {
+  --ns-glass-bg:      #{sf.$sf-glass-dark-bg};
+  --ns-glass-border:  #{sf.$sf-glass-dark-border};
+  --ns-glass-shadow:  #{sf.$sf-glass-dark-shadow};
+  --ns-gradient-surface: linear-gradient(135deg, rgba(#{sf.$sf-blue-dark}, 0.15) 0%, rgba(30, 27, 75, 0.2) 100%);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 1. Layout — ns-section
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-section — standard vertical rhythm section wrapper
+// Usage: <section class="ns-section">…</section>
+.ns-section {
+  padding: 5rem 1.5rem;
+
+  @media screen and (max-width: #{sf.$sf-tablet}) {
+    padding: 3.5rem 1rem;
+  }
+}
+
+// .ns-section--tight — less vertical padding
+// Usage: <section class="ns-section ns-section--tight">…</section>
+.ns-section--tight {
+  padding: 3rem 1.5rem;
+
+  @media screen and (max-width: #{sf.$sf-tablet}) {
+    padding: 2rem 1rem;
+  }
+}
+
+// .ns-section--loose — more vertical padding for hero/landing sections
+// Usage: <section class="ns-section ns-section--loose">…</section>
+.ns-section--loose {
+  padding: 7rem 1.5rem;
+
+  @media screen and (max-width: #{sf.$sf-tablet}) {
+    padding: 5rem 1rem;
+  }
+}
+
+// .ns-section--gradient — section with a subtle surface gradient background
+// Usage: <section class="ns-section ns-section--gradient">…</section>
+.ns-section--gradient {
+  background: var(--ns-gradient-surface);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 2. Typography — eyebrow, gradient text
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-eyebrow — uppercase gradient kicker label above headings
+// Usage: <span class="ns-eyebrow">Learning Path</span>
+.ns-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  @include mx.gradient-text(sf.$sf-gradient-primary);
+  margin-bottom: 0.75rem;
+
+  // Fallback for browsers that don't support background-clip: text
+  @supports not (-webkit-background-clip: text) {
+    color: sf.$sf-blue;
+    background: none;
+  }
+}
+
+// .ns-gradient-text — gradient-clipped display text
+// Usage: <h1 class="title ns-gradient-text">Start Learning</h1>
+.ns-gradient-text {
+  @include mx.gradient-text(sf.$sf-gradient-hero);
+  background-size: 200% 200%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-gradient-shift 8s ease infinite;
+  }
+
+  @supports not (-webkit-background-clip: text) {
+    color: sf.$sf-blue;
+    background: none;
+  }
+}
+
+// .ns-display — large bold display heading for heroes
+// Usage: <h1 class="ns-display">Master Salesforce</h1>
+.ns-display {
+  font-size: clamp(2.5rem, 6vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+// .ns-lead — large body text / subheading below display
+// Usage: <p class="ns-lead">…</p>
+.ns-lead {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.65;
+  color: sf.$sf-text-weak;
+
+  [data-theme="dark"] & {
+    color: sf.$sf-dark-text-muted;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 3. Glass surfaces
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-glass — raw glassmorphism surface (no padding/radius opinions)
+// Usage: <div class="ns-glass">…</div>
+.ns-glass {
+  background: var(--ns-glass-bg);
+  border: 1px solid var(--ns-glass-border);
+  backdrop-filter: blur(var(--ns-glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--ns-glass-blur)) saturate(180%);
+  box-shadow: var(--ns-glass-shadow);
+}
+
+// .ns-glass-card — glassmorphism card with standard padding + radius
+// Usage: <div class="ns-glass-card">…</div>
+.ns-glass-card {
+  @extend .ns-glass;
+  border-radius: sf.$sf-radius-xl;
+  padding: 2rem;
+
+  @media screen and (max-width: #{sf.$sf-tablet}) {
+    padding: 1.5rem;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 4. Cards
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-card — clean elevated content card
+// Usage: <div class="ns-card">…</div>
+.ns-card {
+  background-color: sf.$sf-white;
+  border: 1px solid sf.$sf-border-light;
+  border-radius: sf.$sf-radius-xl;
+  box-shadow: sf.$sf-shadow-card;
+  overflow: hidden;
+  transition: box-shadow sf.$sf-duration-base sf.$sf-ease,
+              transform sf.$sf-duration-base sf.$sf-ease,
+              border-color sf.$sf-duration-base sf.$sf-ease;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// .ns-card.is-hoverable — adds lift + shadow on hover
+// Usage: <div class="ns-card is-hoverable">…</div>
+.ns-card.is-hoverable {
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: sf.$sf-shadow-xl;
+    border-color: rgba(sf.$sf-blue, 0.25);
+
+    [data-theme="dark"] & {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(sf.$sf-dark-link, 0.3);
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+// .ns-card__body — standard card body padding
+// Usage: <div class="ns-card"><div class="ns-card__body">…</div></div>
+.ns-card__body {
+  padding: 1.5rem;
+}
+
+// .ns-card__footer — card footer with top border
+// Usage: <div class="ns-card__footer">…</div>
+.ns-card__footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid sf.$sf-border-light;
+  background-color: sf.$sf-cloud-warm;
+
+  [data-theme="dark"] & {
+    border-top-color: sf.$sf-dark-border;
+    background-color: sf.$sf-dark-surface-2;
+  }
+}
+
+// ─── Feature card ────────────────────────────────────────────────────────────
+
+// .ns-feature-card — icon + title + description feature card
+// Usage:
+//   <div class="ns-feature-card">
+//     <div class="ns-feature-card__icon"><i class="ph ph-lightning"></i></div>
+//     <h3 class="ns-feature-card__title">Fast Learning</h3>
+//     <p class="ns-feature-card__body">…</p>
+//   </div>
+.ns-feature-card {
+  @extend .ns-card;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  // Hoverable variant — apply directly: <div class="ns-feature-card is-hoverable">
+  &.is-hoverable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: sf.$sf-shadow-xl;
+      border-color: rgba(sf.$sf-blue, 0.25);
+
+      [data-theme="dark"] & {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(sf.$sf-dark-link, 0.3);
+      }
+    }
+
+    &:active { transform: translateY(-1px); }
+  }
+
+  // Gradient left border accent
+  border-left: 3px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: sf.$sf-gradient-primary;
+    border-radius: sf.$sf-radius-xl 0 0 sf.$sf-radius-xl;
+  }
+}
+
+.ns-feature-card__icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: sf.$sf-radius-lg;
+  background: linear-gradient(135deg, rgba(sf.$sf-blue, 0.1) 0%, rgba(sf.$sf-indigo, 0.1) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: sf.$sf-blue;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+
+  // Phosphor icon sizing inside
+  i, .ph { font-size: 1.4rem; }
+
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, rgba(sf.$sf-blue-mid, 0.15) 0%, rgba(sf.$sf-indigo, 0.15) 100%);
+    color: sf.$sf-dark-link;
+  }
+}
+
+.ns-feature-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: sf.$sf-text;
+  line-height: 1.3;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text; }
+}
+
+.ns-feature-card__body {
+  font-size: 0.9rem;
+  color: sf.$sf-text-weak;
+  line-height: 1.6;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text-muted; }
+}
+
+// ─── Stat card ───────────────────────────────────────────────────────────────
+
+// .ns-stat — big number + label stat display
+// Usage:
+//   <div class="ns-stat">
+//     <span class="ns-stat__number">10K+</span>
+//     <span class="ns-stat__label">Learners</span>
+//   </div>
+.ns-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.375rem;
+}
+
+.ns-stat__number {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  @include mx.gradient-text(sf.$sf-gradient-primary);
+
+  @supports not (-webkit-background-clip: text) {
+    color: sf.$sf-blue;
+    background: none;
+  }
+}
+
+.ns-stat__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: sf.$sf-text-muted;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text-muted; }
+}
+
+// ─── Track card (learning path / course track) ────────────────────────────────
+
+// .ns-track-card — card for course tracks / learning paths with icon, title, meta
+// Usage:
+//   <a class="ns-track-card" href="/track/admin">
+//     <div class="ns-track-card__icon"><i class="ph ph-shield-check"></i></div>
+//     <div class="ns-track-card__content">
+//       <h3 class="ns-track-card__title">Admin Track</h3>
+//       <p class="ns-track-card__meta">12 modules · 8h</p>
+//       <span class="ns-track-card__badge tag is-primary is-light">Beginner</span>
+//     </div>
+//   </a>
+.ns-track-card {
+  @extend .ns-card;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform sf.$sf-duration-base sf.$sf-ease,
+              box-shadow sf.$sf-duration-base sf.$sf-ease,
+              border-color sf.$sf-duration-base sf.$sf-ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: sf.$sf-shadow-lg;
+    border-color: rgba(sf.$sf-blue, 0.3);
+    text-decoration: none;
+    color: inherit;
+
+    .ns-track-card__icon {
+      background: sf.$sf-gradient-primary;
+      color: sf.$sf-white;
+    }
+
+    [data-theme="dark"] & {
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+      border-color: rgba(sf.$sf-dark-link, 0.3);
+    }
+  }
+}
+
+.ns-track-card__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: sf.$sf-radius-lg;
+  background: linear-gradient(135deg, rgba(sf.$sf-blue, 0.08) 0%, rgba(sf.$sf-indigo, 0.08) 100%);
+  color: sf.$sf-blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  transition: background sf.$sf-duration-base sf.$sf-ease, color sf.$sf-duration-base sf.$sf-ease;
+
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg, rgba(sf.$sf-blue-mid, 0.12) 0%, rgba(sf.$sf-indigo, 0.12) 100%);
+    color: sf.$sf-dark-link;
+  }
+}
+
+.ns-track-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ns-track-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: sf.$sf-text;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text; }
+}
+
+.ns-track-card__meta {
+  font-size: 0.8125rem;
+  color: sf.$sf-text-muted;
+  margin-bottom: 0.5rem;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text-weak; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 5. Buttons (extending Bulma)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .button.is-gradient — gradient fill pill button with glow on hover
+// Usage: <a class="button is-gradient is-large">Get Started</a>
+.button.is-gradient {
+  background: sf.$sf-gradient-primary;
+  background-size: 200% 200%;
+  border: none;
+  color: sf.$sf-white !important;
+  font-weight: 700;
+  border-radius: sf.$sf-radius-pill;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+  transition: transform sf.$sf-duration-base sf.$sf-ease,
+              box-shadow sf.$sf-duration-base sf.$sf-ease;
+
+  // Shine sweep on hover
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ns-gradient-shine);
+    opacity: 0;
+    transition: opacity sf.$sf-duration-slow sf.$sf-ease;
+    pointer-events: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: sf.$sf-white !important;
+    transform: translateY(-2px);
+    box-shadow: sf.$sf-shadow-blue, 0 8px 20px rgba(sf.$sf-indigo, 0.25);
+
+    &::after { opacity: 1; }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-gradient-shift 6s ease infinite;
+  }
+}
+
+// .button.is-glow — plain button with glow box-shadow effect
+// Usage: <button class="button is-primary is-glow">Enroll Now</button>
+.button.is-glow {
+  box-shadow: sf.$sf-shadow-blue;
+  transition: box-shadow sf.$sf-duration-base sf.$sf-ease,
+              transform sf.$sf-duration-base sf.$sf-ease;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: sf.$sf-glow-blue;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: sf.$sf-shadow-blue;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 6. Badge / Tag overrides
+// ═══════════════════════════════════════════════════════════════════════════
+// Use Bulma .tag with modifier classes. Document the canonical usage.
+
+// .ns-badge — semantic alias for Bulma .tag, pill shape
+// Usage: <span class="tag is-primary is-light ns-badge">New</span>
+.ns-badge {
+  border-radius: sf.$sf-radius-pill;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+// Gradient badge variant
+// Usage: <span class="ns-badge ns-badge--gradient">Pro</span>
+.ns-badge--gradient {
+  background: sf.$sf-gradient-primary;
+  color: sf.$sf-white;
+  border: none;
+  border-radius: sf.$sf-radius-pill;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2em 0.7em;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 7. Gradient border wrapper
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-gradient-border — wraps child with a gradient border via pseudo-element
+// Usage: <div class="ns-gradient-border"><div class="ns-card">…</div></div>
+.ns-gradient-border {
+  @include mx.gradient-border(sf.$sf-gradient-primary, 2px, sf.$sf-radius-xl);
+
+  // Inner content needs a background to show gradient border contrast
+  > * {
+    border-radius: calc(#{sf.$sf-radius-xl} - 2px);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 8. Hero section
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-hero — full-width bold hero section
+// Usage:
+//   <section class="ns-hero">
+//     <div class="ns-hero-mesh" aria-hidden="true">
+//       <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+//       <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+//       <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+//     </div>
+//     <div class="container ns-hero__content">…</div>
+//   </section>
+.ns-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 1.5rem 5rem;
+  background: sf.$sf-gradient-hero;
+  color: sf.$sf-white;
+
+  @media screen and (max-width: #{sf.$sf-tablet}) {
+    padding: 4rem 1rem 3.5rem;
+  }
+
+  // Subtle grid overlay
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  [data-theme="dark"] & {
+    background: sf.$sf-gradient-hero-dark;
+  }
+}
+
+.ns-hero__content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+}
+
+.ns-hero__title {
+  font-size: clamp(2.5rem, 6vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: sf.$sf-white;
+  margin-bottom: 1.25rem;
+}
+
+.ns-hero__subtitle {
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 52ch;
+  margin: 0 auto 2rem;
+}
+
+.ns-hero__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+// .ns-hero-mesh — decorative animated gradient blob background
+// Usage: <div class="ns-hero-mesh" aria-hidden="true">…blobs…</div>
+.ns-hero-mesh {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ns-hero-mesh__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+}
+
+.ns-hero-mesh__blob--1 {
+  width: 55vw;
+  height: 55vw;
+  max-width: 700px;
+  max-height: 700px;
+  background: radial-gradient(circle, rgba(27, 150, 255, 0.5) 0%, transparent 70%);
+  top: -15%;
+  left: -10%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-blob-morph 18s ease-in-out infinite;
+  }
+}
+
+.ns-hero-mesh__blob--2 {
+  width: 40vw;
+  height: 40vw;
+  max-width: 500px;
+  max-height: 500px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.45) 0%, transparent 70%);
+  top: 10%;
+  right: -5%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-blob-morph 22s ease-in-out infinite reverse;
+    animation-delay: -6s;
+  }
+}
+
+.ns-hero-mesh__blob--3 {
+  width: 30vw;
+  height: 30vw;
+  max-width: 380px;
+  max-height: 380px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.35) 0%, transparent 70%);
+  bottom: -5%;
+  left: 40%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-blob-morph 14s ease-in-out infinite;
+    animation-delay: -3s;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 9. Logo marquee (trust/sponsor strip)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-logo-marquee — infinite scrolling logo strip
+// Usage:
+//   <div class="ns-logo-marquee">
+//     <div class="ns-logo-marquee__track">
+//       <img class="ns-logo-marquee__logo" src="…" alt="Partner">
+//       <!-- repeat logos, then duplicate for seamless loop -->
+//     </div>
+//   </div>
+.ns-logo-marquee {
+  overflow: hidden;
+  width: 100%;
+  // Fade edges
+  mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.ns-logo-marquee__track {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  width: max-content;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-marquee 28s linear infinite;
+  }
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+.ns-logo-marquee__logo {
+  height: 2rem;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.55;
+  filter: grayscale(1);
+  transition: opacity sf.$sf-duration-base sf.$sf-ease, filter sf.$sf-duration-base sf.$sf-ease;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+    filter: grayscale(0);
+  }
+
+  [data-theme="dark"] & {
+    opacity: 0.4;
+    filter: grayscale(1) brightness(1.6);
+
+    &:hover {
+      opacity: 0.85;
+      filter: grayscale(0) brightness(1.2);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 10. Utility helpers
+// ═══════════════════════════════════════════════════════════════════════════
+
+// .ns-container — max-width content container (1216px centered)
+// Usage: <div class="ns-container">…</div>
+.ns-container {
+  max-width: 1216px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  @media screen and (max-width: #{sf.$sf-tablet}) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+// .ns-divider — styled gradient horizontal rule
+// Usage: <hr class="ns-divider">
+.ns-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    sf.$sf-border 20%,
+    sf.$sf-border 80%,
+    transparent 100%
+  );
+  margin: 3rem 0;
+
+  [data-theme="dark"] & {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      sf.$sf-dark-border 20%,
+      sf.$sf-dark-border 80%,
+      transparent 100%
+    );
+  }
+}
+
+// .ns-grid — auto-fit responsive grid
+// Usage: <div class="ns-grid ns-grid--3">…cards…</div>
+.ns-grid {
+  display: grid;
+  gap: 1.5rem;
+
+  &.ns-grid--2 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  &.ns-grid--3 {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  &.ns-grid--4 {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 11. Global base styles
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Smooth scroll for the whole page
+html {
+  scroll-behavior: smooth;
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
+}
+
+// Focus ring consistency
+*:focus-visible {
+  @include mx.focus-ring(sf.$sf-blue);
+  border-radius: sf.$sf-radius;
+}
+
+// Selection highlight
+::selection {
+  background-color: rgba(sf.$sf-blue, 0.2);
+  color: sf.$sf-blue-dark;
+}
+
+[data-theme="dark"] ::selection {
+  background-color: rgba(sf.$sf-dark-link, 0.3);
+  color: sf.$sf-dark-text;
+}

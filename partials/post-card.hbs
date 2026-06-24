@@ -1,13 +1,13 @@
 {{!-- partials/post-card.hbs --}}
-<article class="card is-flex is-flex-direction-column is-shadowless card-post">
+<article class="ns-card is-hoverable" style="height: 100%; display: flex; flex-direction: column;">
 
   {{!-- ── IMAGE ── --}}
-  <a href="{{url}}" class="is-relative is-block is-clipped card-post-image-wrap" tabindex="-1">
+  <a href="{{url}}" class="is-relative is-block is-clipped" tabindex="-1" style="border-radius: 12px 12px 0 0; overflow: hidden;">
 
     {{#if feature_image}}
       <figure class="image is-16by9">
         <img
-          class="has-ratio card-post-image"
+          class="has-ratio"
           srcset="{{img_url feature_image size="s"}} 300w,
                   {{img_url feature_image size="m"}} 600w,
                   {{img_url feature_image size="l"}} 1000w,
@@ -15,13 +15,14 @@
           sizes="(max-width: 1000px) 400px, 800px"
           src="{{img_url feature_image size="m"}}"
           alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-          loading="lazy">
+          loading="lazy"
+          style="object-fit: cover; width: 100%; height: 100%;">
       </figure>
 
     {{else}}
-      <figure class="image is-16by9 has-background-light is-flex is-align-items-center is-justify-content-center">
-        <span class="icon is-large has-text-grey-light">
-          <i class="ph ph-image is-size-2"></i>
+      <figure class="image is-16by9 is-flex is-align-items-center is-justify-content-center" style="background: linear-gradient(135deg, hsl(var(--ns-hue,240) 70% 15%), hsl(var(--ns-hue,240) 60% 25%));">
+        <span class="icon is-large" style="opacity: 0.4;">
+          <i class="ph ph-image" style="font-size: 3rem; color: #fff;"></i>
         </span>
       </figure>
     {{/if}}
@@ -29,7 +30,7 @@
     {{!-- Lock Overlay --}}
     {{#unless access}}
       {{^has visibility="public"}}
-        <div class="is-overlay is-flex is-align-items-center is-justify-content-center card-post-lock-overlay">
+        <div class="is-overlay is-flex is-align-items-center is-justify-content-center" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);">
           <span class="tag is-dark is-medium is-rounded has-text-weight-bold">
             <span class="icon is-small mr-1"><i class="ph-fill ph-lock"></i></span>
             {{#has visibility="members"}}{{t "Members only"}}{{else}}{{t "Paid-members only"}}{{/has}}
@@ -42,8 +43,8 @@
     {{#has tag="#video"}}
       {{#if access}}
         <div class="is-overlay is-flex is-align-items-center is-justify-content-center">
-          <span class="is-flex is-align-items-center is-justify-content-center has-text-white card-post-play-btn">
-            <i class="ph-fill ph-play-circle is-size-1"></i>
+          <span class="is-flex is-align-items-center is-justify-content-center has-text-white" style="background: rgba(0,0,0,0.45); border-radius: 50%; width: 64px; height: 64px;">
+            <i class="ph-fill ph-play-circle" style="font-size: 2.5rem;"></i>
           </span>
         </div>
       {{/if}}
@@ -52,15 +53,16 @@
   </a>
 
   {{!-- ── CONTENT ── --}}
-  <div class="card-content is-flex-grow-1 is-flex is-flex-direction-column">
+  <div class="ns-card__body" style="flex: 1; display: flex; flex-direction: column;">
 
-    {{!-- Tags --}}
+    {{!-- Badges --}}
     <div class="tags mb-2">
       {{#primary_tag}}
-        <a href="{{url}}" class="tag is-light is-rounded has-text-weight-semibold
-          {{#has tag="#course"}}is-primary{{/has}}
-          {{#has tag="#video"}}is-danger{{/has}}
-          {{#has tag="#blog"}}is-link{{/has}}">
+        <a href="{{url}}" class="tag ns-badge
+          {{#has tag="#course"}}ns-badge--gradient{{/has}}
+          {{#has tag="#blog"}}is-link is-light{{/has}}
+          {{#has tag="#video"}}is-danger is-light{{/has}}
+          is-rounded has-text-weight-semibold">
           {{name}}
         </a>
       {{/primary_tag}}
@@ -74,8 +76,8 @@
     </div>
 
     {{!-- Title --}}
-    <h2 class="title is-5 mb-2">
-      <a href="{{url}}" class="has-text-dark">
+    <h2 class="title is-5 mb-2" style="line-height: 1.3;">
+      <a href="{{url}}" class="has-text-weight-bold">
         {{#unless access}}
           {{^has visibility="public"}}
             {{#unless feature_image}}
@@ -89,47 +91,46 @@
 
     {{!-- Excerpt --}}
     {{#if excerpt}}
-      <p class="is-size-6 has-text-grey is-flex-grow-1 mb-4">
+      <p class="is-size-6 mb-4" style="flex: 1; opacity: 0.75;">
         {{excerpt words="20"}}&hellip;
       </p>
     {{/if}}
 
     {{!-- ── FOOTER ── --}}
-    <div class="mt-auto pt-3 card-post-footer">
+    <div class="ns-card__footer">
 
       {{!-- Course CTA --}}
       {{#has tag="#course"}}
-        <a href="{{url}}" class="button is-primary is-fullwidth is-rounded has-text-weight-bold">
+        <a href="{{url}}" class="button is-gradient is-fullwidth is-rounded has-text-weight-bold">
           {{#unless access}}
             <span class="icon is-small"><i class="ph ph-lock"></i></span>
             <span>{{t "Enroll to Access"}}</span>
           {{else}}
+            <span class="icon is-small"><i class="ph ph-play"></i></span>
             <span>{{t "Start Course"}}</span>
           {{/unless}}
         </a>
 
       {{!-- Standard Meta --}}
       {{else}}
-        <div class="level is-mobile is-size-7 has-text-grey has-text-weight-semibold">
-          <div class="level-left">
-            <div class="level-item">
-              <span class="icon is-small mr-1"><i class="ph ph-calendar-blank"></i></span>
+        <div class="is-flex is-align-items-center is-justify-content-space-between is-size-7" style="opacity: 0.65; gap: 0.5rem; flex-wrap: wrap;">
+          <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
+            <span class="is-flex is-align-items-center" style="gap: 0.25rem;">
+              <i class="ph ph-calendar-blank"></i>
               <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
-            </div>
+            </span>
             {{#if reading_time}}
-              <div class="level-item">
-                <span class="icon is-small mr-1"><i class="ph ph-clock"></i></span>
+              <span class="is-flex is-align-items-center" style="gap: 0.25rem;">
+                <i class="ph ph-clock"></i>
                 {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}
-              </div>
+              </span>
             {{/if}}
           </div>
           {{#if @site.comments_enabled}}
-            <div class="level-right">
-              <div class="level-item">
-                <span class="icon is-small mr-1"><i class="ph ph-chat-circle"></i></span>
-                {{comment_count}}
-              </div>
-            </div>
+            <span class="is-flex is-align-items-center" style="gap: 0.25rem;">
+              <i class="ph ph-chat-circle"></i>
+              {{comment_count}}
+            </span>
           {{/if}}
         </div>
       {{/has}}
@@ -137,46 +138,3 @@
     </div>
   </div>
 </article>
-
-<style>
-  /* ── Post Card ── */
-.card-post {
-  height: 100%;
-  border-radius: 12px;
-  border: 1px solid #eaeaea;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card-post:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-}
-
-.card-post-image-wrap {
-  border-radius: 12px 12px 0 0;
-}
-
-/* object-fit cannot be a Bulma class — required for ratio wrapper */
-.card-post-image {
-  object-fit: cover;
-}
-
-/* Semi-transparent lock overlay */
-.card-post-lock-overlay {
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
-}
-
-/* Circular play button */
-.card-post-play-btn {
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 50%;
-  width: 64px;
-  height: 64px;
-}
-
-/* Footer divider */
-.card-post-footer {
-  border-top: 1px solid #f0f0f0;
-}
-</style>

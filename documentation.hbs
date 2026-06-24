@@ -3,7 +3,7 @@
 {{!-- Hidden span explicitly given 'index' so JS doesn't crash --}}
 <span id="doc-current-id" data-id="index" hidden aria-hidden="true"></span>
 
-<section class="section py-5 has-background-white">
+<section class="ns-section--tight">
   <div class="container is-fluid">
     <div class="columns is-variable is-5-desktop is-multiline">
 
@@ -12,26 +12,27 @@
 
       {{!-- MAIN CONTENT --}}
       <main class="column is-9-desktop is-8-tablet" role="main">
-        <div class="content is-medium">
-          <h1 class="title is-1 has-text-weight-bold">Namaste Salesforce Documentation</h1>
-          <p class="subtitle is-4 has-text-grey">Select a guide from the sidebar to get started.</p>
-          
-          <hr class="my-5">
 
-          <div class="columns is-multiline mt-4">
-            {{#get "posts" filter="tag:documentation" limit="6" order="published_at desc"}}
-              {{#foreach posts}}
-                <div class="column is-6">
-                  <a href="{{url}}" class="box h-100 is-shadowless" style="border: 1px solid #e2e8f0;">
-                    <h3 class="title is-5 mb-2">{{title}}</h3>
-                    <p class="is-size-6 has-text-grey">{{excerpt words="15"}}...</p>
-                  </a>
+        <span class="ns-eyebrow ns-fade-up"><i class="ph ph-book-open mr-1"></i> Documentation</span>
+        <h1 class="ns-display ns-gradient-text ns-fade-up ns-stagger-1">Namaste Salesforce Documentation</h1>
+        <p class="ns-lead ns-fade-up ns-stagger-2">Select a guide from the sidebar to get started.</p>
+
+        <div class="ns-divider"></div>
+
+        <div class="ns-grid ns-grid--2 mt-4">
+          {{#get "posts" filter="tag:documentation" limit="6" order="published_at desc"}}
+            {{#foreach posts}}
+              <a href="{{url}}" class="ns-feature-card is-block ns-fade-up ns-stagger-{{@number}}" style="text-decoration: none; height: 100%;">
+                <div class="ns-feature-card__icon">
+                  <i class="ph-fill ph-file-text"></i>
                 </div>
-              {{/foreach}}
-            {{/get}}
-          </div>
-          
+                <h3 class="ns-feature-card__title">{{title}}</h3>
+                <p class="ns-feature-card__body">{{excerpt words="15"}}...</p>
+              </a>
+            {{/foreach}}
+          {{/get}}
         </div>
+
       </main>
 
     </div>

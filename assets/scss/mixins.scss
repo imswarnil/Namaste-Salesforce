@@ -1,0 +1,153 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// mixins.scss — Namaste Salesforce
+// Reusable SCSS mixins. No side effects — only mixin definitions.
+// Usage: @use "mixins" as mx;
+// ═══════════════════════════════════════════════════════════════════════════
+@use "variables" as sf;
+
+// ─── Glass morphism surface ─────────────────────────────────────────────────
+// Usage: @include mx.glass();  OR  @include mx.glass($blur: 24px);
+@mixin glass(
+  $bg:     sf.$sf-glass-bg,
+  $border: sf.$sf-glass-border,
+  $blur:   sf.$sf-glass-blur,
+  $shadow: sf.$sf-glass-shadow
+) {
+  background: $bg;
+  border: 1px solid $border;
+  backdrop-filter: blur($blur) saturate(180%);
+  -webkit-backdrop-filter: blur($blur) saturate(180%);
+  box-shadow: $shadow;
+}
+
+// Dark-mode glass override mixin (call inside [data-theme="dark"] block)
+@mixin glass-dark(
+  $bg:     sf.$sf-glass-dark-bg,
+  $border: sf.$sf-glass-dark-border,
+  $shadow: sf.$sf-glass-dark-shadow
+) {
+  background: $bg;
+  border-color: $border;
+  box-shadow: $shadow;
+}
+
+// ─── Gradient text (background-clip trick) ──────────────────────────────────
+// Usage: @include mx.gradient-text(sf.$sf-gradient-primary);
+@mixin gradient-text($gradient: sf.$sf-gradient-primary) {
+  background: $gradient;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+// ─── Card hover lift effect ─────────────────────────────────────────────────
+// Usage: @include mx.card-hover();
+@mixin card-hover($lift: -4px, $shadow: sf.$sf-shadow-xl) {
+  transition: transform sf.$sf-duration-base sf.$sf-ease,
+              box-shadow sf.$sf-duration-base sf.$sf-ease;
+
+  &:hover {
+    transform: translateY($lift);
+    box-shadow: $shadow;
+  }
+}
+
+// ─── Fade-up entrance animation setup ───────────────────────────────────────
+// Usage: @include mx.fade-up();
+@mixin fade-up($duration: sf.$sf-duration-xslow, $distance: 24px, $delay: 0ms) {
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    transform: translateY($distance);
+    animation: ns-fade-up $duration sf.$sf-ease-out both;
+    animation-delay: $delay;
+  }
+}
+
+// ─── Float animation setup ───────────────────────────────────────────────────
+@mixin float($duration: 3s, $distance: 10px) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-float $duration ease-in-out infinite;
+  }
+}
+
+// ─── Responsive helpers ─────────────────────────────────────────────────────
+@mixin mobile {
+  @media screen and (max-width: #{sf.$sf-mobile}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media screen and (min-width: #{sf.$sf-tablet}) {
+    @content;
+  }
+}
+
+@mixin until-desktop {
+  @media screen and (max-width: #{sf.$sf-desktop - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: #{sf.$sf-desktop}) {
+    @content;
+  }
+}
+
+@mixin widescreen {
+  @media screen and (min-width: #{sf.$sf-widescreen}) {
+    @content;
+  }
+}
+
+// ─── Gradient border wrapper ─────────────────────────────────────────────────
+// Wraps an element with a gradient border using pseudo-element.
+// Usage: @include mx.gradient-border(sf.$sf-gradient-primary, 2px, 16px);
+@mixin gradient-border($gradient: sf.$sf-gradient-primary, $width: 2px, $radius: sf.$sf-radius-xl) {
+  position: relative;
+  border-radius: $radius;
+  background-clip: padding-box;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: $radius;
+    padding: $width;
+    background: $gradient;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+// ─── Truncate single line ────────────────────────────────────────────────────
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ─── Visually hidden (accessible) ────────────────────────────────────────────
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ─── Focus ring ──────────────────────────────────────────────────────────────
+@mixin focus-ring($color: sf.$sf-blue, $offset: 2px, $width: 2px) {
+  outline: $width solid $color;
+  outline-offset: $offset;
+}

@@ -1,26 +1,38 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // screen.scss — Namaste Salesforce
-// Minimal theme entry point using Bulma 1.x
+// Compiled entry point. Order is critical — Bulma config must come first.
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ─── 1. SALESFORCE BRAND COLOR ──────────────────────────────────────────────
+// ─── 1. BULMA UTILITIES CONFIGURATION ───────────────────────────────────────
+// Must come before @use "bulma/sass" — these set the Bulma CSS variable base.
 $salesforce-blue: #0176D3;
 
-// ─── 2. BULMA CONFIGURATION ─────────────────────────────────────────────────
-// Override the essential utilities before loading the rest of the framework
 @use "bulma/sass/utilities" with (
-  $primary: $salesforce-blue,
-  $link: $salesforce-blue,
-  $family-primary: '"Plus Jakarta Sans", sans-serif'
+  $primary:        #0176D3,
+  $link:           #0176D3,
+  $family-primary: '"Plus Jakarta Sans", sans-serif',
+  $family-code:    '"JetBrains Mono", monospace'
 );
 
-// ─── 3. LOAD BULMA CORE ─────────────────────────────────────────────────────
+// ─── 2. BULMA COMPONENT OVERRIDES ───────────────────────────────────────────
+// Per-component `with` overrides must also precede the full Bulma load.
+@use "bulma/sass/components/card" with (
+  $card-radius: 16px
+);
+
+// ─── 3. BULMA CORE ──────────────────────────────────────────────────────────
 @use "bulma/sass";
 
-// ─── 4. PROJECT PARTIALS ────────────────────────────────────────────────────
+// ─── 4. DESIGN SYSTEM TOKENS ────────────────────────────────────────────────
+@use "variables";
+
+// ─── 5. PROJECT PARTIALS ────────────────────────────────────────────────────
+@use "animations";
+@use "components";
 @use "toc";
 @use "ghost";
 
-// ─── 5. WEB FONTS ───────────────────────────────────────────────────────────
-// Note: Standard CSS @import is still required for fetching external font URLs
+// ─── 6. WEB FONTS ───────────────────────────────────────────────────────────
+// Standard CSS @import for external Google Fonts URLs.
+// Must come after all @use rules in the compiled output.
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");

@@ -5,7 +5,7 @@
 
 {{!-- JSON-LD Omitted for brevity, paste your snippet back here! --}}
 
-<section class="section py-5 has-background-white">
+<section class="ns-section ns-section--tight">
   <div class="container is-fluid">
     <div class="columns is-variable is-5-desktop is-multiline">
 
@@ -15,7 +15,7 @@
       {{!-- 2. ARTICLE COLUMN --}}
       <main class="column is-7-desktop is-8-tablet" role="main">
         <article>
-          
+
           {{!-- Breadcrumb --}}
           <nav class="breadcrumb has-succeeds-separator is-small mb-4" aria-label="breadcrumbs">
             <ul>
@@ -25,18 +25,19 @@
             </ul>
           </nav>
 
-          <header class="mb-6">
-            <h1 class="title is-1 mb-3">{{title}}</h1>
+          <header class="mb-6 ns-fade-up">
+            <span class="ns-eyebrow"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i> Documentation</span>
+            <h1 class="title is-1 mt-3 mb-3">{{title}}</h1>
             {{#if custom_excerpt}}
-              <p class="subtitle is-4 has-text-grey">{{custom_excerpt}}</p>
+              <p class="ns-lead">{{custom_excerpt}}</p>
             {{/if}}
-            
-            <div class="is-flex is-align-items-center is-flex-wrap-wrap is-size-7 has-text-grey mt-4">
-              <span class="is-flex is-align-items-center mr-4">
+
+            <div class="is-flex is-align-items-center is-flex-wrap-wrap is-size-7 has-text-grey mt-4" style="gap:1.25rem;">
+              <span class="is-flex is-align-items-center">
                 <i class="ph ph-timer mr-1" aria-hidden="true"></i> {{reading_time}}
               </span>
               {{#primary_author}}
-                <span class="is-flex is-align-items-center mr-4">
+                <span class="is-flex is-align-items-center">
                   <i class="ph ph-user-circle mr-1" aria-hidden="true"></i> {{name}}
                 </span>
               {{/primary_author}}
@@ -44,8 +45,8 @@
           </header>
 
           {{#if feature_image}}
-            <figure class="image mb-6">
-              <img src="{{img_url feature_image size="l"}}" alt="{{title}}" class="has-ratio">
+            <figure class="image mb-6" style="border-radius:16px;overflow:hidden;">
+              <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" class="has-ratio">
             </figure>
           {{/if}}
 
@@ -54,20 +55,25 @@
           </div>
 
           {{!-- Pagination --}}
-          <nav class="columns is-mobile is-multiline mt-6 pt-6 is-border-top" aria-label="Article navigation">
+          <hr class="ns-divider mt-6">
+          <nav class="columns is-multiline mt-5" aria-label="Article navigation">
             <div class="column is-half-tablet is-full-mobile">
               {{#prev_post filter="tag:documentation"}}
-                <a href="{{url}}" class="box is-shadowless has-background-light h-100 is-block">
-                  <p class="heading has-text-grey mb-1"><i class="ph ph-arrow-left"></i> Previous</p>
-                  <p class="title is-6">{{title}}</p>
+                <a href="{{url}}" class="ns-card is-hoverable is-block" style="height:100%;">
+                  <div class="ns-card__body">
+                    <p class="heading has-text-grey mb-1"><i class="ph ph-arrow-left"></i> Previous</p>
+                    <p class="title is-6 mb-0">{{title}}</p>
+                  </div>
                 </a>
               {{/prev_post}}
             </div>
             <div class="column is-half-tablet is-full-mobile has-text-right">
               {{#next_post filter="tag:documentation"}}
-                <a href="{{url}}" class="box is-shadowless has-background-light h-100 is-block">
-                  <p class="heading has-text-grey mb-1">Next <i class="ph ph-arrow-right"></i></p>
-                  <p class="title is-6">{{title}}</p>
+                <a href="{{url}}" class="ns-card is-hoverable is-block" style="height:100%;">
+                  <div class="ns-card__body">
+                    <p class="heading has-text-grey mb-1">Next <i class="ph ph-arrow-right"></i></p>
+                    <p class="title is-6 mb-0">{{title}}</p>
+                  </div>
                 </a>
               {{/next_post}}
             </div>
@@ -79,17 +85,16 @@
       {{!-- 3. RIGHT SIDEBAR (ToC & Ads) --}}
       <aside class="column is-2-desktop is-hidden-touch">
         <div style="position: sticky; top: 2rem;">
-          <p class="is-size-7 is-uppercase has-text-weight-bold has-text-grey mb-3 tracking-wide">On this page</p>
+          <p class="ns-eyebrow mb-3">On this page</p>
           {{!-- Tocbot target --}}
           <div class="toc-container mb-5 is-size-7">
-                  {{> "toc"}}
+            {{> "toc"}}
+          </div>
 
-          </div> 
-
-          <div class="box is-shadowless has-background-white-ter has-text-centered p-4 mt-6" style="border: 1px dashed #cbd5e1;">
+          <div class="ns-glass-card has-text-centered mt-6">
             <p class="is-size-7 has-text-grey mb-2">Sponsor</p>
-            <div style="height: 200px; background: #f1f5f9; border-radius: 6px;" class="is-flex is-align-items-center is-justify-content-center">
-              <span class="icon is-large has-text-grey-light"><i class="ph ph-megaphone fa-2x"></i></span>
+            <div style="height:200px;border-radius:12px;" class="ns-section--gradient is-flex is-align-items-center is-justify-content-center">
+              <span class="icon is-large has-text-grey-light"><i class="ph ph-megaphone" style="font-size:2rem;"></i></span>
             </div>
           </div>
         </div>

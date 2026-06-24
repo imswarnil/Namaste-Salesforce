@@ -1,27 +1,31 @@
 {{!< default}}
 
 {{#tag}}
-  <section class="hero is-small" style="background-image: url('{{img_url feature_image}}')">
-    <!-- Hero content: will be in the middle -->
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title is-size-1 ">
-          {{name}}
-        </h1>
-        <h2 class="subtitle">
-          {{description}}
-        </h2>
-      </div>
+  <section class="ns-hero"{{#if feature_image}} style="background-image: linear-gradient(rgba(10,10,20,0.65), rgba(10,10,20,0.78)), url('{{img_url feature_image size='xl'}}'); background-size: cover; background-position: center;"{{/if}}>
+    <div class="ns-hero-mesh" aria-hidden="true">
+      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+    </div>
+    <div class="container ns-hero__content has-text-centered">
+      <span class="ns-eyebrow ns-fade-up">Topic</span>
+      <h1 class="ns-hero__title ns-fade-up ns-stagger-1">{{name}}</h1>
+      {{#if description}}
+        <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">{{description}}</p>
+      {{/if}}
+      <p class="ns-fade-up ns-stagger-3 mt-3" style="opacity: 0.7;">
+        <span class="tag ns-badge is-rounded">{{plural ../pagination.total empty="No posts" singular="% post" plural="% posts"}}</span>
+      </p>
     </div>
   </section>
 {{/tag}}
 
-<section class="posts">
-  <div class="container">
+<section class="ns-section">
+  <div class="ns-container">
     {{!-- Latest Posts --}}
-    <div class="columns is-multiline">
+    <div class="ns-grid ns-grid--3">
       {{#foreach posts }}
-        <div class="column is-12-mobile is-6-tablet is-4-widescreen is-6-desktop">
+        <div class="ns-fade-up ns-stagger-{{@number}}">
           {{> post-card}}
         </div>
       {{/foreach}}

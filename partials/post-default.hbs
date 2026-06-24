@@ -1,36 +1,62 @@
+{{!-- partials/post-default.hbs — fallback article layout --}}
 
-<section class="hero background-img is-large" style="background-image: url('{{img_url feature_image}}')">
-  <!-- Hero content: will be in the middle -->
-  <div class="hero-body">
-    <div class="container has-text-centered">
-      <h1 class="title has-text-white is-size-1 has-text-weight-bold">
-        {{title}}
-      </h1>
-      {{#primary_author}}
-        <a href="{{url}}" class="has-text-light is-size-4">{{name}}</a>
-      {{/primary_author}}
-    </div>
+{{!-- Hero with feature image background --}}
+{{#if feature_image}}
+<section class="ns-hero" style="background-image: url('{{img_url feature_image size="xl"}}'); background-size: cover; background-position: center; min-height: 420px;">
+  <div class="ns-hero-mesh" aria-hidden="true">
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+  </div>
+  <div class="container ns-hero__content has-text-centered">
+    <h1 class="ns-hero__title ns-fade-up">{{title}}</h1>
+    {{#primary_author}}
+      <a href="{{url}}" class="ns-hero__subtitle ns-fade-up ns-stagger-1">{{name}}</a>
+    {{/primary_author}}
   </div>
 </section>
+{{else}}
+<section class="ns-hero">
+  <div class="ns-hero-mesh" aria-hidden="true">
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
+    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+  </div>
+  <div class="container ns-hero__content has-text-centered">
+    <h1 class="ns-hero__title ns-fade-up">{{title}}</h1>
+    {{#primary_author}}
+      <a href="{{url}}" class="ns-hero__subtitle ns-fade-up ns-stagger-1">{{name}}</a>
+    {{/primary_author}}
+  </div>
+</section>
+{{/if}}
 
-<section class="post">
-  <div class="container">
-    <div class="columns">
-      <div class="column">
-        <div class="post-content">
-          {{#if tags}}
-            <div class="post-tags">
-              {{#foreach tags limit="3"}}
-                <a class="button tag-{{slug}} is-rounded" href="{{url}}" title="{{name}}" aria-label="{{name}}s">#{{name}}</a>
-              {{/foreach}}
-            </div>
-          {{/if}}
-          <div class="post-content__inner">
-            {{content}}
+<section class="ns-section">
+  <div class="ns-container">
+    <div class="columns is-centered">
+      <div class="column is-8-desktop">
+
+        {{!-- Tag pills --}}
+        {{#if tags}}
+          <div class="tags mb-5">
+            {{#foreach tags limit="3"}}
+              <a class="tag ns-badge is-rounded" href="{{url}}" title="{{name}}" aria-label="{{name}}">
+                <i class="ph ph-hash mr-1"></i>{{name}}
+              </a>
+            {{/foreach}}
           </div>
+        {{/if}}
+
+        {{!-- Content --}}
+        <div class="content is-medium gh-content">
+          {{content}}
         </div>
+
+        {{!-- Social share --}}
         {{> social-share}}
-       {{comments}}
+
+        {{!-- Ghost native comments --}}
+        {{comments}}
+
       </div>
     </div>
   </div>
@@ -38,4 +64,3 @@
 
 {{!-- Related posts --}}
 {{> related-posts}}
-

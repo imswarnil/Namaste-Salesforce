@@ -1,0 +1,148 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// animations.scss — Namaste Salesforce
+// Keyframes + utility animation classes.
+// All motion is wrapped in prefers-reduced-motion: no-preference guards.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "variables" as sf;
+
+// ─── Keyframes ──────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: no-preference) {
+
+  // Fade + slide up
+  @keyframes ns-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // Fade in only
+  @keyframes ns-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  // Gentle float (cards / decorative blobs)
+  @keyframes ns-float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-10px); }
+  }
+
+  // Gradient position shift (animates background-position on gradient-text / hero)
+  @keyframes ns-gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  // Pulse glow (used for CTA buttons / accent rings)
+  @keyframes ns-glow-pulse {
+    0%, 100% {
+      box-shadow: 0 0 8px rgba(#0176D3, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(#0176D3, 0.7), 0 0 40px rgba(#4F46E5, 0.35);
+    }
+  }
+
+  // Marquee scroll (logo strip)
+  @keyframes ns-marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  // Scale bounce (icon / stat number entrance)
+  @keyframes ns-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  // Blob morph (decorative hero background blobs)
+  @keyframes ns-blob-morph {
+    0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    25%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    50%       { border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%; }
+    75%       { border-radius: 70% 30% 50% 50% / 30% 50% 70% 50%; }
+  }
+
+} // end prefers-reduced-motion
+
+// ─── Utility classes ────────────────────────────────────────────────────────
+// These classes are applied via JS IntersectionObserver or directly in markup.
+// The motion only activates under no-preference; otherwise elements are visible.
+
+.ns-fade-up {
+  // Default state: visible (no motion preference or reduced motion)
+  opacity: 1;
+  transform: translateY(0);
+
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: ns-fade-up 0.6s sf.$sf-ease-out both;
+  }
+}
+
+.ns-fade-in {
+  opacity: 1;
+
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    animation: ns-fade-in 0.5s sf.$sf-ease-out both;
+  }
+}
+
+.ns-scale-in {
+  opacity: 1;
+  transform: scale(1);
+
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    transform: scale(0.85);
+    animation: ns-scale-in 0.5s sf.$sf-ease-spring both;
+  }
+}
+
+.ns-float {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-float 3s ease-in-out infinite;
+  }
+}
+
+// ─── Stagger delay helpers (apply alongside animation classes) ───────────────
+// Usage: <div class="ns-fade-up ns-stagger-2">…</div>
+
+.ns-stagger-1 { animation-delay: #{sf.$sf-stagger-1}; }
+.ns-stagger-2 { animation-delay: #{sf.$sf-stagger-2}; }
+.ns-stagger-3 { animation-delay: #{sf.$sf-stagger-3}; }
+.ns-stagger-4 { animation-delay: #{sf.$sf-stagger-4}; }
+.ns-stagger-5 { animation-delay: #{sf.$sf-stagger-5}; }
+.ns-stagger-6 { animation-delay: #{sf.$sf-stagger-6}; }
+
+// ─── Gradient shift (animated gradient background) ──────────────────────────
+// Applied to elements with a gradient background using background-size trick
+.ns-gradient-animated {
+  background-size: 200% 200%;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-gradient-shift 6s ease infinite;
+  }
+}
+
+// ─── Glow pulse button helper ────────────────────────────────────────────────
+.ns-glow-pulse {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ns-glow-pulse 2.5s ease-in-out infinite;
+  }
+}

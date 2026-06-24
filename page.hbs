@@ -3,74 +3,67 @@
 {{#page}}
 
 {{!-- 1. PAGE HEADER --}}
-<section class="hero is-smallmb-6">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title is-1 has-text-dark has-text-weight-bold">{{title}}</h1>
-      {{#if custom_excerpt}}
-        <p class="subtitle is-4 has-text-grey mt-3" style="max-width: 800px;">
-          {{custom_excerpt}}
-        </p>
-      {{/if}}
-    </div>
+<section class="ns-section--tight">
+  <div class="ns-container">
+    <span class="ns-eyebrow ns-fade-up">Page</span>
+    <h1 class="ns-display ns-gradient-text ns-fade-up ns-stagger-1">{{title}}</h1>
+    {{#if custom_excerpt}}
+      <p class="ns-lead ns-fade-up ns-stagger-2" style="max-width: 800px;">
+        {{custom_excerpt}}
+      </p>
+    {{/if}}
   </div>
 </section>
 
 {{!-- 2. MAIN LAYOUT --}}
-<section class="section pt-0">
-  <div class="container">
+<section class="ns-section" style="padding-top: 0;">
+  <div class="ns-container">
     <div class="columns is-variable is-6">
-      
-      {{!-- LEFT: MAIN PAGE CONTENT (8 Columns wide on desktop) --}}
+
+      {{!-- LEFT: MAIN PAGE CONTENT --}}
       <div class="column is-8-desktop">
-        
-        {{!-- Optional Feature Image for the page --}}
+
+        {{!-- Optional Feature Image --}}
         {{#if feature_image}}
-          <figure class="image is-16by9 mb-6" style="border-radius: 12px; overflow: hidden; border: 1px solid #f5f5f5;">
+          <figure class="image is-16by9 mb-6 ns-scale-in" style="border-radius: 16px; overflow: hidden;">
             <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover; height: 100%; width: 100%;">
           </figure>
         {{/if}}
 
-        {{!-- 
-          CRITICAL: Bulma's 'content' class tells the framework to apply typography 
-          styling to the raw HTML output by the Ghost WYSIWYG editor. 
-          'is-medium' makes the text slightly larger for better reading. 
-        --}}
-        <div class="content is-medium has-text-grey-dark">
+        <div class="content is-medium gh-content">
           {{content}}
         </div>
-        
+
       </div>
 
-      {{!-- RIGHT: THE SIDEBAR (4 Columns wide on desktop) --}}
+      {{!-- RIGHT: SIDEBAR --}}
       <div class="column is-4-desktop">
-        
-        {{!-- CSS Sticky positions the sidebar so it follows the user as they scroll --}}
         <div style="position: sticky; top: 2rem;">
-          
-          {{!-- Sidebar Widget 1: Platform/Author Info --}}
-          <div class="box is-shadowless mb-5" style="border: 1px solid #e2e8f0; border-radius: 12px;">
+
+          {{!-- Widget 1: Platform/Author Info --}}
+          <div class="ns-glass-card p-5 mb-5" style="border-radius: 16px;">
             <h3 class="title is-5 mb-3">About Namaste Salesforce</h3>
-            <p class="is-size-6 has-text-grey mb-4">
+            <p class="is-size-6 mb-4" style="opacity: 0.75;">
               Built by Swarnil, this open-source LMS is dedicated to helping developers master the Salesforce ecosystem, from Admin basics to advanced CRM Analytics.
             </p>
-            <a href="/training/" class="button is-primary is-fullwidth is-outlined is-rounded has-text-weight-bold">
-              Explore the Curriculum
+            <a href="/training/" class="button is-gradient is-fullwidth is-rounded has-text-weight-bold">
+              <span>Explore the Curriculum</span>
+              <span class="icon is-small"><i class="ph ph-arrow-right"></i></span>
             </a>
           </div>
 
-          {{!-- Sidebar Widget 2: Newsletter Subscribe --}}
-          <div class="box has-background-dark has-text-white mb-5" style="border-radius: 12px;">
-            <h3 class="title is-5 has-text-white mb-2">Join the Community</h3>
-            <p class="is-size-7 has-text-grey-light mb-4">Get the latest tutorials and platform updates delivered straight to your inbox.</p>
-            
+          {{!-- Widget 2: Newsletter Subscribe --}}
+          <div class="ns-glass-card p-5 mb-5" style="border-radius: 16px;">
+            <h3 class="title is-5 mb-2">Join the Community</h3>
+            <p class="is-size-7 mb-4" style="opacity: 0.7;">Get the latest tutorials and platform updates delivered straight to your inbox.</p>
+
             <form data-members-form="subscribe">
               <div class="field">
                 <div class="control mb-2">
-                  <input class="input is-rounded is-small has-background-white-ter" type="email" data-members-email placeholder="Your email address" aria-label="Email" required>
+                  <input class="input is-rounded is-small" type="email" data-members-email placeholder="Your email address" aria-label="Email" required>
                 </div>
                 <div class="control">
-                  <button class="button is-primary is-rounded is-small is-fullwidth has-text-weight-bold" type="submit">
+                  <button class="button is-gradient ns-gradient-animated is-rounded is-small is-fullwidth has-text-weight-bold" type="submit">
                     Subscribe Now
                   </button>
                 </div>
@@ -78,22 +71,21 @@
             </form>
           </div>
 
-          {{!-- Sidebar Widget 3: Quick Links --}}
-          <div class="box is-shadowless" style="border: 1px solid #e2e8f0; border-radius: 12px;">
-            <h3 class="title is-6 is-uppercase has-text-weight-bold has-text-grey mb-3">Helpful Links</h3>
+          {{!-- Widget 3: Quick Links --}}
+          <div class="ns-glass-card p-5" style="border-radius: 16px;">
+            <h3 class="ns-eyebrow mb-3">Helpful Links</h3>
             <div class="content is-small">
               <ul style="margin-left: 1em; margin-top: 0;">
-                <li><a href="/contact/" class="has-text-dark has-text-weight-semibold">Contact Support</a></li>
-                <li><a href="/documentation/" class="has-text-dark has-text-weight-semibold">Read the Documentation</a></li>
-                <li><a href="https://github.com/iamswarnil" target="_blank" rel="noopener" class="has-text-dark has-text-weight-semibold">GitHub Repository</a></li>
+                <li><a href="/contact/" class="has-text-weight-semibold">Contact Support</a></li>
+                <li><a href="/documentation/" class="has-text-weight-semibold">Read the Documentation</a></li>
+                <li><a href="https://github.com/iamswarnil" target="_blank" rel="noopener" class="has-text-weight-semibold">GitHub Repository</a></li>
               </ul>
             </div>
           </div>
 
         </div>
-        
       </div>
-      
+
     </div>
   </div>
 </section>

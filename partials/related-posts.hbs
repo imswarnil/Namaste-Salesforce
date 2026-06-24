@@ -1,15 +1,20 @@
 {{!-- Related Posts --}}
 {{#get "posts" include="tags,authors" limit="3" filter="id:-{{id}}+tag:{{primary_tag.slug}}" as |related|}}
-  <section class="related-posts">
-    <div class="container">
-      <h4 class="has-text-centered">{{t "You might also like"}}</h4>
-      <div class="columns is-multiline">
-        {{#foreach related}}
-          <div class="column is-12-mobile is-6-tablet is-4-widescreen is-6-desktop">
-            {{> post-card}}
-          </div>
-        {{/foreach}}
+  {{#if related}}
+    <section class="ns-section--tight">
+      <div class="ns-container">
+        <div class="has-text-centered mb-5">
+          <span class="ns-eyebrow">Continue Reading</span>
+          <h3 class="title is-4 ns-gradient-text mt-2">{{t "You might also like"}}</h3>
+        </div>
+        <div class="ns-grid ns-grid--3">
+          {{#foreach related}}
+            <div class="ns-fade-up ns-stagger-{{@number}}">
+              {{> post-card}}
+            </div>
+          {{/foreach}}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  {{/if}}
 {{/get}}
