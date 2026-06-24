@@ -1,38 +1,44 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // screen.scss — Namaste Salesforce
-// Compiled entry point. Order is critical — Bulma config must come first.
+// ---------------------------------------------------------------------------
+// The single compiled entry point (gulp builds this → assets/built/screen.css).
+//
+// The theme uses an in-house, SLDS-flavoured CSS framework (assets/scss/
+// framework/*) instead of Bulma. Load order matters:
+//
+//   1. Design tokens (variables) — no output, just $-variables for everyone.
+//   2. Framework base/reset       — element defaults + document theming.
+//   3. Framework layout/components — grid, buttons, forms, navbar, …
+//   4. Project components (ns-*)   — bespoke cards, hero, etc.
+//   5. Utility helpers             — spacing/flex/visibility (use !important,
+//                                    so they win regardless of order).
+//   6. Article + TOC + animations  — long-form content styling.
+//   7. Web fonts                   — plain CSS @import (kept last).
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ─── 1. BULMA UTILITIES CONFIGURATION ───────────────────────────────────────
-// Must come before @use "bulma/sass" — these set the Bulma CSS variable base.
-$salesforce-blue: #0176D3;
+// ─── 1. Framework: base / reset ─────────────────────────────────────────────
+@use "framework/base";
 
-@use "bulma/sass/utilities" with (
-  $primary:        #0176D3,
-  $link:           #0176D3,
-  $family-primary: '"Plus Jakarta Sans", sans-serif',
-  $family-code:    '"JetBrains Mono", monospace'
-);
+// ─── 2. Framework: layout & components ──────────────────────────────────────
+@use "framework/layout";
+@use "framework/typography";
+@use "framework/buttons";
+@use "framework/forms";
+@use "framework/tags";
+@use "framework/navbar";
+@use "framework/menu";
+@use "framework/card";
 
-// ─── 2. BULMA COMPONENT OVERRIDES ───────────────────────────────────────────
-// Per-component `with` overrides must also precede the full Bulma load.
-@use "bulma/sass/components/card" with (
-  $card-radius: 16px
-);
-
-// ─── 3. BULMA CORE ──────────────────────────────────────────────────────────
-@use "bulma/sass";
-
-// ─── 4. DESIGN SYSTEM TOKENS ────────────────────────────────────────────────
-@use "variables";
-
-// ─── 5. PROJECT PARTIALS ────────────────────────────────────────────────────
-@use "animations";
+// ─── 3. Project components (bespoke ns-* design system) ─────────────────────
 @use "components";
+
+// ─── 4. Utility helpers (spacing / flex / text / visibility) ────────────────
+@use "framework/helpers";
+
+// ─── 5. Long-form content, table of contents, motion ────────────────────────
+@use "animations";
 @use "toc";
 @use "ghost";
 
-// ─── 6. WEB FONTS ───────────────────────────────────────────────────────────
-// Standard CSS @import for external Google Fonts URLs.
-// Must come after all @use rules in the compiled output.
+// ─── 6. Web fonts (external Google Fonts — must stay after @use rules) ───────
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");

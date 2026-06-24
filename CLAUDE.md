@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), forked from Ghost's Casper theme but heavily customized for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is SCSS built on **Bulma 1.x**. The `package.json` metadata (name "casper", TryGhost repo URL, Ghost Foundation author) is leftover from the fork — the actual theme is Namaste Salesforce.
+A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), forked from Ghost's Casper theme but heavily customized for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is a **custom, in-house SCSS framework** under `assets/scss/framework/` — **Bulma has been removed**. The framework reimplements only the utility/component classes the templates use (grid, buttons, navbar, forms, helpers, …), themed with the design tokens in `variables.scss`.
 
 ## Commands
 
@@ -22,7 +22,7 @@ There is no unit-test framework. "Testing" means **gscan** theme validation — 
 
 `gulp build` runs three steps in series, all output to `assets/built/` (committed to git — Ghost serves these directly):
 
-- **css**: `assets/scss/screen.scss` → Sass (with `loadPaths: ['node_modules']` so Bulma resolves) → PostCSS (autoprefixer + cssnano) → `built/screen.css` + sourcemap.
+- **css**: `assets/scss/screen.scss` → Sass → PostCSS (autoprefixer + cssnano) → `built/screen.css` + sourcemap. No external SCSS dependencies — the framework resolves via relative `@use`.
 - **js**: `assets/js/lib/*.js` then `assets/js/*.js`, concatenated (lib first so app code can depend on it) → uglify → `built/casper.js`.
 - **locales**: merges `locales-local/` overrides into `locales/` via `@tryghost/theme-translations`.
 
@@ -41,7 +41,8 @@ Because `assets/built/` is committed, **rebuild and commit the built output** wh
 - `icons/` holds inline SVG icons — include via `{{> "icons/name"}}`. Note: most UI icons in templates use **Phosphor icons** (`<i class="ph-...">`), loaded from the unpkg CDN in `default.hbs`.
 
 **Styling (`assets/scss/`):**
-- `screen.scss` is the only compiled entry point (~29 lines). It sets `$salesforce-blue` and other Bulma vars *before* `@use "bulma/sass"`, then pulls in project partials. Bulma config overrides MUST come before loading the framework.
+- `screen.scss` is the only compiled entry point. It loads the in-house framework (`framework/*`), then bespoke components, then utility helpers (helpers use `!important`, so load order between them and components doesn't matter), then content/TOC/animation styles, and finally the web-font `@import`.
+- `framework/` is the custom CSS framework that replaced Bulma: `_base`, `_layout`, `_helpers`, `_buttons`, `_forms`, `_tags`, `_navbar`, `_menu`, `_card`, `_typography`. Each partial reimplements the Bulma-compatible class names the templates rely on (`.columns`/`.column`, `.button`, `.navbar`, `.tag`, `is-*`/`has-*` helpers, …).
 - `variables.scss` defines the Salesforce brand palette and dark-mode tokens (`$sf-*`).
 - `ghost.scss` styles Ghost's generated post/Koenig-card content; `toc.scss` styles the table of contents.
 

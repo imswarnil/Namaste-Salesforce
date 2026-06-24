@@ -1,0 +1,185 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_navbar.scss — Top navigation bar
+// ---------------------------------------------------------------------------
+// Re-implements Bulma's `.navbar` system (brand, burger, menu, start/end,
+// items, dropdown, divider). Collapses to a burger menu below 1024px to match
+// the `is-hidden-desktop` / `is-hidden-touch` markup in header.hbs. The glass
+// surface itself comes from `.ns-glass` (components.scss); this file owns
+// layout + behaviour only.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "../variables" as sf;
+
+$navbar-height: 3.5rem;
+$navbar-breakpoint: 1024px;
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: sf.$sf-z-navbar;
+  min-height: $navbar-height;
+  border-bottom: 1px solid sf.$sf-border-light;
+
+  [data-theme="dark"] & { border-bottom-color: sf.$sf-dark-border; }
+
+  // Container inside the bar lays brand + menu out horizontally on desktop.
+  > .container {
+    display: flex;
+    align-items: stretch;
+    min-height: $navbar-height;
+    width: 100%;
+  }
+}
+
+// ─── Brand (logo + burger) ───────────────────────────────────────────────────
+.navbar-brand {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  min-height: $navbar-height;
+}
+
+// ─── Items ───────────────────────────────────────────────────────────────────
+.navbar-item,
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  color: sf.$sf-text;
+  font-size: 0.95rem;
+  line-height: 1.5;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text; }
+}
+
+a.navbar-item:hover,
+.navbar-link:hover {
+  color: sf.$sf-blue;
+  background-color: rgba(sf.$sf-blue, 0.06);
+
+  [data-theme="dark"] & {
+    color: sf.$sf-dark-link;
+    background-color: rgba(sf.$sf-dark-link, 0.1);
+  }
+}
+
+// Active nav item (set by navigation.hbs for the current section).
+.navbar-item.is-active,
+a.navbar-item.is-active {
+  color: sf.$sf-blue;
+  font-weight: 600;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-link; }
+}
+
+.navbar-item img { max-height: 2rem; }
+
+.navbar-divider {
+  display: block;
+  height: 1px;
+  border: none;
+  margin: 0.5rem 0;
+  background-color: sf.$sf-border-light;
+
+  [data-theme="dark"] & { background-color: sf.$sf-dark-border; }
+}
+
+// ─── Burger (mobile toggle) ──────────────────────────────────────────────────
+.navbar-burger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: $navbar-height;
+  height: $navbar-height;
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: currentColor;
+
+  span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background-color: currentColor;
+    border-radius: 2px;
+    transition: transform sf.$sf-duration-fast sf.$sf-ease,
+                opacity sf.$sf-duration-fast sf.$sf-ease;
+  }
+  // Bulma burgers render 4 spans; we use the middle two visually.
+  span:first-child,
+  span:last-child { display: none; }
+
+  // Animate into an "X" when open.
+  &.is-active span:nth-child(2) { transform: translateY(3.5px) rotate(45deg); }
+  &.is-active span:nth-child(3) { transform: translateY(-3.5px) rotate(-45deg); }
+}
+
+// ─── Menu (the collapsible part) ─────────────────────────────────────────────
+.navbar-menu { display: none; }
+
+.navbar-start { margin-right: auto; }
+.navbar-end   { margin-left: auto; }
+
+// ── Touch / mobile (< 1024): menu drops down when toggled ──
+@media screen and (max-width: #{$navbar-breakpoint - 1px}) {
+  .navbar-menu {
+    padding: 0.5rem 0;
+    box-shadow: sf.$sf-shadow-lg;
+    background-color: sf.$sf-white;
+    border-top: 1px solid sf.$sf-border-light;
+
+    &.is-active { display: block; }
+
+    [data-theme="dark"] & {
+      background-color: sf.$sf-dark-surface;
+      border-top-color: sf.$sf-dark-border;
+    }
+  }
+
+  .navbar-burger { display: flex; }
+  .navbar-item   { padding: 0.6rem 1rem; }
+}
+
+// ── Desktop (≥ 1024): horizontal menu, burger hidden ──
+@media screen and (min-width: #{$navbar-breakpoint}) {
+  .navbar-burger { display: none; }
+
+  .navbar-menu {
+    display: flex;
+    align-items: stretch;
+    flex-grow: 1;
+  }
+
+  .navbar-start,
+  .navbar-end {
+    display: flex;
+    align-items: stretch;
+  }
+}
+
+// ─── Dropdown (hoverable sub-menu) ───────────────────────────────────────────
+.navbar-item.has-dropdown { position: relative; }
+
+.navbar-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 12rem;
+  padding: 0.5rem 0;
+  background-color: sf.$sf-white;
+  border: 1px solid sf.$sf-border-light;
+  border-radius: sf.$sf-radius-md;
+  box-shadow: sf.$sf-shadow-lg;
+  z-index: sf.$sf-z-dropdown;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
+  }
+}
+
+.navbar-item.has-dropdown:hover .navbar-dropdown { display: block; }

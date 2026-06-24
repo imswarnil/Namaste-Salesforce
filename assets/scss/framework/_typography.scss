@@ -1,0 +1,133 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_typography.scss — Title / subtitle / content prose
+// ---------------------------------------------------------------------------
+// Drop-in replacements for Bulma's `.title`, `.subtitle` and `.content`
+// helpers. Sizes follow the familiar `is-1` … `is-7` scale so existing
+// templates keep working unchanged.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "sass:map";
+@use "../variables" as sf;
+
+// Shared size scale used by .title.is-N and .subtitle.is-N
+$title-sizes: (
+  1: 3rem,
+  2: 2.5rem,
+  3: 2rem,
+  4: 1.5rem,
+  5: 1.25rem,
+  6: 1rem,
+  7: 0.75rem,
+);
+
+// ─── .title ──────────────────────────────────────────────────────────────────
+// Bold display heading. Default size is `is-3` (2rem), matching Bulma.
+.title {
+  display: block;
+  font-weight: 700;
+  line-height: 1.125;
+  letter-spacing: -0.01em;
+  color: sf.$sf-text;
+  font-size: map.get($title-sizes, 3);
+
+  [data-theme="dark"] & {
+    color: sf.$sf-dark-text;
+  }
+
+  // Tighten the gap when a subtitle immediately follows a title.
+  &:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+
+  strong {
+    font-weight: 800;
+    color: inherit;
+  }
+
+  @each $i, $size in $title-sizes {
+    &.is-#{$i} {
+      font-size: $size;
+    }
+  }
+}
+
+// ─── .subtitle ───────────────────────────────────────────────────────────────
+// Lighter supporting heading. Default size is `is-5` (1.25rem).
+.subtitle {
+  display: block;
+  font-weight: 400;
+  line-height: 1.25;
+  color: sf.$sf-text-weak;
+  font-size: map.get($title-sizes, 5);
+
+  [data-theme="dark"] & {
+    color: sf.$sf-dark-text-muted;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+
+  strong {
+    font-weight: 600;
+    color: inherit;
+  }
+
+  @each $i, $size in $title-sizes {
+    &.is-#{$i} {
+      font-size: $size;
+    }
+  }
+}
+
+// When a subtitle directly follows a title, pull it closer.
+.title + .subtitle {
+  margin-top: -1rem;
+}
+
+// ─── .content — prose styling for rendered markup ───────────────────────────
+// Lightweight version of Bulma's `.content`. Article body styling proper
+// lives in ghost.scss (`.gh-content`); this covers ad-hoc `.content` blocks.
+.content {
+  line-height: 1.7;
+
+  > *:not(:last-child) {
+    margin-bottom: 1.25rem;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: sf.$sf-text;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+
+    [data-theme="dark"] & {
+      color: sf.$sf-dark-text;
+    }
+  }
+
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.6rem; }
+  h3 { font-size: 1.3rem; }
+  h4 { font-size: 1.1rem; }
+
+  ul,
+  ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  li + li {
+    margin-top: 0.4rem;
+  }
+
+  blockquote {
+    border-left: 4px solid sf.$sf-blue;
+    background-color: sf.$sf-cloud-warm;
+    padding: 1rem 1.25rem;
+    border-radius: 0 sf.$sf-radius sf.$sf-radius 0;
+
+    [data-theme="dark"] & {
+      background-color: sf.$sf-dark-surface-2;
+    }
+  }
+}

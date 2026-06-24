@@ -1,0 +1,144 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_base.scss — Reset, document defaults, base elements
+// ---------------------------------------------------------------------------
+// Part of the in-house CSS framework that replaces Bulma. Sets a predictable
+// baseline (box-sizing, margins, typography) and themes the document body for
+// light/dark mode using the design tokens in variables.scss.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "../variables" as sf;
+
+// ─── Modern box model + margin reset ────────────────────────────────────────
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  // 16px root keeps the `is-size-*` / `title is-N` scale predictable.
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  // Honour Ghost's custom-font picker (Admin → Design) when set, else fall
+  // back to the theme's default type stack.
+  font-family: var(--gh-font-body, #{sf.$sf-font-family});
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+  color: sf.$sf-text;
+  background-color: sf.$sf-white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background-color sf.$sf-duration-base sf.$sf-ease,
+              color sf.$sf-duration-base sf.$sf-ease;
+
+  // Dark theme is driven by [data-theme="dark"] on <html> (see default.hbs).
+  [data-theme="dark"] & {
+    color: sf.$sf-dark-text;
+    background-color: sf.$sf-dark-bg;
+  }
+}
+
+// ─── Headings: strip UA margins; size handled by .title / utilities ─────────
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--gh-font-heading, #{sf.$sf-font-family});
+  font-weight: 700;
+  line-height: 1.2;
+  color: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+// ─── Links ──────────────────────────────────────────────────────────────────
+a {
+  color: sf.$sf-blue;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color sf.$sf-duration-fast sf.$sf-ease;
+
+  &:hover {
+    color: sf.$sf-blue-dark;
+  }
+
+  [data-theme="dark"] & {
+    color: sf.$sf-dark-link;
+
+    &:hover {
+      color: lighten(sf.$sf-dark-link, 8%);
+    }
+  }
+}
+
+// ─── Media ───────────────────────────────────────────────────────────────────
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+// ─── Forms inherit type by default ──────────────────────────────────────────
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+// ─── Code / preformatted ─────────────────────────────────────────────────────
+code,
+pre,
+kbd,
+samp {
+  font-family: sf.$sf-font-mono;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: sf.$sf-border;
+  margin: 1.5rem 0;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-border;
+  }
+}
+
+// ─── Accessible focus ring ───────────────────────────────────────────────────
+:focus-visible {
+  outline: 2px solid sf.$sf-blue;
+  outline-offset: 2px;
+  border-radius: sf.$sf-radius;
+}
+
+// ─── Text selection ──────────────────────────────────────────────────────────
+::selection {
+  background-color: rgba(sf.$sf-blue, 0.2);
+  color: sf.$sf-blue-dark;
+}
+
+[data-theme="dark"] ::selection {
+  background-color: rgba(sf.$sf-dark-link, 0.3);
+  color: sf.$sf-dark-text;
+}

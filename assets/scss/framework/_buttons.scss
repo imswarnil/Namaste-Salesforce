@@ -1,0 +1,170 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_buttons.scss — Buttons, button groups, icons
+// ---------------------------------------------------------------------------
+// Re-implements Bulma's `.button` / `.buttons` / `.icon` APIs, themed with the
+// Salesforce palette. Colour variants are generated from a single map; each
+// exposes solid, `.is-light` (tinted) and `.is-outlined` styles.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "sass:map";
+@use "../variables" as sf;
+
+// name → (solid-bg, solid-text, light-bg, light-text)
+$btn-colors: (
+  "primary": (sf.$sf-blue,     #fff, sf.$sf-blue-lighter,            sf.$sf-blue-dark),
+  "link":    (sf.$sf-blue,     #fff, sf.$sf-blue-lighter,            sf.$sf-blue-dark),
+  "info":    (sf.$sf-blue-mid, #fff, sf.$sf-blue-lighter,            sf.$sf-blue-dark),
+  "success": (sf.$sf-success,  #fff, rgba(sf.$sf-success, 0.12),     darken(sf.$sf-success, 8%)),
+  "warning": (sf.$sf-warning,  #1a1a1a, rgba(sf.$sf-warning, 0.16),  #94590a),
+  "danger":  (sf.$sf-error,    #fff, rgba(sf.$sf-error, 0.12),       sf.$sf-error),
+  "dark":    (#2b2b2b,         #fff, #f0f0f0,                        #1a1a1a),
+  "light":   (sf.$sf-cloud,    #1a1a1a, sf.$sf-cloud-warm,           #1a1a1a),
+  "white":   (#fff,            #1a1a1a, #fff,                        #1a1a1a),
+);
+
+// ─── Base button ─────────────────────────────────────────────────────────────
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  padding: calc(0.5em - 1px) 1em;
+  border: 1px solid sf.$sf-border;
+  border-radius: sf.$sf-radius;
+  background-color: sf.$sf-white;
+  color: sf.$sf-text;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: top;
+  transition: background-color sf.$sf-duration-fast sf.$sf-ease,
+              border-color sf.$sf-duration-fast sf.$sf-ease,
+              color sf.$sf-duration-fast sf.$sf-ease,
+              box-shadow sf.$sf-duration-fast sf.$sf-ease;
+
+  &:hover { border-color: sf.$sf-text-muted; color: sf.$sf-text; }
+  &:active { transform: translateY(1px); }
+
+  // Icons sit comfortably inside the flex row.
+  .icon {
+    height: 1.5em;
+    width: 1.5em;
+    &:first-child:not(:last-child) { margin-left: -0.25em; }
+    &:last-child:not(:first-child) { margin-right: -0.25em; }
+  }
+
+  // Neutral button adapts to dark mode.
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface-2;
+    border-color: sf.$sf-dark-border;
+    color: sf.$sf-dark-text;
+
+    &:hover { border-color: sf.$sf-dark-text-weak; color: sf.$sf-dark-text; }
+  }
+
+  // ── Sizes ──
+  &.is-small  { font-size: 0.75rem; border-radius: sf.$sf-radius-xs + 2px; }
+  &.is-medium { font-size: 1.25rem; }
+  &.is-large  { font-size: 1.5rem; }
+
+  // ── Shape / width ──
+  &.is-rounded   { border-radius: sf.$sf-radius-pill; padding-left: 1.25em; padding-right: 1.25em; }
+  &.is-fullwidth { display: flex; width: 100%; }
+
+  // ── Non-interactive (e.g. "Coming soon") ──
+  &.is-static {
+    background-color: sf.$sf-cloud;
+    border-color: sf.$sf-border;
+    color: sf.$sf-text-muted;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  // ── Ghost: link-like button ──
+  &.is-ghost {
+    background: none;
+    border-color: transparent;
+    color: sf.$sf-blue;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// ─── Colour variants (generated) ─────────────────────────────────────────────
+@each $name, $spec in $btn-colors {
+  $bg:        map.get($btn-colors, $name);
+  $solid-bg:  nth($spec, 1);
+  $solid-fg:  nth($spec, 2);
+  $light-bg:  nth($spec, 3);
+  $light-fg:  nth($spec, 4);
+
+  .button.is-#{$name} {
+    background-color: $solid-bg;
+    border-color: $solid-bg;
+    color: $solid-fg;
+
+    &:hover {
+      background-color: darken($solid-bg, 6%);
+      border-color: darken($solid-bg, 6%);
+      color: $solid-fg;
+    }
+
+    // Tinted variant: `.is-#{$name}.is-light`
+    &.is-light {
+      background-color: $light-bg;
+      border-color: transparent;
+      color: $light-fg;
+      &:hover { background-color: darken($light-bg, 4%); color: $light-fg; }
+    }
+
+    // Outlined variant
+    &.is-outlined {
+      background-color: transparent;
+      border-color: $solid-bg;
+      color: $solid-bg;
+      &:hover { background-color: $solid-bg; color: $solid-fg; }
+    }
+  }
+}
+
+// White outlined button needs a white border (used on dark hero backgrounds).
+.button.is-white.is-outlined {
+  border-color: #fff;
+  color: #fff;
+  background-color: transparent;
+  &:hover { background-color: #fff; color: sf.$sf-text; }
+}
+
+// ─── Button group ────────────────────────────────────────────────────────────
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+
+  &.is-centered { justify-content: center; }
+  &.are-small .button { font-size: 0.75rem; }
+}
+
+// ─── Icon wrapper ────────────────────────────────────────────────────────────
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+
+  &.is-small  { width: 1rem;   height: 1rem; }
+  &.is-medium { width: 2rem;   height: 2rem; }
+  &.is-large  { width: 3rem;   height: 3rem; }
+}
+
+.icon-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  vertical-align: top;
+}

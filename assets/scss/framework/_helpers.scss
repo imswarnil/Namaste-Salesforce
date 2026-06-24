@@ -1,0 +1,209 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_helpers.scss — Utility classes
+// ---------------------------------------------------------------------------
+// Re-implements the Bulma utility helpers the templates rely on: spacing,
+// text colour/alignment/weight/size, flexbox, display and responsive
+// visibility. Generated with loops to stay compact. Breakpoints follow
+// Bulma's conventions so existing `is-hidden-*` / `is-size-*` markup works.
+//
+//   mobile  : ≤ 768px        touch   : ≤ 1023px
+//   tablet  : ≥ 769px        desktop : ≥ 1024px        widescreen: ≥ 1216px
+// ═══════════════════════════════════════════════════════════════════════════
+@use "sass:map";
+@use "../variables" as sf;
+
+// ─── Colour map (brand + greys) ─────────────────────────────────────────────
+$colors: (
+  "primary":       sf.$sf-blue,
+  "link":          sf.$sf-blue,
+  "info":          sf.$sf-blue-mid,
+  "success":       sf.$sf-success,
+  "warning":       sf.$sf-warning,
+  "danger":        sf.$sf-error,
+  "dark":          sf.$sf-text,
+  "black":         #0a0a0a,
+  "light":         sf.$sf-cloud,
+  "white":         sf.$sf-white,
+  "grey":          sf.$sf-text-weak,
+  "grey-light":    sf.$sf-text-muted,
+  "grey-dark":     #4a4a4a,
+  "primary-light": sf.$sf-blue-light,
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 1. Spacing — margins & padding (Bulma 0–6 scale)
+// ═══════════════════════════════════════════════════════════════════════════
+$spacing: (
+  0: 0,
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 0.75rem,
+  4: 1rem,
+  5: 1.5rem,
+  6: 3rem,
+);
+
+$directions: (
+  "t": ("top"),
+  "r": ("right"),
+  "b": ("bottom"),
+  "l": ("left"),
+  "x": ("left", "right"),
+  "y": ("top", "bottom"),
+  "":  ("top", "right", "bottom", "left"),
+);
+
+@each $prop-abbr, $prop in ("m": "margin", "p": "padding") {
+  @each $dir-abbr, $sides in $directions {
+    @each $step, $value in $spacing {
+      .#{$prop-abbr}#{$dir-abbr}-#{$step} {
+        @each $side in $sides {
+          #{$prop}-#{$side}: $value !important;
+        }
+      }
+    }
+  }
+}
+
+// Auto margins (centering) — not in Bulma's generator but used in templates.
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.ml-auto { margin-left: auto !important; }
+.mr-auto { margin-right: auto !important; }
+.mt-auto { margin-top: auto !important; }
+.is-marginless { margin: 0 !important; }
+
+// Mobile-only spacing overrides used by a few templates.
+@media screen and (max-width: 768px) {
+  .mt-3-mobile { margin-top: 0.75rem !important; }
+  .mb-3-mobile { margin-bottom: 0.75rem !important; }
+  .mb-4-mobile { margin-bottom: 1rem !important; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 2. Text colour
+// ═══════════════════════════════════════════════════════════════════════════
+@each $name, $color in $colors {
+  .has-text-#{$name} { color: $color !important; }
+  .has-background-#{$name} { background-color: $color !important; }
+}
+
+.has-text-inherit { color: inherit !important; }
+.has-text-white-ter { color: #fafafa !important; }
+.has-background-white-ter { background-color: #fafafa !important; }
+.has-background-danger-light { background-color: rgba(sf.$sf-error, 0.12) !important; }
+.has-background-primary { background-color: sf.$sf-blue !important; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 3. Text alignment / transform / style
+// ═══════════════════════════════════════════════════════════════════════════
+.has-text-centered { text-align: center !important; }
+.has-text-left     { text-align: left !important; }
+.has-text-right    { text-align: right !important; }
+.is-uppercase      { text-transform: uppercase !important; }
+.is-italic         { font-style: italic !important; }
+
+@media screen and (min-width: 769px) {
+  .has-text-right-tablet { text-align: right !important; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 4. Font weight
+// ═══════════════════════════════════════════════════════════════════════════
+@each $name, $weight in (
+  "light": 300, "normal": 400, "medium": 500, "semibold": 600, "bold": 700
+) {
+  .has-text-weight-#{$name} { font-weight: $weight !important; }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 5. Font size — `is-size-1` … `is-size-7` (+ mobile variants)
+// ═══════════════════════════════════════════════════════════════════════════
+$sizes: (
+  1: 3rem, 2: 2.5rem, 3: 2rem, 4: 1.5rem, 5: 1.25rem, 6: 1rem, 7: 0.75rem
+);
+
+@each $i, $size in $sizes {
+  .is-size-#{$i} { font-size: $size !important; }
+}
+
+@media screen and (max-width: 768px) {
+  @each $i, $size in $sizes {
+    .is-size-#{$i}-mobile { font-size: $size !important; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 6. Display & flexbox
+// ═══════════════════════════════════════════════════════════════════════════
+.is-block        { display: block !important; }
+.is-inline       { display: inline !important; }
+.is-inline-block { display: inline-block !important; }
+.is-flex         { display: flex !important; }
+.is-inline-flex  { display: inline-flex !important; }
+.is-relative     { position: relative !important; }
+.is-clipped      { overflow: hidden !important; }
+
+.is-flex-direction-row    { flex-direction: row !important; }
+.is-flex-direction-column { flex-direction: column !important; }
+.is-flex-wrap-wrap        { flex-wrap: wrap !important; }
+.is-flex-wrap-nowrap      { flex-wrap: nowrap !important; }
+.is-flex-grow-1           { flex-grow: 1 !important; }
+.is-flex-shrink-0         { flex-shrink: 0 !important; }
+
+.is-align-items-center     { align-items: center !important; }
+.is-align-items-flex-start { align-items: flex-start !important; }
+.is-align-items-flex-end   { align-items: flex-end !important; }
+
+.is-justify-content-center        { justify-content: center !important; }
+.is-justify-content-space-between { justify-content: space-between !important; }
+.is-justify-content-flex-start    { justify-content: flex-start !important; }
+.is-justify-content-flex-end      { justify-content: flex-end !important; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 7. Misc helpers
+// ═══════════════════════════════════════════════════════════════════════════
+.is-clickable    { cursor: pointer !important; }
+// Colour-on-hover helpers (used by footer/social links).
+.hover-text-white:hover { color: #fff !important; }
+.hover-text-link:hover  { color: sf.$sf-blue !important; }
+.is-shadowless   { box-shadow: none !important; }
+.has-shadow      { box-shadow: sf.$sf-shadow-md !important; }
+.is-overlay      { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+.h-100           { height: 100% !important; }
+.is-truncated {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
+}
+
+// Accessible visually-hidden text.
+.is-sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 8. Responsive visibility (Bulma semantics)
+// ═══════════════════════════════════════════════════════════════════════════
+.is-hidden { display: none !important; }
+
+@media screen and (max-width: 768px) {
+  .is-hidden-mobile { display: none !important; }
+}
+@media screen and (min-width: 769px) {
+  .is-hidden-tablet { display: none !important; }
+}
+@media screen and (max-width: 1023px) {
+  .is-hidden-touch { display: none !important; }
+}
+@media screen and (min-width: 1024px) {
+  .is-hidden-desktop { display: none !important; }
+}
+@media screen and (min-width: 1216px) {
+  .is-hidden-widescreen { display: none !important; }
+}
+// Show-only counterparts occasionally used alongside the hide variants.
+@media screen and (min-width: 769px) {
+  .is-block-tablet { display: block !important; }
+}

@@ -1,0 +1,270 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_menu.scss — Side menu, breadcrumb, panel, level, tabs, dropdown,
+//                        progress bar
+// ---------------------------------------------------------------------------
+// Navigation & list-style components carried over from Bulma. The vertical
+// `.menu` powers the docs sidebar and the mobile course/lesson curriculum
+// panels in header.hbs.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "../variables" as sf;
+
+// ─── Vertical menu (sidebars, curriculum lists) ─────────────────────────────
+.menu {
+  font-size: 1rem;
+}
+
+.menu-label {
+  display: block;
+  color: sf.$sf-text-muted;
+  font-size: 0.75em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.5em;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text-weak; }
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  line-height: 1.25;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5em 0.75em;
+    border-radius: sf.$sf-radius;
+    color: sf.$sf-text;
+    transition: background-color sf.$sf-duration-fast sf.$sf-ease,
+                color sf.$sf-duration-fast sf.$sf-ease;
+
+    &:hover {
+      background-color: rgba(sf.$sf-blue, 0.07);
+      color: sf.$sf-blue;
+    }
+
+    &.is-active {
+      background-color: sf.$sf-blue;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] & {
+      color: sf.$sf-dark-text;
+      &:hover { background-color: rgba(sf.$sf-dark-link, 0.12); color: sf.$sf-dark-link; }
+      &.is-active { background-color: sf.$sf-blue; color: #fff; }
+    }
+  }
+
+  // Nested lists get an indent + guide rail.
+  ul {
+    list-style: none;
+    margin: 0.5em 0 0.5em 0.75em;
+    padding-left: 0.75em;
+    border-left: 1px solid sf.$sf-border;
+
+    [data-theme="dark"] & { border-left-color: sf.$sf-dark-border; }
+  }
+}
+
+// ─── Breadcrumb ──────────────────────────────────────────────────────────────
+.breadcrumb {
+  font-size: 0.95rem;
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li + li::before {
+    content: "/";
+    color: sf.$sf-text-muted;
+    padding: 0 0.5em;
+  }
+
+  a { color: sf.$sf-text-weak; padding: 0 0.25em; }
+  a:hover { color: sf.$sf-blue; }
+
+  li.is-active a {
+    color: sf.$sf-text;
+    pointer-events: none;
+    cursor: default;
+
+    [data-theme="dark"] & { color: sf.$sf-dark-text; }
+  }
+
+  // Separator variants used in markup.
+  &.has-succeeds-separator li + li::before { content: "\203A"; } // ›
+  &.has-arrow-separator    li + li::before { content: "\2192"; } // →
+  &.has-bullet-separator   li + li::before { content: "\2022"; } // •
+}
+
+// ─── Panel ───────────────────────────────────────────────────────────────────
+.panel {
+  border-radius: sf.$sf-radius-md;
+  background-color: sf.$sf-white;
+  box-shadow: sf.$sf-shadow-sm;
+  border: 1px solid sf.$sf-border-light;
+  overflow: hidden;
+  font-size: 1rem;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
+  }
+}
+
+.panel-heading {
+  margin: 0;
+  padding: 0.75em 1em;
+  background-color: sf.$sf-cloud-warm;
+  font-weight: 700;
+  font-size: 1rem;
+
+  [data-theme="dark"] & { background-color: sf.$sf-dark-surface-2; }
+}
+
+.panel-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6em 1em;
+  border-top: 1px solid sf.$sf-border-light;
+  color: sf.$sf-text;
+
+  &:hover { background-color: rgba(sf.$sf-blue, 0.05); }
+  &.is-active { border-left: 3px solid sf.$sf-blue; }
+
+  [data-theme="dark"] & {
+    border-top-color: sf.$sf-dark-border;
+    color: sf.$sf-dark-text;
+  }
+}
+
+.panel-icon { color: sf.$sf-text-muted; width: 1.25em; text-align: center; }
+
+// ─── Level (horizontal split rows) ───────────────────────────────────────────
+.level {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+}
+.level-left,
+.level-right { display: flex; align-items: center; gap: 0.75rem; }
+.level-item  { display: flex; align-items: center; justify-content: center; }
+
+// ─── Tabs ────────────────────────────────────────────────────────────────────
+.tabs {
+  font-size: 1rem;
+  overflow-x: auto;
+
+  ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid sf.$sf-border;
+
+    [data-theme="dark"] & { border-bottom-color: sf.$sf-dark-border; }
+  }
+
+  li a {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6em 1em;
+    color: sf.$sf-text-weak;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+
+    &:hover { color: sf.$sf-blue; border-bottom-color: sf.$sf-border; }
+  }
+
+  li.is-active a {
+    color: sf.$sf-blue;
+    border-bottom-color: sf.$sf-blue;
+    font-weight: 600;
+  }
+
+  &.is-boxed li.is-active a {
+    background-color: sf.$sf-white;
+    border: 1px solid sf.$sf-border;
+    border-bottom-color: transparent;
+    border-radius: sf.$sf-radius sf.$sf-radius 0 0;
+  }
+}
+
+// ─── Standalone dropdown ─────────────────────────────────────────────────────
+.dropdown { display: inline-flex; position: relative; vertical-align: top; }
+.dropdown.is-fullwidth { display: flex; width: 100%; }
+.dropdown-trigger { width: 100%; }
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 12rem;
+  padding-top: 4px;
+  z-index: sf.$sf-z-dropdown;
+
+  &.is-fullwidth { width: 100%; }
+}
+.dropdown.is-active .dropdown-menu { display: block; }
+.dropdown-content {
+  background-color: sf.$sf-white;
+  border: 1px solid sf.$sf-border-light;
+  border-radius: sf.$sf-radius-md;
+  box-shadow: sf.$sf-shadow-lg;
+  padding: 0.5rem 0;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
+  }
+}
+.dropdown-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: sf.$sf-text;
+  &:hover { background-color: rgba(sf.$sf-blue, 0.07); color: sf.$sf-blue; }
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text; }
+}
+
+// ─── Progress bar ────────────────────────────────────────────────────────────
+.progress {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  height: 0.75rem;
+  border: none;
+  border-radius: sf.$sf-radius-pill;
+  background-color: sf.$sf-cloud;
+  overflow: hidden;
+
+  &.is-small { height: 0.5rem; }
+
+  &::-webkit-progress-bar   { background-color: sf.$sf-cloud; }
+  &::-webkit-progress-value { background-color: sf.$sf-blue; transition: width sf.$sf-duration-slow sf.$sf-ease; }
+  &::-moz-progress-bar      { background-color: sf.$sf-blue; }
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface-2;
+    &::-webkit-progress-bar { background-color: sf.$sf-dark-surface-2; }
+  }
+}

@@ -1,10 +1,18 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// gulpfile.js — Build pipeline for the Namaste Salesforce Ghost theme
+// ---------------------------------------------------------------------------
+// Tasks (run via `yarn <name>`):
+//   dev    → build once, then watch assets + livereload (default export)
+//   build  → compile css + js + locales into assets/built/
+//   zip    → build, then package the theme into dist/ for upload to Ghost
+//
+// Output in assets/built/ is committed to git because Ghost serves it directly,
+// so remember to rebuild after editing SCSS or JS.
+// ═══════════════════════════════════════════════════════════════════════════
 const {series, watch, src, dest, parallel} = require('gulp');
 const pump = require('pump');
-const path = require('path');
-const releaseUtils = require('@tryghost/release-utils');
-const inquirer = require('inquirer');
 
-// gulp plugins and utils
+// gulp plugins & utils
 const livereload = require('gulp-livereload');
 const postcss = require('gulp-postcss');
 const sass = require('gulp-sass')(require('sass'));
@@ -12,24 +20,15 @@ const zip = require('gulp-zip');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const beeper = require('beeper');
-const fs = require('fs');
 
 // postcss plugins
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 
 // translations support
-const { mergeLocales } = require('@tryghost/theme-translations/build');
+const {mergeLocales} = require('@tryghost/theme-translations/build');
 
-const REPO = 'TryGhost/Casper';
-const REPO_READONLY = 'TryGhost/Casper';
-const CHANGELOG_PATH = path.join(process.cwd(), '.', 'changelog.md');
-
-function serve(done) {
-    livereload.listen();
-    done();
-}
-
+// Beep on error so failures are noticed during `yarn dev` watch sessions.
 const handleError = (done) => {
     return function (err) {
         if (err) {
@@ -39,6 +38,12 @@ const handleError = (done) => {
     };
 };
 
+function serve(done) {
+    livereload.listen();
+    done();
+}
+
+// Reload the browser when a template changes.
 function hbs(done) {
     pump([
         src(['*.hbs', 'partials/**/*.hbs']),
@@ -46,10 +51,11 @@ function hbs(done) {
     ], handleError(done));
 }
 
+// SCSS → autoprefixed, minified CSS (custom framework, no Bulma).
 function css(done) {
     pump([
         src('assets/scss/screen.scss', {sourcemaps: true}),
-        sass({loadPaths: ['node_modules'],quietDeps: true}).on('error', sass.logError),
+        sass({quietDeps: true}).on('error', sass.logError),
         postcss([
             autoprefixer(),
             cssnano()
@@ -59,10 +65,10 @@ function css(done) {
     ], handleError(done));
 }
 
+// Concatenate lib code first (so app code can depend on it), then minify.
 function js(done) {
     pump([
         src([
-            // pull in lib files first so our own code can depend on it
             'assets/js/lib/*.js',
             'assets/js/*.js'
         ], {sourcemaps: true}),
@@ -73,6 +79,7 @@ function js(done) {
     ], handleError(done));
 }
 
+// Package the theme for upload to Ghost admin.
 function zipper(done) {
     const filename = require('./package.json').name + '.zip';
 
@@ -90,6 +97,7 @@ function zipper(done) {
     ], handleError(done));
 }
 
+// Merge author overrides in locales-local/ into the shipped locales/.
 function locales(done) {
     mergeLocales({
         local: './locales-local',
@@ -107,80 +115,3 @@ const build = series(css, js, locales);
 exports.build = build;
 exports.zip = series(build, zipper);
 exports.default = series(build, serve, watcher);
-
-exports.release = async () => {
-    // @NOTE: https://yarnpkg.com/lang/en/docs/cli/version/
-    // require(./package.json) can run into caching issues, this re-reads from file everytime on release
-    let packageJSON = JSON.parse(fs.readFileSync('./package.json'));
-    const newVersion = packageJSON.version;
-
-    if (!newVersion || newVersion === '') {
-        console.log(`Invalid version: ${newVersion}`);
-        return;
-    }
-
-    console.log(`\nCreating release for ${newVersion}...`);
-
-    const githubToken = process.env.GST_TOKEN;
-
-    if (!githubToken) {
-        console.log('Please configure your environment with a GitHub token located in GST_TOKEN');
-        return;
-    }
-
-    try {
-        const prompt = inquirer.createPromptModule();
-        const result = await prompt([{
-            type: 'input',
-            name: 'compatibleWithGhost',
-            message: 'Which version of Ghost is it compatible with?',
-            default: '5.0.0'
-        }]);
-
-        const compatibleWithGhost = result.compatibleWithGhost;
-
-        const releasesResponse = await releaseUtils.releases.get({
-            userAgent: 'Casper',
-            uri: `https://api.github.com/repos/${REPO_READONLY}/releases`
-        });
-
-        if (!releasesResponse || !releasesResponse) {
-            console.log('No releases found. Skipping...');
-            return;
-        }
-
-        let previousVersion = releasesResponse[0].tag_name || releasesResponse[0].name;
-        console.log(`Previous version: ${previousVersion}`);
-
-        const changelog = new releaseUtils.Changelog({
-            changelogPath: CHANGELOG_PATH,
-            folder: path.join(process.cwd(), '.')
-        });
-
-        changelog
-            .write({
-                githubRepoPath: `https://github.com/${REPO}`,
-                lastVersion: previousVersion
-            })
-            .sort()
-            .clean();
-
-        const newReleaseResponse = await releaseUtils.releases.create({
-            draft: true,
-            preRelease: false,
-            tagName: 'v' + newVersion,
-            releaseName: newVersion,
-            userAgent: 'Casper',
-            uri: `https://api.github.com/repos/${REPO}/releases`,
-            github: {
-                token: githubToken
-            },
-            content: [`**Compatible with Ghost ≥ ${compatibleWithGhost}**\n\n`],
-            changelogPath: CHANGELOG_PATH
-        });
-        console.log(`\nRelease draft generated: ${newReleaseResponse.releaseUrl}\n`);
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
-    }
-};

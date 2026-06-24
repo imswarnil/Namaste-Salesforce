@@ -1,74 +1,120 @@
-# Casper
+# Namaste Salesforce — Ghost Theme
 
-A classic theme for [Ghost](http://github.com/tryghost/ghost/), originally the default theme. These days, our default theme is [Source](http://github.com/tryghost/source/)
+An open-source [Ghost](https://ghost.org/) theme for **Salesforce learning communities**:
+courses, lessons, documentation, roadmaps, and a developer blog — all in one clean,
+fast, accessible package.
 
-This is the latest development version of Casper! If you're just looking to download the latest release, head over to the [releases](https://github.com/TryGhost/Casper/releases) page.
+- 🎨 **SLDS-inspired design** — a Salesforce-blue palette with a polished, modern feel
+- 🌗 **Built-in dark mode** — instant, flash-free theme toggle (saved per visitor)
+- 📱 **Fully responsive** — mobile-first layouts, collapsible navigation and sidebars
+- 🧩 **Reusable components** — cards, heroes, stats, tracks, badges, and more
+- ⚡ **No CSS framework dependency** — a small, in-house SCSS framework (Bulma removed)
+- ♿ **Accessible** — semantic markup, focus rings, reduced-motion support
 
 &nbsp;
 
-![screenshot-desktop](https://user-images.githubusercontent.com/1418797/183329195-8e8f2ee5-a473-4694-a813-a2575491209e.png)
+## Quick start
+
+You'll need [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
+
+```bash
+yarn install     # install dependencies
+yarn dev         # build + livereload watch server (for local development)
+yarn build       # one-off build into assets/built/
+yarn zip         # package into dist/namaste-salesforce.zip for upload to Ghost
+yarn test        # validate the theme with gscan (Ghost's theme checker)
+```
+
+Upload the generated `dist/namaste-salesforce.zip` in **Ghost Admin → Settings → Design → Change theme → Upload theme**.
+
+> **Note:** `assets/built/` is committed to git because Ghost serves it directly.
+> Always rebuild (`yarn build`) and commit the output after changing SCSS or JS.
 
 &nbsp;
 
-# First time using a Ghost theme?
+## Project structure
 
-Ghost uses a simple templating language called [Handlebars](http://handlebarsjs.com/) for its themes.
-
-This theme has lots of code comments to help explain what's going on just by reading the code. Once you feel comfortable with how everything works, we also have full [theme API documentation](https://ghost.org/docs/themes/) which explains every possible Handlebars helper and template.
-
-**The main files are:**
-
-- `default.hbs` - The parent template file, which includes your global header/footer
-- `index.hbs` - The main template to generate a list of posts, usually the home page
-- `post.hbs` - The template used to render individual posts
-- `page.hbs` - Used for individual pages
-- `tag.hbs` - Used for tag archives, eg. "all posts tagged with `news`"
-- `author.hbs` - Used for author archives, eg. "all posts written by Jamie"
-
-One neat trick is that you can also create custom one-off templates by adding the slug of a page to a template file. For example:
-
-- `page-about.hbs` - Custom template for an `/about/` page
-- `tag-news.hbs` - Custom template for `/tag/news/` archive
-- `author-ali.hbs` - Custom template for `/author/ali/` archive
-
-
-# Development
-
-Casper styles are compiled using Gulp/PostCSS to polyfill future CSS spec. You'll need [Node](https://nodejs.org/), [Yarn](https://yarnpkg.com/) and [Gulp](https://gulpjs.com) installed globally. After that, from the theme's root directory:
-
-```bash
-# install dependencies
-yarn install
-
-# run development server
-yarn dev
+```
+.
+├── default.hbs            # HTML shell: <head>, header, body, footer, theme script
+├── index.hbs              # Post list / fallback home
+├── home.hbs               # Custom landing page
+├── page-about.hbs         # Custom About page (auto-used for the /about/ page)
+├── courses.hbs            # Courses listing
+├── documentation.hbs      # Docs hub
+├── blog.hbs               # Blog listing
+├── training.hbs           # Roadmaps / training tracks
+├── post.hbs · page.hbs    # Single post / page
+├── tag.hbs · author.hbs   # Archive pages
+│
+├── partials/              # Reusable Handlebars fragments ({{> name}})
+│   ├── header.hbs         # Context-aware navbar (course/lesson/blog/docs/…)
+│   ├── footer.hbs
+│   ├── navigation.hbs     # Ghost menu → navbar with dropdowns & icons
+│   ├── doc-sidebar.hbs    # Documentation sidebar
+│   ├── post-*.hbs         # Per-context post renderers (card, course, lesson, …)
+│   └── toc.hbs            # Table of contents
+│
+└── assets/
+    ├── scss/
+    │   ├── screen.scss        # ⭐ The single compiled entry point
+    │   ├── variables.scss     # Design tokens (colours, spacing, shadows, …)
+    │   ├── mixins.scss        # Reusable SCSS mixins
+    │   ├── framework/         # ⭐ In-house CSS framework (replaces Bulma)
+    │   │   ├── _base.scss     #    reset + document theming
+    │   │   ├── _layout.scss   #    container, 12-col grid, section, footer
+    │   │   ├── _helpers.scss  #    spacing / flex / text / visibility utilities
+    │   │   ├── _buttons.scss  #    buttons, button groups, icons
+    │   │   ├── _forms.scss    #    inputs, fields, controls
+    │   │   ├── _tags.scss     #    tags / badges
+    │   │   ├── _navbar.scss   #    top navigation bar
+    │   │   ├── _menu.scss     #    sidebar menu, breadcrumb, panel, tabs, progress
+    │   │   ├── _card.scss     #    card, box, hero, image ratios
+    │   │   └── _typography.scss#   title / subtitle / content
+    │   ├── components.scss    # Bespoke ns-* components (hero, cards, stats, …)
+    │   ├── ghost.scss         # Styling for Ghost/Koenig post content (.kg-* cards)
+    │   ├── animations.scss    # Entrance / motion animations
+    │   └── toc.scss           # Table-of-contents styling
+    └── js/                    # Concatenated into built/casper.js
 ```
 
-Now you can edit `/assets/css/` files, which will be compiled to `/assets/built/` automatically.
+&nbsp;
 
-The `zip` Gulp task packages the theme files into `dist/<theme-name>.zip`, which you can then upload to your site.
+## Styling architecture
 
-```bash
-# create .zip file
-yarn zip
-```
+This theme **does not use a CSS framework**. Instead it ships a small, purpose-built
+SCSS framework under `assets/scss/framework/`. It reimplements just the utility and
+component classes the templates need (grid, buttons, navbar, forms, helpers, …), themed
+with the Salesforce design tokens in `variables.scss`.
 
-# PostCSS Features Used
+- **Design tokens first.** Colours, spacing, radii, shadows and breakpoints all live in
+  `variables.scss`. Change a token there and it propagates everywhere.
+- **Dark mode** is driven by `data-theme="light|dark"` on `<html>`. Style dark variants
+  with the `[data-theme="dark"] &` selector and the `$sf-dark-*` tokens.
+- **Bespoke components** use an `ns-` prefix (e.g. `.ns-hero`, `.ns-card`,
+  `.ns-feature-card`) and are documented inline in `components.scss`.
 
-- Autoprefixer - Don't worry about writing browser prefixes of any kind, it's all done automatically with support for the latest 2 major versions of every browser.
-- [Color Mod](https://github.com/jonathantneal/postcss-color-mod-function)
+&nbsp;
 
+## Custom templates & routing
 
-# SVG Icons
+Ghost picks templates by convention:
 
-Casper uses inline SVG icons, included via Handlebars partials. You can find all icons inside `/partials/icons`. To use an icon just include the name of the relevant file, eg. To include the SVG icon in `/partials/icons/rss.hbs` - use `{{> "icons/rss"}}`.
+- `page-{slug}.hbs` → custom template for that page (e.g. `page-about.hbs` for `/about/`).
+- `home.hbs`, `courses.hbs`, `documentation.hbs`, `blog.hbs`, `training.hbs` are selectable
+  per page in the Ghost editor, or routed via `routes.yaml` (configured in Ghost Admin).
 
-You can add your own SVG icons in the same manner.
+Post "sections" are driven by internal tags (`#course`, `#lesson`, `#blog`,
+`#training`, `documentation`, …) which switch the navbar context and post layout.
 
-# Translations
+&nbsp;
 
-Please see [@TryGhost/Themes/theme-translations/README.md](https://github.com/TryGhost/Themes/blob/main/packages/theme-translations/README.md) for how to build, edit, or contribute translations.
+## Contributing
 
-# Copyright & License
+Contributions are very welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup,
+coding conventions, and how to propose changes.
 
-Copyright (c) 2013-2026 Ghost Foundation - Released under the [MIT license](LICENSE).
+## License
+
+Released under the [MIT license](LICENSE).
+This theme began as a fork of Ghost's [Casper](https://github.com/TryGhost/Casper) theme.

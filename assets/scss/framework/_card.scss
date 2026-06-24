@@ -1,0 +1,148 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// framework/_card.scss — Card, box, notification, hero, image ratios
+// ---------------------------------------------------------------------------
+// Surface/container components from Bulma. The richer project-specific cards
+// (`.ns-card`, `.ns-feature-card`, …) live in components.scss; this file
+// covers the plain Bulma names still referenced by some partials.
+// ═══════════════════════════════════════════════════════════════════════════
+@use "../variables" as sf;
+
+// ─── Card ────────────────────────────────────────────────────────────────────
+.card {
+  position: relative;
+  background-color: sf.$sf-white;
+  border-radius: sf.$sf-radius-xl;
+  box-shadow: sf.$sf-shadow-card;
+  overflow: hidden;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.card-header-title {
+  flex-grow: 1;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  color: sf.$sf-text;
+
+  [data-theme="dark"] & { color: sf.$sf-dark-text; }
+}
+.card-image { display: block; position: relative; }
+.card-image figure { margin: 0; }
+.card-content { padding: 1.5rem; }
+.card-footer {
+  display: flex;
+  border-top: 1px solid sf.$sf-border-light;
+
+  [data-theme="dark"] & { border-top-color: sf.$sf-dark-border; }
+}
+.card-footer-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+
+  &:not(:last-child) {
+    border-right: 1px solid sf.$sf-border-light;
+    [data-theme="dark"] & { border-right-color: sf.$sf-dark-border; }
+  }
+}
+
+// ─── Box ─────────────────────────────────────────────────────────────────────
+.box {
+  display: block;
+  background-color: sf.$sf-white;
+  border-radius: sf.$sf-radius-lg;
+  box-shadow: sf.$sf-shadow-card;
+  padding: 1.25rem;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+// ─── Notification ────────────────────────────────────────────────────────────
+.notification {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  border-radius: sf.$sf-radius-md;
+  background-color: sf.$sf-cloud;
+  color: sf.$sf-text;
+
+  &.is-primary { background-color: sf.$sf-blue-lighter; color: sf.$sf-blue-dark; }
+  &.is-info    { background-color: sf.$sf-blue-lighter; color: sf.$sf-blue-dark; }
+  &.is-success { background-color: rgba(sf.$sf-success, 0.14); color: darken(sf.$sf-success, 8%); }
+  &.is-warning { background-color: rgba(sf.$sf-warning, 0.16); color: #94590a; }
+  &.is-danger  { background-color: rgba(sf.$sf-error, 0.12); color: sf.$sf-error; }
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface-2;
+    color: sf.$sf-dark-text;
+  }
+}
+
+// ─── Hero ────────────────────────────────────────────────────────────────────
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hero-body {
+  flex-grow: 1;
+  flex-shrink: 0;
+  padding: 3rem 1.5rem;
+
+  @media screen and (min-width: 769px) { padding: 4.5rem 1.5rem; }
+}
+
+// ─── Image (aspect-ratio + fixed sizes) ─────────────────────────────────────
+.image {
+  display: block;
+  position: relative;
+
+  img { display: block; width: 100%; height: auto; }
+
+  // Aspect-ratio boxes
+  &.is-square,
+  &.is-1by1  { padding-top: 100%; }
+  &.is-4by3  { padding-top: 75%; }
+  &.is-5by3  { padding-top: 60%; }
+  &.is-16by9 { padding-top: 56.25%; }
+
+  // Children of a ratio box fill it.
+  &.is-square img, &.is-1by1 img,
+  &.is-4by3 img, &.is-5by3 img, &.is-16by9 img,
+  .has-ratio {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  // Fixed pixel sizes (avatars, thumbnails)
+  &.is-32x32   { width: 32px;  height: 32px; }
+  &.is-48x48   { width: 48px;  height: 48px; }
+  &.is-128x128 { width: 128px; height: 128px; }
+  &.is-32x32 img, &.is-48x48 img, &.is-128x128 img { height: 100%; object-fit: cover; }
+}
+
+// `.has-ratio` applied directly to a media element inside a ratio box.
+.has-ratio {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

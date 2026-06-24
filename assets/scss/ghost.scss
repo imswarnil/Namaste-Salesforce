@@ -1,239 +1,192 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// _ghost.scss — Ghost CMS components as first-class Bulma citizens
-// Fully responsive, uses Bulma mixins, no layout-breaking hacks.
+// ghost.scss — Styling for Ghost-generated content (Koenig cards & editor HTML)
+// ---------------------------------------------------------------------------
+// Ghost renders post bodies into `.gh-content` with a fixed set of `.kg-*`
+// card classes. This file themes all of those with the Salesforce design
+// tokens (variables.scss) and supports light/dark mode. No framework
+// dependency — only our own tokens + mixins.
+//
+// Brand accent: Ghost injects `--ghost-accent-color` (set in Ghost admin).
+// We expose it as `--ns-accent` with a sensible Salesforce-blue fallback.
 // ═══════════════════════════════════════════════════════════════════════════
-
 @use "variables" as sf;
-@use "bulma/sass/utilities/css-variables" as cv;
-@use "bulma/sass/utilities/initial-variables" as iv;
-@use "bulma/sass/utilities/mixins" as mx;
-@use "bulma/sass/utilities/extends" as ext;
+@use "mixins" as mx;
 
-// ───────────────────────────────────────────────────────────────────────────
-// 1. Variables (all !default for easy overrides)
-// ───────────────────────────────────────────────────────────────────────────
-$ghost-content-max-width: cv.getVar("container-max-width") !default;
-$ghost-content-padding:   1rem !default;
-
-$ghost-wide-image-offset-desktop: -2rem !default;
-$ghost-full-image-offset-desktop: -4rem !default;
-
-$ghost-video-aspect-ratio: 16 / 9 !default;
-
-$ghost-quote-border-width: 0.25rem !default;
-$ghost-quote-border-color: cv.getVar("primary") !default;
-$ghost-quote-padding:      1rem 1.5rem !default;
-$ghost-quote-background:   cv.getVar("scheme-main-bis") !default;
-$ghost-quote-radius:       cv.getVar("radius") !default;
-$ghost-quote-font-style:   normal !default;
-
-$ghost-header-min-height: 50vh !default;
-$ghost-header-overlay:    linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)) !default;
-
-$ghost-bookmark-radius: cv.getVar("radius-large") !default;
-$ghost-bookmark-shadow: cv.getVar("shadow") !default;
-
-$ghost-callout-radius:  cv.getVar("radius") !default;
-$ghost-callout-padding: 1.25rem 1.5rem !default;
-
-$ghost-toggle-radius: cv.getVar("radius") !default;
-
-$ghost-product-radius:  cv.getVar("radius-large") !default;
-$ghost-product-padding: 1.5rem !default;
-
-$ghost-button-radius:  cv.getVar("radius") !default;
-$ghost-button-padding: 0.75rem 1.5rem !default;
-
-$ghost-cta-radius:  cv.getVar("radius-large") !default;
-$ghost-cta-padding: 3rem 2rem !default;
-
-$ghost-progress-height:   0.25rem !default;
-$ghost-progress-gradient: linear-gradient(90deg, var(--ns-accent), #{cv.getVar("primary-light")}) !default;
-
-// ───────────────────────────────────────────────────────────────────────────
-// 2. Register CSS custom properties
-// ───────────────────────────────────────────────────────────────────────────
+// ─── Accent custom properties (derive light/dark tints once) ────────────────
 :root {
-  @include cv.register-vars(
-    (
-      // Ghost accent (falls back to Bulma primary)
-      "ns-accent":       var(--ghost-accent-color, #{cv.getVar("primary")}),
-      "ns-accent-light": color-mix(in srgb, var(--ns-accent) 15%, white),
-      "ns-accent-dark":  color-mix(in srgb, var(--ns-accent) 85%, black),
-
-      // Content container
-      "ghost-content-max-width": #{$ghost-content-max-width},
-      "ghost-content-padding":   #{$ghost-content-padding},
-
-      // Wide / full image offsets
-      "ghost-wide-offset-desktop": #{$ghost-wide-image-offset-desktop},
-      "ghost-full-offset-desktop": #{$ghost-full-image-offset-desktop},
-
-      // Video
-      "ghost-video-aspect-ratio": #{$ghost-video-aspect-ratio},
-
-      // Quotes
-      "ghost-quote-border-width": #{$ghost-quote-border-width},
-      "ghost-quote-border-color": #{$ghost-quote-border-color},
-      "ghost-quote-padding":      #{$ghost-quote-padding},
-      "ghost-quote-background":   #{$ghost-quote-background},
-      "ghost-quote-radius":       #{$ghost-quote-radius},
-      "ghost-quote-font-style":   #{$ghost-quote-font-style},
-
-      // Header card
-      "ghost-header-min-height": #{$ghost-header-min-height},
-      "ghost-header-overlay":    #{$ghost-header-overlay},
-
-      // Cards
-      "ghost-bookmark-radius":  #{$ghost-bookmark-radius},
-      "ghost-bookmark-shadow":  #{$ghost-bookmark-shadow},
-      "ghost-callout-radius":   #{$ghost-callout-radius},
-      "ghost-callout-padding":  #{$ghost-callout-padding},
-      "ghost-toggle-radius":    #{$ghost-toggle-radius},
-      "ghost-product-radius":   #{$ghost-product-radius},
-      "ghost-product-padding":  #{$ghost-product-padding},
-      "ghost-button-radius":    #{$ghost-button-radius},
-      "ghost-button-padding":   #{$ghost-button-padding},
-      "ghost-cta-radius":       #{$ghost-cta-radius},
-      "ghost-cta-padding":      #{$ghost-cta-padding},
-      "ghost-progress-height":  #{$ghost-progress-height},
-      "ghost-progress-gradient":#{$ghost-progress-gradient},
-    )
-  );
+  --ns-accent:       var(--ghost-accent-color, #{sf.$sf-blue});
+  --ns-accent-light: color-mix(in srgb, var(--ns-accent) 15%, white);
+  --ns-accent-dark:  color-mix(in srgb, var(--ns-accent) 85%, black);
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 3. Core Ghost content wrapper
+// 1. Core content wrapper — the centred reading column
 // ───────────────────────────────────────────────────────────────────────────
 .gh-content {
-  max-width: cv.getVar("ghost-content-max-width");
+  max-width: 46rem;
   margin-left: auto;
   margin-right: auto;
-  padding-left: cv.getVar("ghost-content-padding");
-  padding-right: cv.getVar("ghost-content-padding");
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 1.075rem;
+  line-height: 1.75;
+  color: sf.$sf-text;
 
-  // Links
+  [data-theme="dark"] & { color: sf.$sf-dark-text; }
+
+  // Vertical rhythm between blocks.
+  > * + * { margin-top: 1.5rem; }
+
+  h2, h3, h4 {
+    margin-top: 2.5rem;
+    line-height: 1.3;
+    color: sf.$sf-text;
+
+    [data-theme="dark"] & { color: sf.$sf-dark-text; }
+  }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.4rem; }
+  h4 { font-size: 1.15rem; }
+
+  // Inline links — underlined for clarity in long-form text.
   a {
-    color: cv.getVar("link");
+    color: sf.$sf-blue;
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
-    text-decoration-color: color-mix(in srgb, #{cv.getVar("link")} 40%, transparent);
-    transition: 0.2s ease;
+    text-decoration-color: color-mix(in srgb, #{sf.$sf-blue} 40%, transparent);
+    transition: color sf.$sf-duration-fast sf.$sf-ease;
 
     &:hover {
-      color: cv.getVar("link-hover");
-      text-decoration-color: cv.getVar("link-hover");
+      color: sf.$sf-blue-dark;
+      text-decoration-color: sf.$sf-blue-dark;
+    }
+
+    [data-theme="dark"] & {
+      color: sf.$sf-dark-link;
+      &:hover { color: lighten(sf.$sf-dark-link, 8%); }
     }
   }
 
-  // Horizontal rule
+  ul, ol { padding-left: 1.5rem; }
+  li + li { margin-top: 0.4rem; }
+
+  // Inline code
+  :not(pre) > code {
+    font-family: sf.$sf-font-mono;
+    font-size: 0.9em;
+    background-color: sf.$sf-cloud;
+    padding: 0.15em 0.4em;
+    border-radius: sf.$sf-radius-xs + 2px;
+
+    [data-theme="dark"] & { background-color: sf.$sf-dark-surface-2; }
+  }
+
   hr {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      #{cv.getVar("border")} 20%,
-      #{cv.getVar("border")} 80%,
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, sf.$sf-border 20%, sf.$sf-border 80%, transparent);
     height: 1px;
     border: 0;
-    margin: 2rem 0;
+    margin: 2.5rem 0;
+
+    [data-theme="dark"] & {
+      background: linear-gradient(90deg, transparent, sf.$sf-dark-border 20%, sf.$sf-dark-border 80%, transparent);
+    }
   }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 4. Full-width images (Bulma-compatible, responsive)
+// 2. Images & galleries
 // ───────────────────────────────────────────────────────────────────────────
 .kg-image-card,
 .kg-gallery-card {
   img {
-    border-radius: cv.getVar("radius");
-    box-shadow: cv.getVar("shadow");
+    border-radius: sf.$sf-radius-lg;
+    box-shadow: sf.$sf-shadow-md;
     width: 100%;
     height: auto;
   }
 
   figcaption {
-    font-size: cv.getVar("size-small");
-    color: cv.getVar("text-light");
+    font-size: 0.875rem;
+    color: sf.$sf-text-weak;
     text-align: center;
     margin-top: 0.5rem;
   }
 }
 
-// Wide and full images: only break out on desktop+ to avoid mobile issues
+// Wide / full-bleed images break out of the column on desktop only.
 @include mx.desktop {
   .kg-image-card.kg-width-wide {
-    margin-left: cv.getVar("ghost-wide-offset-desktop");
-    margin-right: cv.getVar("ghost-wide-offset-desktop");
-    width: calc(100% + (#{cv.getVar("ghost-wide-offset-desktop")} * 2));
+    margin-left: -2rem;
+    margin-right: -2rem;
+    width: calc(100% + 4rem);
     max-width: none;
   }
-
   .kg-image-card.kg-width-full {
-    margin-left: cv.getVar("ghost-full-offset-desktop");
-    margin-right: cv.getVar("ghost-full-offset-desktop");
-    width: calc(100% + (#{cv.getVar("ghost-full-offset-desktop")} * 2));
+    margin-left: -4rem;
+    margin-right: -4rem;
+    width: calc(100% + 8rem);
     max-width: none;
   }
 }
 
-.kg-gallery-card .kg-gallery-image img {
-  border-radius: cv.getVar("radius");
-}
+.kg-gallery-card .kg-gallery-image img { border-radius: sf.$sf-radius-lg; }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 5. Responsive video (16:9)
+// 3. Responsive video / embed (16:9)
 // ───────────────────────────────────────────────────────────────────────────
-.kg-video-card {
+.kg-video-card,
+.kg-embed-card {
   position: relative;
   padding-bottom: 56.25%;
   height: 0;
   overflow: hidden;
-  border-radius: cv.getVar("radius-large");
+  border-radius: sf.$sf-radius-lg;
+  margin: 1.5rem 0;
 
-  video,
-  iframe {
+  video, iframe, embed, object {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0;
     object-fit: cover;
   }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 6. Blockquotes (standard + Ghost variant)
+// 4. Blockquotes
 // ───────────────────────────────────────────────────────────────────────────
 .gh-content blockquote,
 .kg-blockquote-alt {
-  background-color: cv.getVar("ghost-quote-background");
-  border-left: cv.getVar("ghost-quote-border-width") solid cv.getVar("ghost-quote-border-color");
-  padding: cv.getVar("ghost-quote-padding");
-  border-radius: cv.getVar("ghost-quote-radius");
-  font-style: cv.getVar("ghost-quote-font-style");
+  background-color: sf.$sf-cloud-warm;
+  border-left: 0.25rem solid sf.$sf-blue;
+  padding: 1rem 1.5rem;
+  border-radius: 0 sf.$sf-radius sf.$sf-radius 0;
   margin: 1.5rem 0;
 
-  p:last-child {
-    margin-bottom: 0;
+  p:last-child { margin-bottom: 0; }
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface-2;
+    border-left-color: sf.$sf-dark-link;
   }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 7. Header card (full-width background)
+// 5. Header card (full-width hero image with overlay)
 // ───────────────────────────────────────────────────────────────────────────
 .kg-header-card {
   position: relative;
-  min-height: cv.getVar("ghost-header-min-height");
+  min-height: 50vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   background-size: cover;
   background-position: center;
-  border-radius: cv.getVar("radius-large");
+  border-radius: sf.$sf-radius-lg;
   overflow: hidden;
   margin: 2rem 0;
 
@@ -241,309 +194,186 @@ $ghost-progress-gradient: linear-gradient(90deg, var(--ns-accent), #{cv.getVar("
     content: "";
     position: absolute;
     inset: 0;
-    background: cv.getVar("ghost-header-overlay");
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
     z-index: 1;
   }
 
-  > * {
-    position: relative;
-    z-index: 2;
-    color: white;
-  }
-
-  h1, h2, h3, .title {
-    color: white;
-  }
+  > * { position: relative; z-index: 2; color: #fff; }
+  h1, h2, h3, .title { color: #fff; }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 8. Embed card (responsive 16:9)
-// ───────────────────────────────────────────────────────────────────────────
-.kg-embed-card {
-  position: relative;
-  padding-bottom: 56.25%;
-  height: 0;
-  overflow: hidden;
-  max-width: 100%;
-  margin: 1.5rem 0;
-
-  iframe,
-  video,
-  embed,
-  object {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    border: 0;
-  }
-}
-
-// ───────────────────────────────────────────────────────────────────────────
-// 9. Bookmark card
+// 6. Bookmark card
 // ───────────────────────────────────────────────────────────────────────────
 .kg-bookmark-card {
-  background-color: cv.getVar("scheme-main");
-  border: 1px solid cv.getVar("border");
-  border-radius: cv.getVar("ghost-bookmark-radius");
+  background-color: sf.$sf-white;
+  border: 1px solid sf.$sf-border;
+  border-radius: sf.$sf-radius-lg;
   overflow: hidden;
-  transition: 0.2s ease;
+  transition: box-shadow sf.$sf-duration-base sf.$sf-ease;
 
-  &:hover {
-    box-shadow: cv.getVar("ghost-bookmark-shadow");
-  }
+  &:hover { box-shadow: sf.$sf-shadow-md; }
 
-  .kg-bookmark-title {
-    font-weight: cv.getVar("weight-semibold");
-    color: cv.getVar("text");
-  }
+  .kg-bookmark-title { font-weight: 600; color: sf.$sf-text; }
+  .kg-bookmark-description { color: sf.$sf-text-weak; font-size: 0.9em; }
+  .kg-bookmark-publisher { font-size: 0.8em; color: sf.$sf-text-weak; }
+  .kg-bookmark-icon { border-radius: sf.$sf-radius; }
 
-  .kg-bookmark-description {
-    color: cv.getVar("text-light");
-    font-size: 0.9em;
-  }
-
-  .kg-bookmark-publisher {
-    font-size: 0.8em;
-    color: cv.getVar("text-light");
-  }
-
-  .kg-bookmark-icon {
-    border-radius: cv.getVar("radius-small");
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
+    .kg-bookmark-title { color: sf.$sf-dark-text; }
+    .kg-bookmark-description,
+    .kg-bookmark-publisher { color: sf.$sf-dark-text-muted; }
   }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 10. Callout card
+// 7. Callout card
 // ───────────────────────────────────────────────────────────────────────────
 .kg-callout-card {
-  background-color: color-mix(in srgb, var(--ns-accent) 8%, #{cv.getVar("scheme-main-bis")});
+  background-color: color-mix(in srgb, var(--ns-accent) 8%, #{sf.$sf-cloud-warm});
   border: 1px solid color-mix(in srgb, var(--ns-accent) 20%, transparent);
-  border-radius: cv.getVar("ghost-callout-radius");
-  padding: cv.getVar("ghost-callout-padding");
-}
+  border-radius: sf.$sf-radius;
+  padding: 1.25rem 1.5rem;
 
+  [data-theme="dark"] & {
+    background-color: color-mix(in srgb, var(--ns-accent) 10%, #{sf.$sf-dark-surface});
+  }
+}
 .kg-callout-card-accent {
   background-color: var(--ns-accent-light);
   border-color: var(--ns-accent);
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 11. Toggle card
+// 8. Toggle / product / audio cards (shared surface treatment)
 // ───────────────────────────────────────────────────────────────────────────
-.kg-toggle-card {
-  border: 1px solid cv.getVar("border");
-  border-radius: cv.getVar("ghost-toggle-radius");
-  background-color: cv.getVar("scheme-main");
-  padding: 0.5rem 1rem;
-
-  .kg-toggle-heading {
-    font-weight: cv.getVar("weight-bold");
-  }
-}
-
-// ───────────────────────────────────────────────────────────────────────────
-// 12. Product card
-// ───────────────────────────────────────────────────────────────────────────
-.kg-product-card {
-  border: 1px solid cv.getVar("border");
-  border-radius: cv.getVar("ghost-product-radius");
-  padding: cv.getVar("ghost-product-padding");
-  background-color: cv.getVar("scheme-main");
-
-  .kg-product-card-button a {
-    background-color: var(--ns-accent);
-    color: white;
-    border-radius: cv.getVar("radius");
-    padding: 0.5rem 1.25rem;
-    font-weight: cv.getVar("weight-semibold");
-    display: inline-block;
-    text-decoration: none;
-    transition: 0.2s ease;
-
-    &:hover {
-      background-color: var(--ns-accent-dark);
-    }
-  }
-}
-
-// ───────────────────────────────────────────────────────────────────────────
-// 13. Audio card
-// ───────────────────────────────────────────────────────────────────────────
+.kg-toggle-card,
+.kg-product-card,
 .kg-audio-card {
-  border: 1px solid cv.getVar("border");
-  border-radius: cv.getVar("radius-large");
-  overflow: hidden;
-  background-color: cv.getVar("scheme-main");
+  border: 1px solid sf.$sf-border;
+  border-radius: sf.$sf-radius-lg;
+  background-color: sf.$sf-white;
 
-  .kg-audio-player-container {
-    background-color: cv.getVar("background");
-    padding: 1rem;
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
   }
 }
+.kg-toggle-card { padding: 0.5rem 1rem; .kg-toggle-heading { font-weight: 700; } }
+.kg-product-card { padding: 1.5rem; }
+.kg-audio-card { overflow: hidden; .kg-audio-player-container { background-color: sf.$sf-cloud; padding: 1rem; } }
 
-// ───────────────────────────────────────────────────────────────────────────
-// 14. Button card
-// ───────────────────────────────────────────────────────────────────────────
-.kg-button-card {
-  text-align: center;
-  margin: 1.5rem 0;
+.kg-product-card .kg-product-card-button a,
+.kg-button-card a {
+  background-color: var(--ns-accent);
+  color: #fff;
+  border-radius: sf.$sf-radius;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  display: inline-block;
+  text-decoration: none;
+  transition: background-color sf.$sf-duration-base sf.$sf-ease, transform sf.$sf-duration-base sf.$sf-ease;
 
-  a {
-    background-color: var(--ns-accent);
-    color: white;
-    border-radius: cv.getVar("ghost-button-radius");
-    padding: cv.getVar("ghost-button-padding");
-    font-weight: cv.getVar("weight-bold");
-    display: inline-block;
-    text-decoration: none;
-    transition: 0.2s ease;
-
-    &:hover {
-      background-color: var(--ns-accent-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-    }
-  }
+  &:hover { background-color: var(--ns-accent-dark); transform: translateY(-1px); }
 }
 
+.kg-button-card { text-align: center; margin: 1.5rem 0; }
+
 // ───────────────────────────────────────────────────────────────────────────
-// 15. Code card
+// 9. Code card
 // ───────────────────────────────────────────────────────────────────────────
-.kg-code-card pre {
-  border-radius: cv.getVar("radius-large");
-  background-color: cv.getVar("code-background");
-  color: cv.getVar("code");
+.kg-code-card pre,
+.gh-content pre {
+  border-radius: sf.$sf-radius-lg;
+  background-color: sf.$sf-blue-deeper;
+  color: #e6edf3;
   padding: 1.25rem;
+  overflow-x: auto;
+  font-family: sf.$sf-font-mono;
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 16. NFT card
-// ───────────────────────────────────────────────────────────────────────────
-.kg-nft-card {
-  border-radius: cv.getVar("radius-large");
-  overflow: hidden;
-}
-
-// ───────────────────────────────────────────────────────────────────────────
-// 17. Member gate / paywall
+// 10. Member gate / upgrade CTA
 // ───────────────────────────────────────────────────────────────────────────
 .gh-post-upgrade-cta {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--ns-accent) 8%, #{cv.getVar("scheme-main-bis")}) 0%,
-    color-mix(in srgb, var(--ns-accent) 4%, #{cv.getVar("scheme-main-bis")}) 100%
-  );
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--ns-accent) 8%, #{sf.$sf-cloud-warm}) 0%,
+    color-mix(in srgb, var(--ns-accent) 4%, #{sf.$sf-cloud-warm}) 100%);
   border: 1px solid color-mix(in srgb, var(--ns-accent) 20%, transparent);
-  border-radius: cv.getVar("ghost-cta-radius");
-  padding: cv.getVar("ghost-cta-padding");
+  border-radius: sf.$sf-radius-lg;
+  padding: 3rem 2rem;
   text-align: center;
   margin: 3rem 0;
 
-  h2 {
-    color: var(--ns-accent-dark);
-    font-weight: cv.getVar("weight-extrabold");
-  }
-
-  p {
-    color: cv.getVar("text-light");
-  }
+  h2 { color: var(--ns-accent-dark); font-weight: 800; }
+  p  { color: sf.$sf-text-weak; }
 
   .gh-post-upgrade-cta-content a.button {
     background-color: var(--ns-accent);
-    color: white;
-    border-radius: cv.getVar("radius-rounded");
-    font-weight: cv.getVar("weight-bold");
+    color: #fff;
+    border-radius: sf.$sf-radius-pill;
+    font-weight: 700;
     padding: 0.75rem 2rem;
     margin-top: 1rem;
     display: inline-block;
-    transition: 0.2s ease;
+    &:hover { background-color: var(--ns-accent-dark); transform: translateY(-1px); }
+  }
 
-    &:hover {
-      background-color: var(--ns-accent-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-    }
+  [data-theme="dark"] & {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--ns-accent) 14%, #{sf.$sf-dark-surface}) 0%,
+      color-mix(in srgb, var(--ns-accent) 7%, #{sf.$sf-dark-surface}) 100%);
+    border-color: color-mix(in srgb, var(--ns-accent) 25%, transparent);
+    h2 { color: sf.$sf-dark-link; }
+    p  { color: sf.$sf-dark-text-muted; }
   }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 18. Newsletter signup form
+// 11. Members newsletter form (data-members-form)
 // ───────────────────────────────────────────────────────────────────────────
 [data-members-form] {
-  .field:not(:last-child) {
-    margin-bottom: 0.75rem;
-  }
-
-  .input {
-    border-radius: cv.getVar("radius");
-    box-shadow: none;
-    border-color: cv.getVar("border");
-  }
-
-  button[type="submit"] {
-    background-color: var(--ns-accent);
-    color: white;
-    border: none;
-    border-radius: cv.getVar("radius");
-    font-weight: cv.getVar("weight-bold");
-    padding: 0.65rem 1.5rem;
-    cursor: pointer;
-    transition: 0.2s ease;
-
-    &:hover {
-      background-color: var(--ns-accent-dark);
-    }
-  }
-
-  .message-success {
-    color: cv.getVar("success");
-    font-weight: cv.getVar("weight-semibold");
-    margin-top: 0.5rem;
-  }
-
-  .message-error {
-    color: cv.getVar("danger");
-    font-weight: cv.getVar("weight-semibold");
-    margin-top: 0.5rem;
-  }
+  .message-success { color: sf.$sf-success; font-weight: 600; margin-top: 0.5rem; }
+  .message-error   { color: sf.$sf-error;   font-weight: 600; margin-top: 0.5rem; }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 19. Portal button (Ghost subscribe)
+// 12. Ghost Portal subscribe button → brand accent
 // ───────────────────────────────────────────────────────────────────────────
-#ghost-portal-root {
-  .gh-portal-btn-main {
-    background-color: var(--ns-accent) !important;
-
-    &:hover {
-      background-color: var(--ns-accent-dark) !important;
-    }
-  }
+#ghost-portal-root .gh-portal-btn-main {
+  background-color: var(--ns-accent) !important;
+  &:hover { background-color: var(--ns-accent-dark) !important; }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 20. Search modal
+// 13. Search modal & comments
 // ───────────────────────────────────────────────────────────────────────────
 .ghost-search-modal {
-  border-radius: cv.getVar("radius-large");
-  box-shadow: cv.getVar("shadow");
-  border: 1px solid cv.getVar("border");
-  background-color: cv.getVar("scheme-main");
+  border-radius: sf.$sf-radius-lg;
+  box-shadow: sf.$sf-shadow-lg;
+  border: 1px solid sf.$sf-border;
+  background-color: sf.$sf-white;
+
+  [data-theme="dark"] & {
+    background-color: sf.$sf-dark-surface;
+    border-color: sf.$sf-dark-border;
+  }
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// 21. Comments
-// ───────────────────────────────────────────────────────────────────────────
 .gh-comments {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid cv.getVar("border");
+  border-top: 1px solid sf.$sf-border;
+
+  [data-theme="dark"] & { border-top-color: sf.$sf-dark-border; }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 22. Error pages
+// 14. Error pages (404 / 500)
 // ───────────────────────────────────────────────────────────────────────────
 .error-template {
   padding: 6rem 1.5rem;
@@ -551,96 +381,35 @@ $ghost-progress-gradient: linear-gradient(90deg, var(--ns-accent), #{cv.getVar("
 
   .error-code {
     font-size: 6rem;
-    font-weight: cv.getVar("weight-extrabold");
-    color: cv.getVar("primary");
+    font-weight: 800;
+    color: sf.$sf-blue;
     line-height: 1;
     letter-spacing: -0.04em;
   }
-
   .error-description {
     font-size: 1.25rem;
-    color: cv.getVar("text-light");
+    color: sf.$sf-text-weak;
     margin: 1rem 0 2rem;
   }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// 23. Reading progress bar
+// 15. Reading progress bar (used by blog/post headers)
 // ───────────────────────────────────────────────────────────────────────────
 .ns-reading-progress {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: cv.getVar("ghost-progress-height");
+  height: 0.25rem;
   z-index: 9999;
   pointer-events: none;
 
   .ns-reading-progress__bar {
     height: 100%;
     width: 0%;
-    background: cv.getVar("ghost-progress-gradient");
+    background: linear-gradient(90deg, var(--ns-accent), #{sf.$sf-blue-mid});
     transition: width 0.1s linear;
     will-change: width;
-  }
-}
-
-// ───────────────────────────────────────────────────────────────────────────
-// 24. Sync Bulma .is-primary with Ghost accent
-// ───────────────────────────────────────────────────────────────────────────
-.button.is-primary,
-.tag.is-primary {
-  background-color: var(--ns-accent) !important;
-}
-
-.button.is-primary:hover {
-  background-color: var(--ns-accent-dark) !important;
-}
-
-// ───────────────────────────────────────────────────────────────────────────
-// 25. Dark theme
-// ───────────────────────────────────────────────────────────────────────────
-[data-theme="dark"],
-.is-dark {
-  .gh-post-upgrade-cta {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--ns-accent) 12%, #{cv.getVar("scheme-main")}) 0%,
-      color-mix(in srgb, var(--ns-accent) 6%, #{cv.getVar("scheme-main")}) 100%
-    );
-    border-color: color-mix(in srgb, var(--ns-accent) 25%, transparent);
-
-    h2 {
-      color: cv.getVar("link");
-    }
-  }
-
-  .kg-callout-card {
-    background-color: color-mix(in srgb, var(--ns-accent) 8%, #{cv.getVar("scheme-main")});
-    border-color: color-mix(in srgb, var(--ns-accent) 20%, transparent);
-  }
-
-  .kg-bookmark-card,
-  .kg-toggle-card,
-  .kg-product-card,
-  .kg-audio-card {
-    background-color: cv.getVar("scheme-main");
-    border-color: cv.getVar("border");
-  }
-
-  .gh-content blockquote,
-  .kg-blockquote-alt {
-    background-color: cv.getVar("scheme-main-bis");
-    border-left-color: cv.getVar("primary");
-  }
-
-  [data-members-form] .input {
-    background-color: cv.getVar("scheme-main");
-    color: cv.getVar("text");
-    border-color: cv.getVar("border");
-  }
-
-  .gh-comments {
-    border-top-color: cv.getVar("border");
   }
 }
