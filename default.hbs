@@ -2,19 +2,15 @@
 <html lang="{{@site.locale}}" data-theme="light">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True">
     <title>{{meta_title}}</title>
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="preload" as="style" href="{{asset "built/screen.css"}}" />
-    <link rel="preload" as="script" href="{{asset "built/casper.js"}}" />
-    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}" />
-
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    {{!-- Apply saved theme BEFORE paint — prevents flash of wrong theme.
-          Falls back to OS preference on first visit (no ns-theme stored). --}}
+    {{!-- ── Pre-paint theme ───────────────────────────────────────────────
+      Applies the saved theme to <html> BEFORE first paint to prevent a flash
+      of the wrong colours. Falls back to the OS preference on first visit.
+      This is the only inline script in <head>; toggling lives in theme-toggle.js
+    ─────────────────────────────────────────────────────────────────────── --}}
     <script>
       (function () {
         try {
@@ -28,82 +24,56 @@
       })();
     </script>
 
+    {{!-- Fonts: Inter approximates SLDS's Salesforce Sans (proprietary); JetBrains Mono for code --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+    {{!-- Theme stylesheet (Tailwind build) --}}
+    <link rel="preload" as="style" href="{{asset "built/screen.css"}}">
+    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
+
+    {{!-- Phosphor icon web font (general UI icons) --}}
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+
+    {{!-- Google AdSense loader — only when ads are enabled + a publisher ID is set
+         (Ghost Admin → Design). Individual slots are placed via the ads/adsense partial. --}}
+    {{#if @custom.enable_ads}}{{#if @custom.adsense_publisher_id}}
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{@custom.adsense_publisher_id}}" crossorigin="anonymous"></script>
+    {{/if}}{{/if}}
+
+    {{!-- Ghost-injected SEO tags, structured data, code injection, search, etc. --}}
     {{ghost_head}}
   </head>
 
-  <body class="{{body_class}} is-flex is-flex-direction-column" style="min-height:100vh;">
+  <body class="{{body_class}} flex min-h-screen flex-col bg-surface text-ink">
+  {{> "ads/sponsored"}}
+    {{!-- Accessibility: jump straight to the main content with the keyboard --}}
+    <a href="#main"
+       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-brand-500 focus:px-4 focus:py-2 focus:font-medium focus:text-white focus:shadow-raised">
+      Skip to content
+    </a>
 
+    {{!-- Site header / primary navigation (partial) --}}
     {{> header}}
 
-    <main class="main is-flex-grow-1">
+    {{!-- Page body — each template's content renders here --}}
+    <main id="main" class="flex-1">
       {{{body}}}
     </main>
 
+    {{!-- Site footer (partial) --}}
     {{> footer}}
 
+    {{!-- Ghost-injected scripts: Portal (members), search, comments, etc. --}}
     {{ghost_foot}}
 
-    <script src="{{asset "built/casper.js"}}"></script>
+    {{!-- Alpine.js (self-hosted) — powers the mobile menu, dropdowns and toggles.
+         `defer` keeps it non-blocking and lets it auto-start after DOM parse. --}}
+    <script defer src="{{asset "js/vendor/alpine.js"}}"></script>
 
-    {{!-- ── Unified Theme Switcher ────────────────────────────────────────────
-      Single source of truth: data-theme="light|dark" on <html>.
-      Single localStorage key: ns-theme.
-      Toggle buttons: class ns-theme-toggle
-      Icon element:   class ns-theme-icon (ph-moon in light → ph-sun in dark)
-      This is the ONLY place that reads/writes ns-theme.
-    ─────────────────────────────────────────────────────────────────────── --}}
-    <script>
-    (function () {
-      'use strict';
-
-      var html  = document.documentElement;
-      var DARK  = 'dark';
-      var LIGHT = 'light';
-      var KEY   = 'ns-theme';
-
-      function isDark() {
-        return html.getAttribute('data-theme') === DARK;
-      }
-
-      function applyTheme(dark) {
-        html.setAttribute('data-theme', dark ? DARK : LIGHT);
-        try { localStorage.setItem(KEY, dark ? DARK : LIGHT); } catch (e) {}
-
-        // Swap moon ↔ sun icons
-        document.querySelectorAll('.ns-theme-icon').forEach(function (el) {
-          el.classList.toggle('ph-moon', !dark);
-          el.classList.toggle('ph-sun',  dark);
-        });
-
-        // Keep button contrast readable in both modes
-        document.querySelectorAll('.ns-theme-toggle').forEach(function (btn) {
-          btn.classList.toggle('is-dark',  dark);
-          btn.classList.toggle('is-light', !dark);
-        });
-      }
-
-      // Sync icon state on page load (theme already applied by pre-paint script)
-      applyTheme(isDark());
-
-      // Wire all toggle buttons
-      document.querySelectorAll('.ns-theme-toggle').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          applyTheme(!isDark());
-        });
-      });
-
-      // Follow OS changes only when user has not explicitly chosen
-      if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-          try {
-            if (!localStorage.getItem(KEY)) {
-              applyTheme(e.matches);
-            }
-          } catch (ex) {}
-        });
-      }
-    })();
-    </script>
+    {{!-- Theme toggle + small vanilla helpers (concatenated, minified build) --}}
+    <script defer src="{{asset "built/casper.js"}}"></script>
 
   </body>
 </html>

@@ -15,14 +15,13 @@ const pump = require('pump');
 // gulp plugins & utils
 const livereload = require('gulp-livereload');
 const postcss = require('gulp-postcss');
-const sass = require('gulp-sass')(require('sass'));
 const zip = require('gulp-zip');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const beeper = require('beeper');
 
 // postcss plugins
-const autoprefixer = require('autoprefixer');
+const tailwindcss = require('@tailwindcss/postcss'); // Tailwind v4 (CSS-first)
 const cssnano = require('cssnano');
 
 // translations support
@@ -51,13 +50,13 @@ function hbs(done) {
     ], handleError(done));
 }
 
-// SCSS → autoprefixed, minified CSS (custom framework, no Bulma).
+// Tailwind entry → generated, minified CSS. Tailwind v4 emits its own vendor
+// prefixes via Lightning CSS, so autoprefixer is no longer needed.
 function css(done) {
     pump([
-        src('assets/scss/screen.scss', {sourcemaps: true}),
-        sass({quietDeps: true}).on('error', sass.logError),
+        src('assets/css/screen.css', {sourcemaps: true}),
         postcss([
-            autoprefixer(),
+            tailwindcss(),
             cssnano()
         ]),
         dest('assets/built/', {sourcemaps: '.'}),
@@ -65,13 +64,12 @@ function css(done) {
     ], handleError(done));
 }
 
-// Concatenate lib code first (so app code can depend on it), then minify.
+// Concatenate our small scripts (theme toggle, TOC, effects) and minify.
+// Note: assets/js/vendor/* (e.g. Alpine) is loaded separately in default.hbs,
+// so it is intentionally NOT part of this bundle.
 function js(done) {
     pump([
-        src([
-            'assets/js/lib/*.js',
-            'assets/js/*.js'
-        ], {sourcemaps: true}),
+        src('assets/js/*.js', {sourcemaps: true}),
         concat('casper.js'),
         uglify(),
         dest('assets/built/', {sourcemaps: '.'}),
@@ -105,7 +103,9 @@ function locales(done) {
     })(done);
 }
 
-const cssWatcher = () => watch('assets/scss/**/*.scss', css);
+// Recompile CSS when the entry changes OR when templates change (new class
+// names in .hbs need Tailwind to regenerate utilities).
+const cssWatcher = () => watch(['assets/css/**/*.css', '*.hbs', 'partials/**/*.hbs'], css);
 const jsWatcher = () => watch('assets/js/**', js);
 const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], hbs);
 const localesWatcher = () => watch('./locales-local/**/*.json', locales);

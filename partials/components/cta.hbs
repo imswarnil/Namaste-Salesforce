@@ -1,0 +1,33 @@
+{{!-- components/cta.hbs
+     Newsletter / subscribe call-to-action. Uses Ghost members signup when
+     enabled, otherwise links to the Portal. Reusable on listings, posts, home. --}}
+<section class="mx-auto my-14 max-w-4xl px-4 sm:px-6">
+  <div class="relative overflow-hidden rounded-card bg-gradient-to-br from-brand-600 to-brand-900 px-6 py-12 text-center text-white shadow-raised sm:px-12">
+
+    {{!-- decorative grid sheen --}}
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-10"
+         style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:48px 48px;"></div>
+
+    <div class="relative">
+      <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "Join the Ohana"}}</h2>
+      <p class="mx-auto mt-3 max-w-xl text-white/80">{{t "New Salesforce tutorials, courses and tips — straight to your inbox. Free, no spam."}}</p>
+
+      {{#if @site.members_enabled}}
+        <form data-members-form="subscribe" class="mx-auto mt-6 flex max-w-md flex-col gap-3 sm:flex-row">
+          <input data-members-email type="email" required placeholder="you@email.com" aria-label="{{t "Your email address"}}"
+                 class="w-full rounded-pill border-0 px-5 py-3 text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-white">
+          <button type="submit" class="shrink-0 rounded-pill bg-white px-6 py-3 font-bold text-brand-700 transition hover:bg-brand-50">
+            {{t "Subscribe"}}
+          </button>
+        </form>
+        <p data-members-success class="mt-3 hidden text-sm text-white/90">{{t "Check your inbox to confirm! 🎉"}}</p>
+        <p data-members-error class="mt-3 hidden text-sm text-amber-200">{{t "Please enter a valid email."}}</p>
+      {{else}}
+        <a href="#/portal/signup" data-portal="signup"
+           class="mt-6 inline-flex rounded-pill bg-white px-6 py-3 font-bold text-brand-700 transition hover:bg-brand-50">
+          {{t "Subscribe"}}
+        </a>
+      {{/if}}
+    </div>
+  </div>
+</section>

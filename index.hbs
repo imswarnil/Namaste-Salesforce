@@ -1,16 +1,24 @@
 {{!< default}}
+{{!-- index.hbs — default post list (home fallback / collection route) --}}
 
-<section class="ns-section">
-  <div class="ns-container">
-    {{!-- Latest Posts --}}
-    <div class="ns-grid ns-grid--3">
-      {{#foreach posts }}
-        <div class="ns-fade-up ns-stagger-{{@number}}">
-          {{> post-card class="bottom-border"}}
-        </div>
-      {{/foreach}}
-    </div>
+<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
 
-    {{pagination}}
+  {{!-- Post grid --}}
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {{#foreach posts}}
+      <div class="motion-safe:animate-fade-up">
+        {{> post-card}}
+      </div>
+    {{/foreach}}
   </div>
+
+  {{!-- Empty state --}}
+  {{^posts}}
+    <div class="rounded-card border border-dashed border-border py-16 text-center text-muted">
+      <i class="ph ph-newspaper mb-3 text-4xl" aria-hidden="true"></i>
+      <p class="text-lg font-semibold">{{t "No posts yet"}}</p>
+    </div>
+  {{/posts}}
+
+  {{pagination}}
 </section>

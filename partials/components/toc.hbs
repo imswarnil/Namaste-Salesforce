@@ -1,0 +1,22 @@
+{{!-- components/toc.hbs — Custom Table of Contents
+     ---------------------------------------------------------------------------
+     Rendered empty; toc.js scans the post's `.gh-content` headings (h2/h3),
+     injects anchor links into [data-toc], and adds scroll-spy highlighting.
+     - Desktop: meant to sit in a sticky sidebar column (the parent positions it).
+     - Mobile: collapses behind a toggle (Alpine `open` state).
+     The whole nav hides itself (via toc.js) when a post has no headings. --}}
+<nav aria-label="{{t "Table of contents"}}"
+     class="js-toc hidden text-sm"
+     x-data="{ open: false }">
+
+  <div class="flex items-center justify-between gap-2 lg:block">
+    <p class="font-heading text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "On this page"}}</p>
+    <button type="button" class="lg:hidden inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted"
+            @click="open = !open" :aria-expanded="open.toString()" aria-label="{{t "Toggle contents"}}">
+      <i class="ph" :class="open ? 'ph-x' : 'ph-list'" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  {{!-- toc.js fills this <ul>. lg:!block keeps it open on desktop regardless of state. --}}
+  <ul data-toc class="mt-3 space-y-0.5 lg:!block" :class="open ? 'block' : 'hidden'"></ul>
+</nav>

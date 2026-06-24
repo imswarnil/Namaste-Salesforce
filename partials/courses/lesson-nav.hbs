@@ -1,0 +1,19 @@
+{{!-- courses/lesson-nav.hbs — list of lessons in the current lesson's course.
+     Context: a #lesson post. Highlights the current lesson. --}}
+<nav aria-label="{{t "Course lessons"}}">
+  <p class="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">
+    <i class="ph ph-list-checks" aria-hidden="true"></i>{{t "Course lessons"}}
+  </p>
+  <ul class="space-y-0.5 border-l border-border">
+    {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
+      {{#foreach posts}}
+        <li>
+          <a href="{{url}}"
+             class="doc-nav-link -ml-px flex items-start gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../id}}is-doc-active{{/match}}">
+            <span class="shrink-0 font-light">{{@number}}.</span><span>{{title}}</span>
+          </a>
+        </li>
+      {{/foreach}}
+    {{/get}}
+  </ul>
+</nav>

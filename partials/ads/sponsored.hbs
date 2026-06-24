@@ -1,0 +1,29 @@
+{{!-- ads/sponsored.hbs — Sponsored / house promo card
+     ---------------------------------------------------------------------------
+     A self-hosted sponsor slot (no third-party script). Configure the text,
+     link and image in Ghost Admin → Design → (Sponsor). Renders only when a
+     sponsor URL is set, so it's safe to drop into any sidebar or post footer. --}}
+{{#if @custom.sponsor_url}}
+<aside class="not-prose my-8 overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
+  <a href="{{@custom.sponsor_url}}" target="_blank" rel="noopener sponsored" class="group block">
+    {{#if @custom.sponsor_image}}
+      <img src="{{@custom.sponsor_image}}" alt="" loading="lazy" class="h-32 w-full object-cover">
+    {{/if}}
+    <div class="p-4">
+      <span class="text-[0.6rem] font-semibold uppercase tracking-wider text-muted">
+        {{#if @custom.sponsor_label}}{{@custom.sponsor_label}}{{else}}{{t "Sponsored"}}{{/if}}
+      </span>
+      {{#if @custom.sponsor_headline}}
+        <p class="mt-1 font-heading font-bold leading-snug transition-colors group-hover:text-brand-600">{{@custom.sponsor_headline}}</p>
+      {{/if}}
+      {{#if @custom.sponsor_body}}
+        <p class="mt-1 text-sm text-muted">{{@custom.sponsor_body}}</p>
+      {{/if}}
+      <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600">
+        {{#if @custom.sponsor_cta}}{{@custom.sponsor_cta}}{{else}}{{t "Learn more"}}{{/if}}
+        <i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i>
+      </span>
+    </div>
+  </a>
+</aside>
+{{/if}}

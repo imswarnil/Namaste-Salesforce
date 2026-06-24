@@ -1,78 +1,20 @@
 {{!< default}}
+{{!-- blog.hbs — blog listing (custom template / routed collection).
+     First post is featured large; the rest flow into the standard card grid. --}}
 
-{{!-- 1. BLOG HERO SECTION --}}
-<section class="ns-hero">
-  <div class="ns-hero-mesh" aria-hidden="true">
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
-  </div>
-  <div class="container ns-hero__content has-text-centered">
-    <span class="ns-eyebrow ns-fade-up">Namaste Salesforce</span>
-    <h1 class="ns-hero__title ns-fade-up ns-stagger-1">The Developer Blog</h1>
-    <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">
-      Insights, updates, and deep-dives from the Salesforce ecosystem.
-    </p>
-  </div>
-</section>
+{{> "components/page-header" eyebrow="Namaste Salesforce" title="The Developer Blog" subtitle="Insights, updates and deep-dives from the Salesforce ecosystem."}}
 
-{{!-- 2. POSTS FEED --}}
-<section class="ns-section">
-  <div class="ns-container">
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
 
-    {{!-- FEATURED POST: the first post on the page --}}
-    {{#foreach posts limit="1"}}
-      <article class="ns-card is-hoverable mb-6 ns-fade-up" style="overflow: hidden;">
-        <div class="columns is-marginless is-vcentered">
+  {{#foreach posts limit="1"}}
+    {{> "blog/featured-post"}}
+  {{/foreach}}
 
-          <div class="column is-7 p-0">
-            <a href="{{url}}" class="is-block is-clipped" tabindex="-1">
-              {{#if feature_image}}
-                <figure class="image is-5by3" style="height: 100%;">
-                  <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover; height: 100%; width: 100%;">
-                </figure>
-              {{else}}
-                <div class="is-flex is-align-items-center is-justify-content-center" style="min-height: 350px; height: 100%; background: linear-gradient(135deg, hsl(240 70% 15%), hsl(260 60% 25%));">
-                  <span class="icon is-large" style="opacity: 0.4;"><i class="ph ph-image" style="font-size: 3rem; color: #fff;"></i></span>
-                </div>
-              {{/if}}
-            </a>
-          </div>
-
-          <div class="column is-5 is-flex is-flex-direction-column is-justify-content-center p-6">
-            {{#if primary_tag}}
-              <span class="ns-eyebrow mb-3">{{primary_tag.name}}</span>
-            {{/if}}
-
-            <h2 class="title is-2 mb-4" style="line-height: 1.2;">
-              <a href="{{url}}" class="has-text-weight-bold">{{title}}</a>
-            </h2>
-
-            <p class="is-size-6 mb-5" style="opacity: 0.75;">{{excerpt words="35"}}&hellip;</p>
-
-            <div>
-              <a href="{{url}}" class="button is-gradient ns-gradient-animated is-rounded has-text-weight-bold">
-                <span>Read Article</span>
-                <span class="icon is-small"><i class="ph ph-arrow-right"></i></span>
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </article>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {{#foreach posts from="2"}}
+      <div class="motion-safe:animate-fade-up">{{> post-card}}</div>
     {{/foreach}}
-
-    {{!-- STANDARD GRID POSTS: post #2 and onward --}}
-    <div class="ns-grid ns-grid--3">
-      {{#foreach posts from="2"}}
-        <div class="ns-fade-up ns-stagger-{{@number}}">
-          {{> "post-card"}}
-        </div>
-      {{/foreach}}
-    </div>
-
-    {{!-- 3. PAGINATION --}}
-    {{pagination}}
-
   </div>
+
+  {{pagination}}
 </section>

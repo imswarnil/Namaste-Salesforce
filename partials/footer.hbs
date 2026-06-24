@@ -1,187 +1,48 @@
-<footer class="footer pt-6 pb-5">
-    <div class="container">
+{{!-- ════════════════════════════════════════════════════════════════════════
+  partials/footer.hbs — Site footer
+  ----------------------------------------------------------------------------
+  Brand + description + social, a secondary-navigation column, a short
+  newsletter prompt, and a legal/credits strip. Stacks to one column on mobile.
+  Reuses components/social-icons.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<footer class="mt-16 border-t border-border bg-surface-sunken">
+  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
 
-        {{!-- ══════════════════════════════════════════════════════════════
-            MAIN FOOTER GRID
-        ══════════════════════════════════════════════════════════════ --}}
-        <div class="columns is-multiline is-variable is-6 mb-5">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
 
-            {{!-- 1. Brand & Bio (Mobile: 100% | Desktop: 4 Columns) --}}
-            <div class="column is-12-mobile is-5-tablet is-4-desktop mb-4-mobile">
-                <a href="{{@site.url}}" class="is-block mb-4">
-                    {{#if @site.logo}}
-                        <figure class="image is-32x32 is-inline-block">
-                            <img src="{{@site.logo}}" alt="{{@site.title}}">
-                        </figure>
-                    {{else}}
-                        <span class="title is-4 ns-gradient-text">{{@site.title}}</span>
-                    {{/if}}
-                </a>
-                <p class="is-size-6 has-text-grey mb-4">
-                    {{#if @site.description}}
-                        {{@site.description}}
-                    {{else}}
-                        Master Salesforce engineering. Open-source learning paths, architecture breakdowns, and practical tutorials.
-                    {{/if}}
-                </p>
-                <div class="is-size-7 has-text-grey">
-                    <p class="mb-1">
-                        <span class="icon is-small mr-1"><i class="ph ph-map-pin"></i></span>
-                        <strong>Bengaluru, India</strong>
-                    </p>
-                    <p>
-                        <span class="icon is-small mr-1"><i class="ph ph-envelope-simple"></i></span>
-                        <a href="mailto:{{#if @site.email}}{{@site.email}}{{else}}hello@namastesf.com{{/if}}" class="has-text-grey">
-                            {{#if @site.email}}{{@site.email}}{{else}}hello@namastesf.com{{/if}}
-                        </a>
-                    </p>
-                </div>
-            </div>
+      {{!-- Brand --}}
+      <div class="lg:col-span-2">
+        <a href="{{@site.url}}" class="font-heading text-lg font-extrabold text-brand-600 dark:text-brand-300">{{@site.title}}</a>
+        <p class="mt-3 max-w-sm text-sm text-muted">
+          {{#if @site.description}}{{@site.description}}{{else}}{{t "Open-source Salesforce learning — courses, documentation and hands-on tutorials."}}{{/if}}
+        </p>
+        <div class="mt-4">{{> "components/social-icons"}}</div>
+      </div>
 
-            {{!-- 2. Platform Links (Mobile: 50% | Desktop: 2 Columns) --}}
-            <div class="column is-6-mobile is-3-tablet is-2-desktop">
-                <p class="is-size-7 is-uppercase has-text-weight-bold has-text-grey mb-4 ns-eyebrow">Platform</p>
-                <ul class="is-size-6">
-                    <li class="mb-3">
-                        <a href="/courses/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-graduation-cap"></i></span>Courses
-                        </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="/training/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-map-trifold"></i></span>Roadmaps
-                        </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="/blog/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-newspaper"></i></span>Dev Blog
-                        </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="/about/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-user-circle"></i></span>About Swarnil
-                        </a>
-                    </li>
-                </ul>
-            </div>
+      {{!-- Secondary nav --}}
+      <nav aria-label="{{t "Footer"}}">
+        <p class="font-heading text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Explore"}}</p>
+        <ul class="mt-3 flex flex-col gap-1 text-sm">{{navigation type="secondary"}}</ul>
+      </nav>
 
-            {{!-- 3. Resources / Support Links (Mobile: 50% | Desktop: 2 Columns) --}}
-            <div class="column is-6-mobile is-4-tablet is-2-desktop">
-                <p class="is-size-7 is-uppercase has-text-weight-bold has-text-grey mb-4 ns-eyebrow">Resources</p>
-                <ul class="is-size-6">
-                    <li class="mb-3">
-                        <a href="/contact/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-chat-circle-text"></i></span>Contact Us
-                        </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="/privacy/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-shield-check"></i></span>Privacy Policy
-                        </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="/terms/" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-file-text"></i></span>Terms of Service
-                        </a>
-                    </li>
-                    <li class="mb-3">
-                        <a href="#sponsor" class="has-text-grey">
-                            <span class="icon is-small mr-1"><i class="ph ph-heart"></i></span>Sponsor Project
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            {{!-- 4. Newsletter (Mobile: 100% | Desktop: 4 Columns) --}}
-            <div class="column is-12-mobile is-12-tablet is-4-desktop">
-                <div class="ns-glass p-5" style="border-radius: 1rem;">
-                    <p class="ns-eyebrow mb-2">Newsletter</p>
-                    <p class="is-size-5 has-text-weight-bold mb-1">Join the Ohana</p>
-                    <p class="is-size-7 has-text-grey mb-4">Level up your Salesforce game. Delivered directly to your inbox.</p>
-
-                    {{#if @site.members_enabled}}
-                        <form data-members-form>
-                            <div class="field">
-                                <div class="control has-icons-left">
-                                    <input data-members-email class="input" type="email" placeholder="you@example.com" required>
-                                    <span class="icon is-small is-left">
-                                        <i class="ph ph-envelope-simple"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="control">
-                                    <button class="button is-gradient is-fullwidth has-text-weight-bold" type="submit">
-                                        <span class="icon is-small"><i class="ph ph-paper-plane-right"></i></span>
-                                        <span>Subscribe Free</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="message-success has-text-success mt-2 is-size-7 is-hidden">
-                                <span class="icon-text">
-                                    <span class="icon is-small"><i class="ph-fill ph-check-circle"></i></span>
-                                    <span>Check your inbox to confirm!</span>
-                                </span>
-                            </div>
-                            <div class="message-error has-text-danger mt-2 is-size-7 is-hidden">
-                                <span class="icon-text">
-                                    <span class="icon is-small"><i class="ph-fill ph-warning"></i></span>
-                                    <span>Valid email required.</span>
-                                </span>
-                            </div>
-                        </form>
-                    {{/if}}
-                </div>
-            </div>
-        </div>
-
-        {{!-- ══════════════════════════════════════════════════════════════
-            BOTTOM STRIP
-        ══════════════════════════════════════════════════════════════ --}}
-        <hr class="mt-5 mb-5">
-
-        <div class="columns is-vcentered is-mobile is-multiline">
-
-            {{!-- Left Side: Copyright --}}
-            <div class="column is-12-mobile is-6-tablet mb-3-mobile">
-                <p class="is-size-7 has-text-grey">
-                    &copy; {{date format="YYYY"}} <strong class="has-text-weight-semibold">{{@site.title}}</strong>. All rights reserved.
-                </p>
-            </div>
-
-            {{!-- Right Side: Tech Stack & Socials --}}
-            <div class="column is-12-mobile is-6-tablet has-text-right-tablet">
-                <div class="is-inline-flex is-align-items-center is-flex-wrap-wrap is-size-7 has-text-grey" style="gap: 0.75rem;">
-
-                    {{!-- Open Source Info --}}
-                    <span class="icon-text">
-                        <span class="icon is-small"><i class="ph-fill ph-git-branch"></i></span>
-                        <span>Proudly <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="has-text-weight-bold">Open Source</a></span>
-                    </span>
-
-                    {{!-- Tech Stack --}}
-                    <span class="is-hidden-mobile">
-                        Built with <a href="https://ghost.org" target="_blank" rel="noopener" class="has-text-weight-bold">Ghost</a> &amp; a custom SLDS-inspired SCSS framework
-                    </span>
-
-                    {{!-- Mini Social Icons --}}
-                    <div class="buttons are-small mb-0 is-hidden-mobile">
-                        {{#if @site.twitter}}
-                            <a href="{{social_url type="twitter"}}" class="button is-ghost has-text-grey px-2" target="_blank" rel="noopener" aria-label="Twitter">
-                                <span class="icon"><i class="ph-fill ph-twitter-logo is-size-6"></i></span>
-                            </a>
-                        {{/if}}
-                        <a href="https://www.linkedin.com/" class="button is-ghost has-text-grey px-2" target="_blank" rel="noopener" aria-label="LinkedIn">
-                            <span class="icon"><i class="ph-fill ph-linkedin-logo is-size-6"></i></span>
-                        </a>
-                        <a href="https://github.com/imswarnil/Namaste-Salesforce" class="button is-ghost has-text-grey px-2" target="_blank" rel="noopener" aria-label="GitHub">
-                            <span class="icon"><i class="ph-fill ph-github-logo is-size-6"></i></span>
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
+      {{!-- Newsletter prompt --}}
+      <div>
+        <p class="font-heading text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Stay in the loop"}}</p>
+        <p class="mt-3 text-sm text-muted">{{t "Free Salesforce tips & new lessons in your inbox."}}</p>
+        <a href="#/portal/signup" data-portal="signup"
+           class="mt-3 inline-flex items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-brand-600">
+          <i class="ph ph-envelope-simple" aria-hidden="true"></i>{{t "Subscribe"}}
+        </a>
+      </div>
     </div>
+
+    {{!-- Legal / credits --}}
+    <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-sm text-muted sm:flex-row">
+      <p>&copy; {{date format="YYYY"}} <span class="font-medium text-ink">{{@site.title}}</span>. {{t "All rights reserved."}}</p>
+      <p class="flex items-center gap-1.5">
+        <i class="ph ph-git-branch" aria-hidden="true"></i>
+        {{t "Open source"}} · {{t "Built with"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-medium hover:text-brand-600">Ghost</a>
+      </p>
+    </div>
+  </div>
 </footer>

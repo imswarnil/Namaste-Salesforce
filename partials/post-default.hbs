@@ -1,66 +1,56 @@
-{{!-- partials/post-default.hbs — fallback article layout --}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  partials/post-default.hbs — Generic single-post article layout
+  ----------------------------------------------------------------------------
+  Context: {{#post}} (set by post.hbs router). Centred reading column with a
+  header (tag, title, byline), feature image, .prose content, tag footer,
+  social share, comments and related posts.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<article class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
 
-{{!-- Hero with feature image background --}}
-{{#if feature_image}}
-<section class="ns-hero" style="background-image: url('{{img_url feature_image size="xl"}}'); background-size: cover; background-position: center; min-height: 420px;">
-  <div class="ns-hero-mesh" aria-hidden="true">
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-  </div>
-  <div class="container ns-hero__content has-text-centered">
-    <h1 class="ns-hero__title ns-fade-up">{{title}}</h1>
-    {{#primary_author}}
-      <a href="{{url}}" class="ns-hero__subtitle ns-fade-up ns-stagger-1">{{name}}</a>
-    {{/primary_author}}
-  </div>
-</section>
-{{else}}
-<section class="ns-hero">
-  <div class="ns-hero-mesh" aria-hidden="true">
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
-  </div>
-  <div class="container ns-hero__content has-text-centered">
-    <h1 class="ns-hero__title ns-fade-up">{{title}}</h1>
-    {{#primary_author}}
-      <a href="{{url}}" class="ns-hero__subtitle ns-fade-up ns-stagger-1">{{name}}</a>
-    {{/primary_author}}
-  </div>
-</section>
-{{/if}}
+  {{!-- ── Header ── --}}
+  <header class="mb-8">
+    {{#primary_tag}}
+      <a href="{{url}}" class="inline-flex items-center rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">{{name}}</a>
+    {{/primary_tag}}
 
-<section class="ns-section">
-  <div class="ns-container">
-    <div class="columns is-centered">
-      <div class="column is-8-desktop">
+    <h1 class="mt-4 font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{{title}}</h1>
 
-        {{!-- Tag pills --}}
-        {{#if tags}}
-          <div class="tags mb-5">
-            {{#foreach tags limit="3"}}
-              <a class="tag ns-badge is-rounded" href="{{url}}" title="{{name}}" aria-label="{{name}}">
-                <i class="ph ph-hash mr-1"></i>{{name}}
-              </a>
-            {{/foreach}}
-          </div>
-        {{/if}}
+    {{#if custom_excerpt}}
+      <p class="mt-4 text-lg text-muted">{{custom_excerpt}}</p>
+    {{/if}}
 
-        {{!-- Content --}}
-        <div class="content is-medium gh-content">
-          {{content}}
-        </div>
-
-        {{!-- Social share --}}
-        {{> social-share}}
-
-        {{!-- Ghost native comments --}}
-        {{comments}}
-
-      </div>
+    {{!-- Byline (reusable component) --}}
+    <div class="mt-6 border-y border-border py-4">
+      {{> "components/author-byline"}}
     </div>
-  </div>
-</section>
+  </header>
 
-{{!-- Related posts --}}
+  {{!-- ── Feature image ── --}}
+  {{#if feature_image}}
+    <figure class="mb-8">
+      <img src="{{img_url feature_image size='l'}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+           class="w-full rounded-card object-cover shadow-card">
+      {{#if feature_image_caption}}
+        <figcaption class="mt-2 text-center text-sm text-muted">{{feature_image_caption}}</figcaption>
+      {{/if}}
+    </figure>
+  {{/if}}
+
+  {{!-- ── Content ── --}}
+  <div class="prose prose-lg max-w-none gh-content">
+    {{content}}
+  </div>
+
+  {{!-- ── Footer: all tags + share ── --}}
+  <footer class="mt-10 flex flex-col gap-6 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+    {{> "components/tag-pills"}}
+    {{> social-share}}
+  </footer>
+
+  {{!-- ── Comments ── --}}
+  {{comments}}
+
+</article>
+
+{{!-- ── Related posts ── --}}
 {{> related-posts}}

@@ -1,128 +1,72 @@
-{{!-- partials/post-lesson.hbs — individual lesson player --}}
-<div class="ns-section--tight">
-  <div class="container is-fluid">
-    <div class="columns is-variable is-6">
+{{!-- ════════════════════════════════════════════════════════════════════════
+  partials/post-lesson.hbs — Lesson player
+  3-column: course lesson nav · lesson content · (TOC + sponsor on xl).
+  Context: {{#post}} for a #lesson post.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+  <div class="grid gap-8 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_14rem]">
 
-      {{!-- ==========================================
-            LEFT SIDEBAR: COURSE INDEX
-      ========================================== --}}
-      <aside class="column is-12-mobile is-12-tablet is-3-desktop">
-        <div class="ns-glass-card p-4 mb-5" style="border-radius: 12px;">
-          <div class="menu">
-            <p class="menu-label is-size-7 has-text-weight-bold mb-3" style="letter-spacing: 0.08em;">
-              <span class="icon is-small mr-1"><i class="ph ph-list-checks"></i></span>
-              Course Lessons
-            </p>
-            <ul class="menu-list is-size-6">
-              {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
+    {{!-- Left: lessons in this course --}}
+    <aside class="lg:sticky lg:top-20 lg:self-start">
+      {{> "courses/lesson-nav"}}
+    </aside>
+
+    {{!-- Center: lesson content --}}
+    <main role="main" class="min-w-0">
+      <article>
+        <header class="mb-6">
+          <div class="mb-4 flex flex-wrap gap-2">
+            <span class="inline-flex items-center gap-1 rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">
+              <i class="ph ph-graduation-cap" aria-hidden="true"></i>{{t "Lesson"}}
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-pill border border-border px-3 py-1 text-xs text-muted">
+              <i class="ph ph-clock" aria-hidden="true"></i>{{reading_time}}
+            </span>
+          </div>
+          <h1 class="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{title}}</h1>
+          {{#if custom_excerpt}}<p class="mt-3 text-lg text-muted">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        {{#if feature_image}}
+          <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="mb-8 w-full rounded-card object-cover shadow-card">
+        {{/if}}
+
+        <div class="prose max-w-none gh-content">{{content}}</div>
+
+        {{!-- Prev / next lesson --}}
+        <nav class="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6" aria-label="{{t "Lesson navigation"}}">
+          <div>
+            {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
+              <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">
+                <i class="ph ph-arrow-left" aria-hidden="true"></i><span>{{t "Previous"}}</span>
+              </a>
+            {{/prev_post}}
+          </div>
+          <div>
+            {{#next_post in="primary_tag" filter="tag:hash-lesson"}}
+              <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">
+                <span>{{t "Next"}}</span><i class="ph ph-arrow-right" aria-hidden="true"></i>
+              </a>
+            {{else}}
+              {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
                 {{#foreach posts}}
-                  <li>
-                    <a href="{{url}}" class="is-flex is-align-items-flex-start mb-1 py-2 px-3
-                      {{#match id ../../id}}is-active{{/match}}"
-                      style="border-radius: 8px; gap: 0.5rem;">
-                      <span class="is-size-7 has-text-weight-light is-flex-shrink-0 mt-1">{{@number}}.</span>
-                      <span>{{title}}</span>
-                    </a>
-                  </li>
+                  <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
+                    <span>{{t "Finish course"}}</span><i class="ph-fill ph-check-circle" aria-hidden="true"></i>
+                  </a>
                 {{/foreach}}
               {{/get}}
-            </ul>
+            {{/next_post}}
           </div>
-        </div>
-      </aside>
+        </nav>
+      </article>
+    </main>
 
-      {{!-- ==========================================
-            CENTER: MAIN LESSON CONTENT
-      ========================================== --}}
-      <main class="column is-12-mobile is-12-tablet is-7-desktop">
-        <article>
-
-          <header class="mb-6">
-            <div class="tags mb-4" style="gap: 0.5rem;">
-              <span class="tag ns-badge ns-badge--gradient is-medium is-rounded has-text-weight-bold">
-                <span class="icon is-small mr-1"><i class="ph ph-graduation-cap"></i></span>
-                Lesson
-              </span>
-              <span class="tag is-light is-rounded is-medium" style="opacity: 0.75;">
-                <span class="icon is-small mr-1"><i class="ph ph-clock"></i></span>
-                {{reading_time}}
-              </span>
-            </div>
-
-            <h1 class="title is-2 is-size-3-mobile has-text-weight-bold mb-4 ns-fade-up" style="line-height: 1.2;">
-              {{title}}
-            </h1>
-
-            {{#if custom_excerpt}}
-              <p class="ns-lead mt-3 ns-fade-up ns-stagger-1">
-                {{custom_excerpt}}
-              </p>
-            {{/if}}
-          </header>
-
-          {{#if feature_image}}
-            <figure class="image mb-6 ns-scale-in" style="border-radius: 12px; overflow: hidden;">
-              <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" style="object-fit: cover; width: 100%;">
-            </figure>
-          {{/if}}
-
-          {{!-- Lesson Content --}}
-          <div class="content is-medium gh-content js-toc-content">
-            {{content}}
-          </div>
-
-          {{!-- Lesson Prev / Next Navigation --}}
-          <nav class="columns is-mobile mt-6 pt-5" style="border-top: 1px solid rgba(128,128,128,0.15);" aria-label="Lesson navigation">
-            <div class="column is-half">
-              {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
-                <a href="{{url}}" class="button is-light is-rounded has-text-weight-semibold is-fullwidth">
-                  <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                  <span class="is-hidden-mobile">Previous Lesson</span>
-                  <span class="is-hidden-tablet">Prev</span>
-                </a>
-              {{/prev_post}}
-            </div>
-            <div class="column is-half has-text-right">
-              {{#next_post in="primary_tag" filter="tag:hash-lesson"}}
-                <a href="{{url}}" class="button is-gradient is-rounded has-text-weight-bold is-fullwidth">
-                  <span class="is-hidden-mobile">Next Lesson</span>
-                  <span class="is-hidden-tablet">Next</span>
-                  <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                </a>
-              {{else}}
-                {{!-- Last lesson: show Finish Course --}}
-                {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
-                  {{#foreach posts}}
-                    <a href="{{url}}" class="button is-glow is-rounded has-text-weight-bold is-fullwidth">
-                      <span class="is-hidden-mobile">Finish Course</span>
-                      <span class="is-hidden-tablet">Finish</span>
-                      <span class="icon"><i class="ph-fill ph-check-circle"></i></span>
-                    </a>
-                  {{/foreach}}
-                {{/get}}
-              {{/next_post}}
-            </div>
-          </nav>
-
-        </article>
-      </main>
-
-      {{!-- ==========================================
-            RIGHT SIDEBAR: TOC & ADS
-      ========================================== --}}
-      <aside class="column is-12-mobile is-12-tablet is-2-desktop">
-
-        {{>"toc"}}
-
-        <div class="ns-glass-card p-4 has-text-centered mt-4" style="border-radius: 10px; min-height: 260px; display: flex; align-items: center; justify-content: center;">
-          <div>
-            <p class="is-size-7 has-text-weight-semibold mb-1" style="opacity: 0.45; letter-spacing: 0.08em; text-transform: uppercase;">Advertisement</p>
-            <p class="is-size-7" style="opacity: 0.35;">300 &times; 250</p>
-          </div>
-        </div>
-
-      </aside>
-
-    </div>
+    {{!-- Right rail: table of contents + sponsor --}}
+    <aside class="hidden xl:block">
+      <div class="sticky top-20 space-y-6">
+        {{> "components/toc"}}
+        {{> "ads/sponsored"}}
+      </div>
+    </aside>
   </div>
-</div>
+</section>

@@ -1,178 +1,29 @@
 {{!< default}}
+{{!-- training.hbs — Roadmaps / training tracks listing.
+     Lists #training (track) posts; each card previews its modules. --}}
 
-<!-- ── PAGE HEADER ── -->
 {{#page}}
-<section class="hero is-primary is-small">
-  <div class="hero-body">
-    <div class="container">
-      <nav class="breadcrumb has-arrow-separator mb-3" aria-label="breadcrumbs">
-        <ul>
-          <li><a class="has-text-primary-light" href="{{@site.url}}">Home</a></li>
-          <li class="is-active"><a class="has-text-white" href="{{url}}" aria-current="page">{{title}}</a></li>
-        </ul>
-      </nav>
-      <h1 class="title has-text-white">{{title}}</h1>
-      {{#if custom_excerpt}}
-        <p class="subtitle has-text-primary-light is-6">{{custom_excerpt}}</p>
-      {{/if}}
-
-      <!-- Stats row -->
-      <div class="columns is-mobile is-variable is-4 mt-3">
-        <div class="column is-narrow">
-          <p class="heading has-text-primary-light">Courses</p>
-          <p class="title is-4 has-text-white">12</p>
-        </div>
-        <div class="column is-narrow">
-          <p class="heading has-text-primary-light">Lessons</p>
-          <p class="title is-4 has-text-white">150+</p>
-        </div>
-        <div class="column is-narrow">
-          <p class="heading has-text-primary-light">Ecosystem</p>
-          <p class="title is-4 has-text-white">Salesforce</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title=title subtitle=custom_excerpt}}
+{{else}}
+  {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title="Training Roadmaps" subtitle="Master the Salesforce ecosystem from basics to advanced analytics and development."}}
 {{/page}}
 
-<!-- ── FILTER TABS ── -->
-<div class="has-background-white">
-  <div class="container">
-    <div class="tabs is-medium is-boxed">
-      <ul>
-        <li class="is-active"><a><span class="icon is-small">🗂</span><span>All Tracks</span></a></li>
-        <li><a><span class="icon is-small">☁️</span><span>Admin</span></a></li>
-        <li><a><span class="icon is-small">📊</span><span>CRMA</span></a></li>
-        <li><a><span class="icon is-small">💻</span><span>LWC & Dev</span></a></li>
-      </ul>
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {{#foreach posts}}
+      <div class="motion-safe:animate-fade-up">{{> "training/track-card"}}</div>
+    {{/foreach}}
+
+    {{!-- "Request a topic" CTA card --}}
+    <div class="flex flex-col justify-center rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-6 text-white">
+      <h3 class="font-heading text-xl font-bold">{{t "Looking for a specific topic?"}}</h3>
+      <p class="mt-2 text-white/80">{{t "New workflows and tutorials are added every month. Tell us what you want to see next!"}}</p>
+      <div class="mt-5 flex flex-wrap gap-2">
+        <a href="/contact/" class="rounded-pill bg-white px-4 py-2 text-sm font-bold text-brand-700 transition hover:bg-brand-50">{{t "Request a topic"}}</a>
+        <a href="/blog/" class="rounded-pill px-4 py-2 text-sm font-semibold ring-1 ring-white/40 transition hover:bg-white/10">{{t "Read the blog"}}</a>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ── MAIN CONTENT ── -->
-<div class="section">
-  <div class="container">
-
-    <div class="mb-6">
-
-      <!-- Section heading -->
-      <div class="level mb-4">
-        <div class="level-left">
-          <div class="level-item">
-            <div>
-              <div class="tags mb-1">
-                <span class="tag is-primary is-medium is-rounded">☁️ Namaste Salesforce Curriculum</span>
-              </div>
-              <p class="is-size-6 has-text-grey">Master the ecosystem from basics to advanced analytics and development.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="columns is-multiline is-variable is-5">
-
-        {{!-- Loop through your main Track/Course posts --}}
-        {{#foreach posts}}
-        <div class="column is-4-desktop is-6-tablet">
-          <div class="card is-flex is-flex-direction-column" style="height: 100%;">
-            
-            <!-- Dynamic Colored Header based on loop index -->
-            <div class="card-header" 
-                 {{#has index="0,3,6"}}style="background:hsl(204,86%,53%)"{{/has}}
-                 {{#has index="1,4,7"}}style="background:hsl(171,100%,29%)"{{/has}}
-                 {{#has index="2,5,8"}}style="background:hsl(348,100%,45%)"{{/has}}>
-              <div class="card-header-title">
-                <div>
-                  <p class="has-text-white has-text-weight-bold is-size-5">{{title}}</p>
-                  <div class="tags mt-1 mb-0">
-                    {{#if primary_tag}}
-                      <span class="tag is-light is-rounded is-small">{{primary_tag.name}}</span>
-                    {{/if}}
-                    <span class="tag is-dark is-rounded is-small">{{reading_time minute="1 min" minutes="% mins"}} total</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card-content p-0 is-flex-grow-1">
-
-              <!-- Instructor Info -->
-              {{#primary_author}}
-              <div class="px-4 py-3 is-flex is-align-items-center" style="border-bottom:1px solid #ededed">
-                <figure class="image is-32x32 mr-2">
-                  {{#if profile_image}}
-                    <img class="is-rounded" src="{{img_url profile_image size="xs"}}" alt="{{name}}">
-                  {{else}}
-                    <img class="is-rounded" src="{{asset "images/default-avatar.png"}}" alt="{{name}}">
-                  {{/if}}
-                </figure>
-                <div>
-                  <p class="is-size-7 has-text-weight-semibold">{{name}}</p>
-                  {{#if location}}<p class="is-size-7 has-text-grey">{{location}}</p>{{/if}}
-                </div>
-              </div>
-              {{/primary_author}}
-
-              <!-- Lessons list panel -->
-              <div class="panel mb-0" style="box-shadow:none">
-                <p class="panel-heading is-size-7 py-2 px-4 has-background-light has-text-grey has-text-weight-semibold" style="letter-spacing:.06em;text-transform:uppercase">Modules</p>
-
-                {{!-- Fetch up to 4 lessons that belong to this track --}}
-                {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="4"}}
-                  {{#if posts}}
-                    {{#foreach posts}}
-                      <a href="{{url}}" class="panel-block py-2 px-4">
-                        <span class="panel-icon has-text-success">▶</span>
-                        <span class="is-size-7 is-flex-grow-1">{{title}}</span>
-                        <span class="tag is-light is-rounded is-small">{{reading_time minute="1m" minutes="%m"}}</span>
-                      </a>
-                    {{/foreach}}
-                    
-                    {{!-- "View all" link if there are many lessons --}}
-                    <a href="{{../url}}" class="panel-block py-2 px-4 has-background-light is-justify-content-center has-text-primary has-text-weight-semibold is-size-7">
-                      View full curriculum →
-                    </a>
-                  {{else}}
-                    <div class="panel-block py-4 px-4 is-justify-content-center">
-                      <span class="is-size-7 has-text-grey is-italic">Lessons coming soon.</span>
-                    </div>
-                  {{/if}}
-                {{/get}}
-              </div>
-            </div>
-
-            <div class="card-footer mt-auto">
-              <a href="{{url}}" class="card-footer-item has-text-primary has-text-weight-semibold">Start Track</a>
-            </div>
-          </div>
-        </div>
-        {{/foreach}}
-
-        <!-- CTA card at the end of the loop -->
-        <div class="column is-4-desktop is-6-tablet">
-          <div class="card has-background-primary" style="height:100%">
-            <div class="card-content is-flex is-flex-direction-column is-justify-content-center" style="height:100%;min-height:360px">
-              <p class="title has-text-white is-4 mb-3">Looking for a specific topic?</p>
-              <p class="has-text-primary-light mb-5">I am documenting new workflows and tutorials every month. Let me know what you want to see next!</p>
-              <div class="buttons are-small">
-                <a href="#contact" class="button is-warning is-rounded has-text-weight-semibold">Request a Topic</a>
-                <a href="/blog/" class="button is-outlined is-light is-rounded">Read the Blog</a>
-              </div>
-              <div class="notification is-primary is-light mt-5 p-3" style="background:rgba(0,0,0,.15)">
-                <p class="is-size-7 has-text-white"><strong class="has-text-warning">🎉 Up Next:</strong> <span class="has-text-primary-light">Deep dives into LWC modules and advanced SAQL queries.</span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      
-      {{!-- Pagination --}}
-      <div class="mt-6 pt-4 is-flex is-justify-content-center">
-        {{pagination}}
-      </div>
-
-    </div>
-  </div>
-</div>
+  {{pagination}}
+</section>

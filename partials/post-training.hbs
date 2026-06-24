@@ -1,256 +1,123 @@
-{{!-- ═══════════════════════════════════════════════════════════════════════
-  partials/post-training.hbs — Namaste Salesforce
-═══════════════════════════════════════════════════════════════════════ --}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  partials/post-training.hbs — Roadmap track overview (#training) AND the
+  module/lesson player (#training-content). Main column + curriculum sidebar.
+  Context: {{#post}}.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+  <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
 
-<div class="columns is-marginless is-multiline">
+    <main class="min-w-0">
 
-  {{!-- ═══ LEFT: MAIN CONTENT AREA ═══ --}}
-  <main class="column is-12-touch is-8-desktop is-9-widescreen py-6 px-4 px-6-desktop">
-    <div class="container is-max-desktop">
-
-      {{!-- ─── BRANCH A: TRACK OVERVIEW (#training) ─── --}}
+      {{!-- ─── Branch A: track overview ─── --}}
       {{#has tag="#training"}}
-
-        {{!-- Track Hero --}}
-        <div class="ns-glass-card p-6 mb-6" style="border-radius: 16px;">
+        <div class="rounded-card border border-border bg-surface-raised p-6 shadow-card sm:p-8">
           {{#if primary_tag}}
-            <span class="tag ns-badge ns-badge--gradient is-medium is-rounded has-text-weight-bold mb-4 px-3 py-2">
-              <span class="icon is-small mr-1"><i class="ph-fill ph-tag"></i></span>
-              {{primary_tag.name}}
+            <span class="inline-flex items-center gap-1 rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">
+              <i class="ph-fill ph-tag" aria-hidden="true"></i>{{primary_tag.name}}
             </span>
           {{/if}}
+          <h1 class="mt-4 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{title}}</h1>
+          {{#if custom_excerpt}}<p class="mt-3 text-lg text-muted">{{custom_excerpt}}</p>{{/if}}
 
-          <h1 class="title is-1 is-size-2-mobile has-text-weight-bold mb-4 ns-fade-up" style="line-height: 1.15;">
-            {{title}}
-          </h1>
-
-          {{#if custom_excerpt}}
-            <p class="ns-lead ns-fade-up ns-stagger-1">{{custom_excerpt}}</p>
-          {{/if}}
-
-          <div class="ns-divider"></div>
-
-          <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap" style="gap: 1rem;">
+          <hr class="my-6 border-border">
+          <div class="flex flex-wrap items-center justify-between gap-4">
             {{#primary_author}}
-              <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
-                <figure class="image is-48x48">
-                  {{#if profile_image}}
-                    <img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="is-rounded" style="border: 2px solid rgba(128,128,128,0.2);">
-                  {{else}}
-                    <span class="icon is-large" style="opacity: 0.4;"><i class="ph-fill ph-user-circle" style="font-size: 3rem;"></i></span>
-                  {{/if}}
-                </figure>
+              <div class="flex items-center gap-3">
+                {{#if profile_image}}<img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="h-11 w-11 rounded-full border-2 border-border object-cover">{{else}}<span class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-500/10 text-brand-600"><i class="ph-fill ph-user-circle text-2xl" aria-hidden="true"></i></span>{{/if}}
                 <div>
-                  <p class="is-size-7 mb-0" style="opacity: 0.55; letter-spacing: 0.06em; text-transform: uppercase;">Instructor</p>
-                  <p class="has-text-weight-bold is-size-6 mb-0">{{name}}</p>
+                  <p class="text-xs uppercase tracking-wider text-muted">{{t "Instructor"}}</p>
+                  <p class="font-bold">{{name}}</p>
                 </div>
               </div>
             {{/primary_author}}
-
-            {{!-- Start Learning CTA --}}
             {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="1"}}
               {{#foreach posts}}
-                <a href="{{url}}" class="button is-gradient ns-gradient-animated is-medium is-rounded has-text-weight-bold">
-                  <span class="icon"><i class="ph-fill ph-play"></i></span>
-                  <span>Start Learning</span>
+                <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 font-bold text-white shadow-brand transition hover:bg-brand-600">
+                  <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start learning"}}
                 </a>
               {{else}}
-                <button class="button is-light is-medium is-rounded" disabled>
-                  <span class="icon"><i class="ph ph-clock"></i></span>
-                  <span>Coming Soon</span>
-                </button>
+                <span class="inline-flex items-center gap-2 rounded-pill border border-border px-5 py-2.5 font-semibold text-muted"><i class="ph ph-clock" aria-hidden="true"></i>{{t "Coming soon"}}</span>
               {{/foreach}}
             {{/get}}
           </div>
         </div>
 
-        {{!-- About Track --}}
-        <div class="ns-glass-card p-6" style="border-radius: 16px;">
-          <h2 class="title is-4 mb-5">About this track</h2>
-          <div class="content is-medium">
-            {{content}}
-          </div>
+        <div class="mt-6 rounded-card border border-border bg-surface-raised p-6 shadow-card sm:p-8">
+          <h2 class="font-heading text-xl font-extrabold">{{t "About this track"}}</h2>
+          <div class="prose mt-4 max-w-none gh-content">{{content}}</div>
         </div>
-
       {{/has}}
 
-
-      {{!-- ─── BRANCH B: LESSON PLAYER (#training-content) ─── --}}
+      {{!-- ─── Branch B: module / lesson player ─── --}}
       {{#has tag="#training-content"}}
-
-        {{!-- Video / Feature Image Player --}}
-        <div class="mb-5" style="border-radius: 16px; overflow: hidden; background: #000;">
-          <figure class="image is-16by9 is-marginless">
-            {{#if feature_image}}
-              <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="has-ratio" style="object-fit: cover; opacity: 0.9;">
-              <div class="is-overlay is-flex is-justify-content-center is-align-items-center">
-                <button class="button is-large is-rounded is-gradient has-text-weight-bold" style="box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
-                  <span class="icon is-medium"><i class="ph-fill ph-play"></i></span>
-                </button>
-              </div>
-            {{else}}
-              <div class="is-overlay is-flex is-justify-content-center is-align-items-center" style="background: #111;">
-                <span class="icon is-large" style="opacity: 0.2;"><i class="ph ph-video-camera" style="font-size: 4rem; color: #fff;"></i></span>
-              </div>
-            {{/if}}
-          </figure>
-
-          {{!-- Top Nav Bar --}}
-          <div class="ns-glass-card p-4" style="border-radius: 0;">
-            <nav class="level is-mobile mb-0">
-              <div class="level-left">
-                <div class="level-item">
-                  {{#prev_post in="primary_tag"}}
-                    <a href="{{url}}" class="button is-light is-rounded has-text-weight-semibold">
-                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                      <span class="is-hidden-mobile">Previous</span>
-                    </a>
-                  {{else}}
-                    <button class="button is-light is-rounded" disabled>
-                      <span class="icon"><i class="ph ph-arrow-left"></i></span>
-                    </button>
-                  {{/prev_post}}
-                </div>
-              </div>
-              <div class="level-right">
-                <div class="level-item" style="gap: 0.5rem;">
-                  <button class="button is-light is-rounded">
-                    <span class="icon"><i class="ph ph-bookmark-simple"></i></span>
-                  </button>
-                  {{#next_post in="primary_tag"}}
-                    <a href="{{url}}" class="button is-gradient is-rounded has-text-weight-bold">
-                      <span class="is-hidden-mobile">Next Lesson</span>
-                      <span class="icon"><i class="ph ph-arrow-right"></i></span>
-                    </a>
-                  {{else}}
-                    <a href="/training/" class="button is-glow is-rounded has-text-weight-bold">
-                      <span class="icon"><i class="ph-fill ph-check-circle"></i></span>
-                      <span class="is-hidden-mobile">Finish</span>
-                    </a>
-                  {{/next_post}}
-                </div>
-              </div>
-            </nav>
-          </div>
-        </div>
-
-        {{!-- Main Lesson Content --}}
-        <div class="ns-glass-card p-6" style="border-radius: 16px;">
-          <h1 class="title is-2 mb-4 ns-fade-up">{{title}}</h1>
-
-          <div class="is-flex is-align-items-center mb-6" style="gap: 0.75rem; flex-wrap: wrap;">
-            {{#if primary_tag}}
-              <span class="tag ns-badge is-rounded has-text-weight-semibold">{{primary_tag.name}}</span>
-            {{/if}}
-            <span class="is-size-7" style="opacity: 0.55;">
-              <span class="icon is-small mr-1"><i class="ph ph-clock"></i></span>
-              {{reading_time minute="1 min read" minutes="% min read"}}
+        {{#if feature_image}}
+          <div class="relative aspect-video overflow-hidden rounded-card bg-black shadow-card">
+            <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="h-full w-full object-cover opacity-90">
+            <span class="absolute inset-0 flex items-center justify-center">
+              <span class="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-brand-600 shadow-raised"><i class="ph-fill ph-play text-2xl" aria-hidden="true"></i></span>
             </span>
           </div>
+        {{/if}}
 
-          {{!-- Table of Contents --}}
-          <div class="ns-glass-card p-4 mb-6" style="border-radius: 10px;">
-            <p class="has-text-weight-bold mb-3 is-size-6">
-              <span class="icon is-small mr-1"><i class="ph-fill ph-list-dashes"></i></span>
-              Table of Contents
-            </p>
-            {{> "toc"}}
-          </div>
-
-          {{!-- Article Body --}}
-          <div class="content is-medium">
-            {{content}}
-          </div>
+        {{!-- Nav bar --}}
+        <div class="mt-3 flex items-center justify-between gap-2 rounded-card border border-border bg-surface-raised p-3">
+          {{#prev_post in="primary_tag"}}
+            <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill border border-border px-4 py-2 text-sm font-semibold transition hover:border-brand-500"><i class="ph ph-arrow-left" aria-hidden="true"></i><span class="hidden sm:inline">{{t "Previous"}}</span></a>
+          {{else}}
+            <span class="inline-flex items-center gap-2 rounded-pill border border-border px-4 py-2 text-sm text-muted"><i class="ph ph-arrow-left" aria-hidden="true"></i></span>
+          {{/prev_post}}
+          {{#next_post in="primary_tag"}}
+            <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600"><span class="hidden sm:inline">{{t "Next lesson"}}</span><i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+          {{else}}
+            <a href="/training/" class="inline-flex items-center gap-2 rounded-pill bg-success px-4 py-2 text-sm font-bold text-white transition hover:opacity-90"><i class="ph-fill ph-check-circle" aria-hidden="true"></i><span class="hidden sm:inline">{{t "Finish"}}</span></a>
+          {{/next_post}}
         </div>
 
-        {{!-- Large Bottom Pagination --}}
-        <div class="columns is-mobile mt-6" style="gap: 0.25rem;">
-          <div class="column is-half">
+        <article class="mt-6 rounded-card border border-border bg-surface-raised p-6 shadow-card sm:p-8">
+          <h1 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{title}}</h1>
+          <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted">
+            {{#if primary_tag}}<span class="rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">{{primary_tag.name}}</span>{{/if}}
+            <span class="inline-flex items-center gap-1"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min read" minutes="% min read"}}</span>
+          </div>
+
+          <div class="mt-6 rounded-lg border border-border p-4">
+            <p class="mb-2 flex items-center gap-2 text-sm font-bold"><i class="ph-fill ph-list-dashes text-brand-500" aria-hidden="true"></i>{{t "Table of contents"}}</p>
+            {{> "components/toc"}}
+          </div>
+
+          <div class="prose mt-6 max-w-none gh-content">{{content}}</div>
+        </article>
+
+        {{!-- Big bottom prev/next --}}
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <div>
             {{#prev_post in="primary_tag"}}
-              <a href="{{url}}" class="ns-glass-card p-4 is-flex is-flex-direction-column is-justify-content-center h-100" style="border-radius: 12px; min-height: 80px; text-decoration: none; display: flex;">
-                <p class="is-size-7 mb-1" style="opacity: 0.5;">
-                  <i class="ph ph-arrow-left mr-1"></i> Previous
-                </p>
-                <p class="has-text-weight-bold mb-0" style="line-height: 1.3;">{{title}}</p>
+              <a href="{{url}}" class="flex h-full flex-col justify-center rounded-card border border-border p-4 transition hover:border-brand-500 hover:shadow-card">
+                <span class="text-xs text-muted"><i class="ph ph-arrow-left" aria-hidden="true"></i> {{t "Previous"}}</span>
+                <span class="mt-1 font-bold leading-snug">{{title}}</span>
               </a>
             {{/prev_post}}
           </div>
-          <div class="column is-half">
+          <div>
             {{#next_post in="primary_tag"}}
-              <a href="{{url}}" class="ns-glass-card p-4 is-flex is-flex-direction-column is-justify-content-center has-text-right h-100" style="border-radius: 12px; min-height: 80px; text-decoration: none; display: flex;">
-                <p class="is-size-7 mb-1" style="opacity: 0.5;">
-                  Next <i class="ph ph-arrow-right ml-1"></i>
-                </p>
-                <p class="has-text-weight-bold mb-0" style="line-height: 1.3;">{{title}}</p>
+              <a href="{{url}}" class="flex h-full flex-col justify-center rounded-card border border-border p-4 text-right transition hover:border-brand-500 hover:shadow-card">
+                <span class="text-xs text-muted">{{t "Next"}} <i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+                <span class="mt-1 font-bold leading-snug">{{title}}</span>
               </a>
             {{else}}
-              <a href="/training/" class="ns-glass-card p-4 is-flex is-flex-direction-column is-justify-content-center has-text-right h-100" style="border-radius: 12px; min-height: 80px; text-decoration: none; display: flex; border-color: rgba(72,199,142,0.4);">
-                <p class="is-size-7 has-text-success mb-1">
-                  <i class="ph-fill ph-check-circle mr-1"></i> Course Complete
-                </p>
-                <p class="has-text-success has-text-weight-bold mb-0">Return to Track</p>
+              <a href="/training/" class="flex h-full flex-col justify-center rounded-card border border-success/40 p-4 text-right transition hover:shadow-card">
+                <span class="text-xs font-semibold text-success"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> {{t "Course complete"}}</span>
+                <span class="mt-1 font-bold leading-snug text-success">{{t "Return to track"}}</span>
               </a>
             {{/next_post}}
           </div>
         </div>
-
       {{/has}}
+    </main>
 
-    </div>
-  </main>
-
-
-  {{!-- ═══ RIGHT: CURRICULUM SIDEBAR ═══ --}}
-  <aside class="column is-12-touch is-4-desktop is-3-widescreen py-6 px-5" style="border-left: 1px solid rgba(128,128,128,0.1);">
-
-    <div class="is-flex is-align-items-center mb-5" style="gap: 0.5rem;">
-      <span class="icon has-text-primary is-medium"><i class="ph-fill ph-books" style="font-size: 1.4rem;"></i></span>
-      <h3 class="title is-5 mb-0">Course Content</h3>
-    </div>
-
-    <aside class="menu">
-      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="50"}}
-        {{#foreach posts}}
-
-          <p class="menu-label has-text-weight-bold mt-5 mb-2" style="letter-spacing: 0.06em;">
-            {{title}}
-          </p>
-
-          <ul class="menu-list">
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100" as |lessons|}}
-              {{#if lessons}}
-                {{#foreach lessons}}
-                  <li>
-                    <a href="{{url}}" class="is-flex is-align-items-center is-justify-content-space-between py-3
-                      {{#match id ../../../../id}}is-active{{/match}}"
-                      style="border-radius: 8px; gap: 0.5rem;">
-
-                      <div class="is-flex is-align-items-center is-clipped" style="gap: 0.4rem;">
-                        <span class="icon is-small is-flex-shrink-0">
-                          <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else}}ph ph-circle{{/match}}"></i>
-                        </span>
-                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{title}}</span>
-                      </div>
-
-                      <span class="is-size-7 is-flex-shrink-0 {{#match id ../../../../id}}{{else}}has-text-grey-light{{/match}}">
-                        {{reading_time minute="1m" minutes="%m"}}
-                      </span>
-
-                    </a>
-                  </li>
-                {{/foreach}}
-              {{else}}
-                <li><span class="is-size-7 px-3 py-2 is-block" style="opacity: 0.45; font-style: italic;">No lessons yet.</span></li>
-              {{/if}}
-            {{/get}}
-          </ul>
-
-        {{/foreach}}
-      {{else}}
-        <p class="is-size-6" style="opacity: 0.5;">No training courses found.</p>
-      {{/get}}
+    {{!-- Curriculum sidebar --}}
+    <aside class="lg:sticky lg:top-20 lg:self-start">
+      {{> "training/curriculum"}}
     </aside>
-
-  </aside>
-
-</div>
+  </div>
+</section>

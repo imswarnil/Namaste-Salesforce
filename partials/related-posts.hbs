@@ -1,19 +1,17 @@
-{{!-- Related Posts --}}
+{{!-- partials/related-posts.hbs — "You might also like"
+     Pulls up to 3 posts sharing the current post's primary tag (excluding self).
+     Context: a post. Renders nothing when there are no matches. --}}
 {{#get "posts" include="tags,authors" limit="3" filter="id:-{{id}}+tag:{{primary_tag.slug}}" as |related|}}
   {{#if related}}
-    <section class="ns-section--tight">
-      <div class="ns-container">
-        <div class="has-text-centered mb-5">
-          <span class="ns-eyebrow">Continue Reading</span>
-          <h3 class="title is-4 ns-gradient-text mt-2">{{t "You might also like"}}</h3>
-        </div>
-        <div class="ns-grid ns-grid--3">
-          {{#foreach related}}
-            <div class="ns-fade-up ns-stagger-{{@number}}">
-              {{> post-card}}
-            </div>
-          {{/foreach}}
-        </div>
+    <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <div class="mb-6 text-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300">{{t "Continue reading"}}</p>
+        <h2 class="mt-1 font-heading text-2xl font-extrabold">{{t "You might also like"}}</h2>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {{#foreach related}}
+          <div class="motion-safe:animate-fade-up">{{> post-card}}</div>
+        {{/foreach}}
       </div>
     </section>
   {{/if}}

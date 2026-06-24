@@ -1,123 +1,26 @@
 {{!< default}}
+{{!-- courses.hbs — course catalog (custom template / routed collection).
+     Lists #course posts; each card shows its lesson syllabus. --}}
 
-{{!-- 1. COURSE CATALOG HERO --}}
 {{#page}}
-<section class="ns-hero"{{#if feature_image}} style="background-image: linear-gradient(rgba(10,10,20,0.72), rgba(10,10,20,0.82)), url({{img_url feature_image size='xl'}}); background-size: cover; background-position: center;"{{/if}}>
-  <div class="ns-hero-mesh" aria-hidden="true">
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
-  </div>
-  <div class="container ns-hero__content has-text-centered">
-    <span class="ns-eyebrow ns-fade-up"><i class="ph-fill ph-graduation-cap mr-1"></i> Learning Paths</span>
-    <h1 class="ns-hero__title ns-fade-up ns-stagger-1">{{title}}</h1>
-    {{#if custom_excerpt}}
-      <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">{{custom_excerpt}}</p>
-    {{/if}}
-  </div>
-</section>
+  {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title=title subtitle=custom_excerpt}}
 {{else}}
-<section class="ns-hero">
-  <div class="ns-hero-mesh" aria-hidden="true">
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
-  </div>
-  <div class="container ns-hero__content has-text-centered">
-    <span class="ns-eyebrow ns-fade-up"><i class="ph-fill ph-graduation-cap mr-1"></i> Learning Paths</span>
-    <h1 class="ns-hero__title ns-fade-up ns-stagger-1">Course Catalog</h1>
-    <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">
-      Structured learning paths to take you from beginner to Salesforce expert.
-    </p>
-  </div>
-</section>
+  {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title="Course Catalog" subtitle="Structured learning paths to take you from beginner to Salesforce expert."}}
 {{/page}}
 
-{{!-- 2. COURSES GRID WITH EMBEDDED LESSONS --}}
-<section class="ns-section">
-  <div class="ns-container">
-
-    <div class="ns-grid ns-grid--3">
-      {{!-- Loops through the PARENT COURSES (filter: tag:hash-course) --}}
-      {{#foreach posts}}
-        <div class="ns-card is-hoverable ns-fade-up ns-stagger-{{@number}}" style="height: 100%; display: flex; flex-direction: column;">
-
-          {{!-- Course Image --}}
-          {{#if feature_image}}
-            <a href="{{url}}" class="is-block is-clipped" style="border-radius: 12px 12px 0 0; overflow: hidden;">
-              <figure class="image is-16by9">
-                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" style="object-fit: cover; width: 100%; height: 100%;">
-              </figure>
-            </a>
-          {{/if}}
-
-          {{!-- Course Content --}}
-          <div class="ns-card__body" style="flex: 1; display: flex; flex-direction: column;">
-
-            <div class="is-flex is-justify-content-space-between is-align-items-center mb-3" style="gap: 0.5rem;">
-              {{#if primary_tag}}
-                <span class="tag ns-badge ns-badge--gradient is-rounded has-text-weight-bold">
-                  {{primary_tag.name}}
-                </span>
-              {{/if}}
-              <span class="is-size-7 has-text-weight-semibold" style="opacity: 0.6;">
-                <i class="ph ph-clock mr-1"></i> {{reading_time minute="1 min" minutes="% mins"}}
-              </span>
-            </div>
-
-            <h2 class="title is-4 mb-3" style="line-height: 1.3;">
-              <a href="{{url}}" class="has-text-weight-bold">{{title}}</a>
-            </h2>
-
-            <p class="is-size-6 mb-4" style="opacity: 0.75;">
-              {{excerpt words="20"}}&hellip;
-            </p>
-
-            {{!-- ==============================================================
-                  DYNAMIC LESSONS SYLLABUS
-                  Fetches posts tagged with #lesson where the primary tag
-                  matches the current course's slug.
-            ============================================================== --}}
-            <div class="is-flex-grow-1 mt-2 mb-4" style="flex: 1;">
-              <p class="ns-eyebrow mb-2">Syllabus</p>
-
-              {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" order="published_at asc" limit="100"}}
-                {{#if posts}}
-                  <div class="menu">
-                    <ul class="menu-list is-size-7">
-                      {{#foreach posts}}
-                        <li>
-                          <a href="{{url}}" class="is-flex is-align-items-center py-2 px-3 mb-1" style="border-radius: 8px; gap: 0.5rem;">
-                            <span class="icon is-small has-text-primary"><i class="ph-fill ph-play-circle"></i></span>
-                            <span>{{@number}}. {{title}}</span>
-                          </a>
-                        </li>
-                      {{/foreach}}
-                    </ul>
-                  </div>
-                {{else}}
-                  <div class="ns-glass is-size-7 p-3" style="border-radius: 8px; opacity: 0.7;">
-                    <i class="ph ph-wrench mr-1"></i> Lessons are being added...
-                  </div>
-                {{/if}}
-              {{/get}}
-            </div>
-
-            {{!-- Action Button --}}
-            <div class="ns-card__footer">
-              <a href="{{url}}" class="button is-gradient ns-gradient-animated is-fullwidth has-text-weight-bold is-rounded">
-                <span>View Course Details</span>
-                <span class="icon is-small"><i class="ph ph-arrow-right"></i></span>
-              </a>
-            </div>
-
-          </div>
-        </div>
-      {{/foreach}}
-    </div>
-
-    {{!-- 3. PAGINATION --}}
-    {{pagination}}
-
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {{#foreach posts}}
+      <div class="motion-safe:animate-fade-up">{{> "courses/course-card"}}</div>
+    {{/foreach}}
   </div>
+
+  {{^posts}}
+    <div class="rounded-card border border-dashed border-border py-16 text-center text-muted">
+      <i class="ph ph-graduation-cap mb-3 text-4xl" aria-hidden="true"></i>
+      <p class="text-lg font-semibold">{{t "Courses coming soon!"}}</p>
+    </div>
+  {{/posts}}
+
+  {{pagination}}
 </section>

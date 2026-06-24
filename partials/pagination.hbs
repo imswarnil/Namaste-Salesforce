@@ -1,24 +1,22 @@
-{{!-- Pagination --}}
-<nav class="ns-section--tight" role="navigation" aria-label="pagination">
-  <div class="is-flex is-justify-content-center is-align-items-center" style="gap: 0.5rem;">
+{{!-- partials/pagination.hbs — Newer/Older pager (context: {{pagination}}) --}}
+<nav class="mx-auto mt-12 flex max-w-6xl items-center justify-center gap-3 px-4" role="navigation" aria-label="Pagination">
 
-    {{#if prev}}
-      <a class="button is-rounded has-text-weight-semibold ns-fade-in" href="{{page_url prev}}">
-        <span class="icon is-small"><i class="ph ph-arrow-left"></i></span>
-        <span>{{t "Newer"}}</span>
-      </a>
-    {{/if}}
+  {{#if prev}}
+    <a class="inline-flex items-center gap-1 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium transition hover:border-brand-500 hover:text-brand-600"
+       href="{{page_url prev}}" rel="prev">
+      <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Newer"}}
+    </a>
+  {{/if}}
 
-    <span class="button is-rounded is-gradient has-text-weight-bold is-static">
-      {{t "Page {page} of {pages}" page=page pages=pages}}
-    </span>
+  <span class="rounded-pill border border-border px-4 py-2 text-sm text-muted">
+    {{t "Page {page} of {pages}" page=page pages=pages}}
+  </span>
 
-    {{#if next}}
-      <a class="button is-rounded has-text-weight-semibold ns-fade-in" href="{{page_url next}}">
-        <span>{{t "Older"}}</span>
-        <span class="icon is-small"><i class="ph ph-arrow-right"></i></span>
-      </a>
-    {{/if}}
+  {{#if next}}
+    <a class="inline-flex items-center gap-1 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium transition hover:border-brand-500 hover:text-brand-600"
+       href="{{page_url next}}" rel="next">
+      {{t "Older"}}<i class="ph ph-arrow-right" aria-hidden="true"></i>
+    </a>
+  {{/if}}
 
-  </div>
 </nav>

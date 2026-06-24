@@ -1,441 +1,154 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+  partials/post-course.hbs — Course landing page (single #course post)
+  Hero → about + dynamic curriculum + FAQ, with a sticky enrolment sidebar and
+  a mobile sticky CTA. Lessons are pulled by matching this course's primary tag.
+  Internal tags drive duration/level: hash-course-duration-*, hash-course-level-*
+═══════════════════════════════════════════════════════════════════════════ --}}
 
-
-{{!-- 1. FULL WIDTH COURSE HERO --}}
-<section class="ns-hero">
-  <div class="ns-hero-mesh" aria-hidden="true">
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-    <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
+{{!-- ── Hero ── --}}
+<section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+    <div class="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-brand-400/25 blur-3xl"></div>
+    <div class="absolute -bottom-20 right-0 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl"></div>
   </div>
-  <div class="ns-hero__content" style="width: 100%;">
-    <div class="container is-max-widescreen">
-      <div class="columns is-vcentered is-variable is-8 {{#has tag="#temp-media-start"}}is-flex-direction-row-reverse{{/has}}">
-
-        {{!-- Left Hero Content --}}
-        <div class="column {{#if feature_image}}is-7-desktop{{else}}is-10-desktop{{/if}}">
-
-          {{!-- Breadcrumbs --}}
-          <nav class="breadcrumb is-small has-bullet-separator mb-4" aria-label="breadcrumbs">
-            <ul class="has-text-grey-light">
-              <li><a href="/" class="has-text-grey-light hover-text-white">Home</a></li>
-              <li><a href="/courses/" class="has-text-grey-light hover-text-white">Courses</a></li>
-              {{#if primary_tag}}
-                <li><a href="{{primary_tag.url}}" class="has-text-grey-light hover-text-white">{{primary_tag.name}}</a></li>
-              {{/if}}
-              <li class="is-active">
-                <a href="{{url}}" aria-current="page" class="has-text-white has-text-weight-bold">{{title}}</a>
-              </li>
-            </ul>
-          </nav>
-
-          {{!-- Tags --}}
-          <div class="field is-grouped is-grouped-multiline mb-4">
-            {{#if primary_tag}}
-              <div class="control">
-                <a href="{{primary_tag.url}}" class="tag ns-badge ns-badge--gradient is-medium is-rounded has-text-weight-bold">
-                  {{primary_tag.name}}
-                </a>
-              </div>
-            {{/if}}
-
-            {{#foreach tags visibility="public" limit="2" from="2"}}
-              <div class="control">
-                <a href="{{url}}" class="tag ns-badge is-medium is-rounded has-text-weight-semibold">
-                  {{name}}
-                </a>
-              </div>
-            {{/foreach}}
-
-            {{#if featured}}
-              <div class="control">
-                <span class="tag is-warning is-medium is-rounded has-text-weight-bold">
-                  <span class="icon is-small mr-1"><i class="ph-fill ph-star"></i></span> {{t "Featured"}}
-                </span>
-              </div>
-            {{/if}}
-          </div>
-
-          {{!-- Title --}}
-          <h1 class="ns-hero__title has-text-left mb-4 ns-fade-up" style="font-size: clamp(2.2rem, 5vw, 3.4rem); margin-left: 0;">
-            {{title}}
-          </h1>
-
-          {{!-- Excerpt --}}
-          <p class="subtitle is-4 is-size-5-mobile mt-4 has-text-grey-light" style="line-height: 1.5; max-width: 800px;">
-            {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}
-          </p>
-
-          {{!-- Meta --}}
-          <div class="is-flex is-align-items-center mt-5 is-flex-wrap-wrap is-size-6 has-text-grey-light" style="gap: 1.5rem;">
-            <span class="is-flex is-align-items-center has-text-white has-text-weight-bold">
-              <i class="ph ph-list-checks mr-2 is-size-5"></i>
-              {{t "Structured course"}}
-            </span>
-
-            {{#foreach tags visibility="internal"}}
-              {{#match slug "~^" "hash-course-duration-"}}
-                {{#if description}}
-                  <span class="is-flex is-align-items-center">
-                    <i class="ph ph-clock mr-2 is-size-5"></i>{{description}}
-                  </span>
-                {{/if}}
-              {{/match}}
-            {{/foreach}}
-
-            {{#foreach tags visibility="internal"}}
-              {{#match slug "~^" "hash-course-level-"}}
-                {{#if description}}
-                  <span class="is-flex is-align-items-center">
-                    <i class="ph ph-signal-high mr-2 is-size-5"></i>{{description}}
-                  </span>
-                {{/if}}
-              {{/match}}
-            {{/foreach}}
-
-            <span class="is-flex is-align-items-center">
-              <i class="ph ph-calendar mr-2 is-size-5"></i>
-              Updated {{date updated_at format="MMM YYYY"}}
-            </span>
-          </div>
-
-          {{!-- Author --}}
-          {{#primary_author}}
-            <div class="is-flex is-align-items-center mt-6 pt-2">
-              {{#if profile_image}}
-                <figure class="image is-48x48 mr-3">
-                  <img class="is-rounded" src="{{img_url profile_image size="xs"}}" alt="{{name}}" style="border: 2px solid #fff;">
-                </figure>
-              {{else}}
-                <span class="icon is-large has-text-white mr-3"><i class="ph-fill ph-user-circle is-size-1"></i></span>
-              {{/if}}
-              <div>
-                <p class="is-size-6 m-0 has-text-white">Created by <strong>{{name}}</strong></p>
-                {{#if bio}}
-                  <p class="is-size-7 has-text-grey-light m-0" style="max-width: 300px;">{{bio}}</p>
-                {{/if}}
-              </div>
-            </div>
-          {{/primary_author}}
-
-        </div>
-
-        {{!-- Right Hero Media --}}
-        {{^has tag="#temp-no-media"}}
-          {{#if feature_image}}
-            <div class="column is-5-desktop">
-              <figure class="image is-4by3 is-clipped position-relative" style="border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
-                <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover; height: 100%;">
-
-                {{#has tag="#temp-video"}}
-                  <div class="is-overlay is-flex is-justify-content-center is-align-items-center" style="background: rgba(0,0,0,0.4); backdrop-filter: blur(2px);">
-                    <button type="button" class="button is-white is-rounded is-medium has-text-weight-bold" style="box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-                      <span class="icon has-text-link"><i class="ph-fill ph-play"></i></span>
-                      <span>{{t "Watch Intro"}}</span>
-                    </button>
-                  </div>
-                {{/has}}
-              </figure>
-
-              {{#if feature_image_caption}}
-                {{^has tag="#temp-video"}}
-                  <p class="is-size-7 has-text-centered mt-3 has-text-grey-light">{{feature_image_caption}}</p>
-                {{/has}}
-              {{/if}}
-            </div>
-          {{/if}}
-        {{/has}}
-
-      </div>
-    </div>
-  </div>
-</section>
-
-
-{{!-- 2. MAIN LAYOUT --}}
-<section class="ns-section">
-  <div class="container is-max-widescreen">
-    <div class="columns is-variable is-8">
-
-      {{!-- ==========================================
-            LEFT MAIN COLUMN
-      ========================================== --}}
-      <div class="column is-7-tablet is-8-desktop">
-
-        {{!-- 100% Human Content Badge --}}
-        <div class="ns-glass-card is-flex is-align-items-center mb-6 p-5" style="border-radius: 12px; gap: 0.75rem;">
-          <span class="icon is-large has-text-info"><i class="ph-fill ph-seal-check is-size-2"></i></span>
-          <div>
-            <strong class="is-size-5">100% Human-Crafted</strong>
-            <p class="is-size-6 mt-1" style="opacity: 0.75;">This course content is crafted by human developers with real project experience.</p>
-          </div>
-        </div>
-
-        {{!-- What you'll learn --}}
-        <div class="ns-glass-card mb-6 p-5" style="border-radius: 12px;">
-          <h3 class="title is-4 mb-5">What you'll learn</h3>
-          <div class="columns is-multiline">
-            <div class="column is-12-mobile is-half-tablet is-flex is-align-items-flex-start">
-              <span class="icon has-text-success mr-2 mt-1"><i class="ph ph-check is-size-5"></i></span>
-              <span>Understand the full CRM Analytics workflow end-to-end</span>
-            </div>
-            <div class="column is-12-mobile is-half-tablet is-flex is-align-items-flex-start">
-              <span class="icon has-text-success mr-2 mt-1"><i class="ph ph-check is-size-5"></i></span>
-              <span>Build dashboards with clean UX and fast performance</span>
-            </div>
-            <div class="column is-12-mobile is-half-tablet is-flex is-align-items-flex-start">
-              <span class="icon has-text-success mr-2 mt-1"><i class="ph ph-check is-size-5"></i></span>
-              <span>Data prep patterns (recipes/dataflows) you can reuse</span>
-            </div>
-            <div class="column is-12-mobile is-half-tablet is-flex is-align-items-flex-start">
-              <span class="icon has-text-success mr-2 mt-1"><i class="ph ph-check is-size-5"></i></span>
-              <span>Deployment + maintenance checklist for real teams</span>
-            </div>
-          </div>
-        </div>
-
-        {{!-- About (Ghost Content) --}}
-        <div class="content gh-content mb-6 is-medium">
-          <h2 class="title is-3">About this course</h2>
-          {{content}}
-        </div>
-
-        {{!-- In-content ad placeholder --}}
-        <div class="ns-glass-card has-text-centered mb-6 p-5" style="border-radius: 12px;">
-          <p class="ns-eyebrow mb-1">AdSense Placeholder</p>
-          <p class="is-size-7" style="opacity: 0.5;">In-content responsive unit</p>
-        </div>
-
-        {{!-- ==========================================
-              CURRICULUM MODULES (FLAT ONLY)
-        ========================================== --}}
-        <h2 id="ns-curriculum" class="title is-3 mt-6 mb-4 ns-gradient-text">Course Curriculum</h2>
-
-        <nav class="ns-glass-card mb-6" style="border-radius: 12px; overflow: hidden; padding: 0;">
-
-          <div class="panel-heading is-flex is-justify-content-space-between is-align-items-center" style="border-bottom: 1px solid rgba(128,128,128,0.15); background: transparent;">
-            <h3 class="title is-5 mb-0">{{t "Course content"}}</h3>
-            <span class="tag ns-badge is-rounded has-text-weight-bold">Structured path</span>
-          </div>
-
-          {{#if primary_tag}}
-            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags" order="published_at asc" limit="100" as |lessons|}}
-
-              {{!-- Used by JS to update hero lesson count --}}
-              <span class="is-hidden" id="ns-lessons-count" data-count="{{lessons.length}}"></span>
-
-              {{#foreach lessons}}
-                <a data-ns-lesson href="{{url absolute="true"}}" class="panel-block is-flex is-justify-content-space-between p-4" style="border-bottom: 1px solid rgba(128,128,128,0.1);">
-
-                  <div class="is-flex is-align-items-center" style="min-width: 0;">
-                    <span class="panel-icon has-text-primary mr-3"><i class="ph-fill ph-play-circle is-size-4"></i></span>
-                    <span class="has-text-weight-bold is-size-6" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{title}}</span>
-                  </div>
-
-                  <span class="is-size-7 ml-3 is-flex-shrink-0" style="opacity: 0.6;">
-                    {{#foreach tags visibility="internal"}}
-                      {{#match slug "~^" "hash-lesson-duration-"}}
-                        {{#if description}}<span class="is-flex is-align-items-center"><i class="ph ph-clock mr-1"></i>{{description}}</span>{{/if}}
-                      {{/match}}
-                    {{/foreach}}
-                  </span>
-                </a>
-              {{else}}
-                <div class="panel-block p-5" style="opacity: 0.7;">
-                  <span class="icon mr-2"><i class="ph ph-wrench"></i></span> {{t "No lessons yet. Content is being drafted."}}
-                </div>
-              {{/foreach}}
-
-            {{/get}}
-          {{else}}
-            <div class="panel-block p-5 has-text-danger has-background-danger-light">
-              <strong>Configuration Error:</strong> Primary tag not found. Please assign a primary tag to this post to link lessons.
-            </div>
-          {{/if}}
+  <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-20">
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+      <div class="max-w-2xl">
+        {{!-- Breadcrumb --}}
+        <nav class="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/70" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">{{t "Home"}}</a><span aria-hidden="true">·</span>
+          <a href="/courses/" class="hover:text-white">{{t "Courses"}}</a>
+          {{#if primary_tag}}<span aria-hidden="true">·</span><a href="{{primary_tag.url}}" class="hover:text-white">{{primary_tag.name}}</a>{{/if}}
         </nav>
 
-        {{!-- Hardcoded Details (Prerequisites, Downloads, Project) --}}
-        <div class="columns is-variable is-6 mb-5">
-          <div class="column is-half">
-            <div class="ns-glass-card p-5" style="border-radius: 12px; height: 100%;">
-              <h3 class="title is-5 mb-4">Prerequisites</h3>
-              <ul style="margin-left: 1.5rem; list-style-type: disc; opacity: 0.85;">
-                <li class="mb-2">Basic Salesforce navigation</li>
-                <li class="mb-2">Comfort with data concepts (rows/columns)</li>
-                <li>Optional: basic SQL mindset</li>
-              </ul>
-            </div>
+        <div class="mb-4 flex flex-wrap gap-2">
+          {{#if primary_tag}}<span class="rounded-pill bg-white/15 px-3 py-1 text-xs font-semibold">{{primary_tag.name}}</span>{{/if}}
+          {{#if featured}}<span class="inline-flex items-center gap-1 rounded-pill bg-amber-400/90 px-3 py-1 text-xs font-bold text-amber-950"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}</span>{{/if}}
+        </div>
+
+        <h1 class="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{{title}}</h1>
+        <p class="mt-4 max-w-xl text-lg text-white/80">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}</p>
+
+        {{!-- Meta (duration/level from internal tags) --}}
+        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80">
+          <span class="inline-flex items-center gap-2 font-semibold text-white"><i class="ph ph-list-checks text-lg" aria-hidden="true"></i>{{t "Structured course"}}</span>
+          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-duration-"}}{{#if description}}<span class="inline-flex items-center gap-2"><i class="ph ph-clock text-lg" aria-hidden="true"></i>{{description}}</span>{{/if}}{{/match}}{{/foreach}}
+          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-level-"}}{{#if description}}<span class="inline-flex items-center gap-2"><i class="ph ph-signal-high text-lg" aria-hidden="true"></i>{{description}}</span>{{/if}}{{/match}}{{/foreach}}
+          <span class="inline-flex items-center gap-2"><i class="ph ph-calendar text-lg" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="MMM YYYY"}}</span>
+        </div>
+
+        {{#primary_author}}
+          <div class="mt-6 flex items-center gap-3">
+            {{#if profile_image}}<img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="h-11 w-11 rounded-full border-2 border-white/50 object-cover">{{else}}<span class="flex h-11 w-11 items-center justify-center rounded-full bg-white/15"><i class="ph-fill ph-user-circle text-2xl" aria-hidden="true"></i></span>{{/if}}
+            <div><p class="text-sm">{{t "Created by"}} <strong>{{name}}</strong></p>{{#if bio}}<p class="max-w-xs text-xs text-white/70">{{bio}}</p>{{/if}}</div>
           </div>
-          <div class="column is-half">
-            <div class="ns-glass-card p-5" style="border-radius: 12px; height: 100%;">
-              <h3 class="title is-5 mb-3">Downloads</h3>
-              <p class="mb-4" style="opacity: 0.75;">Access cheatsheets, templates, and sample datasets used in this course.</p>
-              <a class="button is-gradient is-fullwidth has-text-weight-bold is-rounded" href="#">
-                <span class="icon"><i class="ph ph-download"></i></span>
-                <span>Download bundle</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="ns-glass-card mb-6 p-5" style="border-radius: 12px;">
-          <h3 class="title is-5 mb-3">Project you’ll build</h3>
-          <p class="mb-4" style="opacity: 0.75;">Placeholder: describe the capstone dashboard/project.</p>
-          <div class="tags">
-            <span class="tag ns-badge is-rounded">Dataset</span>
-            <span class="tag ns-badge is-rounded">Recipe</span>
-            <span class="tag ns-badge is-rounded">Dashboard</span>
-            <span class="tag ns-badge is-rounded">Story</span>
-          </div>
-        </div>
-
-        <div class="ns-glass-card has-text-centered mb-6 p-5" style="border-radius: 12px;">
-          <p class="ns-eyebrow mb-1">AdSense Placeholder</p>
-          <p class="is-size-7" style="opacity: 0.5;">Second in-article unit</p>
-        </div>
-
-        {{!-- Reviews & FAQ --}}
-        <div class="ns-glass-card mb-6 p-5" style="border-radius: 12px;">
-          <h3 class="title is-5 mb-3">Student reviews</h3>
-          <p style="opacity: 0.75;">Placeholder for testimonials/reviews.</p>
-        </div>
-
-        <div class="ns-glass-card mb-6 p-5" style="border-radius: 12px;">
-          <h3 class="title is-5 mb-4">Frequently Asked Questions</h3>
-          <div class="content">
-
-            <details class="ns-glass mb-3 p-4" style="border-radius: 8px;">
-              <summary class="has-text-weight-bold is-clickable" style="outline: none;">Is this course beginner friendly?</summary>
-              <p class="mt-3 mb-0" style="opacity: 0.85;">Yes, the early modules cover fundamental concepts before diving into advanced implementations.</p>
-            </details>
-
-            <details class="ns-glass mb-3 p-4" style="border-radius: 8px;">
-              <summary class="has-text-weight-bold is-clickable" style="outline: none;">Do I get lifetime access?</summary>
-              <p class="mt-3 mb-0" style="opacity: 0.85;">Absolutely. Once enrolled, you have access to the materials and all future updates.</p>
-            </details>
-
-            <details class="ns-glass p-4" style="border-radius: 8px;">
-              <summary class="has-text-weight-bold is-clickable" style="outline: none;">Will this help for interviews?</summary>
-              <p class="mt-3 mb-0" style="opacity: 0.85;">Yes, we cover common scenario-based questions asked in technical interviews.</p>
-            </details>
-
-          </div>
-        </div>
-
+        {{/primary_author}}
       </div>
 
-
-      {{!-- ==========================================
-            RIGHT SIDEBAR (STICKY ENROLLMENT)
-      ========================================== --}}
-      <div class="column is-5-tablet is-4-desktop">
-        <div style="position: sticky; top: 2rem;">
-
-          <div class="card is-shadowless mb-5" style="border-radius: 16px; border: 1px solid #eaeaea; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
-            
-            {{#if feature_image}}
-              <div class="card-image is-hidden-desktop">
-                <figure class="image is-16by9">
-                  <img src="{{img_url feature_image size="l"}}" alt="{{title}}" style="object-fit: cover;">
-                </figure>
-              </div>
-            {{/if}}
-
-            <div class="card-content p-5">
-              <div class="mb-4 is-flex is-align-items-center">
-                <span class="title is-2 has-text-dark mb-0">Free</span>
-                <span class="tag is-success is-light is-rounded has-text-weight-bold ml-3">Open Source</span>
-              </div>
-              <p class="has-text-grey is-size-7 mb-5">Access the entire curriculum instantly.</p>
-
-              <a id="ns-hero-cta" href="#ns-curriculum" class="button is-link is-fullwidth is-medium has-text-weight-bold mb-3 is-rounded">
-                Start Course
-              </a>
-
-              <a href="/courses/" class="button is-light is-fullwidth mb-5 is-rounded has-text-weight-bold">
-                Back to Catalog
-              </a>
-
-              <h4 class="title is-6 mb-4 has-text-dark">This course includes:</h4>
-              <ul class="is-size-6 has-text-grey-dark" style="line-height: 2.2; margin-left: 0;">
-                <li class="is-flex is-align-items-center mb-2">
-                  <i class="ph ph-list-checks has-text-link mr-3 is-size-5"></i> Structured curriculum
-                </li>
-
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-course-duration-"}}
-                    <li class="is-flex is-align-items-center mb-2">
-                      <i class="ph ph-clock has-text-link mr-3 is-size-5"></i> {{#if description}}{{description}}{{else}}{{name}}{{/if}}
-                    </li>
-                  {{/match}}
-                {{/foreach}}
-
-                {{#foreach tags visibility="internal"}}
-                  {{#match slug "~^" "hash-course-level-"}}
-                    <li class="is-flex is-align-items-center mb-2">
-                      <i class="ph ph-signal-high has-text-link mr-3 is-size-5"></i> {{#if description}}{{description}}{{else}}{{name}}{{/if}}
-                    </li>
-                  {{/match}}
-                {{/foreach}}
-
-                <li class="is-flex is-align-items-center mb-2">
-                  <i class="ph ph-infinity has-text-link mr-3 is-size-5"></i> Lifetime access
-                </li>
-
-                <li class="is-flex is-align-items-center">
-                  <i class="ph ph-calendar has-text-link mr-3 is-size-5"></i> Updated {{date updated_at format="DD MMM YYYY"}}
-                </li>
-              </ul>
-
-              <hr class="has-background-light my-5">
-
-              <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <a href="https://twitter.com/intent/tweet?text={{encode title}}&amp;url={{url absolute="true"}}" target="_blank" rel="noopener" class="has-text-grey has-text-weight-semibold is-flex is-align-items-center hover-text-link">
-                  <i class="ph ph-share-network mr-2 is-size-5"></i> Share
-                </a>
-
-                <a href="/contact/" class="has-text-grey has-text-weight-semibold is-flex is-align-items-center hover-text-link">
-                  <i class="ph ph-envelope mr-2 is-size-5"></i> Contact
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="box has-background-white-ter is-shadowless has-text-centered mb-5" style="border: 1px dashed #ccc; border-radius: 12px; min-height: 250px;">
-            <p class="heading has-text-grey mt-6 pt-6">Sidebar AdSense</p>
-            <p class="is-size-7 has-text-grey-light">300×250 / Responsive</p>
-          </div>
-
-          <div class="box is-shadowless" style="border-radius: 12px; border: 1px solid #eaeaea;">
-            <h4 class="title is-6 mb-3">Coming later</h4>
-            <div class="content has-text-grey is-size-6">
-              <ul style="margin-left: 1.25rem;">
-                <li>Instructor bio card</li>
-                <li>Certificate details</li>
-                <li>Community CTA</li>
-                <li>Course roadmap</li>
-              </ul>
-            </div>
-          </div>
-
+      {{#if feature_image}}
+        <div class="hidden w-80 shrink-0 lg:block">
+          <img src="{{img_url feature_image size="l"}}" alt="{{title}}" class="aspect-[4/3] w-full rounded-card object-cover shadow-raised ring-1 ring-white/10">
         </div>
-      </div>
-
+      {{/if}}
     </div>
   </div>
 </section>
 
-{{!-- STICKY FOOTER CTA (Mobile) --}}
-<nav id="ns-course-link-sticky" class="navbar is-fixed-bottom has-shadow is-hidden-tablet py-2 has-background-white" style="border-top: 1px solid #eaeaea;" role="navigation">
-  <div class="container is-flex is-align-items-center is-justify-content-space-between px-4">
-    <div class="is-flex-grow-1 mr-3" style="min-width: 0;">
-      <span class="has-text-weight-bold is-size-6 has-text-dark" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">{{title}}</span>
-    </div>
-    <div class="is-flex-shrink-0">
-      <a href="#ns-curriculum" class="button is-link is-rounded has-text-weight-bold">
-        <span>{{t "Start Course"}}</span>
-        <span class="icon is-small ml-1"><i class="ph ph-arrow-right"></i></span>
-      </a>
-    </div>
-  </div>
-</nav>
+{{!-- ── Main ── --}}
+<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
 
+    {{!-- Left: about + curriculum + FAQ --}}
+    <div class="min-w-0">
+
+      {{#if content}}
+        <h2 class="font-heading text-2xl font-extrabold">{{t "About this course"}}</h2>
+        <div class="prose mt-4 max-w-none gh-content">{{content}}</div>
+      {{/if}}
+
+      {{!-- Curriculum --}}
+      <h2 id="curriculum" class="mt-12 font-heading text-2xl font-extrabold">{{t "Course curriculum"}}</h2>
+      <div class="mt-4 overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
+        <div class="flex items-center justify-between border-b border-border px-5 py-3">
+          <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
+          <span class="rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">{{t "Structured path"}}</span>
+        </div>
+        {{#if primary_tag}}
+          {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags" order="published_at asc" limit="100" as |lessons|}}
+            {{#foreach lessons}}
+              <a href="{{url}}" class="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 transition last:border-0 hover:bg-brand-500/5">
+                <span class="flex min-w-0 items-center gap-3">
+                  <i class="ph-fill ph-play-circle shrink-0 text-xl text-brand-500" aria-hidden="true"></i>
+                  <span class="truncate font-semibold">{{@number}}. {{title}}</span>
+                </span>
+                <span class="shrink-0 text-xs text-muted">
+                  {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-lesson-duration-"}}{{#if description}}<span class="inline-flex items-center gap-1"><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</span>{{/if}}{{/match}}{{/foreach}}
+                </span>
+              </a>
+            {{else}}
+              <p class="px-5 py-6 text-sm text-muted"><i class="ph ph-wrench" aria-hidden="true"></i> {{t "No lessons yet. Content is being drafted."}}</p>
+            {{/foreach}}
+          {{/get}}
+        {{else}}
+          <p class="px-5 py-6 text-sm text-error">{{t "Assign a primary tag to this course to link its lessons."}}</p>
+        {{/if}}
+      </div>
+
+      {{!-- FAQ --}}
+      <h2 class="mt-12 font-heading text-2xl font-extrabold">{{t "Frequently asked questions"}}</h2>
+      <div class="mt-4 space-y-3">
+        {{> "courses/faq-item" q=(t "Is this course beginner friendly?") a=(t "Yes — the early lessons cover the fundamentals before moving on to advanced implementations.")}}
+        {{> "courses/faq-item" q=(t "Do I get lifetime access?") a=(t "Absolutely. Once you start, you have access to the materials and all future updates.")}}
+        {{> "courses/faq-item" q=(t "Will this help for interviews?") a=(t "Yes — we cover common scenario-based questions asked in technical interviews.")}}
+      </div>
+    </div>
+
+    {{!-- Right: sticky enrolment --}}
+    <aside>
+      <div class="lg:sticky lg:top-20">
+        <div class="overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
+          {{#if feature_image}}
+            <img src="{{img_url feature_image size="m"}}" alt="{{title}}" class="aspect-[16/9] w-full object-cover lg:hidden">
+          {{/if}}
+          <div class="p-5">
+            <div class="flex items-center gap-3">
+              <span class="font-heading text-3xl font-extrabold">{{t "Free"}}</span>
+              <span class="rounded-pill bg-success/15 px-2.5 py-0.5 text-xs font-bold text-success">{{t "Open source"}}</span>
+            </div>
+            <p class="mt-1 text-sm text-muted">{{t "Access the entire curriculum instantly."}}</p>
+
+            <a href="#curriculum" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Start course"}}</a>
+            <a href="/courses/" class="mt-2 inline-flex w-full items-center justify-center rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500">{{t "Back to catalog"}}</a>
+
+            <h3 class="mt-6 font-heading font-bold">{{t "This course includes:"}}</h3>
+            <ul class="mt-3 space-y-2.5 text-sm">
+              <li class="flex items-center gap-3"><i class="ph ph-list-checks text-lg text-brand-500" aria-hidden="true"></i>{{t "Structured curriculum"}}</li>
+              {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-duration-"}}<li class="flex items-center gap-3"><i class="ph ph-clock text-lg text-brand-500" aria-hidden="true"></i>{{#if description}}{{description}}{{else}}{{name}}{{/if}}</li>{{/match}}{{/foreach}}
+              {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-level-"}}<li class="flex items-center gap-3"><i class="ph ph-signal-high text-lg text-brand-500" aria-hidden="true"></i>{{#if description}}{{description}}{{else}}{{name}}{{/if}}</li>{{/match}}{{/foreach}}
+              <li class="flex items-center gap-3"><i class="ph ph-infinity text-lg text-brand-500" aria-hidden="true"></i>{{t "Lifetime access"}}</li>
+              <li class="flex items-center gap-3"><i class="ph ph-calendar text-lg text-brand-500" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</li>
+            </ul>
+
+            <hr class="my-5 border-border">
+            <div class="flex items-center justify-between text-sm">
+              <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-semibold text-muted hover:text-brand-600"><i class="ph ph-share-network text-lg" aria-hidden="true"></i>{{t "Share"}}</a>
+              <a href="/contact/" class="inline-flex items-center gap-2 font-semibold text-muted hover:text-brand-600"><i class="ph ph-envelope text-lg" aria-hidden="true"></i>{{t "Contact"}}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">{{> "ads/sponsored"}}</div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{{!-- ── Mobile sticky CTA ── --}}
+<div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 px-4 py-2.5 backdrop-blur lg:hidden">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
+    <span class="truncate font-semibold">{{title}}</span>
+    <a href="#curriculum" class="inline-flex shrink-0 items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand">
+      {{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i>
+    </a>
+  </div>
+</div>

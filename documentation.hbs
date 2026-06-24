@@ -1,66 +1,33 @@
 {{!< default}}
+{{!-- documentation.hbs — Documentation hub (index).
+     Two-column layout: collapsible sidebar + a grid of doc cards. --}}
 
-{{!-- Hidden span explicitly given 'index' so JS doesn't crash --}}
-<span id="doc-current-id" data-id="index" hidden aria-hidden="true"></span>
+{{> "components/page-header" icon="ph-book-open" eyebrow="Documentation" title="Documentation" subtitle="Guides, references and how-tos for the Namaste Salesforce platform."}}
 
-<section class="ns-section--tight">
-  <div class="container is-fluid">
-    <div class="columns is-variable is-5-desktop is-multiline">
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+  <div class="grid gap-8 lg:grid-cols-[16rem_1fr]">
 
-      {{!-- LEFT SIDEBAR (Shared) --}}
-      {{> "doc-sidebar"}}
+    {{> "docs/sidebar"}}
 
-      {{!-- MAIN CONTENT --}}
-      <main class="column is-9-desktop is-8-tablet" role="main">
-
-        <span class="ns-eyebrow ns-fade-up"><i class="ph ph-book-open mr-1"></i> Documentation</span>
-        <h1 class="ns-display ns-gradient-text ns-fade-up ns-stagger-1">Namaste Salesforce Documentation</h1>
-        <p class="ns-lead ns-fade-up ns-stagger-2">Select a guide from the sidebar to get started.</p>
-
-        <div class="ns-divider"></div>
-
-        <div class="ns-grid ns-grid--2 mt-4">
-          {{#get "posts" filter="tag:documentation" limit="6" order="published_at desc"}}
-            {{#foreach posts}}
-              <a href="{{url}}" class="ns-feature-card is-block ns-fade-up ns-stagger-{{@number}}" style="text-decoration: none; height: 100%;">
-                <div class="ns-feature-card__icon">
-                  <i class="ph-fill ph-file-text"></i>
-                </div>
-                <h3 class="ns-feature-card__title">{{title}}</h3>
-                <p class="ns-feature-card__body">{{excerpt words="15"}}...</p>
-              </a>
-            {{/foreach}}
-          {{/get}}
-        </div>
-
-      </main>
-
-    </div>
+    <main role="main">
+      <h2 class="font-heading text-2xl font-extrabold">{{t "All articles"}}</h2>
+      <div class="mt-6 grid gap-5 sm:grid-cols-2">
+        {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
+          {{#foreach posts}}
+            <a href="{{url}}" class="js-spotlight group relative flex items-start gap-3 overflow-hidden rounded-card border border-border bg-surface-raised p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-raised">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-xl text-brand-600 dark:text-brand-300">
+                <i class="ph-fill ph-file-text" aria-hidden="true"></i>
+              </span>
+              <span class="relative">
+                <span class="block font-heading font-bold transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
+                <span class="mt-1 block text-sm text-muted">{{excerpt words="14"}}&hellip;</span>
+              </span>
+            </a>
+          {{/foreach}}
+        {{else}}
+          <p class="text-muted">{{t "No documentation yet."}}</p>
+        {{/get}}
+      </div>
+    </main>
   </div>
 </section>
-
-{{!-- Reuse the exact same script for the mobile dropdown logic --}}
-{{#contentFor "scripts"}}
-<script>
-(function () {
-  'use strict';
-  var dropdown = document.getElementById('docMobDropdown');
-  var trigger = dropdown?.querySelector('.dropdown-trigger button');
-  if (!dropdown || !trigger) return;
-
-  function setOpen(open) {
-    dropdown.classList.toggle('is-active', open);
-    var c = trigger.querySelector('.doc-mob-toggle__caret');
-    if (c) c.style.transform = open ? 'rotate(180deg)' : '';
-  }
-
-  trigger.addEventListener('click', function(e) {
-    e.stopPropagation();
-    setOpen(!dropdown.classList.contains('is-active'));
-  });
-  document.addEventListener('click', function(e) {
-    if (dropdown.classList.contains('is-active') && !dropdown.contains(e.target)) setOpen(false);
-  });
-})();
-</script>
-{{/contentFor}}

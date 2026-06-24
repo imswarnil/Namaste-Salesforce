@@ -1,35 +1,29 @@
 {{!< default}}
+{{!-- tag.hbs — tag archive: header + post grid --}}
 
 {{#tag}}
-  <section class="ns-hero"{{#if feature_image}} style="background-image: linear-gradient(rgba(10,10,20,0.65), rgba(10,10,20,0.78)), url('{{img_url feature_image size='xl'}}'); background-size: cover; background-position: center;"{{/if}}>
-    <div class="ns-hero-mesh" aria-hidden="true">
-      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--1"></div>
-      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--2"></div>
-      <div class="ns-hero-mesh__blob ns-hero-mesh__blob--3"></div>
-    </div>
-    <div class="container ns-hero__content has-text-centered">
-      <span class="ns-eyebrow ns-fade-up">Topic</span>
-      <h1 class="ns-hero__title ns-fade-up ns-stagger-1">{{name}}</h1>
+  <header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 to-brand-900 text-white"
+    {{#if feature_image}}style="background-image: linear-gradient(rgba(3,45,96,0.82), rgba(0,26,62,0.9)), url('{{img_url feature_image size='xl'}}'); background-size: cover; background-position: center;"{{/if}}>
+    <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
+      <p class="text-xs font-semibold uppercase tracking-[0.15em] text-brand-200">{{t "Topic"}}</p>
+      <h1 class="mt-2 font-heading text-4xl font-extrabold sm:text-5xl">{{name}}</h1>
       {{#if description}}
-        <p class="ns-hero__subtitle ns-fade-up ns-stagger-2">{{description}}</p>
+        <p class="mx-auto mt-4 max-w-2xl text-lg text-white/80">{{description}}</p>
       {{/if}}
-      <p class="ns-fade-up ns-stagger-3 mt-3" style="opacity: 0.7;">
-        <span class="tag ns-badge is-rounded">{{plural ../pagination.total empty="No posts" singular="% post" plural="% posts"}}</span>
+      <p class="mt-6">
+        <span class="inline-flex items-center rounded-pill bg-white/15 px-3 py-1 text-sm font-medium">
+          {{plural ../pagination.total empty=(t "No posts") singular=(t "% post") plural=(t "% posts")}}
+        </span>
       </p>
     </div>
-  </section>
+  </header>
 {{/tag}}
 
-<section class="ns-section">
-  <div class="ns-container">
-    {{!-- Latest Posts --}}
-    <div class="ns-grid ns-grid--3">
-      {{#foreach posts }}
-        <div class="ns-fade-up ns-stagger-{{@number}}">
-          {{> post-card}}
-        </div>
-      {{/foreach}}
-    </div>
-    {{pagination}}
+<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {{#foreach posts}}
+      <div class="motion-safe:animate-fade-up">{{> post-card}}</div>
+    {{/foreach}}
   </div>
+  {{pagination}}
 </section>
