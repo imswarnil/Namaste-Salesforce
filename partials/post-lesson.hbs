@@ -1,19 +1,22 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-lesson.hbs — Lesson player
-  3-column: course lesson nav · lesson content · (TOC + sponsor on xl).
-  Context: {{#post}} for a #lesson post.
+  partials/post-lesson.hbs — Lesson player (full-width)
+  3 columns: course nav + ad · lesson content + discussion · TOC + sticky ad.
+  Course nav shows a % completion bar and collapses on mobile. Context: a
+  #lesson post.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-  <div class="grid gap-8 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_14rem]">
+<section class="w-full px-4 py-8 sm:px-6 lg:px-8">
+  <div class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)_15rem]">
 
-    {{!-- Left: lessons in this course --}}
-    <aside class="lg:sticky lg:top-20 lg:self-start">
+    {{!-- Left: course nav (progress) + related/sponsor ad --}}
+    <aside class="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
       {{> "courses/lesson-nav"}}
+      <div class="mt-6">{{> "ads/slot" format="square"}}</div>
     </aside>
 
     {{!-- Center: lesson content --}}
     <main role="main" class="min-w-0">
       <article>
+        {{> "components/breadcrumb"}}
         <header class="mb-6">
           <div class="mb-4 flex flex-wrap gap-2">
             <span class="inline-flex items-center gap-1 rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">
@@ -31,9 +34,12 @@
           <img src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="mb-8 w-full rounded-card object-cover shadow-card">
         {{/if}}
 
+        {{!-- In-content ad --}}
+        {{> "ads/slot" format="horizontal" slot="lesson-top"}}
+
         <div class="prose max-w-none gh-content">{{content}}</div>
 
-        {{!-- Prev / next lesson --}}
+        {{!-- Prev / next (continues to next lesson by order at track end) --}}
         <nav class="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6" aria-label="{{t "Lesson navigation"}}">
           <div>
             {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
@@ -48,9 +54,14 @@
                 <span>{{t "Next"}}</span><i class="ph ph-arrow-right" aria-hidden="true"></i>
               </a>
             {{else}}
+              {{!-- Last lesson of the course → finish (back to the course page) --}}
               {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
                 {{#foreach posts}}
                   <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
+                    <span>{{t "Finish course"}}</span><i class="ph-fill ph-check-circle" aria-hidden="true"></i>
+                  </a>
+                {{else}}
+                  <a href="/courses/" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
                     <span>{{t "Finish course"}}</span><i class="ph-fill ph-check-circle" aria-hidden="true"></i>
                   </a>
                 {{/foreach}}
@@ -58,14 +69,24 @@
             {{/next_post}}
           </div>
         </nav>
+
+        {{!-- Discussion (comments) --}}
+        {{#if @site.comments_enabled}}
+          <section class="mt-12 border-t border-border pt-8" aria-label="{{t "Discussion"}}">
+            <h2 class="mb-4 flex items-center gap-2 font-heading text-xl font-extrabold">
+              <i class="ph ph-chat-circle-text text-brand-500" aria-hidden="true"></i>{{t "Discussion"}}
+            </h2>
+            {{comments title=""}}
+          </section>
+        {{/if}}
       </article>
     </main>
 
-    {{!-- Right rail: table of contents + sponsor --}}
-    <aside class="hidden xl:block">
+    {{!-- Right rail: TOC + sticky sponsor --}}
+    <aside class="hidden lg:block">
       <div class="sticky top-20 space-y-6">
         {{> "components/toc"}}
-        {{> "ads/sponsored"}}
+        {{> "ads/slot" format="rail"}}
       </div>
     </aside>
   </div>

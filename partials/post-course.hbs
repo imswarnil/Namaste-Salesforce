@@ -7,10 +7,7 @@
 
 {{!-- ── Hero ── --}}
 <section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0">
-    <div class="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-brand-400/25 blur-3xl"></div>
-    <div class="absolute -bottom-20 right-0 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl"></div>
-  </div>
+  {{> "components/hero-bg"}}
   <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-20">
     <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
       <div class="max-w-2xl">
@@ -66,6 +63,9 @@
         <div class="prose mt-4 max-w-none gh-content">{{content}}</div>
       {{/if}}
 
+      {{!-- In-content ad --}}
+      {{> "ads/slot" format="horizontal" slot="course-mid"}}
+
       {{!-- Curriculum --}}
       <h2 id="curriculum" class="mt-12 font-heading text-2xl font-extrabold">{{t "Course curriculum"}}</h2>
       <div class="mt-4 overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
@@ -117,7 +117,14 @@
             </div>
             <p class="mt-1 text-sm text-muted">{{t "Access the entire curriculum instantly."}}</p>
 
-            <a href="#curriculum" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Start course"}}</a>
+            {{!-- Start → first lesson of this course (falls back to the curriculum list) --}}
+            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}
+              {{#foreach posts}}
+                <a href="{{url}}" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600"><i class="ph ph-play" aria-hidden="true"></i>{{t "Start course"}}</a>
+              {{else}}
+                <a href="#curriculum" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "View curriculum"}}</a>
+              {{/foreach}}
+            {{/get}}
             <a href="/courses/" class="mt-2 inline-flex w-full items-center justify-center rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500">{{t "Back to catalog"}}</a>
 
             <h3 class="mt-6 font-heading font-bold">{{t "This course includes:"}}</h3>
@@ -137,7 +144,7 @@
           </div>
         </div>
 
-        <div class="mt-6">{{> "ads/sponsored"}}</div>
+        <div class="mt-6">{{> "ads/slot" format="square"}}</div>
       </div>
     </aside>
   </div>
@@ -147,8 +154,12 @@
 <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 px-4 py-2.5 backdrop-blur lg:hidden">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
     <span class="truncate font-semibold">{{title}}</span>
-    <a href="#curriculum" class="inline-flex shrink-0 items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand">
-      {{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i>
-    </a>
+    {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}
+      {{#foreach posts}}
+        <a href="{{url}}" class="inline-flex shrink-0 items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      {{else}}
+        <a href="#curriculum" class="inline-flex shrink-0 items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      {{/foreach}}
+    {{/get}}
   </div>
 </div>

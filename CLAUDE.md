@@ -4,54 +4,60 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), forked from Ghost's Casper theme but heavily customized for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is a **custom, in-house SCSS framework** under `assets/scss/framework/` — **Bulma has been removed**. The framework reimplements only the utility/component classes the templates use (grid, buttons, navbar, forms, helpers, …), themed with the design tokens in `variables.scss`.
+A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), originally forked from Casper but rebuilt for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is **Tailwind CSS v4** (no Bulma, no SCSS framework). Light interactivity uses **Alpine.js** (self-hosted). The design language is **SLDS-inspired** (Salesforce-blue palette, clean cards, dark mode).
 
 ## Commands
 
 ```bash
-yarn install        # install dependencies (Yarn, not npm — package-lock.json is gitignored)
-yarn dev            # gulp default: build + livereload watch server (edit assets, auto-recompiles)
-yarn zip            # build + package into dist/namaste-salesforce.zip for upload to Ghost
-yarn test           # gscan . — validates the theme against Ghost's theme rules
-yarn test:ci        # gscan --fatal --verbose . (used in CI)
+yarn install     # install dependencies (Yarn; package-lock.json is gitignored)
+yarn dev         # gulp default: build + livereload watch
+yarn build       # one-off build into assets/built/
+yarn zip         # build + package into dist/namaste-salesforce.zip
+yarn test        # gscan . — validate against Ghost's theme rules
+yarn test:ci     # gscan --fatal --verbose .
 ```
 
-There is no unit-test framework. "Testing" means **gscan** theme validation — run `yarn test` after template changes to catch Ghost compatibility errors. `pretest` runs `gulp build` first, so the committed `assets/built/` output is what gets validated.
+"Testing" means **gscan** validation — run `yarn test` after template changes. `pretest` runs `gulp build` first, so the committed `assets/built/` output is what gets validated.
 
 ## Build pipeline (gulpfile.js)
 
-`gulp build` runs three steps in series, all output to `assets/built/` (committed to git — Ghost serves these directly):
+`gulp build` runs three steps, all output to `assets/built/` (committed — Ghost serves these directly):
 
-- **css**: `assets/scss/screen.scss` → Sass → PostCSS (autoprefixer + cssnano) → `built/screen.css` + sourcemap. No external SCSS dependencies — the framework resolves via relative `@use`.
-- **js**: `assets/js/lib/*.js` then `assets/js/*.js`, concatenated (lib first so app code can depend on it) → uglify → `built/casper.js`.
-- **locales**: merges `locales-local/` overrides into `locales/` via `@tryghost/theme-translations`.
+- **css**: `assets/css/screen.css` → PostCSS with **`@tailwindcss/postcss`** (Tailwind v4) → cssnano → `built/screen.css`. There is **no `tailwind.config.js`**; tokens and `@source` globs live in `screen.css`. Tailwind v4 emits its own vendor prefixes, so autoprefixer is not used.
+- **js**: `assets/js/*.js` concatenated → uglify → `built/casper.js`. (`assets/js/vendor/*` — Alpine — is **not** bundled; it's loaded separately.)
+- **locales**: merges `locales-local/` into `locales/`.
 
-Because `assets/built/` is committed, **rebuild and commit the built output** when you change SCSS or JS, or Ghost will serve stale assets.
+Because `assets/built/` is committed, **rebuild and commit the built output** after changing CSS or JS. Editing a `.hbs` requires a rebuild too (Tailwind scans templates for class names).
 
 ## Architecture
 
-**Template resolution (Ghost conventions):**
-- `default.hbs` is the shared HTML shell — `<head>`, `{{> header}}`, `{{{body}}}`, `{{> footer}}`, the theme-toggle script, and asset/`{{ghost_head}}`/`{{ghost_foot}}` injection. Every page template starts with `{{!< default}}` to inherit it.
-- `index.hbs` (post list / home), `post.hbs`, `page.hbs`, `tag.hbs`, `author.hbs` are Ghost's reserved template names.
-- `home.hbs`, `blog.hbs`, `courses.hbs`, `training.hbs`, `documentation.hbs` are **custom templates** — selectable per-page in the Ghost editor and/or routed via the site's `routes.yaml` (configured in Ghost admin, not in this repo). Each renders a distinct section of the site with its own hero/layout.
+**Templates (Ghost conventions):**
+- `default.hbs` — shared shell: `<head>`, `{{> header}}`, `{{{body}}}`, `{{> footer}}`, the pre-paint theme script, Alpine + `casper.js` includes, `{{ghost_head}}`/`{{ghost_foot}}`. Page templates start with `{{!< default}}`.
+- Reserved names: `index`, `post`, `page`, `tag`, `author`, `error`.
+- Custom templates: `home`, `courses`, `documentation`, `blog`, `training`, `page-about` (routed/selected in Ghost Admin).
+- `post.hbs` is a **router** — `{{#has tag="…"}}` picks a `post-*` partial: `post-course`, `post-lesson`, `post-training`, `post-documentation`, `post-blog`, `post-default`.
 
-**Partials (`partials/`):** Reusable Handlebars fragments included with `{{> name}}`.
-- `post-*.hbs` (`post-card`, `post-blog`, `post-course`, `post-training`, `post-documentation`, `post-default`, `post-lesson`) are the per-context post renderers — pick the one matching the section.
-- `header/` holds composable header pieces (`brand`, `burger`, `search-icon`, `theme-toggle`, `portal-buttons`, etc.); `header.hbs` assembles them.
-- `icons/` holds inline SVG icons — include via `{{> "icons/name"}}`. Note: most UI icons in templates use **Phosphor icons** (`<i class="ph-...">`), loaded from the unpkg CDN in `default.hbs`.
+**Partials (`partials/`, organised in folders):**
+- `components/` — chrome & shared bits: `theme-toggle`, `nav-icon`, `page-header`, `hero-bg`, `breadcrumb`, `toc`, `cta`, `author-byline`, `tag-pills`, `social-icons`.
+- `icons/` — inline-SVG icons; include via `{{> "icons/name" class="h-4 w-4 …"}}`. They use `currentColor` + a `class` param, so Tailwind utilities theme them. (Content/cards still use **Phosphor** `<i class="ph-…">` from the unpkg CDN.)
+- `home/`, `about/`, `courses/`, `blog/`, `docs/`, `training/` — section-specific partials.
+- `ads/` — `slot` resolves to AdSense → sponsor → dummy placeholder.
 
-**Styling (`assets/scss/`):**
-- `screen.scss` is the only compiled entry point. It loads the in-house framework (`framework/*`), then bespoke components, then utility helpers (helpers use `!important`, so load order between them and components doesn't matter), then content/TOC/animation styles, and finally the web-font `@import`.
-- `framework/` is the custom CSS framework that replaced Bulma: `_base`, `_layout`, `_helpers`, `_buttons`, `_forms`, `_tags`, `_navbar`, `_menu`, `_card`, `_typography`. Each partial reimplements the Bulma-compatible class names the templates rely on (`.columns`/`.column`, `.button`, `.navbar`, `.tag`, `is-*`/`has-*` helpers, …).
-- `variables.scss` defines the Salesforce brand palette and dark-mode tokens (`$sf-*`).
-- `ghost.scss` styles Ghost's generated post/Koenig-card content; `toc.scss` styles the table of contents.
+**Styling (`assets/css/screen.css`, Tailwind v4):**
+- `@theme` holds SLDS tokens: the `brand-*` blue scale, status colours, fonts, radii, shadows, motion. **Semantic role tokens** (`surface`, `surface-raised/sunken`, `ink`, `muted`, `border`) map to `--ns-*` CSS vars that flip under `[data-theme="dark"]`, so `bg-surface`/`text-ink` auto-adapt — avoid hard-coding `dark:` for those.
+- `@layer components` holds the few reusable classes: `.nav-link`, `.icon-btn`/`.nav-tip`, `.subnav-bar`/`.subnav-panel`, `.toc-link`, `.js-spotlight`, `.ns-timeline`/`.ns-steps`, `.bg-grid`/`.bg-dots`, and `.prose` overrides.
+- `@custom-variant dark` wires the `dark:` variant to `data-theme="dark"`.
 
-**Dark mode:** Driven by `data-theme="light|dark"` on `<html>`. An inline pre-paint script in `default.hbs` applies the saved theme from `localStorage` key `ns-theme` before first paint (avoids flash). A second script wires any `.ns-theme-toggle` button and swaps `.ns-theme-icon` (Phosphor `ph-moon`/`ph-sun`). Style dark mode via the `[data-theme="dark"]` selector using `$sf-dark-*` tokens.
+**Dark mode:** `data-theme="light|dark"` on `<html>`. A pre-paint inline script in `default.hbs` applies the saved theme (`localStorage` key `ns-theme`) before first paint; `theme-toggle.js` flips it on `.ns-theme-toggle` clicks. The sun/moon glyph swap is pure CSS (`dark:` variant).
 
-**Translations:** Author overrides in `locales-local/`; `gulp locales` merges them into `locales/`. Don't hand-edit merged files in `locales/`.
+**JS (`assets/js/`):** `theme-toggle`, `toc` (builds TOC + scroll-spy from `.gh-content`), `effects` (pointer spotlight), `reveal` (scroll reveal) → `casper.js`. Alpine (`vendor/alpine.js`) powers menus, the mobile sub-nav panels, and client-side search filters.
 
-## Conventions
+**Translations:** author overrides in `locales-local/`; `gulp locales` merges into `locales/` (don't hand-edit merged files).
 
-- Layout uses Bulma utility classes (`columns`, `is-*`, `hero`, etc.) directly in templates rather than custom CSS where possible.
-- `$salesforce-blue` / `#0176D3` is the brand primary, mapped to Bulma's `$primary` and `$link`.
-- The `release`/`ship` gulp tasks target the upstream TryGhost/Casper repo and a `GST_TOKEN` env var — they are not used for this fork's workflow.
+## Conventions & gotchas
+
+- Prefer Tailwind utilities in markup; promote to `@layer components` only when a pattern repeats or is awkward as utilities.
+- Use the **role tokens** (`surface`/`ink`/`muted`/`border`) and `brand-*` scale; `#0176D3` is `brand-500`.
+- **Never call a Ghost helper across `../`** inside a partial (e.g. `{{../url absolute="true"}}`) — Ghost throws and 500s the page. Use dotted property access (`{{primary_tag.url}}`) instead.
+- Ad slots and per-section sidebars/TOC are shown by default; ads only become "real" once `@custom.enable_ads` + `adsense_publisher_id` (or `sponsor_*`) are set in Ghost Admin → Design.
+- `routes.yaml` (collections / permalinks) lives in Ghost Admin, **not** in this repo.

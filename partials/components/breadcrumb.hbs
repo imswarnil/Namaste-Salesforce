@@ -1,0 +1,19 @@
+{{!-- components/breadcrumb.hbs — Home / [primary tag] / current title.
+     Context: a post or page. Always shown (consistent across the theme) and
+     emits BreadcrumbList JSON-LD for SEO.
+     NOTE: the JSON-LD stays in the POST context (dotted primary_tag.* access);
+     never call a helper across `../` — Ghost throws on that and 500s the page. --}}
+<nav class="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted" aria-label="{{t "Breadcrumb"}}">
+  <a href="{{@site.url}}" class="transition-colors hover:text-brand-600">{{t "Home"}}</a>
+  {{#primary_tag}}<span aria-hidden="true">/</span><a href="{{url}}" class="transition-colors hover:text-brand-600">{{name}}</a>{{/primary_tag}}
+  <span aria-hidden="true">/</span><span class="text-ink">{{title}}</span>
+</nav>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+{"@type":"ListItem","position":1,"name":"Home","item":"{{@site.url}}/"},
+{{#if primary_tag}}{"@type":"ListItem","position":2,"name":"{{primary_tag.name}}","item":"{{@site.url}}{{primary_tag.url}}"},
+{"@type":"ListItem","position":3,"name":"{{title}}","item":"{{url absolute="true"}}"}
+{{else}}{"@type":"ListItem","position":2,"name":"{{title}}","item":"{{url absolute="true"}}"}
+{{/if}}
+]}
+</script>

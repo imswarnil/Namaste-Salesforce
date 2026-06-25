@@ -1,37 +1,49 @@
-{{!-- training/curriculum.hbs — full training curriculum (every track + its
-     lessons). Context: a #training or #training-content post; the current
-     lesson is highlighted. --}}
-<div class="mb-4 flex items-center gap-2">
-  <i class="ph-fill ph-books text-xl text-brand-500" aria-hidden="true"></i>
-  <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
-</div>
+{{!-- training/curriculum.hbs — full training curriculum (every track + lessons).
+     Collapses to a tappable panel below `lg`. Context: a #training or
+     #training-content post; the current lesson is highlighted. --}}
+<div x-data="{ open: false }" class="relative">
 
-<nav aria-label="{{t "Curriculum"}}">
-  {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="50"}}
-    {{#foreach posts}}
-      <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted">{{title}}</p>
-      <ul class="space-y-0.5 border-l border-border">
-        {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100" as |lessons|}}
-          {{#if lessons}}
-            {{#foreach lessons}}
-              <li>
-                <a href="{{url}}"
-                   class="doc-nav-link -ml-px flex items-center justify-between gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
-                  <span class="flex min-w-0 items-center gap-2">
-                    <i class="{{#match id ../../../../id}}ph-fill ph-play-circle text-brand-500{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
-                    <span class="truncate">{{title}}</span>
-                  </span>
-                  <span class="shrink-0 text-xs">{{reading_time minute="1m" minutes="%m"}}</span>
-                </a>
-              </li>
-            {{/foreach}}
-          {{else}}
-            <li><span class="block px-3 py-2 text-sm italic text-muted">{{t "No lessons yet."}}</span></li>
-          {{/if}}
-        {{/get}}
-      </ul>
-    {{else}}
-      <p class="text-sm text-muted">{{t "No training courses found."}}</p>
-    {{/foreach}}
-  {{/get}}
-</nav>
+  {{!-- Mobile toggle --}}
+  <button type="button" class="subnav-bar group"
+          @click="open = !open" :aria-expanded="open.toString()" aria-controls="training-curriculum">
+    <span class="flex items-center gap-2"><i class="ph-fill ph-books text-brand-500" aria-hidden="true"></i>{{t "Course content"}}</span>
+    <i class="ph ph-caret-down transition-transform" :class="open && 'rotate-180'" aria-hidden="true"></i>
+  </button>
+
+  <div id="training-curriculum" class="subnav-panel lg:!block" :class="open ? 'block' : 'hidden'">
+    <div class="mb-4 hidden items-center gap-2 lg:flex">
+      <i class="ph-fill ph-books text-xl text-brand-500" aria-hidden="true"></i>
+      <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
+    </div>
+
+    <nav aria-label="{{t "Curriculum"}}">
+      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="50"}}
+        {{#foreach posts}}
+          <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted first:mt-0">{{title}}</p>
+          <ul class="space-y-0.5 border-l border-border">
+            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100" as |lessons|}}
+              {{#if lessons}}
+                {{#foreach lessons}}
+                  <li>
+                    <a href="{{url}}"
+                       class="doc-nav-link -ml-px flex items-center justify-between gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
+                      <span class="flex min-w-0 items-center gap-2">
+                        <i class="{{#match id ../../../../id}}ph-fill ph-play-circle text-brand-500{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
+                        <span class="truncate">{{title}}</span>
+                      </span>
+                      <span class="shrink-0 text-xs">{{reading_time minute="1m" minutes="%m"}}</span>
+                    </a>
+                  </li>
+                {{/foreach}}
+              {{else}}
+                <li><span class="block px-3 py-2 text-sm italic text-muted">{{t "No lessons yet."}}</span></li>
+              {{/if}}
+            {{/get}}
+          </ul>
+        {{else}}
+          <p class="text-sm text-muted">{{t "No training courses found."}}</p>
+        {{/foreach}}
+      {{/get}}
+    </nav>
+  </div>
+</div>

@@ -1,28 +1,35 @@
 {{!< default}}
-{{!-- training.hbs — Roadmaps / training tracks listing.
-     Lists #training (track) posts; each card previews its modules. --}}
+{{!-- training.hbs — Roadmaps as a numbered, animated timeline.
+     Each #training track is a numbered node (training/track-node) on a vertical
+     rail; nodes reveal on scroll. --}}
 
 {{#page}}
   {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title=title subtitle=custom_excerpt}}
 {{else}}
-  {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title="Training Roadmaps" subtitle="Master the Salesforce ecosystem from basics to advanced analytics and development."}}
+  {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title="Training Roadmaps" subtitle="Follow the path step by step — from Salesforce fundamentals to advanced analytics and AI."}}
 {{/page}}
 
-<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
+  <ol class="ns-steps">
     {{#foreach posts}}
-      <div class="motion-safe:animate-fade-up">{{> "training/track-card"}}</div>
+      {{> "training/track-node"}}
     {{/foreach}}
+  </ol>
 
-    {{!-- "Request a topic" CTA card --}}
-    <div class="flex flex-col justify-center rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-6 text-white">
-      <h3 class="font-heading text-xl font-bold">{{t "Looking for a specific topic?"}}</h3>
-      <p class="mt-2 text-white/80">{{t "New workflows and tutorials are added every month. Tell us what you want to see next!"}}</p>
-      <div class="mt-5 flex flex-wrap gap-2">
-        <a href="/contact/" class="rounded-pill bg-white px-4 py-2 text-sm font-bold text-brand-700 transition hover:bg-brand-50">{{t "Request a topic"}}</a>
-        <a href="/blog/" class="rounded-pill px-4 py-2 text-sm font-semibold ring-1 ring-white/40 transition hover:bg-white/10">{{t "Read the blog"}}</a>
-      </div>
+  {{^posts}}
+    <div class="rounded-card border border-dashed border-border py-16 text-center text-muted">
+      <i class="ph ph-map-trifold mb-3 text-4xl" aria-hidden="true"></i>
+      <p class="text-lg font-semibold">{{t "Roadmaps coming soon!"}}</p>
     </div>
+  {{/posts}}
+
+  {{!-- Request a topic --}}
+  <div class="mt-6 flex flex-col items-center justify-between gap-4 rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-6 text-white sm:flex-row sm:p-8">
+    <div>
+      <h2 class="font-heading text-xl font-bold">{{t "Looking for a specific topic?"}}</h2>
+      <p class="mt-1 text-white/80">{{t "New roadmaps are added every month. Tell us what to build next."}}</p>
+    </div>
+    <a href="/contact/" class="inline-flex shrink-0 items-center gap-2 rounded-pill bg-white px-5 py-2.5 font-bold text-brand-700 transition hover:bg-brand-50">{{> "icons/mail" class="h-5 w-5"}}{{t "Request a topic"}}</a>
   </div>
 
   {{pagination}}

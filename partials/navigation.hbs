@@ -1,9 +1,12 @@
 {{!-- partials/navigation.hbs — primary/secondary nav items
-     Rendered by the {{navigation}} helper. Outputs <li> links only so the
-     parent <ul> can lay them out (row in the header, column in the mobile
-     menu / footer). The current page's item gets `.is-current`. --}}
+     Rendered by the {{navigation}} helper. Outputs <li> links with a per-slug
+     icon (components/nav-icon). The parent <ul> handles layout (row in the
+     header, column in the mobile menu / footer). --}}
 {{#foreach navigation}}
   <li>
-    <a href="{{url absolute="true"}}" class="nav-link{{#if current}} is-current{{/if}}">{{label}}</a>
+    <a href="{{url absolute="true"}}" class="nav-link{{#if current}} is-current{{/if}}">
+      {{> "components/nav-icon" slug=slug}}
+      <span>{{label}}</span>
+    </a>
   </li>
 {{/foreach}}

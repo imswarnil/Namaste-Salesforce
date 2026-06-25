@@ -1,66 +1,87 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
   partials/header.hbs — Primary site header / navigation
   ----------------------------------------------------------------------------
-  Sticky, translucent (glass) bar. Desktop shows the brand + primary nav +
-  actions; below `lg` it collapses to an Alpine-powered slide-down menu.
-  Reuses components/theme-toggle and the navigation partial.
+  Sticky glass bar. Brand = logo + site title. Primary nav uses per-item icons
+  (navigation → components/nav-icon). Right cluster: search, Star on GitHub,
+  Sponsor, theme toggle, Log in / Sign up. Below `lg` everything collapses into
+  an Alpine slide-down panel.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 <header class="sticky top-0 z-40 border-b border-border bg-surface/80 backdrop-blur supports-[backdrop-filter]:bg-surface/70"
         x-data="{ open: false }">
-  <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
+  <div class="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 sm:px-6">
 
-    {{!-- Brand --}}
-    <a href="{{@site.url}}" class="flex shrink-0 items-center gap-2 font-heading text-lg font-extrabold">
-      {{#if @site.logo}}
-        <img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto">
-      {{else}}
-        <span class="text-brand-600 dark:text-brand-300">{{@site.title}}</span>
-      {{/if}}
+    {{!-- Brand: logo + site title --}}
+    <a href="{{@site.url}}" class="flex shrink-0 items-center gap-2">
+      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto">{{/if}}
+      <span class="font-heading text-lg font-extrabold tracking-tight text-ink">{{@site.title}}</span>
     </a>
 
     {{!-- Desktop nav --}}
     <nav class="ml-2 hidden lg:block" aria-label="{{t "Primary"}}">
-      <ul class="flex items-center gap-1">{{navigation}}</ul>
+      <ul class="flex items-center gap-0.5">{{navigation}}</ul>
     </nav>
 
-    {{!-- Actions --}}
-    <div class="ml-auto flex items-center gap-2">
-      <a href="#/search" data-ghost-search aria-label="{{t "Search"}}"
-         class="hidden h-9 w-9 items-center justify-center rounded-full border border-border text-ink transition hover:bg-brand-500/10 hover:text-brand-600 sm:inline-flex">
-        <i class="ph ph-magnifying-glass text-lg" aria-hidden="true"></i>
+    {{!-- Right cluster: icon-only actions with hover tooltips --}}
+    <div class="ml-auto flex items-center gap-1.5">
+
+      <a href="#/search" data-ghost-search aria-label="{{t "Search"}}" class="icon-btn group hidden sm:inline-flex">
+        {{> "icons/search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
+      </a>
+
+      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}" class="icon-btn group hidden sm:inline-flex">
+        {{> "icons/github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
+      </a>
+
+      <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener" aria-label="{{t "Become a sponsor"}}" class="icon-btn icon-btn--pink group hidden sm:inline-flex">
+        {{> "icons/heart" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Become a sponsor"}}</span>
       </a>
 
       {{> "components/theme-toggle"}}
 
       {{#if @member}}
-        <a href="#/portal/account" data-portal="account"
-           class="hidden rounded-pill border border-border px-4 py-2 text-sm font-medium transition hover:border-brand-500 sm:inline-flex">{{t "Account"}}</a>
+        <a href="#/portal/account" data-portal="account" aria-label="{{t "Account"}}" class="icon-btn group hidden sm:inline-flex">
+          {{> "icons/user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Account"}}</span>
+        </a>
       {{else}}
-        <a href="#/portal/signup" data-portal="signup"
-           class="hidden rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600 sm:inline-flex">{{t "Subscribe"}}</a>
+        <a href="#/portal/signin" data-portal="signin" aria-label="{{t "Log in"}}" class="icon-btn group hidden sm:inline-flex">
+          {{> "icons/login" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
+        </a>
+        <a href="#/portal/signup" data-portal="signup" aria-label="{{t "Sign up"}}" class="icon-btn icon-btn--brand group hidden sm:inline-flex">
+          {{> "icons/user-plus" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Sign up"}}</span>
+        </a>
       {{/if}}
 
       {{!-- Mobile menu toggle --}}
       <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink lg:hidden"
               @click="open = !open" :aria-expanded="open.toString()" aria-controls="mobile-menu" aria-label="{{t "Menu"}}">
-        <i class="ph text-xl" :class="open ? 'ph-x' : 'ph-list'" aria-hidden="true"></i>
+        <span x-show="!open">{{> "icons/menu" class="h-[1.15rem] w-[1.15rem]"}}</span>
+        <span x-show="open" x-cloak>{{> "icons/x" class="h-[1.15rem] w-[1.15rem]"}}</span>
       </button>
     </div>
   </div>
 
-  {{!-- Mobile menu --}}
+  {{!-- Mobile panel --}}
   <div id="mobile-menu" class="lg:hidden" x-show="open" x-cloak
        x-transition:enter="transition ease-out duration-200"
        x-transition:enter-start="opacity-0 -translate-y-2"
        x-transition:enter-end="opacity-100 translate-y-0">
-    <nav class="border-t border-border px-4 py-3" aria-label="{{t "Mobile"}}">
-      <ul class="flex flex-col gap-1">{{navigation}}</ul>
-      <div class="mt-3 flex items-center gap-2 border-t border-border pt-3">
+    <nav class="space-y-1 border-t border-border px-4 py-3" aria-label="{{t "Mobile"}}">
+      <ul class="flex flex-col gap-0.5">{{navigation}}</ul>
+
+      <div class="mt-3 grid grid-cols-2 gap-2 border-t border-border pt-3">
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener"
+           class="inline-flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-semibold">
+          {{> "icons/github" class="h-4 w-4"}}{{t "Star"}}
+        </a>
+        <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener"
+           class="inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-pink-600 ring-1 ring-pink-500/30">
+          {{> "icons/heart" class="h-4 w-4"}}{{t "Sponsor"}}
+        </a>
         {{#if @member}}
-          <a href="#/portal/account" data-portal="account" class="rounded-pill border border-border px-4 py-2 text-sm font-medium">{{t "Account"}}</a>
+          <a href="#/portal/account" data-portal="account" class="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium">{{> "icons/user" class="h-4 w-4"}}{{t "Account"}}</a>
         {{else}}
-          <a href="#/portal/signin" data-portal="signin" class="rounded-pill border border-border px-4 py-2 text-sm font-medium">{{t "Log in"}}</a>
-          <a href="#/portal/signup" data-portal="signup" class="rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white">{{t "Subscribe"}}</a>
+          <a href="#/portal/signin" data-portal="signin" class="inline-flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium">{{> "icons/login" class="h-4 w-4"}}{{t "Log in"}}</a>
+          <a href="#/portal/signup" data-portal="signup" class="inline-flex items-center justify-center rounded-full bg-brand-500 px-3 py-2 text-sm font-bold text-white">{{t "Sign up"}}</a>
         {{/if}}
       </div>
     </nav>

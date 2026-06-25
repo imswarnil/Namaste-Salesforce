@@ -1,6 +1,6 @@
 {{!< default}}
 {{!-- courses.hbs — course catalog (custom template / routed collection).
-     Lists #course posts; each card shows its lesson syllabus. --}}
+     Stats bar · searchable grid of course cards · become-instructor + feedback. --}}
 
 {{#page}}
   {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title=title subtitle=custom_excerpt}}
@@ -8,10 +8,36 @@
   {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title="Course Catalog" subtitle="Structured learning paths to take you from beginner to Salesforce expert."}}
 {{/page}}
 
-<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+{{!-- Stats bar --}}
+<section class="border-b border-border bg-surface-sunken">
+  <div class="mx-auto grid max-w-5xl grid-cols-2 gap-6 px-4 py-8 text-center sm:px-6 lg:grid-cols-4">
+    <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">{{pagination.total}}</div><div class="mt-1 text-sm font-medium text-muted">{{t "Courses"}}</div></div>
+    {{#get "posts" filter="tag:hash-lesson" limit="1"}}
+      <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">{{pagination.total}}+</div><div class="mt-1 text-sm font-medium text-muted">{{t "Lessons"}}</div></div>
+    {{/get}}
+    <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">All</div><div class="mt-1 text-sm font-medium text-muted">{{t "Skill levels"}}</div></div>
+    <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">100%</div><div class="mt-1 text-sm font-medium text-muted">{{t "Free"}}</div></div>
+  </div>
+</section>
+
+{{!-- Searchable grid --}}
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16" x-data="{ q: '' }">
+  <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <h2 class="font-heading text-xl font-extrabold">{{t "All courses"}}</h2>
+    <label class="relative w-full sm:max-w-xs">
+      <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{{> "icons/search" class="h-4 w-4"}}</span>
+      <input x-model="q" type="search" placeholder="{{t "Search courses…"}}" aria-label="{{t "Search courses"}}"
+             class="w-full rounded-pill border border-border bg-surface py-2.5 pl-10 pr-4 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+    </label>
+  </div>
+
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {{#foreach posts}}
-      <div class="motion-safe:animate-fade-up">{{> "courses/course-card"}}</div>
+      <div data-title="{{title}}"
+           x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
+           class="motion-safe:animate-fade-up">
+        {{> "courses/course-card"}}
+      </div>
     {{/foreach}}
   </div>
 
@@ -23,4 +49,28 @@
   {{/posts}}
 
   {{pagination}}
+</section>
+
+{{!-- Become an instructor --}}
+<section class="mx-auto max-w-6xl px-4 pb-6 sm:px-6">
+  <div class="grid items-center gap-6 overflow-hidden rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-8 text-white sm:p-10 lg:grid-cols-[1fr_auto]">
+    <div>
+      <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "Know Salesforce? Teach it."}}</h2>
+      <p class="mt-2 max-w-xl text-white/80">{{t "Share your expertise with thousands of learners. Contribute a course or lesson — everything stays open and credited to you."}}</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a href="/contact/" class="inline-flex items-center gap-2 rounded-pill bg-white px-5 py-3 font-bold text-brand-700 transition hover:bg-brand-50">{{> "icons/users" class="h-5 w-5"}}{{t "Become an instructor"}}</a>
+      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill px-5 py-3 font-semibold ring-1 ring-white/40 transition hover:bg-white/10">{{> "icons/github" class="h-5 w-5"}}{{t "Contribute"}}</a>
+    </div>
+  </div>
+</section>
+
+{{!-- Feedback --}}
+<section class="mx-auto max-w-6xl px-4 pb-16 text-center sm:px-6">
+  <div class="rounded-card border border-border bg-surface-raised p-8 shadow-card">
+    <i class="ph-fill ph-chat-circle-text mx-auto mb-3 block text-3xl text-brand-500" aria-hidden="true"></i>
+    <h2 class="font-heading text-xl font-extrabold">{{t "Missing a course you'd love to see?"}}</h2>
+    <p class="mx-auto mt-2 max-w-lg text-muted">{{t "Tell us what to build next — your feedback shapes the curriculum."}}</p>
+    <a href="/contact/" class="mt-5 inline-flex items-center gap-2 rounded-pill border border-border px-5 py-2.5 font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/mail" class="h-5 w-5"}}{{t "Share feedback"}}</a>
+  </div>
 </section>

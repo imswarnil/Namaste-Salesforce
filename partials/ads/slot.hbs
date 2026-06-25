@@ -1,0 +1,14 @@
+{{!-- ads/slot.hbs — one ad slot, used everywhere. Resolution order:
+       1. Google AdSense  (when @custom.enable_ads + publisher id are set)
+       2. Sponsor card     (when @custom.sponsor_url is set)
+       3. Dummy placeholder (always, so the ad area is visible by default)
+     Params: format = square | horizontal | rail; slot = AdSense slot id. --}}
+{{#if @custom.enable_ads}}
+  {{> "ads/adsense" slot=slot}}
+{{else}}
+  {{#if @custom.sponsor_url}}
+    {{> "ads/sponsored"}}
+  {{else}}
+    {{> "ads/placeholder" format=format}}
+  {{/if}}
+{{/if}}

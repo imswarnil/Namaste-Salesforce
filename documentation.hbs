@@ -1,33 +1,65 @@
 {{!< default}}
 {{!-- documentation.hbs — Documentation hub (index).
-     Two-column layout: collapsible sidebar + a grid of doc cards. --}}
+     Hero with docs-only search · collapsible sidebar · filterable doc grid ·
+     contributor CTA. Search + filter share one Alpine scope. --}}
+<div x-data="{ q: '' }">
 
-{{> "components/page-header" icon="ph-book-open" eyebrow="Documentation" title="Documentation" subtitle="Guides, references and how-tos for the Namaste Salesforce platform."}}
+  {{!-- Hero with search --}}
+  <header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
+    {{> "components/hero-bg"}}
+    <div class="relative mx-auto max-w-3xl px-4 py-14 text-center sm:px-6 lg:py-16">
+      <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-200">
+        {{> "icons/documentation" class="h-4 w-4"}}{{t "Documentation"}}
+      </p>
+      <h1 class="mt-2 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{{t "How can we help?"}}</h1>
+      <p class="mx-auto mt-3 max-w-xl text-white/80">{{t "Guides, references and how-tos for the Namaste Salesforce platform."}}</p>
+      <label class="relative mx-auto mt-6 block max-w-lg">
+        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted">{{> "icons/search" class="h-5 w-5"}}</span>
+        <input x-model="q" type="search" placeholder="{{t "Search the docs…"}}" aria-label="{{t "Search documentation"}}"
+               class="w-full rounded-pill border-0 bg-white py-3 pl-12 pr-4 text-ink shadow-raised placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-brand-300">
+      </label>
+    </div>
+  </header>
 
-<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
-  <div class="grid gap-8 lg:grid-cols-[16rem_1fr]">
+  <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
+    <div class="grid gap-8 lg:grid-cols-[16rem_1fr]">
 
-    {{> "docs/sidebar"}}
+      {{> "docs/sidebar"}}
 
-    <main role="main">
-      <h2 class="font-heading text-2xl font-extrabold">{{t "All articles"}}</h2>
-      <div class="mt-6 grid gap-5 sm:grid-cols-2">
-        {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
-          {{#foreach posts}}
-            <a href="{{url}}" class="js-spotlight group relative flex items-start gap-3 overflow-hidden rounded-card border border-border bg-surface-raised p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-raised">
-              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-xl text-brand-600 dark:text-brand-300">
-                <i class="ph-fill ph-file-text" aria-hidden="true"></i>
-              </span>
-              <span class="relative">
-                <span class="block font-heading font-bold transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
-                <span class="mt-1 block text-sm text-muted">{{excerpt words="14"}}&hellip;</span>
-              </span>
-            </a>
-          {{/foreach}}
-        {{else}}
-          <p class="text-muted">{{t "No documentation yet."}}</p>
-        {{/get}}
-      </div>
-    </main>
-  </div>
-</section>
+      <main role="main">
+        <h2 class="font-heading text-2xl font-extrabold">{{t "All articles"}}</h2>
+        <div class="mt-6 grid gap-5 sm:grid-cols-2">
+          {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
+            {{#foreach posts}}
+              <a href="{{url}}" data-title="{{title}}"
+                 x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
+                 class="js-spotlight group relative flex items-start gap-3 overflow-hidden rounded-card border border-border bg-surface-raised p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-raised">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-xl text-brand-600 dark:text-brand-300">
+                  <i class="ph-fill ph-file-text" aria-hidden="true"></i>
+                </span>
+                <span class="relative">
+                  <span class="block font-heading font-bold transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
+                  <span class="mt-1 block text-sm text-muted">{{excerpt words="14"}}&hellip;</span>
+                </span>
+              </a>
+            {{else}}
+              <p class="text-muted">{{t "No documentation yet."}}</p>
+            {{/foreach}}
+          {{/get}}
+        </div>
+
+        {{!-- Contributor CTA --}}
+        <div class="mt-12 grid items-center gap-6 rounded-card border border-border bg-surface-sunken p-6 sm:grid-cols-[1fr_auto] sm:p-8">
+          <div>
+            <h3 class="font-heading text-lg font-bold">{{t "Help improve these docs"}}</h3>
+            <p class="mt-1 text-sm text-muted">{{t "Spotted a gap or an error? Request contributor access or open an edit on GitHub — docs are community-maintained."}}</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=docs&title=Docs%20feedback" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Edit on GitHub"}}</a>
+            <a href="/contact/" class="inline-flex items-center gap-2 rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Request access"}}</a>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+</div>

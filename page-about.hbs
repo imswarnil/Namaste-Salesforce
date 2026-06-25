@@ -1,20 +1,17 @@
 {{!< default}}
 {{!-- ════════════════════════════════════════════════════════════════════════
-  page-about.hbs — Custom template for the /about/ page.
-  Ghost auto-uses this for the page with slug `about`. Designed hero + mission
-  + values + editable body + open-source band. Reuses home/feature-card.
+  page-about.hbs — Custom template for /about/ (slug `about`).
+  Hero → founder → mission → timeline → values → editable body → contribute.
+  Reuses about/founder, home/timeline-item, home/feature-card, icons/*.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 {{#page}}
 
 {{!-- ── Hero ── --}}
 <section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0">
-    <div class="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-brand-400/30 blur-3xl"></div>
-    <div class="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl"></div>
-  </div>
+  {{> "components/hero-bg"}}
   <div class="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:py-28">
     <span class="inline-flex items-center gap-2 rounded-pill bg-white/10 px-4 py-1.5 text-sm font-semibold ring-1 ring-white/20">
-      <i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Our story"}}
+      {{> "icons/heart" class="h-4 w-4"}}{{t "Our story"}}
     </span>
     <h1 class="mt-6 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{{title}}</h1>
     <p class="mx-auto mt-5 max-w-2xl text-lg text-white/80">
@@ -23,15 +20,22 @@
   </div>
 </section>
 
+{{!-- ── Founder ── --}}
+<section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <div class="mb-8 text-center">
+    <p class="text-sm font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-300">{{t "Meet the founder"}}</p>
+    <h2 class="mt-2 font-heading text-3xl font-extrabold sm:text-4xl">{{t "Built by a Salesforce developer, for developers"}}</h2>
+  </div>
+  {{> "about/founder"}}
+</section>
+
 {{!-- ── Mission ── --}}
-<section class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
-  <div class="grid items-center gap-10 lg:grid-cols-2">
+<section class="border-y border-border bg-surface-sunken">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-20">
     <div>
       <p class="text-sm font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-300">{{t "Our mission"}}</p>
       <h2 class="mt-2 font-heading text-3xl font-extrabold sm:text-4xl">{{t "Learning Salesforce should be free for everyone"}}</h2>
-      <p class="mt-4 text-lg leading-relaxed text-muted">
-        {{t "Talent is everywhere but opportunity isn't. Namaste Salesforce exists to close that gap — turning curious beginners into confident, certified professionals through hands-on, community-driven learning."}}
-      </p>
+      <p class="mt-4 text-lg leading-relaxed text-muted">{{t "Talent is everywhere but opportunity isn't. Namaste Salesforce exists to close that gap — turning curious beginners into confident, certified professionals through hands-on, community-driven learning."}}</p>
     </div>
     <div class="grid grid-cols-2 gap-4">
       {{> "home/feature-card" icon="ph-users-three" title="10K+ learners" body="A worldwide community learning together."}}
@@ -42,14 +46,44 @@
   </div>
 </section>
 
-{{!-- ── Editable page body (managed in Ghost admin) ── --}}
+{{!-- ── Mission timeline ── --}}
+<section class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+  <div class="mb-10 text-center">
+    <p class="text-sm font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-300">{{t "The journey"}}</p>
+    <h2 class="mt-2 font-heading text-3xl font-extrabold sm:text-4xl">{{t "How we got here"}}</h2>
+  </div>
+  <ol class="ns-timeline space-y-8">
+    {{> "home/timeline-item" year="The why" title="Close the opportunity gap" body="Make hands-on Salesforce learning accessible to anyone, anywhere — for free."}}
+    {{> "home/timeline-item" year="2024" title="Platform launched" body="The first open courses and roadmaps went live to a growing community."}}
+    {{> "home/timeline-item" year="2025" title="10,000 learners" body="Crossed ten thousand learners and 300+ lessons across every role."}}
+    {{> "home/timeline-item" year="2026" title="AI-era curriculum" body="Added Agentforce, Data Cloud and Einstein tracks for next-gen skills."}}
+  </ol>
+</section>
+
+{{!-- ── Values ── --}}
+<section class="border-y border-border bg-surface-sunken">
+  <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="text-sm font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-300">{{t "What we stand for"}}</p>
+      <h2 class="mt-2 font-heading text-3xl font-extrabold sm:text-4xl">{{t "The principles behind the platform"}}</h2>
+    </div>
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {{> "home/feature-card" icon="ph-lock-open" title="Open by default" body="Curriculum, code and content are open source — learn from or improve any of it."}}
+      {{> "home/feature-card" icon="ph-flask" title="Learn by doing" body="Real orgs, real Apex, real projects. We teach the way the job works."}}
+      {{> "home/feature-card" icon="ph-users-three" title="Community first" body="Questions, answers and mentorship sit at the heart of the platform."}}
+      {{> "home/feature-card" icon="ph-seal-check" title="Quality, always" body="Every lesson is written and reviewed by certified Salesforce pros."}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── Editable page body ── --}}
 {{#if content}}
-  <section class="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
+  <section class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
     <div class="prose prose-lg max-w-none gh-content">{{content}}</div>
   </section>
 {{/if}}
 
-{{!-- ── Open-source / contribute band ── --}}
+{{!-- ── Contribute band ── --}}
 <section class="border-t border-border bg-surface-sunken">
   <div class="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6">
     <p class="text-sm font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-300">{{t "Open source"}}</p>
@@ -57,13 +91,9 @@
     <p class="mx-auto mt-3 max-w-xl text-muted">{{t "This theme and its curriculum are open source. Found a bug, want a feature, or have a lesson to share? Contributions of every size are welcome."}}</p>
     <div class="mt-8 flex flex-wrap justify-center gap-3">
       <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener"
-         class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">
-        <i class="ph ph-github-logo" aria-hidden="true"></i>{{t "View on GitHub"}}
-      </a>
-      <a href="https://github.com/imswarnil/Namaste-Salesforce/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener"
-         class="inline-flex items-center gap-2 rounded-pill border border-border px-6 py-3 font-semibold transition hover:border-brand-500 hover:text-brand-600">
-        <i class="ph ph-book-open" aria-hidden="true"></i>{{t "Contribution guide"}}
-      </a>
+         class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-5 w-5"}}{{t "View on GitHub"}}</a>
+      <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-2 rounded-pill px-6 py-3 font-semibold text-pink-600 ring-1 ring-pink-500/30 transition hover:bg-pink-500/10">{{> "icons/heart" class="h-5 w-5"}}{{t "Become a sponsor"}}</a>
     </div>
   </div>
 </section>

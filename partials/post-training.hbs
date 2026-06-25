@@ -8,6 +8,8 @@
 
     <main class="min-w-0">
 
+      {{> "components/breadcrumb"}}
+
       {{!-- ─── Branch A: track overview ─── --}}
       {{#has tag="#training"}}
         <div class="rounded-card border border-border bg-surface-raised p-6 shadow-card sm:p-8">
@@ -69,7 +71,12 @@
           {{#next_post in="primary_tag"}}
             <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600"><span class="hidden sm:inline">{{t "Next lesson"}}</span><i class="ph ph-arrow-right" aria-hidden="true"></i></a>
           {{else}}
-            <a href="/training/" class="inline-flex items-center gap-2 rounded-pill bg-success px-4 py-2 text-sm font-bold text-white transition hover:opacity-90"><i class="ph-fill ph-check-circle" aria-hidden="true"></i><span class="hidden sm:inline">{{t "Finish"}}</span></a>
+            {{!-- End of this track → continue to the next module by order, else finish --}}
+            {{#next_post filter="tag:hash-training-content"}}
+              <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600"><span class="hidden sm:inline">{{t "Next section"}}</span><i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+            {{else}}
+              <a href="/training/" class="inline-flex items-center gap-2 rounded-pill bg-success px-4 py-2 text-sm font-bold text-white transition hover:opacity-90"><i class="ph-fill ph-check-circle" aria-hidden="true"></i><span class="hidden sm:inline">{{t "Finish"}}</span></a>
+            {{/next_post}}
           {{/next_post}}
         </div>
 
@@ -105,10 +112,17 @@
                 <span class="mt-1 font-bold leading-snug">{{title}}</span>
               </a>
             {{else}}
-              <a href="/training/" class="flex h-full flex-col justify-center rounded-card border border-success/40 p-4 text-right transition hover:shadow-card">
-                <span class="text-xs font-semibold text-success"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> {{t "Course complete"}}</span>
-                <span class="mt-1 font-bold leading-snug text-success">{{t "Return to track"}}</span>
-              </a>
+              {{#next_post filter="tag:hash-training-content"}}
+                <a href="{{url}}" class="flex h-full flex-col justify-center rounded-card border border-border p-4 text-right transition hover:border-brand-500 hover:shadow-card">
+                  <span class="text-xs text-muted">{{t "Next section"}} <i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+                  <span class="mt-1 font-bold leading-snug">{{title}}</span>
+                </a>
+              {{else}}
+                <a href="/training/" class="flex h-full flex-col justify-center rounded-card border border-success/40 p-4 text-right transition hover:shadow-card">
+                  <span class="text-xs font-semibold text-success"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> {{t "Course complete"}}</span>
+                  <span class="mt-1 font-bold leading-snug text-success">{{t "Return to track"}}</span>
+                </a>
+              {{/next_post}}
             {{/next_post}}
           </div>
         </div>
@@ -118,6 +132,7 @@
     {{!-- Curriculum sidebar --}}
     <aside class="lg:sticky lg:top-20 lg:self-start">
       {{> "training/curriculum"}}
+      <div class="mt-6 hidden lg:block">{{> "ads/slot" format="square"}}</div>
     </aside>
   </div>
 </section>

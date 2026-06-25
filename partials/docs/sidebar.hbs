@@ -3,17 +3,16 @@
      Lists all `documentation`-tagged posts. Sticky on desktop; on mobile it
      collapses behind a toggle (Alpine). The current article (when on a single
      doc page that prints #doc-current-id) is highlighted via the inline script. --}}
-<aside class="lg:sticky lg:top-20 lg:self-start" x-data="{ open: false }">
+<aside class="relative lg:sticky lg:top-20 lg:self-start" x-data="{ open: false }">
 
   {{!-- Mobile toggle --}}
-  <button type="button"
-          class="mb-3 flex w-full items-center justify-between rounded-lg border border-border bg-surface-raised px-4 py-2.5 text-sm font-semibold lg:hidden"
+  <button type="button" class="subnav-bar group"
           @click="open = !open" :aria-expanded="open.toString()" aria-controls="docs-nav">
     <span class="flex items-center gap-2"><i class="ph ph-list-bullets" aria-hidden="true"></i>{{t "All articles"}}</span>
     <i class="ph ph-caret-down transition-transform" :class="open && 'rotate-180'" aria-hidden="true"></i>
   </button>
 
-  <nav id="docs-nav" class="lg:!block" :class="open ? 'block' : 'hidden'" aria-label="{{t "Documentation"}}">
+  <nav id="docs-nav" class="subnav-panel lg:!block" :class="open ? 'block' : 'hidden'" aria-label="{{t "Documentation"}}">
     <a href="/documentation/" class="mb-4 inline-flex items-center gap-1 text-sm text-muted transition hover:text-brand-600">
       <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Docs home"}}
     </a>
