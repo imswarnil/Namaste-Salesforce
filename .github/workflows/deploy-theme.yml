@@ -8,9 +8,24 @@ jobs:
   deploy:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      # Strip dev-only files so only the theme itself is zipped & uploaded.
+      # (dummy-content = importable seed data, docs, and build source maps —
+      # none of it belongs in the deployed theme, and it can trip Ghost's
+      # upload validation.)
+      - name: Prune non-theme files
+        run: |
+          rm -rf dummy-content .claude
+          rm -f TODO.md CLAUDE.md CONTRIBUTING.md
+          rm -f assets/built/*.map
+
       - name: Deploy Ghost Theme
         uses: TryGhost/action-deploy-theme@v1
+        # The v1 action targets Node 20; GitHub runners now default to Node 24.
+        # Allow it to run on its bundled Node until a Node-24 build ships.
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
         with:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
           api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}

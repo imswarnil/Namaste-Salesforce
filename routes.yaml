@@ -50,13 +50,24 @@ collections:
     template: index
     filter: tag:hash-lesson
 
+  # Training tracks + nested content (mirrors courses). Track POST slug MUST
+  # equal its track TAG so its content nests under /training/{track-tag}/.
+  # A training-content lesson's PRIMARY tag = the track tag (its section is a
+  # secondary tag, used only to group lessons in the curriculum display).
   /training/:
     permalink: /training/{slug}/
     template: training
-    filter: tag:hash-training,tag:hash-training-content
+    filter: tag:hash-training
 
-  /documentation/:
-    permalink: /documentation/{slug}/
+  /training-content/:
+    permalink: /training/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-training-content
+
+  # Docs hub + section-nested articles: /docs/{section-tag}/{doc-slug}/
+  # (doc primary tag = its docs-NN-* section tag).
+  /docs/:
+    permalink: /docs/{primary_tag}/{slug}/
     template: documentation
     filter: tag:documentation
 

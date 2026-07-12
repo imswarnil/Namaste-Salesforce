@@ -34,9 +34,16 @@ committed to git yet — review, then commit when you're happy.
 - `@graph` with Organization + WebSite + navigation ItemList (all pages).
 - **Course** (+ CourseInstance, hasPart→lessons) on `#course`; **LearningResource** (+ VideoObject for `#lesson-type-video`) on `#lesson`.
 
-### Dummy content (`dummy-content/`)
-- `course.json` (5 courses + lessons), `taxonomy.json` (all internal tags), `navigation.json` (primary + secondary), `import.json` (Ghost importable — **already imported**).
-- `training.json` (3 roadmaps → 12 sections → 37 lessons) and `docs.json` (6 sections → 22 docs) — content specs (not yet turned into a Ghost import; templates for these are the next build).
+### Dummy content (`dummy-content/`) — one importable per collection
+- **`course.json`** — Ghost-importable courses + lessons (was `import.json`; **already imported**). `course-spec.json` keeps the readable outline.
+- **`training.json`** — Ghost-importable tracks + section content (3 roadmaps → 12 sections → 37 lessons). Model: track slug == track tag; a training-content lesson's PRIMARY tag = the track tag (nests at `/training/{track}/{slug}/`), section = a secondary `train-{track}-NN-*` tag for grouping.
+- **`docs.json`** — Ghost-importable docs (6 sections → 22 docs). Doc PRIMARY tag = its `docs-NN-*` section tag (nests at `/docs/{section}/{slug}/`).
+- `taxonomy.json`, `navigation.json` — reference (not imports).
+- Import each collection separately in **Settings → Labs → Import**.
+
+### Routes updated (2 changes)
+- **Docs moved to `/docs/`** (was `/documentation/`) and now **section-nested**: `/docs/{section}/{doc}/`. All in-theme links repointed.
+- **Training split into two collections** like courses: tracks at `/training/{track}/`, content at `/training/{track}/{lesson}/`.
 - Internal tags: `#course #lesson`, `#free #paid`, `#level-*`, `#hero-1..5`, `#show-image/#hide-image`, `#lesson-type-video`, `#preview`, `#duration-*` (15m→12h30m), `#video-duration-*` (1m→45m).
 
 ---
