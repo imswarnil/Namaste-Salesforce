@@ -16,19 +16,38 @@
     <a href="/docs/" class="mb-4 inline-flex items-center gap-1 text-sm text-muted transition hover:text-brand-600">
       <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Docs home"}}
     </a>
-    <p class="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Contents"}}</p>
-    <ul class="space-y-0.5 border-l border-border">
-      {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
-        {{#foreach posts}}
-          <li>
-            <a href="{{url}}" data-doc-id="{{id}}"
-               class="doc-nav-link -ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300">
-              {{title}}
-            </a>
-          </li>
-        {{/foreach}}
-      {{/get}}
-    </ul>
+    {{!-- Grouped by section (each doc's PRIMARY tag is its `docs-NN-*` section). --}}
+    {{#get "tags" filter="slug:~^'docs-'" order="slug asc" limit="30"}}
+      {{#foreach tags}}
+        <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted first:mt-0">{{name}}</p>
+        <ul class="mb-1 space-y-0.5 border-l border-border">
+          {{#get "posts" filter="tag:documentation+primary_tag:{{slug}}" limit="100" order="published_at asc"}}
+            {{#foreach posts}}
+              <li>
+                <a href="{{url}}" data-doc-id="{{id}}"
+                   class="doc-nav-link -ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300">
+                  {{title}}
+                </a>
+              </li>
+            {{/foreach}}
+          {{/get}}
+        </ul>
+      {{else}}
+        <p class="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Contents"}}</p>
+        <ul class="space-y-0.5 border-l border-border">
+          {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
+            {{#foreach posts}}
+              <li>
+                <a href="{{url}}" data-doc-id="{{id}}"
+                   class="doc-nav-link -ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300">
+                  {{title}}
+                </a>
+              </li>
+            {{/foreach}}
+          {{/get}}
+        </ul>
+      {{/foreach}}
+    {{/get}}
   </nav>
 </aside>
 

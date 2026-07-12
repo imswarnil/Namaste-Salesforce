@@ -1,11 +1,12 @@
-{{!-- training/curriculum.hbs — full training curriculum (every track + lessons).
-     Static sidebar on `lg`; on mobile a drawer below the navbar, opened by the
-     course-player header's hamburger (Alpine store `lessonNav`). Context: a
-     #training or #training-content post; the current lesson is highlighted. --}}
+{{!-- training/curriculum.hbs — THIS track's curriculum, grouped by section.
+     Track = the current post's primary tag (a #training post's own tag, or a
+     #training-content module's primary tag). Sections = public tags slugged
+     `train-{track}-NN-*`; a section's modules are #training-content posts also
+     tagged with that section tag. Static sidebar on lg; mobile drawer via the
+     course-player hamburger. The current module is highlighted. --}}
 <div x-data class="js-lesson-nav">
   <nav id="training-curriculum" class="ns-lesson-panel" :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
 
-    {{!-- Mobile drawer bar (hidden on lg) with a close ✕ --}}
     <div class="ns-lesson-panel__bar">
       <span class="flex items-center gap-2 font-heading font-bold"><i class="ph-fill ph-books text-brand-500" aria-hidden="true"></i>{{t "Course content"}}</span>
       <button type="button" class="icon-btn" @click="$store.lessonNav.close()" aria-label="{{t "Close"}}">{{> "icons/x" class="h-5 w-5"}}</button>
@@ -17,31 +18,36 @@
         <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
       </div>
 
-      {{#get "posts" filter="tag:hash-training" order="published_at asc" limit="50"}}
-        {{#foreach posts}}
-          <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted first:mt-0">{{title}}</p>
+      {{#get "tags" filter="slug:~^'train-{{primary_tag.slug}}-'" order="slug asc" limit="30"}}
+        {{#foreach tags}}
+          <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted first:mt-0">{{name}}</p>
           <ul class="space-y-0.5 border-l border-border">
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="100" as |lessons|}}
-              {{#if lessons}}
-                {{#foreach lessons}}
-                  <li>
-                    <a href="{{url}}" @click="$store.lessonNav.close()"
-                       class="doc-nav-link -ml-px flex items-center justify-between gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
-                      <span class="flex min-w-0 items-center gap-2">
-                        <i class="{{#match id ../../../../id}}ph-fill ph-play-circle text-brand-500{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
-                        <span class="truncate">{{title}}</span>
-                      </span>
-                      <span class="shrink-0 text-xs">{{reading_time minute="1m" minutes="%m"}}</span>
-                    </a>
-                  </li>
-                {{/foreach}}
-              {{else}}
-                <li><span class="block px-3 py-2 text-sm italic text-muted">{{t "No lessons yet."}}</span></li>
-              {{/if}}
+            {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" order="published_at asc" limit="100"}}
+              {{#foreach posts}}
+                <li>
+                  <a href="{{url}}" @click="$store.lessonNav.close()"
+                     class="doc-nav-link -ml-px flex items-center justify-between gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
+                    <span class="flex min-w-0 items-center gap-2">
+                      <i class="{{#match id ../../../../id}}ph-fill ph-play-circle text-brand-500{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
+                      <span class="truncate">{{title}}</span>
+                    </span>
+                    <span class="shrink-0 text-xs">{{reading_time minute="1m" minutes="%m"}}</span>
+                  </a>
+                </li>
+              {{/foreach}}
             {{/get}}
           </ul>
         {{else}}
-          <p class="text-sm text-muted">{{t "No training courses found."}}</p>
+          {{!-- Fallback: no sections defined → list every module in the track --}}
+          <ul class="space-y-0.5 border-l border-border">
+            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
+              {{#foreach posts}}
+                <li><a href="{{url}}" @click="$store.lessonNav.close()" class="doc-nav-link -ml-px flex items-center gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 {{#match id ../../../../id}}is-doc-active{{/match}}"><i class="ph ph-circle shrink-0" aria-hidden="true"></i><span class="truncate">{{title}}</span></a></li>
+              {{else}}
+                <li><span class="block px-3 py-2 text-sm italic text-muted">{{t "No lessons yet."}}</span></li>
+              {{/foreach}}
+            {{/get}}
+          </ul>
         {{/foreach}}
       {{/get}}
     </div>

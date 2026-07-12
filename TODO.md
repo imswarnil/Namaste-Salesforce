@@ -58,10 +58,14 @@ committed to git yet — review, then commit when you're happy.
 
 ---
 
+### Templates wired to the section model (done)
+- **Homepage** (`home.hbs`) — plain Tailwind, grid-line background patterns, no gradients.
+- **Docs home** (`documentation.hbs`) — grouped by **section** (`docs-NN-*` primary tag), search filters within groups.
+- **Docs sidebar** (`docs/sidebar.hbs`) — section-grouped; single doc breadcrumb shows the section; prev/next stays **within the section** (`in="primary_tag"`).
+- **Training curriculum** (`training/curriculum.hbs`) — THIS track's modules grouped by **section** (`train-{track}-NN-*`); `training-nav.js` flows Prev/Next across sections → Finish.
+
 ## 🔜 Pending (next up — requested, not yet built)
-- **Training restructure** — mirror courses: `/training/` ordered list → training **sections** (a tag) → section lessons (`#training-content`), with end-to-end prev/next + switch (like the course player). Plus `dummy-content/training.json`.
-- **Documentation restructure** — `/docs/` → docs **sections** → section posts; realistic docs (how to configure courses/lessons/site, end-to-end). Plus `dummy-content/docs.json`.
-- **Homepage** — simplify to plain Tailwind: grids + line/grid background patterns, less "designed".
+- **Import** `dummy-content/training.json` + `dummy-content/docs.json` (Settings → Labs → Import) — live site still shows the old training/docs data, so the new section grouping only appears after import.
 - **Hero variants** — flesh out all 5 distinct course-hero layouts (2 = centered, 5 = video already differ).
 - **JSON-LD** — add branches for blog, docs, training, collection pages.
 

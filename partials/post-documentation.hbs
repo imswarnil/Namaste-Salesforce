@@ -16,6 +16,7 @@
         <nav class="mb-4 flex items-center gap-2 text-sm text-muted" aria-label="Breadcrumb">
           <a href="/" class="hover:text-brand-600">{{t "Home"}}</a><span aria-hidden="true">/</span>
           <a href="/docs/" class="hover:text-brand-600">{{t "Docs"}}</a><span aria-hidden="true">/</span>
+          {{#primary_tag}}<span class="text-muted">{{name}}</span><span aria-hidden="true">/</span>{{/primary_tag}}
           <span class="text-ink">{{title}}</span>
         </nav>
 
@@ -40,13 +41,13 @@
 
         {{!-- Prev / next --}}
         <nav class="mt-10 grid gap-4 border-t border-border pt-6 sm:grid-cols-2" aria-label="{{t "Article navigation"}}">
-          {{#prev_post filter="tag:documentation"}}
+          {{#prev_post in="primary_tag"}}
             <a href="{{url}}" class="rounded-card border border-border p-4 transition hover:border-brand-500 hover:shadow-card">
               <span class="text-xs text-muted"><i class="ph ph-arrow-left" aria-hidden="true"></i> {{t "Previous"}}</span>
               <span class="mt-1 block font-semibold">{{title}}</span>
             </a>
           {{/prev_post}}
-          {{#next_post filter="tag:documentation"}}
+          {{#next_post in="primary_tag"}}
             <a href="{{url}}" class="rounded-card border border-border p-4 text-right transition hover:border-brand-500 hover:shadow-card sm:col-start-2">
               <span class="text-xs text-muted">{{t "Next"}} <i class="ph ph-arrow-right" aria-hidden="true"></i></span>
               <span class="mt-1 block font-semibold">{{title}}</span>
