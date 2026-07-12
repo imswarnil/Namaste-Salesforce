@@ -1,61 +1,129 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/header.hbs — Primary site header / navigation
+  partials/header.hbs — Primary site header / navigation (production module)
   ----------------------------------------------------------------------------
-  Sticky glass bar. Brand = logo + site title. Primary nav uses per-item icons
-  (navigation → components/nav-icon). Right cluster: search, Star on GitHub,
-  Sponsor, theme toggle, Log in / Sign up. Below `lg` everything collapses into
-  an Alpine slide-down panel.
+  Full-width bar, brand left · nav centered · action cluster right.
+  Behaviour (sticky / fixed-on-scroll / island-on-scroll / static) is driven by
+  the `@custom.navbar_behavior` Ghost setting via data-nav-behavior + navbar.js.
+  Which action icons show is configurable (@custom.navbar_show_*). The account
+  control is a plain user icon (→ log in) or, for members, an avatar dropdown
+  that includes "Become Author". Below `lg`, the primary nav collapses into an
+  Alpine slide-down panel; search / theme / account stay visible on mobile.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<header class="sticky top-0 z-40 border-b border-border bg-surface/80 backdrop-blur supports-[backdrop-filter]:bg-surface/70"
-        x-data="{ open: false }">
-  <div class="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 sm:px-6">
+<header class="ns-nav z-40 border-b border-border bg-surface/80 backdrop-blur supports-[backdrop-filter]:bg-surface/70 {{#match @custom.navbar_behavior "Static"}}relative{{else}}sticky top-0{{/match}}"
+        data-nav-behavior="{{@custom.navbar_behavior}}"
+        x-data="{ open: false, acct: false }">
+  <div class="ns-nav__bar relative flex w-full items-center gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
 
-    {{!-- Brand: logo + site title --}}
-    <a href="{{@site.url}}" class="flex shrink-0 items-center gap-2">
-      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto">{{/if}}
-      <span class="font-heading text-lg font-extrabold tracking-tight text-ink">{{@site.title}}</span>
+    {{!-- Brand: logo + site title. On phones the long title is hidden so the
+         action icons always fit; it returns from `sm` up. --}}
+    <a href="{{@site.url}}" class="flex min-w-0 shrink items-center gap-2" aria-label="{{@site.title}}">
+      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto shrink-0">{{/if}}
+      <span class="hidden min-w-0 truncate font-heading text-lg font-extrabold tracking-tight text-ink sm:inline">{{@site.title}}</span>
     </a>
 
-    {{!-- Desktop nav --}}
-    <nav class="ml-2 hidden lg:block" aria-label="{{t "Primary"}}">
+    {{!-- Topics — hover-opens a tag cloud (desktop) --}}
+    <div class="ns-topics relative hidden shrink-0 lg:block" x-data="{ open: false }"
+         @mouseenter="open = true" @mouseleave="open = false" @focusin="open = true" @focusout="open = false">
+      <button type="button" class="nav-link" :aria-expanded="open.toString()" @click="open = !open">
+        <i class="ph ph-hash" aria-hidden="true"></i><span>{{t "Topics"}}</span>
+        <i class="ph ph-caret-down text-xs transition-transform" :class="open && 'rotate-180'" aria-hidden="true"></i>
+      </button>
+      <div class="ns-topics__panel" x-show="open" x-cloak
+           x-transition:enter="transition ease-out duration-150"
+           x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
+        <p class="ns-topics__title">{{t "Browse by topic"}}</p>
+        <div class="ns-topics__cloud">
+          {{#get "tags" filter="visibility:public" limit="24" include="count.posts" order="count.posts desc"}}
+            {{#foreach tags}}
+              <a href="{{url}}" class="ns-tagchip"><span>{{name}}</span><b>{{count.posts}}</b></a>
+            {{else}}
+              <p class="text-sm text-muted">{{t "No topics yet."}}</p>
+            {{/foreach}}
+          {{/get}}
+        </div>
+        <a href="/blog/" class="ns-topics__all">{{t "All articles"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    </div>
+
+    {{!-- Desktop nav — absolutely centered across the full-width bar --}}
+    <nav class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block" aria-label="{{t "Primary"}}">
       <ul class="flex items-center gap-0.5">{{navigation}}</ul>
     </nav>
 
-    {{!-- Right cluster: icon-only actions with hover tooltips --}}
-    <div class="ml-auto flex items-center gap-1.5">
+    {{!-- Right cluster: plain icon actions --}}
+    <div class="ml-auto flex shrink-0 items-center gap-1.5">
 
-      <a href="#/search" data-ghost-search aria-label="{{t "Search"}}" class="icon-btn group hidden sm:inline-flex">
-        {{> "icons/search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
-      </a>
-
-      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}" class="icon-btn group hidden sm:inline-flex">
-        {{> "icons/github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
-      </a>
-
-      <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener" aria-label="{{t "Become a sponsor"}}" class="icon-btn icon-btn--pink group hidden sm:inline-flex">
-        {{> "icons/heart" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Become a sponsor"}}</span>
-      </a>
-
-      {{> "components/theme-toggle"}}
-
-      {{#if @member}}
-        <a href="#/portal/account" data-portal="account" aria-label="{{t "Account"}}" class="icon-btn group hidden sm:inline-flex">
-          {{> "icons/user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Account"}}</span>
-        </a>
-      {{else}}
-        <a href="#/portal/signin" data-portal="signin" aria-label="{{t "Log in"}}" class="icon-btn group hidden sm:inline-flex">
-          {{> "icons/login" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
-        </a>
-        <a href="#/portal/signup" data-portal="signup" aria-label="{{t "Sign up"}}" class="icon-btn icon-btn--brand group hidden sm:inline-flex">
-          {{> "icons/user-plus" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Sign up"}}</span>
+      {{#if @custom.navbar_show_search}}
+        <a href="#/search" data-ghost-search aria-label="{{t "Search"}}" class="icon-btn group">
+          {{> "icons/search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
         </a>
       {{/if}}
 
-      {{!-- Mobile menu toggle --}}
-      <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-ink lg:hidden"
+      {{#if @custom.navbar_show_github}}
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}" class="icon-btn group hidden sm:inline-flex">
+          {{> "icons/github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
+        </a>
+      {{/if}}
+
+      {{#if @custom.navbar_show_sponsor}}
+        <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener" aria-label="{{t "Become a sponsor"}}" class="icon-btn icon-btn--pink group hidden sm:inline-flex">
+          {{> "icons/heart" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Become a sponsor"}}</span>
+        </a>
+      {{/if}}
+
+      {{> "components/theme-toggle"}}
+
+      {{!-- Account: plain user icon (log in) OR member avatar + dropdown --}}
+      {{#if @member}}
+        <div class="relative" @click.outside="acct = false">
+          <button type="button" @click="acct = !acct" :aria-expanded="acct.toString()"
+                  aria-haspopup="menu" aria-label="{{t "Account menu"}}"
+                  class="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-1 ring-border transition hover:ring-brand-500">
+            {{#if @member.avatar_image}}
+              <img src="{{@member.avatar_image}}" alt="{{@member.name}}" class="h-full w-full object-cover">
+            {{else}}
+              <span class="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-700 text-white">
+                {{> "icons/user" class="h-[1.05rem] w-[1.05rem]"}}
+              </span>
+            {{/if}}
+          </button>
+
+          <div x-show="acct" x-cloak
+               x-transition:enter="transition ease-out duration-150"
+               x-transition:enter-start="opacity-0 -translate-y-1"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               class="absolute right-0 mt-2 w-64 overflow-hidden rounded-card border border-border bg-surface-raised shadow-raised"
+               role="menu">
+            <div class="border-b border-border px-4 py-3">
+              <p class="truncate text-sm font-bold text-ink">{{#if @member.name}}{{@member.name}}{{else}}{{t "Member"}}{{/if}}</p>
+              {{#if @member.email}}<p class="truncate text-xs text-muted">{{@member.email}}</p>{{/if}}
+            </div>
+            <div class="p-1.5">
+              <a href="#/portal/account" data-portal="account" role="menuitem" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-ink transition hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-300">
+                {{> "icons/user" class="h-4 w-4"}}{{t "Account"}}
+              </a>
+              <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" role="menuitem" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10 dark:text-brand-300">
+                {{> "icons/user-plus" class="h-4 w-4"}}{{t "Become Author "}}
+              </a>
+            </div>
+            <div class="border-t border-border p-1.5">
+              <a href="javascript:;" data-members-signout role="menuitem" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-muted transition hover:bg-surface-sunken hover:text-ink">
+                {{> "icons/login" class="h-4 w-4"}}{{t "Sign out"}}
+              </a>
+            </div>
+          </div>
+        </div>
+      {{else}}
+        <a href="#/portal/signin" data-portal="signin" aria-label="{{t "Log in"}}" class="icon-btn group">
+          {{> "icons/user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
+        </a>
+      {{/if}}
+
+      {{!-- Mobile menu toggle — borderless --}}
+      <button type="button" class="icon-btn lg:hidden"
               @click="open = !open" :aria-expanded="open.toString()" aria-controls="mobile-menu" aria-label="{{t "Menu"}}">
-        <span x-show="!open">{{> "icons/menu" class="h-[1.15rem] w-[1.15rem]"}}</span>
-        <span x-show="open" x-cloak>{{> "icons/x" class="h-[1.15rem] w-[1.15rem]"}}</span>
+        <span x-show="!open">{{> "icons/menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
+        <span x-show="open" x-cloak>{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}</span>
       </button>
     </div>
   </div>
@@ -78,10 +146,9 @@
           {{> "icons/heart" class="h-4 w-4"}}{{t "Sponsor"}}
         </a>
         {{#if @member}}
-          <a href="#/portal/account" data-portal="account" class="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium">{{> "icons/user" class="h-4 w-4"}}{{t "Account"}}</a>
+          <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" class="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-500 px-3 py-2 text-sm font-bold text-white">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Become an author"}}</a>
         {{else}}
-          <a href="#/portal/signin" data-portal="signin" class="inline-flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-sm font-medium">{{> "icons/login" class="h-4 w-4"}}{{t "Log in"}}</a>
-          <a href="#/portal/signup" data-portal="signup" class="inline-flex items-center justify-center rounded-full bg-brand-500 px-3 py-2 text-sm font-bold text-white">{{t "Sign up"}}</a>
+          <a href="#/portal/signup" data-portal="signup" class="col-span-2 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand-500 px-3 py-2 text-sm font-bold text-white">{{t "Create free account"}}</a>
         {{/if}}
       </div>
     </nav>

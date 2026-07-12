@@ -1,57 +1,34 @@
 {{!-- courses/lesson-nav.hbs — lessons in the current lesson's course.
-     Shows a completion progress bar (current index ÷ total), collapses to a
-     panel below `lg`, and highlights the active lesson. Context: a #lesson post. --}}
-<div x-data="{ open: false }" class="js-lesson-nav relative">
+     Static sidebar on `lg`; on mobile it becomes a drawer below the navbar,
+     opened by the course-player header's hamburger (Alpine store `lessonNav`)
+     and closed by the ✕ in the drawer bar. Progress lives in the header,
+     computed from these .doc-nav-link items. Context: a #lesson post. --}}
+<div x-data class="js-lesson-nav">
+  <nav id="lesson-list" class="ns-lesson-panel" :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Course lessons"}}">
 
-  {{!-- Progress --}}
-  <div class="mb-4">
-    <div class="flex items-center justify-between text-xs font-semibold text-muted">
-      <span>{{t "Your progress"}}</span><span class="js-progress-text">0%</span>
+    {{!-- Mobile drawer bar (hidden on lg) with a close ✕ --}}
+    <div class="ns-lesson-panel__bar">
+      <span class="flex items-center gap-2 font-heading font-bold"><i class="ph ph-list-checks text-brand-500" aria-hidden="true"></i>{{t "Course lessons"}}</span>
+      <button type="button" class="icon-btn" @click="$store.lessonNav.close()" aria-label="{{t "Close"}}">{{> "icons/x" class="h-5 w-5"}}</button>
     </div>
-    <div class="mt-1 h-2 overflow-hidden rounded-full bg-surface-sunken">
-      <div class="js-progress-bar h-full w-0 rounded-full bg-brand-500 transition-[width] duration-500"></div>
+
+    <div class="ns-lesson-panel__body">
+      {{!-- Desktop heading (hidden on mobile; the drawer bar covers mobile) --}}
+      <p class="mb-3 hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-muted lg:flex">
+        <i class="ph ph-list-checks" aria-hidden="true"></i>{{t "Course lessons"}}
+      </p>
+      <ul class="space-y-0.5 border-l border-border">
+        {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
+          {{#foreach posts}}
+            <li>
+              <a href="{{url}}" @click="$store.lessonNav.close()"
+                 class="doc-nav-link -ml-px flex items-start gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../id}}is-doc-active{{/match}}">
+                <span class="shrink-0 font-light">{{@number}}.</span><span>{{title}}</span>
+              </a>
+            </li>
+          {{/foreach}}
+        {{/get}}
+      </ul>
     </div>
-  </div>
-
-  {{!-- Mobile toggle --}}
-  <button type="button" class="subnav-bar group"
-          @click="open = !open" :aria-expanded="open.toString()" aria-controls="lesson-list">
-    <span class="flex items-center gap-2"><i class="ph ph-list-checks" aria-hidden="true"></i>{{t "Course lessons"}}</span>
-    <i class="ph ph-caret-down transition-transform" :class="open && 'rotate-180'" aria-hidden="true"></i>
-  </button>
-
-  <nav id="lesson-list" class="subnav-panel lg:!block" :class="open ? 'block' : 'hidden'" aria-label="{{t "Course lessons"}}">
-    <p class="mb-3 hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-muted lg:flex">
-      <i class="ph ph-list-checks" aria-hidden="true"></i>{{t "Course lessons"}}
-    </p>
-    <ul class="space-y-0.5 border-l border-border">
-      {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
-        {{#foreach posts}}
-          <li>
-            <a href="{{url}}"
-               class="doc-nav-link -ml-px flex items-start gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../id}}is-doc-active{{/match}}">
-              <span class="shrink-0 font-light">{{@number}}.</span><span>{{title}}</span>
-            </a>
-          </li>
-        {{/foreach}}
-      {{/get}}
-    </ul>
   </nav>
-
-  {{!-- Compute % complete from the active lesson's position --}}
-  <script>
-    (function () {
-      var root = document.currentScript.closest('.js-lesson-nav');
-      if (!root) return;
-      var links = root.querySelectorAll('.doc-nav-link');
-      if (!links.length) return;
-      var idx = 0;
-      links.forEach(function (a, i) { if (a.classList.contains('is-doc-active')) idx = i + 1; });
-      var pct = Math.round(idx / links.length * 100);
-      var bar = root.querySelector('.js-progress-bar');
-      var txt = root.querySelector('.js-progress-text');
-      if (bar) bar.style.width = pct + '%';
-      if (txt) txt.textContent = pct + '%';
-    })();
-  </script>
 </div>

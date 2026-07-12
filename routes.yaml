@@ -1,0 +1,80 @@
+# routes.yaml — Namaste Salesforce
+# Upload in Ghost Admin → Settings → Labs → Routes (this file is NOT read from
+# the theme folder; it lives here so it's versioned alongside the theme).
+#
+# URL model (nested course → lesson):
+#   /courses/                      list of courses (courses template)
+#   /courses/{course-tag}/         a single course  (post #course, primary tag = course tag)
+#   /courses/{course-tag}/{slug}/  a lesson of that course (post #lesson, primary tag = course tag)
+# Because a lesson's primary tag == its course's tag, the {primary_tag} segment
+# nests every lesson under its course automatically.
+#
+# Content model (matches the templates' tag conventions + import.json):
+#   Course       = post tagged #course,  primary tag = course tag (e.g. apex)
+#   Lesson       = post tagged #lesson,  primary tag = its course's tag
+#   Track        = post tagged #training, primary tag = track tag
+#   Module       = post tagged #training-content, primary tag = its track's tag
+#   Doc          = post tagged `documentation`, primary tag = docs-NN-* section tag
+#   Resource     = post tagged #resource
+#   Blog post    = post tagged #blog
+#   Pages: /about/, /products/, /contact/ use page-{slug}.hbs automatically.
+#
+# Course/lesson TAG pages (/tag/{course-tag}/) redirect to the course in
+# tag.hbs, so there is no duplicate tag URL for course content.
+
+routes:
+  /: home
+  # Content-less routes → these templates render standalone (also work if a
+  # Ghost page with the matching slug exists).
+  /become-author/:
+    template: page-become-author
+  /about/:
+    template: page-about
+
+collections:
+  # Courses list + single course at /courses/{course-slug}/.
+  # IMPORTANT: give each course POST a slug equal to its course TAG (e.g. course
+  # "Apex Masterclass" → slug "apex", primary tag "apex"). The course URL uses
+  # {slug} (unique) — using {primary_tag} is ambiguous because the course and
+  # all its lessons share that tag, which makes Ghost 301 to the wrong course.
+  # Because course-slug == course-tag, lessons still nest under /courses/{tag}/.
+  /courses/:
+    permalink: /courses/{slug}/
+    template: courses
+    filter: tag:hash-course
+
+  # Lessons nest under their course: /courses/{course-tag}/{lesson-slug}/
+  # (the /lessons/ path is just this collection's archive index.)
+  /lessons/:
+    permalink: /courses/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-lesson
+
+  /training/:
+    permalink: /training/{slug}/
+    template: training
+    filter: tag:hash-training,tag:hash-training-content
+
+  /documentation/:
+    permalink: /documentation/{slug}/
+    template: documentation
+    filter: tag:documentation
+
+  /resources/:
+    permalink: /resources/{slug}/
+    template: resources
+    filter: tag:hash-resource
+
+  /blog/:
+    permalink: /blog/{slug}/
+    template: blog
+    filter: tag:hash-blog
+
+  # Catch-all so untagged posts still get a URL.
+  /archive/:
+    permalink: /archive/{slug}/
+    template: index
+
+taxonomies:
+  tag: /tag/{slug}/
+  author: /author/{slug}/

@@ -1,149 +1,167 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-course.hbs — Course landing page (single #course post)
-  Hero → about + dynamic curriculum + FAQ, with a sticky enrolment sidebar and
-  a mobile sticky CTA. Lessons are pulled by matching this course's primary tag.
-  Internal tags drive duration/level: hash-course-duration-*, hash-course-level-*
+  partials/post-course.hbs — single #course page.
+  Hero (variant via #hero-1..5) → left content (description → curriculum → FAQ)
+  + sticky enrolment sidebar + reusable 728×90 ad + mobile sticky CTA.
+  Lessons are pulled with {{#get}} (Handlebars, not JS). Level / duration /
+  price / hero / access come from internal tags (#level-*, #duration-*,
+  #free/#paid, #hero-*, #preview). Ghost content toggle cards render as FAQ
+  accordions and product cards as testimonials (styled in namaste-ui/course.css).
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- ── Hero ── --}}
-<section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
-  {{> "components/hero-bg"}}
+{{!-- ── HERO ─────────────────────────────────────────────────────────────── --}}
+<section class="ns-course-hero ns-aurora relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white"
+         data-hero="{{#has tag="#hero-2"}}2{{else has tag="#hero-3"}}3{{else has tag="#hero-4"}}4{{else has tag="#hero-5"}}5{{else}}1{{/has}}">
+  <div aria-hidden="true" class="bg-grid pointer-events-none absolute inset-0 text-white/40"></div>
+
   <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-20">
-    <div class="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
-      <div class="max-w-2xl">
-        {{!-- Breadcrumb --}}
+    <div class="ns-course-hero__grid grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+
+      <div class="ns-course-hero__body min-w-0 max-w-2xl">
+        {{!-- Breadcrumb (dotted access only — no ../ helper calls) --}}
         <nav class="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/70" aria-label="Breadcrumb">
-          <a href="/" class="hover:text-white">{{t "Home"}}</a><span aria-hidden="true">·</span>
+          <a href="/" class="hover:text-white">{{t "Home"}}</a><span aria-hidden="true">/</span>
           <a href="/courses/" class="hover:text-white">{{t "Courses"}}</a>
-          {{#if primary_tag}}<span aria-hidden="true">·</span><a href="{{primary_tag.url}}" class="hover:text-white">{{primary_tag.name}}</a>{{/if}}
         </nav>
 
-        <div class="mb-4 flex flex-wrap gap-2">
-          {{#if primary_tag}}<span class="rounded-pill bg-white/15 px-3 py-1 text-xs font-semibold">{{primary_tag.name}}</span>{{/if}}
-          {{#if featured}}<span class="inline-flex items-center gap-1 rounded-pill bg-amber-400/90 px-3 py-1 text-xs font-bold text-amber-950"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}</span>{{/if}}
+        {{!-- Badges: level · featured · price --}}
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+          {{> "components/course-level"}}
+          {{#if featured}}<span class="ns-badge-featured"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}</span>{{/if}}
+          {{#has tag="#free"}}<span class="ns-price-tag ns-price-tag--free"><i class="ph-fill ph-gift" aria-hidden="true"></i>{{t "Free"}}</span>{{else has tag="#paid"}}<span class="ns-price-tag ns-price-tag--paid"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Members"}}</span>{{/has}}
         </div>
 
-        <h1 class="font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{{title}}</h1>
-        <p class="mt-4 max-w-xl text-lg text-white/80">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="26"}}{{/if}}</p>
+        <h1 class="ns-display--sm font-heading font-extrabold leading-tight tracking-tight">{{title}}</h1>
+        <p class="mt-4 max-w-xl text-lg text-white/85">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="30"}}{{/if}}</p>
 
-        {{!-- Meta (duration/level from internal tags) --}}
-        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80">
-          <span class="inline-flex items-center gap-2 font-semibold text-white"><i class="ph ph-list-checks text-lg" aria-hidden="true"></i>{{t "Structured course"}}</span>
-          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-duration-"}}{{#if description}}<span class="inline-flex items-center gap-2"><i class="ph ph-clock text-lg" aria-hidden="true"></i>{{description}}</span>{{/if}}{{/match}}{{/foreach}}
-          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-level-"}}{{#if description}}<span class="inline-flex items-center gap-2"><i class="ph ph-signal-high text-lg" aria-hidden="true"></i>{{description}}</span>{{/if}}{{/match}}{{/foreach}}
-          <span class="inline-flex items-center gap-2"><i class="ph ph-calendar text-lg" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="MMM YYYY"}}</span>
+        {{!-- Animated stats --}}
+        <div class="ns-course-stats mt-7">
+          {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" limit="100" as |lessons|}}
+            <div class="ns-course-stat"><i class="ph-fill ph-list-checks" aria-hidden="true"></i><b class="js-count" data-to="{{lessons.length}}">0</b><span>{{t "Lessons"}}</span></div>
+          {{/get}}
+          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<div class="ns-course-stat"><i class="ph-fill ph-clock" aria-hidden="true"></i><b>{{description}}</b><span>{{t "Duration"}}</span></div>{{/match}}{{/foreach}}
+          <div class="ns-course-stat"><i class="ph-fill ph-seal-check" aria-hidden="true"></i><b>{{t "Self-paced"}}</b><span>{{t "Access"}}</span></div>
         </div>
 
-        {{#primary_author}}
-          <div class="mt-6 flex items-center gap-3">
-            {{#if profile_image}}<img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="h-11 w-11 rounded-full border-2 border-white/50 object-cover">{{else}}<span class="flex h-11 w-11 items-center justify-center rounded-full bg-white/15"><i class="ph-fill ph-user-circle text-2xl" aria-hidden="true"></i></span>{{/if}}
-            <div><p class="text-sm">{{t "Created by"}} <strong>{{name}}</strong></p>{{#if bio}}<p class="max-w-xs text-xs text-white/70">{{bio}}</p>{{/if}}</div>
-          </div>
-        {{/primary_author}}
+        {{!-- Instructor(s) --}}
+        <div class="mt-7 flex flex-wrap items-center gap-4">
+          {{#primary_author}}
+            <div class="flex items-center gap-3">
+              <span class="ns-ring">{{#if profile_image}}<img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="h-11 w-11 object-cover">{{else}}<span class="flex h-11 w-11 items-center justify-center rounded-full bg-white/15"><i class="ph-fill ph-user text-xl" aria-hidden="true"></i></span>{{/if}}</span>
+              <div><p class="text-xs uppercase tracking-wider text-white/60">{{t "Instructor"}}</p><p class="font-bold">{{name}}</p></div>
+            </div>
+          {{/primary_author}}
+          {{#if authors.[1]}}
+            <div class="flex -space-x-2" title="{{t "Co-instructors"}}">
+              {{#foreach authors}}{{#unless @first}}{{#if profile_image}}<img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-8 w-8 rounded-full object-cover ring-2 ring-brand-800">{{/if}}{{/unless}}{{/foreach}}
+            </div>
+          {{/if}}
+        </div>
+
+        {{!-- CTA --}}
+        <div class="mt-8 flex flex-wrap gap-3">
+          {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
+            <a href="{{url}}" class="ns-btn ns-btn--white"><i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start course"}}</a>
+          {{else}}
+            <a href="#curriculum" class="ns-btn ns-btn--white">{{t "View curriculum"}}</a>
+          {{/foreach}}{{/get}}
+          <a href="#curriculum" class="ns-btn ns-btn--glass">{{t "See curriculum"}}</a>
+        </div>
       </div>
 
-      {{#if feature_image}}
-        <div class="hidden w-80 shrink-0 lg:block">
-          <img src="{{img_url feature_image size="l"}}" alt="{{title}}" class="aspect-[4/3] w-full rounded-card object-cover shadow-raised ring-1 ring-white/10">
+      {{!-- Media: image, or a video-play poster for #hero-5 --}}
+      {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
+        <div class="ns-course-hero__media hidden w-96 shrink-0 lg:block">
+          {{#has tag="#hero-5"}}
+            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson+tag:hash-lesson-type-video" order="published_at asc" limit="1" as |vids|}}
+              {{#if vids.[0]}}
+                <a href="{{vids.[0].url}}" class="ns-video-poster group" aria-label="{{t "Play intro"}}">
+                  <img src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                  <span class="ns-video-poster__play"><i class="ph-fill ph-play" aria-hidden="true"></i></span>
+                </a>
+              {{else}}
+                <img src="{{img_url feature_image size="l"}}" alt="{{title}}" class="aspect-[4/3] w-full rounded-card object-cover shadow-raised ring-1 ring-white/10">
+              {{/if}}
+            {{/get}}
+          {{else}}
+            <img src="{{img_url feature_image size="l"}}" alt="{{title}}" class="aspect-[4/3] w-full rounded-card object-cover shadow-raised ring-1 ring-white/10">
+          {{/has}}
         </div>
-      {{/if}}
+      {{/if}}{{/has}}
     </div>
   </div>
 </section>
 
-{{!-- ── Main ── --}}
+{{!-- ── MAIN ─────────────────────────────────────────────────────────────── --}}
 <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
   <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
 
-    {{!-- Left: about + curriculum + FAQ --}}
+    {{!-- Left: description → curriculum → FAQ --}}
     <div class="min-w-0">
 
-      {{#if content}}
+      {{#if html}}
         <h2 class="font-heading text-2xl font-extrabold">{{t "About this course"}}</h2>
-        <div class="prose mt-4 max-w-none gh-content">{{content}}</div>
+        {{!-- Ghost content = the description. Toggle cards render as FAQ
+             accordions, product cards as testimonials (namaste-ui/course.css). --}}
+        <div class="ns-course-content prose mt-4 max-w-none gh-content">{{content}}</div>
       {{/if}}
 
-      {{!-- In-content ad --}}
-      {{> "ads/slot" format="horizontal" slot="course-mid"}}
+      {{> "ads/leaderboard"}}
 
-      {{!-- Curriculum --}}
-      <h2 id="curriculum" class="mt-12 font-heading text-2xl font-extrabold">{{t "Course curriculum"}}</h2>
-      <div class="mt-4 overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
-        <div class="flex items-center justify-between border-b border-border px-5 py-3">
-          <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
-          <span class="rounded-pill bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-600 dark:text-brand-300">{{t "Structured path"}}</span>
+      {{!-- Curriculum (pulled via {{#get}} in curriculum-list) --}}
+      <div class="mt-12 flex items-center justify-between gap-3">
+        <h2 id="curriculum" class="font-heading text-2xl font-extrabold">{{t "Course curriculum"}}</h2>
+        {{#has tag="#paid"}}<span class="ns-badge-featured" style="background:color-mix(in srgb, var(--color-brand-500) 14%, transparent);color:var(--ns-link);"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Members course"}}</span>{{/has}}
+      </div>
+
+      {{!-- Lock notice for paid / members-only courses --}}
+      {{#has tag="#paid"}}
+        <div class="ns-lock-note mt-4">
+          <i class="ph-fill ph-lock-simple" aria-hidden="true"></i>
+          <div>
+            <p class="font-bold">{{t "This is a members course"}}</p>
+            <p class="text-sm">{{t "Preview lessons are open to everyone. Sign in with a membership to unlock the full curriculum."}}</p>
+          </div>
+          <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Unlock"}}</a>
         </div>
-        {{#if primary_tag}}
-          {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags" order="published_at asc" limit="100" as |lessons|}}
-            {{#foreach lessons}}
-              <a href="{{url}}" class="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 transition last:border-0 hover:bg-brand-500/5">
-                <span class="flex min-w-0 items-center gap-3">
-                  <i class="ph-fill ph-play-circle shrink-0 text-xl text-brand-500" aria-hidden="true"></i>
-                  <span class="truncate font-semibold">{{@number}}. {{title}}</span>
-                </span>
-                <span class="shrink-0 text-xs text-muted">
-                  {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-lesson-duration-"}}{{#if description}}<span class="inline-flex items-center gap-1"><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</span>{{/if}}{{/match}}{{/foreach}}
-                </span>
-              </a>
-            {{else}}
-              <p class="px-5 py-6 text-sm text-muted"><i class="ph ph-wrench" aria-hidden="true"></i> {{t "No lessons yet. Content is being drafted."}}</p>
-            {{/foreach}}
-          {{/get}}
-        {{else}}
-          <p class="px-5 py-6 text-sm text-error">{{t "Assign a primary tag to this course to link its lessons."}}</p>
-        {{/if}}
-      </div>
+      {{/has}}
 
-      {{!-- FAQ --}}
-      <h2 class="mt-12 font-heading text-2xl font-extrabold">{{t "Frequently asked questions"}}</h2>
-      <div class="mt-4 space-y-3">
-        {{> "courses/faq-item" q=(t "Is this course beginner friendly?") a=(t "Yes — the early lessons cover the fundamentals before moving on to advanced implementations.")}}
-        {{> "courses/faq-item" q=(t "Do I get lifetime access?") a=(t "Absolutely. Once you start, you have access to the materials and all future updates.")}}
-        {{> "courses/faq-item" q=(t "Will this help for interviews?") a=(t "Yes — we cover common scenario-based questions asked in technical interviews.")}}
-      </div>
+      <div class="mt-4">{{> "courses/curriculum-list"}}</div>
+
+      {{!-- Share --}}
+      <div class="mt-10">{{> "components/share"}}</div>
     </div>
 
-    {{!-- Right: sticky enrolment --}}
+    {{!-- Right: sticky enrolment sidebar --}}
     <aside>
       <div class="lg:sticky lg:top-20">
-        <div class="overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
-          {{#if feature_image}}
+        <div class="js-spotlight relative overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
+          {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
             <img src="{{img_url feature_image size="m"}}" alt="{{title}}" class="aspect-[16/9] w-full object-cover lg:hidden">
-          {{/if}}
+          {{/if}}{{/has}}
           <div class="p-5">
-            <div class="flex items-center gap-3">
-              <span class="font-heading text-3xl font-extrabold">{{t "Free"}}</span>
-              <span class="rounded-pill bg-success/15 px-2.5 py-0.5 text-xs font-bold text-success">{{t "Open source"}}</span>
+            <div class="flex items-baseline gap-2">
+              {{#has tag="#free"}}<span class="font-heading text-3xl font-extrabold">{{t "Free"}}</span><span class="ns-price-tag ns-price-tag--free">{{t "Open"}}</span>{{else has tag="#paid"}}<span class="font-heading text-3xl font-extrabold">{{t "Members"}}</span><span class="ns-price-tag ns-price-tag--paid">{{t "Paid"}}</span>{{else}}<span class="font-heading text-3xl font-extrabold">{{t "Free"}}</span>{{/has}}
             </div>
-            <p class="mt-1 text-sm text-muted">{{t "Access the entire curriculum instantly."}}</p>
 
-            {{!-- Start → first lesson of this course (falls back to the curriculum list) --}}
-            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}
-              {{#foreach posts}}
-                <a href="{{url}}" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600"><i class="ph ph-play" aria-hidden="true"></i>{{t "Start course"}}</a>
-              {{else}}
-                <a href="#curriculum" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-brand-500 px-4 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "View curriculum"}}</a>
-              {{/foreach}}
-            {{/get}}
-            <a href="/courses/" class="mt-2 inline-flex w-full items-center justify-center rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500">{{t "Back to catalog"}}</a>
+            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
+              <a href="{{url}}" class="ns-btn ns-btn--primary mt-4 w-full"><i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start course"}}</a>
+            {{else}}
+              <a href="#curriculum" class="ns-btn ns-btn--primary mt-4 w-full">{{t "View curriculum"}}</a>
+            {{/foreach}}{{/get}}
+            <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm mt-2 w-full">{{t "Back to catalog"}}</a>
 
-            <h3 class="mt-6 font-heading font-bold">{{t "This course includes:"}}</h3>
+            <h3 class="mt-6 font-heading font-bold">{{t "This course includes"}}</h3>
             <ul class="mt-3 space-y-2.5 text-sm">
-              <li class="flex items-center gap-3"><i class="ph ph-list-checks text-lg text-brand-500" aria-hidden="true"></i>{{t "Structured curriculum"}}</li>
-              {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-duration-"}}<li class="flex items-center gap-3"><i class="ph ph-clock text-lg text-brand-500" aria-hidden="true"></i>{{#if description}}{{description}}{{else}}{{name}}{{/if}}</li>{{/match}}{{/foreach}}
-              {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-course-level-"}}<li class="flex items-center gap-3"><i class="ph ph-signal-high text-lg text-brand-500" aria-hidden="true"></i>{{#if description}}{{description}}{{else}}{{name}}{{/if}}</li>{{/match}}{{/foreach}}
+              {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" limit="100" as |ls|}}
+                <li class="flex items-center gap-3"><i class="ph ph-list-checks text-lg text-brand-500" aria-hidden="true"></i>{{ls.length}} {{t "lessons"}}</li>
+              {{/get}}
+              {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<li class="flex items-center gap-3"><i class="ph ph-clock text-lg text-brand-500" aria-hidden="true"></i>{{description}} {{t "of content"}}</li>{{/match}}{{/foreach}}
+              <li class="flex items-center gap-3"><i class="ph ph-gauge text-lg text-brand-500" aria-hidden="true"></i>{{#has tag="#level-beginner"}}{{t "Beginner"}}{{else has tag="#level-intermediate"}}{{t "Intermediate"}}{{else has tag="#level-advanced"}}{{t "Advanced"}}{{else}}{{t "All levels"}}{{/has}}</li>
               <li class="flex items-center gap-3"><i class="ph ph-infinity text-lg text-brand-500" aria-hidden="true"></i>{{t "Lifetime access"}}</li>
-              <li class="flex items-center gap-3"><i class="ph ph-calendar text-lg text-brand-500" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</li>
+              <li class="flex items-center gap-3"><i class="ph ph-calendar text-lg text-brand-500" aria-hidden="true"></i>{{t "Updated"}} {{date updated_at format="MMM YYYY"}}</li>
             </ul>
-
-            <hr class="my-5 border-border">
-            <div class="flex items-center justify-between text-sm">
-              <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 font-semibold text-muted hover:text-brand-600"><i class="ph ph-share-network text-lg" aria-hidden="true"></i>{{t "Share"}}</a>
-              <a href="/contact/" class="inline-flex items-center gap-2 font-semibold text-muted hover:text-brand-600"><i class="ph ph-envelope text-lg" aria-hidden="true"></i>{{t "Contact"}}</a>
-            </div>
           </div>
         </div>
-
         <div class="mt-6">{{> "ads/slot" format="square"}}</div>
       </div>
     </aside>
@@ -154,12 +172,10 @@
 <div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 px-4 py-2.5 backdrop-blur lg:hidden">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
     <span class="truncate font-semibold">{{title}}</span>
-    {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}
-      {{#foreach posts}}
-        <a href="{{url}}" class="inline-flex shrink-0 items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-      {{else}}
-        <a href="#curriculum" class="inline-flex shrink-0 items-center gap-1 rounded-pill bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-brand">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-      {{/foreach}}
-    {{/get}}
+    {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
+      <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+    {{else}}
+      <a href="#curriculum" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+    {{/foreach}}{{/get}}
   </div>
 </div>

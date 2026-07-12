@@ -3,8 +3,9 @@
   page-about.hbs — Custom template for /about/ (slug `about`).
   Hero → founder → mission → timeline → values → editable body → contribute.
   Reuses about/founder, home/timeline-item, home/feature-card, icons/*.
+  Renders standalone via the /about/ route AND as a Ghost page (slug `about`);
+  the sections live outside {{#page}}, post fields are optional overrides.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-{{#page}}
 
 {{!-- ── Hero ── --}}
 <section class="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
@@ -13,7 +14,7 @@
     <span class="inline-flex items-center gap-2 rounded-pill bg-white/10 px-4 py-1.5 text-sm font-semibold ring-1 ring-white/20">
       {{> "icons/heart" class="h-4 w-4"}}{{t "Our story"}}
     </span>
-    <h1 class="mt-6 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{{title}}</h1>
+    <h1 class="mt-6 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{{#if title}}{{title}}{{else}}{{t "About Namaste Salesforce"}}{{/if}}</h1>
     <p class="mx-auto mt-5 max-w-2xl text-lg text-white/80">
       {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "A free, open-source platform built to make world-class Salesforce education accessible to everyone — no paywalls, no gatekeeping."}}{{/if}}
     </p>
@@ -76,12 +77,12 @@
   </div>
 </section>
 
-{{!-- ── Editable page body ── --}}
-{{#if content}}
+{{!-- ── Editable page body (only when rendered as a real Ghost page) ── --}}
+{{#page}}{{#if html}}
   <section class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
     <div class="prose prose-lg max-w-none gh-content">{{content}}</div>
   </section>
-{{/if}}
+{{/if}}{{/page}}
 
 {{!-- ── Contribute band ── --}}
 <section class="border-t border-border bg-surface-sunken">
@@ -97,5 +98,3 @@
     </div>
   </div>
 </section>
-
-{{/page}}

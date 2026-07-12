@@ -1,0 +1,111 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+  components/course-player-header.hbs — distraction-free "player" header used
+  on #lesson / #training / #training-content posts (swapped in by default.hbs).
+  ----------------------------------------------------------------------------
+  Layout: brand (logo + title) left · course name + inline progress centered
+  (desktop only) · actions + a ✕ close at the END that returns to the parent
+  course/track. On mobile a HAMBURGER (right side) opens the lesson list as a
+  drawer below the navbar (Alpine store `lessonNav`, panel lives in the aside).
+  Progress is computed from the lesson list (.doc-nav-link + .is-doc-active).
+═══════════════════════════════════════════════════════════════════════════ --}}
+{{!-- Register the cross-component store BEFORE the deferred Alpine bundle runs
+     (this inline script executes during parse, so alpine:init still fires). --}}
+<script>
+  document.addEventListener('alpine:init', function () {
+    window.Alpine && Alpine.store('lessonNav', {
+      open: false,
+      toggle() { this.open = !this.open; },
+      close() { this.open = false; }
+    });
+  });
+</script>
+
+<header class="ns-nav sticky top-0 z-40 border-b border-border bg-surface/90 backdrop-blur supports-[backdrop-filter]:bg-surface/75"
+        x-data="{ acct: false }">
+  <div class="ns-nav__bar relative flex w-full items-center gap-2 px-4 py-2.5 sm:gap-3 sm:px-6 lg:px-8">
+
+    {{!-- Hamburger — LEFT of the brand; opens the lesson drawer (mobile/tablet
+         only; desktop shows the static aside). --}}
+    <button type="button" class="icon-btn shrink-0 lg:hidden"
+            @click="$store.lessonNav.toggle()" :aria-expanded="$store.lessonNav.open.toString()"
+            aria-controls="lesson-list" aria-label="{{t "Course lessons"}}">
+      <span x-show="!$store.lessonNav.open">{{> "icons/menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
+      <span x-show="$store.lessonNav.open" x-cloak>{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}</span>
+    </button>
+
+    {{!-- Brand: logo + site title (title truncates if space is tight) --}}
+    <a href="{{@site.url}}" class="flex min-w-0 shrink items-center gap-2" aria-label="{{@site.title}}">
+      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto shrink-0">{{/if}}
+      <span class="min-w-0 truncate font-heading text-base font-extrabold tracking-tight text-ink sm:text-lg">{{@site.title}}</span>
+    </a>
+
+    {{!-- Primary nav — absolutely centered across the bar (desktop only) --}}
+    <nav class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block" aria-label="{{t "Primary"}}">
+      <ul class="flex items-center gap-0.5">{{navigation}}</ul>
+    </nav>
+
+    {{!-- Right cluster --}}
+    <div class="ml-auto flex shrink-0 items-center gap-1.5">
+
+      {{#if @custom.navbar_show_search}}
+        <a href="#/search" data-ghost-search aria-label="{{t "Search"}}" class="icon-btn group hidden sm:inline-flex">
+          {{> "icons/search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
+        </a>
+      {{/if}}
+
+      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}" class="icon-btn group hidden sm:inline-flex">
+        {{> "icons/github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
+      </a>
+
+      {{> "components/theme-toggle"}}
+
+      {{!-- Account: avatar dropdown (member) or plain login icon — from sm up --}}
+      {{#if @member}}
+        <div class="relative hidden sm:block" @click.outside="acct = false">
+          <button type="button" @click="acct = !acct" :aria-expanded="acct.toString()"
+                  aria-haspopup="menu" aria-label="{{t "Account menu"}}"
+                  class="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-1 ring-border transition hover:ring-brand-500">
+            {{#if @member.avatar_image}}
+              <img src="{{@member.avatar_image}}" alt="{{@member.name}}" class="h-full w-full object-cover">
+            {{else}}
+              <span class="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-700 text-white">{{> "icons/user" class="h-[1.05rem] w-[1.05rem]"}}</span>
+            {{/if}}
+          </button>
+          <div x-show="acct" x-cloak
+               x-transition:enter="transition ease-out duration-150"
+               x-transition:enter-start="opacity-0 -translate-y-1"
+               x-transition:enter-end="opacity-100 translate-y-0"
+               class="absolute right-0 mt-2 w-60 overflow-hidden rounded-card border border-border bg-surface-raised shadow-raised" role="menu">
+            <div class="p-1.5">
+              <a href="#/portal/account" data-portal="account" role="menuitem" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-ink transition hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-300">{{> "icons/user" class="h-4 w-4"}}{{t "Account"}}</a>
+              <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" role="menuitem" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10 dark:text-brand-300">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Become Author"}}</a>
+              <a href="javascript:;" data-members-signout role="menuitem" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-muted transition hover:bg-surface-sunken hover:text-ink">{{> "icons/login" class="h-4 w-4"}}{{t "Sign out"}}</a>
+            </div>
+          </div>
+        </div>
+      {{else}}
+        <a href="#/portal/signin" data-portal="signin" aria-label="{{t "Log in"}}" class="icon-btn group hidden sm:inline-flex">
+          {{> "icons/user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
+        </a>
+      {{/if}}
+
+      {{!-- ✕ Close → return to the parent course / track --}}
+      <span class="mx-0.5 hidden h-6 w-px bg-border sm:block" aria-hidden="true"></span>
+      {{#has tag="#lesson"}}
+        {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
+          <a href="{{url}}" class="icon-btn group" aria-label="{{t "Exit to course"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit to course"}}</span></a>
+        {{else}}
+          <a href="/courses/" class="icon-btn group" aria-label="{{t "Exit to courses"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
+        {{/foreach}}{{/get}}
+      {{else has tag="#training-content"}}
+        {{#get "posts" filter="tag:hash-training+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
+          <a href="{{url}}" class="icon-btn group" aria-label="{{t "Exit to track"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit to track"}}</span></a>
+        {{else}}
+          <a href="/training/" class="icon-btn group" aria-label="{{t "Exit to roadmaps"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
+        {{/foreach}}{{/get}}
+      {{else}}
+        <a href="/training/" class="icon-btn group" aria-label="{{t "Exit to roadmaps"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
+      {{/has}}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,94 @@
+{{!< default}}
+{{!-- page-become-author.hbs — recruit course/lesson authors. Auto-selected for
+     a Ghost page with slug `become-author`. Marketing sections + animated SVG;
+     renders the page body (if any) as an intro. Works both as page-{slug}
+     (a Ghost page "become-author") AND via a content-less route in routes.yaml,
+     so the sections live OUTSIDE {{#post}} and post fields are optional. --}}
+
+{{!-- ── Hero ── --}}
+<section class="ns-aurora relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
+  <div aria-hidden="true" class="bg-dots pointer-events-none absolute inset-0 text-white/40"></div>
+  <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_auto] lg:py-24">
+    <div class="max-w-xl">
+      <p class="ns-kicker ns-kicker--light">{{t "Teach with us"}}</p>
+      <h1 class="mt-3 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+        {{#if title}}{{title}}{{else}}{{t "Become an Author for Namaste Salesforce"}}{{/if}}
+      </h1>
+      <p class="mt-5 text-lg text-white/85">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Turn what you know into a course thousands of Salesforce learners will use. Open, credited, and free forever to read."}}{{/if}}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="mailto:swarnilsinghaicse@gmail.com?subject=I%20want%20to%20write%20for%20Namaste%20Salesforce" class="ns-btn ns-btn--white"><i class="ph-fill ph-pen-nib" aria-hidden="true"></i>{{t "Apply to write"}}</a>
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--glass">{{> "icons/github" class="h-5 w-5"}}{{t "See the repo"}}</a>
+      </div>
+    </div>
+
+    {{!-- Animated SVG illustration --}}
+    <div class="hidden w-80 shrink-0 lg:block" aria-hidden="true">
+      <svg viewBox="0 0 200 200" class="ns-ba-svg h-auto w-full">
+        <circle cx="100" cy="100" r="78" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2" stroke-dasharray="6 8" class="ns-ba-ring"/>
+        <circle cx="100" cy="100" r="58" fill="rgba(255,255,255,.06)"/>
+        <g class="ns-ba-pen">
+          <rect x="94" y="52" width="12" height="70" rx="4" fill="#fff"/>
+          <rect x="94" y="52" width="12" height="16" rx="4" fill="#1b96ff"/>
+          <polygon points="100,132 92,116 108,116" fill="#fff"/>
+          <circle cx="100" cy="128" r="2.4" fill="#03386b"/>
+        </g>
+        <path d="M60 150 q40 -18 80 0" fill="none" stroke="#7cbeff" stroke-width="3" stroke-linecap="round" class="ns-ba-underline"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+{{!-- Optional page body as an intro (only when rendered as a real Ghost page) --}}
+{{#post}}{{#if html}}
+  <section class="mx-auto max-w-3xl px-4 pt-12 sm:px-6">
+    <div class="gh-content prose prose-lg max-w-none">{{content}}</div>
+  </section>
+{{/if}}{{/post}}
+
+{{!-- ── Why + How ── --}}
+<section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-20">
+  <div class="mx-auto max-w-2xl text-center">
+    <p class="ns-kicker ns-kicker--center">{{t "Why write here"}}</p>
+    <h2 class="mt-2 font-heading text-3xl font-extrabold sm:text-4xl">{{t "Your knowledge, amplified"}}</h2>
+  </div>
+  <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="js-spotlight relative rounded-card border border-border bg-surface-raised p-6 shadow-card">
+      <span class="ns-chip"><i class="ph-fill ph-users-three" aria-hidden="true"></i></span>
+      <h3 class="mt-4 font-heading text-lg font-bold">{{t "Reach thousands"}}</h3>
+      <p class="mt-2 text-sm text-muted">{{t "Your course sits in a catalog learners search every day — with your name and profile on it."}}</p>
+    </div>
+    <div class="js-spotlight relative rounded-card border border-border bg-surface-raised p-6 shadow-card">
+      <span class="ns-chip ns-chip--accent"><i class="ph-fill ph-seal-check" aria-hidden="true"></i></span>
+      <h3 class="mt-4 font-heading text-lg font-bold">{{t "Fully credited"}}</h3>
+      <p class="mt-2 text-sm text-muted">{{t "Every lesson links back to you. Build your authority in the Salesforce ecosystem."}}</p>
+    </div>
+    <div class="js-spotlight relative rounded-card border border-border bg-surface-raised p-6 shadow-card">
+      <span class="ns-chip"><i class="ph-fill ph-git-branch" aria-hidden="true"></i></span>
+      <h3 class="mt-4 font-heading text-lg font-bold">{{t "Open & lasting"}}</h3>
+      <p class="mt-2 text-sm text-muted">{{t "Content is open-source and stays free to read — a resource that keeps giving back."}}</p>
+    </div>
+  </div>
+
+  <div class="mx-auto mt-16 max-w-2xl text-center">
+    <p class="ns-kicker ns-kicker--center">{{t "How it works"}}</p>
+    <h2 class="mt-2 font-heading text-3xl font-extrabold sm:text-4xl">{{t "From idea to published in four steps"}}</h2>
+  </div>
+  <ol class="ns-steps mx-auto mt-12 max-w-3xl space-y-6">
+    <li class="flex gap-4"><span class="ns-step-num">1</span><div><h3 class="font-heading font-bold">{{t "Pitch your topic"}}</h3><p class="mt-1 text-sm text-muted">{{t "Email us your course idea and a rough outline. We'll help you shape it."}}</p></div></li>
+    <li class="flex gap-4"><span class="ns-step-num">2</span><div><h3 class="font-heading font-bold">{{t "Get an author account"}}</h3><p class="mt-1 text-sm text-muted">{{t "We set you up in Ghost with the course/lesson templates and internal tags."}}</p></div></li>
+    <li class="flex gap-4"><span class="ns-step-num">3</span><div><h3 class="font-heading font-bold">{{t "Write your lessons"}}</h3><p class="mt-1 text-sm text-muted">{{t "Draft in the editor — code blocks, videos and toggles all render beautifully."}}</p></div></li>
+    <li class="flex gap-4"><span class="ns-step-num">4</span><div><h3 class="font-heading font-bold">{{t "Publish & share"}}</h3><p class="mt-1 text-sm text-muted">{{t "We review, publish, and promote your course to the community."}}</p></div></li>
+  </ol>
+</section>
+
+{{!-- ── CTA ── --}}
+<section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+  <div class="ns-aurora relative overflow-hidden rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-8 text-center text-white sm:p-12">
+    <div aria-hidden="true" class="bg-grid pointer-events-none absolute inset-0 text-white/40"></div>
+    <div class="relative">
+      <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "Ready to teach?"}}</h2>
+      <p class="mx-auto mt-2 max-w-xl text-white/85">{{t "We'd love to hear your idea. Reach out and we'll get you set up."}}</p>
+      <a href="mailto:swarnilsinghaicse@gmail.com?subject=I%20want%20to%20write%20for%20Namaste%20Salesforce" class="ns-btn ns-btn--white mt-6"><i class="ph-fill ph-paper-plane-tilt" aria-hidden="true"></i>{{t "Apply to write"}}</a>
+    </div>
+  </div>
+</section>

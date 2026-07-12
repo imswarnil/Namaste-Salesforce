@@ -1,6 +1,8 @@
 {{!< default}}
-{{!-- courses.hbs — course catalog (custom template / routed collection).
-     Stats bar · searchable grid of course cards · become-instructor + feedback. --}}
+{{!-- courses.hbs — course catalog. Animated stats · fixed filter sidebar
+     (search · price · level · duration slider · author) · course grid with a
+     sponsored card and a leaderboard ad after every 4 courses · become-author
+     band. Filtering is client-side (Alpine reads each card's data-* attrs). --}}
 
 {{#page}}
   {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title=title subtitle=custom_excerpt}}
@@ -8,69 +10,127 @@
   {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title="Course Catalog" subtitle="Structured learning paths to take you from beginner to Salesforce expert."}}
 {{/page}}
 
-{{!-- Stats bar --}}
+{{!-- Animated stats --}}
 <section class="border-b border-border bg-surface-sunken">
-  <div class="mx-auto grid max-w-5xl grid-cols-2 gap-6 px-4 py-8 text-center sm:px-6 lg:grid-cols-4">
-    <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">{{pagination.total}}</div><div class="mt-1 text-sm font-medium text-muted">{{t "Courses"}}</div></div>
-    {{#get "posts" filter="tag:hash-lesson" limit="1"}}
-      <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">{{pagination.total}}+</div><div class="mt-1 text-sm font-medium text-muted">{{t "Lessons"}}</div></div>
-    {{/get}}
-    <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">All</div><div class="mt-1 text-sm font-medium text-muted">{{t "Skill levels"}}</div></div>
-    <div><div class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-300 sm:text-3xl">100%</div><div class="mt-1 text-sm font-medium text-muted">{{t "Free"}}</div></div>
+  <div class="ns-course-stats mx-auto max-w-5xl justify-center px-4 py-8 sm:px-6" style="gap:2rem 3rem;">
+    <div class="ns-course-stat" style="color:var(--color-ink)"><i class="ph-fill ph-graduation-cap" style="color:var(--color-brand-500)" aria-hidden="true"></i><b class="js-count" data-to="{{pagination.total}}">0</b><span>{{t "Courses"}}</span></div>
+    {{#get "posts" filter="tag:hash-lesson" limit="1"}}<div class="ns-course-stat" style="color:var(--color-ink)"><i class="ph-fill ph-play-circle" style="color:var(--color-brand-500)" aria-hidden="true"></i><b class="js-count" data-to="{{pagination.total}}">0</b><span>{{t "Lessons"}}</span></div>{{/get}}
+    <div class="ns-course-stat" style="color:var(--color-ink)"><i class="ph-fill ph-medal" style="color:var(--color-brand-500)" aria-hidden="true"></i><b>{{t "All"}}</b><span>{{t "Levels"}}</span></div>
+    <div class="ns-course-stat" style="color:var(--color-ink)"><i class="ph-fill ph-infinity" style="color:var(--color-brand-500)" aria-hidden="true"></i><b>{{t "Lifetime"}}</b><span>{{t "Access"}}</span></div>
   </div>
 </section>
 
-{{!-- Searchable grid --}}
-<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16" x-data="{ q: '' }">
-  <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <h2 class="font-heading text-xl font-extrabold">{{t "All courses"}}</h2>
-    <label class="relative w-full sm:max-w-xs">
-      <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{{> "icons/search" class="h-4 w-4"}}</span>
-      <input x-model="q" type="search" placeholder="{{t "Search courses…"}}" aria-label="{{t "Search courses"}}"
-             class="w-full rounded-pill border border-border bg-surface py-2.5 pl-10 pr-4 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-    </label>
-  </div>
+{{!-- Catalog with filters --}}
+<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:py-14"
+  x-data="{
+    q:'', price:'all', lv:{beginner:false,intermediate:false,advanced:false}, author:'', maxH:13, open:false,
+    mins(s){ s=s||''; var h=(s.match(/(\d+)h/)||[])[1]||0; var m=(s.match(/(\d+)m/)||[])[1]||0; return (+h)*60+(+m); },
+    show(el){ var d=el.dataset;
+      if(d.sponsored) return true;
+      if(this.q && d.title.toLowerCase().indexOf(this.q.toLowerCase())===-1) return false;
+      if(this.price!=='all' && d.price!==this.price) return false;
+      var anyLv = this.lv.beginner || this.lv.intermediate || this.lv.advanced;
+      if(anyLv && !this.lv[d.level]) return false;
+      if(this.author && d.author!==this.author) return false;
+      if(this.mins(d.duration) > this.maxH*60) return false;
+      return true; },
+    reset(){ this.q=''; this.price='all'; this.lv={beginner:false,intermediate:false,advanced:false}; this.author=''; this.maxH=13; }
+  }">
 
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {{#foreach posts}}
-      <div data-title="{{title}}"
-           x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
-           class="motion-safe:animate-fade-up">
-        {{> "courses/course-card"}}
+  {{!-- mobile filter toggle --}}
+  <button type="button" class="ns-btn ns-btn--outline ns-btn--sm mb-4 lg:hidden" @click="open=!open"><i class="ph ph-funnel" aria-hidden="true"></i>{{t "Filters"}}</button>
+
+  <div class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
+
+    {{!-- ── Filter sidebar ── --}}
+    <aside class="ns-filters" :class="open ? 'is-open' : ''">
+      <div class="lg:sticky lg:top-20">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="font-heading font-extrabold">{{t "Filters"}}</h2>
+          <button type="button" class="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-300" @click="reset()">{{t "Reset"}}</button>
+        </div>
+
+        <label class="relative mb-5 block">
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{{> "icons/search" class="h-4 w-4"}}</span>
+          <input x-model="q" type="search" placeholder="{{t "Search courses…"}}" aria-label="{{t "Search"}}" class="ns-input py-2.5 pl-10 text-sm">
+        </label>
+
+        {{!-- Price --}}
+        <fieldset class="ns-filter-group">
+          <legend>{{t "Price"}}</legend>
+          <label class="ns-radio"><input type="radio" name="price" value="all" x-model="price"><span>{{t "All"}}</span></label>
+          <label class="ns-radio"><input type="radio" name="price" value="free" x-model="price"><span>{{t "Free"}}</span></label>
+          <label class="ns-radio"><input type="radio" name="price" value="paid" x-model="price"><span>{{t "Members / Paid"}}</span></label>
+        </fieldset>
+
+        {{!-- Level --}}
+        <fieldset class="ns-filter-group">
+          <legend>{{t "Level"}}</legend>
+          <label class="ns-check"><input type="checkbox" x-model="lv.beginner"><span class="ns-dot ns-dot--beginner"></span>{{t "Beginner"}}</label>
+          <label class="ns-check"><input type="checkbox" x-model="lv.intermediate"><span class="ns-dot ns-dot--intermediate"></span>{{t "Intermediate"}}</label>
+          <label class="ns-check"><input type="checkbox" x-model="lv.advanced"><span class="ns-dot ns-dot--advanced"></span>{{t "Advanced"}}</label>
+        </fieldset>
+
+        {{!-- Duration slider --}}
+        <fieldset class="ns-filter-group">
+          <legend>{{t "Max duration"}}</legend>
+          <input type="range" min="1" max="13" step="1" x-model.number="maxH" class="ns-slider">
+          <p class="mt-1 text-sm text-muted"><span x-text="maxH"></span>{{t "h or less"}}</p>
+        </fieldset>
+
+        {{!-- Author --}}
+        <fieldset class="ns-filter-group">
+          <legend>{{t "Instructor"}}</legend>
+          <label class="ns-radio"><input type="radio" name="author" value="" x-model="author"><span>{{t "Anyone"}}</span></label>
+          {{#get "authors" limit="8"}}{{#foreach authors}}
+            <label class="ns-radio ns-radio--author"><input type="radio" name="author" value="{{slug}}" x-model="author">
+              {{#if profile_image}}<img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-6 w-6 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-6 w-6"><i class="ph-fill ph-user" aria-hidden="true"></i></span>{{/if}}
+              <span class="truncate">{{name}}</span></label>
+          {{/foreach}}{{/get}}
+        </fieldset>
       </div>
-    {{/foreach}}
-  </div>
+    </aside>
 
-  {{^posts}}
-    <div class="rounded-card border border-dashed border-border py-16 text-center text-muted">
-      <i class="ph ph-graduation-cap mb-3 text-4xl" aria-hidden="true"></i>
-      <p class="text-lg font-semibold">{{t "Courses coming soon!"}}</p>
-    </div>
-  {{/posts}}
-
-  {{pagination}}
-</section>
-
-{{!-- Become an instructor --}}
-<section class="mx-auto max-w-6xl px-4 pb-6 sm:px-6">
-  <div class="grid items-center gap-6 overflow-hidden rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-8 text-white sm:p-10 lg:grid-cols-[1fr_auto]">
+    {{!-- ── Grid ── --}}
     <div>
-      <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "Know Salesforce? Teach it."}}</h2>
-      <p class="mt-2 max-w-xl text-white/80">{{t "Share your expertise with thousands of learners. Contribute a course or lesson — everything stays open and credited to you."}}</p>
-    </div>
-    <div class="flex flex-wrap gap-3">
-      <a href="/contact/" class="inline-flex items-center gap-2 rounded-pill bg-white px-5 py-3 font-bold text-brand-700 transition hover:bg-brand-50">{{> "icons/users" class="h-5 w-5"}}{{t "Become an instructor"}}</a>
-      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill px-5 py-3 font-semibold ring-1 ring-white/40 transition hover:bg-white/10">{{> "icons/github" class="h-5 w-5"}}{{t "Contribute"}}</a>
+      <div class="ns-catalog-grid">
+        {{!-- Sponsored card leads --}}
+        {{> "courses/sponsored-card"}}
+
+        {{#foreach posts}}
+          <div x-show="show($el.firstElementChild)">{{> "courses/course-card"}}</div>
+          {{#has number="nth:4"}}<div class="ns-catalog-grid__full">{{> "ads/leaderboard"}}</div>{{/has}}
+        {{else}}
+          <div class="ns-catalog-grid__full rounded-card border border-dashed border-border py-16 text-center text-muted">
+            <i class="ph ph-graduation-cap mb-3 text-4xl" aria-hidden="true"></i>
+            <p class="text-lg font-semibold">{{t "Courses coming soon!"}}</p>
+          </div>
+        {{/foreach}}
+      </div>
+
+      {{pagination}}
     </div>
   </div>
 </section>
 
-{{!-- Feedback --}}
-<section class="mx-auto max-w-6xl px-4 pb-16 text-center sm:px-6">
-  <div class="rounded-card border border-border bg-surface-raised p-8 shadow-card">
-    <i class="ph-fill ph-chat-circle-text mx-auto mb-3 block text-3xl text-brand-500" aria-hidden="true"></i>
-    <h2 class="font-heading text-xl font-extrabold">{{t "Missing a course you'd love to see?"}}</h2>
-    <p class="mx-auto mt-2 max-w-lg text-muted">{{t "Tell us what to build next — your feedback shapes the curriculum."}}</p>
-    <a href="/contact/" class="mt-5 inline-flex items-center gap-2 rounded-pill border border-border px-5 py-2.5 font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/mail" class="h-5 w-5"}}{{t "Share feedback"}}</a>
+{{!-- Become an author (animated) --}}
+<section class="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
+  <div class="ns-become ns-aurora relative overflow-hidden rounded-card bg-gradient-to-br from-brand-600 via-brand-800 to-brand-900 p-8 text-white sm:p-10">
+    <div aria-hidden="true" class="bg-dots pointer-events-none absolute inset-0 text-white/40"></div>
+    <div class="relative grid items-center gap-6 lg:grid-cols-[1fr_auto]">
+      <div>
+        <p class="ns-kicker ns-kicker--light">{{t "Teach with us"}}</p>
+        <h2 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">{{t "Know Salesforce? Become an author."}}</h2>
+        <p class="mt-2 max-w-xl text-white/80">{{t "Share your expertise with thousands of learners. Publish a course or lesson — open, credited, and forever free to read."}}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="/become-author/" class="ns-btn ns-btn--white"><i class="ph-fill ph-pen-nib" aria-hidden="true"></i>{{t "Become an author"}}</a>
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--glass">{{> "icons/github" class="h-5 w-5"}}{{t "Contribute"}}</a>
+      </div>
+    </div>
+    {{!-- animated orbiting glyphs --}}
+    <span class="ns-become__orbit ns-become__orbit--1"><i class="ph-fill ph-code" aria-hidden="true"></i></span>
+    <span class="ns-become__orbit ns-become__orbit--2"><i class="ph-fill ph-lightbulb" aria-hidden="true"></i></span>
+    <span class="ns-become__orbit ns-become__orbit--3"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i></span>
   </div>
 </section>

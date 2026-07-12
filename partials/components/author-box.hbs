@@ -1,0 +1,20 @@
+{{!-- components/author-box.hbs — "Written by" author card, shown after lesson
+     content. Context: a post (uses {{#primary_author}}). --}}
+{{#primary_author}}
+<div class="ns-authorbox">
+  <span class="ns-ring shrink-0">
+    {{#if profile_image}}<img src="{{img_url profile_image size="s"}}" alt="{{name}}" class="h-16 w-16 object-cover">
+    {{else}}<span class="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-user text-2xl" aria-hidden="true"></i></span>{{/if}}
+  </span>
+  <div class="min-w-0">
+    <p class="text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Written by"}}</p>
+    <p class="font-heading text-lg font-bold">{{name}}</p>
+    {{#if bio}}<p class="mt-1 text-sm text-muted">{{bio}}</p>{{/if}}
+    <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+      <a href="{{url}}" class="inline-flex items-center gap-1 font-semibold text-brand-600 hover:underline dark:text-brand-300"><i class="ph ph-books" aria-hidden="true"></i>{{t "More by"}} {{name}}</a>
+      {{#if website}}<a href="{{website}}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-muted hover:text-brand-600"><i class="ph ph-globe" aria-hidden="true"></i>{{t "Website"}}</a>{{/if}}
+      {{#if twitter}}<a href="https://x.com/{{twitter}}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-muted hover:text-brand-600"><i class="ph ph-x-logo" aria-hidden="true"></i>{{twitter}}</a>{{/if}}
+    </div>
+  </div>
+</div>
+{{/primary_author}}

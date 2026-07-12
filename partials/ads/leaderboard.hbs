@@ -1,0 +1,11 @@
+{{!-- ads/leaderboard.hbs — reusable 728×90 leaderboard ad slot.
+     Resolves to a real AdSense unit when ads are enabled + a publisher ID is
+     set (Ghost Admin → Design); otherwise a labelled dummy placeholder so the
+     layout is visible during development. Drop it anywhere: {{> "ads/leaderboard"}} --}}
+<div class="ns-ad ns-ad--leaderboard" aria-label="{{t "Advertisement"}}">
+  {{#if @custom.enable_ads}}{{#if @custom.adsense_publisher_id}}
+    <ins class="adsbygoogle" style="display:inline-block;width:728px;height:90px"
+         data-ad-client="{{@custom.adsense_publisher_id}}"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  {{else}}{{> "ads/leaderboard-placeholder"}}{{/if}}{{else}}{{> "ads/leaderboard-placeholder"}}{{/if}}
+</div>

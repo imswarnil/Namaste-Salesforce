@@ -1,0 +1,43 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   NAMASTE UI · overrides.css — restyles of EXISTING theme classes
+   ----------------------------------------------------------------------------
+   These ride classes the templates already carry (.js-spotlight, .icon-btn,
+   .nav-link), so the whole site picks up the identity with no markup churn.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* “Diya light” on every spotlight card — hairline top-edge highlight
+     always, soft blue glow ring on hover. (.js-spotlight's own glow uses
+     ::before; we take ::after.) */
+  .js-spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 55%, transparent);
+    transition: box-shadow 0.3s ease;
+  }
+  [data-theme="dark"] .js-spotlight::after {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 9%, transparent);
+  }
+  .js-spotlight:hover::after {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 55%, transparent),
+                0 0 0 1px color-mix(in srgb, var(--color-brand-500) 35%, transparent),
+                0 12px 40px -12px color-mix(in srgb, var(--color-brand-500) 40%, transparent);
+  }
+  [data-theme="dark"] .js-spotlight:hover::after {
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff 9%, transparent),
+                0 0 0 1px color-mix(in srgb, var(--color-brand-400) 40%, transparent),
+                0 12px 40px -12px color-mix(in srgb, var(--color-brand-400) 35%, transparent);
+  }
+
+  /* Header sign-up icon — solid brand (site-consistent). */
+  .icon-btn--brand {
+    background-color: var(--color-brand-500);
+    color: #fff;
+    box-shadow: var(--shadow-brand);
+  }
+  .icon-btn--brand:hover { background-color: var(--color-brand-600); }
+
+}

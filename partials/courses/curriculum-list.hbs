@@ -1,0 +1,42 @@
+{{!-- courses/curriculum-list.hbs — the course's lessons, pulled with {{#get}}
+     (Handlebars, not JS). Each row shows a THUMBNAIL (lesson feature image →
+     author avatar → type icon), the type (video/article), duration, and access
+     state. Access is by Ghost VISIBILITY: public = free; members/paid = locked;
+     a #preview lesson is always previewable. 3 styles via #curriculum-cards /
+     #curriculum-timeline. Context: a #course post. --}}
+<div class="ns-curriculum" data-style="{{#has tag="#curriculum-timeline"}}timeline{{else has tag="#curriculum-cards"}}cards{{else}}list{{/has}}">
+  {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags,authors" order="published_at asc" limit="100" as |lessons|}}
+    {{#foreach lessons}}
+      <a href="{{url}}" class="ns-curriculum__item{{#has tag="#preview"}} is-preview{{else}}{{#match visibility "public"}}{{else}} is-locked{{/match}}{{/has}}">
+        <span class="ns-curriculum__num">{{@number}}</span>
+
+        {{!-- Thumbnail: lesson image → expert avatar → type icon --}}
+        <span class="ns-curriculum__thumb">
+          {{#if feature_image}}<img src="{{img_url feature_image size="xs"}}" alt="" loading="lazy">
+          {{else}}{{#primary_author}}{{#if profile_image}}<img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" loading="lazy">
+          {{else}}<i class="{{#has tag="#lesson-type-video"}}ph-fill ph-play-circle{{else}}ph ph-file-text{{/has}}" aria-hidden="true"></i>{{/if}}
+          {{else}}<i class="{{#has tag="#lesson-type-video"}}ph-fill ph-play-circle{{else}}ph ph-file-text{{/has}}" aria-hidden="true"></i>{{/primary_author}}{{/if}}
+        </span>
+
+        <span class="ns-curriculum__body">
+          <span class="ns-curriculum__title">{{title}}</span>
+          {{#if excerpt}}<span class="ns-curriculum__desc">{{excerpt words="16"}}</span>{{/if}}
+          <span class="ns-curriculum__type">
+            {{#has tag="#lesson-type-video"}}<i class="ph ph-video-camera" aria-hidden="true"></i>{{t "Video"}}{{else}}<i class="ph ph-article" aria-hidden="true"></i>{{t "Article"}}{{/has}}
+            {{#primary_author}} · {{name}}{{/primary_author}}
+          </span>
+        </span>
+
+        <span class="ns-curriculum__meta">
+          <span class="ns-curriculum__dur">
+            {{#has tag="#lesson-type-video"}}<i class="ph ph-clock" aria-hidden="true"></i>{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}{{else}}<i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% min"}}{{/has}}
+          </span>
+          {{#has tag="#preview"}}<span class="ns-curriculum__badge ns-curriculum__badge--preview"><i class="ph-fill ph-eye" aria-hidden="true"></i>{{t "Preview"}}</span>
+          {{else}}{{#match visibility "public"}}<i class="ph-fill ph-lock-simple-open ns-curriculum__free" title="{{t "Free"}}" aria-hidden="true"></i>{{else}}<i class="ph-fill ph-lock-simple ns-curriculum__lock" title="{{t "Members only"}}" aria-hidden="true"></i>{{/match}}{{/has}}
+        </span>
+      </a>
+    {{else}}
+      <p class="ns-curriculum__empty"><i class="ph ph-wrench" aria-hidden="true"></i> {{t "Lessons are being added."}}</p>
+    {{/foreach}}
+  {{/get}}
+</div>

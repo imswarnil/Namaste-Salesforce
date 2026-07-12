@@ -1,0 +1,57 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+  partials/jsonld/base.hbs — site-wide @graph nodes (emit on EVERY page)
+  ----------------------------------------------------------------------------
+  Three linked nodes with stable @id so per-page nodes can reference them:
+    {site.url}/#owner       Organization (the brand)
+    {site.url}/#website     WebSite (+ SearchAction)
+    {site.url}/#navigation  ItemList of SiteNavigationElement (the navbar)
+  Output is comma-separated with NO trailing comma; per-page nodes prepend a
+  comma. Double-stache only → quotes become &quot; (JSON-safe). No newlines in
+  the interpolated values (site title/description are single-line).
+═══════════════════════════════════════════════════════════════════════════ --}}
+{
+  "@type": "Organization",
+  "@id": "{{@site.url}}/#owner",
+  "name": "{{@site.title}}",
+  "url": "{{@site.url}}/",
+  {{#if @site.logo}}"logo": {
+    "@type": "ImageObject",
+    "@id": "{{@site.url}}/#logo",
+    "url": "{{@site.logo}}"
+  },{{/if}}
+  "sameAs": [
+    "https://github.com/imswarnil/Namaste-Salesforce"{{#if @site.twitter}},
+    "{{social_url type="twitter"}}"{{/if}}{{#if @site.facebook}},
+    "{{social_url type="facebook"}}"{{/if}}
+  ]
+},
+{
+  "@type": "WebSite",
+  "@id": "{{@site.url}}/#website",
+  "url": "{{@site.url}}/",
+  "name": "{{@site.title}}",
+  {{#if @site.description}}"description": "{{@site.description}}",{{/if}}
+  "inLanguage": "{{@site.locale}}",
+  "publisher": { "@id": "{{@site.url}}/#owner" },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "{{@site.url}}/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+},
+{
+  "@type": "ItemList",
+  "@id": "{{@site.url}}/#navigation",
+  "name": "Primary navigation",
+  "itemListElement": [
+    {{#foreach navigation}}{{#unless @first}},{{/unless}}{
+      "@type": "SiteNavigationElement",
+      "position": {{@number}},
+      "name": "{{label}}",
+      "url": "{{url absolute="true"}}"
+    }{{/foreach}}
+  ]
+}

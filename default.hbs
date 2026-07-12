@@ -54,16 +54,25 @@
       Skip to content
     </a>
 
-    {{!-- Site header / primary navigation (partial) --}}
-    {{> header}}
+    {{!-- Site header. Course/lesson/training posts get the distraction-free
+         "course player" header (logo · progress · ✕ back-to-course); everything
+         else gets the standard navigation bar. --}}
+    {{#is "post"}}{{#post}}{{#has tag="#lesson, #training, #training-content"}}{{> "components/course-player-header"}}{{else}}{{> header}}{{/has}}{{/post}}{{else}}{{> header}}{{/is}}
+
+    {{!-- Custom @graph JSON-LD (navbar + site nodes). Placed after the header
+         (before the footer's secondary-nav render) so {{#foreach navigation}}
+         resolves to the PRIMARY menu. Valid for crawlers anywhere in the doc;
+         additive to Ghost's own structured data. --}}
+    {{> "structured-data"}}
 
     {{!-- Page body — each template's content renders here --}}
     <main id="main" class="flex-1">
       {{{body}}}
     </main>
 
-    {{!-- Site footer (partial) --}}
-    {{> footer}}
+    {{!-- Site footer. Lesson/module posts get a minimal, distraction-free
+         footer; every other page gets the full footer. --}}
+    {{#is "post"}}{{#post}}{{#has tag="#lesson, #training-content"}}{{> "footer-lesson"}}{{else}}{{> footer}}{{/has}}{{/post}}{{else}}{{> footer}}{{/is}}
 
     {{!-- Ghost-injected scripts: Portal (members), search, comments, etc. --}}
     {{ghost_foot}}

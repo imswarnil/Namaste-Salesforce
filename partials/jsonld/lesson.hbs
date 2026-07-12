@@ -1,0 +1,26 @@
+{{!-- jsonld/lesson.hbs — LearningResource for a #lesson post, linked back to its
+     course (isPartOf → /courses/{primary_tag}/#course, since course slug == course
+     tag). Adds a VideoObject when the lesson is tagged #lesson-type-video. Emitted
+     inside the page @graph → STARTS with a comma. Double-stache only → JSON-safe. --}}
+,{
+  "@type": "LearningResource",
+  "@id": "{{url absolute="true"}}#lesson",
+  "name": "{{title}}",
+  "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+  "url": "{{url absolute="true"}}",
+  "learningResourceType": "{{#has tag="#lesson-type-video"}}Video{{else}}Lesson{{/has}}",
+  "inLanguage": "{{@site.locale}}",
+  "isAccessibleForFree": {{#has tag="#free"}}true{{else has tag="#preview"}}true{{else}}false{{/has}},
+  "author": { "@id": "{{@site.url}}/#owner" },
+  "isPartOf": { "@id": "{{@site.url}}/courses/{{primary_tag.slug}}/#course" }
+}{{#has tag="#lesson-type-video"}},
+{
+  "@type": "VideoObject",
+  "@id": "{{url absolute="true"}}#video",
+  "name": "{{title}}",
+  "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+  {{#if feature_image}}"thumbnailUrl": "{{feature_image}}",{{/if}}
+  "uploadDate": "{{date format="YYYY-MM-DDTHH:mm:ssZ"}}",
+  "embedUrl": "{{url absolute="true"}}",
+  "isPartOf": { "@id": "{{url absolute="true"}}#lesson" }
+}{{/has}}

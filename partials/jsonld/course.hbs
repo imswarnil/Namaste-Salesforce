@@ -1,0 +1,42 @@
+{{!-- jsonld/course.hbs — Course (+ CourseInstance, offers, hasPart→lessons) and
+     a WebPage node for a #course post. Emitted inside the page @graph, so it
+     STARTS with a comma (base nodes have no trailing comma). Fields derive from
+     the course's tags: #level-*, #free/#paid. Lessons are linked by @id only
+     (defined on their own pages). Double-stache only → JSON-safe. --}}
+,{
+  "@type": "Course",
+  "@id": "{{url absolute="true"}}#course",
+  "name": "{{title}}",
+  "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+  "url": "{{url absolute="true"}}",
+  {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
+  "provider": { "@id": "{{@site.url}}/#owner" },
+  {{#if primary_tag}}"about": "{{primary_tag.name}}",{{/if}}
+  "inLanguage": "{{@site.locale}}",
+  "educationalLevel": "{{#has tag="#level-beginner"}}Beginner{{else has tag="#level-intermediate"}}Intermediate{{else has tag="#level-advanced"}}Advanced{{else}}Beginner{{/has}}",
+  "isAccessibleForFree": {{#has tag="#free"}}true{{else}}false{{/has}},
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": "online",
+    "instructor": { "@id": "{{@site.url}}/#owner" },
+    "offers": {
+      "@type": "Offer",
+      "category": "{{#has tag="#free"}}Free{{else}}Paid{{/has}}",
+      "price": {{#has tag="#free"}}0{{else}}0{{/has}},
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": "{{url absolute="true"}}"
+    }
+  },
+  "hasPart": [
+    {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}{{#foreach posts}}{{#unless @first}},{{/unless}}{ "@id": "{{url absolute="true"}}#lesson" }{{/foreach}}{{/get}}
+  ]
+},
+{
+  "@type": "WebPage",
+  "@id": "{{url absolute="true"}}#webpage",
+  "url": "{{url absolute="true"}}",
+  "name": "{{meta_title}}",
+  "isPartOf": { "@id": "{{@site.url}}/#website" },
+  "mainEntity": { "@id": "{{url absolute="true"}}#course" }
+}
