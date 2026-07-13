@@ -21,30 +21,6 @@
       <span class="hidden min-w-0 truncate font-heading text-lg font-extrabold tracking-tight text-ink sm:inline">{{@site.title}}</span>
     </a>
 
-    {{!-- Topics — hover-opens a tag cloud (desktop) --}}
-    <div class="ns-topics relative hidden shrink-0 lg:block" x-data="{ open: false }"
-         @mouseenter="open = true" @mouseleave="open = false" @focusin="open = true" @focusout="open = false">
-      <button type="button" class="nav-link" :aria-expanded="open.toString()" @click="open = !open">
-        <i class="ph ph-hash" aria-hidden="true"></i><span>{{t "Topics"}}</span>
-        <i class="ph ph-caret-down text-xs transition-transform" :class="open && 'rotate-180'" aria-hidden="true"></i>
-      </button>
-      <div class="ns-topics__panel" x-show="open" x-cloak
-           x-transition:enter="transition ease-out duration-150"
-           x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
-        <p class="ns-topics__title">{{t "Browse by topic"}}</p>
-        <div class="ns-topics__cloud">
-          {{#get "tags" filter="visibility:public" limit="24" include="count.posts" order="count.posts desc"}}
-            {{#foreach tags}}
-              <a href="{{url}}" class="ns-tagchip"><span>{{name}}</span><b>{{count.posts}}</b></a>
-            {{else}}
-              <p class="text-sm text-muted">{{t "No topics yet."}}</p>
-            {{/foreach}}
-          {{/get}}
-        </div>
-        <a href="/blog/" class="ns-topics__all">{{t "All articles"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-      </div>
-    </div>
-
     {{!-- Desktop nav — absolutely centered across the full-width bar --}}
     <nav class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block" aria-label="{{t "Primary"}}">
       <ul class="flex items-center gap-0.5">{{navigation}}</ul>

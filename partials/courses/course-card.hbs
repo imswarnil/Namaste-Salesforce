@@ -1,4 +1,4 @@
-{{!-- courses/course-card.hbs — catalog course card (compact, site-default feel).
+{{!-- courses/course-card.hbs — catalog course card (minimal).
      Context: a #course post. Carries data-* the catalog filter reads
      (title, price, level, author, duration tag). --}}
 <article class="ns-ccard js-spotlight group{{#if featured}} is-featured{{/if}}"
@@ -8,35 +8,30 @@
          data-author="{{#primary_author}}{{slug}}{{/primary_author}}"
          data-duration="{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}{{slug}}{{/match}}{{/foreach}}">
 
-  {{#if featured}}<span class="ns-ccard__ribbon"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}</span>{{/if}}
-
   {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
     <a href="{{url}}" tabindex="-1" aria-hidden="true" class="ns-ccard__media">
       <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" class="ns-zoom">
-      <span class="ns-ccard__media-badges">
-        {{> "components/course-level"}}
-        {{#has tag="#paid"}}<span class="ns-pill-icon ns-pill-icon--paid" title="{{t "Members"}}"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i></span>{{else}}<span class="ns-pill-icon ns-pill-icon--free" title="{{t "Free"}}"><i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i></span>{{/has}}
-      </span>
+      <span class="ns-ccard__media-badges">{{> "components/course-level"}}</span>
+      {{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free">{{t "Free"}}</span>{{/has}}
     </a>
   {{/if}}{{/has}}
 
   <div class="ns-ccard__body">
-    {{#has tag="#hide-image"}}<div class="mb-3 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-pill-icon ns-pill-icon--paid" title="{{t "Members"}}"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i></span>{{else}}<span class="ns-pill-icon ns-pill-icon--free" title="{{t "Free"}}"><i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i></span>{{/has}}</div>
-    {{else}}{{#unless feature_image}}<div class="mb-3 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-pill-icon ns-pill-icon--paid" title="{{t "Members"}}"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i></span>{{else}}<span class="ns-pill-icon ns-pill-icon--free" title="{{t "Free"}}"><i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i></span>{{/has}}</div>{{/unless}}{{/has}}
+    {{#has tag="#hide-image"}}<div class="mb-2.5 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid ns-ccard__price--static">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free ns-ccard__price--static">{{t "Free"}}</span>{{/has}}</div>
+    {{else}}{{#unless feature_image}}<div class="mb-2.5 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid ns-ccard__price--static">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free ns-ccard__price--static">{{t "Free"}}</span>{{/has}}</div>{{/unless}}{{/has}}
 
-    <h2 class="font-heading text-lg font-bold leading-snug">
+    <h2 class="font-heading text-base font-bold leading-snug">
       <a href="{{url}}" class="transition-colors hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
     </h2>
-    <p class="ns-ccard__excerpt mt-1.5 text-sm text-muted">{{excerpt words="12"}}&hellip;</p>
 
-    <div class="ns-ccard__meta mt-3">
-      {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" limit="100" as |ls|}}<span><i class="ph ph-list-checks" aria-hidden="true"></i>{{ls.length}}</span>{{/get}}
+    <div class="ns-ccard__meta mt-2">
+      {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" limit="100" as |ls|}}<span><i class="ph ph-list-checks" aria-hidden="true"></i>{{ls.length}} {{t "lessons"}}</span>{{/get}}
       {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<span><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</span>{{/match}}{{/foreach}}
     </div>
 
     <div class="ns-ccard__foot">
-      {{#primary_author}}<span class="ns-ccard__author">{{#if profile_image}}<img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-6 w-6 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-6 w-6"><i class="ph-fill ph-user" aria-hidden="true"></i></span>{{/if}}<span class="truncate">{{name}}</span></span>{{/primary_author}}
-      <a href="{{url}}" class="ns-ccard__cta">{{t "View"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      {{#primary_author}}<span class="ns-ccard__author">{{#if profile_image}}<img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-5 w-5 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-5 w-5"><i class="ph-fill ph-user" aria-hidden="true"></i></span>{{/if}}<span class="truncate">{{name}}</span></span>{{/primary_author}}
+      <a href="{{url}}" class="ns-ccard__cta" aria-label="{{t "View"}} {{title}}">{{t "View"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
     </div>
   </div>
 </article>

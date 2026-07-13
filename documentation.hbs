@@ -1,7 +1,8 @@
 {{!< default}}
 {{!-- documentation.hbs — Documentation hub (index).
-     Hero with docs-only search · collapsible sidebar · filterable doc grid ·
-     contributor CTA. Search + filter share one Alpine scope. --}}
+     Hero with docs-only search · 3-col help center: sticky section sidebar (left)
+     · big-icon section blocks (center) · fixed "On this page" TOC (right).
+     Search + sidebar + TOC share one Alpine scope; TOC uses a scroll-spy. --}}
 <div x-data="{ q: '' }">
 
   {{!-- Hero with search --}}
@@ -21,56 +22,69 @@
     </div>
   </header>
 
-  <section class="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:py-16">
+  <div class="mx-auto max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)_13rem] lg:py-16">
 
-    {{!-- Category cards — one per section (each doc's PRIMARY tag is its
-         `docs-NN-*` section). Help-center layout: card → article links. --}}
-    <div class="grid gap-6 sm:grid-cols-2">
+    {{!-- ── Left: sticky section sidebar ── --}}
+    <aside class="hidden lg:block">
+      <nav class="sticky top-24 self-start" aria-label="{{t "Sections"}}">
+        <p class="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-muted">{{t "Sections"}}</p>
+        <ul class="space-y-0.5">
+          {{#get "tags" filter="slug:~^'docs-'" order="slug asc" limit="30"}}
+            {{#foreach tags}}
+              <li>
+                <a href="#{{slug}}" class="doc-toc-link flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300">
+                  <i class="ph {{#match slug "docs-01-getting-started"}}ph-rocket-launch{{else match slug "docs-02-account-profile"}}ph-user-circle{{else match slug "docs-03-courses-lessons"}}ph-graduation-cap{{else match slug "docs-04-roadmaps"}}ph-map-trifold{{else match slug "docs-05-membership-billing"}}ph-credit-card{{else match slug "docs-06-certificates-progress"}}ph-seal-check{{else match slug "docs-07-become-an-author"}}ph-pen-nib{{else match slug "docs-08-community-support"}}ph-users-three{{else match slug "docs-09-troubleshooting"}}ph-wrench{{else}}ph-folder-open{{/match}} shrink-0 text-base" aria-hidden="true"></i>
+                  <span class="truncate">{{name}}</span>
+                </a>
+              </li>
+            {{/foreach}}
+          {{/get}}
+        </ul>
+      </nav>
+    </aside>
+
+    {{!-- ── Center: big-icon section blocks ── --}}
+    <main class="min-w-0">
       {{#get "tags" filter="slug:~^'docs-'" order="slug asc" limit="30"}}
         {{#foreach tags}}
-          <section data-cat
+          <section id="{{slug}}" data-cat data-section="{{slug}}"
                    x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-                   class="flex flex-col rounded-card border border-border bg-surface-raised p-6 shadow-card transition hover:shadow-raised">
-            <div class="mb-4 flex items-center gap-3">
-              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-2xl text-brand-600 dark:text-brand-300">
-                {{#match slug "docs-01-getting-started"}}<i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>
-                {{else match slug "docs-02-account-profile"}}<i class="ph-fill ph-user-circle" aria-hidden="true"></i>
-                {{else match slug "docs-03-courses-lessons"}}<i class="ph-fill ph-graduation-cap" aria-hidden="true"></i>
-                {{else match slug "docs-04-roadmaps"}}<i class="ph-fill ph-map-trifold" aria-hidden="true"></i>
-                {{else match slug "docs-05-membership-billing"}}<i class="ph-fill ph-credit-card" aria-hidden="true"></i>
-                {{else match slug "docs-06-certificates-progress"}}<i class="ph-fill ph-seal-check" aria-hidden="true"></i>
-                {{else match slug "docs-07-become-an-author"}}<i class="ph-fill ph-pen-nib" aria-hidden="true"></i>
-                {{else match slug "docs-08-community-support"}}<i class="ph-fill ph-users-three" aria-hidden="true"></i>
-                {{else match slug "docs-09-troubleshooting"}}<i class="ph-fill ph-wrench" aria-hidden="true"></i>
-                {{else}}<i class="ph-fill ph-folder-open" aria-hidden="true"></i>
-                {{/match}}
+                   class="scroll-mt-24 border-t border-border pt-10 first:border-t-0 first:pt-0 [&:not(:first-child)]:mt-10">
+
+            {{!-- Big icon + section title + summary --}}
+            <div class="flex items-start gap-4">
+              <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-500/10 text-3xl text-brand-600 dark:text-brand-300">
+                <i class="ph-fill {{#match slug "docs-01-getting-started"}}ph-rocket-launch{{else match slug "docs-02-account-profile"}}ph-user-circle{{else match slug "docs-03-courses-lessons"}}ph-graduation-cap{{else match slug "docs-04-roadmaps"}}ph-map-trifold{{else match slug "docs-05-membership-billing"}}ph-credit-card{{else match slug "docs-06-certificates-progress"}}ph-seal-check{{else match slug "docs-07-become-an-author"}}ph-pen-nib{{else match slug "docs-08-community-support"}}ph-users-three{{else match slug "docs-09-troubleshooting"}}ph-wrench{{else}}ph-folder-open{{/match}}" aria-hidden="true"></i>
               </span>
               <div class="min-w-0">
-                <h3 class="font-heading text-lg font-bold">{{name}}</h3>
-                {{#get "posts" filter="tag:documentation+primary_tag:{{slug}}" limit="1"}}<p class="text-xs text-muted">{{pagination.total}} {{t "articles"}}</p>{{/get}}
+                <h2 class="font-heading text-2xl font-extrabold tracking-tight">{{name}}</h2>
+                {{#if description}}<p class="mt-1 text-sm text-muted">{{description}}</p>
+                {{else}}{{#get "posts" filter="tag:documentation+primary_tag:{{slug}}" limit="1"}}<p class="mt-1 text-sm text-muted">{{pagination.total}} {{t "articles in this section"}}</p>{{/get}}{{/if}}
               </div>
             </div>
-            <ul class="space-y-0.5">
+
+            {{!-- Article list --}}
+            <ul class="mt-5 grid gap-2 sm:grid-cols-2">
               {{#get "posts" filter="tag:documentation+primary_tag:{{slug}}" limit="100" order="published_at asc"}}
                 {{#foreach posts}}
                   <li>
                     <a href="{{url}}" data-title="{{title}}"
                        x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
-                       class="group flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300">
-                      <i class="ph ph-file-text shrink-0 opacity-60" aria-hidden="true"></i>
-                      <span class="truncate">{{title}}</span>
-                      <i class="ph ph-arrow-right ml-auto shrink-0 opacity-0 transition group-hover:opacity-100" aria-hidden="true"></i>
+                       class="group flex items-center gap-2.5 rounded-lg border border-transparent px-3 py-2.5 text-sm text-ink transition hover:border-border hover:bg-surface-raised hover:shadow-card">
+                      <i class="ph ph-file-text shrink-0 text-brand-500 opacity-70" aria-hidden="true"></i>
+                      <span class="truncate group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
+                      <i class="ph ph-arrow-right ml-auto shrink-0 text-muted opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden="true"></i>
                     </a>
                   </li>
                 {{else}}
-                  <li><span class="block px-2 py-1.5 text-sm italic text-muted">{{t "Coming soon."}}</span></li>
+                  <li class="sm:col-span-2"><span class="block px-3 py-2.5 text-sm italic text-muted">{{t "Coming soon."}}</span></li>
                 {{/foreach}}
               {{/get}}
             </ul>
           </section>
         {{else}}
           {{!-- Fallback: no section tags → flat list of all docs --}}
-          <div class="sm:col-span-2 grid gap-4 sm:grid-cols-2">
+          <div class="grid gap-4 sm:grid-cols-2">
             {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
               {{#foreach posts}}
                 <a href="{{url}}" data-title="{{title}}"
@@ -86,24 +100,61 @@
           </div>
         {{/foreach}}
       {{/get}}
-    </div>
 
-    {{!-- No-results (search) --}}
-    <p x-show="q !== '' && ![...document.querySelectorAll('[data-cat] a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-       class="mt-10 rounded-card border border-dashed border-border py-12 text-center text-muted">
-      {{t "No articles match your search."}}
-    </p>
+      {{!-- No-results (search) --}}
+      <p x-show="q !== '' && ![...document.querySelectorAll('[data-cat] a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
+         class="mt-10 rounded-card border border-dashed border-border py-12 text-center text-muted">
+        {{t "No articles match your search."}}
+      </p>
 
-    {{!-- Contributor CTA --}}
-    <div class="mt-12 grid items-center gap-6 rounded-card border border-border bg-surface-sunken p-6 sm:grid-cols-[1fr_auto] sm:p-8">
-      <div>
-        <h3 class="font-heading text-lg font-bold">{{t "Help improve these docs"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "Spotted a gap or an error? Request contributor access or open an edit on GitHub — docs are community-maintained."}}</p>
+      {{!-- Contributor CTA --}}
+      <div class="mt-12 grid items-center gap-6 rounded-card border border-border bg-surface-sunken p-6 sm:grid-cols-[1fr_auto] sm:p-8">
+        <div>
+          <h3 class="font-heading text-lg font-bold">{{t "Help improve these docs"}}</h3>
+          <p class="mt-1 text-sm text-muted">{{t "Spotted a gap or an error? Request contributor access or open an edit on GitHub — docs are community-maintained."}}</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=docs&title=Docs%20feedback" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Edit on GitHub"}}</a>
+          <a href="/contact/" class="inline-flex items-center gap-2 rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Request access"}}</a>
+        </div>
       </div>
-      <div class="flex flex-wrap gap-3">
-        <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=docs&title=Docs%20feedback" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Edit on GitHub"}}</a>
-        <a href="/contact/" class="inline-flex items-center gap-2 rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Request access"}}</a>
-      </div>
-    </div>
-  </section>
+    </main>
+
+    {{!-- ── Right: fixed "On this page" TOC ── --}}
+    <aside class="hidden lg:block">
+      <nav class="sticky top-24 self-start" aria-label="{{t "On this page"}}">
+        <p class="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-muted">{{t "On this page"}}</p>
+        <ul class="space-y-0.5 border-l border-border">
+          {{#get "tags" filter="slug:~^'docs-'" order="slug asc" limit="30"}}
+            {{#foreach tags}}
+              <li>
+                <a href="#{{slug}}" data-toc="{{slug}}"
+                   class="doc-spy -ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300">
+                  {{name}}
+                </a>
+              </li>
+            {{/foreach}}
+          {{/get}}
+        </ul>
+      </nav>
+    </aside>
+  </div>
 </div>
+
+{{!-- Scroll-spy: highlight the section currently in view in both side rails --}}
+<script>
+  (function () {
+    var secs = document.querySelectorAll('section[data-section]');
+    if (!secs.length || !('IntersectionObserver' in window)) return;
+    function setActive(slug) {
+      document.querySelectorAll('.doc-spy, .doc-toc-link').forEach(function (a) {
+        var on = a.getAttribute('href') === '#' + slug;
+        a.classList.toggle('is-doc-active', on);
+      });
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+  })();
+</script>

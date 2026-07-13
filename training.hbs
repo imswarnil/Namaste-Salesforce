@@ -1,36 +1,102 @@
 {{!< default}}
-{{!-- training.hbs — Roadmaps as a numbered, animated timeline.
-     Each #training track is a numbered node (training/track-node) on a vertical
-     rail; nodes reveal on scroll. --}}
+{{!-- training.hbs — "Learn Salesforce end to end" training landing.
+     Hero + stats · why-train-with-us value strip · the roadmap tracks as a grid
+     of numbered "path stage" cards (training/track-card) · request-a-topic CTA. --}}
 
-{{#page}}
-  {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title=title subtitle=custom_excerpt}}
-{{else}}
-  {{> "components/page-header" icon="ph-map-trifold" eyebrow="Roadmaps" title="Training Roadmaps" subtitle="Follow the path step by step — from Salesforce fundamentals to advanced analytics and AI."}}
-{{/page}}
+{{!-- ── Hero ── --}}
+<header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
+  {{> "components/hero-bg"}}
+  <div class="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
+    <p class="inline-flex items-center gap-2 rounded-pill bg-white/10 px-3 py-1 text-sm font-semibold uppercase tracking-[0.12em] text-brand-100 ring-1 ring-white/20">
+      <i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "Salesforce Roadmaps"}}
+    </p>
+    {{#page}}
+      <h1 class="mt-4 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{{title}}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-white/80">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Structured, hands-on paths that take you from Salesforce fundamentals to advanced development, analytics and AI — everything you need, in order."}}{{/if}}</p>
+    {{else}}
+      <h1 class="mt-4 font-heading text-4xl font-extrabold tracking-tight sm:text-5xl">{{t "Learn Salesforce, end to end."}}</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-white/80">{{t "Structured, hands-on roadmaps that take you from the very basics to advanced development, analytics and AI — everything you need to master the platform, in the right order."}}</p>
+    {{/page}}
 
-<section class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
-  <ol class="ns-steps">
-    {{#foreach posts}}
-      {{> "training/track-node"}}
-    {{/foreach}}
-  </ol>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a href="#tracks" class="inline-flex items-center gap-2 rounded-pill bg-white px-6 py-3 font-bold text-brand-700 shadow-raised transition hover:bg-brand-50"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning"}}</a>
+      <a href="/courses/" class="inline-flex items-center gap-2 rounded-pill border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10"><i class="ph ph-graduation-cap" aria-hidden="true"></i>{{t "Browse courses"}}</a>
+    </div>
 
-  {{^posts}}
+    {{!-- stats --}}
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+      <div class="text-center">
+        <div class="font-heading text-3xl font-extrabold"><span class="js-count" data-to="{{pagination.total}}">0</span></div>
+        <div class="text-sm text-white/60">{{t "Roadmaps"}}</div>
+      </div>
+      {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+        <div class="text-center">
+          <div class="font-heading text-3xl font-extrabold"><span class="js-count" data-to="{{pagination.total}}">0</span></div>
+          <div class="text-sm text-white/60">{{t "Modules"}}</div>
+        </div>
+      {{/get}}
+      <div class="text-center">
+        <div class="font-heading text-3xl font-extrabold">{{t "Free"}}</div>
+        <div class="text-sm text-white/60">{{t "Forever to read"}}</div>
+      </div>
+      <div class="text-center">
+        <div class="font-heading text-3xl font-extrabold">{{t "Self-paced"}}</div>
+        <div class="text-sm text-white/60">{{t "Learn anytime"}}</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+{{!-- ── Why train with us ── --}}
+<section class="border-b border-border bg-surface-sunken">
+  <div class="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+    <div class="flex items-start gap-3">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-path text-lg" aria-hidden="true"></i></span>
+      <div><h3 class="font-heading font-bold">{{t "A clear path"}}</h3><p class="mt-0.5 text-sm text-muted">{{t "Stages ordered from zero to job-ready — no guessing what to learn next."}}</p></div>
+    </div>
+    <div class="flex items-start gap-3">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-wrench text-lg" aria-hidden="true"></i></span>
+      <div><h3 class="font-heading font-bold">{{t "Hands-on"}}</h3><p class="mt-0.5 text-sm text-muted">{{t "Every module is practical — build, configure and code as you go."}}</p></div>
+    </div>
+    <div class="flex items-start gap-3">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-seal-check text-lg" aria-hidden="true"></i></span>
+      <div><h3 class="font-heading font-bold">{{t "Cert-ready"}}</h3><p class="mt-0.5 text-sm text-muted">{{t "Aligned to Salesforce certification tracks — Admin, Developer and beyond."}}</p></div>
+    </div>
+    <div class="flex items-start gap-3">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-users-three text-lg" aria-hidden="true"></i></span>
+      <div><h3 class="font-heading font-bold">{{t "Community"}}</h3><p class="mt-0.5 text-sm text-muted">{{t "Open, credited and maintained by working Salesforce professionals."}}</p></div>
+    </div>
+  </div>
+</section>
+
+{{!-- ── Roadmap tracks ── --}}
+<section id="tracks" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
+  <div class="mb-8 max-w-2xl">
+    <h2 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Your learning path"}}</h2>
+    <p class="mt-2 text-muted">{{t "Work through the stages in order, or jump to the track that fits where you are today."}}</p>
+  </div>
+
+  {{#if posts}}
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {{#foreach posts}}
+        {{> "training/track-card"}}
+      {{/foreach}}
+    </div>
+  {{else}}
     <div class="rounded-card border border-dashed border-border py-16 text-center text-muted">
       <i class="ph ph-map-trifold mb-3 text-4xl" aria-hidden="true"></i>
       <p class="text-lg font-semibold">{{t "Roadmaps coming soon!"}}</p>
     </div>
-  {{/posts}}
+  {{/if}}
+
+  {{pagination}}
 
   {{!-- Request a topic --}}
-  <div class="mt-6 flex flex-col items-center justify-between gap-4 rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-6 text-white sm:flex-row sm:p-8">
+  <div class="mt-12 flex flex-col items-center justify-between gap-4 overflow-hidden rounded-card bg-gradient-to-br from-brand-600 to-brand-900 p-6 text-white sm:flex-row sm:p-8">
     <div>
       <h2 class="font-heading text-xl font-bold">{{t "Looking for a specific topic?"}}</h2>
       <p class="mt-1 text-white/80">{{t "New roadmaps are added every month. Tell us what to build next."}}</p>
     </div>
     <a href="/contact/" class="inline-flex shrink-0 items-center gap-2 rounded-pill bg-white px-5 py-2.5 font-bold text-brand-700 transition hover:bg-brand-50">{{> "icons/mail" class="h-5 w-5"}}{{t "Request a topic"}}</a>
   </div>
-
-  {{pagination}}
 </section>

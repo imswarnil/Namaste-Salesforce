@@ -1,0 +1,39 @@
+{{!-- training/track-card.hbs — one roadmap track as a rich "path stage" card.
+     Context: a #training post inside {{#foreach posts}} (uses @number for the
+     stage number). Shows module count, reading time, a preview of the first
+     modules, and a Start-track CTA. Reveals on scroll (.js-reveal). --}}
+<article class="js-reveal group relative flex flex-col overflow-hidden rounded-card border border-border bg-surface-raised p-6 shadow-card transition hover:-translate-y-1 hover:border-brand-400 hover:shadow-raised">
+
+  {{!-- stage number + track tag --}}
+  <div class="flex items-center gap-3">
+    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 font-heading text-lg font-extrabold text-brand-600 dark:text-brand-300">{{@number}}</span>
+    <div class="min-w-0">
+      <p class="text-xs font-bold uppercase tracking-[0.1em] text-muted">{{t "Stage"}} {{@number}}</p>
+      {{#if primary_tag}}<p class="truncate text-sm font-semibold text-brand-600 dark:text-brand-300">{{primary_tag.name}}</p>{{/if}}
+    </div>
+  </div>
+
+  <h3 class="mt-4 font-heading text-xl font-bold leading-snug">
+    <a href="{{url}}" class="transition-colors before:absolute before:inset-0 hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
+  </h3>
+  <p class="mt-1.5 line-clamp-2 text-sm text-muted">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="24"}}&hellip;{{/if}}</p>
+
+  {{!-- meta --}}
+  <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+    {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" limit="1"}}<span class="inline-flex items-center gap-1.5"><i class="ph ph-stack" aria-hidden="true"></i>{{pagination.total}} {{t "modules"}}</span>{{/get}}
+    <span class="inline-flex items-center gap-1.5"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% mins"}}</span>
+  </div>
+
+  {{!-- module preview --}}
+  {{#get "posts" filter="tag:hash-training-content+primary_tag:{{slug}}" order="published_at asc" limit="3"}}
+    {{#if posts}}
+      <ul class="relative z-10 mt-4 space-y-1 border-t border-border pt-4">
+        {{#foreach posts}}
+          <li><a href="{{url}}" class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted transition hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-300"><i class="ph-fill ph-play-circle shrink-0 text-brand-500" aria-hidden="true"></i><span class="line-clamp-1">{{title}}</span></a></li>
+        {{/foreach}}
+      </ul>
+    {{/if}}
+  {{/get}}
+
+  <span class="mt-5 inline-flex items-center gap-1.5 self-start pt-0 text-sm font-bold text-brand-600 transition-all group-hover:gap-2.5 dark:text-brand-300">{{t "Start this stage"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+</article>
