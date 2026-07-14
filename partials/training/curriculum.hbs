@@ -1,10 +1,15 @@
 {{!-- training/curriculum.hbs — THIS track's curriculum, grouped by section.
-     Track = the current post's primary tag (a #training post's own tag, or a
-     #training-content module's primary tag). Sections = public tags slugged
+     Track = the current post's primary tag. Sections = public tags slugged
      `train-{track}-NN-*`; a section's modules are #training-content posts also
-     tagged with that section tag. Static sidebar on lg; mobile drawer via the
-     course-player hamburger. The current module is highlighted. --}}
-<div x-data class="js-lesson-nav">
+     tagged with that section tag.
+     • Search box on top filters modules AND hides emptied sections (Alpine q).
+     • Sections are collapsible <details> with a keyword-matched icon + module
+       count; the section containing the current module opens on load (script
+       below), the rest start closed — and all stay user-toggleable.
+     • Each module shows a type icon and its ACCESS state (lock for members/
+       paid, tier star) straight from Ghost visibility.
+     Static sidebar on lg; mobile drawer via the course-player hamburger. --}}
+<div x-data="{ q: '' }" x-effect="if (q !== '') $el.querySelectorAll('details.train-sec').forEach(d => d.open = true)" class="js-lesson-nav">
   <nav id="training-curriculum" class="ns-lesson-panel" :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
 
     <div class="ns-lesson-panel__bar">
@@ -13,36 +18,61 @@
     </div>
 
     <div class="ns-lesson-panel__body">
-      <div class="mb-4 hidden items-center gap-2 lg:flex">
+      <div class="mb-3 hidden items-center gap-2 lg:flex">
         <i class="ph-fill ph-books text-xl text-brand-500" aria-hidden="true"></i>
         <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
       </div>
 
+      {{!-- Search: filters modules; a section hides when nothing matches --}}
+      <label class="relative mb-3 block">
+        <i class="ph ph-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted" aria-hidden="true"></i>
+        <input x-model="q" type="search" placeholder="{{t "Search lessons…"}}" aria-label="{{t "Search lessons"}}"
+               class="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none">
+      </label>
+
       {{#get "tags" filter="slug:~^'train-{{primary_tag.slug}}-'" order="slug asc" limit="30"}}
         {{#foreach tags}}
-          <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted first:mt-0">{{name}}</p>
-          <ul class="space-y-0.5 border-l border-border">
-            {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" order="published_at asc" limit="100"}}
-              {{#foreach posts}}
-                <li>
-                  <a href="{{url}}" @click="$store.lessonNav.close()"
-                     class="doc-nav-link -ml-px flex items-center justify-between gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
-                    <span class="flex min-w-0 items-center gap-2">
-                      <i class="{{#match id ../../../../id}}ph-fill ph-play-circle text-brand-500{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
-                      <span class="truncate">{{title}}</span>
-                    </span>
-                    <span class="shrink-0 text-xs">{{reading_time minute="1m" minutes="%m"}}</span>
-                  </a>
-                </li>
-              {{/foreach}}
-            {{/get}}
-          </ul>
+          <details class="train-sec group/sec" data-sec="{{slug}}"
+                   x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))">
+            <summary class="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-semibold text-ink transition hover:bg-surface-sunken [&::-webkit-details-marker]:hidden">
+              <i class="ph-fill {{#match slug "~" "foundation"}}ph-flag{{else match slug "~" "data-model"}}ph-database{{else match slug "~" "data-architecture"}}ph-blueprint{{else match slug "~" "automation"}}ph-gear-six{{else match slug "~" "analytics"}}ph-chart-line-up{{else match slug "~" "certification"}}ph-seal-check{{else match slug "~" "apex"}}ph-code{{else match slug "~" "lightning"}}ph-lightning{{else match slug "~" "platform"}}ph-cube{{else match slug "~" "integration"}}ph-plugs-connected{{else match slug "~" "sharing"}}ph-lock-key{{else match slug "~" "devops"}}ph-git-branch{{else match slug "~" "security"}}ph-shield-check{{else}}ph-folder-open{{/match}} shrink-0 text-base text-brand-500" aria-hidden="true"></i>
+              <span class="min-w-0 flex-1 truncate">{{name}}</span>
+              {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" limit="1"}}<span class="shrink-0 rounded-pill bg-surface-sunken px-1.5 py-0.5 text-[0.65rem] font-bold text-muted">{{pagination.total}}</span>{{/get}}
+              <i class="ph ph-caret-right shrink-0 text-xs text-muted transition-transform group-open/sec:rotate-90" aria-hidden="true"></i>
+            </summary>
+            <ol class="train-tl mb-2 pt-1">
+              {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" order="published_at asc" limit="100"}}
+                {{#foreach posts}}
+                  <li x-show="q === '' || $el.querySelector('a').dataset.title.toLowerCase().includes(q.toLowerCase())"
+                      class="{{#match id ../../../../id}}is-active{{/match}}">
+                    <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
+                       class="doc-nav-link flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
+                      <span class="flex min-w-0 items-center gap-2">
+                        <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else has tag="#training-type-video"}}ph ph-video-camera{{else has tag="#training-type-exercise"}}ph ph-barbell{{else has tag="#training-type-quiz"}}ph ph-exam{{else}}ph ph-file-text{{/match}} shrink-0" aria-hidden="true"></i>
+                        <span class="truncate">{{title}}</span>
+                      </span>
+                      <span class="flex shrink-0 items-center gap-1.5 text-xs">
+                        {{#match visibility "public"}}{{else match visibility "members"}}<i class="ph-fill ph-lock-simple" title="{{t "Members only"}}" aria-hidden="true"></i>{{else match visibility "paid"}}<i class="ph-fill ph-crown-simple text-warning" title="{{t "Paid members"}}" aria-hidden="true"></i>{{else}}<i class="ph-fill ph-star" title="{{t "Tier exclusive"}}" aria-hidden="true"></i>{{/match}}
+                        <span>{{reading_time minute="1m" minutes="%m"}}</span>
+                      </span>
+                    </a>
+                  </li>
+                {{/foreach}}
+              {{/get}}
+            </ol>
+          </details>
         {{else}}
-          {{!-- Fallback: no sections defined → list every module in the track --}}
-          <ul class="space-y-0.5 border-l border-border">
+          {{!-- Fallback: no sections defined → flat list of the track's modules --}}
+          <ul class="space-y-0.5">
             {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
               {{#foreach posts}}
-                <li><a href="{{url}}" @click="$store.lessonNav.close()" class="doc-nav-link -ml-px flex items-center gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 {{#match id ../../../../id}}is-doc-active{{/match}}"><i class="ph ph-circle shrink-0" aria-hidden="true"></i><span class="truncate">{{title}}</span></a></li>
+                <li x-show="q === '' || $el.querySelector('a').dataset.title.toLowerCase().includes(q.toLowerCase())">
+                  <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
+                     class="doc-nav-link flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
+                    <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
+                    <span class="truncate">{{title}}</span>
+                  </a>
+                </li>
               {{else}}
                 <li><span class="block px-3 py-2 text-sm italic text-muted">{{t "No lessons yet."}}</span></li>
               {{/foreach}}
@@ -50,6 +80,31 @@
           </ul>
         {{/foreach}}
       {{/get}}
+
+      <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
+         x-cloak class="rounded-lg border border-dashed border-border px-3 py-4 text-center text-sm text-muted">{{t "No lessons match."}}</p>
     </div>
   </nav>
 </div>
+
+{{!-- Open the section containing the current module (others stay closed; on a
+     track OVERVIEW open the first). Then mark every lesson BEFORE the active
+     one .is-done so the timeline rail fills in as the learner progresses. --}}
+<script>
+  (function () {
+    var active = document.querySelector('#training-curriculum .is-doc-active');
+    if (active) {
+      var d = active.closest('details');
+      if (d) d.open = true;
+    } else {
+      var first = document.querySelector('#training-curriculum details.train-sec');
+      if (first) first.open = true;
+    }
+    // progress: everything before the current module counts as done
+    var items = document.querySelectorAll('#training-curriculum .train-tl li');
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].classList.contains('is-active')) break;
+      items[i].classList.add('is-done');
+    }
+  })();
+</script>

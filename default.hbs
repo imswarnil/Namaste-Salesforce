@@ -42,6 +42,13 @@
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{@custom.adsense_publisher_id}}" crossorigin="anonymous"></script>
     {{/if}}{{/if}}
 
+    {{!-- PWA: icons, manifest, theme colour (icon kit in assets/logo/) --}}
+    <link rel="icon" type="image/svg+xml" href="{{asset "logo/favicon.svg"}}">
+    <link rel="icon" href="{{asset "logo/favicon.ico"}}" sizes="48x48">
+    <link rel="apple-touch-icon" href="{{asset "logo/apple-touch-icon.png"}}">
+    <link rel="manifest" href="{{asset "logo/manifest.webmanifest"}}">
+    <meta name="theme-color" content="#0176d3">
+
     {{!-- Ghost-injected SEO tags, structured data, code injection, search, etc. --}}
     {{ghost_head}}
   </head>
@@ -73,6 +80,9 @@
     {{!-- Site footer. Lesson/module posts get a minimal, distraction-free
          footer; every other page gets the full footer. --}}
     {{#is "post"}}{{#post}}{{#has tag="#lesson, #training-content"}}{{> "footer-lesson"}}{{else}}{{> footer}}{{/has}}{{/post}}{{else}}{{> footer}}{{/is}}
+
+    {{!-- PWA install prompt (shown by pwa.js when installable) --}}
+    {{> "components/pwa-install"}}
 
     {{!-- Ghost-injected scripts: Portal (members), search, comments, etc. --}}
     {{ghost_foot}}

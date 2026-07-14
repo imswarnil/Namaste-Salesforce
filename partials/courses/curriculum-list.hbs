@@ -4,7 +4,7 @@
      state. Access is by Ghost VISIBILITY: public = free; members/paid = locked;
      a #preview lesson is always previewable. 3 styles via #curriculum-cards /
      #curriculum-timeline. Context: a #course post. --}}
-<div class="ns-curriculum" data-style="{{#has tag="#curriculum-timeline"}}timeline{{else has tag="#curriculum-cards"}}cards{{else}}list{{/has}}">
+<div class="ns-curriculum" data-style="{{#has tag="#curriculum-timeline"}}timeline{{else has tag="#curriculum-cards"}}cards{{else has tag="#curriculum-detailed"}}detailed{{else}}list{{/has}}">
   {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags,authors" order="published_at asc" limit="100" as |lessons|}}
     {{#foreach lessons}}
       <a href="{{url}}" class="ns-curriculum__item{{#has tag="#preview"}} is-preview{{else}}{{#match visibility "public"}}{{else}} is-locked{{/match}}{{/has}}">
@@ -31,8 +31,13 @@
           <span class="ns-curriculum__dur">
             {{#has tag="#lesson-type-video"}}<i class="ph ph-clock" aria-hidden="true"></i>{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}{{else}}<i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% min"}}{{/has}}
           </span>
+          {{!-- Access badge — one per Ghost visibility, not a lock for everything:
+               public=Free · members=Members · paid=Pro · tiers=Tier exclusive --}}
           {{#has tag="#preview"}}<span class="ns-curriculum__badge ns-curriculum__badge--preview"><i class="ph-fill ph-eye" aria-hidden="true"></i>{{t "Preview"}}</span>
-          {{else}}{{#match visibility "public"}}<i class="ph-fill ph-lock-simple-open ns-curriculum__free" title="{{t "Free"}}" aria-hidden="true"></i>{{else}}<i class="ph-fill ph-lock-simple ns-curriculum__lock" title="{{t "Members only"}}" aria-hidden="true"></i>{{/match}}{{/has}}
+          {{else}}{{#match visibility "public"}}<span class="ns-curriculum__badge ns-curriculum__badge--free" title="{{t "Free — no account needed"}}"><i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i>{{t "Free"}}</span>
+          {{else match visibility "members"}}<span class="ns-curriculum__badge ns-curriculum__badge--members" title="{{t "Free with a member account"}}"><i class="ph-fill ph-user-circle" aria-hidden="true"></i>{{t "Members"}}</span>
+          {{else match visibility "paid"}}<span class="ns-curriculum__badge ns-curriculum__badge--paid" title="{{t "Requires a paid plan"}}"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Pro"}}</span>
+          {{else}}<span class="ns-curriculum__badge ns-curriculum__badge--tiers" title="{{t "Available on specific tiers"}}"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Tier"}}</span>{{/match}}{{/has}}
         </span>
       </a>
     {{else}}

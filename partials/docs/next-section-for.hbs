@@ -1,0 +1,48 @@
+{{!-- docs/next-section-for.hbs — maps the CURRENT section (param: current,
+     clean OR legacy slug) to its successor and renders docs/next-section.
+     Mirrors the order in docs/sections.hbs — keep both in sync.
+     The last section loops back to the docs hub instead. --}}
+{{#match current "getting-started"}}
+  {{> "docs/next-section" slug="account-profile" legacy="docs-02-account-profile" name="Account & Profile" icon="ph-user-circle"}}
+{{else match current "docs-01-getting-started"}}
+  {{> "docs/next-section" slug="account-profile" legacy="docs-02-account-profile" name="Account & Profile" icon="ph-user-circle"}}
+{{else match current "account-profile"}}
+  {{> "docs/next-section" slug="courses-lessons" legacy="docs-03-courses-lessons" name="Courses & Lessons" icon="ph-graduation-cap"}}
+{{else match current "docs-02-account-profile"}}
+  {{> "docs/next-section" slug="courses-lessons" legacy="docs-03-courses-lessons" name="Courses & Lessons" icon="ph-graduation-cap"}}
+{{else match current "courses-lessons"}}
+  {{> "docs/next-section" slug="roadmaps" legacy="docs-04-roadmaps" name="Roadmaps" icon="ph-map-trifold"}}
+{{else match current "docs-03-courses-lessons"}}
+  {{> "docs/next-section" slug="roadmaps" legacy="docs-04-roadmaps" name="Roadmaps" icon="ph-map-trifold"}}
+{{else match current "roadmaps"}}
+  {{> "docs/next-section" slug="membership-billing" legacy="docs-05-membership-billing" name="Membership & Billing" icon="ph-credit-card"}}
+{{else match current "docs-04-roadmaps"}}
+  {{> "docs/next-section" slug="membership-billing" legacy="docs-05-membership-billing" name="Membership & Billing" icon="ph-credit-card"}}
+{{else match current "membership-billing"}}
+  {{> "docs/next-section" slug="certificates-progress" legacy="docs-06-certificates-progress" name="Certificates & Progress" icon="ph-seal-check"}}
+{{else match current "docs-05-membership-billing"}}
+  {{> "docs/next-section" slug="certificates-progress" legacy="docs-06-certificates-progress" name="Certificates & Progress" icon="ph-seal-check"}}
+{{else match current "certificates-progress"}}
+  {{> "docs/next-section" slug="become-an-author" legacy="docs-07-become-an-author" name="Become an Author" icon="ph-pen-nib"}}
+{{else match current "docs-06-certificates-progress"}}
+  {{> "docs/next-section" slug="become-an-author" legacy="docs-07-become-an-author" name="Become an Author" icon="ph-pen-nib"}}
+{{else match current "become-an-author"}}
+  {{> "docs/next-section" slug="community-support" legacy="docs-08-community-support" name="Community & Support" icon="ph-users-three"}}
+{{else match current "docs-07-become-an-author"}}
+  {{> "docs/next-section" slug="community-support" legacy="docs-08-community-support" name="Community & Support" icon="ph-users-three"}}
+{{else match current "community-support"}}
+  {{> "docs/next-section" slug="troubleshooting" legacy="docs-09-troubleshooting" name="Troubleshooting" icon="ph-wrench"}}
+{{else match current "docs-08-community-support"}}
+  {{> "docs/next-section" slug="troubleshooting" legacy="docs-09-troubleshooting" name="Troubleshooting" icon="ph-wrench"}}
+{{else}}
+  {{!-- Last section (or unknown): send readers back to the hub --}}
+  <aside class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-card border border-border bg-surface-sunken p-6 sm:p-8">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "That's a wrap"}}</p>
+      <h3 class="mt-1 font-heading text-lg font-bold">{{t "You've reached the end of the docs."}}</h3>
+    </div>
+    <a href="/docs/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">
+      <i class="ph ph-books" aria-hidden="true"></i> {{t "Back to docs home"}}
+    </a>
+  </aside>
+{{/match}}

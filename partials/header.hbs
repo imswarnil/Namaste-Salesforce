@@ -14,11 +14,12 @@
         x-data="{ open: false, acct: false }">
   <div class="ns-nav__bar relative flex w-full items-center gap-3 px-4 py-2.5 sm:px-6 lg:px-8">
 
-    {{!-- Brand: logo + site title. On phones the long title is hidden so the
-         action icons always fit; it returns from `sm` up. --}}
+    {{!-- Brand: logo + site title. The title stays visible on phones too —
+         it truncates (min-w-0 + shrink on the link) so the icons always fit. --}}
     <a href="{{@site.url}}" class="flex min-w-0 shrink items-center gap-2" aria-label="{{@site.title}}">
-      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto shrink-0">{{/if}}
-      <span class="hidden min-w-0 truncate font-heading text-lg font-extrabold tracking-tight text-ink sm:inline">{{@site.title}}</span>
+      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto shrink-0">
+      {{else}}<img src="{{asset "logo/icon-192.png"}}" alt="{{@site.title}}" class="h-8 w-8 shrink-0 rounded-lg">{{/if}}
+      <span class="min-w-0 truncate font-heading text-base font-extrabold tracking-tight text-ink sm:text-lg">{{@site.title}}</span>
     </a>
 
     {{!-- Desktop nav — absolutely centered across the full-width bar --}}

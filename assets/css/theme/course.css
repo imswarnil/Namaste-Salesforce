@@ -1,7 +1,8 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   NAMASTE UI · course.css — single-course page (post-course.hbs) + course cards
-   Level badges · price tags · hero stats · video poster · curriculum (3 styles)
-   · lock note · leaderboard ad · share menu · Ghost toggle→FAQ & product→testimonial
+   THEME · course.css — the LMS modules: course page + catalog + lesson page
+   Level badges · price tags · hero stats · video poster · curriculum (4 styles)
+   · lock note · ads · share menu · Ghost toggle→FAQ & product→testimonial
+   Flat and legible: solid tints instead of gradients, small shadows.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Level badge (colour-coded) ─────────────────────────────────────────── */
@@ -11,51 +12,54 @@
   font-size: 0.75rem; font-weight: 700; line-height: 1.4;
   border: 1px solid transparent;
 }
-.ns-level--beginner     { color: #fff; background: color-mix(in srgb, var(--color-success) 88%, #000); }
-.ns-level--intermediate { color: #3a2402; background: var(--color-warning); }
-.ns-level--advanced     { color: #fff; background: var(--color-error); }
-/* On light surfaces (cards) use tinted style */
-.ns-card .ns-level--beginner, .pf-tint .ns-level--beginner { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 14%, transparent); }
+/* soft theme tints — readable, never shouting */
+.ns-level--beginner     { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.ns-level--intermediate { color: #8a5a00; background: color-mix(in srgb, var(--color-warning) 16%, transparent); }
+[data-theme="dark"] .ns-level--intermediate { color: var(--color-warning); }
+.ns-level--advanced     { color: var(--color-brand-600); background: color-mix(in srgb, var(--color-brand-500) 12%, transparent); }
+[data-theme="dark"] .ns-level--advanced { color: var(--color-brand-300); }
 
-/* ── Featured + price tags ──────────────────────────────────────────────── */
+/* ── Featured + price tags (solid tints — no gradients) ─────────────────── */
 .ns-badge-featured {
   display: inline-flex; align-items: center; gap: 0.375rem;
   border-radius: var(--radius-pill); padding: 0.2rem 0.7rem;
-  font-size: 0.75rem; font-weight: 800; color: #3a2a02;
-  background: linear-gradient(135deg, #ffd874, #f6a609);
-  box-shadow: 0 0 0 1px rgb(246 166 9 / 0.4), 0 4px 14px -4px rgb(246 166 9 / 0.6);
+  font-size: 0.75rem; font-weight: 800; color: #7c4a03;
+  background: color-mix(in srgb, var(--color-warning) 30%, #fff);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-warning) 45%, transparent);
 }
+[data-theme="dark"] .ns-badge-featured { color: var(--color-warning); background: color-mix(in srgb, var(--color-warning) 18%, transparent); }
 .ns-price-tag {
   display: inline-flex; align-items: center; gap: 0.3rem;
   border-radius: var(--radius-pill); padding: 0.2rem 0.7rem;
   font-size: 0.75rem; font-weight: 700;
 }
-.ns-price-tag--free { color: #fff; background: color-mix(in srgb, var(--color-success) 85%, #000); }
-.ns-price-tag--paid { color: #3a2a02; background: linear-gradient(135deg, #ffe08a, #f0b429); }
+.ns-price-tag--free { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.ns-price-tag--paid { color: #8a5a00; background: color-mix(in srgb, var(--color-warning) 16%, transparent); }
+[data-theme="dark"] .ns-price-tag--paid { color: var(--color-warning); }
 
-/* ── Catalog stats (inline row, light/dark surface) ─────────────────────── */
+/* ── Catalog stats (inline row) ─────────────────────────────────────────── */
 .ns-cat-stats { display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
   gap: 0.75rem 2.5rem; }
 .ns-cat-stat { display: inline-flex; align-items: baseline; gap: 0.4rem; color: var(--color-ink); }
 .ns-cat-stat > i { align-self: center; font-size: 1.15rem; color: var(--color-brand-500); }
-.ns-cat-stat > b { font-family: var(--pf-t--global--font--family--heading); font-size: 1.15rem; font-weight: 800; line-height: 1; }
+.ns-cat-stat > b { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; line-height: 1; }
 .ns-cat-stat > span { font-size: 0.8rem; color: var(--color-muted); }
 @media (max-width: 480px) { .ns-cat-stats { gap: 0.5rem 1.5rem; } }
 
-/* ── Hero stats (count-up) ──────────────────────────────────────────────── */
+/* ── Hero stats ─────────────────────────────────────────────────────────── */
 .ns-course-stats { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; }
 .ns-course-stat { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto;
   column-gap: 0.5rem; align-items: center; }
 .ns-course-stat > i { grid-row: 1 / 3; font-size: 1.5rem; color: var(--color-brand-200); }
-.ns-course-stat > b { font-family: var(--pf-t--global--font--family--heading); font-size: 1.25rem; font-weight: 800; line-height: 1; }
+.ns-course-stat > b { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; line-height: 1; }
 .ns-course-stat > span { font-size: 0.75rem; color: rgb(255 255 255 / 0.65); }
 
-/* ── Video poster (hero-5) ──────────────────────────────────────────────── */
+/* ── Video poster ───────────────────────────────────────────────────────── */
 .ns-video-poster { position: relative; display: block; border-radius: var(--radius-card); overflow: hidden;
   box-shadow: var(--shadow-raised); }
 .ns-video-poster img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover; transition: transform 0.4s ease; }
 .ns-video-poster:hover img { transform: scale(1.05); }
-.ns-video-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(3 45 96 / 0.5), transparent 60%); }
+.ns-video-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / 0.45), transparent 60%); }
 .ns-video-poster__play { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
 .ns-video-poster__play i { display: flex; align-items: center; justify-content: center;
   height: 4.5rem; width: 4.5rem; border-radius: 9999px; background: rgb(255 255 255 / 0.92);
@@ -89,11 +93,19 @@
   padding: 0.1rem 0.5rem; font-size: 0.68rem; font-weight: 700; }
 .ns-curriculum__badge--preview { color: var(--color-brand-600); background: color-mix(in srgb, var(--color-brand-500) 12%, transparent); }
 [data-theme="dark"] .ns-curriculum__badge--preview { color: var(--color-brand-300); }
+/* one badge per Ghost visibility — free / members / paid / specific tiers */
+.ns-curriculum__badge--free    { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 12%, transparent); }
+.ns-curriculum__badge--members { color: var(--color-brand-600); background: color-mix(in srgb, var(--color-brand-500) 12%, transparent); }
+[data-theme="dark"] .ns-curriculum__badge--members { color: var(--color-brand-300); }
+.ns-curriculum__badge--paid    { color: #b05c00; background: color-mix(in srgb, var(--color-warning) 18%, transparent); }
+[data-theme="dark"] .ns-curriculum__badge--paid { color: var(--color-warning); }
+.ns-curriculum__badge--tiers   { color: #7526e3; background: color-mix(in srgb, #7526e3 12%, transparent); }
+[data-theme="dark"] .ns-curriculum__badge--tiers { color: #c29ef1; }
 .ns-curriculum__free { color: var(--color-success); font-size: 1rem; }
 .ns-curriculum__lock { color: var(--color-muted); font-size: 1rem; }
 .ns-curriculum__item.is-locked .ns-curriculum__title { color: var(--color-muted); }
 .ns-curriculum__empty { padding: 1.5rem 1.1rem; color: var(--color-muted); font-size: 0.875rem; }
-/* hide the one-line desc in the default list; show in cards/timeline */
+/* hide the one-line desc in the default list; show in cards/detailed/timeline */
 .ns-curriculum[data-style="list"] .ns-curriculum__desc { display: none; }
 
 /* cards style */
@@ -103,6 +115,23 @@
   border-radius: var(--radius-card); background: var(--color-surface-raised); box-shadow: var(--shadow-card);
   align-items: flex-start; }
 .ns-curriculum[data-style="cards"] .ns-curriculum__type { display: inline-flex; }
+
+/* detailed style — hero-like rows: big media thumb, title AND excerpt.
+   Opt in by tagging the course #curriculum-detailed. */
+.ns-curriculum[data-style="detailed"] { border: 0; background: transparent; box-shadow: none;
+  display: grid; gap: 0.9rem; }
+.ns-curriculum[data-style="detailed"] .ns-curriculum__item { align-items: flex-start; gap: 1rem;
+  border: 1px solid var(--color-border); border-radius: var(--radius-card);
+  background: var(--color-surface-raised); box-shadow: var(--shadow-card); padding: 1rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.ns-curriculum[data-style="detailed"] .ns-curriculum__item:hover { transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-brand-500) 40%, transparent); box-shadow: var(--shadow-raised); }
+.ns-curriculum[data-style="detailed"] .ns-curriculum__thumb { height: 4.75rem; width: 8rem;
+  border-radius: 0.5rem; font-size: 1.75rem; }
+.ns-curriculum[data-style="detailed"] .ns-curriculum__title { font-size: 1.05rem; font-weight: 700; }
+.ns-curriculum[data-style="detailed"] .ns-curriculum__desc { display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.2rem; }
+.ns-curriculum[data-style="detailed"] .ns-curriculum__type { display: inline-flex; }
 
 /* timeline style */
 .ns-curriculum[data-style="timeline"] { border: 0; background: transparent; box-shadow: none; padding-left: 0.5rem; }
@@ -137,7 +166,8 @@
   padding: 0.5rem 0.7rem; border: 0; border-radius: 0.4rem; background: transparent; color: var(--color-ink);
   font-size: 0.875rem; text-align: left; cursor: pointer; text-decoration: none; }
 .ns-share__menu a:hover, .ns-share__menu button:hover { background: color-mix(in srgb, var(--color-brand-500) 8%, transparent);
-  color: var(--ns-link); }
+  color: var(--color-brand-600); }
+[data-theme="dark"] .ns-share__menu a:hover, [data-theme="dark"] .ns-share__menu button:hover { color: var(--color-brand-300); }
 .ns-share__menu i { font-size: 1.05rem; }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -150,7 +180,7 @@
   background: var(--color-surface-raised); padding: 1rem 1.15rem; margin-block: 0.75rem;
   box-shadow: var(--shadow-card);
 }
-.ns-course-content .kg-toggle-heading { font-family: var(--pf-t--global--font--family--heading); font-weight: 700; }
+.ns-course-content .kg-toggle-heading { font-family: var(--font-heading); font-weight: 700; }
 .ns-course-content .kg-toggle-card[data-kg-toggle-state="open"] { border-color: color-mix(in srgb, var(--color-brand-500) 35%, transparent); }
 
 .ns-course-content .kg-product-card .kg-product-card-container {
@@ -162,7 +192,7 @@
   content: "\201C"; position: absolute; top: -0.4rem; right: 1rem;
   font-family: Georgia, serif; font-size: 3rem; line-height: 1; color: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
 }
-.ns-course-content .kg-product-card-title { font-family: var(--pf-t--global--font--family--heading); }
+.ns-course-content .kg-product-card-title { font-family: var(--font-heading); }
 
 @media (prefers-reduced-motion: reduce) {
   .ns-video-poster img, .ns-video-poster__play i { transition: none; }
@@ -178,27 +208,30 @@
   background: var(--color-surface-raised); box-shadow: var(--shadow-card);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
 .ns-ccard:hover { transform: translateY(-4px); box-shadow: var(--shadow-raised); }
-.ns-ccard.is-featured { border-color: color-mix(in srgb, var(--color-accent-400) 55%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent-400) 40%, transparent), var(--shadow-raised); }
+.ns-ccard.is-featured { border-color: color-mix(in srgb, var(--color-brand-500) 50%, transparent); }
 
 .ns-ccard__ribbon { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 2;
   display: inline-flex; align-items: center; gap: 0.3rem; border-radius: var(--radius-pill);
-  padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 800; color: #3a2a02;
-  background: linear-gradient(135deg, #ffd874, #f6a609); box-shadow: 0 4px 14px -4px rgb(246 166 9 / 0.6); }
-.ns-ccard__ribbon--sponsored { color: #fff; background: linear-gradient(135deg, var(--color-brand-400), var(--color-brand-600)); box-shadow: var(--shadow-glow); }
+  padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 800; color: #7c4a03;
+  background: color-mix(in srgb, var(--color-warning) 30%, #fff);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-warning) 45%, transparent); }
+.ns-ccard__ribbon--sponsored { color: #fff; background: var(--color-brand-600); box-shadow: var(--shadow-card); }
 
 .ns-ccard__media { position: relative; display: block; aspect-ratio: 16/9; overflow: hidden; background: var(--color-surface-sunken); }
 .ns-ccard__media img { height: 100%; width: 100%; object-fit: cover; }
 .ns-ccard__media-badges { position: absolute; left: 0.6rem; bottom: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .ns-ccard__sponsored-art { display: flex; height: 100%; width: 100%; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-800)); color: #fff; font-size: 3rem; }
+  background: var(--color-brand-700); color: #fff; font-size: 3rem; }
 
 /* price pill — overlays media top-right, or static inline when no image */
 .ns-ccard__price { position: absolute; top: 0.6rem; right: 0.6rem; border-radius: var(--radius-pill);
-  padding: 0.15rem 0.55rem; font-size: 0.7rem; font-weight: 700; backdrop-filter: blur(4px); }
+  padding: 0.15rem 0.55rem; font-size: 0.7rem; font-weight: 700; }
 .ns-ccard__price--static { position: static; }
-.ns-ccard__price--free { color: #fff; background: color-mix(in srgb, var(--color-success) 90%, #000); }
-.ns-ccard__price--paid { color: #3a2a02; background: color-mix(in srgb, #f0b429 92%, #fff); }
+.ns-ccard__price--free { color: var(--color-success); background: var(--color-surface-raised);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-success) 35%, transparent); }
+.ns-ccard__price--paid { color: #8a5a00; background: var(--color-surface-raised);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-warning) 45%, transparent); }
+[data-theme="dark"] .ns-ccard__price--paid { color: var(--color-warning); }
 
 .ns-ccard__body { display: flex; flex: 1; flex-direction: column; padding: 1rem; }
 .ns-ccard__excerpt { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -209,7 +242,8 @@
 .ns-ccard__author-ph { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center;
   border-radius: 9999px; background: color-mix(in srgb, var(--color-brand-500) 12%, transparent); color: var(--color-brand-600); }
 .ns-ccard__cta { display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.3rem;
-  font-size: 0.82rem; font-weight: 700; color: var(--ns-link); text-decoration: none; transition: gap 0.2s ease; }
+  font-size: 0.82rem; font-weight: 700; color: var(--color-brand-600); text-decoration: none; transition: gap 0.2s ease; }
+[data-theme="dark"] .ns-ccard__cta { color: var(--color-brand-300); }
 .ns-ccard__cta:hover { gap: 0.55rem; }
 
 /* ── Grid ───────────────────────────────────────────────────────────────── */
@@ -226,7 +260,7 @@
   .ns-filters.is-open { display: block; }
 }
 .ns-filter-group { margin-bottom: 1.25rem; border: 0; padding: 0; }
-.ns-filter-group legend { margin-bottom: 0.5rem; font-family: var(--pf-t--global--font--family--heading);
+.ns-filter-group legend { margin-bottom: 0.5rem; font-family: var(--font-heading);
   font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-muted); }
 .ns-radio, .ns-check { display: flex; align-items: center; gap: 0.55rem; padding: 0.3rem 0; font-size: 0.875rem; cursor: pointer; }
 .ns-radio input, .ns-check input { accent-color: var(--color-brand-500); width: 1rem; height: 1rem; }
@@ -263,7 +297,7 @@
 .ns-video-poster--lesson { aspect-ratio: 16/9; }
 .ns-video-poster--lesson img { aspect-ratio: 16/9; }
 .ns-video-poster__fallback { display: block; width: 100%; aspect-ratio: 16/9;
-  background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-900)); }
+  background: var(--color-brand-800); }
 
 .ns-authorbox { display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem;
   border: 1px solid var(--color-border); border-radius: var(--radius-card);
@@ -277,12 +311,44 @@
 .ns-support__sponsor { color: #db2777; border: 1px solid color-mix(in srgb, #ec4899 35%, transparent); background: transparent; }
 .ns-support__sponsor:hover { background: color-mix(in srgb, #ec4899 10%, transparent); }
 
+/* ── Curriculum timeline rail (training sidebar) ────────────────────────────
+   One connected line per section; a dot per lesson. Lessons BEFORE the active
+   one (.is-done, set by curriculum.hbs's script) fill the dot + line segment
+   in brand blue, drawing the learner's progress down the track. ─────────── */
+.train-tl { position: relative; list-style: none; margin: 0; padding: 0; }
+.train-tl > li { position: relative; padding-left: 1.4rem; }
+/* base connector line, per item so it never overshoots the list */
+.train-tl > li::after { content: ""; position: absolute; left: 0.5rem; top: 0; bottom: 0;
+  width: 1px; background: var(--color-border); }
+.train-tl > li:first-child::after { top: 50%; }
+.train-tl > li:last-child::after { bottom: 50%; }
+/* progress overlay: done items paint their whole segment; the active item
+   paints only the incoming half, so the line "arrives" at the current lesson */
+.train-tl > li.is-done::after { background: var(--color-brand-500); width: 2px; margin-left: -0.5px; }
+.train-tl > li.is-active::after { background: linear-gradient(var(--color-brand-500) 50%, var(--color-border) 50%); }
+/* the dot */
+.train-tl > li::before { content: ""; position: absolute; left: calc(0.5rem - 2.5px); top: 50%;
+  transform: translateY(-50%); z-index: 1; width: 6px; height: 6px; border-radius: 9999px;
+  background: var(--color-border); }
+.train-tl > li.is-done::before { background: var(--color-brand-500); }
+.train-tl > li.is-active::before { width: 8px; height: 8px; left: calc(0.5rem - 3.5px);
+  background: var(--color-brand-500); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-500) 20%, transparent); }
+
+/* ── Video timestamp buttons (training-video.js builds these from chapter
+      tables in the content — click seeks the hero video) ─────────────────── */
+.js-ts { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0;
+  border: 0; background: none; cursor: pointer; font: inherit; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: var(--color-brand-600); }
+.js-ts:hover { text-decoration: underline; }
+.js-ts i { font-size: 1rem; }
+[data-theme="dark"] .js-ts { color: var(--color-brand-300); }
+
 /* ── Compact icon price badge (cards) ───────────────────────────────────── */
 .ns-pill-icon { display: inline-flex; align-items: center; justify-content: center;
   height: 1.6rem; width: 1.6rem; border-radius: 9999px; font-size: 0.9rem; }
-.ns-pill-icon--free { color: #fff; background: color-mix(in srgb, var(--color-success) 88%, #000); }
-.ns-pill-icon--paid { color: #3a2a02; background: linear-gradient(135deg, #ffe08a, #f0b429); }
-.ns-ccard__meta span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.ns-pill-icon--free { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 14%, transparent); }
+.ns-pill-icon--paid { color: #8a5a00; background: color-mix(in srgb, var(--color-warning) 18%, transparent); }
+[data-theme="dark"] .ns-pill-icon--paid { color: var(--color-warning); }
 
 /* ── Course hero VARIANTS (data-hero 1..5) ──────────────────────────────── */
 /* 2 — centered over the pattern, no side media */

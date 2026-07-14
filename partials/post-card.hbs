@@ -30,8 +30,9 @@
       {{^has visibility="public"}}
         <div class="absolute inset-0 flex items-center justify-center bg-black/55 backdrop-blur-sm">
           <span class="inline-flex items-center gap-1 rounded-pill bg-black/70 px-3 py-1 text-xs font-bold text-white">
-            <i class="ph-fill ph-lock" aria-hidden="true"></i>
-            {{#has visibility="members"}}{{t "Members only"}}{{else}}{{t "Paid-members only"}}{{/has}}
+            {{#match visibility "members"}}<i class="ph-fill ph-user-circle" aria-hidden="true"></i>{{t "Members only"}}
+            {{else match visibility "paid"}}<i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Paid-members only"}}
+            {{else}}<i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Tier exclusive"}}{{/match}}
           </span>
         </div>
       {{/has}}

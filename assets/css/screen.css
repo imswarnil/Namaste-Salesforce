@@ -16,15 +16,15 @@
 @source "../../*.hbs";
 @source "../../partials/**/*.hbs";
 
-/* Namaste UI — the site's own design system (SLDS-blue), split shadcn-style:
-   tokens → base signatures → overrides of existing classes → primitives →
-   navbar module behaviour. See each file's header for the identity. */
-@import "./namaste-ui/tokens.css";
-@import "./namaste-ui/base.css";
-@import "./namaste-ui/overrides.css";
-@import "./namaste-ui/components.css";
-@import "./namaste-ui/navbar.css";
-@import "./namaste-ui/course.css";
+/* THEME — the site's own LMS design system, split shadcn-style:
+   tokens → base defaults → primitives → navbar module → course/LMS modules.
+   Identity: calm, flat, reading-first — one working blue, hairline borders,
+   small shadows, no gradients/glass/glow. See each file's header. */
+@import "./theme/tokens.css";
+@import "./theme/base.css";
+@import "./theme/components.css";
+@import "./theme/navbar.css";
+@import "./theme/course.css";
 
 /* Dark mode is driven by data-theme="dark" on <html> (set before paint by the
    inline script in default.hbs). This re-points the `dark:` variant at that
@@ -224,7 +224,15 @@
   .toc-link.is-h3 { @apply pl-6 text-[0.8rem]; }
 
   /* Active item in the documentation sidebar (set by docs/sidebar.hbs script) */
-  .doc-nav-link.is-doc-active { @apply border-brand-500 font-semibold text-brand-600 dark:text-brand-300; }
+  /* Active doc in the sidebar: primary "button" — brand bg, white text */
+  /* !important so the markup's text-muted / hover:* utilities (which live in
+     the later-cascading utilities layer) can't wash the active state out. */
+  .doc-nav-link.is-doc-active {
+    background-color: var(--color-brand-500) !important;
+    color: #fff !important;
+    font-weight: 600;
+  }
+  .doc-nav-link.is-doc-active:hover { background-color: var(--color-brand-600) !important; }
   /* Docs-home scroll-spy: right rail (border) + left rail (tinted) */
   .doc-spy.is-doc-active { @apply border-brand-500 font-semibold text-brand-600 dark:text-brand-300; }
   .doc-toc-link.is-doc-active { @apply bg-surface-sunken font-semibold text-brand-600 dark:text-brand-300; }

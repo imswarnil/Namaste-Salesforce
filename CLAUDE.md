@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), originally forked from Casper but rebuilt for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is **Tailwind CSS v4** (no Bulma, no SCSS framework). Light interactivity uses **Alpine.js** (self-hosted). The design language is **SLDS-inspired** (Salesforce-blue palette, clean cards, dark mode).
+A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), originally forked from Casper but rebuilt for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is **Tailwind CSS v4** (no Bulma, no SCSS framework). Light interactivity uses **Alpine.js** (self-hosted). The design language is the theme's own **LMS design system** (`assets/css/theme/`): calm, flat, reading-first — one working blue, hairline borders, small shadows; no gradients/glass/glow. Dark mode included.
 
 ## Commands
 
@@ -44,9 +44,10 @@ Because `assets/built/` is committed, **rebuild and commit the built output** af
 - `ads/` — `slot` resolves to AdSense → sponsor → dummy placeholder.
 
 **Styling (`assets/css/screen.css`, Tailwind v4):**
-- `@theme` holds SLDS tokens: the `brand-*` blue scale, status colours, fonts, radii, shadows, motion. **Semantic role tokens** (`surface`, `surface-raised/sunken`, `ink`, `muted`, `border`) map to `--ns-*` CSS vars that flip under `[data-theme="dark"]`, so `bg-surface`/`text-ink` auto-adapt — avoid hard-coding `dark:` for those.
+- `@theme` holds the tokens: the `brand-*` blue scale, status colours, fonts, radii, shadows, motion. **Semantic role tokens** (`surface`, `surface-raised/sunken`, `ink`, `muted`, `border`) map to `--ns-*` CSS vars that flip under `[data-theme="dark"]`, so `bg-surface`/`text-ink` auto-adapt — avoid hard-coding `dark:` for those.
 - `@layer components` holds the few reusable classes: `.nav-link`, `.icon-btn`/`.nav-tip`, `.subnav-bar`/`.subnav-panel`, `.toc-link`, `.js-spotlight`, `.ns-timeline`/`.ns-steps`, `.bg-grid`/`.bg-dots`, and `.prose` overrides.
 - `@custom-variant dark` wires the `dark:` variant to `data-theme="dark"`.
+- `assets/css/theme/` is the design system, split shadcn-style: `tokens.css` (accent scale, float animation) → `base.css` (scrollbar, selection, focus) → `components.css` (`.ns-btn`, `.ns-kicker`, `.ns-chip`, `.ns-badge`, `.ns-input`, …) → `navbar.css` (header behaviours, lesson drawer, topics dropdown) → `course.css` (curriculum styles/badges, course cards, catalog, lesson page).
 
 **Dark mode:** `data-theme="light|dark"` on `<html>`. A pre-paint inline script in `default.hbs` applies the saved theme (`localStorage` key `ns-theme`) before first paint; `theme-toggle.js` flips it on `.ns-theme-toggle` clicks. The sun/moon glyph swap is pure CSS (`dark:` variant).
 

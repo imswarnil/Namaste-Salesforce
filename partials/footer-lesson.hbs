@@ -1,13 +1,26 @@
 {{!-- footer-lesson.hbs — minimal footer for the distraction-free lesson/module
-     player. Just a slim credits strip; the course player header owns navigation. --}}
+     player: a full-width 90px sponsored/ad band, then a slim credits strip.
+     The course player header owns navigation. --}}
+<div class="w-full border-t border-border bg-surface-sunken py-4">
+  <div class="mx-auto flex h-[90px] max-w-[90rem] items-center justify-center px-4 sm:px-6">
+    {{> "ads/leaderboard"}}
+  </div>
+</div>
 <footer class="border-t border-border bg-surface-sunken">
   <div class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-4 py-4 text-sm text-muted sm:flex-row sm:px-6">
     <a href="{{@site.url}}" class="flex items-center gap-2 font-heading font-bold text-ink">
       {{#if @site.logo}}<img src="{{@site.logo}}" alt="" class="h-5 w-auto">{{/if}}{{@site.title}}
     </a>
     <p class="flex items-center gap-1.5"><i class="ph ph-git-branch" aria-hidden="true"></i>{{t "Open source"}} · &copy; {{date format="YYYY"}}</p>
-    <a href="/courses/" class="inline-flex items-center gap-1.5 font-semibold hover:text-brand-600 dark:hover:text-brand-300">
-      <i class="ph ph-squares-four" aria-hidden="true"></i>{{t "All courses"}}
-    </a>
+    {{!-- Context-aware collection link: training modules go back to roadmaps --}}
+    {{#has tag="#training-content"}}
+      <a href="/training/" class="inline-flex items-center gap-1.5 font-semibold hover:text-brand-600 dark:hover:text-brand-300">
+        <i class="ph ph-map-trifold" aria-hidden="true"></i>{{t "All roadmaps"}}
+      </a>
+    {{else}}
+      <a href="/courses/" class="inline-flex items-center gap-1.5 font-semibold hover:text-brand-600 dark:hover:text-brand-300">
+        <i class="ph ph-squares-four" aria-hidden="true"></i>{{t "All courses"}}
+      </a>
+    {{/has}}
   </div>
 </footer>

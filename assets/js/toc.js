@@ -1,20 +1,21 @@
 /* ============================================================================
    toc.js — Custom Table of Contents (no library)
    ----------------------------------------------------------------------------
-   Builds the TOC from the headings inside `.gh-content` and adds scroll-spy
+   Builds a TOC from the headings inside `.gh-content` and adds scroll-spy
    highlighting. Works with components/toc.hbs:
      <nav class="js-toc hidden"> … <ul data-toc></ul> </nav>
+   - Fills EVERY .js-toc on the page (a page may show one TOC in a desktop
+     rail and another in the mobile flow).
    - Only h2 and h3 are listed (h3 indented).
    - Headings missing an id get a slug so they can be anchored.
-   - The TOC nav stays hidden if the post has fewer than 2 headings.
+   - TOC navs stay hidden if the post has fewer than 2 headings.
    ========================================================================== */
 (function () {
   'use strict';
 
-  var nav = document.querySelector('.js-toc');
-  var list = nav && nav.querySelector('[data-toc]');
+  var navs = Array.prototype.slice.call(document.querySelectorAll('.js-toc'));
   var content = document.querySelector('.gh-content');
-  if (!nav || !list || !content) return;
+  if (!navs.length || !content) return;
 
   var headings = Array.prototype.slice.call(content.querySelectorAll('h2, h3'));
   if (headings.length < 2) return; // not worth a TOC
@@ -27,8 +28,6 @@
   }
 
   var used = {};
-  var links = [];
-
   headings.forEach(function (h) {
     if (!h.id) {
       var base = slugify(h.textContent) || 'section';
@@ -37,27 +36,31 @@
       h.id = id;
     }
     used[h.id] = true;
-
-    var li = document.createElement('li');
-    var a = document.createElement('a');
-    a.href = '#' + h.id;
-    a.textContent = h.textContent;
-    a.className = 'toc-link' + (h.tagName === 'H3' ? ' is-h3' : '');
-    li.appendChild(a);
-    list.appendChild(li);
-    links.push(a);
   });
 
-  // Reveal the TOC now that it has content.
-  nav.classList.remove('hidden');
+  var links = []; // across all TOC instances
 
-  // ── Scroll-spy: highlight the link for the heading nearest the top ──
-  var byId = {};
-  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+  navs.forEach(function (nav) {
+    var list = nav.querySelector('[data-toc]');
+    if (!list) return;
+    headings.forEach(function (h) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      a.className = 'toc-link' + (h.tagName === 'H3' ? ' is-h3' : '');
+      li.appendChild(a);
+      list.appendChild(li);
+      links.push(a);
+    });
+    nav.classList.remove('hidden'); // reveal now that it has content
+  });
 
+  // ── Scroll-spy: highlight the link(s) for the heading nearest the top ──
   function setActive(id) {
-    links.forEach(function (a) { a.classList.remove('is-active'); });
-    if (byId[id]) byId[id].classList.add('is-active');
+    links.forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + id);
+    });
   }
 
   if ('IntersectionObserver' in window) {

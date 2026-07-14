@@ -1,62 +1,33 @@
-{{!-- docs/sidebar.hbs — Documentation navigation
+{{!-- docs/sidebar.hbs — desktop docs navigation (sticky rail)
      ---------------------------------------------------------------------------
-     Lists all `documentation`-tagged posts. Sticky on desktop; on mobile it
-     collapses behind a toggle (Alpine). The current article (when on a single
-     doc page that prints #doc-current-id) is highlighted via the inline script. --}}
-<aside class="relative lg:sticky lg:top-20 lg:self-start" x-data="{ open: false }">
-
-  {{!-- Mobile toggle --}}
-  <button type="button" class="subnav-bar group"
-          @click="open = !open" :aria-expanded="open.toString()" aria-controls="docs-nav">
-    <span class="flex items-center gap-2"><i class="ph ph-list-bullets" aria-hidden="true"></i>{{t "All articles"}}</span>
-    <i class="ph ph-caret-down transition-transform" :class="open && 'rotate-180'" aria-hidden="true"></i>
-  </button>
-
-  <nav id="docs-nav" class="subnav-panel lg:!block" :class="open ? 'block' : 'hidden'" aria-label="{{t "Documentation"}}">
-    <a href="/docs/" class="mb-4 inline-flex items-center gap-1 text-sm text-muted transition hover:text-brand-600">
-      <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Docs home"}}
-    </a>
-    {{!-- Grouped by section (each doc's PRIMARY tag is its `docs-NN-*` section). --}}
-    {{#get "tags" filter="slug:~^'docs-'" order="slug asc" limit="30"}}
-      {{#foreach tags}}
-        <p class="mb-2 mt-5 text-xs font-bold uppercase tracking-[0.08em] text-muted first:mt-0">{{name}}</p>
-        <ul class="mb-1 space-y-0.5 border-l border-border">
-          {{#get "posts" filter="tag:documentation+primary_tag:{{slug}}" limit="100" order="published_at asc"}}
-            {{#foreach posts}}
-              <li>
-                <a href="{{url}}" data-doc-id="{{id}}"
-                   class="doc-nav-link -ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300">
-                  {{title}}
-                </a>
-              </li>
-            {{/foreach}}
-          {{/get}}
-        </ul>
-      {{else}}
-        <p class="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Contents"}}</p>
-        <ul class="space-y-0.5 border-l border-border">
-          {{#get "posts" filter="tag:documentation" limit="100" order="published_at asc"}}
-            {{#foreach posts}}
-              <li>
-                <a href="{{url}}" data-doc-id="{{id}}"
-                   class="doc-nav-link -ml-px block border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300">
-                  {{title}}
-                </a>
-              </li>
-            {{/foreach}}
-          {{/get}}
-        </ul>
-      {{/foreach}}
-    {{/get}}
-  </nav>
+     Collapsible per-section groups (docs/sections view="nav"), each with its
+     icon. Desktop-only — mobile navigation is docs/mobile-bar. The script
+     highlights the current doc (pages that print #doc-current-id) as a brand
+     button and pops open its section; section pages print #doc-current-sec
+     so their group opens too. --}}
+<aside class="hidden lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1" aria-label="{{t "Documentation"}}">
+  <a href="/docs/" class="mb-2 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-ink transition hover:bg-surface-sunken">
+    <i class="ph ph-books text-brand-500" aria-hidden="true"></i>{{t "Docs home"}}
+  </a>
+  {{> "docs/sections" view="nav"}}
 </aside>
 
-{{!-- Highlight the current doc (single-doc pages print #doc-current-id). --}}
+{{!-- Open + highlight the active doc/section in every nav instance
+     (desktop rail and the mobile panel share the same markup). --}}
 <script>
   (function () {
-    var c = document.getElementById('doc-current-id');
-    if (!c) return;
-    var link = document.querySelector('[data-doc-id="' + c.getAttribute('data-id') + '"]');
-    if (link) link.classList.add('is-doc-active');
+    var cur = document.getElementById('doc-current-id');
+    if (cur) {
+      document.querySelectorAll('[data-doc-id="' + cur.getAttribute('data-id') + '"]').forEach(function (a) {
+        a.classList.add('is-doc-active');
+        var d = a.closest('details');
+        if (d) d.open = true;
+      });
+    }
+    var sec = document.getElementById('doc-current-sec');
+    if (sec) {
+      var s = sec.getAttribute('data-sec');
+      document.querySelectorAll('details[data-sec="' + s + '"], details[data-sec-legacy="' + s + '"]').forEach(function (d) { d.open = true; });
+    }
   })();
 </script>

@@ -1,0 +1,23 @@
+{{!-- docs/mobile-bar.hbs — mobile docs menu, pinned right under the navbar
+     ---------------------------------------------------------------------------
+     Full-bleed bar (no page padding) that sticks to the bottom edge of the
+     sticky site header on <lg screens. Tapping it reveals a dropdown-style
+     panel with the whole docs tree (docs/sections view="nav").
+     Param: label — current section/article name shown in the bar. --}}
+<div class="sticky top-14 z-30 border-b border-border bg-surface lg:hidden" x-data="{ dopen: false }">
+  <button type="button" @click="dopen = !dopen" :aria-expanded="dopen.toString()" aria-controls="docs-mobile-panel"
+          class="flex w-full items-center justify-between gap-2 px-4 py-2.5 text-sm font-semibold text-ink">
+    <span class="inline-flex min-w-0 items-center gap-2">
+      <i class="ph ph-book-open-text shrink-0 text-brand-500" aria-hidden="true"></i>
+      <span class="truncate">{{#if label}}{{label}}{{else}}{{t "Documentation"}}{{/if}}</span>
+    </span>
+    <i class="ph ph-caret-down shrink-0 text-muted transition-transform" :class="dopen && 'rotate-180'" aria-hidden="true"></i>
+  </button>
+  <div id="docs-mobile-panel" x-show="dopen" x-cloak @click.outside="dopen = false"
+       class="absolute inset-x-0 top-full z-30 max-h-[70vh] overflow-y-auto border-b border-border bg-surface px-3 pb-4 pt-2 shadow-raised">
+    <a href="/docs/" class="mb-1 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-ink transition hover:bg-surface-sunken">
+      <i class="ph ph-books text-brand-500" aria-hidden="true"></i>{{t "Docs home"}}
+    </a>
+    {{> "docs/sections" view="nav"}}
+  </div>
+</div>

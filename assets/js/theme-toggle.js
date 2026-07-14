@@ -4,7 +4,7 @@
    The PRE-PAINT script in default.hbs <head> applies the saved theme before
    first paint (avoids a flash). This file only handles clicks on any
    `.ns-theme-toggle` button: it flips data-theme on <html> and persists the
-   choice. The sun/moon glyphs are swapped purely by the CSS `dark:` variant.
+   choice. The sun/moon glyph swap is pure CSS (dark: variant).
    ========================================================================== */
 (function () {
   'use strict';
