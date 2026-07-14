@@ -2,8 +2,9 @@
   <!-- ══════════════════════════════════════════════════════════════════
        publication-cover.svg — flat-vector cover, self-animated (CSS only).
        Palette: #0176D3 · #1B96FF · #B0D7FF · #032D60 on #F6F7F9.
-       Scene: lesson-player window, HUD-pinned concept cards (CRM, funnel,
-       flow, code), curvy dotted learning path flag → certificate.
+       The central screen CROSSFADES between a Salesforce record UI and the
+       video lesson (learn the app → watch the lesson); HUD-pinned concept
+       cards float around it; dotted trail runs flag → certificate.
        ══════════════════════════════════════════════════════════════════ -->
   <style>
     .fl  { animation: fl 7s ease-in-out infinite; }
@@ -12,30 +13,36 @@
     @keyframes fl { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
     .path { stroke-dasharray: 3 14; animation: dash 30s linear infinite; }
     @keyframes dash { to { stroke-dashoffset: -340; } }
-    .pulse { transform-origin: 650px 262px; animation: pulse 2.6s ease-in-out infinite; }
+    .pulse { transform-origin: 650px 300px; animation: pulse 2.6s ease-in-out infinite; }
     @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
     .bar { animation: bar 6s ease-in-out infinite; }
     @keyframes bar { 0%,15% { width: 90px; } 55%,100% { width: 200px; } }
-    @media (prefers-reduced-motion: reduce) { .fl,.fl2,.fl3,.path,.pulse,.bar { animation: none; } }
+    /* screen crossfade: Salesforce UI (sA) ⇄ video lesson (sB), 14s loop */
+    .sA { animation: sA 14s ease-in-out infinite; }
+    .sB { opacity: 0; animation: sB 14s ease-in-out infinite; }
+    @keyframes sA { 0%,36% { opacity: 1; } 44%,88% { opacity: 0; } 96%,100% { opacity: 1; } }
+    @keyframes sB { 0%,36% { opacity: 0; } 44%,88% { opacity: 1; } 96%,100% { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+      .fl,.fl2,.fl3,.path,.pulse,.bar { animation: none; }
+      .sA { animation: none; opacity: 0; }
+      .sB { animation: none; opacity: 1; }
+    }
   </style>
 
   <!-- canvas -->
   <rect width="1200" height="630" rx="28" fill="#F6F7F9"/>
-  <!-- faint grid -->
   <g stroke="#E4E9F0" stroke-width="1">
     <path d="M0 158h1200M0 316h1200M0 474h1200"/>
     <path d="M300 0v630M600 0v630M900 0v630"/>
   </g>
 
-  <!-- curvy dotted learning path: flag → certificate -->
+  <!-- dotted learning trail: flag → certificate -->
   <path class="path" d="M120 520 C 260 470, 240 350, 380 330 S 700 560, 860 470 S 980 220, 1052 152"
         fill="none" stroke="#1B96FF" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
-  <!-- start flag -->
   <g transform="translate(104 470)">
     <rect x="12" y="0" width="5" height="56" rx="2.5" fill="#032D60"/>
     <path d="M17 4h44l-10 12 10 12H17z" fill="#0176D3"/>
   </g>
-  <!-- certificate badge -->
   <g transform="translate(1020 92)">
     <circle cx="40" cy="40" r="34" fill="#0176D3"/>
     <circle cx="40" cy="40" r="26" fill="#1B96FF"/>
@@ -43,92 +50,119 @@
     <path d="M26 70l6 22 8-9 8 9 6-22" fill="#0176D3"/>
   </g>
 
-  <!-- ── central lesson-player window ── -->
-  <g>
-    <rect x="440" y="120" width="420" height="392" rx="18" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
-    <!-- app bar -->
-    <rect x="462" y="142" width="26" height="26" rx="7" fill="#0176D3"/>
-    <rect x="498" y="150" width="86" height="10" rx="5" fill="#B0D7FF"/>
-    <rect x="770" y="146" width="68" height="18" rx="9" fill="#EAF4FF"/>
-    <circle cx="784" cy="155" r="5" fill="#0176D3"/>
-    <line x1="440" y1="182" x2="860" y2="182" stroke="#E7EDF5" stroke-width="2"/>
-    <!-- video -->
-    <rect x="462" y="200" width="376" height="150" rx="12" fill="#032D60"/>
-    <g class="pulse">
-      <circle cx="650" cy="275" r="27" fill="#fff"/>
-      <path d="M642 262l24 13-24 13z" fill="#0176D3"/>
-    </g>
-    <!-- checklist -->
+  <!-- ── central screen ── -->
+  <rect x="440" y="120" width="420" height="392" rx="18" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
+  <!-- app bar (shared) -->
+  <rect x="462" y="142" width="26" height="26" rx="7" fill="#0176D3"/>
+  <rect x="498" y="150" width="86" height="10" rx="5" fill="#B0D7FF"/>
+  <rect x="770" y="146" width="68" height="18" rx="9" fill="#EAF4FF"/>
+  <circle cx="784" cy="155" r="5" fill="#0176D3"/>
+  <line x1="440" y1="182" x2="860" y2="182" stroke="#E7EDF5" stroke-width="2"/>
+
+  <!-- scene A: Salesforce record UI -->
+  <g class="sA">
+    <!-- record highlights -->
+    <rect x="462" y="200" width="376" height="58" rx="10" fill="#F2F7FD"/>
+    <rect x="476" y="212" width="34" height="34" rx="9" fill="#0176D3"/>
+    <path d="M486 231c1.5-4 12.5-4 14 0M493 222a5 5 0 100 .01" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <rect x="522" y="214" width="120" height="10" rx="5" fill="#032D60" opacity="0.75"/>
+    <rect x="522" y="232" width="52" height="12" rx="6" fill="#fff" stroke="#B0D7FF"/>
+    <rect x="582" y="232" width="52" height="12" rx="6" fill="#fff" stroke="#B0D7FF"/>
+    <rect x="764" y="216" width="60" height="24" rx="12" fill="#0176D3"/>
+    <!-- details / activity columns -->
+    <rect x="462" y="282" width="110" height="10" rx="5" fill="#B0D7FF"/>
+    <rect x="462" y="304" width="176" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="462" y="324" width="150" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="462" y="344" width="176" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="462" y="364" width="120" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="670" y="282" width="110" height="10" rx="5" fill="#B0D7FF"/>
+    <circle cx="678" cy="312" r="8" fill="#B0D7FF"/><rect x="694" y="307" width="144" height="9" rx="4.5" fill="#E7EDF5"/>
+    <circle cx="678" cy="340" r="8" fill="#B0D7FF"/><rect x="694" y="335" width="120" height="9" rx="4.5" fill="#E7EDF5"/>
+    <circle cx="678" cy="368" r="8" fill="#B0D7FF"/><rect x="694" y="363" width="132" height="9" rx="4.5" fill="#E7EDF5"/>
+    <!-- path/stage bar (very Salesforce) -->
     <g>
-      <circle cx="478" cy="378" r="8" fill="#0176D3"/><path d="M474 378l3 3 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <rect x="498" y="372" width="220" height="11" rx="5.5" fill="#E7EDF5"/>
-      <circle cx="478" cy="408" r="8" fill="#0176D3"/><path d="M474 408l3 3 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <rect x="498" y="402" width="180" height="11" rx="5.5" fill="#E7EDF5"/>
-      <circle cx="478" cy="438" r="8" fill="#1B96FF"/><path d="M475.5 433.5l8 4.5-8 4.5z" fill="#fff"/>
-      <rect x="498" y="432" width="250" height="11" rx="5.5" fill="#B0D7FF"/>
-      <circle cx="478" cy="468" r="8" fill="none" stroke="#C6D3E4" stroke-width="2.5"/>
-      <rect x="498" y="462" width="150" height="11" rx="5.5" fill="#E7EDF5"/>
+      <rect x="462" y="404" width="86" height="20" rx="10" fill="#0176D3"/>
+      <rect x="552" y="404" width="86" height="20" rx="10" fill="#1B96FF"/>
+      <rect x="642" y="404" width="86" height="20" rx="10" fill="#B0D7FF"/>
+      <rect x="732" y="404" width="86" height="20" rx="10" fill="#E7EDF5"/>
     </g>
-    <!-- progress -->
+    <rect x="462" y="448" width="376" height="44" rx="10" fill="#F6F9FD" stroke="#E7EDF5"/>
+    <rect x="478" y="464" width="200" height="10" rx="5" fill="#E7EDF5"/>
+  </g>
+
+  <!-- scene B: video lesson -->
+  <g class="sB">
+    <rect x="462" y="200" width="376" height="176" rx="12" fill="#032D60"/>
+    <g class="pulse">
+      <circle cx="650" cy="288" r="28" fill="#fff"/>
+      <path d="M642 274l25 14-25 14z" fill="#0176D3"/>
+    </g>
+    <g>
+      <circle cx="480" cy="404" r="8" fill="#0176D3"/><path d="M476 404l3 3 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <rect x="500" y="398" width="210" height="11" rx="5.5" fill="#E7EDF5"/>
+      <circle cx="480" cy="434" r="8" fill="#1B96FF"/><path d="M477.5 429.5l8 4.5-8 4.5z" fill="#fff"/>
+      <rect x="500" y="428" width="250" height="11" rx="5.5" fill="#B0D7FF"/>
+      <circle cx="480" cy="464" r="8" fill="none" stroke="#C6D3E4" stroke-width="2.5"/>
+      <rect x="500" y="458" width="160" height="11" rx="5.5" fill="#E7EDF5"/>
+    </g>
     <rect x="462" y="490" width="376" height="8" rx="4" fill="#E7EDF5"/>
     <rect class="bar" x="462" y="490" width="200" height="8" rx="4" fill="#0176D3"/>
   </g>
 
   <!-- ── HUD pin lines ── -->
   <g stroke="#0176D3" stroke-width="1.6" opacity="0.55">
-    <line x1="440" y1="210" x2="352" y2="166"/>
-    <line x1="440" y1="392" x2="342" y2="392"/>
-    <line x1="860" y1="250" x2="948" y2="216"/>
-    <line x1="860" y1="440" x2="940" y2="470"/>
+    <line x1="440" y1="210" x2="356" y2="164"/>
+    <line x1="440" y1="392" x2="346" y2="392"/>
+    <line x1="860" y1="250" x2="944" y2="212"/>
+    <line x1="860" y1="440" x2="936" y2="468"/>
   </g>
   <g fill="#0176D3">
     <circle cx="440" cy="210" r="4.5"/><circle cx="440" cy="392" r="4.5"/>
     <circle cx="860" cy="250" r="4.5"/><circle cx="860" cy="440" r="4.5"/>
   </g>
   <g fill="none" stroke="#0176D3">
-    <circle cx="352" cy="166" r="4.5"/><circle cx="342" cy="392" r="4.5"/>
-    <circle cx="948" cy="216" r="4.5"/><circle cx="940" cy="470" r="4.5"/>
+    <circle cx="356" cy="164" r="4.5"/><circle cx="346" cy="392" r="4.5"/>
+    <circle cx="944" cy="212" r="4.5"/><circle cx="936" cy="468" r="4.5"/>
   </g>
 
-  <!-- ── concept card: CRM (top-left) ── -->
+  <!-- ── concept card: CRM (top-left) — roomy padding around the glyph ── -->
   <g class="fl">
-    <rect x="160" y="96" width="192" height="104" rx="14" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
-    <circle cx="192" cy="130" r="13" fill="#B0D7FF"/>
-    <circle cx="192" cy="125" r="5" fill="#0176D3"/>
-    <path d="M182 138c2-6 18-6 20 0" fill="#0176D3"/>
-    <rect x="214" y="118" width="106" height="9" rx="4.5" fill="#E7EDF5"/>
-    <rect x="214" y="134" width="76" height="9" rx="4.5" fill="#E7EDF5"/>
-    <rect x="178" y="162" width="60" height="16" rx="8" fill="#EAF4FF"/>
-    <rect x="246" y="162" width="60" height="16" rx="8" fill="#EAF4FF"/>
+    <rect x="148" y="84" width="208" height="116" rx="16" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
+    <circle cx="190" cy="128" r="15" fill="#B0D7FF"/>
+    <circle cx="190" cy="122" r="5.5" fill="#0176D3"/>
+    <path d="M179 137c2.5-7 19.5-7 22 0" fill="#0176D3"/>
+    <rect x="218" y="112" width="104" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="218" y="130" width="74" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="172" y="158" width="62" height="18" rx="9" fill="#EAF4FF"/>
+    <rect x="242" y="158" width="62" height="18" rx="9" fill="#EAF4FF"/>
   </g>
 
   <!-- ── concept card: flow (left) ── -->
   <g class="fl2">
-    <rect x="150" y="336" width="192" height="104" rx="14" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
-    <rect x="176" y="374" width="26" height="26" rx="6" fill="#0176D3"/>
-    <line x1="202" y1="387" x2="232" y2="387" stroke="#C6D3E4" stroke-width="2.5"/>
-    <circle cx="246" cy="387" r="13" fill="none" stroke="#1B96FF" stroke-width="3"/>
-    <line x1="259" y1="387" x2="288" y2="387" stroke="#C6D3E4" stroke-width="2.5"/>
-    <rect x="288" y="374" width="26" height="26" rx="6" transform="rotate(45 301 387)" fill="#B0D7FF"/>
+    <rect x="138" y="324" width="208" height="116" rx="16" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
+    <rect x="170" y="368" width="28" height="28" rx="7" fill="#0176D3"/>
+    <line x1="198" y1="382" x2="228" y2="382" stroke="#C6D3E4" stroke-width="2.5"/>
+    <circle cx="243" cy="382" r="14" fill="none" stroke="#1B96FF" stroke-width="3"/>
+    <line x1="257" y1="382" x2="286" y2="382" stroke="#C6D3E4" stroke-width="2.5"/>
+    <rect x="286" y="368" width="28" height="28" rx="7" transform="rotate(45 300 382)" fill="#B0D7FF"/>
   </g>
 
   <!-- ── concept card: funnel (top-right) ── -->
   <g class="fl3">
-    <rect x="946" y="150" width="176" height="112" rx="14" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
-    <rect x="976" y="216" width="22" height="24" rx="4" fill="#B0D7FF"/>
-    <rect x="1008" y="196" width="22" height="44" rx="4" fill="#1B96FF"/>
-    <rect x="1040" y="176" width="22" height="64" rx="4" fill="#0176D3"/>
-    <path d="M978 168h84l-30 22v14h-24v-14z" fill="#EAF4FF" stroke="#B0D7FF" stroke-width="2" transform="translate(-6 -4) scale(0.5)" opacity="0"/>
+    <rect x="936" y="138" width="192" height="124" rx="16" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
+    <rect x="972" y="208" width="24" height="26" rx="5" fill="#B0D7FF"/>
+    <rect x="1008" y="186" width="24" height="48" rx="5" fill="#1B96FF"/>
+    <rect x="1044" y="164" width="24" height="70" rx="5" fill="#0176D3"/>
   </g>
 
   <!-- ── concept card: code (bottom-right) ── -->
   <g class="fl">
-    <rect x="920" y="420" width="196" height="100" rx="14" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
-    <path d="M962 452l-16 17 16 17" fill="none" stroke="#0176D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M994 452l16 17-16 17" fill="none" stroke="#0176D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="984" y1="450" x2="972" y2="488" stroke="#1B96FF" stroke-width="4" stroke-linecap="round"/>
-    <rect x="1026" y="452" width="66" height="9" rx="4.5" fill="#E7EDF5"/>
-    <rect x="1026" y="470" width="48" height="9" rx="4.5" fill="#B0D7FF"/>
-    <rect x="1026" y="488" width="58" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="908" y="408" width="212" height="112" rx="16" fill="#fff" stroke="#D9E2EF" stroke-width="2"/>
+    <path d="M958 444l-17 18 17 18" fill="none" stroke="#0176D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M992 444l17 18-17 18" fill="none" stroke="#0176D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="981" y1="442" x2="969" y2="482" stroke="#1B96FF" stroke-width="4" stroke-linecap="round"/>
+    <rect x="1028" y="444" width="64" height="9" rx="4.5" fill="#E7EDF5"/>
+    <rect x="1028" y="462" width="46" height="9" rx="4.5" fill="#B0D7FF"/>
+    <rect x="1028" y="480" width="56" height="9" rx="4.5" fill="#E7EDF5"/>
   </g>
 </svg>

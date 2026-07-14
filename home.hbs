@@ -10,7 +10,7 @@
   <div aria-hidden="true" class="pointer-events-none absolute inset-0"
        style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 52px 52px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 78%);"></div>
 
-  <div class="relative mx-auto grid max-w-[85rem] items-center gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-14">
+  <div class="relative mx-auto grid max-w-[85rem] items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
 
     {{!-- ── Left: copy + CTAs + subscribe ── --}}
     <div class="text-center lg:text-left">
@@ -29,7 +29,7 @@
       {{!-- CTA + inline newsletter --}}
       <div class="mt-7 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
         <a href="#/portal/signup" data-portal="signup" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Start learning free"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-        <form data-members-form="signup" class="w-full max-w-sm">
+        <form data-members-form="signup" class="w-full max-w-xs">
           <div class="flex overflow-hidden rounded-pill border border-border bg-surface shadow-card focus-within:border-brand-500">
             <input data-members-email type="email" required placeholder="{{t "Your email — free lessons weekly"}}" aria-label="{{t "Email address"}}"
                    class="w-full min-w-0 border-0 bg-transparent px-5 py-3 text-sm text-ink placeholder:text-muted focus:outline-none">
@@ -54,6 +54,11 @@
       <img src="{{asset "img/publication-cover.svg"}}" alt="{{t "Illustration of the Namaste Salesforce learning platform"}}"
            width="1200" height="630" loading="eager" decoding="async"
            class="relative h-auto w-full rounded-2xl border border-border shadow-raised">
+      {{!-- the real lesson, muted + autoplaying, mapped onto the illustration's
+           screen area (SVG coords 452,192 → 848,502 of the 1200×630 canvas) --}}
+      <iframe src="https://www.youtube-nocookie.com/embed/xx2sK-QiBjw?autoplay=1&mute=1&loop=1&playlist=xx2sK-QiBjw&controls=0&modestbranding=1&playsinline=1&rel=0"
+              title="{{t "Namaste Salesforce lesson preview"}}" loading="lazy" allow="autoplay; encrypted-media"
+              class="absolute left-[37.7%] top-[30.5%] h-[49.2%] w-[33%] rounded-lg border-0 bg-[#032D60]"></iframe>
     </div>
   </div>
 </section>
@@ -75,12 +80,32 @@
 {{!-- ── FEATURED COURSES ─────────────────────────────────────────────────── --}}
 <section class="border-t border-border bg-surface-sunken">
   <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    {{!-- header: title + value points left · production illustration right --}}
+    <div class="mb-10 grid items-center gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <div>
-        <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "Popular courses"}}</h2>
-        <p class="mt-2 max-w-xl text-muted">{{t "Project-based and carefully produced — watch, build along, and check your understanding as you go."}}</p>
+        <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i>{{t "Courses"}}</p>
+        <h2 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">{{t "Produced like a show, structured like a syllabus"}}</h2>
+        <ul class="mt-4 space-y-2.5 text-sm text-ink">
+          <li class="flex items-start gap-2.5"><i class="ph-fill ph-video-camera mt-0.5 text-base text-brand-500" aria-hidden="true"></i>{{t "Every video is outlined, scripted, recorded in a live org and reviewed before it ships."}}</li>
+          <li class="flex items-start gap-2.5"><i class="ph-fill ph-lock-simple-open mt-0.5 text-base text-brand-500" aria-hidden="true"></i>{{t "Fundamentals are free; member lessons need a free account; a few Pro deep-dives fund the platform."}}</li>
+          <li class="flex items-start gap-2.5"><i class="ph-fill ph-pen-nib mt-0.5 text-base text-brand-500" aria-hidden="true"></i>{{t "Built by the community — experienced pros can publish their own course."}}</li>
+        </ul>
       </div>
-      <a href="/courses/" class="inline-flex items-center gap-1 text-sm font-bold text-brand-600 hover:underline dark:text-brand-300">{{t "View all"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+      {{!-- mini production-pipeline illustration --}}
+      <div class="relative hidden lg:block" aria-hidden="true">
+        <svg viewBox="0 0 340 170" fill="none" class="h-auto w-full">
+          <line x1="58" y1="86" x2="140" y2="86" stroke="var(--color-border)" stroke-width="2" stroke-dasharray="4 6"/>
+          <line x1="200" y1="86" x2="282" y2="86" stroke="var(--color-border)" stroke-width="2" stroke-dasharray="4 6"/>
+          <rect x="14" y="58" width="56" height="56" rx="14" fill="var(--color-surface-raised)" stroke="var(--color-border)" stroke-width="2"/>
+          <path d="M30 92h24M30 84h24M30 76h14" stroke="var(--color-brand-500)" stroke-width="3" stroke-linecap="round"/>
+          <rect x="142" y="50" width="72" height="72" rx="16" fill="var(--color-brand-500)"/>
+          <circle cx="178" cy="86" r="17" fill="#fff"/>
+          <path d="M173 78l14 8-14 8z" fill="var(--color-brand-600)"/>
+          <rect x="270" y="58" width="56" height="56" rx="14" fill="var(--color-surface-raised)" stroke="var(--color-border)" stroke-width="2"/>
+          <path d="M286 86l8 8 16-16" stroke="var(--color-success)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="mt-2 flex justify-between px-1 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-muted"><span>{{t "Script"}}</span><span>{{t "Record"}}</span><span>{{t "Review"}}</span></p>
+      </div>
     </div>
     {{#get "posts" filter="tag:hash-course" limit="3" include="tags,authors"}}
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -90,24 +115,10 @@
       <p class="rounded-card border border-dashed border-border py-12 text-center text-muted">{{t "Courses coming soon."}}</p>
     {{/get}}
 
-    {{!-- How courses are made + access model + author CTA --}}
-    <div class="mt-12 grid gap-4 border-t border-border pt-10 md:grid-cols-3">
-      <div class="rounded-card border border-border bg-surface-raised p-6 shadow-card">
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-video-camera" aria-hidden="true"></i></span>
-        <h3 class="mt-3 font-heading font-bold">{{t "Produced, not recorded"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "Every video goes through a real pipeline — outlined, scripted, recorded in a live org, then reviewed by working Salesforce pros before it ships."}}</p>
-      </div>
-      <div class="rounded-card border border-border bg-surface-raised p-6 shadow-card">
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i></span>
-        <h3 class="mt-3 font-heading font-bold">{{t "Free first, Pro deeper"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "Fundamentals are free for everyone. Member lessons need a free account, and a few advanced deep-dives support the platform as paid content."}}</p>
-      </div>
-      <div class="flex flex-col rounded-card border border-brand-500/40 bg-brand-500/5 p-6 shadow-card">
-        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500 text-white"><i class="ph-fill ph-pen-nib" aria-hidden="true"></i></span>
-        <h3 class="mt-3 font-heading font-bold">{{t "Share your knowledge"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "Worked with Salesforce for years? Turn what you know into a course — we help with structure, editing and publishing."}}</p>
-        <a href="/become-author/" class="mt-4 inline-flex items-center gap-1.5 self-start text-sm font-bold text-brand-600 transition hover:gap-2.5 dark:text-brand-300">{{t "Become an author"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-      </div>
+    {{!-- CTA --}}
+    <div class="mt-12 flex flex-wrap items-center justify-center gap-3">
+      <a href="/courses/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Browse all courses"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      <a href="/become-author/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-6 py-3 font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Share your knowledge"}}</a>
     </div>
   </div>
 </section>
@@ -136,40 +147,46 @@
       </a>
     </div>
 
-    {{!-- Right: node path — every track, in teaching order, on a curvy line --}}
-    <div class="js-tl relative">
-      {{!-- curved path (d is built by the script from the real node positions) --}}
+    {{!-- Right: trek-trail — switchback dotted path, milestone badges only
+         (overview: stage · name · module count — details live on the track) --}}
+    <div class="js-tl relative mx-auto w-full max-w-sm py-2">
+      {{!-- trail (d is built by the script from the real badge positions):
+           dotted base like a hiking map, solid overlay reveals on scroll --}}
       <svg class="js-tl-svg pointer-events-none absolute inset-0 h-full w-full" fill="none" aria-hidden="true" preserveAspectRatio="none">
-        <path class="js-tl-path-base" d="" stroke="var(--color-border)" stroke-width="2" stroke-linecap="round"/>
-        <path class="js-tl-path" d="" stroke="var(--color-brand-500)" stroke-width="2.5" stroke-linecap="round"/>
+        <path class="js-tl-path-base" d="" stroke="var(--color-border)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 9"/>
+        <path class="js-tl-path" d="" stroke="var(--color-brand-500)" stroke-width="2" stroke-linecap="round"/>
       </svg>
+
+      {{!-- trailhead --}}
+      <div class="js-tl-item relative mb-8 flex w-1/2 items-center gap-3">
+        <span class="js-tl-dot flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-border bg-surface text-base text-muted transition-colors" aria-hidden="true"><i class="ph-fill ph-flag" aria-hidden="true"></i></span>
+        <p class="text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Trailhead"}}</p>
+      </div>
 
       {{#get "posts" filter="tag:hash-training" limit="12" order="published_at asc"}}
         {{#foreach posts}}
-          <article class="js-tl-item relative pb-12 pl-16 last:pb-2">
-            <span class="js-tl-dot absolute left-0 top-0 flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-border bg-surface text-lg text-muted transition-colors" aria-hidden="true">
+          <a href="{{url}}" class="js-tl-item group relative mb-8 flex w-[55%] items-center gap-3 {{#if @odd}}ml-auto flex-row-reverse text-right{{/if}}">
+            <span class="js-tl-dot flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-border bg-surface text-base text-muted transition-colors" aria-hidden="true">
               <i class="ph-fill {{#match primary_tag.slug "~" "admin"}}ph-shield-check{{else match primary_tag.slug "~" "developer"}}ph-code{{else match primary_tag.slug "~" "architect"}}ph-blueprint{{else}}ph-map-trifold{{/match}}" aria-hidden="true"></i>
             </span>
-            <p class="text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Stage"}} {{@number}}{{#if primary_tag}} · {{primary_tag.name}}{{/if}}</p>
-            <h3 class="mt-1.5 font-heading text-lg font-bold leading-snug">
-              <a href="{{url}}" class="transition hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
-            </h3>
-            <p class="mt-1 line-clamp-2 text-sm text-muted">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="20"}}&hellip;{{/if}}</p>
-            <div class="mt-2 flex items-center gap-4 text-xs text-muted">
-              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1"}}<span class="inline-flex items-center gap-1"><i class="ph ph-stack" aria-hidden="true"></i>{{pagination.total}} {{t "modules"}}</span>{{/get}}
-              <a href="{{url}}" class="inline-flex items-center gap-1 font-bold text-brand-600 transition hover:gap-2 dark:text-brand-300">{{t "Open track"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-            </div>
-          </article>
+            <span class="min-w-0">
+              <span class="block text-[0.65rem] font-bold uppercase tracking-[0.12em] text-muted">{{t "Stage"}} {{@number}}</span>
+              <span class="block truncate font-heading text-sm font-bold text-ink transition group-hover:text-brand-600 dark:group-hover:text-brand-300">{{#if primary_tag}}{{primary_tag.name}}{{else}}{{title}}{{/if}}</span>
+              {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1"}}<span class="block text-xs text-muted">{{pagination.total}} {{t "modules"}}</span>{{/get}}
+            </span>
+          </a>
         {{else}}
           <p class="rounded-card border border-dashed border-border py-12 text-center text-muted">{{t "Roadmaps coming soon."}}</p>
         {{/foreach}}
       {{/get}}
 
-      {{!-- end cap --}}
-      <div class="js-tl-item relative pl-16">
-        <span class="js-tl-dot absolute left-0 top-0 flex h-11 w-11 items-center justify-center rounded-2xl border-2 border-border bg-surface text-lg text-muted transition-colors" aria-hidden="true"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i></span>
-        <p class="pt-2 font-heading font-bold">{{t "Certified & job-ready"}}</p>
-        <p class="mt-0.5 text-sm text-muted">{{t "That's the whole path — start at stage 1 and just keep going."}}</p>
+      {{!-- summit --}}
+      <div class="js-tl-item relative flex w-1/2 items-center gap-3">
+        <span class="js-tl-dot flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-border bg-surface text-base text-muted transition-colors" aria-hidden="true"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i></span>
+        <span>
+          <span class="block font-heading text-sm font-bold">{{t "Certified & job-ready"}}</span>
+          <span class="block text-xs text-muted">{{t "The summit — just keep walking."}}</span>
+        </span>
       </div>
     </div>
   </div>
@@ -199,9 +216,10 @@
       var d = 'M' + pts[0].x + ' ' + pts[0].y;
       for (var i = 1; i < pts.length; i++) {
         var a = pts[i - 1], b = pts[i];
-        var bulge = i % 2 ? 110 : 45;   // alternate deep/shallow curves to the right
-        d += ' C ' + (a.x + bulge) + ' ' + (a.y + (b.y - a.y) * 0.35) +
-             ', ' + (b.x + bulge) + ' ' + (b.y - (b.y - a.y) * 0.35) +
+        // switchback: ease out of one badge and into the next (trek-trail S)
+        var dy = b.y - a.y;
+        d += ' C ' + a.x + ' ' + (a.y + dy * 0.6) +
+             ', ' + b.x + ' ' + (b.y - dy * 0.6) +
              ', ' + b.x + ' ' + b.y;
       }
       pathA.setAttribute('d', d);
@@ -343,10 +361,12 @@
   </div>
 </section>
 
-{{!-- ── NEWSLETTER: why join + how membership works (big grid canvas) ─────── --}}
+{{!-- ── NEWSLETTER: why join + how membership works ─────────────────────────
+     Backdrop: light dot pattern pushed to the CORNERS (inverse radial mask);
+     the centre stays plain so the content breathes. --}}
 <section class="relative overflow-hidden border-t border-border bg-surface">
   <div aria-hidden="true" class="pointer-events-none absolute inset-0"
-       style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 52px 52px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 25%, transparent 80%); mask-image: radial-gradient(ellipse 75% 75% at 50% 40%, #000 25%, transparent 80%);"></div>
+       style="background-image: radial-gradient(color-mix(in srgb, var(--color-brand-500) 22%, transparent) 1.5px, transparent 1.5px); background-size: 24px 24px; -webkit-mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, transparent 48%, #000 95%); mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, transparent 48%, #000 95%);"></div>
 
   <div class="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
     <div class="mx-auto max-w-2xl text-center">

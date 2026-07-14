@@ -20,18 +20,20 @@
     {{#has tag="#hide-image"}}<div class="mb-2.5 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid ns-ccard__price--static">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free ns-ccard__price--static">{{t "Free"}}</span>{{/has}}</div>
     {{else}}{{#unless feature_image}}<div class="mb-2.5 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid ns-ccard__price--static">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free ns-ccard__price--static">{{t "Free"}}</span>{{/has}}</div>{{/unless}}{{/has}}
 
-    <h2 class="font-heading text-base font-bold leading-snug">
+    <h2 class="font-heading text-[1.05rem] font-bold leading-snug">
       <a href="{{url}}" class="transition-colors hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
     </h2>
 
-    <div class="ns-ccard__meta mt-2">
+    {{#if custom_excerpt}}<p class="ns-ccard__excerpt mt-1.5 text-sm text-muted">{{custom_excerpt}}</p>{{/if}}
+
+    <div class="ns-ccard__meta mt-2.5">
       {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" limit="100" as |ls|}}<span><i class="ph ph-list-checks" aria-hidden="true"></i>{{ls.length}} {{t "lessons"}}</span>{{/get}}
       {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<span><i class="ph ph-clock" aria-hidden="true"></i>{{description}}</span>{{/match}}{{/foreach}}
     </div>
 
     <div class="ns-ccard__foot">
       {{#primary_author}}<span class="ns-ccard__author">{{#if profile_image}}<img src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-5 w-5 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-5 w-5"><i class="ph-fill ph-user" aria-hidden="true"></i></span>{{/if}}<span class="truncate">{{name}}</span></span>{{/primary_author}}
-      <a href="{{url}}" class="ns-ccard__cta" aria-label="{{t "View"}} {{title}}">{{t "View"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      <a href="{{url}}" class="inline-flex shrink-0 items-center gap-1.5 rounded-pill bg-brand-500/10 px-3.5 py-1.5 text-xs font-bold text-brand-600 transition hover:bg-brand-500 hover:text-white dark:text-brand-300 dark:hover:text-white" aria-label="{{t "Start"}} {{title}}">{{t "Start"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
     </div>
   </div>
 </article>
