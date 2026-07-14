@@ -1,0 +1,92 @@
+{{!< default}}
+{{!-- resources.hbs — Resource library at /resources/ (collection: tag:#resource,
+     routes.yaml). Sidebar filters by TYPE (internal #resource-type-* tags) +
+     search; cards carry data-* the Alpine filter reads. --}}
+
+{{!-- ── Hero ── --}}
+<header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
+  {{> "components/hero-bg"}}
+  <div class="relative mx-auto max-w-3xl px-4 py-12 text-center sm:px-6 lg:py-14">
+    <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-200">
+      <i class="ph-fill ph-toolbox" aria-hidden="true"></i>{{t "Resources"}}
+    </p>
+    <h1 class="mt-2 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{t "The Salesforce toolbox"}}</h1>
+    <p class="mx-auto mt-3 max-w-xl text-white/80">{{t "Hand-picked books, tools, videos and cheat sheets we actually use — free to browse, forever."}}</p>
+    <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+      <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=resources&title=Resource%20suggestion" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-white px-6 py-3 font-bold text-brand-700 shadow-card transition hover:bg-brand-50">{{> "icons/github" class="h-4 w-4"}}{{t "Submit a resource"}}</a>
+      <a href="#library" class="inline-flex items-center gap-2 rounded-pill border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10"><i class="ph ph-arrow-down" aria-hidden="true"></i>{{t "Browse the library"}}</a>
+    </div>
+  </div>
+</header>
+
+<section id="library" class="mx-auto max-w-[85rem] scroll-mt-20 px-4 py-10 sm:px-6" x-data="{ q: '', type: 'all' }">
+  <div class="grid gap-10 lg:grid-cols-[15rem_minmax(0,1fr)]">
+
+    {{!-- ── Sidebar: search + type filter ── --}}
+    <aside class="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
+      <label class="relative block">
+        <i class="ph ph-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted" aria-hidden="true"></i>
+        <input x-model="q" type="search" placeholder="{{t "Search resources…"}}" aria-label="{{t "Search resources"}}"
+               class="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none">
+      </label>
+
+      <p class="mb-2 mt-6 text-xs font-bold uppercase tracking-[0.1em] text-muted">{{t "Type"}}</p>
+      <ul class="space-y-0.5 text-sm">
+        <li><button type="button" @click="type='all'"       :class="type==='all'       && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-squares-four" aria-hidden="true"></i>{{t "Everything"}}</button></li>
+        <li><button type="button" @click="type='book'"      :class="type==='book'      && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-book-bookmark" aria-hidden="true"></i>{{t "Books"}}</button></li>
+        <li><button type="button" @click="type='tool'"      :class="type==='tool'      && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-wrench" aria-hidden="true"></i>{{t "Tools"}}</button></li>
+        <li><button type="button" @click="type='video'"     :class="type==='video'     && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-video-camera" aria-hidden="true"></i>{{t "Videos"}}</button></li>
+        <li><button type="button" @click="type='cheatsheet'" :class="type==='cheatsheet' && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-file-text" aria-hidden="true"></i>{{t "Cheat sheets"}}</button></li>
+        <li><button type="button" @click="type='website'"   :class="type==='website'   && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-globe" aria-hidden="true"></i>{{t "Websites"}}</button></li>
+        <li><button type="button" @click="type='podcast'"   :class="type==='podcast'   && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-microphone" aria-hidden="true"></i>{{t "Podcasts"}}</button></li>
+        <li><button type="button" @click="type='repo'"      :class="type==='repo'      && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-git-fork" aria-hidden="true"></i>{{t "Repos"}}</button></li>
+        <li><button type="button" @click="type='community'" :class="type==='community' && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-users-three" aria-hidden="true"></i>{{t "Communities"}}</button></li>
+      </ul>
+
+      <div class="mt-8 hidden lg:block">{{> "ads/slot" format="square"}}</div>
+    </aside>
+
+    {{!-- ── Resource cards ── --}}
+    <main class="min-w-0">
+      {{#if posts}}
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {{#foreach posts}}
+            <a href="{{url}}"
+               data-title="{{title}}"
+               data-type="{{#has tag="#resource-type-book"}}book{{else has tag="#resource-type-tool"}}tool{{else has tag="#resource-type-video"}}video{{else has tag="#resource-type-cheatsheet"}}cheatsheet{{else has tag="#resource-type-website"}}website{{else has tag="#resource-type-podcast"}}podcast{{else has tag="#resource-type-repo"}}repo{{else has tag="#resource-type-community"}}community{{else}}other{{/has}}"
+               x-show="(type === 'all' || $el.dataset.type === type) && (q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase()))"
+               class="group flex flex-col rounded-card border border-border bg-surface-raised p-5 shadow-card transition hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-raised">
+              <div class="flex items-start justify-between gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-lg text-brand-600 dark:text-brand-300">
+                  <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
+                </span>
+                <span class="rounded-pill bg-surface-sunken px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted">
+                  {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
+                </span>
+              </div>
+              <h2 class="mt-3 font-heading font-bold leading-snug transition group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</h2>
+              <p class="mt-1 line-clamp-2 flex-1 text-sm text-muted">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="18"}}&hellip;{{/if}}</p>
+              <span class="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 transition group-hover:gap-2.5 dark:text-brand-300">{{t "View resource"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+            </a>
+          {{/foreach}}
+        </div>
+        <p x-show="q !== '' && ![...document.querySelectorAll('main a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
+           x-cloak class="mt-8 rounded-card border border-dashed border-border py-12 text-center text-muted">{{t "No resources match your search."}}</p>
+
+        {{!-- Pagination (collection pages: /resources/page/2/ …) --}}
+        {{pagination}}
+      {{else}}
+        <p class="rounded-card border border-dashed border-border py-16 text-center text-muted">{{t "Resources are being curated — check back soon."}}</p>
+      {{/if}}
+
+      {{!-- Suggest a resource --}}
+      <div class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-card border border-border bg-surface-sunken p-6">
+        <div>
+          <h3 class="font-heading font-bold">{{t "Know a great resource?"}}</h3>
+          <p class="mt-0.5 text-sm text-muted">{{t "Suggest a book, tool or site and we'll review it for the library."}}</p>
+        </div>
+        <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=resources&title=Resource%20suggestion" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Suggest it"}}</a>
+      </div>
+    </main>
+  </div>
+</section>

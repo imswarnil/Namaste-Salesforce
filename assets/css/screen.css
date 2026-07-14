@@ -339,6 +339,28 @@
   /* Reveal-on-scroll (reveal.js toggles .is-visible). Reduced-motion safe. */
   .js-reveal { @apply opacity-0; transform: translateY(1.25rem); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0,0,0.2,1); }
   .js-reveal.is-visible { @apply opacity-100; transform: none; }
+
+  /* Manifesto: words ink in as the reader scrolls (script in home.hbs) */
+  .js-manifesto span { opacity: 0.15; transition: opacity 0.25s ease; }
+  .js-manifesto span.on { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .js-manifesto span { opacity: 1; transition: none; }
+  }
+
+  /* 3D screen marquee: columns loop forever (content is duplicated, so -50%
+     is a seamless cycle); --dur staggers the speeds per column */
+  .ns-marquee-col { animation: ns-marq-y var(--dur, 45s) linear infinite; will-change: transform; }
+  .ns-marquee-col--rev { animation-direction: reverse; }
+  @media (prefers-reduced-motion: reduce) {
+    .ns-marquee-col { animation: none; }
+  }
+}
+
+@keyframes ns-marq-y {
+  to { transform: translateY(-50%); }
+}
+
+@layer components {
   @media (prefers-reduced-motion: reduce) {
     .js-reveal { @apply opacity-100; transform: none; transition: none; }
   }
