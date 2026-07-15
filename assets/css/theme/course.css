@@ -391,17 +391,17 @@
 
 /* the spine */
 .ns-road::before { content: ""; position: absolute; left: var(--road-x); top: 0.5rem; bottom: -2.5rem;
-  width: 2px; margin-left: -1px; border-radius: 1px;
+  width: 4px; margin-left: -2px; border-radius: 2px;
   background: repeating-linear-gradient(to bottom,
-    var(--color-border) 0 6px, transparent 6px 12px); }
+    var(--color-border) 0 9px, transparent 9px 17px); }
 
 /* START — a solid dot the path grows out of */
 .ns-road__start { position: relative; margin: 0 0 2rem; padding-left: calc(var(--road-x) + 1.75rem); }
 @media (min-width: 768px) { .ns-road__start { padding-left: 0; text-align: center; } }
-.ns-road__start::before { content: ""; position: absolute; left: var(--road-x); top: 0.35rem;
-  width: 14px; height: 14px; margin-left: -7px; border-radius: 9999px;
+.ns-road__start::before { content: ""; position: absolute; left: var(--road-x); top: 0.2rem;
+  width: 20px; height: 20px; margin-left: -10px; border-radius: 9999px;
   background: var(--color-brand-500);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-500) 18%, transparent); }
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-brand-500) 16%, transparent); }
 @media (min-width: 768px) { .ns-road__start::before { top: -0.15rem; } }
 .ns-road__start span { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--color-brand-600); }
@@ -410,7 +410,7 @@
 
 .ns-road__node { position: relative; margin-bottom: 2rem; padding-left: calc(var(--road-x) + 1.75rem); }
 @media (min-width: 768px) {
-  .ns-road__node { width: calc(50% - 2.75rem); padding-left: 0; }
+  .ns-road__node { width: calc(50% - 3.25rem); padding-left: 0; }
   /* START occupies child 1, so sections are children 2..6: EVEN is the first
      section and goes left. Add/remove anything before them and this flips. */
   .ns-road__node:nth-child(even) { margin-right: auto; }          /* left side  */
@@ -418,57 +418,70 @@
 }
 
 /* the node dot, sitting ON the spine */
-.ns-road__node::before { content: ""; position: absolute; top: 2rem; left: var(--road-x);
-  z-index: 2; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 9999px;
-  background: var(--color-surface); box-shadow: 0 0 0 2px var(--color-brand-500); }
+.ns-road__node::before { content: ""; position: absolute; top: 2.4rem; left: var(--road-x);
+  z-index: 2; width: 16px; height: 16px; margin-left: -8px; border-radius: 9999px;
+  background: var(--color-surface); box-shadow: 0 0 0 3px var(--color-brand-500); }
 @media (min-width: 768px) {
-  .ns-road__node:nth-child(even)::before { left: auto; right: -2.75rem; margin-right: -5.5px; }
-  .ns-road__node:nth-child(odd)::before  { left: -2.75rem; margin-left: -5.5px; }
+  .ns-road__node:nth-child(even)::before { left: auto; right: -3.25rem; margin-right: -8px; }
+  .ns-road__node:nth-child(odd)::before  { left: -3.25rem; margin-left: -8px; }
 }
 .ns-road__node:hover::before { background: var(--color-brand-500); }
 
 /* the CURVED elbow from card to spine — a quarter-arc drawn with a rounded
    corner on two borders, which is why it reads as a bend rather than a tee */
-.ns-road__node::after { content: ""; position: absolute; top: 1.05rem; left: var(--road-x);
-  width: 1.75rem; height: 1rem; border-color: var(--color-border); border-style: dashed;
-  border-width: 0 0 2px 2px; border-bottom-left-radius: 0.9rem; }
+.ns-road__node::after { content: ""; position: absolute; top: 1.2rem; left: var(--road-x);
+  width: 1.75rem; height: 1.2rem; border-color: var(--color-border); border-style: dashed;
+  border-width: 0 0 3px 3px; border-bottom-left-radius: 1rem; }
 @media (min-width: 768px) {
-  .ns-road__node:nth-child(even)::after { left: auto; right: -2.75rem; width: 2.75rem;
-    border-width: 0 2px 2px 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0.9rem; }
-  .ns-road__node:nth-child(odd)::after { left: -2.75rem; width: 2.75rem;
-    border-width: 0 0 2px 2px; border-bottom-left-radius: 0.9rem; }
+  .ns-road__node:nth-child(even)::after { left: auto; right: -3.25rem; width: 3.25rem;
+    border-width: 0 3px 3px 0; border-bottom-left-radius: 0; border-bottom-right-radius: 1rem; }
+  .ns-road__node:nth-child(odd)::after { left: -3.25rem; width: 3.25rem;
+    border-width: 0 0 3px 3px; border-bottom-left-radius: 1rem; }
 }
 
-/* ── the card: content first ── */
-.ns-road__card { display: flex; gap: 0.9rem; padding: 1rem; text-decoration: none;
-  border: 1px solid var(--color-border); border-radius: var(--radius-card);
+/* ── the card: content first, and big enough to be one ── */
+.ns-road__card { display: flex; gap: 1.15rem; padding: 1.25rem; text-decoration: none;
+  min-height: 12rem; border: 1px solid var(--color-border); border-radius: var(--radius-card);
   background: var(--color-surface-raised); box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
 .ns-road__card:hover { transform: translateY(-2px); border-color: var(--color-brand-400);
   box-shadow: var(--shadow-raised); }
-.ns-road__thumb { flex: none; width: 5rem; height: 5rem; border-radius: 0.6rem; overflow: hidden;
-  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+/* a tall rectangle, not a square chip — it has to hold its own beside the copy */
+.ns-road__thumb { flex: none; width: 7.5rem; align-self: stretch; border-radius: 0.6rem;
+  overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 2rem;
   background: color-mix(in srgb, var(--color-brand-500) 8%, var(--color-surface-sunken));
   color: var(--color-brand-500); }
 .ns-road__thumb img { width: 100%; height: 100%; object-fit: cover; }
-.ns-road__body { min-width: 0; flex: 1; }
+/* column so the CTA can pin to the bottom and every card ends on the same line */
+.ns-road__body { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .ns-road__kicker { display: flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;
   font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-muted); }
 .ns-road__num { display: inline-flex; align-items: center; justify-content: center;
-  min-width: 1.15rem; height: 1.15rem; padding: 0 0.3rem; border-radius: 0.35rem;
+  min-width: 1.3rem; height: 1.3rem; padding: 0 0.35rem; border-radius: 0.4rem;
   background: color-mix(in srgb, var(--color-brand-500) 12%, transparent);
-  color: var(--color-brand-600); font-size: 0.65rem; font-variant-numeric: tabular-nums; }
+  color: var(--color-brand-600); font-size: 0.7rem; font-variant-numeric: tabular-nums; }
 [data-theme="dark"] .ns-road__num { color: var(--color-brand-300); }
-.ns-road__title { display: block; margin-top: 0.2rem; font-family: var(--font-heading);
-  font-size: 1rem; font-weight: 800; line-height: 1.3; color: var(--color-ink); }
+.ns-road__title { display: block; margin-top: 0.3rem; font-family: var(--font-heading);
+  font-size: 1.2rem; font-weight: 800; line-height: 1.25; color: var(--color-ink); }
 .ns-road__card:hover .ns-road__title { color: var(--color-brand-600); }
 [data-theme="dark"] .ns-road__card:hover .ns-road__title { color: var(--color-brand-300); }
-/* the blurb is ALWAYS visible — that was the whole problem with the old card */
-.ns-road__desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden; margin-top: 0.3rem; font-size: 0.8rem; line-height: 1.5; color: var(--color-muted); }
-.ns-road__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem;
-  margin-top: 0.6rem; font-size: 0.7rem; font-weight: 700; color: var(--color-muted); }
+/* always visible — that was the whole problem with the old card */
+.ns-road__desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; margin-top: 0.4rem; font-size: 0.85rem; line-height: 1.55; color: var(--color-muted); }
+.ns-road__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.85rem;
+  margin-top: 0.7rem; font-size: 0.72rem; font-weight: 700; color: var(--color-muted); }
 .ns-road__meta i { margin-right: 0.25rem; }
+/* margin-top:auto pins the CTA to the bottom of the tallest card in the row */
+.ns-road__cta { display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start;
+  margin-top: auto; padding-top: 0.9rem; font-size: 0.8rem; font-weight: 800;
+  color: var(--color-brand-600); transition: gap 0.2s ease; }
+[data-theme="dark"] .ns-road__cta { color: var(--color-brand-300); }
+.ns-road__card:hover .ns-road__cta { gap: 0.7rem; }
+
+@media (max-width: 480px) {
+  .ns-road__card { flex-direction: column; min-height: 0; }
+  .ns-road__thumb { width: 100%; height: 7rem; align-self: auto; }
+}
 
 /* ── the finish: the trail ends IN the newsletter ──────────────────────────
    The end node isn't a full-width band — it stays ON the spine so it reads as
@@ -476,9 +489,9 @@
 .ns-road__end { position: relative; padding-left: calc(var(--road-x) + 1.75rem); }
 @media (min-width: 768px) { .ns-road__end { padding-left: 0; } }
 .ns-road__end::before { content: ""; position: absolute; left: var(--road-x); top: 1.5rem;
-  z-index: 2; width: 14px; height: 14px; margin-left: -7px; border-radius: 9999px;
+  z-index: 2; width: 20px; height: 20px; margin-left: -10px; border-radius: 9999px;
   background: var(--color-brand-500);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-500) 18%, transparent); }
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-brand-500) 16%, transparent); }
 
 .ns-road__finish { border: 1px solid var(--color-border); border-radius: var(--radius-card);
   background: var(--color-surface-sunken); padding: 1.5rem; }
