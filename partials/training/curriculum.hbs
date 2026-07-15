@@ -1,7 +1,8 @@
-{{!-- training/curriculum.hbs — THIS track's curriculum, grouped by section.
-     Track = the current post's primary tag. Sections = public tags slugged
-     `train-{track}-NN-*`; a section's modules are #training-content posts also
-     tagged with that section tag.
+{{!-- training/curriculum.hbs — the whole training, grouped by section.
+     There is ONE training, so this always lists every section (from
+     training/sections.hbs, which owns their order) — not just the current
+     post's. A section's lessons are #training-content posts whose PRIMARY tag
+     is that section.
      • Search box on top filters modules AND hides emptied sections (Alpine q).
      • Sections are collapsible <details> with a keyword-matched icon + module
        count; the section containing the current module opens on load (script
@@ -30,56 +31,13 @@
                class="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none">
       </label>
 
-      {{#get "tags" filter="slug:~^'train-{{primary_tag.slug}}-'" order="slug asc" limit="30"}}
-        {{#foreach tags}}
-          <details class="train-sec group/sec" data-sec="{{slug}}"
-                   x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))">
-            <summary class="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-semibold text-ink transition hover:bg-surface-sunken [&::-webkit-details-marker]:hidden">
-              <i class="ph-fill {{#match slug "~" "foundation"}}ph-flag{{else match slug "~" "data-model"}}ph-database{{else match slug "~" "data-architecture"}}ph-blueprint{{else match slug "~" "automation"}}ph-gear-six{{else match slug "~" "analytics"}}ph-chart-line-up{{else match slug "~" "certification"}}ph-seal-check{{else match slug "~" "apex"}}ph-code{{else match slug "~" "lightning"}}ph-lightning{{else match slug "~" "platform"}}ph-cube{{else match slug "~" "integration"}}ph-plugs-connected{{else match slug "~" "sharing"}}ph-lock-key{{else match slug "~" "devops"}}ph-git-branch{{else match slug "~" "security"}}ph-shield-check{{else}}ph-folder-open{{/match}} shrink-0 text-base text-brand-500" aria-hidden="true"></i>
-              <span class="min-w-0 flex-1 truncate">{{name}}</span>
-              {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" limit="1"}}<span class="shrink-0 rounded-pill bg-surface-sunken px-1.5 py-0.5 text-[0.65rem] font-bold text-muted">{{pagination.total}}</span>{{/get}}
-              <i class="ph ph-caret-right shrink-0 text-xs text-muted transition-transform group-open/sec:rotate-90" aria-hidden="true"></i>
-            </summary>
-            <ol class="train-tl mb-2 pt-1">
-              {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" order="published_at asc" limit="100"}}
-                {{#foreach posts}}
-                  <li x-show="q === '' || $el.querySelector('a').dataset.title.toLowerCase().includes(q.toLowerCase())"
-                      class="{{#match id ../../../../id}}is-active{{/match}}">
-                    <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
-                       class="doc-nav-link flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
-                      <span class="flex min-w-0 items-center gap-2">
-                        <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else has tag="#training-type-video"}}ph ph-video-camera{{else has tag="#training-type-exercise"}}ph ph-barbell{{else has tag="#training-type-quiz"}}ph ph-exam{{else}}ph ph-file-text{{/match}} shrink-0" aria-hidden="true"></i>
-                        <span class="truncate">{{title}}</span>
-                      </span>
-                      <span class="flex shrink-0 items-center gap-1.5 text-xs">
-                        {{#match visibility "public"}}{{else match visibility "members"}}<i class="ph-fill ph-lock-simple" title="{{t "Members only"}}" aria-hidden="true"></i>{{else match visibility "paid"}}<i class="ph-fill ph-crown-simple text-warning" title="{{t "Paid members"}}" aria-hidden="true"></i>{{else}}<i class="ph-fill ph-star" title="{{t "Tier exclusive"}}" aria-hidden="true"></i>{{/match}}
-                        <span>{{reading_time minute="1m" minutes="%m"}}</span>
-                      </span>
-                    </a>
-                  </li>
-                {{/foreach}}
-              {{/get}}
-            </ol>
-          </details>
-        {{else}}
-          {{!-- Fallback: no sections defined → flat list of the track's modules --}}
-          <ul class="space-y-0.5">
-            {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
-              {{#foreach posts}}
-                <li x-show="q === '' || $el.querySelector('a').dataset.title.toLowerCase().includes(q.toLowerCase())">
-                  <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
-                     class="doc-nav-link flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../../../id}}is-doc-active{{/match}}">
-                    <i class="{{#match id ../../../../id}}ph-fill ph-play-circle{{else}}ph ph-circle{{/match}} shrink-0" aria-hidden="true"></i>
-                    <span class="truncate">{{title}}</span>
-                  </a>
-                </li>
-              {{else}}
-                <li><span class="block px-3 py-2 text-sm italic text-muted">{{t "No lessons yet."}}</span></li>
-              {{/foreach}}
-            {{/get}}
-          </ul>
-        {{/foreach}}
-      {{/get}}
+      {{!-- One .train-rail around every section so the timeline is a single
+           unbroken line through sections AND lessons (see course.css).
+           Order comes from training/sections.hbs — section slugs are clean, so
+           there's no query that can order them. --}}
+      <div class="train-rail">
+        {{> "training/sections" view="nav"}}
+      </div>
 
       <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
          x-cloak class="rounded-lg border border-dashed border-border px-3 py-4 text-center text-sm text-muted">{{t "No lessons match."}}</p>
@@ -87,24 +45,63 @@
   </nav>
 </div>
 
-{{!-- Open the section containing the current module (others stay closed; on a
-     track OVERVIEW open the first). Then mark every lesson BEFORE the active
-     one .is-done so the timeline rail fills in as the learner progresses. --}}
+{{!-- Curriculum progress.
+
+     1. Open the section containing the current module (others stay closed; on a
+        training OVERVIEW open the first).
+     2. Mark every lesson BEFORE the active one .is-done, and every section
+        before the active section .is-done / the active one .is-current.
+     3. Paint the rail: --tl-fill is the distance from the rail's top to the
+        CENTRE of the active lesson, so the blue line stops exactly at "you are
+        here". It's measured rather than computed in CSS because the rail spans
+        collapsed <details> whose heights only exist at runtime — so it's
+        re-measured whenever a section is toggled or the panel reflows. --}}
 <script>
   (function () {
-    var active = document.querySelector('#training-curriculum .is-doc-active');
+    var panel = document.querySelector('#training-curriculum');
+    if (!panel) return;
+    var rail = panel.querySelector('.train-rail');
+    var active = panel.querySelector('.is-doc-active');
+
     if (active) {
       var d = active.closest('details');
       if (d) d.open = true;
     } else {
-      var first = document.querySelector('#training-curriculum details.train-sec');
+      var first = panel.querySelector('details.train-sec');
       if (first) first.open = true;
     }
-    // progress: everything before the current module counts as done
-    var items = document.querySelectorAll('#training-curriculum .train-tl li');
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].classList.contains('is-active')) break;
-      items[i].classList.add('is-done');
+
+    var activeLi = active ? active.closest('li') : null;
+
+    // Progress only exists relative to a current module. On a training OVERVIEW
+    // there is none, so nothing is done and the rail stays unpainted.
+    if (activeLi) {
+      // lessons: everything before the current module counts as done
+      var items = panel.querySelectorAll('.train-tl li');
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].classList.contains('is-active')) break;
+        items[i].classList.add('is-done');
+      }
+      // sections: done if they end before the active lesson; current if they hold it
+      var secs = panel.querySelectorAll('details.train-sec');
+      for (var s = 0; s < secs.length; s++) {
+        if (secs[s].contains(activeLi)) { secs[s].classList.add('is-current'); break; }
+        secs[s].classList.add('is-done');
+      }
     }
+
+    function paint() {
+      if (!rail) return;
+      if (!activeLi) { rail.style.setProperty('--tl-fill', '0px'); return; }
+      // only measurable when laid out; a collapsed section reports height 0
+      var r = activeLi.getBoundingClientRect();
+      if (!r.height) { rail.style.setProperty('--tl-fill', '0px'); return; }
+      var top = rail.getBoundingClientRect().top + 16; // matches the rail's 1rem inset
+      rail.style.setProperty('--tl-fill', Math.max(0, r.top + r.height / 2 - top) + 'px');
+    }
+    paint();
+    panel.addEventListener('toggle', paint, true);   // <details> toggle doesn't bubble
+    window.addEventListener('resize', paint);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(paint);
   })();
 </script>

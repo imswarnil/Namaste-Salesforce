@@ -9,18 +9,28 @@
 # Because a lesson's primary tag == its course's tag, the {primary_tag} segment
 # nests every lesson under its course automatically.
 #
-# Content model (matches the templates' tag conventions + import.json):
+# Content model (matches the templates' tag conventions + dummy-content/*.json):
 #   Course       = post tagged #course,  primary tag = course tag (e.g. apex)
 #   Lesson       = post tagged #lesson,  primary tag = its course's tag
-#   Track        = post tagged #training, primary tag = track tag
-#   Module       = post tagged #training-content, primary tag = its track's tag
+#   Training     = /training/ itself. There is ONE training, so it has no post
+#                  of its own — the landing lists its sections.
+#   Section      = PUBLIC tag with a CLEAN slug (foundation-start). The slug IS
+#                  the URL segment, which is why it carries no train-/NN- prefix:
+#                  a lesson nests under its section via {primary_tag}, so any
+#                  prefix would leak into every lesson URL.
+#   Lesson       = post tagged #training-content, PRIMARY tag = its section tag.
+#                  /training/{section}/{lesson}/
+#   Section ORDER lives in partials/training/sections.hbs — clean slugs can't
+#   encode it (same trade-off the docs sections make).
 #   Doc          = post tagged `documentation`, primary tag = docs-NN-* section tag
 #   Resource     = post tagged #resource
 #   Blog post    = post tagged #blog
 #   Pages: /about/, /products/, /contact/ use page-{slug}.hbs automatically.
 #
-# Course/lesson TAG pages (/tag/{course-tag}/) redirect to the course in
-# tag.hbs, so there is no duplicate tag URL for course content.
+# TAG pages redirect in tag.hbs rather than serving a duplicate archive:
+#   /tag/{course-tag}/   -> the course
+#   /tag/{section-tag}/  -> /training/{section}/  (detected by the tag having
+#                           #training-content posts whose primary tag it is)
 
 routes:
   /: home
@@ -32,6 +42,31 @@ routes:
     template: page-about
   /sponsor/:
     template: page-sponsor
+
+  # ── Training ──────────────────────────────────────────────────────────
+  # /training/ is the single training's landing (no #training post backs it;
+  # a Ghost PAGE with slug `training` will supply the title/excerpt if one
+  # exists — training.hbs forks on {{#page}}).
+  /training/:
+    template: training
+
+  # One route per SECTION. Keep this list in sync with
+  # partials/training/sections.hbs, which owns their ORDER.
+  /training/foundation-start/:
+    data: tag.foundation-start
+    template: training-section
+  /training/setup-salesforce/:
+    data: tag.setup-salesforce
+    template: training-section
+  /training/navigating-salesforce/:
+    data: tag.navigating-salesforce
+    template: training-section
+  /training/data-model-basics/:
+    data: tag.data-model-basics
+    template: training-section
+  /training/security-basics/:
+    data: tag.security-basics
+    template: training-section
 
   # Docs section pages — /docs/{section}/ (clean slugs, no numbering).
   # Each renders docs-section.hbs with its tag as {{tag}}. Section tag slugs
@@ -84,16 +119,11 @@ collections:
     template: index
     filter: tag:hash-lesson
 
-  # Training tracks + nested content (mirrors courses). Track POST slug MUST
-  # equal its track TAG so its content nests under /training/{track-tag}/.
-  # A training-content lesson's PRIMARY tag = the track tag (its section is a
-  # secondary tag, used only to group lessons in the curriculum display).
-  /training/:
-    permalink: /training/{slug}/
-    template: training
-    filter: tag:hash-training
-
-  /training-content/:
+  # Training LESSONS nest under their section: /training/{section}/{lesson}/
+  # (a lesson's primary tag IS its section tag, and that tag's slug is clean so
+  # it can be the URL segment). The /training-lessons/ path is just this
+  # collection's archive index — the real entry point is /training/.
+  /training-lessons/:
     permalink: /training/{primary_tag}/{slug}/
     template: index
     filter: tag:hash-training-content

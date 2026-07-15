@@ -281,6 +281,23 @@
     -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 40%, #000 25%, transparent 78%);
     mask-image: radial-gradient(ellipse 100% 100% at 50% 40%, #000 25%, transparent 78%);
   }
+  /* Grid that lives in ONE corner and dissolves toward the middle of the
+     section — used behind two-column heroes so the art side has structure and
+     the reading side stays clean. Mask is anchored right by default; add
+     .bg-grid-corner--left to flip it. */
+  .bg-grid-corner {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, currentColor 10%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, currentColor 10%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(120% 120% at 100% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+    mask-image: radial-gradient(120% 120% at 100% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+  }
+  .bg-grid-corner--left {
+    -webkit-mask-image: radial-gradient(120% 120% at 0% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+    mask-image: radial-gradient(120% 120% at 0% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+  }
+
   .bg-dots {
     background-image: radial-gradient(color-mix(in srgb, currentColor 16%, transparent) 1px, transparent 1px);
     background-size: 22px 22px;
@@ -347,17 +364,17 @@
     .js-manifesto span { opacity: 1; transition: none; }
   }
 
-  /* 3D screen marquee: columns loop forever (content is duplicated, so -50%
-     is a seamless cycle); --dur staggers the speeds per column */
-  .ns-marquee-col { animation: ns-marq-y var(--dur, 45s) linear infinite; will-change: transform; }
-  .ns-marquee-col--rev { animation-direction: reverse; }
+  /* 3D screen marquee: rows loop forever (content is duplicated, so -50%
+     is a seamless cycle); --dur staggers the speeds per row */
+  .ns-marquee-row { animation: ns-marq-x var(--dur, 32s) linear infinite; will-change: transform; }
+  .ns-marquee-row--rev { animation-direction: reverse; }
   @media (prefers-reduced-motion: reduce) {
-    .ns-marquee-col { animation: none; }
+    .ns-marquee-row { animation: none; }
   }
 }
 
-@keyframes ns-marq-y {
-  to { transform: translateY(-50%); }
+@keyframes ns-marq-x {
+  to { transform: translateX(-50%); }
 }
 
 @layer components {

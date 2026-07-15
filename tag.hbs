@@ -1,41 +1,64 @@
 {{!< default}}
-{{!-- tag.hbs — tag archive: header + post grid.
-     Course/lesson tags redirect to the course page so there is no duplicate
-     tag URL for course content (a course post shares its primary tag with all
-     its lessons). --}}
+{{!-- tag.hbs — tag archive.
 
-{{#tag}}
-  {{#get "posts" filter="tag:hash-course+primary_tag:{{slug}}" limit="1" as |course|}}
-    {{#if course}}{{#foreach course}}
-      <script>window.location.replace("{{url}}");</script>
-      <noscript><meta http-equiv="refresh" content="0; url={{url}}"></noscript>
-      <link rel="canonical" href="{{url absolute="true"}}">
-      <p class="ns-container ns-section" style="text-align:center;">{{t "Redirecting to the course…"}} <a href="{{url}}" class="ns-underline">{{title}}</a></p>
-    {{/foreach}}{{else}}
-  <header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 to-brand-900 text-white"
-    {{#if feature_image}}style="background-image: linear-gradient(rgba(3,45,96,0.82), rgba(0,26,62,0.9)), url('{{img_url feature_image size='xl'}}'); background-size: cover; background-position: center;"{{/if}}>
-    <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
-      <p class="text-xs font-semibold uppercase tracking-[0.15em] text-brand-200">{{t "Topic"}}</p>
-      <h1 class="mt-2 font-heading text-4xl font-extrabold sm:text-5xl">{{name}}</h1>
-      {{#if description}}
-        <p class="mx-auto mt-4 max-w-2xl text-lg text-white/80">{{description}}</p>
+     Three different things live at /tag/{slug}/, so this template forks:
+
+     1. A TRAINING SECTION tag redirects to /training/{slug}/, its real home.
+        Detected by having #training-content lessons whose PRIMARY tag it is —
+        no slug convention needed, since section slugs are clean now.
+     2. A COURSE tag redirects to the course. A course post shares its primary
+        tag with all its lessons, so the archive would be a duplicate, worse
+        version of the course page.
+     3. Anything else is a normal tag archive: header + post grid.
+
+     The `../` depths inside the archive branch are load-bearing — Ghost 500s if
+     a helper is called across `../`, so that branch is left exactly as it was. --}}
+
+{{!-- A TRAINING SECTION tag: its lessons carry it as their primary tag. The
+     section's real home is /training/{slug}/, so never serve an archive here. --}}
+{{#get "posts" filter="primary_tag:{{tag.slug}}+tag:hash-training-content" limit="1" as |lesson|}}
+  {{#if lesson}}
+    <script>window.location.replace("/training/{{tag.slug}}/");</script>
+    <noscript><meta http-equiv="refresh" content="0; url=/training/{{tag.slug}}/"></noscript>
+    <link rel="canonical" href="/training/{{tag.slug}}/">
+    <p class="ns-container ns-section" style="text-align:center;">{{t "Redirecting to the section…"}} <a href="/training/{{tag.slug}}/" class="ns-underline">{{tag.name}}</a></p>
+  {{else}}
+
+  {{#tag}}
+    {{#get "posts" filter="primary_tag:{{slug}}+tag:hash-course" limit="1" as |hub|}}
+      {{#if hub}}{{#foreach hub}}
+        <script>window.location.replace("{{url}}");</script>
+        <noscript><meta http-equiv="refresh" content="0; url={{url}}"></noscript>
+        <link rel="canonical" href="{{url absolute="true"}}">
+        <p class="ns-container ns-section" style="text-align:center;">{{t "Redirecting…"}} <a href="{{url}}" class="ns-underline">{{title}}</a></p>
+      {{/foreach}}{{else}}
+    <header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 to-brand-900 text-white"
+      {{#if feature_image}}style="background-image: linear-gradient(rgba(3,45,96,0.82), rgba(0,26,62,0.9)), url('{{img_url feature_image size='xl'}}'); background-size: cover; background-position: center;"{{/if}}>
+      <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
+        <p class="text-xs font-semibold uppercase tracking-[0.15em] text-brand-200">{{t "Topic"}}</p>
+        <h1 class="mt-2 font-heading text-4xl font-extrabold sm:text-5xl">{{name}}</h1>
+        {{#if description}}
+          <p class="mx-auto mt-4 max-w-2xl text-lg text-white/80">{{description}}</p>
+        {{/if}}
+        <p class="mt-6">
+          <span class="inline-flex items-center rounded-pill bg-white/15 px-3 py-1 text-sm font-medium">
+            {{plural ../pagination.total empty=(t "No posts") singular=(t "% post") plural=(t "% posts")}}
+          </span>
+        </p>
+      </div>
+    </header>
       {{/if}}
-      <p class="mt-6">
-        <span class="inline-flex items-center rounded-pill bg-white/15 px-3 py-1 text-sm font-medium">
-          {{plural ../pagination.total empty=(t "No posts") singular=(t "% post") plural=(t "% posts")}}
-        </span>
-      </p>
-    </div>
-  </header>
-    {{/if}}
-  {{/get}}
-{{/tag}}
+    {{/get}}
+  {{/tag}}
 
-<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {{#foreach posts}}
-      <div class="motion-safe:animate-fade-up">{{> post-card}}</div>
-    {{/foreach}}
-  </div>
-  {{pagination}}
-</section>
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {{#foreach posts}}
+        <div class="motion-safe:animate-fade-up">{{> post-card}}</div>
+      {{/foreach}}
+    </div>
+    {{pagination}}
+  </section>
+
+  {{/if}}
+{{/get}}
