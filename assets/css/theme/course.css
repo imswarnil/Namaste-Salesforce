@@ -429,14 +429,17 @@
 
 /* the CURVED elbow from card to spine — a quarter-arc drawn with a rounded
    corner on two borders, which is why it reads as a bend rather than a tee */
-.ns-road__node::after { content: ""; position: absolute; top: 1.2rem; left: var(--road-x);
-  width: 1.75rem; height: 1.2rem; border-color: var(--color-border); border-style: dashed;
-  border-width: 0 0 3px 3px; border-bottom-left-radius: 1rem; }
+/* the branch: a long, gentle arc. A tight radius on a dashed border reads as a
+   kink rather than a curve, so the elbow is taller than it is wide and solid —
+   dashes can't render a smooth bend at this size. */
+.ns-road__node::after { content: ""; position: absolute; top: 1.3rem; left: var(--road-x);
+  width: 1.75rem; height: 1.6rem; border-color: var(--color-border); border-style: solid;
+  border-width: 0 0 3px 3px; border-bottom-left-radius: 1.6rem; opacity: 0.85; }
 @media (min-width: 768px) {
   .ns-road__node:nth-child(even)::after { left: auto; right: -3.25rem; width: 3.25rem;
-    border-width: 0 3px 3px 0; border-bottom-left-radius: 0; border-bottom-right-radius: 1rem; }
+    border-width: 0 3px 3px 0; border-bottom-left-radius: 0; border-bottom-right-radius: 1.6rem; }
   .ns-road__node:nth-child(odd)::after { left: -3.25rem; width: 3.25rem;
-    border-width: 0 0 3px 3px; border-bottom-left-radius: 1rem; }
+    border-width: 0 0 3px 3px; border-bottom-left-radius: 1.6rem; }
 }
 
 /* ── the card: content first, and big enough to be one ── */
@@ -486,7 +489,7 @@
 /* ── the finish: the trail ends IN the newsletter ──────────────────────────
    The end node isn't a full-width band — it stays ON the spine so it reads as
    the last stop rather than a separate CTA section bolted underneath. */
-.ns-road__end { position: relative; padding-left: calc(var(--road-x) + 1.75rem); }
+.ns-road__end { position: relative; margin-top: 4.5rem; padding-left: calc(var(--road-x) + 1.75rem); }
 @media (min-width: 768px) { .ns-road__end { padding-left: 0; } }
 .ns-road__end::before { content: ""; position: absolute; left: var(--road-x); top: 1.5rem;
   z-index: 2; width: 20px; height: 20px; margin-left: -10px; border-radius: 9999px;
