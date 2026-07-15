@@ -22,8 +22,11 @@
   "@graph": [
     {{> "jsonld/base"}}
     {{!-- Per-page nodes (each partial starts with a comma). --}}
-    {{#is "post"}}{{#post}}{{#has tag="#course"}}{{> "jsonld/course"}}{{/has}}{{#has tag="#lesson"}}{{> "jsonld/lesson"}}{{/has}}{{/post}}{{/is}}
-    {{!-- Still blank: #training, #blog, documentation, pages, collections. --}}
+    {{#is "post"}}{{#post}}{{#has tag="#course"}}{{> "jsonld/course"}}{{/has}}{{#has tag="#lesson"}}{{> "jsonld/lesson"}}{{/has}}{{#has tag="#training-content"}}{{> "jsonld/training-lesson"}}{{/has}}{{/post}}{{/is}}
+    {{!-- /training/ and /training/{section}/ are CUSTOM ROUTES, so {{#is "post"}}
+         never matches them and their nodes can't join this graph. They emit
+         their own ld+json from jsonld/training.hbs and jsonld/training-section.hbs.
+         Still blank: #blog, documentation, pages, collections. --}}
   ]
 }
 </script>

@@ -1,0 +1,29 @@
+{{!-- jsonld/training-lesson.hbs — LearningResource for a #training-content lesson,
+     linked back to its SECTION (isPartOf → /training/{primary_tag}/#section, since
+     a lesson's primary tag IS its section and that slug is the URL segment).
+     Adds a VideoObject when tagged #training-type-video. Emitted inside the page
+     @graph → STARTS with a comma. Double-stache only → JSON-safe. --}}
+,{
+  "@type": "LearningResource",
+  "@id": "{{url absolute="true"}}#lesson",
+  "name": "{{title}}",
+  "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+  "url": "{{url absolute="true"}}",
+  "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else}}Reading{{/has}}",
+  "inLanguage": "{{@site.locale}}",
+  "isAccessibleForFree": {{#has visibility="public"}}true{{else}}false{{/has}},
+  {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
+  "timeRequired": "PT{{reading_time minute="1" minutes="%"}}M",
+  "author": { "@id": "{{@site.url}}/#owner" },
+  "isPartOf": { "@id": "{{@site.url}}/training/{{primary_tag.slug}}/#section" }
+}{{#has tag="#training-type-video"}},
+{
+  "@type": "VideoObject",
+  "@id": "{{url absolute="true"}}#video",
+  "name": "{{title}}",
+  "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+  {{#if feature_image}}"thumbnailUrl": "{{feature_image}}",{{/if}}
+  "uploadDate": "{{date format="YYYY-MM-DDTHH:mm:ssZ"}}",
+  "embedUrl": "{{url absolute="true"}}",
+  "isPartOf": { "@id": "{{url absolute="true"}}#lesson" }
+}{{/has}}

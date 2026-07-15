@@ -375,68 +375,130 @@
   box-shadow: inset 0 0 0 1px var(--color-brand-500); }
 [data-theme="dark"] .ns-step-badge { color: var(--color-brand-300); }
 
-/* ── Netflix-style section card ──────────────────────────────────────────────
-   The step number is a huge outlined glyph the artwork sits against, so the
-   sequence reads at a glance. On hover the card lifts, the number nudges out,
-   and the title block slides up to reveal the blurb — the "text animates"
-   without ever reflowing the grid (it's all transforms). ─────────────────── */
-.ns-nf { position: relative; display: block; padding-left: 2.1rem; text-decoration: none; }
-@media (min-width: 640px) { .ns-nf { padding-left: 3rem; } }
+/* ── Training roadmap (the /training/ section list) ──────────────────────────
+   roadmap.sh-style: a dashed spine with a START dot, then cards alternating
+   left/right, each joined to the spine by a CURVED elbow. Replaces a
+   Netflix-style card whose blurb lived under an image scrim and only appeared
+   on hover — i.e. never on touch, and invisible at rest. Here the content is
+   the card; the artwork is a thumbnail beside it.
 
-.ns-nf__num { position: absolute; left: -0.35rem; bottom: -0.9rem; z-index: 0; line-height: 0.78;
-  font-family: var(--font-heading); font-size: 8rem; font-weight: 800; font-variant-numeric: tabular-nums;
-  color: transparent; -webkit-text-stroke: 2px var(--color-border);
-  transition: transform 0.35s var(--ease-spring), -webkit-text-stroke-color 0.35s ease; }
-@media (min-width: 640px) { .ns-nf__num { font-size: 10rem; } }
-.ns-nf:hover .ns-nf__num, .ns-nf:focus-visible .ns-nf__num {
-  transform: translateX(-0.35rem); -webkit-text-stroke-color: var(--color-brand-500); }
+   Layout is pure CSS + :nth-child, so the whole thing is Handlebars-rendered
+   with no JS. Below `md` it collapses to a single left-hand spine, because
+   alternating sides needs width to read as a path. ───────────────────────── */
+/* padding-bottom leaves room for the spine to run on past the finish card */
+.ns-road { position: relative; list-style: none; margin-block: 0; padding: 0 0 3.5rem; --road-x: 1.25rem; }
+@media (min-width: 768px) { .ns-road { --road-x: 50%; } }
 
-.ns-nf__card { position: relative; z-index: 1; display: block; overflow: hidden;
+/* the spine */
+.ns-road::before { content: ""; position: absolute; left: var(--road-x); top: 0.5rem; bottom: -2.5rem;
+  width: 2px; margin-left: -1px; border-radius: 1px;
+  background: repeating-linear-gradient(to bottom,
+    var(--color-border) 0 6px, transparent 6px 12px); }
+
+/* START — a solid dot the path grows out of */
+.ns-road__start { position: relative; margin: 0 0 2rem; padding-left: calc(var(--road-x) + 1.75rem); }
+@media (min-width: 768px) { .ns-road__start { padding-left: 0; text-align: center; } }
+.ns-road__start::before { content: ""; position: absolute; left: var(--road-x); top: 0.35rem;
+  width: 14px; height: 14px; margin-left: -7px; border-radius: 9999px;
+  background: var(--color-brand-500);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-500) 18%, transparent); }
+@media (min-width: 768px) { .ns-road__start::before { top: -0.15rem; } }
+.ns-road__start span { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--color-brand-600); }
+@media (min-width: 768px) { .ns-road__start span { display: inline-block; margin-top: 1.4rem; } }
+[data-theme="dark"] .ns-road__start span { color: var(--color-brand-300); }
+
+.ns-road__node { position: relative; margin-bottom: 2rem; padding-left: calc(var(--road-x) + 1.75rem); }
+@media (min-width: 768px) {
+  .ns-road__node { width: calc(50% - 2.75rem); padding-left: 0; }
+  /* START occupies child 1, so sections are children 2..6: EVEN is the first
+     section and goes left. Add/remove anything before them and this flips. */
+  .ns-road__node:nth-child(even) { margin-right: auto; }          /* left side  */
+  .ns-road__node:nth-child(odd)  { margin-left: auto; }           /* right side */
+}
+
+/* the node dot, sitting ON the spine */
+.ns-road__node::before { content: ""; position: absolute; top: 2rem; left: var(--road-x);
+  z-index: 2; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 9999px;
+  background: var(--color-surface); box-shadow: 0 0 0 2px var(--color-brand-500); }
+@media (min-width: 768px) {
+  .ns-road__node:nth-child(even)::before { left: auto; right: -2.75rem; margin-right: -5.5px; }
+  .ns-road__node:nth-child(odd)::before  { left: -2.75rem; margin-left: -5.5px; }
+}
+.ns-road__node:hover::before { background: var(--color-brand-500); }
+
+/* the CURVED elbow from card to spine — a quarter-arc drawn with a rounded
+   corner on two borders, which is why it reads as a bend rather than a tee */
+.ns-road__node::after { content: ""; position: absolute; top: 1.05rem; left: var(--road-x);
+  width: 1.75rem; height: 1rem; border-color: var(--color-border); border-style: dashed;
+  border-width: 0 0 2px 2px; border-bottom-left-radius: 0.9rem; }
+@media (min-width: 768px) {
+  .ns-road__node:nth-child(even)::after { left: auto; right: -2.75rem; width: 2.75rem;
+    border-width: 0 2px 2px 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0.9rem; }
+  .ns-road__node:nth-child(odd)::after { left: -2.75rem; width: 2.75rem;
+    border-width: 0 0 2px 2px; border-bottom-left-radius: 0.9rem; }
+}
+
+/* ── the card: content first ── */
+.ns-road__card { display: flex; gap: 0.9rem; padding: 1rem; text-decoration: none;
   border: 1px solid var(--color-border); border-radius: var(--radius-card);
   background: var(--color-surface-raised); box-shadow: var(--shadow-card);
-  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s ease, border-color 0.2s ease; }
-.ns-nf:hover .ns-nf__card, .ns-nf:focus-visible .ns-nf__card {
-  transform: translateY(-4px); box-shadow: var(--shadow-raised); border-color: var(--color-brand-400); }
-
-.ns-nf__img { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover;
-  transition: transform 0.5s ease; }
-.ns-nf:hover .ns-nf__img { transform: scale(1.05); }
-.ns-nf__img--empty { display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.ns-road__card:hover { transform: translateY(-2px); border-color: var(--color-brand-400);
+  box-shadow: var(--shadow-raised); }
+.ns-road__thumb { flex: none; width: 5rem; height: 5rem; border-radius: 0.6rem; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
   background: color-mix(in srgb, var(--color-brand-500) 8%, var(--color-surface-sunken));
-  color: var(--color-brand-500); font-size: 2.5rem; }
-/* scrim keeps the title legible over ANY photo — the one place a gradient earns
-   its place, because it's a legibility device over an image, not decoration */
-.ns-nf__scrim { position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.82) 0%, rgb(0 0 0 / 0.35) 45%, transparent 75%); }
+  color: var(--color-brand-500); }
+.ns-road__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.ns-road__body { min-width: 0; flex: 1; }
+.ns-road__kicker { display: flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;
+  font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-muted); }
+.ns-road__num { display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.15rem; height: 1.15rem; padding: 0 0.3rem; border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--color-brand-500) 12%, transparent);
+  color: var(--color-brand-600); font-size: 0.65rem; font-variant-numeric: tabular-nums; }
+[data-theme="dark"] .ns-road__num { color: var(--color-brand-300); }
+.ns-road__title { display: block; margin-top: 0.2rem; font-family: var(--font-heading);
+  font-size: 1rem; font-weight: 800; line-height: 1.3; color: var(--color-ink); }
+.ns-road__card:hover .ns-road__title { color: var(--color-brand-600); }
+[data-theme="dark"] .ns-road__card:hover .ns-road__title { color: var(--color-brand-300); }
+/* the blurb is ALWAYS visible — that was the whole problem with the old card */
+.ns-road__desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; margin-top: 0.3rem; font-size: 0.8rem; line-height: 1.5; color: var(--color-muted); }
+.ns-road__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem;
+  margin-top: 0.6rem; font-size: 0.7rem; font-weight: 700; color: var(--color-muted); }
+.ns-road__meta i { margin-right: 0.25rem; }
 
-.ns-nf__lock { position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2; display: inline-flex;
-  align-items: center; justify-content: center; height: 1.6rem; width: 1.6rem; border-radius: 9999px;
-  background: rgb(0 0 0 / 0.55); color: #fff; font-size: 0.8rem; backdrop-filter: none; }
+/* ── the finish: the trail ends IN the newsletter ──────────────────────────
+   The end node isn't a full-width band — it stays ON the spine so it reads as
+   the last stop rather than a separate CTA section bolted underneath. */
+.ns-road__end { position: relative; padding-left: calc(var(--road-x) + 1.75rem); }
+@media (min-width: 768px) { .ns-road__end { padding-left: 0; } }
+.ns-road__end::before { content: ""; position: absolute; left: var(--road-x); top: 1.5rem;
+  z-index: 2; width: 14px; height: 14px; margin-left: -7px; border-radius: 9999px;
+  background: var(--color-brand-500);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-500) 18%, transparent); }
 
-.ns-nf__body { position: absolute; inset-inline: 0; bottom: 0; z-index: 2; display: block;
-  padding: 0.9rem 1rem 1rem; color: #fff;
-  transform: translateY(var(--nf-shift, 0)); transition: transform 0.35s var(--ease-spring); }
-.ns-nf__kicker { display: block; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em;
-  text-transform: uppercase; color: rgb(255 255 255 / 0.7); }
-.ns-nf__title { display: block; margin-top: 0.15rem; font-family: var(--font-heading);
-  font-size: 1.05rem; font-weight: 800; line-height: 1.25; }
-/* the blurb is the reveal: measured out of view, slid in on hover */
-.ns-nf__desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden; margin-top: 0.35rem; font-size: 0.78rem; line-height: 1.45;
-  color: rgb(255 255 255 / 0.8); opacity: 0; max-height: 0;
-  transition: opacity 0.3s ease, max-height 0.35s ease; }
-.ns-nf:hover .ns-nf__desc, .ns-nf:focus-visible .ns-nf__desc { opacity: 1; max-height: 3rem; }
-.ns-nf__meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-  margin-top: 0.55rem; font-size: 0.72rem; font-weight: 700; color: rgb(255 255 255 / 0.75); }
-.ns-nf__meta i { margin-right: 0.3rem; }
-.ns-nf__go { display: inline-flex; align-items: center; gap: 0.3rem; color: #fff;
-  transition: gap 0.25s ease; }
-.ns-nf:hover .ns-nf__go { gap: 0.6rem; }
-
-@media (prefers-reduced-motion: reduce) {
-  .ns-nf__num, .ns-nf__card, .ns-nf__img, .ns-nf__body, .ns-nf__desc, .ns-nf__go { transition: none; }
-  .ns-nf__desc { opacity: 1; max-height: 3rem; }
+.ns-road__finish { border: 1px solid var(--color-border); border-radius: var(--radius-card);
+  background: var(--color-surface-sunken); padding: 1.5rem; }
+@media (min-width: 768px) {
+  /* centred on the spine — it's the destination, so it sits ON the line rather
+     than hanging off one side like a section does */
+  .ns-road__finish { margin-inline: auto; max-width: 32rem; text-align: center; }
+  .ns-road__finish-kicker { justify-content: center; }
+  .ns-road__finish-form { margin-inline: auto; }
+  .ns-road__end::before { top: -0.4rem; }
 }
+.ns-road__finish-kicker { display: flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;
+  font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-brand-600); }
+[data-theme="dark"] .ns-road__finish-kicker { color: var(--color-brand-300); }
+.ns-road__finish-title { margin-top: 0.5rem; font-family: var(--font-heading); font-size: 1.15rem;
+  font-weight: 800; line-height: 1.3; color: var(--color-ink); }
+.ns-road__finish-desc { margin-top: 0.4rem; font-size: 0.85rem; line-height: 1.55; color: var(--color-muted); }
+.ns-road__finish-form { margin-top: 1rem; max-width: 26rem; }
+
+@media (prefers-reduced-motion: reduce) { .ns-road__card { transition: none; } }
 
 /* ── Video timestamp buttons (training-video.js builds these from chapter
       tables in the content — click seeks the hero video) ─────────────────── */

@@ -1,0 +1,43 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+  jsonld/training-section.hbs — one section at /training/{section}/, as a Course
+  that isPartOf the training, with every lesson in it as hasPart.
+
+  Its own <script> for the same reason as jsonld/training.hbs: a section is a
+  custom route with `data: tag.{slug}`, which structured-data.hbs can't detect.
+  Context here is the section TAG. Double-stache only → JSON-safe.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      "@id": "{{@site.url}}/training/{{slug}}/#section",
+      "name": "{{name}}",
+      {{#if description}}"description": "{{description}}",{{/if}}
+      "url": "{{@site.url}}/training/{{slug}}/",
+      {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
+      "provider": { "@id": "{{@site.url}}/#owner" },
+      "inLanguage": "{{@site.locale}}",
+      "isPartOf": { "@id": "{{@site.url}}/training/#course" },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online"
+      },
+      "hasPart": [
+        {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="50"}}
+          {{#foreach posts}}{{#unless @first}},{{/unless}}{
+            "@type": "LearningResource",
+            "@id": "{{url absolute="true"}}#lesson",
+            "name": "{{title}}",
+            "url": "{{url absolute="true"}}",
+            "position": {{@number}},
+            "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else}}Reading{{/has}}",
+            "isAccessibleForFree": {{#has visibility="public"}}true{{else}}false{{/has}}
+          }{{/foreach}}
+        {{/get}}
+      ]
+    }
+  ]
+}
+</script>

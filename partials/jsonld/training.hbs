@@ -1,0 +1,41 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+  jsonld/training.hbs — the whole training at /training/: a Course whose
+  hasPart is every SECTION, each of which carries its own lessons.
+
+  Emitted as its OWN <script> rather than joining the @graph in
+  partials/structured-data.hbs, because /training/ is a custom route — that
+  partial forks on {{#is "post"}}/{{#post}}, which never matches here. Multiple
+  ld+json blocks are valid, and structured-data.hbs already notes the site's
+  JSON-LD is additive.
+
+  Section order + membership come from training/sections.hbs, the one place
+  that knows them. Double-stache only → JSON-safe.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      "@id": "{{@site.url}}/training/#course",
+      "name": "{{#if title}}{{title}}{{else}}Salesforce Training{{/if}}",
+      "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}One training, in order. Start at absolute zero, finish job-ready.{{/if}}",
+      "url": "{{@site.url}}/training/",
+      "provider": { "@id": "{{@site.url}}/#owner" },
+      "inLanguage": "{{@site.locale}}",
+      "isAccessibleForFree": true,
+      "educationalLevel": "Beginner",
+      "about": "Salesforce",
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online",
+        "courseWorkload": "PT1H"
+      },
+      "hasPart": [
+        {{> "training/sections" view="jsonld-ref"}}
+      ]
+    }
+    {{> "training/sections" view="jsonld"}}
+  ]
+}
+</script>

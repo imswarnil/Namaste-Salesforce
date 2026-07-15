@@ -9,11 +9,15 @@
   Keep in sync with the /training/{section}/ routes in routes.yaml.
 
   Params:
-    view — "card" (the /training/ grid) | "nav" (the curriculum rail)
-  Anything else is passed through to training/section-item.
+    view  — "card" (the /training/ grid) | "nav" (rail) | "search"
+    cur   — slug of the section being viewed (nav active state)
+    curId — id of the lesson being viewed (nav active state)
+  `first="1"` is set on the first entry only, so the jsonld-ref view can omit
+  its leading comma.
+  All are passed through to training/section-item.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-{{> "training/section-item" view=view n="1" slug="foundation-start"      icon="ph-flag"}}
-{{> "training/section-item" view=view n="2" slug="setup-salesforce"      icon="ph-gear-six"}}
-{{> "training/section-item" view=view n="3" slug="navigating-salesforce" icon="ph-compass"}}
-{{> "training/section-item" view=view n="4" slug="data-model-basics"     icon="ph-database"}}
-{{> "training/section-item" view=view n="5" slug="security-basics"       icon="ph-shield-check"}}
+{{> "training/section-item" view=view cur=cur curId=curId first="1" n="1" slug="foundation-start"      icon="ph-flag"}}
+{{> "training/section-item" view=view cur=cur curId=curId n="2" slug="setup-salesforce"      icon="ph-gear-six"}}
+{{> "training/section-item" view=view cur=cur curId=curId n="3" slug="navigating-salesforce" icon="ph-compass"}}
+{{> "training/section-item" view=view cur=cur curId=curId n="4" slug="data-model-basics"     icon="ph-database"}}
+{{> "training/section-item" view=view cur=cur curId=curId n="5" slug="security-basics"       icon="ph-shield-check"}}

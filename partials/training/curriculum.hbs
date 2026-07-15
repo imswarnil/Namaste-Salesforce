@@ -14,20 +14,20 @@
   <nav id="training-curriculum" class="ns-lesson-panel" :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
 
     <div class="ns-lesson-panel__bar">
-      <span class="flex items-center gap-2 font-heading font-bold"><i class="ph-fill ph-books text-brand-500" aria-hidden="true"></i>{{t "Course content"}}</span>
+      <span class="flex items-center gap-2 font-heading font-bold"><i class="ph-fill ph-books text-brand-500" aria-hidden="true"></i>{{t "Training content"}}</span>
       <button type="button" class="icon-btn" @click="$store.lessonNav.close()" aria-label="{{t "Close"}}">{{> "icons/x" class="h-5 w-5"}}</button>
     </div>
 
     <div class="ns-lesson-panel__body">
       <div class="mb-3 hidden items-center gap-2 lg:flex">
         <i class="ph-fill ph-books text-xl text-brand-500" aria-hidden="true"></i>
-        <h3 class="font-heading font-bold">{{t "Course content"}}</h3>
+        <h3 class="font-heading font-bold">{{t "Training content"}}</h3>
       </div>
 
       {{!-- Search: filters modules; a section hides when nothing matches --}}
       <label class="relative mb-3 block">
         <i class="ph ph-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted" aria-hidden="true"></i>
-        <input x-model="q" type="search" placeholder="{{t "Search lessons…"}}" aria-label="{{t "Search lessons"}}"
+        <input x-model="q" type="search" placeholder="{{t "Search this training…"}}" aria-label="{{t "Search lessons"}}"
                class="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none">
       </label>
 
@@ -36,7 +36,7 @@
            Order comes from training/sections.hbs — section slugs are clean, so
            there's no query that can order them. --}}
       <div class="train-rail">
-        {{> "training/sections" view="nav"}}
+        {{> "training/sections" view="nav" cur=cur curId=curId}}
       </div>
 
       <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"

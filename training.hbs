@@ -6,58 +6,85 @@
   Ghost PAGE with slug `training` exists, its title/excerpt win (the {{#page}}
   fork below) — otherwise the copy here is used.
 
-  The page is: a two-column hero (copy + the stepwise artwork), then every
-  section as a Netflix-style numbered card. Section ORDER lives in
-  partials/training/sections.hbs — see that file for why.
+  The page is: a full-width two-column hero (short copy + subscribe, beside the
+  trail artwork that names every stage), then every section as a stop on a
+  roadmap.sh-style trail. Section ORDER lives in partials/training/sections.hbs
+  — see that file for why.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- ── Hero: copy left, the climb right ── --}}
+{{> "jsonld/training"}}
+
+{{!-- ── Hero ─────────────────────────────────────────────────────────────────
+     Medium height and left-aligned on every breakpoint. The previous cut was
+     centre-on-mobile / left-on-desktop, which made the kicker, heading, stats
+     and CTAs each shift axis at the lg breakpoint — nothing lined up with
+     anything. One axis, one column of text, art beside it.
+     `items-center` on the grid keeps the trail optically level with the copy
+     rather than pinned to the top of a taller text column. --}}
 <header class="relative overflow-hidden border-b border-border bg-surface">
-  {{!-- grid lines anchored to the art side, dissolving before they reach the
-       reading column --}}
   <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid-corner text-brand-500/70"></div>
 
-  <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:py-16">
+  <div class="relative grid items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:gap-14 lg:px-10 lg:py-10 xl:px-16">
 
-    <div class="text-center lg:text-left">
-      <p class="ns-kicker justify-center lg:justify-start">{{t "Salesforce Training"}}</p>
+    <div>
+      {{!-- Breadcrumb ── --}}
+      <nav aria-label="{{t "Breadcrumb"}}" class="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+        <a href="/" class="inline-flex items-center transition hover:text-brand-600" aria-label="{{t "Home"}}"><i class="ph ph-house" aria-hidden="true"></i></a>
+        <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
+        <span class="text-ink">{{t "Training"}}</span>
+      </nav>
+
+      <p class="ns-kicker">{{t "Salesforce Training"}}</p>
 
       {{#page}}
-        <h1 class="mt-3 font-heading text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{{title}}</h1>
-        <p class="mx-auto mt-3 max-w-md text-muted sm:text-lg lg:mx-0">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "One training, in order — from your first org to certified."}}{{/if}}</p>
+        <h1 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">{{title}}</h1>
+        <p class="mt-2.5 max-w-lg text-muted">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "One training, in order — from your first org to certified."}}{{/if}}</p>
       {{else}}
-        <h1 class="mt-3 font-heading text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{{t "Learn Salesforce, step by step."}}</h1>
-        <p class="mx-auto mt-3 max-w-md text-muted sm:text-lg lg:mx-0">{{t "One training, in order. Start at absolute zero, finish job-ready — you always know what's next and how far in you are."}}</p>
+        <h1 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">{{t "From zero to Salesforce Engineer."}}</h1>
+        <p class="mt-2.5 max-w-lg text-muted">{{t "One training, five sections, in order — no guessing what to learn next. Start with what Salesforce even is, finish able to build, automate and secure a real org."}}</p>
       {{/page}}
 
-      {{> "training/search"}}
+      {{!-- ── CTA + a search that stays out of the way until wanted.
+           The magnifier is a toggle: the panel only exists once opened, so the
+           hero stays a headline + one action rather than a form wall. `open`
+           lives on the same x-data as `q` so closing also clears the query. --}}
+      <div x-data="{ open: false, q: '' }" class="mt-5">
+        <div class="flex flex-wrap items-center gap-3">
+          {{#get "posts" filter="tag:foundation-start+tag:hash-training-content" order="published_at asc" limit="1"}}
+            {{#foreach posts}}
+              <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">
+                <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start learning"}}
+              </a>
+            {{/foreach}}
+          {{/get}}
 
-      <dl class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-3 lg:justify-start">
-        {{!-- Section count is literal because the section list is explicit
-             (partials/training/sections.hbs) — there's no query that returns
-             "training sections" now that their slugs are clean. Update both
-             together. --}}
-        <div>
-          <dd class="font-heading text-2xl font-extrabold text-ink"><span class="js-count" data-to="5">0</span></dd>
-          <dt class="text-sm text-muted">{{t "sections"}}</dt>
+          <button type="button" @click="open = !open; open ? $nextTick(() => $refs.searchInput?.focus()) : q = ''"
+                  :aria-expanded="open ? 'true' : 'false'" aria-controls="training-search"
+                  class="inline-flex h-10 w-10 items-center justify-center rounded-pill border border-border text-ink transition hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-300"
+                  :class="open && 'border-brand-500 text-brand-600'"
+                  aria-label="{{t "Search training"}}">
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </button>
         </div>
-        {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-          <div>
-            <dd class="font-heading text-2xl font-extrabold text-ink"><span class="js-count" data-to="{{pagination.total}}">0</span></dd>
-            <dt class="text-sm text-muted">{{t "lessons"}}</dt>
-          </div>
-        {{/get}}
-        {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
-          <div>
-            <dd class="font-heading text-2xl font-extrabold text-ink"><span class="js-count" data-to="{{pagination.total}}">0</span></dd>
-            <dt class="text-sm text-muted">{{t "free to read"}}</dt>
-          </div>
-        {{/get}}
-      </dl>
+
+        {{> "training/search"}}
+
+        {{!-- ── What you get, inline and small ── --}}
+        <ul class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted">
+          {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
+            <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-lock-simple-open text-brand-500" aria-hidden="true"></i>{{pagination.total}} {{t "lessons free to read"}}</li>
+          {{/get}}
+          <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-video-camera text-brand-500" aria-hidden="true"></i>{{t "Video + hands-on"}}</li>
+          <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-clock-countdown text-brand-500" aria-hidden="true"></i>{{t "Self-paced"}}</li>
+          <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Cert-ready"}}</li>
+        </ul>
+      </div>
+
     </div>
 
-    <div class="flex justify-center lg:justify-end">
-      {{> "training/hero-steps"}}
+    {{!-- the trail names every stage, so the copy beside it stays short --}}
+    <div class="hidden lg:block">
+      {{> "training/hero-trail"}}
     </div>
   </div>
 </header>
@@ -66,13 +93,39 @@
 <section id="sections" class="mx-auto max-w-[85rem] scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
   <div class="mb-10 max-w-2xl">
     <h2 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "The path"}}</h2>
-    <p class="mt-2 text-muted">{{t "Five sections, in order. Each one assumes the last — start at the top and work down."}}</p>
+    <p class="mt-2 text-muted">{{t "Five sections, in order. Each one assumes the last — follow the trail from the top."}}</p>
   </div>
 
-  {{!-- generous row-gap: the step numbers hang below each card --}}
-  <div class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+  {{!-- The roadmap: a START dot, then every section as a stop on a dashed
+       spine (see .ns-road in course.css). Pure CSS + Handlebars — no JS. --}}
+  <ol class="ns-road mx-auto max-w-4xl">
+    <li class="ns-road__start"><span>{{t "Start here"}}</span></li>
     {{> "training/sections" view="card"}}
-  </div>
+
+    {{!-- ── The trail terminates in the newsletter: you've seen the whole path,
+         so the ask is "tell me when the next lesson lands", not a generic
+         signup. Ghost's members form — no theme JS. ── --}}
+    <li class="ns-road__end">
+      <div class="ns-road__finish">
+        <p class="ns-road__finish-kicker"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i>{{t "End of the trail — for now"}}</p>
+        <h3 class="ns-road__finish-title">{{t "Get notified the moment I publish new training content"}}</h3>
+        <p class="ns-road__finish-desc">{{t "New lessons and sections land regularly. Drop your email and the next one comes straight to your inbox — free, unsubscribe in one click."}}</p>
+
+        <form data-members-form="subscribe" class="ns-road__finish-form">
+          <div class="flex overflow-hidden rounded-pill border border-border bg-surface-raised shadow-card focus-within:border-brand-500">
+            <input data-members-email type="email" required placeholder="{{t "you@example.com"}}" aria-label="{{t "Email address"}}"
+                   class="w-full min-w-0 border-0 bg-transparent px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none">
+            <button type="submit" class="shrink-0 bg-brand-500 px-5 text-sm font-bold text-white transition hover:bg-brand-600">
+              <span data-members-loading class="hidden"><i class="ph ph-circle-notch animate-spin" aria-hidden="true"></i></span>
+              <span data-members-default>{{t "Notify me"}}</span>
+            </button>
+          </div>
+          <p data-members-success class="mt-2 text-sm font-semibold text-success" hidden>{{t "Check your inbox — your magic link is on its way!"}}</p>
+          <p data-members-error class="mt-2 text-sm font-semibold text-error" hidden>{{t "Something went wrong — try again."}}</p>
+        </form>
+      </div>
+    </li>
+  </ol>
 
   {{!-- Request a topic --}}
   <div class="mt-16 flex flex-col items-center justify-between gap-4 rounded-card border border-border bg-surface-sunken p-6 sm:flex-row sm:p-8">
