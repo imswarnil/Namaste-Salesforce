@@ -19,9 +19,9 @@
     • `.journey` wraps route + stops + walker so ONE opacity keyframe fades the
       whole trail as the certificate forms; the children keep their own
       animations underneath (opacity multiplies).
-    • the square→circle morph animates the rect's `rx` (a real animatable CSS
-      property on SVG rects), so the frame genuinely rounds into a dot rather
-      than cross-fading with a decoy circle.
+    • square→circle is a CROSS-FADE, not an `rx` animation. Animating rx is
+      geometry: it relayouts every frame (~115 layouts/sec measured) and hangs
+      the tab. Opacity composites for free, and at 11px the swap is invisible.
     • stop delays match the walker's arrival (14s loop; stops ≈1.4s apart).
 
   Role tokens only → flips in dark mode; the tick uses --color-success, the one
@@ -46,7 +46,8 @@
     /* the certificate: forms at the end, then walks home and becomes the dot */
     .ns-trail .cert { transform-box: fill-box; transform-origin: center;
       animation: nsCert 14s cubic-bezier(0.65,0,0.35,1) infinite both; }
-    .ns-trail .cert-frame { animation: nsCertShape 14s cubic-bezier(0.65,0,0.35,1) infinite both; }
+    .ns-trail .cert-square { animation: nsCertSquare 14s ease-out infinite both; }
+    .ns-trail .cert-dot   { opacity: 0; animation: nsCertDot 14s ease-out infinite both; }
     .ns-trail .cert-ink   { animation: nsCertInk 14s ease-out infinite both; }
 
     @keyframes nsJourney { 0%, 38% { opacity: 1; } 44%, 93% { opacity: 0; } 97%, 100% { opacity: 1; } }
@@ -68,8 +69,10 @@
       86%, 93%  { opacity: 1; transform: translate(-590px, 142px) scale(0.09); }
       97%, 100% { opacity: 0; transform: translate(-590px, 142px) scale(0.09); }
     }
-    /* square while it's a certificate; a circle by the time it's the dot */
-    @keyframes nsCertShape { 0%, 74% { rx: 10px; } 86%, 100% { rx: 55px; } }
+    /* square while it's a certificate; the circle takes over as it shrinks.
+       Cross-fade, NOT an rx animation — rx is geometry and relayouts every frame. */
+    @keyframes nsCertSquare { 0%, 74% { opacity: 1; } 84%, 100% { opacity: 0; } }
+    @keyframes nsCertDot    { 0%, 74% { opacity: 0; } 84%, 100% { opacity: 1; } }
     /* the text can't survive being shrunk to a dot — drop it before the trip */
     @keyframes nsCertInk { 0%, 40% { opacity: 0; } 46%, 76% { opacity: 1; } 82%, 100% { opacity: 0; } }
 
@@ -79,7 +82,8 @@
       .ns-trail .walker { animation: none; offset-distance: 100%; }
       /* settle showing the credential, in place, legible */
       .ns-trail .cert { animation: none; opacity: 1; transform: none; }
-      .ns-trail .cert-frame { animation: none; }
+      .ns-trail .cert-square { animation: none; opacity: 1; }
+      .ns-trail .cert-dot { animation: none; opacity: 0; }
       .ns-trail .cert-ink { animation: none; opacity: 1; }
     }
   </style>
@@ -158,7 +162,9 @@
 
   {{!-- ═══ the credential the trail becomes ═══ --}}
   <g class="cert">
-    <rect class="cert-frame fill-surface stroke-brand-500" x="565" y="3" width="110" height="110" rx="10" stroke-width="2"/>
+    <rect class="cert-square fill-surface stroke-brand-500" x="565" y="3" width="110" height="110" rx="10" stroke-width="2"/>
+    {{!-- the dot the square becomes; same box, so the scale lands it in place --}}
+    <circle class="cert-dot fill-brand-500" cx="620" cy="58" r="55"/>
     <g class="cert-ink">
       <rect x="574" y="12" width="92" height="92" rx="5" class="stroke-border" stroke-width="1" fill="none"/>
       <text x="620" y="42" text-anchor="middle" class="fill-muted" font-size="7" font-weight="800" letter-spacing="0.14em">CERTIFIED</text>
