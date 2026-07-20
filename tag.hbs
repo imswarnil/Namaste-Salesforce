@@ -19,12 +19,16 @@
      more robust than looking for lessons, so a brand-new empty section still
      redirects. Never serve a duplicate archive here. --}}
 {{#get "posts" filter="primary_tag:{{tag.slug}}+tag:hash-training-section" limit="1" as |section|}}
-  {{#if section}}
-    <script>window.location.replace("/training/{{tag.slug}}/");</script>
-    <noscript><meta http-equiv="refresh" content="0; url=/training/{{tag.slug}}/"></noscript>
-    <link rel="canonical" href="/training/{{tag.slug}}/">
-    <p class="ns-container ns-section text-center">{{t "Redirecting to the section…"}} <a href="/training/{{tag.slug}}/" class="ns-underline">{{tag.name}}</a></p>
-  {{else}}
+  {{#if section}}{{#foreach section}}
+    {{!-- Redirect to the section post's OWN url (the collection permalink,
+         /training/{slug}/). {{tag.slug}} is NOT readable here — {{#get}} swaps
+         the context to its result, so reaching for the tag would emit
+         /training// (empty slug). {{url}} is on the post and always resolves. --}}
+    <script>window.location.replace("{{url}}");</script>
+    <noscript><meta http-equiv="refresh" content="0; url={{url}}"></noscript>
+    <link rel="canonical" href="{{url}}">
+    <p class="ns-container ns-section text-center">{{t "Redirecting to the section…"}} <a href="{{url}}" class="ns-underline">{{title}}</a></p>
+  {{/foreach}}{{else}}
 
   {{#tag}}
     {{#get "posts" filter="primary_tag:{{slug}}+tag:hash-course" limit="1" as |hub|}}

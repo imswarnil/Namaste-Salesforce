@@ -16,7 +16,7 @@
       "name": "{{title}}",
       {{#if custom_excerpt}}"description": "{{custom_excerpt}}",{{/if}}
       "url": "{{url absolute="true"}}",
-      {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
+      {{#if primary_tag.feature_image}}"image": "{{primary_tag.feature_image}}",{{else}}{{#if feature_image}}"image": "{{feature_image}}",{{/if}}{{/if}}
       "provider": { "@id": "{{@site.url}}/#owner" },
       "inLanguage": "{{@site.locale}}",
       "isPartOf": { "@id": "{{@site.url}}/training/#course" },
@@ -32,7 +32,7 @@
             "name": "{{title}}",
             "url": "{{url absolute="true"}}",
             "position": {{@number}},
-            "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else}}Reading{{/has}}",
+            "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else has tag="#training-type-article"}}Article{{else}}Article{{/has}}",
             "isAccessibleForFree": {{#has visibility="public"}}true{{else}}false{{/has}}
           }{{/foreach}}
         {{/get}}

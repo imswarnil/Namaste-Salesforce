@@ -31,12 +31,18 @@
   <li class="ns-road__node">
     <a href="{{url}}" class="ns-road__card">
       <span class="ns-road__thumb">
-        {{#if feature_image}}
-          <img src="{{img_url feature_image size="s"}}" alt="" loading="lazy" decoding="async">
+        {{!-- Icon priority: the section TAG's image first (set once on the tag,
+             shared everywhere the section appears), then the section POST's own
+             feature image, then a position-rotated glyph so a section with
+             neither still reads as a distinct stop — no per-section config. --}}
+        {{#if primary_tag.feature_image}}
+          <img src="{{img_url primary_tag.feature_image size="s"}}" alt="" loading="lazy" decoding="async">
         {{else}}
-          {{!-- No feature image: rotate an icon by position, so the roadmap
-               still reads as distinct stops with no per-section config. --}}
-          <i class="ph-fill {{#match n 1}}ph-flag{{else match n 2}}ph-gear-six{{else match n 3}}ph-compass{{else match n 4}}ph-database{{else match n 5}}ph-shield-check{{else}}ph-steps{{/match}}" aria-hidden="true"></i>
+          {{#if feature_image}}
+            <img src="{{img_url feature_image size="s"}}" alt="" loading="lazy" decoding="async">
+          {{else}}
+            <i class="ph-fill {{#match n 1}}ph-flag{{else match n 2}}ph-gear-six{{else match n 3}}ph-compass{{else match n 4}}ph-database{{else match n 5}}ph-shield-check{{else}}ph-steps{{/match}}" aria-hidden="true"></i>
+          {{/if}}
         {{/if}}
       </span>
 
@@ -89,7 +95,7 @@
   "name": "{{title}}",
   {{#if custom_excerpt}}"description": "{{custom_excerpt}}",{{/if}}
   "url": "{{url absolute="true"}}",
-  {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
+  {{#if primary_tag.feature_image}}"image": "{{primary_tag.feature_image}}",{{else}}{{#if feature_image}}"image": "{{feature_image}}",{{/if}}{{/if}}
   "position": {{n}},
   "provider": { "@id": "{{@site.url}}/#owner" },
   "inLanguage": "{{@site.locale}}",
@@ -103,7 +109,7 @@
         "name": "{{title}}",
         "url": "{{url absolute="true"}}",
         "position": {{@number}},
-        "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else}}Reading{{/has}}",
+        "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else has tag="#training-type-article"}}Article{{else}}Article{{/has}}",
         "isAccessibleForFree": {{#has visibility="public"}}true{{else}}false{{/has}}
       }{{/foreach}}
     {{/get}}
