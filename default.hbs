@@ -24,20 +24,27 @@
       })();
     </script>
 
-    {{!-- Fonts: Inter approximates SLDS's Salesforce Sans (proprietary); JetBrains Mono for code --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+    {{!-- ── Fonts & icons: ALL self-hosted ────────────────────────────────
+      Everything below used to come from two third-party origins — Google Fonts
+      and unpkg — as four render-blocking stylesheets:
 
-    {{!-- Theme stylesheet (Tailwind build) --}}
-    <link rel="preload" as="style" href="{{asset "built/screen.css"}}">
+        Google Fonts CSS      round-trip before font URLs were even known
+        Phosphor regular CSS   78 KB  ┐ two full icon fonts (~1,500 glyphs)
+        Phosphor fill CSS      86 KB  │ to draw the ~123 icons this theme uses
+        Phosphor woff2 ×2     279 KB  ┘
+
+      Now: one local stylesheet, fonts declared in theme/fonts.css, and a
+      Phosphor subset built by scripts/subset-icons.py (443 KB → 26 KB). The
+      only fonts preloaded are the two on the critical path — Inter, needed by
+      every page, and the regular icon weight used in the header. JetBrains
+      Mono and the fill weight are fetched on demand: browsers only download a
+      webfont when rendered text actually matches it.
+    ───────────────────────────────────────────────────────────────────── --}}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/inter-var-latin.woff2"}}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/phosphor-subset.woff2"}}">
+
+    {{!-- Theme stylesheet (Tailwind build) — carries the @font-face rules --}}
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
-
-    {{!-- Phosphor icons — pinned version, only the two weights the theme uses
-         (regular `ph` + `ph-fill`); the old bootstrap script pulled all six. --}}
-    <link rel="preconnect" href="https://unpkg.com" crossorigin>
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
 
     {{!-- Google AdSense loader — only when ads are enabled + a publisher ID is set
          (Ghost Admin → Design). Individual slots are placed via the ads/adsense partial. --}}

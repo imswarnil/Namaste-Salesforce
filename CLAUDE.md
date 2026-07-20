@@ -24,6 +24,7 @@ yarn test:ci     # gscan --fatal --verbose .
 `gulp build` runs three steps, all output to `assets/built/` (committed — Ghost serves these directly):
 
 - **css**: `assets/css/screen.css` → PostCSS with **`@tailwindcss/postcss`** (Tailwind v4) → cssnano → `built/screen.css`. There is **no `tailwind.config.js`**; tokens and `@source` globs live in `screen.css`. Tailwind v4 emits its own vendor prefixes, so autoprefixer is not used.
+  **`url()` gotcha:** the pipeline rebases relative urls and consumes exactly one `../`, so a font referenced as `../../fonts/x.woff2` in source emits `../fonts/x.woff2` in `built/screen.css` (which is what resolves). Check `grep -o 'url([^)]*)' assets/built/screen.css` after touching font paths.
 - **js**: `assets/js/*.js` concatenated → uglify → `built/casper.js`. (`assets/js/vendor/*` — Alpine — is **not** bundled; it's loaded separately.)
 - **locales**: merges `locales-local/` into `locales/`.
 
@@ -39,7 +40,17 @@ Because `assets/built/` is committed, **rebuild and commit the built output** af
 
 **Partials (`partials/`, organised in folders):**
 - `components/` — chrome & shared bits: `theme-toggle`, `nav-icon`, `page-header`, `hero-bg`, `breadcrumb`, `toc`, `cta`, `author-byline`, `tag-pills`, `social-icons`.
-- `icons/` — inline-SVG icons; include via `{{> "icons/name" class="h-4 w-4 …"}}`. They use `currentColor` + a `class` param, so Tailwind utilities theme them. (Content/cards still use **Phosphor** `<i class="ph-…">` from the unpkg CDN.)
+- `icons/` — inline-SVG icons; include via `{{> "icons/name" class="h-4 w-4 …"}}`. They use `currentColor` + a `class` param, so Tailwind utilities theme them. (Content/cards still use **Phosphor** `<i class="ph-…">`.)
+
+**Icon font (important):** Phosphor is **self-hosted and subsetted** — `assets/fonts/phosphor*.woff2` plus the generated `assets/css/theme/icons.css`, built by `scripts/subset-icons.py`. Only the ~131 glyphs the theme references are shipped. **Adding a new `ph-*` class means re-running the script**, otherwise the icon renders as a blank box:
+
+```bash
+pip3 install fonttools brotli   # once
+python3 scripts/subset-icons.py
+yarn build
+```
+
+Icons used *inside Ghost post content* can't be found by scanning templates — add those to `CONTENT_SAFELIST` in that script.
 - `home/`, `about/`, `courses/`, `blog/`, `docs/`, `training/` — section-specific partials.
 - `ads/` — `slot` resolves to AdSense → sponsor → dummy placeholder.
 
