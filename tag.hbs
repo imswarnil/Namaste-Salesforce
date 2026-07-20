@@ -4,8 +4,8 @@
      Three different things live at /tag/{slug}/, so this template forks:
 
      1. A TRAINING SECTION tag redirects to /training/{slug}/, its real home.
-        Detected by having #training-content lessons whose PRIMARY tag it is —
-        no slug convention needed, since section slugs are clean now.
+        Detected by the #training-section POST whose primary tag it is — the
+        section's backing post, so even a brand-new empty section redirects.
      2. A COURSE tag redirects to the course. A course post shares its primary
         tag with all its lessons, so the archive would be a duplicate, worse
         version of the course page.
@@ -14,14 +14,16 @@
      The `../` depths inside the archive branch are load-bearing — Ghost 500s if
      a helper is called across `../`, so that branch is left exactly as it was. --}}
 
-{{!-- A TRAINING SECTION tag: its lessons carry it as their primary tag. The
-     section's real home is /training/{slug}/, so never serve an archive here. --}}
-{{#get "posts" filter="primary_tag:{{tag.slug}}+tag:hash-training-content" limit="1" as |lesson|}}
-  {{#if lesson}}
+{{!-- A TRAINING SECTION tag: the section's real home is /training/{slug}/ (a
+     post whose slug == this tag's slug). Detect by that section POST existing —
+     more robust than looking for lessons, so a brand-new empty section still
+     redirects. Never serve a duplicate archive here. --}}
+{{#get "posts" filter="primary_tag:{{tag.slug}}+tag:hash-training-section" limit="1" as |section|}}
+  {{#if section}}
     <script>window.location.replace("/training/{{tag.slug}}/");</script>
     <noscript><meta http-equiv="refresh" content="0; url=/training/{{tag.slug}}/"></noscript>
     <link rel="canonical" href="/training/{{tag.slug}}/">
-    <p class="ns-container ns-section" style="text-align:center;">{{t "Redirecting to the section…"}} <a href="/training/{{tag.slug}}/" class="ns-underline">{{tag.name}}</a></p>
+    <p class="ns-container ns-section text-center">{{t "Redirecting to the section…"}} <a href="/training/{{tag.slug}}/" class="ns-underline">{{tag.name}}</a></p>
   {{else}}
 
   {{#tag}}
