@@ -1,132 +1,33 @@
 {{!< default}}
 {{!-- ════════════════════════════════════════════════════════════════════════
-  training-section.hbs — one training section at /training/{section}/.
+  training-section.hbs — the /training-sections/ COLLECTION INDEX.
 
-  This is the section's OVERVIEW and it opens exactly like a lesson: same
-  player shell, same curriculum rail on the left. In that rail it's the first
-  entry under its own section ("Overview"), so moving between the overview and
-  its lessons never changes the furniture.
+  This used to be the section page itself, rendered from a tag via a
+  `data: tag.{slug}` route. That model is gone: a section is now a POST and its
+  page renders through post.hbs → partials/post-training-section.hbs.
 
-  routes.yaml routes each section here with `data: tag.{slug}`, so {{#tag}} is
-  the section TAG — its name, description and feature_image are the section's.
-
-  GOTCHA: {{#get}} repoints the context at its own result, so the tag's own
-  fields ({{name}}, {{feature_image}}) must stay OUTSIDE every {{#get}} block —
-  inside one they silently render empty.
+  What is left here is only the collection's archive index. Ghost requires a
+  collection to have a path, and `/training-sections/` is that path — but the
+  real entry point is /training/, so this just shows the same roadmap rather
+  than 404ing or duplicating a listing nobody links to.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-{{#tag}}
 
-  {{> "jsonld/training-section"}}
+<section class="mx-auto max-w-[85rem] px-4 py-14 sm:px-6 lg:py-16">
+  <nav aria-label="{{t "Breadcrumb"}}" class="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-muted">
+    <a href="/" class="inline-flex items-center transition hover:text-brand-600" aria-label="{{t "Home"}}"><i class="ph ph-house" aria-hidden="true"></i></a>
+    <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
+    <a href="/training/" class="transition hover:text-brand-600">{{t "Training"}}</a>
+    <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
+    <span class="text-ink">{{t "All sections"}}</span>
+  </nav>
 
-  <section class="w-full">
-    <div class="grid lg:grid-cols-[19rem_minmax(0,1fr)]">
+  <div class="mb-10 max-w-2xl">
+    <h1 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "The path"}}</h1>
+    <p class="mt-2 text-muted">{{t "Every section, in order. Each one assumes the last."}}</p>
+  </div>
 
-      {{!-- ── Left: the same curriculum as a lesson. `cur` marks this section's
-           Overview row active; no curId, because no lesson is open. ── --}}
-      <aside class="lg:border-r lg:border-border">
-        <div class="lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto lg:p-4">
-          {{> "training/curriculum" cur=slug}}
-          {{> "training/newsletter-widget"}}
-        </div>
-      </aside>
-
-      <div class="min-w-0 px-4 py-8 sm:px-6 lg:px-8">
-
-        {{!-- ── Breadcrumb ── --}}
-        <nav aria-label="{{t "Breadcrumb"}}" class="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-          <a href="/" class="inline-flex items-center transition hover:text-brand-600" aria-label="{{t "Home"}}"><i class="ph ph-house" aria-hidden="true"></i></a>
-          <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
-          <a href="/training/" class="inline-flex items-center gap-1 transition hover:text-brand-600"><i class="ph ph-steps" aria-hidden="true"></i>{{t "Training"}}</a>
-          <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
-          <span class="truncate text-ink">{{name}}</span>
-        </nav>
-
-        {{!-- ── Hero. On mobile it's NOT a box: no border, no card, no padding
-             — just the grid lines and the copy, so a small screen isn't a
-             frame inside a frame. The box only appears from sm up. ── --}}
-        <header class="relative overflow-hidden sm:rounded-card sm:border sm:border-border sm:bg-surface sm:p-8">
-          <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid-corner text-brand-500/70"></div>
-
-          <div class="relative grid items-center gap-6 {{#if feature_image}}sm:grid-cols-[minmax(0,1fr)_13rem]{{/if}}">
-            <div>
-              <p class="ns-kicker">{{t "Training section"}}</p>
-              <h1 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{{name}}</h1>
-              {{#if description}}
-                <p class="mt-3 max-w-xl text-muted">{{description}}</p>
-              {{/if}}
-
-              <div class="mt-6 flex flex-wrap items-center gap-4">
-                {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="1"}}
-                  {{#foreach posts}}
-                    <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 font-bold text-white shadow-brand transition hover:bg-brand-600">
-                      <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start this section"}}
-                    </a>
-                    <span class="text-sm text-muted">{{../pagination.total}} {{t "lessons"}}</span>
-                  {{/foreach}}
-                {{/get}}
-              </div>
-            </div>
-
-            {{#if feature_image}}
-              <img decoding="async" src="{{img_url feature_image size="m"}}" alt="" loading="eager"
-                   class="hidden aspect-[4/3] w-full rounded-card border border-border object-cover shadow-card sm:block">
-            {{/if}}
-          </div>
-        </header>
-
-        {{!-- ── Every lesson in this section, in order.
-             Uses .ns-curriculum (assets/css/theme/course.css) — the component
-             the course pages already use for this exact job: numbered rows with
-             a thumb, blurb, duration and access badge. ── --}}
-        <div class="mt-10 max-w-3xl">
-          <div class="mb-4 flex items-baseline justify-between gap-3">
-            <h2 class="font-heading text-lg font-extrabold text-ink">{{t "What's in this section"}}</h2>
-            {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
-              <span class="text-xs text-muted">{{pagination.total}} {{t "lessons"}}</span>
-            {{/get}}
-          </div>
-
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="50" as |lessons|}}
-            <ol class="ns-curriculum">
-              {{#foreach lessons}}
-                <li>
-                  <a href="{{url}}" class="ns-curriculum__item">
-                    <span class="ns-curriculum__num">{{@number}}</span>
-
-                    {{#if feature_image}}
-                      <span class="ns-curriculum__thumb"><img decoding="async" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy"></span>
-                    {{else}}
-                      <span class="ns-curriculum__thumb">
-                        <i class="{{#has tag="#training-type-video"}}ph-fill ph-video-camera{{else has tag="#training-type-exercise"}}ph-fill ph-barbell{{else has tag="#training-type-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-file-text{{/has}}" aria-hidden="true"></i>
-                      </span>
-                    {{/if}}
-
-                    <span class="ns-curriculum__body">
-                      <span class="ns-curriculum__title">{{title}}</span>
-                      {{#if custom_excerpt}}<span class="ns-curriculum__desc">{{custom_excerpt}}</span>{{/if}}
-                    </span>
-
-                    <span class="ns-curriculum__meta">
-                      {{#match visibility "public"}}
-                        <span class="ns-curriculum__badge ns-curriculum__badge--free">{{t "Free"}}</span>
-                      {{else}}
-                        <span class="ns-curriculum__badge ns-curriculum__badge--members"><i class="ph-fill ph-lock-simple" aria-hidden="true"></i>{{t "Members"}}</span>
-                      {{/match}}
-                      <span class="ns-curriculum__dur"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% mins"}}</span>
-                    </span>
-                  </a>
-                </li>
-              {{/foreach}}
-            </ol>
-
-            {{^lessons}}
-              <p class="rounded-card border border-dashed border-border py-12 text-center text-muted">{{t "No lessons in this section yet."}}</p>
-            {{/lessons}}
-          {{/get}}
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-{{/tag}}
+  <ol class="ns-road mx-auto max-w-6xl">
+    <li class="ns-road__start"><span>{{t "Start here"}}</span></li>
+    {{> "training/sections" view="card"}}
+  </ol>
+</section>

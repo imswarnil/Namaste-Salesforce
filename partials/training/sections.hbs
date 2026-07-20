@@ -1,23 +1,27 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  training/sections.hbs — THE ordered list of the training's sections.
+  training/sections.hbs — every training section, discovered from content.
 
-  Section tag slugs are clean (`foundation-start`, not `train-01-…`) because a
-  lesson's URL nests under its section via {primary_tag} — any prefix would leak
-  into every lesson URL. Clean slugs can't encode order, so the order lives
-  here, in one place. Same trade-off partials/docs/sections.hbs makes.
+  A SECTION IS A POST: tagged #training-section, primary tag = the section tag,
+  and its slug == that tag's slug (so it lands at /training/{slug}/ — see
+  routes.yaml). The post BODY is the section overview.
 
-  Keep in sync with the /training/{section}/ routes in routes.yaml.
+  This used to be a hand-written list of five {{> section-item}} calls kept in
+  sync with a route-per-section block in routes.yaml. Both are gone: sections
+  are queried, and ORDER is published_at asc — backdate a section post to move
+  it earlier. Adding a section is now Ghost-Admin-only.
 
-  Params:
-    view  — "card" (the /training/ grid) | "nav" (rail) | "search"
+  Params (passed straight through to training/section-item):
+    view  — "card" (the /training/ roadmap) | "nav" (rail) | "search"
+            | "jsonld" | "jsonld-ref"
     cur   — slug of the section being viewed (nav active state)
     curId — id of the lesson being viewed (nav active state)
-  `first="1"` is set on the first entry only, so the jsonld-ref view can omit
-  its leading comma.
-  All are passed through to training/section-item.
+
+  limit="50": Ghost rejects limit="all" in {{#get}}, and 50 sections is far
+  past any realistic path length. `@number`/`@first` supply the step number and
+  the jsonld-ref comma suppression that used to be hand-written params.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-{{> "training/section-item" view=view cur=cur curId=curId first="1" n="1" slug="foundation-start"      icon="ph-flag"}}
-{{> "training/section-item" view=view cur=cur curId=curId n="2" slug="setup-salesforce"      icon="ph-gear-six"}}
-{{> "training/section-item" view=view cur=cur curId=curId n="3" slug="navigating-salesforce" icon="ph-compass"}}
-{{> "training/section-item" view=view cur=cur curId=curId n="4" slug="data-model-basics"     icon="ph-database"}}
-{{> "training/section-item" view=view cur=cur curId=curId n="5" slug="security-basics"       icon="ph-shield-check"}}
+{{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="50"}}
+  {{#foreach posts}}
+    {{> "training/section-item" view=../view cur=../cur curId=../curId n=@number first=@first}}
+  {{/foreach}}
+{{/get}}

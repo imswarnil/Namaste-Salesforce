@@ -14,14 +14,18 @@
 #   Lesson       = post tagged #lesson,  primary tag = its course's tag
 #   Training     = /training/ itself. There is ONE training, so it has no post
 #                  of its own — the landing lists its sections.
-#   Section      = PUBLIC tag with a CLEAN slug (foundation-start). The slug IS
-#                  the URL segment, which is why it carries no train-/NN- prefix:
-#                  a lesson nests under its section via {primary_tag}, so any
-#                  prefix would leak into every lesson URL.
+#   Section      = POST tagged #training-section, PRIMARY tag = the section tag,
+#                  and post slug == that tag's slug (e.g. slug "start", primary
+#                  tag "start"). The post BODY is the section overview.
+#                  → /training/start/
 #   Lesson       = post tagged #training-content, PRIMARY tag = its section tag.
-#                  /training/{section}/{lesson}/
-#   Section ORDER lives in partials/training/sections.hbs — clean slugs can't
-#   encode it (same trade-off the docs sections make).
+#                  → /training/start/{lesson-slug}/
+#   Section ORDER = published_at asc. Backdate a section post to move it earlier.
+#
+#   Adding a section is therefore Ghost-Admin-only: make the tag, write the
+#   section post with a matching slug, publish. No routes.yaml edit, no theme
+#   edit. (This replaced a hardcoded route-per-section list plus an ordered
+#   partial that both had to be kept in sync by hand.)
 #   Doc          = post tagged `documentation`, primary tag = docs-NN-* section tag
 #   Resource     = post tagged #resource
 #   Blog post    = post tagged #blog
@@ -50,23 +54,10 @@ routes:
   /training/:
     template: training
 
-  # One route per SECTION. Keep this list in sync with
-  # partials/training/sections.hbs, which owns their ORDER.
-  /training/foundation-start/:
-    data: tag.foundation-start
-    template: training-section
-  /training/setup-salesforce/:
-    data: tag.setup-salesforce
-    template: training-section
-  /training/navigating-salesforce/:
-    data: tag.navigating-salesforce
-    template: training-section
-  /training/data-model-basics/:
-    data: tag.data-model-basics
-    template: training-section
-  /training/security-basics/:
-    data: tag.security-basics
-    template: training-section
+  # NOTE: sections are NO LONGER routed one-by-one here. A section is a POST
+  # (tagged #training-section) and is served by the /training-sections/
+  # collection below, so adding a section is pure Ghost Admin work — no route
+  # edit, no theme edit. See the collection for the slug rule.
 
   # Docs section pages — /docs/{section}/ (clean slugs, no numbering).
   # Each renders docs-section.hbs with its tag as {{tag}}. Section tag slugs
@@ -119,10 +110,27 @@ collections:
     template: index
     filter: tag:hash-lesson
 
+  # ── Training SECTIONS — /training/{section}/ ─────────────────────────────
+  # A section is a POST tagged #training-section whose PRIMARY tag is the
+  # section tag. Its body is the section overview.
+  #
+  # THE ONE RULE: the section post's SLUG must equal its primary TAG's slug.
+  # The permalink uses {slug} (unique per post) rather than {primary_tag},
+  # because the section post and every one of its lessons share that tag —
+  # {primary_tag} would be ambiguous and Ghost would 301 to the wrong place.
+  # Keeping slug == tag slug is what makes /training/start/ (the section) and
+  # /training/start/{lesson}/ (its lessons) line up. Same trick as /courses/.
+  #
+  # This replaces the old hand-maintained route-per-section list: sections are
+  # now discovered from content, and their ORDER is published_at asc.
+  /training-sections/:
+    permalink: /training/{slug}/
+    template: training-section
+    filter: tag:hash-training-section
+
   # Training LESSONS nest under their section: /training/{section}/{lesson}/
-  # (a lesson's primary tag IS its section tag, and that tag's slug is clean so
-  # it can be the URL segment). The /training-lessons/ path is just this
-  # collection's archive index — the real entry point is /training/.
+  # A lesson's primary tag IS its section tag, so {primary_tag} nests it
+  # automatically. Different path depth from the section above, so no clash.
   /training-lessons/:
     permalink: /training/{primary_tag}/{slug}/
     template: index

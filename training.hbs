@@ -52,11 +52,18 @@
            lives on the same x-data as `q` so closing also clears the query. --}}
       <div x-data="{ open: false, q: '' }" class="mt-5">
         <div class="flex flex-wrap items-center gap-3">
-          {{#get "posts" filter="tag:foundation-start+tag:hash-training-content" order="published_at asc" limit="1"}}
+          {{!-- "Start learning" = the first lesson of the first section. Both
+               hops are derived, so this no longer hardcodes a section slug —
+               reordering or replacing the opening section just works. --}}
+          {{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="1"}}
             {{#foreach posts}}
-              <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">
-                <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start learning"}}
-              </a>
+              {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="1"}}
+                {{#foreach posts}}
+                  <a href="{{url}}" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">
+                    <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start learning"}}
+                  </a>
+                {{/foreach}}
+              {{/get}}
             {{/foreach}}
           {{/get}}
 

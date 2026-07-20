@@ -2,9 +2,9 @@
   jsonld/training-section.hbs — one section at /training/{section}/, as a Course
   that isPartOf the training, with every lesson in it as hasPart.
 
-  Its own <script> for the same reason as jsonld/training.hbs: a section is a
-  custom route with `data: tag.{slug}`, which structured-data.hbs can't detect.
-  Context here is the section TAG. Double-stache only → JSON-safe.
+  Its own <script> for the same reason as jsonld/training.hbs.
+  Context here is the section POST (tagged #training-section); its slug equals
+  its primary tag's slug, which is what the lesson query below filters on.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 <script type="application/ld+json">
 {
@@ -12,10 +12,10 @@
   "@graph": [
     {
       "@type": "Course",
-      "@id": "{{@site.url}}/training/{{slug}}/#section",
-      "name": "{{name}}",
-      {{#if description}}"description": "{{description}}",{{/if}}
-      "url": "{{@site.url}}/training/{{slug}}/",
+      "@id": "{{url absolute="true"}}#section",
+      "name": "{{title}}",
+      {{#if custom_excerpt}}"description": "{{custom_excerpt}}",{{/if}}
+      "url": "{{url absolute="true"}}",
       {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
       "provider": { "@id": "{{@site.url}}/#owner" },
       "inLanguage": "{{@site.locale}}",
