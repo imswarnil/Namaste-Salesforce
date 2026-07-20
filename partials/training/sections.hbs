@@ -22,6 +22,10 @@
 ═══════════════════════════════════════════════════════════════════════════ --}}
 {{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="50"}}
   {{#foreach posts}}
-    {{> "training/section-item" view=../view cur=../cur curId=../curId n=@number first=@first}}
+    {{!-- Params live on THIS partial's context (two frames up: past #foreach and
+         past #get), so they're reached with ../../ — a single ../ lands on the
+         #get result scope, which has no view/cur/curId and silently blanks every
+         section-item. --}}
+    {{> "training/section-item" view=../../view cur=../../cur curId=../../curId n=@number first=@first}}
   {{/foreach}}
 {{/get}}
