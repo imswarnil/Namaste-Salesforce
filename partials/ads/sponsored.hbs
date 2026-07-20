@@ -7,7 +7,11 @@
 <aside class="not-prose my-8 overflow-hidden rounded-card border border-border bg-surface-raised shadow-card">
   <a href="{{@custom.sponsor_url}}" target="_blank" rel="noopener sponsored" class="group block">
     {{#if @custom.sponsor_image}}
-      <img src="{{@custom.sponsor_image}}" alt="" loading="lazy" class="h-32 w-full object-cover">
+      {{!-- A sponsor logo is meaningful content, not decoration: empty alt hid
+           who the sponsor was from screen readers. --}}
+      <img decoding="async" src="{{img_url @custom.sponsor_image size="m"}}" loading="lazy"
+           alt="{{#if @custom.sponsor_headline}}{{@custom.sponsor_headline}}{{else}}{{t "Sponsor"}}{{/if}}"
+           class="h-32 w-full object-cover">
     {{/if}}
     <div class="p-4">
       <span class="text-[0.6rem] font-semibold uppercase tracking-wider text-muted">

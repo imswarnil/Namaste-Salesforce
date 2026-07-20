@@ -17,8 +17,8 @@
     {{!-- Brand: logo + site title. The title stays visible on phones too —
          it truncates (min-w-0 + shrink on the link) so the icons always fit. --}}
     <a href="{{@site.url}}" class="flex min-w-0 shrink items-center gap-2" aria-label="{{@site.title}}">
-      {{#if @site.logo}}<img src="{{@site.logo}}" alt="{{@site.title}}" class="h-8 w-auto shrink-0">
-      {{else}}<img src="{{asset "logo/icon-192.png"}}" alt="{{@site.title}}" class="h-8 w-8 shrink-0 rounded-lg">{{/if}}
+      {{#if @site.logo}}<img decoding="async" fetchpriority="high" src="{{img_url @site.logo size="s"}}" alt="{{@site.title}}" class="h-8 w-auto shrink-0">
+      {{else}}<img decoding="async" fetchpriority="high" src="{{asset "logo/icon-192.png"}}" alt="{{@site.title}}" class="h-8 w-8 shrink-0 rounded-lg">{{/if}}
       <span class="min-w-0 truncate font-heading text-base font-extrabold tracking-tight text-ink sm:text-lg">{{@site.title}}</span>
     </a>
 
@@ -57,7 +57,7 @@
                   aria-haspopup="menu" aria-label="{{t "Account menu"}}"
                   class="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-1 ring-border transition hover:ring-brand-500">
             {{#if @member.avatar_image}}
-              <img src="{{@member.avatar_image}}" alt="{{@member.name}}" class="h-full w-full object-cover">
+              <img loading="lazy" decoding="async" src="{{img_url @member.avatar_image size="xs"}}" alt="{{@member.name}}" class="h-full w-full object-cover">
             {{else}}
               <span class="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-700 text-white">
                 {{> "icons/user" class="h-[1.05rem] w-[1.05rem]"}}
