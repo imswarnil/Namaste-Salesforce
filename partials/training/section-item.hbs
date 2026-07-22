@@ -26,34 +26,31 @@
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
 {{#match view "card"}}
-  {{!-- ── One stop on the roadmap. Content-first: blurb, lesson count and
-       access are all visible at rest. ── --}}
-  <li class="ns-road__node">
-    <a href="{{url}}" class="ns-road__card">
-      <span class="ns-road__thumb">
-        {{!-- Icon priority: the section TAG's image first (set once on the tag,
-             shared everywhere the section appears), then the section POST's own
-             feature image, then a position-rotated glyph so a section with
-             neither still reads as a distinct stop — no per-section config. --}}
+  {{!-- ── One stop on the training track: a numbered badge on the spine, then a
+       card with the section PHOTO on the left and content on the right. ── --}}
+  <li class="ns-track__item">
+    <span class="ns-track__num">{{n}}</span>
+    <a href="{{url}}" class="ns-track__card">
+      {{!-- Photo priority: the section TAG's image first (set once on the tag,
+           shared everywhere the section appears), then the section POST's own
+           feature image, then a position-rotated glyph so a section with
+           neither still reads as a distinct stop. ── --}}
+      <span class="ns-track__media">
         {{#if primary_tag.feature_image}}
           <img src="{{img_url primary_tag.feature_image size="s"}}" alt="" loading="lazy" decoding="async">
+        {{else}}{{#if feature_image}}
+          <img src="{{img_url feature_image size="s"}}" alt="" loading="lazy" decoding="async">
         {{else}}
-          {{#if feature_image}}
-            <img src="{{img_url feature_image size="s"}}" alt="" loading="lazy" decoding="async">
-          {{else}}
-            <i class="ph-fill {{#match n 1}}ph-flag{{else match n 2}}ph-gear-six{{else match n 3}}ph-compass{{else match n 4}}ph-database{{else match n 5}}ph-shield-check{{else}}ph-steps{{/match}}" aria-hidden="true"></i>
-          {{/if}}
-        {{/if}}
+          <i class="ph-fill {{#match n 1}}ph-flag{{else match n 2}}ph-gear-six{{else match n 3}}ph-compass{{else match n 4}}ph-database{{else match n 5}}ph-shield-check{{else}}ph-steps{{/match}}" aria-hidden="true"></i>
+        {{/if}}{{/if}}
       </span>
 
-      <span class="ns-road__body">
-        <span class="ns-road__kicker">
-          <span class="ns-road__num">{{n}}</span>{{t "Section"}}
-        </span>
-        <span class="ns-road__title">{{title}}</span>
-        {{#if custom_excerpt}}<span class="ns-road__desc">{{custom_excerpt}}</span>{{/if}}
+      <span class="ns-track__body">
+        <span class="ns-track__kicker">{{t "Section"}} {{n}}</span>
+        <span class="ns-track__title">{{title}}</span>
+        {{#if custom_excerpt}}<span class="ns-track__desc">{{custom_excerpt}}</span>{{/if}}
 
-        <span class="ns-road__meta">
+        <span class="ns-track__meta">
           {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
             <span><i class="ph ph-stack" aria-hidden="true"></i>{{pagination.total}} {{t "lessons"}}</span>
           {{/get}}
@@ -66,8 +63,27 @@
         </span>
 
         {{!-- a <span>, not a nested <a>: the whole card is already the link --}}
-        <span class="ns-road__cta">{{t "Start this section"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+        <span class="ns-track__cta">{{t "Start this section"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></span>
       </span>
+    </a>
+  </li>
+{{/match}}
+
+{{#match view "overview"}}
+  {{!-- ── One row in the HOME roadmap card: a numbered step on a connecting
+       rail, section name + lesson count, chevron. Deliberately lighter than the
+       full /training/ photo track — a glance, not the detailed roadmap. ── --}}
+  <li class="ns-plist__item">
+    <a href="{{url}}" class="ns-plist__row">
+      <span class="ns-plist__num">{{n}}</span>
+      <span class="ns-plist__main">
+        <span class="ns-plist__title">{{title}}</span>
+        <span class="ns-plist__meta">
+          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}<i class="ph ph-stack" aria-hidden="true"></i>{{pagination.total}} {{t "lessons"}}{{/get}}
+          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:public" limit="1"}}{{#if pagination.total}} · {{pagination.total}} {{t "free"}}{{/if}}{{/get}}
+        </span>
+      </span>
+      <i class="ph ph-caret-right ns-plist__arrow" aria-hidden="true"></i>
     </a>
   </li>
 {{/match}}

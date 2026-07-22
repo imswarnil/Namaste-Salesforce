@@ -1,679 +1,164 @@
 {{!< default}}
 {{!-- ════════════════════════════════════════════════════════════════════════
-  home.hbs — Landing page. Deliberately simple & plain-Tailwind: a light hero
-  over a grid-line background pattern, a stats row, collection cards, featured
-  courses, latest blog, and a CTA. No gradients/marquee/timeline.
+  home.hbs — Landing page.
+
+  One design system across every section:
+    · Backgrounds ALTERNATE surface ↔ surface-sunken so each block reads as its
+      own band (never two of the same in a row).
+    · Every section opens with the same eyebrow: an icon + uppercase brand label.
+    · Section padding rhythm is uniform (py-16 sm:py-20 lg:py-24); the sponsor
+      strip and hero are the only exceptions.
+    · Headings: the Training flagship is text-3xl→4xl; every other section is
+      text-2xl→3xl, so hierarchy is deliberate, not accidental.
+
+  Order: Hero → Training (flagship) → Courses → Blog → Resources → Stats →
+         Open source → Sponsor ad.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- ── HERO (light, grid-line background) ───────────────────────────────── --}}
+{{!-- ── HERO: copy + subscribe left · publication cover (with optional video) right ── --}}
 <section class="relative overflow-hidden border-b border-border bg-surface">
   <div aria-hidden="true" class="pointer-events-none absolute inset-0"
        style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 52px 52px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 78%);"></div>
 
   <div class="relative mx-auto grid max-w-[85rem] items-center gap-10 px-4 py-14 sm:px-6 lg:min-h-[calc(100vh-3.6rem)] lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
 
-    {{!-- ── Left: copy + CTAs + subscribe ── --}}
+    {{!-- ── Left: copy + subscribe CTA ── --}}
     <div class="text-center lg:text-left">
       <span class="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-sm font-semibold text-brand-600 dark:text-brand-300 shadow-card">
         {{> "icons/sparkle" class="h-4 w-4"}}{{t "Salesforce skills for the AI era"}}
       </span>
 
-      <h1 class="mt-5 font-heading text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-4xl xl:text-5xl">
-        {{t "The open LMS for"}}<br><span class="text-brand-600 dark:text-brand-400">{{t "next-gen Salesforce careers"}}</span>
+      <h1 class="mt-5 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl xl:text-6xl">
+        {{t "Become a"}} <span class="text-brand-600 dark:text-brand-400">{{t "Salesforce engineer"}}</span>
       </h1>
 
-      <p class="mx-auto mt-4 max-w-md text-muted sm:text-lg lg:mx-0">
+      <p class="mx-auto mt-5 max-w-md text-muted sm:text-lg lg:mx-0">
         {{t "Master Admin, Apex and LWC — then go further with Agentforce, Data Cloud and Einstein AI. Hands-on courses, training and docs, free and open source."}}
       </p>
 
-      {{!-- CTA + inline newsletter --}}
-      <div class="mt-7 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
-        <a href="#/portal/signup" data-portal="signup" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}</a>
-        <a href="/courses/" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-pill border border-border bg-surface px-6 py-3 font-semibold text-ink transition hover:border-brand-500 hover:text-brand-600"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i>{{t "Browse courses"}}</a>
+      {{!-- CTA: one seamless pill — Ghost members subscribe form, portal fallback ── --}}
+      <div class="mt-8">
+        {{#if @site.members_enabled}}
+          <form data-members-form="subscribe" class="mx-auto flex max-w-md overflow-hidden rounded-pill border border-border bg-surface-raised p-1 shadow-card transition focus-within:border-brand-500 focus-within:shadow-brand lg:mx-0">
+            <input data-members-email type="email" required placeholder="{{t "you@email.com"}}" aria-label="{{t "Your email address"}}"
+                   class="w-full min-w-0 border-0 bg-transparent px-4 py-2.5 text-ink placeholder:text-muted focus:outline-none">
+            <button type="submit" class="shrink-0 inline-flex items-center justify-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 font-bold text-white transition hover:bg-brand-600">
+              <i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start free"}}
+            </button>
+          </form>
+          <p data-members-success class="mt-3 text-sm font-semibold text-success hidden">{{t "Check your inbox to confirm! 🎉"}}</p>
+          <p data-members-error class="mt-3 text-sm font-semibold text-error hidden">{{t "Please enter a valid email."}}</p>
+        {{else}}
+          <a href="#/portal/signup" data-portal="signup" class="inline-flex items-center justify-center gap-2 rounded-pill bg-brand-500 px-6 py-3.5 font-bold text-white shadow-brand transition hover:bg-brand-600"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}</a>
+        {{/if}}
+        <p class="mt-3 text-xs text-muted">{{t "No credit card. One click to unsubscribe."}} <a href="/courses/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "or browse courses →"}}</a></p>
       </div>
 
       {{!-- reassurance --}}
-      <div class="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-muted lg:justify-start">
+      <div class="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-muted lg:justify-start">
         <span class="inline-flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-success" aria-hidden="true"></i>{{t "Free forever"}}</span>
         <span class="inline-flex items-center gap-1.5"><i class="ph-fill ph-git-branch text-brand-500" aria-hidden="true"></i>{{t "Open source"}}</span>
         <span class="inline-flex items-center gap-1.5"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificates included"}}</span>
       </div>
     </div>
 
-    {{!-- ── Right: publication cover — self-animated SVG of the platform
-         (assets/img/publication-cover.svg: lesson player, HUD-pinned concept
-         cards, dotted path flag → certificate). One cached vector, animations
-         run inside the <img>, responsive by intrinsic ratio. ── --}}
+    {{!-- ── Right: the Ghost publication cover image (Admin → Settings →
+         General → Publication identity), falling back to the logo/icon so the
+         frame is never empty. A small play button opens @custom.hero_video_url
+         in place, hiding the image. ── --}}
     <div class="relative mx-auto w-full max-w-xl lg:max-w-none">
       <div class="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/10 blur-3xl" aria-hidden="true"></div>
-      <img src="{{asset "img/publication-cover.svg"}}" alt="{{t "Illustration of the Namaste Salesforce learning platform"}}"
-           width="770" height="550" loading="eager" fetchpriority="high" decoding="async"
-           class="relative h-auto w-full rounded-2xl border border-border shadow-raised">
+      <div class="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-surface-sunken shadow-raised"
+           {{#if @custom.hero_video_url}}x-data="{ playing: false }"{{/if}}>
+        {{!-- Branded fallback base layer — always present, so if the cover image
+             is unset or its URL 404s the frame still reads as the publication. --}}
+        <div class="absolute inset-0 flex items-center justify-center bg-surface-sunken p-12" {{#if @custom.hero_video_url}}x-show="!playing"{{/if}} aria-hidden="true">
+          {{#if @site.logo}}
+            <img src="{{img_url @site.logo size="l"}}" alt="" loading="eager" decoding="async" class="h-auto w-full max-w-[200px] object-contain opacity-90">
+          {{else}}
+            <img src="{{asset "logo/icon-512.png"}}" alt="" loading="eager" decoding="async" class="h-auto w-full max-w-[200px] object-contain opacity-90">
+          {{/if}}
+        </div>
+        {{!-- The publication cover, laid over the fallback. onerror removes a
+             broken image so the branded layer below shows through cleanly. --}}
+        {{#if @site.cover_image}}
+          <img src="{{img_url @site.cover_image size="xl"}}" alt="{{@site.title}}" onerror="this.remove()"
+               {{#if @custom.hero_video_url}}x-show="!playing"{{/if}}
+               loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+        {{/if}}
+        {{#if @custom.hero_video_url}}
+          <button type="button" @click="playing = true" x-show="!playing" aria-label="{{t "Play video"}}"
+                  class="group absolute inset-0 flex items-center justify-center">
+            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 shadow-brand transition group-hover:scale-110">
+              <i class="ph-fill ph-play text-xl text-brand-600" aria-hidden="true"></i>
+            </span>
+          </button>
+          <template x-if="playing">
+            <iframe src="{{@custom.hero_video_url}}" title="{{@site.title}}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy" class="absolute inset-0 h-full w-full"></iframe>
+          </template>
+        {{/if}}
+      </div>
     </div>
   </div>
 </section>
 
-{{!-- ── MANIFESTO: big fat typography that inks in as you scroll (dark) ── --}}
-<section class="border-b border-border bg-[#032D60]">
-  <div class="mx-auto max-w-5xl px-4 py-24 sm:px-6 lg:py-32">
-    <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-200"><span aria-hidden="true">💙</span><i class="ph-fill ph-quotes" aria-hidden="true"></i>{{t "Why this exists"}}</p>
-    <p class="js-manifesto mt-6 font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">{{t "World-class Salesforce education shouldn't cost a salary or live in a hundred scattered tabs. So I built one open place — courses, training, docs and a blog — free for every learner, forever."}}</p>
-    <p class="mt-8 flex items-center gap-3 text-sm font-semibold text-white/60"><span class="h-px w-10 bg-brand-300"></span>{{t "Swarnil, creator of Namaste Salesforce"}}</p>
-  </div>
-</section>
+{{!-- ── TRAINING OVERVIEW: pitch + stats + CTA left · a contained roadmap card
+     right (view="overview"). Deliberately lighter than the full photo track on
+     /training/. ── --}}
+<section class="relative overflow-hidden border-b border-border bg-surface-sunken">
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid text-brand-500/50"></div>
 
-{{!-- ── SCREEN MARQUEE: the product, as 3D-slanted screens drifting by
-     (Aceternity-style) — white canvas, rows autoplay left/right forever ── --}}
-<section class="relative overflow-hidden border-b border-border bg-white dark:bg-surface">
-  <div class="relative z-10 mx-auto max-w-6xl px-4 pt-20 text-center sm:px-6">
-    <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300"><span aria-hidden="true">🎬</span><i class="ph-fill ph-film-strip" aria-hidden="true"></i>{{t "The project, frame by frame"}}</p>
-    <h2 class="mx-auto mt-3 max-w-2xl font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{t "Everything in one place"}}</h2>
-    <p class="mx-auto mt-3 max-w-xl text-muted">{{t "Structured courses, guided training, deep docs and a developer blog — all free and open."}}</p>
-    <div class="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm font-bold">
-      <a href="/courses/" class="rounded-pill bg-brand-500/10 px-4 py-1.5 text-brand-600 transition hover:bg-brand-500 hover:text-white dark:text-brand-300 dark:hover:text-white">🎓 {{t "Courses"}}</a>
-      <a href="/training/" class="rounded-pill bg-brand-500/10 px-4 py-1.5 text-brand-600 transition hover:bg-brand-500 hover:text-white dark:text-brand-300 dark:hover:text-white">🗺️ {{t "Training"}}</a>
-      <a href="/docs/" class="rounded-pill bg-brand-500/10 px-4 py-1.5 text-brand-600 transition hover:bg-brand-500 hover:text-white dark:text-brand-300 dark:hover:text-white">📖 {{t "Docs"}}</a>
-      <a href="/blog/" class="rounded-pill bg-brand-500/10 px-4 py-1.5 text-brand-600 transition hover:bg-brand-500 hover:text-white dark:text-brand-300 dark:hover:text-white">📰 {{t "Blog"}}</a>
-      <a href="/resources/" class="rounded-pill bg-brand-500/10 px-4 py-1.5 text-brand-600 transition hover:bg-brand-500 hover:text-white dark:text-brand-300 dark:hover:text-white">🧰 {{t "Resources"}}</a>
+  <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+
+      {{!-- ── Left: the pitch ── --}}
+      <div class="text-center lg:text-left">
+        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "Guided training"}}</span>
+        <h2 class="mt-3 font-heading text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{{t "Follow a path, not a maze"}}</h2>
+        <p class="mx-auto mt-4 max-w-md text-muted sm:text-lg lg:mx-0">{{t "One guided training, in order — from your first org to certified. Finish a section and the next unlocks."}}</p>
+
+        <dl class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-4 lg:justify-start">
+          {{#get "posts" filter="tag:hash-training-section" limit="1"}}
+            <div class="text-center lg:text-left"><dd class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted">{{t "sections"}}</dt></div>
+          {{/get}}
+          {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+            <div class="text-center lg:text-left"><dd class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted">{{t "lessons"}}</dt></div>
+          {{/get}}
+          {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
+            <div class="text-center lg:text-left"><dd class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted">{{t "free to read"}}</dt></div>
+          {{/get}}
+        </dl>
+
+        <div class="mt-8">
+          <a href="/training/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "See the full roadmap"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+        </div>
+      </div>
+
+      {{!-- ── Right: the roadmap card ── --}}
+      <div class="rounded-card border border-border bg-surface-raised p-4 shadow-raised sm:p-5">
+        <div class="mb-2 flex items-center justify-between px-1.5">
+          <span class="text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Your roadmap"}}</span>
+          <span class="inline-flex items-center gap-1.5 rounded-pill bg-brand-500/10 px-2.5 py-1 text-[0.7rem] font-bold text-brand-600 dark:text-brand-300"><i class="ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Cert-ready"}}</span>
+        </div>
+        <ol class="ns-plist">
+          {{> "training/sections" view="overview"}}
+        </ol>
+      </div>
+
     </div>
   </div>
-
-  {{!-- the 3D stage: plane tilts back on X only (no rotateZ — the rows must read
-       as straight horizontal tracks, not a diagonal slant), wider than the
-       viewport so the rows run off both edges with no visible start/end --}}
-  {{!-- the mask fades the top & bottom rows out into the page background; it's a
-       mask rather than a gradient overlay so it works on any surface colour --}}
-  <div class="relative mt-10 h-64 overflow-hidden sm:h-[36rem] [perspective:1400px]" aria-hidden="true"
-       style="-webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 20%, #000 80%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 20%, #000 80%, transparent 100%);">
-    <div class="absolute left-1/2 top-1/2 flex w-[150%] flex-col justify-center gap-3 [transform:translate(-50%,-50%)_rotateX(47deg)_rotateZ(-5deg)]" style="transform-style:preserve-3d;">
-        <div class="w-full overflow-hidden">
-          <div class="ns-marquee-row flex w-max gap-6" style="--dur:96s">
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="w-full overflow-hidden">
-          <div class="ns-marquee-row ns-marquee-row--rev flex w-max gap-6" style="--dur:112s">
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-graduation-cap text-brand-500" aria-hidden="true"></i>{{t "Course catalog"}}</span>
-              </div>
-              <div class="p-3.5"><div class="grid grid-cols-2 gap-2"><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-graduation-cap text-brand-500" aria-hidden="true"></i>{{t "Course catalog"}}</span>
-              </div>
-              <div class="p-3.5"><div class="grid grid-cols-2 gap-2"><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-graduation-cap text-brand-500" aria-hidden="true"></i>{{t "Course catalog"}}</span>
-              </div>
-              <div class="p-3.5"><div class="grid grid-cols-2 gap-2"><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-graduation-cap text-brand-500" aria-hidden="true"></i>{{t "Course catalog"}}</span>
-              </div>
-              <div class="p-3.5"><div class="grid grid-cols-2 gap-2"><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-graduation-cap text-brand-500" aria-hidden="true"></i>{{t "Course catalog"}}</span>
-              </div>
-              <div class="p-3.5"><div class="grid grid-cols-2 gap-2"><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-graduation-cap text-brand-500" aria-hidden="true"></i>{{t "Course catalog"}}</span>
-              </div>
-              <div class="p-3.5"><div class="grid grid-cols-2 gap-2"><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="rounded-lg border border-border p-2"><div class="h-9 rounded bg-brand-500/15"></div><div class="mt-1.5 h-1.5 w-4/5 rounded bg-ink/20"></div><div class="mt-1 h-1.5 w-3/5 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="w-full overflow-hidden">
-          <div class="ns-marquee-row flex w-max gap-6" style="--dur:100s">
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificate"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-center gap-3"><span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white"><i class="ph-fill ph-seal-check text-xl" aria-hidden="true"></i></span><div class="flex-1 space-y-1.5"><div class="h-2 w-3/4 rounded bg-ink/25"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div><div class="mt-3 h-1.5 w-full rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificate"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-center gap-3"><span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white"><i class="ph-fill ph-seal-check text-xl" aria-hidden="true"></i></span><div class="flex-1 space-y-1.5"><div class="h-2 w-3/4 rounded bg-ink/25"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div><div class="mt-3 h-1.5 w-full rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificate"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-center gap-3"><span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white"><i class="ph-fill ph-seal-check text-xl" aria-hidden="true"></i></span><div class="flex-1 space-y-1.5"><div class="h-2 w-3/4 rounded bg-ink/25"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div><div class="mt-3 h-1.5 w-full rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificate"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-center gap-3"><span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white"><i class="ph-fill ph-seal-check text-xl" aria-hidden="true"></i></span><div class="flex-1 space-y-1.5"><div class="h-2 w-3/4 rounded bg-ink/25"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div><div class="mt-3 h-1.5 w-full rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificate"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-center gap-3"><span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white"><i class="ph-fill ph-seal-check text-xl" aria-hidden="true"></i></span><div class="flex-1 space-y-1.5"><div class="h-2 w-3/4 rounded bg-ink/25"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div><div class="mt-3 h-1.5 w-full rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificate"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-center gap-3"><span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white"><i class="ph-fill ph-seal-check text-xl" aria-hidden="true"></i></span><div class="flex-1 space-y-1.5"><div class="h-2 w-3/4 rounded bg-ink/25"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div><div class="mt-3 h-1.5 w-full rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-book-open-text text-brand-500" aria-hidden="true"></i>{{t "Docs"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex gap-3"><div class="w-1/3 space-y-1.5"><div class="h-1.5 w-full rounded bg-brand-500/60"></div><div class="h-1.5 w-4/5 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-3/5 rounded bg-surface-sunken"></div></div><div class="flex-1 space-y-1.5"><div class="h-2 w-2/3 rounded bg-ink/25"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-5/6 rounded bg-surface-sunken"></div><div class="h-1.5 w-full rounded bg-surface-sunken"></div><div class="h-1.5 w-1/2 rounded bg-surface-sunken"></div></div></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-play-circle text-brand-500" aria-hidden="true"></i>{{t "Lesson player"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-900"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/90"><i class="ph-fill ph-play text-sm text-brand-600" aria-hidden="true"></i></span></div><div class="mt-2.5 space-y-1.5"><div class="flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-3/4 rounded bg-surface-sunken"></div></div><div class="flex items-center gap-1.5"><i class="ph-fill ph-play-circle text-xs text-brand-500" aria-hidden="true"></i><div class="h-1.5 w-2/3 rounded bg-brand-500/30"></div></div></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="w-full overflow-hidden">
-          <div class="ns-marquee-row ns-marquee-row--rev flex w-max gap-6" style="--dur:120s">
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-          
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-code text-brand-500" aria-hidden="true"></i>{{t "Apex"}}</span>
-              </div>
-              <div class="p-3.5"><div class="rounded-lg bg-[#032D60] p-3 font-mono text-[0.6rem] leading-relaxed"><span class="text-brand-300">trigger</span> <span class="text-white/80">OnAccount</span> <span class="text-white/50">on</span> <span class="text-brand-200">Account</span><br><span class="text-white/40">&nbsp;&nbsp;(before insert) {</span><br><span class="text-white/60">&nbsp;&nbsp;&nbsp;&nbsp;Handler.run();</span><br><span class="text-white/40">&nbsp;&nbsp;}</span></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-map-trifold text-brand-500" aria-hidden="true"></i>{{t "Training trail"}}</span>
-              </div>
-              <div class="p-3.5"><svg viewBox="0 0 232 80" fill="none" class="h-auto w-full"><path d="M8 66 C60 74 70 36 116 40 S190 16 224 10" stroke="var(--color-brand-400)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="1 8"/><circle cx="8" cy="66" r="5" fill="var(--color-brand-500)"/><circle cx="116" cy="40" r="5" fill="var(--color-brand-400)"/><circle cx="224" cy="10" r="5" fill="var(--color-brand-300)"/></svg><div class="mt-2 h-1.5 w-2/3 rounded bg-surface-sunken"></div></div>
-            </div>
-            <div class="w-72 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-raised shadow-raised">
-              <div class="flex items-center gap-1.5 border-b border-border px-3.5 py-2">
-                <span class="h-2 w-2 rounded-full bg-error/50"></span><span class="h-2 w-2 rounded-full bg-warning/50"></span><span class="h-2 w-2 rounded-full bg-success/50"></span>
-                <span class="ml-1.5 inline-flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wide text-muted"><i class="ph-fill ph-chart-bar text-brand-500" aria-hidden="true"></i>{{t "Reports"}}</span>
-              </div>
-              <div class="p-3.5"><div class="flex items-end gap-1.5"><div class="h-4 w-4 rounded-sm bg-brand-500/25"></div><div class="h-7 w-4 rounded-sm bg-brand-500/45"></div><div class="h-10 w-4 rounded-sm bg-brand-500/70"></div><div class="h-6 w-4 rounded-sm bg-brand-500/35"></div><div class="h-12 w-4 rounded-sm bg-brand-500"></div></div><div class="mt-2 h-1.5 w-1/2 rounded bg-surface-sunken"></div></div>
-            </div>
-          </div>
-        </div>
-    </div>
-    {{!-- soft fades so the plane dissolves at the edges --}}
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white to-transparent dark:from-surface"></div>
-    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent dark:from-surface"></div>
-    <div class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent dark:from-surface"></div>
-    <div class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent dark:from-surface"></div>
-  </div>
 </section>
-
-{{!-- Manifesto ink-in on scroll --}}
-<script>
-  (function () {
-    var tick = false;
-    var man = document.querySelector('.js-manifesto');
-    if (!man) return;
-    man.innerHTML = man.textContent.trim().split(/\s+/).map(function (w) { return '<span>' + w + '</span>'; }).join(' ');
-    var spans = Array.prototype.slice.call(man.querySelectorAll('span'));
-    function update() {
-      tick = false;
-      var r = man.getBoundingClientRect();
-      var p = Math.max(0, Math.min(1, (window.innerHeight * 0.8 - r.top) / (r.height + window.innerHeight * 0.35)));
-      var n = Math.round(p * spans.length);
-      for (var i = 0; i < spans.length; i++) spans[i].classList.toggle('on', i < n);
-    }
-    function onScroll() { if (!tick) { tick = true; requestAnimationFrame(update); } }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
-  })();
-</script>
 
 {{!-- ── FEATURED COURSES ─────────────────────────────────────────────────── --}}
-<section class="border-t border-border bg-surface-sunken">
-  <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
-    {{!-- header: title + value points left · production illustration right --}}
-    <div class="mb-10 grid items-center gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+<section class="border-t border-border bg-surface">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i>{{t "Courses"}}</p>
-        <h2 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">{{t "Produced like a show, structured like a syllabus"}}</h2>
-        <ul class="mt-4 space-y-2.5 text-sm text-ink">
-          <li class="flex items-start gap-2.5"><i class="ph-fill ph-video-camera mt-0.5 text-base text-brand-500" aria-hidden="true"></i>{{t "Every video is outlined, scripted, recorded in a live org and reviewed before it ships."}}</li>
-          <li class="flex items-start gap-2.5"><i class="ph-fill ph-lock-simple-open mt-0.5 text-base text-brand-500" aria-hidden="true"></i>{{t "Fundamentals are free; member lessons need a free account; a few Pro deep-dives fund the platform."}}</li>
-          <li class="flex items-start gap-2.5"><i class="ph-fill ph-pen-nib mt-0.5 text-base text-brand-500" aria-hidden="true"></i>{{t "Built by the community — experienced pros can publish their own course."}}</li>
-        </ul>
+        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i>{{t "Courses"}}</span>
+        <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Featured courses"}}</h2>
+        <p class="mt-2 text-muted">{{t "Hands-on, video-first, structured like a syllabus."}}</p>
       </div>
-      {{!-- mini production-pipeline illustration --}}
-      <div class="relative hidden lg:block" aria-hidden="true">
-        <svg viewBox="0 0 340 170" fill="none" class="h-auto w-full">
-          <line x1="58" y1="86" x2="140" y2="86" stroke="var(--color-border)" stroke-width="2" stroke-dasharray="4 6"/>
-          <line x1="200" y1="86" x2="282" y2="86" stroke="var(--color-border)" stroke-width="2" stroke-dasharray="4 6"/>
-          <rect x="14" y="58" width="56" height="56" rx="14" fill="var(--color-surface-raised)" stroke="var(--color-border)" stroke-width="2"/>
-          <path d="M30 92h24M30 84h24M30 76h14" stroke="var(--color-brand-500)" stroke-width="3" stroke-linecap="round"/>
-          <rect x="142" y="50" width="72" height="72" rx="16" fill="var(--color-brand-500)"/>
-          <circle cx="178" cy="86" r="17" fill="#fff"/>
-          <path d="M173 78l14 8-14 8z" fill="var(--color-brand-600)"/>
-          <rect x="270" y="58" width="56" height="56" rx="14" fill="var(--color-surface-raised)" stroke="var(--color-border)" stroke-width="2"/>
-          <path d="M286 86l8 8 16-16" stroke="var(--color-success)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p class="mt-2 flex justify-between px-1 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-muted"><span>{{t "Script"}}</span><span>{{t "Record"}}</span><span>{{t "Review"}}</span></p>
-      </div>
+      <a href="/courses/" class="group inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-bold text-brand-600 transition hover:border-brand-500 dark:text-brand-300">{{t "All courses"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
     </div>
     {{#get "posts" filter="tag:hash-course" limit="3" include="tags,authors"}}
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -682,67 +167,19 @@
     {{else}}
       <p class="rounded-card border border-dashed border-border py-12 text-center text-muted">{{t "Courses coming soon."}}</p>
     {{/get}}
-
-    {{!-- CTA --}}
-    <div class="mt-12 flex flex-wrap items-center justify-center gap-3">
-      <a href="/courses/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Browse all courses"}}<i class="ph ph-arrow-right" aria-hidden="true"></i></a>
-      <a href="/become-author/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-6 py-3 font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Share your knowledge"}}</a>
-    </div>
-  </div>
-</section>
-
-{{!-- ── TRAINING: copy left, the path itself drawn on the right.
-     Replaces the old full-bleed training-trail.svg + frosted card. That art was
-     fixed light-canvas, which forced the whole section onto hard-coded navy
-     inks (so it never adapted to dark mode) and the card leaned on
-     backdrop-blur — glass, which this design system doesn't use. The
-     illustration is now inline, token-driven and flat. --}}
-<section class="relative overflow-hidden border-y border-border bg-surface">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid text-brand-500/60"></div>
-
-  <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:py-20">
-
-    {{!-- ── Left: the promise ── --}}
-    <div class="text-center lg:text-left">
-      <p class="ns-kicker justify-center lg:justify-start">{{t "Guided training"}}</p>
-      <h2 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{{t "Follow a path, not a maze"}}</h2>
-      <p class="mx-auto mt-3 max-w-md text-muted lg:mx-0">{{t "One training, in order — from your first org to certified. Sections build on each other, so you always know what's next and how far in you are."}}</p>
-
-      {{!-- three real numbers, straight from the content --}}
-      <dl class="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-3 lg:justify-start">
-        {{!-- Section count is literal: section slugs are clean, so no filter
-             means "is a training section". Owned by partials/training/sections.hbs. --}}
-        <div><dd class="font-heading text-xl font-extrabold text-ink">5</dd><dt class="text-xs text-muted">{{t "sections"}}</dt></div>
-        {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-          <div><dd class="font-heading text-xl font-extrabold text-ink">{{pagination.total}}</dd><dt class="text-xs text-muted">{{t "lessons"}}</dt></div>
-        {{/get}}
-        {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
-          <div><dd class="font-heading text-xl font-extrabold text-ink">{{pagination.total}}</dd><dt class="text-xs text-muted">{{t "free to read"}}</dt></div>
-        {{/get}}
-      </dl>
-
-      <div class="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
-        <a href="/training/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Start training"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
-        <a href="/courses/" class="inline-flex items-center gap-2 rounded-pill border border-border px-5 py-3 text-sm font-semibold text-ink transition hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-300">{{t "Browse courses"}}</a>
-      </div>
-    </div>
-
-    {{!-- ── Right: the path ── --}}
-    <div class="flex justify-center lg:justify-end">
-      {{> "home/training-illustration"}}
-    </div>
   </div>
 </section>
 
 {{!-- ── LATEST BLOG ──────────────────────────────────────────────────────── --}}
 <section class="border-t border-border bg-surface-sunken">
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "From the blog"}}</h2>
+        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-newspaper" aria-hidden="true"></i>{{t "Blog"}}</span>
+        <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "From the blog"}}</h2>
         <p class="mt-2 text-muted">{{t "Tips, deep dives and updates from the Salesforce ecosystem."}}</p>
       </div>
-      <a href="/blog/" class="inline-flex items-center gap-1 text-sm font-bold text-brand-600 hover:underline dark:text-brand-300">{{t "All posts"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+      <a href="/blog/" class="group inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-bold text-brand-600 transition hover:border-brand-500 dark:text-brand-300">{{t "All posts"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
     </div>
     {{#get "posts" filter="tag:hash-blog" limit="6" include="tags,authors"}}
       {{#if posts}}
@@ -766,61 +203,103 @@
   </div>
 </section>
 
-{{!-- ── STATS: big fat animated numbers, every collection ─────────────────── --}}
-<section class="border-t border-border">
-  <div class="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 lg:py-20">
-    <div class="mb-10 max-w-2xl">
-      <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-chart-bar" aria-hidden="true"></i>{{t "The library"}}</p>
-      <h2 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">{{t "Everything we've published, counted live"}}</h2>
+{{!-- ── RESOURCES: pitch left · floating icon-card grid right ── --}}
+<section class="border-t border-border bg-surface">
+  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <div class="grid items-center gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+
+      {{!-- ── Left: the pitch ── --}}
+      <div class="text-center lg:text-left">
+        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-toolbox" aria-hidden="true"></i>{{t "The toolbox"}}</span>
+        <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Books, tools and cheat sheets we actually use"}}</h2>
+        <p class="mx-auto mt-4 max-w-md text-muted lg:mx-0">{{t "Hand-picked, not sponsored — every pick has earned its place in the library."}}</p>
+        <div class="mt-7">
+          <a href="/resources/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Browse the toolbox"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+        </div>
+      </div>
+
+      {{!-- ── Right: floating resource cards, icon-first, gently staggered ── --}}
+      {{#get "posts" filter="tag:hash-resource" limit="4"}}
+        {{#if posts}}
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+            {{#foreach posts}}
+              <a href="{{url}}" class="group flex items-center gap-3.5 rounded-card border border-border bg-surface-raised p-4 shadow-card transition hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-raised {{#match @number "2"}}sm:mt-8{{else match @number "4"}}sm:mt-8{{/match}}">
+                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-2xl text-brand-600 transition group-hover:bg-brand-500 group-hover:text-white dark:text-brand-300">
+                  <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
+                </span>
+                <span class="min-w-0">
+                  <span class="block truncate text-sm font-bold leading-snug transition group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
+                  <span class="mt-0.5 block text-[0.7rem] font-semibold uppercase tracking-wide text-muted">
+                    {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
+                  </span>
+                </span>
+                <i class="ph ph-arrow-right ml-auto shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-brand-500" aria-hidden="true"></i>
+              </a>
+            {{/foreach}}
+          </div>
+        {{else}}
+          <p class="rounded-card border border-dashed border-border py-12 text-center text-muted">{{t "Resources coming soon."}}</p>
+        {{/if}}
+      {{/get}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── STATS: live counts of every collection ───────────────────────────── --}}
+<section class="border-t border-border bg-surface-sunken">
+  <div class="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <div class="mb-10 text-center">
+      <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-chart-bar" aria-hidden="true"></i>{{t "The library"}}</span>
+      <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Everything we've published, counted live"}}</h2>
     </div>
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
       {{#get "posts" filter="tag:hash-course" limit="1"}}
-        <div class="js-reveal relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card">
-          <i class="ph-fill ph-graduation-cap pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
-          <div class="mt-3 bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-heading text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl lg:text-5xl dark:from-brand-300 dark:to-brand-500"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+          <i class="ph-fill ph-graduation-cap pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
+          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
           <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Courses"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-lesson" limit="1"}}
-        <div class="js-reveal relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card">
-          <i class="ph-fill ph-play-circle pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
-          <div class="mt-3 bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-heading text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl lg:text-5xl dark:from-brand-300 dark:to-brand-500"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+          <i class="ph-fill ph-play-circle pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
+          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
           <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Lessons"}}</div>
         </div>
       {{/get}}
       {{!-- Counts training LESSONS, not trainings: there is one training now,
            so "1" would be a pointless stat. --}}
       {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-        <div class="js-reveal relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card">
-          <i class="ph-fill ph-steps pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
-          <div class="mt-3 bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-heading text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl lg:text-5xl dark:from-brand-300 dark:to-brand-500"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+          <i class="ph-fill ph-steps pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
+          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
           <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Training lessons"}}</div>
         </div>
       {{/get}}
-      {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-        <div class="js-reveal relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card">
-          <i class="ph-fill ph-stack pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
-          <div class="mt-3 bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-heading text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl lg:text-5xl dark:from-brand-300 dark:to-brand-500"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Modules"}}</div>
+      {{#get "posts" filter="tag:hash-training-section" limit="1"}}
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+          <i class="ph-fill ph-stack pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
+          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Sections"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:documentation" limit="1"}}
-        <div class="js-reveal relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card">
-          <i class="ph-fill ph-book-open-text pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
-          <div class="mt-3 bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-heading text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl lg:text-5xl dark:from-brand-300 dark:to-brand-500"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+          <i class="ph-fill ph-book-open-text pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
+          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
           <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Docs"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-blog" limit="1"}}
-        <div class="js-reveal relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card">
-          <i class="ph-fill ph-newspaper pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
-          <div class="mt-3 bg-gradient-to-br from-brand-500 to-brand-800 bg-clip-text font-heading text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl lg:text-5xl dark:from-brand-300 dark:to-brand-500"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+          <i class="ph-fill ph-newspaper pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
+          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
           <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Blog posts"}}</div>
         </div>
       {{/get}}
@@ -829,92 +308,26 @@
 </section>
 
 {{!-- ── OPEN SOURCE (grid-line background) ───────────────────────────────── --}}
-<section class="border-t border-border bg-surface-sunken">
-  <div class="relative overflow-hidden">
-    <div aria-hidden="true" class="pointer-events-none absolute inset-0"
-         style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 40px 40px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%);"></div>
-    <div class="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
-      <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300"><i class="ph ph-git-branch" aria-hidden="true"></i>{{t "Open source"}}</p>
-      <h2 class="mt-2 font-heading text-2xl font-extrabold sm:text-3xl">{{t "Built in the open, on Ghost"}}</h2>
-      <p class="mx-auto mt-3 max-w-xl text-muted">{{t "The whole platform — a custom Ghost theme, the courses, the docs — is an open-source project. Read the code, fix a typo, write a lesson or improve the help center: every contribution ships."}}</p>
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
-        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
-        <a href="/docs/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
-        <a href="/become-author/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
-        <a href="/sponsor/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-pink-600 transition hover:border-pink-500"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
-      </div>
-      <p class="mt-6 text-sm text-muted">{{t "Powered by"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Ghost</a> · {{t "Styled with"}} <a href="https://tailwindcss.com" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Tailwind CSS</a> · {{t "MIT-licensed theme"}}</p>
+<section class="relative overflow-hidden border-t border-border bg-surface">
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0"
+       style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 40px 40px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%);"></div>
+  <div class="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:py-24">
+    <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-git-branch" aria-hidden="true"></i>{{t "Open source"}}</span>
+    <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Built in the open, on Ghost"}}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-muted">{{t "The whole platform — a custom Ghost theme, the courses, the docs — is an open-source project. Read the code, fix a typo, write a lesson or improve the help center: every contribution ships."}}</p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
+      <a href="/docs/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
+      <a href="/become-author/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
+      <a href="/sponsor/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-pink-600 transition hover:border-pink-500"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
     </div>
+    <p class="mt-7 text-sm text-muted">{{t "Powered by"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Ghost</a> · {{t "Styled with"}} <a href="https://tailwindcss.com" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Tailwind CSS</a> · {{t "MIT-licensed theme"}}</p>
   </div>
 </section>
 
-{{!-- ── NEWSLETTER: why join + how membership works ─────────────────────────
-     Backdrop: light dot pattern pushed to the CORNERS (inverse radial mask);
-     the centre stays plain so the content breathes. --}}
-<section class="relative overflow-hidden border-t border-border bg-surface">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0"
-       style="background-image: radial-gradient(color-mix(in srgb, var(--color-brand-500) 22%, transparent) 1.5px, transparent 1.5px); background-size: 24px 24px; -webkit-mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, transparent 48%, #000 95%); mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, transparent 48%, #000 95%);"></div>
-
-  <div class="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
-    <div class="mx-auto max-w-2xl text-center">
-      <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-envelope-simple" aria-hidden="true"></i>{{t "The newsletter"}}</p>
-      <h2 class="mt-2 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{t "One email a week. Zero noise."}}</h2>
-      <p class="mx-auto mt-3 max-w-xl text-muted">{{t "New lessons, a Salesforce tip you'll actually use, and what's shipping next on the platform — written by the people who build the courses."}}</p>
-    </div>
-
-    {{!-- why join --}}
-    <div class="mt-12 grid gap-4 sm:grid-cols-3">
-      <div class="rounded-card border border-border bg-surface-raised p-6 text-center shadow-card">
-        <span class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-xl text-brand-600 dark:text-brand-300"><i class="ph-fill ph-bell-ringing" aria-hidden="true"></i></span>
-        <h3 class="mt-3 font-heading font-bold">{{t "Never miss a lesson"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "New courses, modules and docs land in your inbox the week they publish."}}</p>
-      </div>
-      <div class="rounded-card border border-border bg-surface-raised p-6 text-center shadow-card">
-        <span class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-xl text-brand-600 dark:text-brand-300"><i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i></span>
-        <h3 class="mt-3 font-heading font-bold">{{t "Unlocks member lessons"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "Your free account doubles as the key to all members-only lessons and docs."}}</p>
-      </div>
-      <div class="rounded-card border border-border bg-surface-raised p-6 text-center shadow-card">
-        <span class="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-xl text-brand-600 dark:text-brand-300"><i class="ph-fill ph-chart-line-up" aria-hidden="true"></i></span>
-        <h3 class="mt-3 font-heading font-bold">{{t "Career signal, not spam"}}</h3>
-        <p class="mt-1 text-sm text-muted">{{t "Cert changes, release highlights and hiring trends — condensed to two minutes."}}</p>
-      </div>
-    </div>
-
-    {{!-- how it works (Ghost membership flow) --}}
-    <div class="mt-14 grid gap-8 md:grid-cols-3">
-      <div class="relative text-center">
-        <span class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 font-heading font-extrabold text-white">1</span>
-        <h4 class="mt-3 font-heading font-bold">{{t "Subscribe"}}</h4>
-        <p class="mx-auto mt-1 max-w-xs text-sm text-muted">{{t "Drop your email below — no password, no credit card."}}</p>
-        <i class="ph ph-arrow-right absolute -right-5 top-4 hidden text-xl text-muted md:block" aria-hidden="true"></i>
-      </div>
-      <div class="relative text-center">
-        <span class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 font-heading font-extrabold text-white">2</span>
-        <h4 class="mt-3 font-heading font-bold">{{t "Click the magic link"}}</h4>
-        <p class="mx-auto mt-1 max-w-xs text-sm text-muted">{{t "Ghost emails you a sign-in link — clicking it confirms you and creates your free account."}}</p>
-        <i class="ph ph-arrow-right absolute -right-5 top-4 hidden text-xl text-muted md:block" aria-hidden="true"></i>
-      </div>
-      <div class="text-center">
-        <span class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 font-heading font-extrabold text-white">3</span>
-        <h4 class="mt-3 font-heading font-bold">{{t "Learn as a member"}}</h4>
-        <p class="mx-auto mt-1 max-w-xs text-sm text-muted">{{t "You're signed in on this device — member lessons unlock and the weekly email starts."}}</p>
-      </div>
-    </div>
-
-    {{!-- signup --}}
-    <form data-members-form="signup" class="mx-auto mt-12 max-w-md">
-      <div class="flex overflow-hidden rounded-pill border border-border bg-surface-raised shadow-card focus-within:border-brand-500">
-        <input data-members-email type="email" required placeholder="{{t "you@example.com"}}" aria-label="{{t "Email address"}}"
-               class="w-full min-w-0 border-0 bg-transparent px-5 py-3.5 text-ink placeholder:text-muted focus:outline-none">
-        <button type="submit" class="shrink-0 bg-brand-500 px-6 font-bold text-white transition hover:bg-brand-600">
-          <span data-members-loading class="hidden"><i class="ph ph-circle-notch animate-spin" aria-hidden="true"></i></span>
-          <span data-members-default>{{t "Join free"}}</span>
-        </button>
-      </div>
-      <p data-members-success class="mt-3 hidden text-center text-sm font-semibold text-success">{{t "Check your inbox — your magic link is on its way!"}}</p>
-      <p data-members-error class="mt-3 hidden text-center text-sm font-semibold text-error">{{t "Something went wrong — try again."}}</p>
-      <p class="mt-3 text-center text-xs text-muted">{{t "Unsubscribe anytime with one click. We never share your email."}}</p>
-    </form>
+{{!-- ── SPONSOR: 728×90 leaderboard, shrinks on mobile — last before the footer ── --}}
+<section class="border-t border-border bg-surface">
+  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    {{> "ads/leaderboard"}}
   </div>
 </section>

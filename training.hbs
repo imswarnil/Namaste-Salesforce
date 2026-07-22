@@ -43,7 +43,7 @@
         <p class="mt-2.5 max-w-lg text-muted">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "One training, in order — from your first org to certified."}}{{/if}}</p>
       {{else}}
         <h1 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">{{t "From zero to Salesforce Engineer."}}</h1>
-        <p class="mt-2.5 max-w-lg text-muted">{{t "One training, five sections, in order — no guessing what to learn next. Start with what Salesforce even is, finish able to build, automate and secure a real org."}}</p>
+        <p class="mt-2.5 max-w-lg text-muted">{{t "One training, in order — no guessing what to learn next. Start with what Salesforce even is, finish able to build, automate and secure a real org."}}</p>
       {{/page}}
 
       {{!-- ── CTA + a search that stays out of the way until wanted.
@@ -99,22 +99,26 @@
 </header>
 
 {{!-- ── Every section, in order ── --}}
-<section id="sections" class="mx-auto max-w-[85rem] scroll-mt-20 px-4 py-14 sm:px-6 lg:py-16">
-  <div class="mb-10 max-w-2xl">
-    <h2 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "The path"}}</h2>
-    <p class="mt-2 text-muted">{{t "Five sections, in order. Each one assumes the last — follow the trail from the top."}}</p>
-  </div>
+<section id="sections" class="scroll-mt-20 border-t border-border bg-surface-sunken">
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+    <div class="mb-12 text-center">
+      <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "The path"}}</span>
+      <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Every section, in order"}}</h2>
+      <p class="mx-auto mt-3 text-muted">{{t "Each one assumes the last — follow the trail from the top."}}</p>
+    </div>
 
-  {{!-- The roadmap: a START dot, then every section as a stop on a dashed
-       spine (see .ns-road in course.css). Pure CSS + Handlebars — no JS. --}}
-  <ol class="ns-road mx-auto max-w-6xl">
-    <li class="ns-road__start"><span>{{t "Start here"}}</span></li>
+  {{!-- The track: a START dot, then every section as a numbered stop on a
+       single left-aligned spine (see .ns-track in course.css). Pure CSS +
+       Handlebars — no JS. --}}
+  <ol class="ns-track mx-auto max-w-3xl">
+    <li class="ns-track__start"><span>{{t "Start here"}}</span></li>
     {{> "training/sections" view="card"}}
 
     {{!-- ── The trail terminates in the newsletter: you've seen the whole path,
          so the ask is "tell me when the next lesson lands", not a generic
          signup. Ghost's members form — no theme JS. ── --}}
-    <li class="ns-road__end">
+    <li class="ns-track__end">
+      <span class="ns-track__num ns-track__num--flag"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i></span>
       <div class="ns-road__finish">
         <p class="ns-road__finish-kicker"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i>{{t "End of the trail — for now"}}</p>
         <h3 class="ns-road__finish-title">{{t "Get notified the moment I publish new training content"}}</h3>
@@ -136,12 +140,16 @@
     </li>
   </ol>
 
-  {{!-- Request a topic --}}
-  <div class="mt-16 flex flex-col items-center justify-between gap-4 rounded-card border border-border bg-surface-sunken p-6 sm:flex-row sm:p-8">
-    <div>
-      <h2 class="font-heading text-xl font-bold text-ink">{{t "Looking for a specific topic?"}}</h2>
-      <p class="mt-1 text-muted">{{t "New lessons are added every month. Tell us what to build next."}}</p>
+    {{!-- Request a topic --}}
+    <div class="mt-16 flex flex-col items-center justify-between gap-5 rounded-card border border-border bg-surface-raised p-6 shadow-card sm:flex-row sm:p-8">
+      <div class="flex items-center gap-4 text-center sm:text-left">
+        <span class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-2xl text-brand-600 dark:text-brand-300 sm:flex"><i class="ph-fill ph-lightbulb" aria-hidden="true"></i></span>
+        <div>
+          <h2 class="font-heading text-lg font-bold text-ink sm:text-xl">{{t "Looking for a specific topic?"}}</h2>
+          <p class="mt-1 text-sm text-muted">{{t "New lessons are added every month. Tell us what to build next."}}</p>
+        </div>
+      </div>
+      <a href="/contact/" class="inline-flex shrink-0 items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/mail" class="h-5 w-5"}}{{t "Request a topic"}}</a>
     </div>
-    <a href="/contact/" class="inline-flex shrink-0 items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/mail" class="h-5 w-5"}}{{t "Request a topic"}}</a>
   </div>
 </section>
