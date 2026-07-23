@@ -52,11 +52,17 @@
     e.preventDefault();
     deferred = e;
     if (snoozed()) return;
-    setTimeout(function () { box.classList.remove('hidden'); }, 4000);
+    setTimeout(function () {
+      box.classList.remove('hidden');
+      if (window.posthog) window.posthog.capture('pwa install prompt shown');
+    }, 4000);
   });
 
   box.querySelectorAll('[data-pwa-dismiss]').forEach(function (b) {
-    b.addEventListener('click', snooze);
+    b.addEventListener('click', function () {
+      if (window.posthog) window.posthog.capture('pwa install dismissed');
+      snooze();
+    });
   });
 
   var installBtn = box.querySelector('[data-pwa-install]');
@@ -64,6 +70,7 @@
     installBtn.addEventListener('click', function () {
       box.classList.add('hidden');
       if (!deferred) return;
+      if (window.posthog) window.posthog.capture('pwa install accepted');
       deferred.prompt();
       deferred.userChoice.then(function (choice) {
         if (choice && choice.outcome === 'accepted') {
@@ -79,5 +86,6 @@
   window.addEventListener('appinstalled', function () {
     box.classList.add('hidden');
     try { localStorage.setItem(KEY, String(Date.now() + 3650 * 864e5)); } catch (e) {}
+    if (window.posthog) window.posthog.capture('pwa installed');
   });
 })();

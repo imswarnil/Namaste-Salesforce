@@ -96,6 +96,18 @@
     {{!-- Ghost-injected scripts: Portal (members), search, comments, etc. --}}
     {{ghost_foot}}
 
+    {{!-- Expose current Ghost member data for PostHog user identification.
+         UUID is a non-PII identifier; email/name are set as person properties
+         (not event properties) inside posthog-init.js. --}}
+    <script>
+      window.__phMember = {{#if @member}}{
+        id: '{{@member.uuid}}',
+        email: '{{@member.email}}',
+        name: '{{@member.name}}',
+        subscribed: {{@member.paid}}
+      }{{else}}null{{/if}};
+    </script>
+
     {{!-- Alpine.js (self-hosted) — powers the mobile menu, dropdowns and toggles.
          `defer` keeps it non-blocking and lets it auto-start after DOM parse. --}}
     <script defer src="{{asset "js/vendor/alpine.js"}}"></script>

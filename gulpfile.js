@@ -9,8 +9,14 @@
 // Output in assets/built/ is committed to git because Ghost serves it directly,
 // so remember to rebuild after editing SCSS or JS.
 // ═══════════════════════════════════════════════════════════════════════════
+
+// Load .env so POSTHOG_PROJECT_TOKEN / POSTHOG_API_HOST are available during
+// build-time injection into the JS bundle. Missing .env is silently ignored.
+require('dotenv').config();
+
 const {series, watch, src, dest, parallel} = require('gulp');
 const pump = require('pump');
+const {Transform} = require('stream');
 
 // gulp plugins & utils
 const livereload = require('gulp-livereload');
@@ -26,6 +32,26 @@ const cssnano = require('cssnano');
 
 // translations support
 const {mergeLocales} = require('@tryghost/theme-translations/build');
+
+// Replace __POSTHOG_TOKEN__ / __POSTHOG_HOST__ markers in the JS bundle with
+// values from process.env (populated by .env above). Runs before uglify so
+// the real token is already present when the minifier processes the file.
+function injectPostHogEnv() {
+    const phToken = process.env.POSTHOG_PROJECT_TOKEN || '';
+    const phHost  = process.env.POSTHOG_API_HOST  || 'https://eu.i.posthog.com';
+    return new Transform({
+        objectMode: true,
+        transform(file, _enc, callback) {
+            if (file.isBuffer()) {
+                const src = file.contents.toString()
+                    .replace(/__POSTHOG_TOKEN__/g, phToken)
+                    .replace(/__POSTHOG_HOST__/g,  phHost);
+                file.contents = Buffer.from(src);
+            }
+            callback(null, file);
+        }
+    });
+}
 
 // Beep on error so failures are noticed during `yarn dev` watch sessions.
 const handleError = (done) => {
@@ -67,10 +93,13 @@ function css(done) {
 // Concatenate our small scripts (theme toggle, TOC, effects) and minify.
 // Note: assets/js/vendor/* (e.g. Alpine) is loaded separately in default.hbs,
 // so it is intentionally NOT part of this bundle.
+// posthog-init.js is included and its __POSTHOG_TOKEN__ / __POSTHOG_HOST__
+// markers are replaced with values from .env before minification.
 function js(done) {
     pump([
         src('assets/js/*.js', {sourcemaps: true}),
         concat('casper.js'),
+        injectPostHogEnv(),
         uglify(),
         dest('assets/built/', {sourcemaps: '.'}),
         livereload()

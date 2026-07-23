@@ -49,6 +49,14 @@
       a.href = '#' + h.id;
       a.textContent = h.textContent;
       a.className = 'toc-link' + (h.tagName === 'H3' ? ' is-h3' : '');
+      a.addEventListener('click', function () {
+        if (window.posthog) window.posthog.capture('toc section clicked', {
+          section_id:    h.id,
+          section_title: h.textContent,
+          section_level: h.tagName.toLowerCase(),
+          page_url:      window.location.href
+        });
+      });
       li.appendChild(a);
       list.appendChild(li);
       links.push(a);
