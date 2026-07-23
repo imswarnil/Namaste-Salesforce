@@ -46,21 +46,39 @@
     return (t ? t.textContent : a.textContent).trim();
   }
 
-  function apply(selector, link) {
+  function apply(selector, link, direction) {
     if (!link) return;
     document.querySelectorAll(selector).forEach(function (el) {
       el.setAttribute('href', link.getAttribute('href'));
       el.style.display = '';
       var lab = el.querySelector('.js-train-label');
       if (lab) lab.textContent = labelOf(link);
+      el.addEventListener('click', function () {
+        if (window.posthog) window.posthog.capture('training module navigated', {
+          direction:        direction,
+          target_title:     labelOf(link),
+          target_url:       link.getAttribute('href'),
+          current_url:      window.location.href,
+          module_index:     idx,
+          total_modules:    links.length
+        });
+      });
     });
   }
 
-  apply('.js-train-prev', prev);
-  apply('.js-train-next', next);
+  apply('.js-train-prev', prev, 'prev');
+  apply('.js-train-next', next, 'next');
 
   // No next module anywhere → reveal the Finish button.
   if (!next) {
-    document.querySelectorAll('.js-train-finish').forEach(function (el) { el.style.display = ''; });
+    document.querySelectorAll('.js-train-finish').forEach(function (el) {
+      el.style.display = '';
+      el.addEventListener('click', function () {
+        if (window.posthog) window.posthog.capture('training curriculum completed', {
+          current_url:   window.location.href,
+          total_modules: links.length
+        });
+      });
+    });
   }
 })();

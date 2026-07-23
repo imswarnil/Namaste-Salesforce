@@ -20,7 +20,13 @@
   }
 
   document.querySelectorAll('.ns-theme-toggle').forEach(function (btn) {
-    btn.addEventListener('click', function () { apply(!isDark()); });
+    btn.addEventListener('click', function () {
+      var nowDark = !isDark();
+      apply(nowDark);
+      if (window.posthog) window.posthog.capture('theme toggled', {
+        theme: nowDark ? 'dark' : 'light'
+      });
+    });
   });
 
   // Follow OS changes only while the visitor hasn't made an explicit choice.

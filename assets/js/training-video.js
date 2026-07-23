@@ -80,11 +80,20 @@
     var m = cell.textContent.trim().match(TS);
     if (!m) return;
     var sec = toSeconds(m);
+    var label = cell.textContent.trim().replace(/[()]/g, ''); // capture before DOM mutation
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'js-ts';
-    btn.innerHTML = '<i class="ph-fill ph-play-circle" aria-hidden="true"></i>' + cell.textContent.trim().replace(/[()]/g, '');
-    btn.addEventListener('click', function () { seek(sec); });
+    btn.innerHTML = '<i class="ph-fill ph-play-circle" aria-hidden="true"></i>' + label;
+    btn.addEventListener('click', function () {
+      seek(sec);
+      if (window.posthog) window.posthog.capture('training video timestamp clicked', {
+        timestamp_seconds: sec,
+        timestamp_label:   label,
+        video_kind:        player.kind,
+        page_url:          window.location.href
+      });
+    });
     cell.textContent = '';
     cell.appendChild(btn);
   });
