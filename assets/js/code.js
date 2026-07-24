@@ -161,6 +161,13 @@
     wrap.appendChild(bar);
     wrap.appendChild(pre);
 
-    btn.addEventListener('click', function () { copyText(raw, btn); });
+    btn.addEventListener('click', function () {
+      copyText(raw, btn);
+      if (window.posthog) window.posthog.capture('code copied', {
+        language:    lang || 'unknown',
+        code_length: raw.length,
+        page_url:    window.location.href
+      });
+    });
   });
 })();
