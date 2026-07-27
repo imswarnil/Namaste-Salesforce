@@ -49,23 +49,21 @@
    FORM    --boxed (a card around the rail) · --flush (no outer padding)
 
    SPACING comes from the foundation, not from this file — every value in here
-   is a --space-* token. Rows use --space-row-sm / --space-inline (--space-row-xs
-   in the --sm variant), gaps use --space-gap-xs, and the section rules use
-   --space-gap-sm either side. The rail had drifted onto its own invented scale
-   (0.15, 0.25, 0.35, 0.4, 0.45, 0.5, 0.6, 0.65, 0.75rem …), which is exactly how
-   a component stops looking like the rest of the theme. Note that the SIZE
-   variant is the thing to check first when rail spacing looks wrong: it sets
-   padding-block, so a hard-coded value there silently beats the base rule.
+   is a --space-* token. The SIZE variant is still the first thing to check when
+   the rhythm looks wrong: --sm is what every real page uses, so a padding
+   override there governs the whole component and beats the base rule silently.
+   The variants change TYPE only; --lg is the one documented exception.
 
-   Rows are deliberately taller than the type needs. A rail is scanned, not
-   read, and a scannable list needs air between its items far more than it
-   needs to fit one more row on screen. The SIZE variants honour that: --sm
-   makes the type smaller and leaves the rhythm alone, because --sm is what
-   every page uses and a padding override there governs the whole component.
+   THE RAIL IS DENSE, and that is the point. It is a table of contents, not a
+   menu: the value of it is seeing where you are in the WHOLE training at once,
+   and every rem of padding is a lesson pushed off the screen. So rows sit on
+   --space-row-xs, they touch each other with no gap between them, and the only
+   real space in the component is the --space-gap-sm either side of a section
+   rule. Two spacings, and one of them is zero.
 
-   The vertical rhythm is one step: rows are --space-row-sm apart, sections are
-   --space-card apart. Two spacings, not five — a rail whose gaps all differ
-   slightly reads as accidental even when nobody can say why.
+   Separation comes from RULES, not from air — which is the house rule for the
+   whole system, and the reason this rail can be tight without reading as
+   cramped.
 
    MOTION follows the house rule: 120ms, ease-out, colour and background only.
    A hovered row also slides 2px toward the reader — the one transform allowed
@@ -78,7 +76,9 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
-    gap: var(--space-gap-xs);
+    /* No gap between the groups: they are separated by a RULE, and a rule plus
+       a gap is the separation stated twice. */
+    gap: 0;
     min-width: 0;
     overflow-x: hidden;      /* a rail that scrolls sideways cannot be read */
     font-size: var(--size-small);
@@ -86,9 +86,9 @@
 
   /* ── Head ──────────────────────────────────────────────────────────────── */
   .ns-sidenav__head {
-    padding: 0 var(--space-inline) var(--space-card);
+    padding: 0 var(--space-inline) var(--space-gap-sm);
     border-bottom: var(--border-hairline) solid var(--color-border);
-    margin-bottom: var(--space-card);
+    margin-bottom: var(--space-gap-sm);
   }
   .ns-sidenav__title {
     display: block;
@@ -115,14 +115,14 @@
   /* A rule between sections, not a gap: it holds the structure even when every
      section is collapsed, which is most of the time. */
   .ns-sidenav__group + .ns-sidenav__group {
-    margin-top: var(--space-card);
-    padding-top: var(--space-card);
+    margin-top: var(--space-gap-sm);
+    padding-top: var(--space-gap-sm);
     border-top: var(--border-hairline) solid var(--color-border);
   }
   /* An open section is bracketed top and bottom, so its lessons read as
      belonging to it rather than to the list in general. */
   .ns-sidenav__group[open] {
-    padding-bottom: var(--space-card);
+    padding-bottom: var(--space-gap-sm);
     border-bottom: var(--border-hairline) solid var(--color-border);
   }
   .ns-sidenav__group[open] + .ns-sidenav__group { border-top: 0; }
@@ -134,7 +134,7 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     gap: var(--space-gap-xs);
-    padding: var(--space-row-sm) var(--space-inline);
+    padding: var(--space-row-xs) var(--space-inline);
     border-radius: var(--radius-btn);
     cursor: pointer;
     list-style: none;
@@ -200,9 +200,9 @@
      lesson title, which is the only thing in the row worth reading. */
   .ns-sidenav__list {
     display: grid;
-    gap: var(--space-gap-xs);
+    gap: 0;
     min-width: 0;
-    margin: var(--space-gap-xs) 0 var(--space-gap-sm) var(--space-gap-sm);
+    margin: var(--space-gap-xs) 0 0 var(--space-gap-sm);
     padding-left: var(--space-gap-sm);
     border-left: var(--border-hairline) solid var(--color-border);
   }
@@ -221,7 +221,7 @@
     flex-wrap: nowrap;
     white-space: nowrap;
     gap: var(--space-gap-xs);
-    padding: var(--space-row-sm) var(--space-inline);
+    padding: var(--space-row-xs) var(--space-inline);
     border-radius: var(--radius-btn);
     color: var(--color-muted);
     transition: background-color var(--duration-fast) var(--ease-out),

@@ -5,13 +5,26 @@
    truncates instead, because a breadcrumb that reflows pushes the article down
    on every narrow screen.
 
-   The trail is mono uppercase, like every other label in the system, and the
-   separator is a slash — the same mark the kicker uses. The CURRENT page
-   breaks that pattern on purpose: it flips to the sans face at full weight,
-   so the eye lands on where you are rather than on how you got there.
+   ONE TYPE TREATMENT, all the way across. The trail used to switch faces at
+   the last step — mono uppercase for the path, then sans bold at 1.05em for
+   where you are — and that was the thing that made it look wrong. Two faces
+   and two sizes inside one short line reads as a mistake rather than as
+   emphasis, and it put the visual weight on the last crumb, which is the one
+   piece of information the reader already has: the page title is directly
+   below it.
+
+   So it is mono, uppercase, label-scale, end to end. The current page is
+   distinguished by COLOUR alone — full ink against the label grey — which is
+   enough to find and quiet enough to stay a back-path rather than a headline.
+   That is the same trick the rest of the system uses for state: change the
+   value, never the shape.
+
+   The separator is a slash, the mark the kicker already uses. It needs no
+   glyph and never fights the icons either side.
 
    SIZE  (default)  --sm
    TONE  --light  (on a dark hero)
+   FORM  --bar    (a ruled strip, for a page with no hero to sit in)
    PARTS __link __sep __current
    ════════════════════════════════════════════════════════════════════════ */
 
@@ -20,7 +33,7 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-gap-xs);
     white-space: nowrap;
     font-family: var(--font-mono);
     font-size: var(--size-label);
@@ -29,7 +42,6 @@
     text-transform: uppercase;
     color: var(--color-label);
   }
-  @media (min-width: 640px) { .ns-crumbs { font-size: var(--size-small); } }
 
   .ns-crumbs__link {
     display: inline-flex;
@@ -38,38 +50,46 @@
     gap: 0.35rem;
     transition: color var(--duration-fast) var(--ease-out);
   }
-  .ns-crumbs__link > i { font-size: 1.1em; opacity: 0.8; }
+  /* Icons ride the type: sized in em and dimmed, so they read as part of the
+     label rather than as a row of little pictures with words after them. */
+  .ns-crumbs__link > i { font-size: 1.05em; opacity: 0.7; }
   .ns-crumbs__link:hover { color: var(--color-brand-600); }
+  .ns-crumbs__link:hover > i { opacity: 1; }
   [data-theme="dark"] .ns-crumbs__link:hover { color: var(--color-brand-300); }
 
-  /* The separator is a slash, not a chevron: it is the same mark the kicker
-     uses, it needs no icon, and it never fights the glyphs either side. */
-  .ns-crumbs__sep { flex-shrink: 0; opacity: 0.4; font-size: 0.9em; }
+  .ns-crumbs__sep { flex-shrink: 0; opacity: 0.35; }
   .ns-crumbs__sep::before { content: "/"; }
   .ns-crumbs__sep > * { display: none; }
 
+  /* Where you are. Same face, same size, same tracking — only the colour and
+     the weight move, and the weight only by one step. */
   .ns-crumbs__current {
     display: inline-flex;
     min-width: 0;
     align-items: center;
     gap: 0.35rem;
     color: var(--color-ink);
-    text-transform: none;
-    letter-spacing: normal;
-    font-family: var(--font-sans);
-    font-size: 1.05em;
-    font-weight: var(--weight-semibold);
+    font-weight: 700;
   }
   .ns-crumbs__current > span { overflow: hidden; text-overflow: ellipsis; }
 
-  /* Small — for pages that already carry a sub bar naming where you are, so
-     the crumbs are a back-path rather than a headline. */
-  .ns-crumbs--sm { font-size: 0.7rem; gap: 0.3rem; }
+  /* Small — for a page that already names itself somewhere above, so the
+     crumbs are a back-path rather than a headline. */
+  .ns-crumbs--sm { font-size: 0.7rem; }
 
   /* On a dark hero the crumbs need the light ramp, or they vanish. */
-  .ns-crumbs--light { color: rgb(255 255 255 / 0.7); }
-  .ns-crumbs--light .ns-crumbs__link:hover { color: #fff; }
+  .ns-crumbs--light { color: rgb(255 255 255 / 0.65); }
+  .ns-crumbs--light .ns-crumbs__link:hover,
   .ns-crumbs--light .ns-crumbs__current { color: #fff; }
-  .ns-crumbs--sm .ns-crumbs__sep { font-size: 0.5rem; }
-  .ns-crumbs--sm :where(i, svg) { font-size: 0.8em; }
+
+  /* ── --bar ─────────────────────────────────────────────────────────────
+     A lesson has no hero for the crumbs to sit in, so on its own they float
+     above the title with nothing holding them. This gives them a ruled strip:
+     a hairline under a single line of trail, which is how this system puts a
+     thing in its own register without inventing a background colour for it. */
+  .ns-crumbs--bar {
+    padding-bottom: var(--space-gap-sm);
+    margin-bottom: var(--space-gap-sm);
+    border-bottom: var(--border-hairline) solid var(--color-border);
+  }
 }

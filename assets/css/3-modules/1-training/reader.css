@@ -58,6 +58,32 @@
   @media (min-width: 1024px) {
     .ns-reader--rail { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr); }
     .ns-reader--both { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr) var(--layout-rail); }
+
+    /* ── The columns are RULED apart ───────────────────────────────────────
+       Three columns separated by whitespace alone read as three pages that
+       happen to be side by side. A hairline on the inner edge of each rail
+       says what is actually true: one page, with navigation down one side and
+       contents down the other.
+
+       It is the house rule applied at page scale — the same reason a section
+       in the rail is divided by a rule rather than a gap. Structure is drawn,
+       not implied by distance.
+
+       The rules run the FULL height of the sticky column, not the height of
+       what is in it, so they read as the edge of a column rather than as an
+       underline that stopped early. The gap either side comes down to match:
+       a rule needs less room than a void to do the same job. */
+    .ns-reader--ruled { gap: 0; }
+    .ns-reader--ruled .ns-reader__rail {
+      border-right: var(--border-hairline) solid var(--color-border);
+      padding-right: var(--space-gap);
+      margin-right: var(--space-gap);
+    }
+    .ns-reader--ruled .ns-reader__aside {
+      border-left: var(--border-hairline) solid var(--color-border);
+      padding-left: var(--space-gap);
+      margin-left: var(--space-gap);
+    }
   }
 
   /* Both rails stick under the header and scroll on their own. */

@@ -1894,11 +1894,13 @@ page("Training", "training-nav", "Training navigation",
           "tier. A tally like &ldquo;1 free&rdquo; is noise at best and looks broken at worst, and a section is "
           "a section — not a price. The lock on the individual row is the whole access story."),
      head("Spacing"),
-     note("Every value in the rail is a <code>--space-*</code> token: rows use "
-          "<code>--space-row-sm</code> / <code>--space-inline</code>, sections are "
-          "<code>--space-card</code> apart, and the smallest gaps are <code>--space-gap-xs</code>. "
-          "Two vertical spacings, not five — a rail whose gaps all differ slightly reads as "
-          "accidental even when nobody can say why."),
+     note("<b>The rail is dense, and that is the point.</b> It is a table of contents, not a menu: "
+          "the value of it is seeing where you are in the WHOLE training at once, and every rem of "
+          "padding is a lesson pushed off the screen. Rows sit on <code>--space-row-xs</code> and "
+          "touch each other with no gap; the only real space in the component is the "
+          "<code>--space-gap-sm</code> either side of a section rule. Two spacings, and one of them "
+          "is zero — separation comes from RULES, not from air, which is why it can be tight without "
+          "reading as cramped."),
      note("<b>Every row is one line.</b> A row is four things — marker, type, title, duration — and "
           "only the title may take the leftover room: the rest are <code>flex-shrink:0</code> and the "
           "row is <code>nowrap</code>, so a long title shortens rather than pushing its duration onto "
@@ -1909,6 +1911,15 @@ page("Training", "training-nav", "Training navigation",
           "is what every real page uses, that one line silently governed the whole component and beat "
           "every token on the base rule. The size variants now change TYPE only; <code>--lg</code> is "
           "the sole exception and says so explicitly."),
+     head("Ruled columns"),
+     note("Three columns separated by whitespace alone read as three pages that happen to be side by "
+          "side. <code>.ns-reader--ruled</code> puts a hairline on the inner edge of each rail — right "
+          "of the navigation, left of the contents — which says what is actually true: one page, with "
+          "navigation down one side and contents down the other. It is the house rule at page scale, "
+          "the same reason a section in the rail is divided by a rule rather than a gap. The rules run "
+          "the full height of the sticky column, so they read as a column edge rather than an "
+          "underline that stopped early, and the gap either side comes down to match: a rule needs "
+          "less room than a void to do the same job."),
      head("The floating button"),
      note("Below <code>lg</code> the rail has nowhere to live. It used to be opened by the hamburger "
           "in the site header — which meant the SITE menu icon opened a lesson list, so the most "
@@ -1928,8 +1939,11 @@ page("Training", "training-nav", "Training navigation",
               '<i class="ph-fill ph-list-checks"></i><span>Contents</span>'
               '<span class="ns-train-fab__count">3/9</span></span></div>', wide=True)),
      note("It opens <code>.ns-lesson-panel--sheet</code>: the shared player panel, restyled for the "
-          "training as a sheet that rises from the BOTTOM edge — the edge the button that summoned it "
-          "sits on. Motion that starts anywhere else makes the reader look for its source."),
+          "training as a FULL-SCREEN sheet that rises from the bottom edge — the edge the button that "
+          "summoned it sits on. Full screen because the rail is the contents of an entire training, "
+          "so a part-height sheet puts the reader in a scroll-within-a-scroll to answer a question the "
+          "full list answers at a glance. It is a mode, not a peek: you left the lesson to look at the "
+          "map, and the ✕ pinned in its bar is how you come back."),
      head("Motion"),
      note("A lesson is a full page load, so without motion every navigation is a hard cut. The lesson "
           "ARRIVES instead: title, meta, media, body, then the pager, each 40ms behind the last — the "

@@ -20,8 +20,8 @@
    It hides itself while the panel is open (the panel has its own ✕) and
    whenever the static rail is on screen at lg+.
 
-   THE PANEL it opens is .ns-lesson-panel, styled for this breakpoint below: a
-   full-height sheet that rises from the bottom edge, so the motion starts at
+   THE PANEL it opens is .ns-lesson-panel, styled for this breakpoint below as
+   a FULL-SCREEN sheet that rises from the bottom edge, so the motion starts at
    the button that summoned it.
    ════════════════════════════════════════════════════════════════════════ */
 
@@ -68,39 +68,53 @@
   @media (min-width: 1024px) { .ns-train-fab { display: none; } }
 }
 
-/* ── The panel, as a bottom sheet ──────────────────────────────────────────
-   Overrides the component's default (a drawer under the navbar) for the
-   training only. It rises from the bottom edge because that is where the
-   button that opens it lives — motion that starts anywhere else makes the
-   reader look for the source. */
+/* ── The panel, full screen ───────────────────────────────────────────────
+   Below lg the training navigation takes the WHOLE screen. A part-height sheet
+   is the wrong shape for this content: the rail is the table of contents for
+   an entire training, so it is long, and a sheet that shows a third of it puts
+   the reader in a scroll-within-a-scroll to answer a question — "where am I?"
+   — that the full list answers at a glance.
+
+   Full screen also makes the interaction honest. It is a MODE, not a peek: you
+   left the lesson to look at the map, and you come back with the ✕. That ✕ is
+   in the panel's own bar, pinned at the top, so the way out is in the same
+   place every time and never scrolls away.
+
+   It still rises from the bottom edge, because that is where the button that
+   opened it lives — motion that starts anywhere else makes the reader look for
+   its source. */
 @media (max-width: 1023.98px) {
   .ns-lesson-panel--sheet {
-    top: auto;
+    top: 0;
     bottom: 0;
-    max-height: min(78vh, calc(100vh - var(--space-navbar)));
-    border-bottom: 0;
-    border-top: var(--border-hairline) solid var(--color-border);
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    max-height: none;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    /* The panel itself must not scroll — its body does, below. Two nested
+       scroll containers is how a list ends up with a scrollbar that moves
+       nothing. */
+    overflow: hidden;
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    transform: translateY(1rem);
-    box-shadow: 0 -10px 30px rgb(3 20 40 / 0.24);
+    transform: translateY(1.5rem);
+    box-shadow: none;
   }
   .ns-lesson-panel--sheet.is-open { transform: none; }
 
-  /* A grab handle above the bar: it says "this came from the bottom and it
-     goes back there" without a word of copy. */
-  .ns-lesson-panel--sheet .ns-lesson-panel__bar { position: sticky; top: 0; z-index: 1;
-    background: var(--color-surface); }
-  .ns-lesson-panel--sheet .ns-lesson-panel__bar::before {
-    content: "";
-    position: absolute;
-    top: 0.35rem;
-    left: 50%;
-    height: 3px;
-    width: 2.25rem;
-    transform: translateX(-50%);
-    border-radius: var(--radius-pill);
-    background: var(--color-border);
+  /* The bar is the panel's chrome: title on the left, ✕ on the right, pinned
+     at the top and never part of what scrolls. */
+  .ns-lesson-panel--sheet .ns-lesson-panel__bar {
+    flex: none;
+    padding-top: max(var(--space-gap-sm), env(safe-area-inset-top, 0px));
+  }
+  /* Only the list scrolls, and it is the one scroll container in the panel. */
+  .ns-lesson-panel--sheet .ns-lesson-panel__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 }
 
