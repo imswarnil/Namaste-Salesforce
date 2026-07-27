@@ -19,6 +19,9 @@
    Nothing here moves more than 0.4rem, and nothing scales. The page is
    settling, not flying in.
 
+   THE SIDEBAR IS EXEMPT, on purpose — see the note where its animation used
+   to be. Only the reading column assembles; the rail is already there.
+
    RESILIENCE: every animation uses `both`, so if it never runs — reduced
    motion, an old engine, a stylesheet that failed — the element is simply
    there at full opacity. Motion is never load-bearing.
@@ -26,10 +29,6 @@
 
 @keyframes ns-arrive {
   from { opacity: 0; transform: translateY(0.4rem); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes ns-arrive-x {
-  from { opacity: 0; transform: translateX(-0.35rem); }
   to   { opacity: 1; transform: none; }
 }
 
@@ -49,51 +48,20 @@
   .ns-reader__title { animation: ns-arrive 240ms var(--ease-out-strong) 40ms both; }
   .ns-reader__meta  { animation: ns-arrive 240ms var(--ease-out-strong) 100ms both; }
 
-  /* ── The rail, filling in top to bottom ────────────────────────────────
-     Sideways rather than upward: the rail is a column at the edge of the
-     page, so motion along its own axis would fight the page's. Only the OPEN
-     section's rows animate — collapsed sections have nothing to show, and
-     animating fifty hidden rows costs frames for nothing. */
-  .ns-sidenav__group[open] > .ns-sidenav__list > .ns-sidenav__link {
-    animation: ns-arrive-x 200ms var(--ease-out-strong) both;
-  }
-  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(1) { animation-delay: 20ms; }
-  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(2) { animation-delay: 45ms; }
-  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(3) { animation-delay: 70ms; }
-  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(4) { animation-delay: 95ms; }
-  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(5) { animation-delay: 120ms; }
-  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(n+6) { animation-delay: 145ms; }
+  /* ── The rail does NOT animate ─────────────────────────────────────────
+     It used to: the rows of the open section slid in one by one. It was wrong,
+     and the reason is worth keeping written down.
 
-  /* ── Moving between lessons ────────────────────────────────────────────
-     The active row is the one thing on the page that has to survive a
-     navigation intact — it is how the reader knows the click worked. A marker
-     that redraws instantly reads as a new page; one that GROWS into place
-     reads as the same rail, one row further down.
+     The content is what CHANGED when you navigated — animating it tells you
+     what is new. The rail did not change: it is the same list it was a moment
+     ago, with one row now marked. Animating it says "this is new too", which
+     is a lie, and it makes the one fixed thing on the page — the thing the
+     reader uses to keep their place — the most restless.
 
-     The bar is a pseudo-element rather than a border so it can scale from
-     nothing without moving the row's text by a pixel. */
-  .ns-sidenav__link { --ns-mark: 0; }
-  .ns-sidenav__link::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.25rem;
-    bottom: 0.25rem;
-    width: 2px;
-    border-radius: var(--radius-pill);
-    background: var(--color-brand-500);
-    transform: scaleY(var(--ns-mark));
-    transform-origin: center;
-    transition: transform var(--duration-base) var(--ease-out-strong);
-  }
-  .ns-sidenav__link.is-current { --ns-mark: 1; }
-  .ns-sidenav__link.is-current::before { background: #fff; }
-
-  /* An open section's caret and its list arrive together, so expanding a
-     section reads as one movement rather than two. */
-  .ns-sidenav__group[open] > .ns-sidenav__list {
-    animation: ns-arrive 180ms var(--ease-out-strong) both;
-  }
+     So the rail arrives instantly, in place, and only the reading column
+     assembles. Its hover and open/close transitions still live in rail.css,
+     where interaction motion belongs; this file is about ARRIVAL, and the rail
+     does not arrive. It is already there. */
 
   /* ── The pager ─────────────────────────────────────────────────────────
      training-nav.js unhides these once it knows where prev/next go, which is
@@ -110,10 +78,7 @@
   .ns-reader__main > *,
   .ns-reader__title,
   .ns-reader__meta,
-  .ns-reader__step,
-  .ns-sidenav__group[open] > .ns-sidenav__list,
-  .ns-sidenav__group[open] > .ns-sidenav__list > .ns-sidenav__link {
+  .ns-reader__step {
     animation: none;
   }
-  .ns-sidenav__link::before { transition: none; }
 }

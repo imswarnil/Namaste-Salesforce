@@ -1899,6 +1899,11 @@ page("Training", "training-nav", "Training navigation",
           "<code>--space-card</code> apart, and the smallest gaps are <code>--space-gap-xs</code>. "
           "Two vertical spacings, not five — a rail whose gaps all differ slightly reads as "
           "accidental even when nobody can say why."),
+     note("<b>Every row is one line.</b> A row is four things — marker, type, title, duration — and "
+          "only the title may take the leftover room: the rest are <code>flex-shrink:0</code> and the "
+          "row is <code>nowrap</code>, so a long title shortens rather than pushing its duration onto "
+          "a second line. A rail whose rows are sometimes one line and sometimes two cannot be "
+          "scanned, because the eye has to re-find the left edge on every row."),
      note("<b>The size variant is the first place to look when rail spacing is wrong.</b> "
           "<code>--sm</code> used to override <code>padding-block</code>, and since <code>--sm</code> "
           "is what every real page uses, that one line silently governed the whole component and beat "
@@ -1932,11 +1937,11 @@ page("Training", "training-nav", "Training navigation",
           "anyway. Steps are 240ms and nothing moves more than <code>0.4rem</code>; the whole sequence "
           "is done inside half a second, because a lesson you have opened before should never feel "
           "performed at you."),
-     note("The rail fills in sideways rather than upward — it is a column at the edge of the page, so "
-          "motion along its own axis would fight the page's. Only the OPEN section animates; fifty "
-          "hidden rows cost frames for nothing. The active marker <i>scales</i> into place instead of "
-          "redrawing, so moving between lessons reads as the same rail one row further down rather "
-          "than as a new page."),
+     note("<b>The sidebar does not animate.</b> It used to, and that was wrong: the content is what "
+          "CHANGED when you navigated, so animating it tells you what is new — but the rail is the "
+          "same list it was a moment ago with one row now marked. Animating it claims otherwise, and "
+          "it makes the one fixed thing on the page, the thing you use to keep your place, the most "
+          "restless. Only the reading column assembles; the rail is already there."),
      note("Every animation uses <code>both</code>, so if it never runs — reduced motion, an old "
           "engine, a stylesheet that failed — the element is simply there. Motion is never "
           "load-bearing."),
