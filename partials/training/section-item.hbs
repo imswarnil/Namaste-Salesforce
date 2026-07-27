@@ -72,7 +72,7 @@
           <div class="ns-track-card__lessons">
             {{#foreach posts}}
               <a class="ns-track-card__lesson" href="{{url}}">
-                <i class="ph-fill {{#has tag="#training-type-video"}}ph-play-circle{{else has tag="#training-type-exercise"}}ph-barbell{{else has tag="#training-type-quiz"}}ph-exam{{else}}ph-article{{/has}}" aria-hidden="true"></i>
+                <i class="ph-fill {{#has tag="#training-video"}}ph-play-circle{{else has tag="#training-exercise"}}ph-barbell{{else has tag="#training-quiz"}}ph-exam{{else}}ph-article{{/has}}" aria-hidden="true"></i>
                 <span>{{title}}</span>
                 <span class="ns-track-card__lesson-meta">
                   {{^has visibility="public"}}<i class="ph ph-lock" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
@@ -142,7 +142,9 @@
         "name": "{{title}}",
         "url": "{{url absolute="true"}}",
         "position": {{@number}},
-        "learningResourceType": "{{#has tag="#training-type-video"}}Video{{else has tag="#training-type-exercise"}}Exercise{{else has tag="#training-type-quiz"}}Quiz{{else has tag="#training-type-article"}}Article{{else}}Article{{/has}}",
+        "learningResourceType": "{{#has tag="#training-video"}}Video{{else has tag="#training-exercise"}}Exercise{{else has tag="#training-quiz"}}Quiz{{else}}Article{{/has}}",
+        {{#if feature_image}}"image": "{{feature_image}}",{{/if}}
+        "timeRequired": "PT{{reading_time minute="1" minutes="%"}}M",
         "isAccessibleForFree": {{#has visibility="public"}}true{{else}}false{{/has}}
       }{{/foreach}}
     {{/get}}
@@ -197,7 +199,7 @@
              x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
              class="ns-sidenav__link{{#match id ../../curId}} is-current{{/match}}{{^has visibility="public"}} is-locked{{/has}}">
             <span class="ns-sidenav__num"><span>{{@number}}</span></span>
-            <i class="ns-sidenav__type {{#has tag="#training-type-video"}}ph-fill ph-play-circle{{else has tag="#training-type-exercise"}}ph-fill ph-barbell{{else has tag="#training-type-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
+            <i class="ns-sidenav__type {{#has tag="#training-video"}}ph-fill ph-play-circle{{else has tag="#training-exercise"}}ph-fill ph-barbell{{else has tag="#training-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
             <span class="ns-sidenav__text">{{title}}</span>
             <span class="ns-sidenav__meta">
               {{^has visibility="public"}}<i class="ph ph-lock" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}

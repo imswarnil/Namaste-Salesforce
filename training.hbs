@@ -41,11 +41,10 @@
         <p class="ns-hero__sub">{{t "One training, in order — no guessing what to learn next. Start with what Salesforce even is, finish able to build, automate and secure a real org."}}</p>
       {{/page}}
 
-      {{!-- CTA + a search that stays out of the way until it is wanted. The
-           magnifier is a toggle: the panel only exists once opened, so the hero
-           stays a headline and one action rather than a form wall. `open` lives
-           on the same x-data as `q`, so closing also clears the query. --}}
-      <div x-data="{ open: false, q: '' }" class="ns-hero__actions">
+      {{!-- Two actions, no search. The rail on every section and lesson page
+           carries a search of its own, so a second one in the hero was a
+           control for something the reader has not started yet. --}}
+      <div class="ns-hero__actions">
         <div class="ns-cluster">
           {{!-- "Start learning" = the first lesson of the first section. Both
                hops are derived, so no section slug is hardcoded — reordering or
@@ -63,16 +62,7 @@
           {{/get}}
 
           <a href="#sections" class="ns-btn ns-btn--outline">{{t "See the path"}}</a>
-
-          <button type="button" @click="open = !open; open ? $nextTick(() => $refs.searchInput?.focus()) : q = ''"
-                  :aria-expanded="open ? 'true' : 'false'" aria-controls="training-search"
-                  :class="open && 'is-active'"
-                  class="icon-btn icon-btn--outline" aria-label="{{t "Search training"}}">
-            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-          </button>
         </div>
-
-        {{> "training/search"}}
       </div>
 
       {{!-- What you get, as a readout rather than a paragraph. --}}

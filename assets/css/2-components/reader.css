@@ -20,6 +20,10 @@
          __foot              prev / next
        __aside               on-this-page + support
 
+   The RAIL is a window column: it runs from the header to the bottom of the
+   viewport and scrolls inside itself, so the progress readout can sit at the
+   bottom of the SCREEN rather than at the bottom of a list nobody scrolled to.
+
    LAYOUT  --rail (nav only) · --both (nav + toc) · --narrow (article measure)
            --fluid (fill the window, not the 92rem shell)
            --wide-media (the video runs past the reading column)
@@ -61,9 +65,11 @@
     .ns-reader__rail,
     .ns-reader__aside {
       position: sticky;
-      /* clears the header AND the sub bar */
-      top: calc(var(--space-navbar) + 3.5rem);
-      max-height: calc(100vh - var(--space-navbar) - 4.75rem);
+      top: var(--space-navbar);
+      /* A full window column: the rail runs header-to-viewport-bottom and
+         scrolls inside itself, so its footer can sit at the bottom of the
+         SCREEN rather than at the bottom of a list nobody scrolled to. */
+      height: calc(100vh - var(--space-navbar));
       overflow-y: auto;
       overscroll-behavior: contain;
       /* one scroll container per column — never a scrollbar inside a scrollbar */
@@ -73,12 +79,16 @@
        stacked blocks, so the TOC, the ads and the section list line up
        across the page rather than each finding its own rhythm. */
     .ns-reader__aside { display: grid; gap: var(--grid-gutter); align-content: start; }
-    .ns-reader__rail  { display: grid; gap: var(--grid-gutter); align-content: start; }
+    /* Not a grid: the rail is a column whose last child must be pushed to the
+       bottom, which needs flex. */
+    .ns-reader__rail { display: flex; flex-direction: column; }
+    .ns-reader__rail > * { min-height: 0; }
     /* Both rails scroll inside themselves, so the last block needs room under
        it — otherwise the ad or the "All sections" button ends flush against
        the bottom edge with nothing to show the column has ended. */
-    .ns-reader__rail,
     .ns-reader__aside { padding-bottom: var(--space-section-sm); }
+    /* The rail owns its own padding so its sticky footer can reach the edges */
+    .ns-reader__rail { padding-block: 1.25rem; }
     /* The ad is a separate block, not a continuation of the contents — give
        it real air rather than the default stack gap. */
     .ns-reader__aside-ad { margin-top: var(--space-section-sm); }
@@ -134,6 +144,8 @@
     max-width: var(--container-read);
   }
   @media (min-width: 640px) { .ns-reader__foot { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  /* When the pager follows a block rather than a rule, it needs its own air. */
+  .ns-reader__foot--spaced { margin-top: 3rem; }
   @media (max-width: 639.98px) { .ns-reader__step--empty { display: none; } }
 
   .ns-reader__step {

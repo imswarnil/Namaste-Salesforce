@@ -156,6 +156,24 @@
   }
   .ns-hero--flush .ns-hero__inner { max-width: 92rem; }
 
+  /* Dark mode. The navy hero is ALREADY dark, so it does not invert — it goes
+     deeper, and its hairline lifts instead of dropping. Otherwise the hero and
+     the page behind it collapse into one flat field. */
+  [data-theme="dark"] .ns-hero {
+    background-color: #041020;
+    border-bottom-color: rgb(255 255 255 / 0.1);
+  }
+  [data-theme="dark"] .ns-hero--plain  { background-color: var(--color-surface); }
+  [data-theme="dark"] .ns-hero--sunken { background-color: var(--color-surface-sunken); }
+  /* The pattern has to lift too, or it disappears into the deeper ground. */
+  [data-theme="dark"] .ns-hero--grid::before,
+  [data-theme="dark"] .ns-hero--dots::before { opacity: 0.75; }
+  /* And the image wash follows the new ground rather than the old navy. */
+  [data-theme="dark"] .ns-hero__bleed > img { opacity: 0.4; }
+  [data-theme="dark"] .ns-hero__bleed::after {
+    background: linear-gradient(to left, rgb(4 16 32 / 0.55), rgb(4 16 32 / 0.9));
+  }
+
   /* ── A mark behind the hero's media, so the card is not floating alone ─── */
   .ns-mark-stack { position: relative; isolation: isolate; }
   .ns-mark-stack__mark {

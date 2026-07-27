@@ -47,6 +47,11 @@
    Rows are deliberately taller than the type needs. A rail is scanned, not
    read, and a scannable list needs air between its items far more than it
    needs to fit one more row on screen.
+
+   MOTION follows the house rule: 120ms, ease-out, colour and background only.
+   A hovered row also slides 2px toward the reader — the one transform allowed
+   here, because it reads as "this is the thing under your cursor" rather than
+   as decoration.
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -191,11 +196,13 @@
     border-radius: var(--radius-btn);
     color: var(--color-muted);
     transition: background-color var(--duration-fast) var(--ease-out),
-                color var(--duration-fast) var(--ease-out);
+                color var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out);
   }
   .ns-sidenav__link:hover {
     background: color-mix(in srgb, var(--color-brand-500) 7%, transparent);
     color: var(--color-brand-600);
+    transform: translateX(2px);
   }
   [data-theme="dark"] .ns-sidenav__link:hover { color: var(--color-brand-300); }
 
@@ -242,8 +249,18 @@
   .ns-sidenav__link.is-done .ns-sidenav__num > * { display: none; }
   .ns-sidenav__link.is-done .ns-sidenav__text { color: var(--color-muted); }
 
-  .ns-sidenav__link.is-locked { color: var(--color-muted); cursor: not-allowed; }
-  .ns-sidenav__link.is-locked .ns-sidenav__meta { color: var(--color-muted); }
+  /* Members-only. It stays a normal, readable row — greying a lesson out says
+     "broken", when what is true is "you need an account". The lock is the
+     signal; the type icon steps back so there is only one. */
+  .ns-sidenav__link.is-locked .ns-sidenav__type { opacity: 0.45; }
+  .ns-sidenav__link.is-locked .ns-sidenav__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--color-warning);
+  }
+  .ns-sidenav__link.is-locked:hover .ns-sidenav__meta { color: var(--color-warning); }
+  .ns-sidenav__link.is-current.is-locked .ns-sidenav__meta { color: rgb(255 255 255 / 0.9); }
 
   /* ── Sizes + forms ─────────────────────────────────────────────────────── */
   .ns-sidenav--sm { font-size: 0.8125rem; }
@@ -297,4 +314,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ns-sidenav__caret { transition: none; }
+  .ns-sidenav__link { transition: none; }
+  .ns-sidenav__link:hover { transform: none; }
 }

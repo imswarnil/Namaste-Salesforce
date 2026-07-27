@@ -339,6 +339,15 @@ page("Components", "hero", "Hero &amp; page header",
               'proves it works.</p></div></div>', wide=True)),
      note("The breadcrumb lives HERE now, in the hero, rather than in a bar of its own under the main "
           "menu. One row of chrome fewer, and the crumb sits with the title it belongs to."),
+     note("The trail is mono uppercase like every other label in the system, and the separator is a "
+          "slash — the same mark the kicker uses, so it needs no icon and never fights the glyphs "
+          "either side. The CURRENT page deliberately breaks that pattern, flipping to the sans face "
+          "at full weight, so the eye lands on where you are rather than on how you got there."),
+     head("Dark mode"),
+     note("The navy hero does not invert — it goes DEEPER, and its hairline lifts instead of dropping. "
+          "Inverting would collapse the hero and the page behind it into one flat field. The pattern "
+          "lifts with it, and the image wash follows the new ground rather than the old navy, which is "
+          "how one image keeps working in both themes."),
      note("<code>--flush</code> is what a section header uses: square corners, edge to edge, no gap "
           "above it, and an inner measure matching the reader below so the title lines up with the "
           "content. It sits ABOVE the reader rather than inside one of its columns — a page header "
@@ -1826,6 +1835,16 @@ page("Training", "training-nav", "Training navigation",
                                '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
                                '<span class="ns-sidenav__stitle">Open section</span>'
                                '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
+     head("Motion"),
+     note("The house rule, applied consistently: 120ms, ease-out, colour and background only — plus a "
+          "2px slide toward the reader on hover. That transform is the one allowed here, because it "
+          "reads as &ldquo;this is the row under your cursor&rdquo; rather than as decoration. All of it is off "
+          "under <code>prefers-reduced-motion</code>."),
+     head("A window column"),
+     note("The rail runs from the site header to the bottom of the viewport and scrolls inside itself, "
+          "so its progress footer sits at the bottom of the SCREEN rather than at the bottom of a list "
+          "nobody scrolled to. That is why it is a flex column, not a grid — the last child has to be "
+          "pushable to the end."),
      head("Room to scan"),
      note("Rows are taller than the type strictly needs. A rail is SCANNED, not read, and a scannable "
           "list needs air between its items far more than it needs to fit one more row on screen. "
@@ -1858,8 +1877,10 @@ page("Training", "training-nav", "Training navigation",
               '<span class="ns-sidenav__meta">12m</span></a></div></details></nav>', wide=True)),
      head("States"),
      note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
-          "uses. <code>.is-done</code> swaps the number for a tick and steps the title back. "
-          "<code>.is-locked</code> greys the row for members-only lessons."),
+          "uses. <code>.is-done</code> swaps the number for a tick and steps the title back."),
+     note("<code>.is-locked</code> does NOT grey the row out. Greying says &ldquo;broken&rdquo;, when what is "
+          "true is &ldquo;you need an account&rdquo; — so the row stays readable, the type icon steps back, and "
+          "the lock carries the warning colour as the single signal."),
      row(spec("link states",
               '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
               '<a class="ns-sidenav__link is-done" href="#!"><span class="ns-sidenav__num"><span>1</span></span>'
@@ -1872,8 +1893,9 @@ page("Training", "training-nav", "Training navigation",
               '<span class="ns-sidenav__text">How to use this training</span>'
               '<span class="ns-sidenav__meta">5m</span></a>'
               '<a class="ns-sidenav__link is-locked" href="#!"><span class="ns-sidenav__num"><span>4</span></span>'
+              '<i class="ns-sidenav__type ph-fill ph-article"></i>'
               '<span class="ns-sidenav__text">Objects and fields</span>'
-              '<i class="ns-sidenav__meta ph ph-lock"></i></a>'
+              '<span class="ns-sidenav__meta"><i class="ph-fill ph-lock"></i>Members</span></a>'
               '</div></nav>', wide=True)))
 
 page("Training", "training-section", "Training section",
