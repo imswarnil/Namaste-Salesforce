@@ -1927,30 +1927,17 @@ page("Training", "training-nav", "Training navigation",
           "is what every real page uses, that one line silently governed the whole component and beat "
           "every token on the base rule. The size variants now change TYPE only; <code>--lg</code> is "
           "the sole exception and says so explicitly."),
-     head("Ruled columns"),
-     note("Three columns separated by whitespace alone read as three pages that happen to be side by "
-          "side. <code>.ns-reader--ruled</code> puts a hairline in each gutter, which says what is "
-          "actually true: one page, with navigation down one side and contents down the other. It is "
-          "the house rule at page scale, the same reason a section in the rail is divided by a rule "
-          "rather than a gap."),
-     note("<b>Neither side column is boxed.</b> The rule beside a column already separates it from the "
-          "lesson, so a border around what is inside it draws the same boundary a second time, one "
-          "centimetre in. Both rails sit directly on the page: no card around the contents widget, no "
-          "rule under the progress readout, no line under a widget head. That is the whole point of "
-          "having one strong divider — once the page is ruled into columns, everything inside a column "
-          "can be flat, and flat is what makes a rail scannable, because every hairline is a thing the "
-          "eye has to decide is not a boundary it cares about."),
-     note("<b>The rules run the full height of the page</b>, header to footer — not the height of what "
-          "is in each column. That is why they are pseudo-elements on the shell rather than borders on "
-          "the rails: a rail is sticky and only as tall as the viewport, so a border on it would stop "
-          "wherever that column happened to end and read as an underline that gave up. A line that "
-          "divides a page has to be as tall as the page. They are centred in the gutter with a calc "
-          "over the same track widths the grid is built from, which is also why "
-          "<code>--ruled</code> pins the gap to <code>--grid-gutter</code>: a clamped gap would drift "
-          "the line off centre as the viewport changed."),
-     note("With those in place the lesson carries NO horizontal rules — not under the breadcrumb, not "
-          "between the article and the pager. The page is already divided the other way, and a "
-          "hairline crossing the column rules turns a clean grid into a box."),
+     head("Flat columns"),
+     note("<code>.ns-reader--flat</code>: nothing between the columns but the gutter, and nothing "
+          "inside them boxed. There was a full-height hairline in each gutter for a while, and it "
+          "went — three columns with a strong line down each side of the middle one reads as a FRAME "
+          "around the lesson, and a frame is a heavier claim than &ldquo;these are related columns of one "
+          "page&rdquo;. The whitespace was already saying it."),
+     note("Neither side column is boxed either: no card around the contents widget, no rule under a "
+          "widget head, no line above the progress readout, nothing between sections in the rail. The "
+          "lesson is the only thing on the page carrying any weight — which is correct, because it is "
+          "the only thing on the page you came to read. Every hairline you remove from a rail is one "
+          "less thing the eye has to decide is not a boundary it cares about."),
      head("The floating button"),
      note("Below <code>lg</code> the rail has nowhere to live. It used to be opened by the hamburger "
           "in the site header — which meant the SITE menu icon opened a lesson list, so the most "

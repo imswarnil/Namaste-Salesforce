@@ -27,8 +27,9 @@
    LAYOUT  --rail (nav only) · --both (nav + toc) · --narrow (article measure)
            --fluid (fill the window, not the 92rem shell)
            --wide-media (the video runs past the reading column)
-   DIVIDERS  __sep between blocks — a hairline is how this system separates
-             things, so a lesson's sections are ruled, not just spaced
+   FLAT      --flat: nothing between the columns but the gutter, and nothing
+             inside them boxed. The lesson is the only thing on the page
+             carrying any weight, which is the only thing worth weighting
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -59,27 +60,16 @@
     .ns-reader--rail { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr); }
     .ns-reader--both { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr) var(--layout-rail); }
 
-    /* ── The columns are RULED apart ───────────────────────────────────────
-       Three columns separated by whitespace alone read as three pages that
-       happen to be side by side. A hairline in each gutter says what is
-       actually true: ONE page, with navigation down one side and contents down
-       the other. It is the house rule at page scale — the same reason a
-       section in the rail is divided by a rule rather than a gap.
+    /* ── No rules between the columns ─────────────────────────────────────
+       There was a full-height hairline in each gutter for a while. It went:
+       three columns with a strong line down each side of the middle one reads
+       as a frame around the lesson, and a frame is a heavier claim than "these
+       are related columns of one page". The whitespace was already saying it.
 
-       THE RULES RUN THE FULL HEIGHT, header to footer, not the height of the
-       column's contents. That is why they are drawn on the SHELL as absolutely
-       positioned pseudo-elements rather than as borders on the rails: a rail is
-       sticky and as tall as the viewport, so a border on it would stop wherever
-       that column happened to end and read as an underline that gave up. A line
-       that divides a page has to be as tall as the page.
-
-       They sit in the middle of each gutter, computed from the same track
-       widths the grid is built from, so they stay centred whatever the gutter
-       clamps to. */
-    /* The gap becomes a fixed token so the rules can be centred in it with a
-       calc. A clamped gap would drift the line off centre as the viewport
-       changed, which is worse than no line at all. */
-    .ns-reader--ruled { position: relative; gap: var(--grid-gutter); }
+       What is left is the whole point — nothing separates the columns but the
+       gutter, and nothing inside them is boxed either. The lesson is the only
+       thing on the page with any weight, which is correct: it is the only
+       thing on the page you came to read. */
 
     /* ── Neither side column is BOXED ──────────────────────────────────────
        The rule beside a column already separates it from the lesson, so a
@@ -92,49 +82,22 @@
        ruled into columns, everything inside a column can be flat — and flat is
        what makes a rail scannable, because every hairline is a thing the eye
        has to decide is not a boundary it cares about. */
-    .ns-reader--ruled :where(.ns-reader__rail, .ns-reader__aside) .ns-widget {
+    .ns-reader--flat :where(.ns-reader__rail, .ns-reader__aside) .ns-widget {
       border: 0;
       background: none;
       padding: 0;
     }
-    .ns-reader--ruled :where(.ns-reader__rail, .ns-reader__aside) .ns-widget + .ns-widget {
+    .ns-reader--flat :where(.ns-reader__rail, .ns-reader__aside) .ns-widget + .ns-widget {
       margin-top: var(--space-gap);
     }
     /* The widget head keeps its label and loses its rule — the label is doing
        the work, and a hairline under two words is a box drawn round nothing. */
-    .ns-reader--ruled :where(.ns-reader__rail, .ns-reader__aside) .ns-widget__head {
+    .ns-reader--flat :where(.ns-reader__rail, .ns-reader__aside) .ns-widget__head {
       border-bottom: 0;
       padding-bottom: 0;
     }
-    .ns-reader--ruled .ns-sidenav__head,
-    .ns-reader--ruled .ns-sidenav__foot { border: 0; }
-    .ns-reader--ruled::before,
-    .ns-reader--ruled::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: var(--border-hairline);
-      background: var(--color-border);
-      pointer-events: none;
-    }
-    .ns-reader--ruled::before {
-      left: calc(var(--space-gutter) + var(--layout-sidebar) + var(--grid-gutter) / 2);
-    }
-    /* Only --both has a third column, so only --both draws the second rule. */
-    .ns-reader--ruled::after { content: none; }
-    .ns-reader--both.ns-reader--ruled::after {
-      content: "";
-      right: calc(var(--space-gutter) + var(--layout-rail) + var(--grid-gutter) / 2);
-    }
-    @media (min-width: 1536px) {
-      .ns-reader--fluid.ns-reader--ruled::before {
-        left: calc(clamp(var(--space-gutter), 4vw, 4rem) + var(--layout-sidebar) + var(--grid-gutter) / 2);
-      }
-      .ns-reader--fluid.ns-reader--both.ns-reader--ruled::after {
-        right: calc(clamp(var(--space-gutter), 4vw, 4rem) + var(--layout-rail) + var(--grid-gutter) / 2);
-      }
-    }
+    .ns-reader--flat .ns-sidenav__head,
+    .ns-reader--flat .ns-sidenav__foot { border: 0; }
   }
 
   /* Both rails stick under the header and scroll on their own. */
