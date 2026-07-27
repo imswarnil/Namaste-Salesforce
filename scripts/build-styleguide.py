@@ -1600,34 +1600,44 @@ _LESSONS = (
 
 
 def _sidenav(open_index=1):
-    out = ['<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">',
-           '<div class="ns-sidenav__head">',
-           '<span class="ns-sidenav__title">Salesforce training</span>',
-           '<div class="ns-progress ns-progress--sm ns-sidenav__progress">'
-           '<span class="ns-progress__bar" data-demo-width="35"></span></div>',
-           '<div class="ns-sidenav__readout"><span>4 / 13 lessons</span><span>35%</span></div>',
-           '</div>']
+    out = ['<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">']
     for i, (title, _, count, _dur, state) in enumerate(_SECTIONS):
         is_open = " open" if i == open_index else ""
         out.append('<details class="ns-sidenav__group" name="sg-training"%s>' % is_open)
         out.append('<summary class="ns-sidenav__summary">'
-                   '<span class="ns-sidenav__index">%02d</span>'
+                   '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
                    '<span class="ns-sidenav__stitle">%s</span>'
-                   '<span class="ns-sidenav__count">%d</span>'
-                   '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary>' % (i + 1, title, count))
+                   '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary>' % title)
         out.append('<div class="ns-sidenav__list">')
+        out.append('<a class="ns-sidenav__link" href="#!">'
+                   '<span class="ns-sidenav__num"><i class="ph ph-squares-four"></i></span>'
+                   '<span class="ns-sidenav__text">Overview</span></a>')
         for n, (lt, ld, ls) in enumerate(_LESSONS[:count]):
             cls = " is-current" if ls == "current" else (" is-done" if ls == "done" else "")
             out.append('<a class="ns-sidenav__link%s" href="#!">'
                        '<span class="ns-sidenav__num"><span>%d</span></span>'
                        '<span class="ns-sidenav__text">%s</span>'
                        '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, lt, ld))
+        if i + 1 < len(_SECTIONS):
+            out.append('<a class="ns-sidenav__next" href="#!">Next<span>%s</span>'
+                       '<i class="ph ph-arrow-right"></i></a>' % _SECTIONS[i + 1][0])
         out.append('</div></details>')
     out.append('<div class="ns-sidenav__foot">'
                '<a class="ns-btn ns-btn--outline ns-btn--sm ns-btn--block" href="#!">'
-               '<i class="ph ph-arrow-left"></i>All training</a></div>')
+               '<i class="ph ph-arrow-left"></i>All sections</a></div>')
     out.append('</nav>')
     return "".join(out)
+
+
+SUBBAR = ('<div class="ns-subbar ns-subbar--static demo-w-full">'
+          '<div class="ns-subbar__inner">'
+          '<a class="ns-subbar__title" href="#!"><i class="ph-fill ph-flow-arrow"></i>Salesforce training</a>'
+          '<i class="ns-subbar__sep ph ph-caret-right"></i>'
+          '<span class="ns-subbar__section">Build Your First App</span>'
+          '<div class="ns-subbar__progress">'
+          '<div class="ns-progress ns-progress--xs"><span class="ns-progress__bar" data-demo-width="35"></span></div>'
+          '<span class="ns-subbar__readout">4 / 13 done</span></div>'
+          '</div></div>')
 
 
 def _track_card(i, title, excerpt, count, dur, state):
@@ -1685,9 +1695,24 @@ page("Training", "training-overview", "/training/ — the path",
                         '<span class="ns-stat__label">%s</span></div>' % (v, l)
                         for v, l in (("4", "sections"), ("13", "lessons"), ("4h", "total"), ("100%", "free")))
               + '</div></div>'
-              '<div class="ns-hero__media"><div class="ns-media ns-media--frame demo-media">'
-              '<i class="ph ph-image"></i></div></div>'
+              '<div class="ns-hero__media"><article class="ns-card ns-card--interactive">'
+              '<div class="ns-card__header"><div><span class="ns-card__meta">Start here</span>'
+              '<h2 class="ns-card__title demo-mt">Start Here</h2></div>'
+              '<span class="ns-chip ns-chip--sm"><i class="ph-fill ph-stack"></i></span></div>'
+              '<p class="ns-clamp-2 demo-type-small demo-mt">Get oriented: what the platform is, how '
+              'this training works, and a free org of your own.</p>'
+              '<ul class="ns-list ns-list--num ns-list--sm ns-list--divided demo-mt">'
+              + "".join('<li class="ns-list__item"><span class="ns-truncate">%s</span>'
+                        '<span class="ns-list__meta">%s</span></li>' % (t, d)
+                        for t, d, _s in _LESSONS[:3])
+              + '</ul>'
+              '<div class="ns-card__footer"><span class="ns-card__meta">3 lessons</span>'
+              '<span class="ns-btn ns-btn--outline ns-btn--xs">Open section</span></div>'
+              '</article></div>'
               '</div></div>', wide=True)),
+     note("The media slot shows the FIRST SECTION — what you actually start with, and its lessons. It "
+          "replaced a decorative trail illustration that rendered as a faint dotted line and left this "
+          "half of the hero empty; showing the real first step is both more useful and more honest."),
      head("Your progress"),
      row(spec(".ns-progress + .ns-stats",
               '<div class="ns-card demo-w-full">'
@@ -1722,6 +1747,37 @@ page("Training", "training-nav", "Section navigation",
      note("Open section 3 below and section 2 closes on its own."),
      head("The rail"),
      row(spec(".ns-sidenav--boxed", _sidenav(), wide=True)),
+     head("What is deliberately NOT in it"),
+     note("<b>No lesson count on the section row.</b> The expanded list already shows it, and the "
+          "number was the noisiest thing in the rail. <b>No training name or progress</b> — those "
+          "belong to the page, not to the navigation, and repeating them above every rail was the "
+          "single biggest source of clutter. They live in the sub bar instead."),
+     note("<b>No horizontal scroll, ever.</b> Every text cell is <code>min-width: 0</code> with "
+          "truncation and the rail clips its x axis — a sidebar you have to scroll sideways is a "
+          "sidebar you cannot read."),
+     head("Section icons"),
+     note("The section's own image is its icon: the tag image first (set once, shared everywhere the "
+          "section appears), then the post's feature image, then ONE shared fallback glyph. The same "
+          "glyph for every section, so a missing image reads as &ldquo;section&rdquo; rather than as a different "
+          "kind of thing. The open section's icon goes solid."),
+     row(spec("__icon — image",
+              '<span class="ns-sidenav__icon"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 '
+              'viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%230176d3%22/%3E%3C/svg%3E" alt=""></span>'),
+         spec("__icon — fallback", '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'),
+         spec("__icon — open", '<details class="ns-sidenav__group" open><summary class="ns-sidenav__summary">'
+                               '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
+                               '<span class="ns-sidenav__stitle">Open section</span>'
+                               '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
+     head("End of a section"),
+     note("When a section's lessons run out, the next section starts — without a trip back out to the "
+          "path. That row is the last thing in every list but the final one."),
+     row(spec(".ns-sidenav__next",
+              '<div class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
+              '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>3</span></span>'
+              '<span class="ns-sidenav__text">How to use this training</span>'
+              '<span class="ns-sidenav__meta">5m</span></a>'
+              '<a class="ns-sidenav__next" href="#!">Next<span>Build Your First App</span>'
+              '<i class="ph ph-arrow-right"></i></a></div></div>', wide=True)),
      head("States"),
      note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
           "uses. <code>.is-done</code> swaps the number for a tick and steps the title back. "
@@ -1740,14 +1796,27 @@ page("Training", "training-nav", "Section navigation",
               '<a class="ns-sidenav__link is-locked" href="#!"><span class="ns-sidenav__num"><span>4</span></span>'
               '<span class="ns-sidenav__text">Objects and fields</span>'
               '<i class="ns-sidenav__meta ph ph-lock"></i></a>'
-              '</div></nav>', wide=True)),
-     head("On mobile"),
-     note("Below <code>lg</code> the rail is not a column — it collapses into the bar below, which "
-          "opens the same markup as a drawer. Same component, two shapes."),
-     row(spec(".ns-reader__bar",
-              '<div class="demo-w-lg"><button class="ns-reader__bar demo-flex">'
-              '<span><span class="ns-label">Section 2</span><br>Build Your First App</span>'
-              '<i class="ph ph-caret-down"></i></button></div>', wide=True)))
+              '</div></nav>', wide=True)))
+
+page("Training", "training-subbar", "Sub bar",
+     "A second bar directly under the site header, naming what you are inside and how far through it "
+     "you are. It exists because that information was cluttering the section rail, where it repeated "
+     "on every page and pushed the actual navigation down — it belongs to the PAGE, so it sits with "
+     "the page chrome, once, at the top.",
+     row(spec(".ns-subbar", SUBBAR, wide=True)),
+     note("It is one bar rather than a heading because on a phone it is also the way into the rail — "
+          "<code>__action--drawer</code> is the toggle, hidden from <code>lg</code> up. The progress "
+          "bar drops on very narrow screens and the readout stays."),
+     head("With small breadcrumbs under it"),
+     note("Pages carrying a sub bar switch to <code>.ns-crumbs--sm</code>: the bar already says where "
+          "you are, so the crumbs become a back-path rather than a headline."),
+     row(spec(".ns-crumbs--sm",
+              '<nav class="ns-crumbs ns-crumbs--sm"><a class="ns-crumbs__link" href="#!">'
+              '<i class="ph ph-flow-arrow"></i>Training</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<a class="ns-crumbs__link" href="#!">Build Your First App</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<span class="ns-crumbs__current"><span>Create a custom object</span></span></nav>', wide=True)))
 
 page("Training", "training-section", "/training/{section}/ — the overview",
      "A section page is the contents page for that section: what it covers, what you will be able to "
@@ -1813,11 +1882,11 @@ page("Training", "training-lesson", "/training/{section}/{lesson}/ — the lesso
           "<code>__aside</code>. Both rails stick under the header and scroll independently; below "
           "<code>lg</code> they become the bar and a drawer."),
      row(spec(".ns-reader--both",
-              '<div class="ns-reader ns-reader--both demo-fill demo-w-full">'
+              SUBBAR + '<div class="ns-reader ns-reader--both demo-fill demo-w-full">'
               '<aside class="ns-reader__rail">' + _sidenav() + '</aside>'
               '<div class="ns-reader__main">'
               '<div class="ns-reader__head">'
-              '<nav class="ns-crumbs"><a class="ns-crumbs__link" href="#!">Training</a>'
+              '<nav class="ns-crumbs ns-crumbs--sm"><a class="ns-crumbs__link" href="#!">Training</a>'
               '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
               '<a class="ns-crumbs__link" href="#!">Build Your First App</a>'
               '<i class="ns-crumbs__sep ph ph-caret-right"></i>'

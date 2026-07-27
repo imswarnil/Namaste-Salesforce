@@ -143,15 +143,28 @@
        THE BEHAVIOUR RULE: the section you are in stays open, every other one is
        closed. `name` makes these a native exclusive accordion, so the browser
        enforces one-open-at-a-time and closes the previous when another opens —
-       no script, and `open` is rendered server-side so there is no flash. ── --}}
+       no script, and `open` is rendered server-side so there is no flash.
+
+       Deliberately no lesson count on the row: the expanded list already shows
+       it, and the number was the noisiest thing in the rail. ── --}}
   <details class="ns-sidenav__group" name="ns-training-nav" data-sec="{{slug}}" {{#match cur slug}}open{{/match}}
            x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))">
     <summary class="ns-sidenav__summary">
-      <span class="ns-sidenav__index">{{n}}</span>
+      {{!-- The section's own image is its icon. Tag image first (set once on
+           the tag, shared everywhere the section appears), then the post's
+           feature image, then ONE shared fallback glyph — the same for every
+           section, so a missing image reads as "section" rather than as a
+           different kind of thing. --}}
+      <span class="ns-sidenav__icon">
+        {{#if primary_tag.feature_image}}
+          <img src="{{img_url primary_tag.feature_image size="xs"}}" alt="" loading="lazy" decoding="async">
+        {{else}}{{#if feature_image}}
+          <img src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" decoding="async">
+        {{else}}
+          <i class="ph-fill ph-stack" aria-hidden="true"></i>
+        {{/if}}{{/if}}
+      </span>
       <span class="ns-sidenav__stitle">{{title}}</span>
-      {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
-        <span class="ns-sidenav__count">{{pagination.total}}</span>
-      {{/get}}
       <i class="ns-sidenav__caret ph ph-caret-right" aria-hidden="true"></i>
     </summary>
 
@@ -174,6 +187,17 @@
             <span class="ns-sidenav__meta">
               {{^has visibility="public"}}<i class="ph ph-lock" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
             </span>
+          </a>
+        {{/foreach}}
+      {{/get}}
+
+      {{!-- When this section ends, the next one starts — without a trip back
+           out to the path. Sections are ordered by published_at. --}}
+      {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" order="published_at asc" limit="1"}}
+        {{#foreach posts}}
+          <a href="{{url}}" class="ns-sidenav__next" @click="$store.lessonNav.close()">
+            {{t "Next"}}<span>{{title}}</span>
+            <i class="ph ph-arrow-right" aria-hidden="true"></i>
           </a>
         {{/foreach}}
       {{/get}}

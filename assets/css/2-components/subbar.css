@@ -1,0 +1,98 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · sub bar — .ns-subbar
+   ----------------------------------------------------------------------------
+   A second bar directly under the site header, naming the thing you are inside
+   and how far through it you are: "Salesforce training · 1 / 9 done".
+
+   It exists because that information was cluttering the section rail, where it
+   was repeated on every page and pushed the actual navigation down. It belongs
+   to the PAGE, not to the navigation — so it sits with the page chrome, once,
+   at the top.
+
+   It also carries the drawer toggle on small screens, which is why it is one
+   bar rather than a heading: on a phone it is the way into the rail.
+
+   TONE   (default surface) --sunken --dark
+   PARTS  __inner __title __sep __section __progress __readout __action
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-subbar {
+    position: sticky;
+    top: var(--space-navbar);
+    z-index: var(--z-subnav);
+    border-bottom: var(--border-hairline) solid var(--color-border);
+    background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+  .ns-subbar--sunken { background: var(--color-surface-sunken); }
+  .ns-subbar--dark {
+    background: var(--color-brand-900);
+    border-bottom-color: rgb(255 255 255 / 0.12);
+    color: #fff;
+  }
+  .ns-subbar--static { position: static; }
+
+  .ns-subbar__inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-inline: auto;
+    max-width: 92rem;
+    padding: 0.5rem var(--space-gutter);
+    min-height: 2.75rem;
+  }
+
+  /* What you are inside */
+  .ns-subbar__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .ns-subbar__title > i { color: var(--color-brand-500); }
+
+  /* Which part of it — truncates rather than wrapping the bar to two lines */
+  .ns-subbar__section {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--size-small);
+    font-weight: var(--weight-semibold);
+  }
+  .ns-subbar__sep { flex-shrink: 0; color: var(--color-border); }
+
+  /* How far through — the bar and its readout, pushed to the trailing edge */
+  .ns-subbar__progress {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+  }
+  .ns-subbar__progress > .ns-progress { width: 6rem; }
+  .ns-subbar__readout {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+    white-space: nowrap;
+  }
+  @media (max-width: 559.98px) {
+    /* On a phone the bar is the drawer toggle first and a readout second. */
+    .ns-subbar__progress > .ns-progress { display: none; }
+  }
+
+  .ns-subbar__action { flex-shrink: 0; }
+  @media (min-width: 1024px) { .ns-subbar__action--drawer { display: none; } }
+}

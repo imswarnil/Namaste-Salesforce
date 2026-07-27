@@ -8,10 +8,11 @@
   becomes the drawer the player header opens, and the contents render inline
   above the article.
 
-  The reading column stays capped at --container-prose however wide the window
-  gets. Line length is what decides whether a lesson gets read, so the layout
-  protects it rather than filling the screen — the video is the one thing
-  allowed to run wider.
+  The reading column is --container-read (58rem): wider than the article
+  measure, because a lesson is prose plus code, tables and screenshots. The
+  video runs wider still (--wide-media).
+
+  The training name and progress are in the sub bar above, not in the rail.
 
   VIDEO lessons put the player in __media; training-video.js adopts the first
   embed found in the content and wires chapter-table timestamps to seek it.
@@ -19,6 +20,8 @@
   There is no training-overview branch: /training/ is a route, not a post, so
   this partial only ever renders a lesson. See routes.yaml.
 ═══════════════════════════════════════════════════════════════════════════ --}}
+
+{{> "training/subbar" section=primary_tag.name}}
 
 <div class="ns-reader ns-reader--both ns-reader--wide-media">
 
@@ -32,18 +35,9 @@
 
   <div class="ns-reader__main">
 
-    {{!-- The mobile way into the rail — hidden from lg up. --}}
-    <button type="button" class="ns-reader__bar mb-4" @click="$store.lessonNav.open = true">
-      <span>
-        <span class="ns-label">{{#if primary_tag}}{{primary_tag.name}}{{else}}{{t "Training"}}{{/if}}</span><br>
-        {{t "All lessons"}}
-      </span>
-      <i class="ph ph-list" aria-hidden="true"></i>
-    </button>
-
-    {{!-- ── Head ── --}}
+        {{!-- ── Head ── --}}
     <div class="ns-reader__head">
-      <nav class="ns-crumbs" aria-label="{{t "Breadcrumb"}}">
+      <nav class="ns-crumbs ns-crumbs--sm" aria-label="{{t "Breadcrumb"}}">
         <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
         {{#primary_tag}}
           <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>

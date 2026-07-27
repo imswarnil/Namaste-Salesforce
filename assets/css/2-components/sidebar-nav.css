@@ -15,17 +15,25 @@
 
    STRUCTURE
      .ns-sidenav            the rail
-       __head               title + progress readout
        __group              <details name="..."> — one section
          __summary          the clickable section row
-           __index          01, 02 … mono, tabular
-           __title
-           __count          "6 lessons"
+           __icon           the section's image, or one shared fallback glyph
+           __stitle         the section name
            __caret          rotates on open
          __list             the lessons
            __link           one lesson
              __num  __text  __meta
+         __next             on to the next section, at the end of a list
      STATES  .is-current (the open page) · .is-done · .is-locked
+
+   Deliberately NOT here: a lesson count on the section row, and the training
+   title + progress. The count repeats what the expanded list already shows,
+   and the title belongs to the page, not to every section row — both moved
+   out to keep the rail scannable. Progress now lives in .ns-subbar.
+
+   The rail never scrolls sideways: every text cell is min-width:0 + truncate,
+   and the rail itself clips the x axis. A sidebar that scrolls horizontally is
+   a sidebar you cannot read.
 
    SIZE    --sm  (default)  --lg
    FORM    --boxed (a card around the rail) · --flush (no outer padding)
@@ -36,6 +44,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
+    min-width: 0;
+    overflow-x: hidden;      /* a rail that scrolls sideways cannot be read */
     font-size: var(--size-small);
   }
 
@@ -90,22 +100,32 @@
   [data-theme="dark"] .ns-sidenav__summary:hover { color: var(--color-brand-300); }
   .ns-sidenav__summary:focus-visible { outline: 2px solid var(--color-brand-500); outline-offset: -2px; }
 
-  .ns-sidenav__index {
+  /* The section's own image, or one shared fallback glyph when it has none —
+     the same glyph for every section, so a missing image reads as "section",
+     not as a different kind of thing. */
+  .ns-sidenav__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    min-width: 1.35rem;
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    font-weight: var(--weight-label);
-    font-variant-numeric: tabular-nums;
-    color: var(--color-label);
+    height: 1.5rem;
+    width: 1.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--color-brand-500) 8%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brand-500) 20%, transparent);
+    color: var(--color-brand-600);
+    font-size: 0.8rem;
   }
-  .ns-sidenav__stitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .ns-sidenav__count {
-    flex-shrink: 0;
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    font-variant-numeric: tabular-nums;
-    color: var(--color-label);
+  [data-theme="dark"] .ns-sidenav__icon { color: var(--color-brand-300); }
+  .ns-sidenav__icon > img { height: 100%; width: 100%; object-fit: cover; }
+
+  .ns-sidenav__stitle {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .ns-sidenav__caret {
     flex-shrink: 0;
@@ -118,7 +138,11 @@
   /* The open section is the one you are in — mark it, quietly. */
   .ns-sidenav__group[open] > .ns-sidenav__summary { color: var(--color-brand-600); }
   [data-theme="dark"] .ns-sidenav__group[open] > .ns-sidenav__summary { color: var(--color-brand-300); }
-  .ns-sidenav__group[open] > .ns-sidenav__summary .ns-sidenav__index { color: var(--color-brand-500); }
+  .ns-sidenav__group[open] > .ns-sidenav__summary .ns-sidenav__icon {
+    background: var(--color-brand-500);
+    box-shadow: none;
+    color: #fff;
+  }
 
   /* ── The lesson list ───────────────────────────────────────────────────── */
   .ns-sidenav__list {
@@ -195,6 +219,39 @@
     padding: 0.75rem;
   }
   .ns-sidenav--flush .ns-sidenav__head { padding-inline: 0; }
+
+  /* ── End of a section: on to the next one, without going back out to the
+     path. The last lesson of section 2 should lead into section 3. ───────── */
+  .ns-sidenav__next {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+    padding: 0.4rem 0.6rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .ns-sidenav__next:hover { color: var(--color-brand-600); }
+  [data-theme="dark"] .ns-sidenav__next:hover { color: var(--color-brand-300); }
+  .ns-sidenav__next > span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: var(--font-sans);
+    font-size: var(--size-small);
+    font-weight: var(--weight-semibold);
+    color: var(--color-ink);
+  }
 
   /* ── Footer action (back to the track, finish, etc.) ───────────────────── */
   .ns-sidenav__foot {

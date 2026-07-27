@@ -8,6 +8,10 @@
   Renders the .ns-sidenav COMPONENT — 2-components/sidebar-nav.css, documented
   at /styleguide/training-nav.html.
 
+  The training NAME and PROGRESS are not here — they moved to .ns-subbar, the
+  bar under the site header. They belong to the page, not to the navigation,
+  and repeating them above every rail was the single biggest source of clutter.
+
   THE OPEN/CLOSED RULE is native and server-rendered: each section is a
   <details> sharing one `name`, which is an exclusive accordion, and the
   current section gets `open` from Handlebars. So the right section is open on
@@ -32,20 +36,6 @@
 
     <div class="ns-lesson-panel__body">
       <div class="ns-sidenav ns-sidenav--sm">
-
-        {{!-- Head: what this is, and how far through it you are. --}}
-        <div class="ns-sidenav__head">
-          <span class="ns-sidenav__title">{{t "Salesforce training"}}</span>
-          {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-            <div class="ns-progress ns-progress--sm ns-sidenav__progress">
-              <span class="ns-progress__bar js-train-progress"></span>
-            </div>
-            <div class="ns-sidenav__readout">
-              <span class="js-train-done">0</span>
-              <span>{{pagination.total}} {{t "lessons"}}</span>
-            </div>
-          {{/get}}
-        </div>
 
         {{!-- Search: filters lessons; a section hides when nothing matches. --}}
         <label class="ns-input-icon mb-2">
@@ -90,10 +80,15 @@
       }
       var done = panel.querySelectorAll('.ns-sidenav__link.is-done').length;
       var total = panel.querySelectorAll('.ns-sidenav__num > span').length;
-      var bar = panel.querySelector('.js-train-progress');
-      var out = panel.querySelector('.js-train-done');
+      // The readout lives in the sub bar above, not in this rail.
+      var bar = document.querySelector('.js-train-progress');
+      var out = document.querySelector('.js-train-done');
       if (bar && total) bar.style.width = Math.round((done / total) * 100) + '%';
       if (out) out.textContent = done + ' / ' + total + ' done';
+    } else {
+      var out0 = document.querySelector('.js-train-done');
+      var tot0 = panel.querySelectorAll('.ns-sidenav__num > span').length;
+      if (out0) out0.textContent = '0 / ' + tot0 + ' done';
     }
 
     // Searching needs every section open at once, which is exactly what the
