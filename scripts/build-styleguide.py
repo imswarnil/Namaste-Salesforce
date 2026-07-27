@@ -1614,10 +1614,13 @@ def _sidenav(open_index=1):
                    '<span class="ns-sidenav__text">Overview</span></a>')
         for n, (lt, ld, ls) in enumerate(_LESSONS[:count]):
             cls = " is-current" if ls == "current" else (" is-done" if ls == "done" else "")
+            icon = ("ph-play-circle" if n == 0 else
+                    "ph-barbell" if n == 2 else "ph-article")
             out.append('<a class="ns-sidenav__link%s" href="#!">'
                        '<span class="ns-sidenav__num"><span>%d</span></span>'
+                       '<i class="ns-sidenav__type ph-fill %s"></i>'
                        '<span class="ns-sidenav__text">%s</span>'
-                       '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, lt, ld))
+                       '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, icon, lt, ld))
         if i + 1 < len(_SECTIONS):
             out.append('<a class="ns-sidenav__next" href="#!">Next<span>%s</span>'
                        '<i class="ph ph-arrow-right"></i></a>' % _SECTIONS[i + 1][0])
@@ -1631,12 +1634,19 @@ def _sidenav(open_index=1):
 
 SUBBAR = ('<div class="ns-subbar ns-subbar--static demo-w-full">'
           '<div class="ns-subbar__inner">'
-          '<a class="ns-subbar__title" href="#!"><i class="ph-fill ph-flow-arrow"></i>Salesforce training</a>'
-          '<i class="ns-subbar__sep ph ph-caret-right"></i>'
-          '<span class="ns-subbar__section">Build Your First App</span>'
+          '<nav class="ns-crumbs ns-crumbs--sm">'
+          '<a class="ns-crumbs__link" href="#!"><i class="ph ph-house"></i></a>'
+          '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+          '<a class="ns-crumbs__link" href="#!"><i class="ph ph-flow-arrow"></i>Training</a>'
+          '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+          '<a class="ns-crumbs__link" href="#!">Build Your First App</a>'
+          '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+          '<span class="ns-crumbs__current"><span>Create a custom object</span></span></nav>'
           '<div class="ns-subbar__progress">'
           '<div class="ns-progress ns-progress--xs"><span class="ns-progress__bar" data-demo-width="35"></span></div>'
           '<span class="ns-subbar__readout">4 / 13 done</span></div>'
+          '<button class="ns-btn ns-btn--outline ns-btn--xs ns-subbar__action">'
+          '<i class="ph ph-list"></i>Training content</button>'
           '</div></div>')
 
 
@@ -1755,6 +1765,28 @@ page("Training", "training-nav", "Section navigation",
      note("<b>No horizontal scroll, ever.</b> Every text cell is <code>min-width: 0</code> with "
           "truncation and the rail clips its x axis — a sidebar you have to scroll sideways is a "
           "sidebar you cannot read."),
+     head("Lesson type icons"),
+     note("Each lesson row carries what KIND it is — video, exercise, quiz or article. The number says "
+          "where you are in the section; the icon says what you are about to open, which is the thing "
+          "you actually scan for."),
+     row(spec("__type",
+              '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
+              + "".join('<a class="ns-sidenav__link" href="#!">'
+                        '<span class="ns-sidenav__num"><span>%d</span></span>'
+                        '<i class="ns-sidenav__type ph-fill %s"></i>'
+                        '<span class="ns-sidenav__text">%s</span>'
+                        '<span class="ns-sidenav__meta">%s</span></a>' % (n + 1, ic, t, d)
+                        for n, (ic, t, d) in enumerate((
+                            ("ph-play-circle", "Watch: the data model", "12m"),
+                            ("ph-article", "Read: field types", "6m"),
+                            ("ph-barbell", "Build: your first object", "20m"),
+                            ("ph-exam", "Check what you know", "4m"))))
+              + '</div></nav>', wide=True)),
+     head("It has to FIT"),
+     note("Every level of the rail — group, list, row, text — is <code>min-width: 0</code>, so the "
+          "title is what truncates and the duration is never clipped off the edge. The indent under a "
+          "section is deliberately small, because every millimetre there comes off the lesson title, "
+          "which is the only thing in the row worth reading."),
      head("Section icons"),
      note("The section's own image is its icon: the tag image first (set once, shared everywhere the "
           "section appears), then the post's feature image, then ONE shared fallback glyph. The same "
@@ -1799,17 +1831,22 @@ page("Training", "training-nav", "Section navigation",
               '</div></nav>', wide=True)))
 
 page("Training", "training-subbar", "Sub bar",
-     "A second bar directly under the site header, naming what you are inside and how far through it "
-     "you are. It exists because that information was cluttering the section rail, where it repeated "
-     "on every page and pushed the actual navigation down — it belongs to the PAGE, so it sits with "
-     "the page chrome, once, at the top.",
+     "A second bar directly under the site header. It carries THREE things, and it is the only place "
+     "any of them appear on the page.",
      row(spec(".ns-subbar", SUBBAR, wide=True)),
-     note("It is one bar rather than a heading because on a phone it is also the way into the rail — "
-          "<code>__action--drawer</code> is the toggle, hidden from <code>lg</code> up. The progress "
-          "bar drops on very narrow screens and the readout stays."),
-     head("With small breadcrumbs under it"),
-     note("Pages carrying a sub bar switch to <code>.ns-crumbs--sm</code>: the bar already says where "
-          "you are, so the crumbs become a back-path rather than a headline."),
+     head("1 · The breadcrumb — once"),
+     note("Here, and not again above the page title. It uses <code>.ns-crumbs--sm</code> with icon-only "
+          "leading crumbs: the bar is a back-path, not a headline, so it should be the quietest line on "
+          "the page."),
+     head("2 · Training content"),
+     note("The button opens the rail as a PANEL at every screen size — not just on mobile. On desktop "
+          "the rail is already visible, but the panel is where the SEARCH lives, so the button is how "
+          "you reach it without hunting. The panel dismisses on the scrim, the ✕, or Escape."),
+     head("3 · Progress"),
+     note("How far through the training you are. It sat at the top of the rail before, where it "
+          "repeated on every page and pushed the actual navigation down — it belongs to the page, so "
+          "it lives with the page chrome. The bar drops on very narrow screens; the readout stays."),
+     head("The crumbs on their own"),
      row(spec(".ns-crumbs--sm",
               '<nav class="ns-crumbs ns-crumbs--sm"><a class="ns-crumbs__link" href="#!">'
               '<i class="ph ph-flow-arrow"></i>Training</a>'

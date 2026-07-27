@@ -58,9 +58,15 @@
 
 /* ────────────────────────────────────────────────────────────────────────────
    Course-player lesson drawer (.ns-lesson-panel)
-   Static sidebar on lg+; on mobile a full-width panel that drops in below the
-   navbar, toggled by the header hamburger (Alpine store `lessonNav`) and closed
-   by the ✕ in the drawer bar.
+
+   Two jobs, one markup:
+     • below lg it IS the navigation — a panel that drops in below the navbar
+     • at lg+ the rail is already on the page, so the panel becomes the
+       quick-jump overlay the "Training content" button opens, because that is
+       also where the SEARCH lives
+
+   Either way it is toggled by the Alpine store `lessonNav` and closed by the ✕
+   in its bar, by the scrim, or by Escape.
    ──────────────────────────────────────────────────────────────────────────── */
 .ns-lesson-panel__bar {
   display: flex;
@@ -95,12 +101,44 @@
     opacity: 1;
     visibility: visible;
   }
-  .ns-lesson-panel__body { padding: 1rem; }
+  .ns-lesson-panel__body { padding: 1rem; min-width: 0; }
 }
 
-/* Desktop: static sidebar, no drawer chrome. */
+/* Desktop: the rail is static and the drawer chrome is hidden — UNTIL the
+   "Training content" button opens it, when the same panel becomes a centred
+   overlay carrying the search. */
 @media (min-width: 1024px) {
   .ns-lesson-panel__bar { display: none; }
+
+  .ns-lesson-panel.is-open {
+    position: fixed;
+    left: 50%;
+    top: calc(var(--space-navbar) + 3rem);
+    transform: translateX(-50%);
+    z-index: var(--z-drawer);
+    width: min(30rem, calc(100vw - 3rem));
+    max-height: calc(100vh - var(--space-navbar) - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+    padding: 0.75rem;
+  }
+  .ns-lesson-panel.is-open .ns-lesson-panel__bar {
+    display: flex;
+    padding-top: 0;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* The scrim behind an open panel, at every size. */
+.ns-lesson-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-drawer) - 1);
+  background: rgb(3 20 40 / 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

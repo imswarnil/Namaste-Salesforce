@@ -1,20 +1,35 @@
 {{!-- training/subbar.hbs — the bar under the site header.
 
-     Names what you are inside and how far through it you are, and on small
-     screens it is the way into the section rail. This used to sit at the top
-     of the rail itself, where it was repeated on every page and pushed the
-     actual navigation down — see 2-components/subbar.css.
+     It carries THREE things, and it is the only place any of them appear:
 
-     Param: section — the section title to show after the training name. --}}
+       1. the breadcrumb — once, here, never again above the title
+       2. the "Training content" button, which opens the rail as a panel on
+          EVERY screen size (on desktop the rail is already visible, but the
+          panel is also where the search lives)
+       3. how far through the training you are
+
+     Params: section    — the section title
+             sectionUrl — its URL, so the crumb can link to it
+             lesson     — the lesson title (omitted on a section overview) --}}
 <div class="ns-subbar">
   <div class="ns-subbar__inner">
-    <a href="/training/" class="ns-subbar__title">
-      <i class="ph-fill ph-flow-arrow" aria-hidden="true"></i>{{t "Salesforce training"}}
-    </a>
-    {{#if section}}
-      <i class="ns-subbar__sep ph ph-caret-right" aria-hidden="true"></i>
-      <span class="ns-subbar__section">{{section}}</span>
-    {{/if}}
+
+    {{!-- The one breadcrumb on the page. --}}
+    <nav class="ns-crumbs ns-crumbs--sm" aria-label="{{t "Breadcrumb"}}">
+      <a class="ns-crumbs__link" href="/"><i class="ph ph-house" aria-hidden="true"></i></a>
+      <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+      <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
+      {{#if section}}
+        <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+        {{#if lesson}}
+          <a class="ns-crumbs__link" href="{{sectionUrl}}">{{section}}</a>
+          <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+          <span class="ns-crumbs__current"><span>{{lesson}}</span></span>
+        {{else}}
+          <span class="ns-crumbs__current"><span>{{section}}</span></span>
+        {{/if}}
+      {{/if}}
+    </nav>
 
     <div class="ns-subbar__progress">
       <div class="ns-progress ns-progress--xs">
@@ -23,9 +38,10 @@
       <span class="ns-subbar__readout js-train-done"></span>
     </div>
 
-    <button type="button" class="icon-btn icon-btn--sm ns-subbar__action ns-subbar__action--drawer"
-            @click="$store.lessonNav.open = true" aria-label="{{t "Open the section list"}}">
-      <i class="ph ph-list" aria-hidden="true"></i>
+    <button type="button" class="ns-btn ns-btn--outline ns-btn--xs ns-subbar__action"
+            @click="$store.lessonNav.open = true" aria-controls="training-curriculum">
+      <i class="ph ph-list" aria-hidden="true"></i>{{t "Training content"}}
     </button>
+
   </div>
 </div>

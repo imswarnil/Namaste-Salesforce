@@ -11,7 +11,7 @@
    EDGE     --strong (2px border)  --rail (brand left rail)  --dashed (empty state)
    STATE    --interactive  hover: border → brand + a top accent line
             --active / .is-active   the selected card in a set
-   PATTERN  --grid  --dots  --lines   the foundation background patterns
+   PATTERN  --grid  --dots  --lines  --contour   the foundation patterns
    PARTS    __media __header __body __footer __title __meta __actions __link
             __badge (a corner label on the media)
 
@@ -102,10 +102,12 @@
   /* ── Patterns — the foundation's background layer, clipped to the card ─── */
   .ns-card--grid,
   .ns-card--dots,
-  .ns-card--lines { position: relative; overflow: hidden; isolation: isolate; }
+  .ns-card--lines,
+  .ns-card--contour { position: relative; overflow: hidden; isolation: isolate; }
   .ns-card--grid::before,
   .ns-card--dots::before,
-  .ns-card--lines::before {
+  .ns-card--lines::before,
+  .ns-card--contour::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -126,6 +128,17 @@
   .ns-card--lines::before {
     background-image: repeating-linear-gradient(
       135deg, var(--color-grid) 0 1px, transparent 1px 9px);
+  }
+  /* Contour — concentric arcs off the trailing corner. Reads as progression
+     rather than as surface, which is why the training sections use it. */
+  .ns-card--contour::before {
+    color: var(--color-brand-500);
+    background-image:
+      repeating-radial-gradient(circle at 100% 0%,
+        transparent 0 18px, currentColor 18px 19px, transparent 19px 40px);
+    opacity: 0.16;
+    -webkit-mask-image: radial-gradient(110% 110% at 100% 0%, #000 8%, transparent 62%);
+    mask-image: radial-gradient(110% 110% at 100% 0%, #000 8%, transparent 62%);
   }
 
   /* ── Parts ─────────────────────────────────────────────────────────────── */

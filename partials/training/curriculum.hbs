@@ -25,7 +25,11 @@
 
   Static rail on lg; below that it is the drawer the player header opens.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<div x-data="{ q: '' }" class="js-lesson-nav">
+<div x-data="{ q: '' }" class="js-lesson-nav" @keydown.escape.window="$store.lessonNav.close()">
+
+  {{!-- The scrim, so an open panel can be dismissed by clicking away. --}}
+  <div x-show="$store.lessonNav.open" x-cloak class="ns-lesson-scrim"
+       @click="$store.lessonNav.close()" aria-hidden="true"></div>
   <nav id="training-curriculum" class="ns-lesson-panel" data-cur="{{cur}}"
          :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
 

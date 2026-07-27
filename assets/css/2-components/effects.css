@@ -79,6 +79,33 @@
 }
 .js-tl-line { transition: height 0.15s linear; }
 
+/* ── The training mark (.ns-mark) ─────────────────────────────────────────
+   One inline SVG: a ring that turns, a logo path that draws itself once, and
+   three dots orbiting at different speeds — the three stages of the path.
+   Everything is transform/stroke only, so it composites on the GPU and never
+   triggers layout. Under prefers-reduced-motion it settles into its finished
+   state rather than stopping mid-draw. */
+.ns-mark { width: 100%; max-width: 20rem; height: auto; color: var(--color-brand-500); }
+
+.ns-mark__ring {
+  transform-origin: 100px 100px;
+  animation: ns-mark-spin 40s linear infinite;
+}
+.ns-mark__draw {
+  stroke-dasharray: 260;
+  stroke-dashoffset: 260;
+  animation: ns-mark-draw 1.6s var(--ease-out-strong) 0.2s forwards;
+}
+.ns-mark__orbit {
+  transform-origin: 100px 100px;
+  animation: ns-mark-spin 14s linear infinite;
+}
+.ns-mark__orbit--2 { animation-duration: 22s; animation-direction: reverse; }
+.ns-mark__orbit--3 { animation-duration: 30s; }
+
+@keyframes ns-mark-spin { to { transform: rotate(360deg); } }
+@keyframes ns-mark-draw { to { stroke-dashoffset: 0; } }
+
 /* ── Become-author animated SVG (illustration — the one allowed float) ───── */
 .ns-ba-ring { transform-origin: 100px 100px; animation: ns-ba-spin 22s linear infinite; }
 .ns-ba-pen { transform-origin: 100px 90px; animation: ns-ba-float 4s ease-in-out infinite; }
@@ -96,4 +123,6 @@
   .js-tl-line { transition: none; }
   .ns-ba-ring, .ns-ba-pen, .ns-ba-underline { animation: none; }
   .ns-ba-underline { stroke-dashoffset: 0; }
+  .ns-mark__ring, .ns-mark__orbit, .ns-mark__draw { animation: none; }
+  .ns-mark__draw { stroke-dashoffset: 0; }   /* settle drawn, not half-drawn */
 }

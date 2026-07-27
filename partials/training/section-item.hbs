@@ -34,6 +34,19 @@
     <div class="ns-track-card__index"></div>
     <div class="ns-track-card__box">
 
+      {{!-- The section's image, floated beside the copy. Tag image first (set
+           once, shared everywhere the section appears), then the post's own,
+           then the shared fallback glyph. --}}
+      <span class="ns-track-card__media">
+        {{#if primary_tag.feature_image}}
+          <img src="{{img_url primary_tag.feature_image size="s"}}" alt="" loading="lazy" decoding="async">
+        {{else}}{{#if feature_image}}
+          <img src="{{img_url feature_image size="s"}}" alt="" loading="lazy" decoding="async">
+        {{else}}
+          <i class="ph-fill ph-stack" aria-hidden="true"></i>
+        {{/if}}{{/if}}
+      </span>
+
       <div class="ns-track-card__head">
         <h3 class="ns-track-card__title"><a href="{{url}}">{{title}}</a></h3>
         {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:-public" limit="1"}}
@@ -183,6 +196,7 @@
              x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
              class="ns-sidenav__link{{#match id ../../curId}} is-current{{/match}}{{^has visibility="public"}} is-locked{{/has}}">
             <span class="ns-sidenav__num"><span>{{@number}}</span></span>
+            <i class="ns-sidenav__type {{#has tag="#training-type-video"}}ph-fill ph-play-circle{{else has tag="#training-type-exercise"}}ph-fill ph-barbell{{else has tag="#training-type-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
             <span class="ns-sidenav__text">{{title}}</span>
             <span class="ns-sidenav__meta">
               {{^has visibility="public"}}<i class="ph ph-lock" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
