@@ -1936,6 +1936,15 @@ page("Training", "training-nav", "Training navigation",
           "of it, and breaking both rules at once is what makes it impossible to mistake for another "
           "paragraph. The copy inside still keeps a measure, though: a centred line running the full "
           "width of a 58rem column is unreadable."),
+     note("Ghost injects its OWN <code>&lt;aside class=\"gh-post-upgrade-cta\"&gt;</code> into the "
+          "content of a post the visitor cannot read, and there is no setting to turn it off — so the "
+          "page carried two gates in a row in two different design languages. It is hidden in "
+          "<code>lock.css</code>, scoped to the reader: a members-only BLOG post has no gate of its "
+          "own, and there Ghost's CTA is the only thing between the reader and a dead end."),
+     note("The gate renders on <code>{{#unless access}}</code>, not <code>{{#unless @member}}</code>. A "
+          "free member reading a PAID lesson is signed in and still cannot read it — "
+          "<code>access</code> is the only value that answers &ldquo;can this visitor see the content&rdquo;, "
+          "which is the actual question."),
      note("Quiet otherwise — a hairline, one glyph, one heading, two buttons. No tinted panel, no "
           "gradient, no urgency: the reader is being told &ldquo;not yet&rdquo;, not sold to. The wording "
           "follows Ghost's <code>visibility</code>, so a <code>paid</code> lesson offers plans and a "

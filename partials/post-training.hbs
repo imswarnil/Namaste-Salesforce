@@ -116,9 +116,20 @@
          of it, and the one thing on the page that should be impossible to
          mistake for another paragraph. Everything else about it stays quiet —
          a hairline, one glyph, one button — because the reader is being told
-         "not yet", not sold to. ── --}}
+         "not yet", not sold to.
+
+         The condition is {{#unless access}}, not {{#unless @member}}. A free
+         member reading a PAID lesson is signed in and still cannot read it —
+         `access` is the only value that answers "can this visitor see the
+         content", which is the actual question. Getting it wrong showed no
+         gate at all to exactly the people most likely to upgrade.
+
+         Ghost renders its own <aside class="gh-post-upgrade-cta"> inside the
+         content for the same situation. There is no theme setting to turn it
+         off, so it is hidden in lock.css — the two together were two gates
+         one after the other, in two different design languages. ── --}}
     {{^has visibility="public"}}
-      {{#unless @member}}
+      {{#unless access}}
         <div class="ns-lock">
           <span class="ns-lock__mark"><i class="ph-fill ph-lock-simple" aria-hidden="true"></i></span>
           <h2 class="ns-lock__title">
