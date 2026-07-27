@@ -1,0 +1,88 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   FOUNDATION · backgrounds.css — brand background patterns + cover canvases
+   ----------------------------------------------------------------------------
+   The brand's only decoration: faint hairline structure (grid / dots / lines)
+   dissolving through a radial mask. No photography, no gradients, no glow.
+
+   The patterns use `currentColor`, so they inherit the text color of their
+   context (white on dark heroes, ink on light sections) — set the text color,
+   get a matching pattern.
+
+   The .ns-cover-* canvases are for CONTENT ASSETS — YouTube thumbnails,
+   course/lesson covers, Instagram posts, blog OG images — so everything
+   published off-site is built from the same tokens as the site itself.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── Patterns ─────────────────────────────────────────────────────────── */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 40%, #000 25%, transparent 78%);
+    mask-image: radial-gradient(ellipse 100% 100% at 50% 40%, #000 25%, transparent 78%);
+  }
+
+  /* Grid that lives in ONE corner and dissolves toward the middle — used
+     behind two-column heroes so the art side has structure and the reading
+     side stays clean. Anchored right; add --left to flip. */
+  .bg-grid-corner {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, currentColor 10%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, currentColor 10%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px;
+    -webkit-mask-image: radial-gradient(120% 120% at 100% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+    mask-image: radial-gradient(120% 120% at 100% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+  }
+  .bg-grid-corner--left {
+    -webkit-mask-image: radial-gradient(120% 120% at 0% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+    mask-image: radial-gradient(120% 120% at 0% 50%, #000 0%, rgb(0 0 0 / 0.65) 30%, transparent 68%);
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(color-mix(in srgb, currentColor 16%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, #000 20%, transparent 75%);
+  }
+
+  /* Diagonal hairlines — a quieter alternative for narrow bands/footers. */
+  .bg-lines {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, currentColor 8%, transparent) 0 1px,
+      transparent 1px 14px);
+    -webkit-mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 30%, transparent 80%);
+    mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, #000 30%, transparent 80%);
+  }
+
+  /* Unmasked, ultra-faint full-bleed grid in the theme's own tint — the
+     default canvas texture for covers and section backgrounds. */
+  .bg-grid-flat {
+    background-image:
+      linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* ── Cover canvases (content-creation assets) ─────────────────────────────
+     Fixed-ratio branded surfaces: navy console ground, corner grid, brand
+     accent via text utilities. Compose with .bg-grid-corner / .bg-grid-flat
+     and the mono label scale for kickers. */
+  .ns-cover {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    color: #fff;
+    background-color: var(--color-brand-900);
+    border-radius: var(--radius-card);
+  }
+  .ns-cover--video  { aspect-ratio: 16 / 9; }   /* YouTube thumbnail / OG image */
+  .ns-cover--square { aspect-ratio: 1 / 1; }    /* Instagram post */
+  .ns-cover--story  { aspect-ratio: 9 / 16; }   /* Instagram story / short */
+  .ns-cover--banner { aspect-ratio: 3 / 1; }    /* channel art / blog header */
+  .ns-cover--light  { color: var(--color-ink); background-color: var(--color-surface); }
+}

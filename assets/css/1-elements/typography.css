@@ -1,0 +1,52 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   ELEMENTS · typography.css — headings, links, inline text elements
+   ----------------------------------------------------------------------------
+   Bare-tag styling built on the foundation scales. Global rules stay minimal
+   (font + weight only) so template utilities keep full control of size;
+   FULL sizing applies inside reading contexts: Ghost content (.gh-content),
+   the typography plugin (.prose), and the design-system docs (.ns-prose).
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+    text-wrap: balance;
+  }
+  h1 { line-height: var(--leading-tight); }
+
+  strong, b { font-weight: var(--weight-semibold); }
+  small { font-size: var(--size-small); }
+
+  /* Code + keyboard input are always the mono material */
+  code, kbd, samp, pre { font-family: var(--font-mono); }
+
+  /* The reading contexts get the full scale */
+  :where(.gh-content, .ns-prose) h1 { font-size: var(--size-h1); }
+  :where(.gh-content, .ns-prose) h2 { font-size: var(--size-h2); }
+  :where(.gh-content, .ns-prose) h3 { font-size: var(--size-h3); }
+  :where(.gh-content, .ns-prose) h4 { font-size: var(--size-h4); }
+  :where(.gh-content, .ns-prose) p,
+  :where(.gh-content, .ns-prose) li {
+    line-height: var(--leading-body);
+  }
+
+  /* Links: brand only inside reading contexts — chrome/component links keep
+     their own classes and colors. */
+  :where(.gh-content, .ns-prose) a:not([class]) {
+    color: var(--color-brand-600);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-brand-500) 35%, transparent);
+    text-underline-offset: 2px;
+    transition: color var(--duration-fast) var(--ease-out),
+                text-decoration-color var(--duration-fast) var(--ease-out);
+  }
+  :where(.gh-content, .ns-prose) a:not([class]):hover {
+    color: var(--color-brand-500);
+    text-decoration-color: currentColor;
+  }
+  [data-theme="dark"] :where(.gh-content, .ns-prose) a:not([class]) {
+    color: var(--color-brand-300);
+  }
+}

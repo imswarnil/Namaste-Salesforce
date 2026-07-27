@@ -24,8 +24,8 @@
 
     {{!-- ── Left: copy + subscribe CTA ── --}}
     <div class="text-center lg:text-left">
-      <span class="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-sm font-semibold text-brand-600 dark:text-brand-300 shadow-card">
-        {{> "icons/sparkle" class="h-4 w-4"}}{{t "Salesforce skills for the AI era"}}
+      <span class="ns-kicker">
+        {{t "Salesforce skills for the AI era"}}
       </span>
 
       <h1 class="mt-5 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl xl:text-6xl">
@@ -39,17 +39,17 @@
       {{!-- CTA: one seamless pill — Ghost members subscribe form, portal fallback ── --}}
       <div class="mt-8">
         {{#if @site.members_enabled}}
-          <form data-members-form="subscribe" class="mx-auto flex max-w-md overflow-hidden rounded-pill border border-border bg-surface-raised p-1 shadow-card transition focus-within:border-brand-500 focus-within:shadow-brand lg:mx-0">
+          <form data-members-form="subscribe" class="mx-auto flex max-w-md overflow-hidden rounded-btn border border-border bg-surface-raised p-1 ns-transition focus-within:border-brand-500 lg:mx-0">
             <input data-members-email type="email" required placeholder="{{t "you@email.com"}}" aria-label="{{t "Your email address"}}"
                    class="w-full min-w-0 border-0 bg-transparent px-4 py-2.5 text-ink placeholder:text-muted focus:outline-none">
-            <button type="submit" class="shrink-0 inline-flex items-center justify-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 font-bold text-white transition hover:bg-brand-600">
+            <button type="submit" class="ns-btn ns-btn--primary shrink-0">
               <i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start free"}}
             </button>
           </form>
           <p data-members-success class="mt-3 text-sm font-semibold text-success hidden">{{t "Check your inbox to confirm! 🎉"}}</p>
           <p data-members-error class="mt-3 text-sm font-semibold text-error hidden">{{t "Please enter a valid email."}}</p>
         {{else}}
-          <a href="#/portal/signup" data-portal="signup" class="inline-flex items-center justify-center gap-2 rounded-pill bg-brand-500 px-6 py-3.5 font-bold text-white shadow-brand transition hover:bg-brand-600"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}</a>
+          <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--lg"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}</a>
         {{/if}}
         <p class="mt-3 text-xs text-muted">{{t "No credit card. One click to unsubscribe."}} <a href="/courses/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "or browse courses →"}}</a></p>
       </div>
@@ -67,8 +67,7 @@
          frame is never empty. A small play button opens @custom.hero_video_url
          in place, hiding the image. ── --}}
     <div class="relative mx-auto w-full max-w-xl lg:max-w-none">
-      <div class="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/10 blur-3xl" aria-hidden="true"></div>
-      <div class="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-surface-sunken shadow-raised"
+      <div class="relative aspect-video w-full overflow-hidden rounded-card border border-border bg-surface-sunken"
            {{#if @custom.hero_video_url}}x-data="{ playing: false }"{{/if}}>
         {{!-- Branded fallback base layer — always present, so if the cover image
              is unset or its URL 404s the frame still reads as the publication. --}}
@@ -89,7 +88,7 @@
         {{#if @custom.hero_video_url}}
           <button type="button" @click="playing = true" x-show="!playing" aria-label="{{t "Play video"}}"
                   class="group absolute inset-0 flex items-center justify-center">
-            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 shadow-brand transition group-hover:scale-110">
+            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 ns-transition">
               <i class="ph-fill ph-play text-xl text-brand-600" aria-hidden="true"></i>
             </span>
           </button>
@@ -113,32 +112,32 @@
 
       {{!-- ── Left: the pitch ── --}}
       <div class="text-center lg:text-left">
-        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "Guided training"}}</span>
+        <span class="ns-kicker">{{t "Guided training"}}</span>
         <h2 class="mt-3 font-heading text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{{t "Follow a path, not a maze"}}</h2>
         <p class="mx-auto mt-4 max-w-md text-muted sm:text-lg lg:mx-0">{{t "One guided training, in order — from your first org to certified. Finish a section and the next unlocks."}}</p>
 
         <dl class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-4 lg:justify-start">
           {{#get "posts" filter="tag:hash-training-section" limit="1"}}
-            <div class="text-center lg:text-left"><dd class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted">{{t "sections"}}</dt></div>
+            <div class="text-center lg:text-left"><dd class="font-mono text-2xl font-extrabold tabular-nums text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 ns-label">{{t "sections"}}</dt></div>
           {{/get}}
           {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-            <div class="text-center lg:text-left"><dd class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted">{{t "lessons"}}</dt></div>
+            <div class="text-center lg:text-left"><dd class="font-mono text-2xl font-extrabold tabular-nums text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 ns-label">{{t "lessons"}}</dt></div>
           {{/get}}
           {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
-            <div class="text-center lg:text-left"><dd class="font-heading text-2xl font-extrabold text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 text-xs font-semibold uppercase tracking-wide text-muted">{{t "free to read"}}</dt></div>
+            <div class="text-center lg:text-left"><dd class="font-mono text-2xl font-extrabold tabular-nums text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 ns-label">{{t "free to read"}}</dt></div>
           {{/get}}
         </dl>
 
         <div class="mt-8">
-          <a href="/training/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "See the full roadmap"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+          <a href="/training/" class="ns-btn ns-btn--primary ns-btn--lg">{{t "See the full roadmap"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
         </div>
       </div>
 
       {{!-- ── Right: the roadmap card ── --}}
-      <div class="rounded-card border border-border bg-surface-raised p-4 shadow-raised sm:p-5">
+      <div class="rounded-card border border-border bg-surface-raised p-4 sm:p-5">
         <div class="mb-2 flex items-center justify-between px-1.5">
-          <span class="text-xs font-bold uppercase tracking-[0.12em] text-muted">{{t "Your roadmap"}}</span>
-          <span class="inline-flex items-center gap-1.5 rounded-pill bg-brand-500/10 px-2.5 py-1 text-[0.7rem] font-bold text-brand-600 dark:text-brand-300"><i class="ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Cert-ready"}}</span>
+          <span class="ns-label">{{t "Your roadmap"}}</span>
+          <span class="ns-badge"><i class="ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Cert-ready"}}</span>
         </div>
         <ol class="ns-plist">
           {{> "training/sections" view="overview"}}
@@ -154,11 +153,11 @@
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
     <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i>{{t "Courses"}}</span>
+        <span class="ns-kicker">{{t "Courses"}}</span>
         <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Featured courses"}}</h2>
         <p class="mt-2 text-muted">{{t "Hands-on, video-first, structured like a syllabus."}}</p>
       </div>
-      <a href="/courses/" class="group inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-bold text-brand-600 transition hover:border-brand-500 dark:text-brand-300">{{t "All courses"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
+      <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm group">{{t "All courses"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
     </div>
     {{#get "posts" filter="tag:hash-course" limit="3" include="tags,authors"}}
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -175,11 +174,11 @@
   <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
     <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-newspaper" aria-hidden="true"></i>{{t "Blog"}}</span>
+        <span class="ns-kicker">{{t "Blog"}}</span>
         <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "From the blog"}}</h2>
         <p class="mt-2 text-muted">{{t "Tips, deep dives and updates from the Salesforce ecosystem."}}</p>
       </div>
-      <a href="/blog/" class="group inline-flex items-center gap-1.5 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-bold text-brand-600 transition hover:border-brand-500 dark:text-brand-300">{{t "All posts"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
+      <a href="/blog/" class="ns-btn ns-btn--outline ns-btn--sm group">{{t "All posts"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
     </div>
     {{#get "posts" filter="tag:hash-blog" limit="6" include="tags,authors"}}
       {{#if posts}}
@@ -210,11 +209,11 @@
 
       {{!-- ── Left: the pitch ── --}}
       <div class="text-center lg:text-left">
-        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-toolbox" aria-hidden="true"></i>{{t "The toolbox"}}</span>
+        <span class="ns-kicker">{{t "The toolbox"}}</span>
         <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Books, tools and cheat sheets we actually use"}}</h2>
         <p class="mx-auto mt-4 max-w-md text-muted lg:mx-0">{{t "Hand-picked, not sponsored — every pick has earned its place in the library."}}</p>
         <div class="mt-7">
-          <a href="/resources/" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-6 py-3 font-bold text-white shadow-brand transition hover:bg-brand-600">{{t "Browse the toolbox"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+          <a href="/resources/" class="ns-btn ns-btn--primary ns-btn--lg">{{t "Browse the toolbox"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
         </div>
       </div>
 
@@ -223,13 +222,13 @@
         {{#if posts}}
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
             {{#foreach posts}}
-              <a href="{{url}}" class="group flex items-center gap-3.5 rounded-card border border-border bg-surface-raised p-4 shadow-card transition hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-raised {{#match @number "2"}}sm:mt-8{{else match @number "4"}}sm:mt-8{{/match}}">
-                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-2xl text-brand-600 transition group-hover:bg-brand-500 group-hover:text-white dark:text-brand-300">
+              <a href="{{url}}" class="group flex items-center gap-3.5 rounded-card border border-border bg-surface-raised p-4 ns-transition hover:border-brand-500 {{#match @number "2"}}sm:mt-8{{else match @number "4"}}sm:mt-8{{/match}}">
+                <span class="ns-chip shrink-0 ns-transition group-hover:bg-brand-500 group-hover:text-white">
                   <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
                 </span>
                 <span class="min-w-0">
                   <span class="block truncate text-sm font-bold leading-snug transition group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
-                  <span class="mt-0.5 block text-[0.7rem] font-semibold uppercase tracking-wide text-muted">
+                  <span class="ns-label mt-0.5 block">
                     {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
                   </span>
                 </span>
@@ -249,58 +248,58 @@
 <section class="border-t border-border bg-surface-sunken">
   <div class="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
     <div class="mb-10 text-center">
-      <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-chart-bar" aria-hidden="true"></i>{{t "The library"}}</span>
+      <span class="ns-kicker ns-kicker--center">{{t "The library"}}</span>
       <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Everything we've published, counted live"}}</h2>
     </div>
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
       {{#get "posts" filter="tag:hash-course" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
           <i class="ph-fill ph-graduation-cap pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
-          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Courses"}}</div>
+          <span class="ns-chip"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
+          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="ns-label mt-1">{{t "Courses"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-lesson" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
           <i class="ph-fill ph-play-circle pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
-          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Lessons"}}</div>
+          <span class="ns-chip"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
+          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="ns-label mt-1">{{t "Lessons"}}</div>
         </div>
       {{/get}}
       {{!-- Counts training LESSONS, not trainings: there is one training now,
            so "1" would be a pointless stat. --}}
       {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
           <i class="ph-fill ph-steps pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
-          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Training lessons"}}</div>
+          <span class="ns-chip"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
+          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="ns-label mt-1">{{t "Training lessons"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-training-section" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
           <i class="ph-fill ph-stack pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
-          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Sections"}}</div>
+          <span class="ns-chip"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
+          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="ns-label mt-1">{{t "Sections"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:documentation" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
           <i class="ph-fill ph-book-open-text pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
-          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Docs"}}</div>
+          <span class="ns-chip"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
+          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="ns-label mt-1">{{t "Docs"}}</div>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-blog" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left shadow-card transition hover:border-brand-500/40 hover:shadow-raised">
+        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
           <i class="ph-fill ph-newspaper pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
-          <div class="mt-4 font-heading text-3xl font-extrabold tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-muted">{{t "Blog posts"}}</div>
+          <span class="ns-chip"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
+          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
+          <div class="ns-label mt-1">{{t "Blog posts"}}</div>
         </div>
       {{/get}}
     </div>
@@ -312,14 +311,14 @@
   <div aria-hidden="true" class="pointer-events-none absolute inset-0"
        style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 40px 40px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%);"></div>
   <div class="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:py-24">
-    <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300"><i class="ph-fill ph-git-branch" aria-hidden="true"></i>{{t "Open source"}}</span>
+    <span class="ns-kicker ns-kicker--center">{{t "Open source"}}</span>
     <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Built in the open, on Ghost"}}</h2>
     <p class="mx-auto mt-4 max-w-xl text-muted">{{t "The whole platform — a custom Ghost theme, the courses, the docs — is an open-source project. Read the code, fix a typo, write a lesson or improve the help center: every contribution ships."}}</p>
     <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-5 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
-      <a href="/docs/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
-      <a href="/become-author/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
-      <a href="/sponsor/" class="inline-flex items-center gap-2 rounded-pill border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-pink-600 transition hover:border-pink-500"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
+      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--primary">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
+      <a href="/docs/" class="ns-btn ns-btn--outline"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
+      <a href="/become-author/" class="ns-btn ns-btn--outline">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
+      <a href="/sponsor/" class="ns-btn ns-btn--outline text-pink-600 hover:border-pink-500"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
     </div>
     <p class="mt-7 text-sm text-muted">{{t "Powered by"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Ghost</a> · {{t "Styled with"}} <a href="https://tailwindcss.com" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Tailwind CSS</a> · {{t "MIT-licensed theme"}}</p>
   </div>

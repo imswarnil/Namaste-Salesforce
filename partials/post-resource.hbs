@@ -35,7 +35,7 @@
 
       {{#if feature_image}}
         <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-             class="mt-8 w-full rounded-card object-cover shadow-card">
+             class="mt-8 w-full rounded-card border border-border object-cover">
       {{/if}}
 
       <div class="prose mt-8 max-w-none gh-content">{{content}}</div>
@@ -50,12 +50,12 @@
 
     {{!-- Sidebar: related + sponsored --}}
     <aside class="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
-      <p class="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-muted">{{t "More like this"}}</p>
+      <p class="ns-label mb-3">{{t "More like this"}}</p>
       <ul class="space-y-2">
         {{#get "posts" filter="tag:hash-resource+id:-{{id}}" limit="6" include="tags" order="published_at desc"}}
           {{#foreach posts}}
             <li>
-              <a href="{{url}}" class="group flex items-center gap-3 rounded-card border border-border bg-surface-raised p-3 shadow-card transition hover:border-brand-500/40">
+              <a href="{{url}}" class="group flex items-center gap-3 rounded-card border border-border bg-surface-raised p-3 ns-transition hover:border-brand-500">
                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-300">
                   <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}} text-sm" aria-hidden="true"></i>
                 </span>

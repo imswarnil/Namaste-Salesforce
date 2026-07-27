@@ -12,7 +12,7 @@ WHY
 WHAT IT WRITES
     assets/fonts/phosphor-subset.woff2       (regular weight)
     assets/fonts/phosphor-fill-subset.woff2  (fill weight)
-    assets/css/theme/icons.css               @font-face + only the used classes
+    assets/css/0-foundation/icons.css               @font-face + only the used classes
 
 WHEN TO RE-RUN
     Any time you add a new `ph-*` class to a template, OR add an icon to a
@@ -40,7 +40,7 @@ CDN = f"https://unpkg.com/@phosphor-icons/web@{PHOSPHOR_VERSION}/src"
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = os.path.join(ROOT, "assets", "fonts")
-CSS_OUT = os.path.join(ROOT, "assets", "css", "theme", "icons.css")
+CSS_OUT = os.path.join(ROOT, "assets", "css", "0-foundation", "icons.css")
 
 # Icons used inside Ghost POST CONTENT rather than in templates. Template
 # scanning cannot see these, so anything an author drops into a post as

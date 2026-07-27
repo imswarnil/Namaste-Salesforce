@@ -1,11 +1,11 @@
 {{!-- docs/next-section.hbs — "Up next" card shown after a section's last doc
      and at the bottom of a section page. Params: slug · legacy · name · icon.
      Fetches the target section's first article for the "Start section" CTA. --}}
-<aside class="relative mt-10 overflow-hidden rounded-card border border-brand-700/50 bg-gradient-to-br from-brand-800 to-brand-900 p-6 text-white shadow-raised sm:p-8">
+<aside class="relative mt-10 overflow-hidden rounded-card border border-brand-700/50 bg-brand-900 p-6 text-white sm:p-8">
   <i class="ph-fill {{icon}} pointer-events-none absolute -right-6 -top-6 text-[9rem] text-white/[0.06]" aria-hidden="true"></i>
-  <p class="text-xs font-bold uppercase tracking-[0.14em] text-brand-200">{{t "Next section"}}</p>
+  <p class="ns-kicker ns-kicker--light">{{t "Next section"}}</p>
   <div class="relative mt-3 flex items-start gap-4">
-    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-2xl ring-1 ring-white/20">
+    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-white/10 text-2xl ring-1 ring-white/20">
       <i class="ph-fill {{icon}}" aria-hidden="true"></i>
     </span>
     <div class="min-w-0">
@@ -15,11 +15,11 @@
       {{#get "posts" filter="tag:documentation+primary_tag:[{{slug}},{{legacy}}]" limit="1" order="published_at asc"}}
         <p class="mt-1 text-sm text-white/70">{{pagination.total}} {{t "articles"}}</p>
         {{#foreach posts}}
-          <a href="{{url}}" class="mt-4 inline-flex items-center gap-2 rounded-pill bg-white px-5 py-2.5 text-sm font-bold text-brand-700 shadow-card transition hover:bg-brand-50">
+          <a href="{{url}}" class="ns-btn ns-btn--white mt-4">
             {{t "Start section"}} <i class="ph ph-arrow-right" aria-hidden="true"></i>
           </a>
         {{else}}
-          <a href="/docs/{{slug}}/" class="mt-4 inline-flex items-center gap-2 rounded-pill bg-white px-5 py-2.5 text-sm font-bold text-brand-700 shadow-card transition hover:bg-brand-50">
+          <a href="/docs/{{slug}}/" class="ns-btn ns-btn--white mt-4">
             {{t "Open section"}} <i class="ph ph-arrow-right" aria-hidden="true"></i>
           </a>
         {{/foreach}}

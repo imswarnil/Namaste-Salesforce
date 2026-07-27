@@ -4,17 +4,17 @@
      search; cards carry data-* the Alpine filter reads. --}}
 
 {{!-- ── Hero ── --}}
-<header class="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-700 via-brand-800 to-brand-900 text-white">
+<header class="relative overflow-hidden border-b border-border bg-brand-900 text-white">
   {{> "components/hero-bg"}}
   <div class="relative mx-auto max-w-3xl px-4 py-12 text-center sm:px-6 lg:py-14">
-    <p class="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-200">
+    <p class="ns-kicker ns-kicker--light ns-kicker--center">
       <i class="ph-fill ph-toolbox" aria-hidden="true"></i>{{t "Resources"}}
     </p>
     <h1 class="mt-2 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{t "The Salesforce toolbox"}}</h1>
     <p class="mx-auto mt-3 max-w-xl text-white/80">{{t "Hand-picked books, tools, videos and cheat sheets we actually use — free to browse, forever."}}</p>
     <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
-      <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=resources&title=Resource%20suggestion" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-white px-6 py-3 font-bold text-brand-700 shadow-card transition hover:bg-brand-50">{{> "icons/github" class="h-4 w-4"}}{{t "Submit a resource"}}</a>
-      <a href="#library" class="inline-flex items-center gap-2 rounded-pill border border-white/40 px-6 py-3 font-semibold text-white transition hover:bg-white/10"><i class="ph ph-arrow-down" aria-hidden="true"></i>{{t "Browse the library"}}</a>
+      <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=resources&title=Resource%20suggestion" target="_blank" rel="noopener" class="ns-btn ns-btn--white ns-btn--lg">{{> "icons/github" class="h-4 w-4"}}{{t "Submit a resource"}}</a>
+      <a href="#library" class="ns-btn ns-btn--glass ns-btn--lg"><i class="ph ph-arrow-down" aria-hidden="true"></i>{{t "Browse the library"}}</a>
     </div>
   </div>
 </header>
@@ -30,7 +30,7 @@
                class="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none">
       </label>
 
-      <p class="mb-2 mt-6 text-xs font-bold uppercase tracking-[0.1em] text-muted">{{t "Type"}}</p>
+      <p class="ns-label mb-2 mt-6">{{t "Type"}}</p>
       <ul class="space-y-0.5 text-sm">
         <li><button type="button" @click="type='all'"       :class="type==='all'       && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-squares-four" aria-hidden="true"></i>{{t "Everything"}}</button></li>
         <li><button type="button" @click="type='book'"      :class="type==='book'      && 'is-doc-active'" class="doc-nav-link flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-muted transition hover:bg-surface-sunken hover:text-brand-600"><i class="ph ph-book-bookmark" aria-hidden="true"></i>{{t "Books"}}</button></li>
@@ -55,12 +55,12 @@
                data-title="{{title}}"
                data-type="{{#has tag="#resource-type-book"}}book{{else has tag="#resource-type-tool"}}tool{{else has tag="#resource-type-video"}}video{{else has tag="#resource-type-cheatsheet"}}cheatsheet{{else has tag="#resource-type-website"}}website{{else has tag="#resource-type-podcast"}}podcast{{else has tag="#resource-type-repo"}}repo{{else has tag="#resource-type-community"}}community{{else}}other{{/has}}"
                x-show="(type === 'all' || $el.dataset.type === type) && (q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-               class="group flex flex-col rounded-card border border-border bg-surface-raised p-5 shadow-card transition hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-raised">
+               class="js-spotlight group relative flex flex-col overflow-hidden rounded-card border border-border bg-surface-raised p-5 ns-transition hover:border-brand-500">
               <div class="flex items-start justify-between gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-lg text-brand-600 dark:text-brand-300">
+                <span class="ns-chip h-10 w-10 text-lg">
                   <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
                 </span>
-                <span class="rounded-pill bg-surface-sunken px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-muted">
+                <span class="ns-badge">
                   {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
                 </span>
               </div>
@@ -85,7 +85,7 @@
           <h3 class="font-heading font-bold">{{t "Know a great resource?"}}</h3>
           <p class="mt-0.5 text-sm text-muted">{{t "Suggest a book, tool or site and we'll review it for the library."}}</p>
         </div>
-        <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=resources&title=Resource%20suggestion" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-pill bg-brand-500 px-4 py-2.5 text-sm font-bold text-white shadow-brand transition hover:bg-brand-600">{{> "icons/github" class="h-4 w-4"}}{{t "Suggest it"}}</a>
+        <a href="https://github.com/imswarnil/Namaste-Salesforce/issues/new?labels=resources&title=Resource%20suggestion" target="_blank" rel="noopener" class="ns-btn ns-btn--primary ns-btn--sm">{{> "icons/github" class="h-4 w-4"}}{{t "Suggest it"}}</a>
       </div>
     </main>
   </div>

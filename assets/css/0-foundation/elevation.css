@@ -1,0 +1,27 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   FOUNDATION · elevation.css — shadows + the z-index ladder
+   ----------------------------------------------------------------------------
+   Elevation comes from the hairline border, not from shadows: at rest
+   components sit flat, and hover brightens the border to brand blue (plus an
+   accent line) — it never lifts. Shadows exist only for layers that GENUINELY
+   float above the page (dropdowns, drawers, the island navbar), and rings
+   (--shadow-brand / --shadow-focus) replace glows for emphasis and focus.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* Exposed as shadow-card / shadow-raised / shadow-brand / shadow-focus */
+  --shadow-card:   0 1px 0 rgb(0 0 0 / 0.02);                /* near-flat rest state */
+  --shadow-raised: 0 4px 16px -8px rgb(0 0 0 / 0.18);        /* floating layers only */
+  --shadow-brand:  0 0 0 1px color-mix(in srgb, var(--color-brand-500) 55%, transparent);
+  --shadow-focus:  0 0 0 3px color-mix(in srgb, var(--color-brand-500) 25%, transparent);
+}
+
+:root {
+  /* Z-index ladder — every stacked layer sits on one of these rungs; never
+     invent an in-between value. (Markup counterparts: z-[30] … z-[50].) */
+  --z-subnav:   30;   /* sticky sub-navbars under the header */
+  --z-drawer:   39;   /* mobile lesson drawer */
+  --z-nav:      40;   /* the site header */
+  --z-dropdown: 45;   /* topics / share menus */
+  --z-tooltip:  50;   /* nav tooltips */
+}

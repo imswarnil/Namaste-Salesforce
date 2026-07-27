@@ -3,18 +3,17 @@
      Feature image on top when set · corner border accents · a big low-opacity
      stage number bleeding half into the card · module preview + CTA.
      Reveals on scroll (.js-reveal). --}}
-<article class="js-reveal group relative flex flex-col overflow-hidden rounded-card border border-border bg-surface-raised shadow-card transition hover:-translate-y-1 hover:border-brand-400 hover:shadow-raised">
+<article class="js-reveal group relative flex flex-col overflow-hidden rounded-card border border-border bg-surface-raised ns-transition hover:border-brand-500">
 
   {{!-- corner accents (top-left / bottom-right brackets) --}}
-  <span aria-hidden="true" class="pointer-events-none absolute left-0 top-0 z-10 h-7 w-7 rounded-tl-card border-l-2 border-t-2 border-brand-500/70 transition-all group-hover:h-9 group-hover:w-9"></span>
-  <span aria-hidden="true" class="pointer-events-none absolute bottom-0 right-0 z-10 h-7 w-7 rounded-br-card border-b-2 border-r-2 border-brand-500/70 transition-all group-hover:h-9 group-hover:w-9"></span>
+  <span aria-hidden="true" class="pointer-events-none absolute left-0 top-0 z-10 h-7 w-7 rounded-tl-card border-l-2 border-t-2 border-brand-500/70"></span>
+  <span aria-hidden="true" class="pointer-events-none absolute bottom-0 right-0 z-10 h-7 w-7 rounded-br-card border-b-2 border-r-2 border-brand-500/70"></span>
 
   {{#if feature_image}}
     <div class="relative aspect-[16/9] overflow-hidden bg-surface-sunken">
       <img decoding="async" src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy"
-           class="h-full w-full object-cover saturate-[0.8] transition duration-300 group-hover:scale-105 group-hover:saturate-100">
+           class="h-full w-full object-cover saturate-[0.8] transition duration-300 group-hover:scale-[1.03] group-hover:saturate-100">
       {{!-- brand tint so any image sits in the site's palette --}}
-      <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-brand-800/50 via-brand-500/15 to-transparent mix-blend-multiply"></div>
       <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-brand-500/10"></div>
     </div>
   {{/if}}
@@ -25,7 +24,7 @@
          as "step N of a sequence", because these cards are a path. --}}
     <p class="relative flex items-center gap-2.5">
       <span class="ns-step-badge" aria-hidden="true">{{@number}}</span>
-      <span class="min-w-0 flex-1 truncate text-xs font-bold uppercase tracking-[0.12em] text-muted">
+      <span class="ns-label min-w-0 flex-1 truncate">
         {{t "Step"}} {{@number}}{{#if primary_tag}} · <span class="text-brand-600 dark:text-brand-300">{{primary_tag.name}}</span>{{/if}}
       </span>
     </p>
@@ -37,15 +36,15 @@
 
     {{!-- ── Overview stats: the same three numbers a section page shows, so the
          card answers "how big is this and how much is free" up front. --}}
-    <dl class="relative mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-border pt-4 text-xs text-muted">
+    <dl class="relative mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-border pt-4 font-mono text-xs text-label">
       {{#get "tags" filter="slug:~^'train-{{primary_tag.slug}}-'" limit="1"}}
-        <div class="inline-flex items-center gap-1.5"><i class="ph ph-folders" aria-hidden="true"></i><dd class="font-bold text-ink">{{pagination.total}}</dd><dt>{{t "sections"}}</dt></div>
+        <div class="inline-flex items-center gap-1.5"><i class="ph ph-folders" aria-hidden="true"></i><dd class="font-bold tabular-nums text-ink">{{pagination.total}}</dd><dt>{{t "sections"}}</dt></div>
       {{/get}}
       {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}" limit="1"}}
-        <div class="inline-flex items-center gap-1.5"><i class="ph ph-stack" aria-hidden="true"></i><dd class="font-bold text-ink">{{pagination.total}}</dd><dt>{{t "modules"}}</dt></div>
+        <div class="inline-flex items-center gap-1.5"><i class="ph ph-stack" aria-hidden="true"></i><dd class="font-bold tabular-nums text-ink">{{pagination.total}}</dd><dt>{{t "modules"}}</dt></div>
       {{/get}}
       {{#get "posts" filter="tag:hash-training-content+primary_tag:{{primary_tag.slug}}+visibility:public" limit="1"}}
-        <div class="inline-flex items-center gap-1.5"><i class="ph ph-lock-simple-open" aria-hidden="true"></i><dd class="font-bold text-ink">{{pagination.total}}</dd><dt>{{t "free"}}</dt></div>
+        <div class="inline-flex items-center gap-1.5"><i class="ph ph-lock-simple-open" aria-hidden="true"></i><dd class="font-bold tabular-nums text-ink">{{pagination.total}}</dd><dt>{{t "free"}}</dt></div>
       {{/get}}
     </dl>
 
@@ -61,7 +60,7 @@
               <a href="/tag/{{slug}}/" class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted transition hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-300">
                 <span class="line-clamp-1 flex-1">{{name}}</span>
                 {{#get "posts" filter="tag:hash-training-content+tag:{{slug}}" limit="1"}}
-                  <span class="shrink-0 rounded-pill bg-surface-sunken px-1.5 py-0.5 text-[0.65rem] font-bold">{{pagination.total}}</span>
+                  <span class="shrink-0 rounded-pill bg-surface-sunken px-1.5 py-0.5 font-mono text-[0.65rem] font-bold tabular-nums">{{pagination.total}}</span>
                 {{/get}}
               </a>
             </li>

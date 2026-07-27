@@ -1,0 +1,62 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME · chrome.css — site chrome: nav links, icon buttons, tooltips,
+   sub-navbars, table of contents, documentation sidebar.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── Primary navigation links (header + mobile menu) ───────────────────── */
+  .nav-link {
+    @apply inline-flex items-center gap-2 rounded-btn px-3 py-2 text-sm font-medium text-ink/80 transition
+           hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-300;
+  }
+  .nav-link.is-current { @apply bg-brand-500/10 text-brand-600 dark:text-brand-300; }
+
+  /* ── Icon-only action buttons with hover tooltip (navbar) ──────────────── */
+  .icon-btn {
+    @apply relative inline-flex h-9 w-9 items-center justify-center rounded-full text-ink transition
+           hover:bg-brand-500/10 hover:text-brand-600;
+  }
+  .icon-btn--pink  { @apply text-pink-600 hover:bg-pink-500/10 hover:text-pink-600; }
+  .icon-btn--brand { background-color: var(--color-brand-500); color: #fff; }
+  .icon-btn--brand:hover { background-color: var(--color-brand-600); color: #fff; }
+
+  .nav-tip {
+    @apply pointer-events-none absolute left-1/2 top-full z-[50] mt-2 -translate-x-1/2 whitespace-nowrap
+           rounded-sm bg-ink px-2 py-1 font-mono text-xs font-medium text-surface opacity-0
+           transition-opacity duration-150 group-hover:opacity-100;
+  }
+
+  /* ── Table-of-contents links (built by toc.js) ─────────────────────────── */
+  .toc-link {
+    @apply block border-l-2 border-transparent py-1 pl-3 text-muted transition
+           hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300;
+  }
+  .toc-link.is-active { @apply border-brand-500 font-medium text-brand-600 dark:text-brand-300; }
+  .toc-link.is-h3 { @apply pl-6 text-[0.8rem]; }
+
+  /* ── Documentation sidebar ─────────────────────────────────────────────
+     Active doc = the primary "button": brand bg, white text. !important so
+     the markup's text-muted / hover:* utilities (later cascade layer) can't
+     wash the active state out. */
+  .doc-nav-link.is-doc-active {
+    background-color: var(--color-brand-500) !important;
+    color: #fff !important;
+    font-weight: 600;
+  }
+  .doc-nav-link.is-doc-active:hover { background-color: var(--color-brand-600) !important; }
+  /* Docs-home scroll-spy: right rail (border) + left rail (tinted) */
+  .doc-spy.is-doc-active { @apply border-brand-500 font-semibold text-brand-600 dark:text-brand-300; }
+  .doc-toc-link.is-doc-active { @apply bg-surface-sunken font-semibold text-brand-600 dark:text-brand-300; }
+
+  /* ── Mobile sub-navbar (course / lesson / training / docs lists) ────────
+     A short sticky bar under the header on small screens toggling a dropdown
+     panel; becomes a normal static sidebar from `lg`. */
+  .subnav-bar {
+    @apply sticky top-[3.5rem] z-[30] mb-3 flex w-full items-center justify-between gap-2 rounded-card
+           border border-border bg-surface/95 px-4 py-2.5 text-sm font-semibold backdrop-blur lg:hidden;
+  }
+  .subnav-panel {
+    @apply mt-1 max-h-[60vh] overflow-y-auto rounded-card border border-border bg-surface p-3 shadow-raised
+           lg:mt-0 lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none;
+  }
+}

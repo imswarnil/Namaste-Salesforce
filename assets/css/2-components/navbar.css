@@ -1,0 +1,133 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME · navbar.css — header module behaviour styles
+   ----------------------------------------------------------------------------
+   Position is set in markup from @custom.navbar_behavior; these classes handle
+   the on-scroll transformations toggled by navbar.js:
+     .is-scrolled  hairline separation once the page is scrolled
+     .is-fixed     compact bar (Fixed on scroll)
+     .is-island    detached, centered floating bar (Island on scroll)
+   ════════════════════════════════════════════════════════════════════════ */
+
+.ns-nav__bar {
+  transition: max-width var(--duration-base) var(--ease-out),
+              margin var(--duration-base) var(--ease-out),
+              padding var(--duration-base) var(--ease-out),
+              border-radius var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out),
+              background-color var(--duration-base) var(--ease-out);
+}
+
+/* Subtle separation once scrolled (fixed + island modes). */
+.ns-nav.is-scrolled { box-shadow: 0 1px 0 var(--color-border); }
+
+/* Fixed on scroll → compact the bar. */
+.ns-nav.is-fixed .ns-nav__bar {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* Island on scroll → the bar detaches into a centered floating bar.
+   A floating layer genuinely sits above the page, so it may carry
+   --shadow-raised — the one place chrome does. */
+.ns-nav.is-island {
+  border-bottom-color: transparent;
+  background: transparent !important;
+  box-shadow: none;
+}
+.ns-nav.is-island .ns-nav__bar {
+  max-width: 72rem;
+  margin-inline: auto;
+  margin-top: 0.6rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  padding-block: 0.45rem;
+  padding-inline: 1.1rem;
+  background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  box-shadow: var(--shadow-raised);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+/* Keep the centered nav anchored to the bar (not the viewport) in island mode. */
+.ns-nav.is-island .ns-nav__bar > nav[aria-label] {
+  left: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-nav__bar { transition: none; }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Course-player lesson drawer (.ns-lesson-panel)
+   Static sidebar on lg+; on mobile a full-width panel that drops in below the
+   navbar, toggled by the header hamburger (Alpine store `lessonNav`) and closed
+   by the ✕ in the drawer bar.
+   ──────────────────────────────────────────────────────────────────────────── */
+.ns-lesson-panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (max-width: 1023.98px) {
+  .ns-lesson-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--space-navbar);          /* directly under the sticky navbar */
+    z-index: var(--z-drawer);
+    max-height: calc(100vh - var(--space-navbar));
+    overflow-y: auto;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-raised);
+    transform: translateY(-0.5rem);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--duration-base) var(--ease-out),
+                transform var(--duration-base) var(--ease-out),
+                visibility var(--duration-base);
+  }
+  .ns-lesson-panel.is-open {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+  .ns-lesson-panel__body { padding: 1rem; }
+}
+
+/* Desktop: static sidebar, no drawer chrome. */
+@media (min-width: 1024px) {
+  .ns-lesson-panel__bar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-lesson-panel { transition: opacity var(--duration-base) var(--ease-out), visibility var(--duration-base); }
+}
+
+/* ── Topics dropdown (tag cloud, hover) ─────────────────────────────────── */
+.ns-topics__panel { position: absolute; left: 0; top: calc(100% + 0.5rem); z-index: var(--z-dropdown);
+  width: 22rem; max-width: 90vw; padding: 1rem; border: 1px solid var(--color-border);
+  border-radius: var(--radius-card); background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }
+.ns-topics__title { margin-bottom: 0.6rem; font-family: var(--font-mono);
+  font-size: var(--size-label); font-weight: var(--weight-label); text-transform: uppercase;
+  letter-spacing: var(--tracking-label); color: var(--color-label); }
+/* tag chips are TRUE pills — the one legitimate pill shape */
+.ns-topics__cloud { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.ns-tagchip { display: inline-flex; align-items: center; gap: 0.4rem; border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border); padding: 0.25rem 0.65rem; font-size: 0.8rem; font-weight: 600;
+  color: var(--color-ink); text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out),
+              background-color var(--duration-fast) var(--ease-out); }
+.ns-tagchip:hover { border-color: var(--color-brand-500); color: var(--color-brand-600);
+  background: color-mix(in srgb, var(--color-brand-500) 6%, transparent); }
+[data-theme="dark"] .ns-tagchip:hover { color: var(--color-brand-300); }
+.ns-tagchip b { font-family: var(--font-mono); font-size: 0.65rem; color: var(--color-muted);
+  font-weight: 700; font-variant-numeric: tabular-nums; }
+.ns-topics__all { margin-top: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.8rem; font-weight: 700; color: var(--color-brand-600); text-decoration: none;
+  transition: gap var(--duration-fast) var(--ease-out); }
+[data-theme="dark"] .ns-topics__all { color: var(--color-brand-300); }
+.ns-topics__all:hover { gap: 0.6rem; }
