@@ -235,20 +235,63 @@
   .ns-track-card--compact .ns-track-card__excerpt { display: none; }
 
   /* ── Section hero — the band at the top of /training/{section}/ ────────── */
-  .ns-track-hero__index {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 2.25rem;
-    width: 2.25rem;
-    border-radius: var(--radius-pill);
-    background: color-mix(in srgb, #fff 14%, transparent);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: #fff;
+  /* ── The section number, as the hero's ground ──────────────────────────
+     Set to the FULL height of the band and anchored to the left edge, WHOLE —
+     the first version overhung the edge and simply lost a third of the digit to
+     the viewport, which reads as a rendering fault rather than as a crop. The
+     scale is what makes it scenery instead of a label; it does not also need to
+     be cut.
+
+     It is drawn, not written. A low-opacity fill with a slightly stronger
+     stroke means it reads as an impression in the ground rather than as text
+     sitting on top of it, and it survives the image bleed on the other side of
+     the hero without either one fighting the title in the middle.
+
+     paint-order puts the stroke UNDER the fill, so the outline stays an even
+     weight instead of the fill eating half of it from the inside.
+
+     An SVG rather than a font-size because "as tall as the hero" is a
+     relationship CSS cannot express when the hero's height comes from its own
+     content — preserveAspectRatio does it exactly, at any content length and
+     any viewport, with nothing to keep in sync. */
+  .ns-track-hero__num {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    height: 100%;
+    width: auto;
+    overflow: visible;
+    pointer-events: none;
   }
+  .ns-track-hero__num > text {
+    font-family: var(--font-mono);
+    font-size: 132px;             /* viewBox units — the glyph fills the box */
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    fill: rgb(255 255 255 / 0.08);
+    stroke: rgb(255 255 255 / 0.14);
+    stroke-width: 1.5;
+    paint-order: stroke fill;
+  }
+  [data-theme="dark"] .ns-track-hero__num > text {
+    fill: rgb(255 255 255 / 0.06);
+    stroke: rgb(255 255 255 / 0.11);
+  }
+  /* ── The copy moves right, past the number ──────────────────────────────
+     The two share the band rather than stacking, so the hero indents its own
+     content by roughly the width of the digit. Roughly, because the digit is
+     as wide as the hero is tall and no CSS length knows that — but both sides
+     of this scale with the viewport, so they track each other. */
+  @media (min-width: 768px) {
+    .ns-hero--numbered .ns-hero__inner { padding-left: clamp(6rem, 17vw, 14rem); }
+  }
+  /* On a phone the copy runs the full width — there is no room to sit beside
+     anything — so the number goes back to being texture under it. */
+  @media (max-width: 767.98px) {
+    .ns-track-hero__num { opacity: 0.5; }
+  }
+
   .ns-track-hero__meta {
     display: flex;
     flex-wrap: wrap;

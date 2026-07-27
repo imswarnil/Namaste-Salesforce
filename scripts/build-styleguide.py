@@ -2001,7 +2001,24 @@ page("Training", "training-section", "Training section",
      "A section page is the contents page for that section: what it covers, what you will be able to "
      "do, and the lessons in order. The rail is on the left, breadcrumbs above, and the same "
      "components as everywhere else in between.",
-     head("Head — breadcrumb, index, title, meta"),
+     head("Head — the number IS the hero"),
+     note("The section used to announce itself three times over the same two lines: a breadcrumb, a "
+          "small numbered disc under it, and a <code>// TRAINING SECTION</code> kicker beside that. "
+          "The breadcrumb already says where you are, so the chip and the kicker are gone and the "
+          "number became the hero's GROUND — set at the full height of the band, anchored to the left "
+          "edge, drawn into the background rather than written on top of it. It is scenery, not a "
+          "label: you read the title, and the number is the size of the place you are standing in."),
+     note("It is an <code>&lt;svg&gt;</code> rather than a <code>font-size</code>, because &ldquo;as tall as "
+          "the hero&rdquo; is a relationship CSS cannot express when the hero's height comes from its own "
+          "content. <code>preserveAspectRatio</code> states it exactly, at any content length and any "
+          "viewport, with no clamp to keep in sync. Low fill, slightly stronger stroke, "
+          "<code>paint-order: stroke fill</code> so the outline keeps an even weight instead of the "
+          "fill eating half of it from inside."),
+     note("It sits WHOLE in the frame and <code>.ns-hero--numbered</code> indents the copy past it, so "
+          "the number and the title share the band rather than stacking. An earlier version ran the "
+          "digit off the left edge — at that size a crop reads as a rendering fault, not as a "
+          "decision. <code>aria-hidden</code>, since the section is already named twice above it."),
+     head("Breadcrumb, title, meta"),
      row(spec(".ns-hero + .ns-track-hero",
               '<div class="ns-hero ns-hero--sm ns-hero--start ns-hero--dots">'
               '<div class="ns-hero__inner">'

@@ -26,7 +26,7 @@
 {{!-- ── The section hero, as designed: index disc, state, title, the
      readout, and the way in. A band rather than a plain page head, so a
      section reads as a place you have arrived at. ── --}}
-<header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--flush">
+<header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--flush ns-hero--numbered">
   {{!-- The section image, blended into the trailing edge rather than
        placed beside the copy — it is atmosphere, not information, so it
        must never compete with the title or fail in dark mode. --}}
@@ -40,6 +40,36 @@
     </div>
   {{/if}}{{/if}}
 
+  {{!-- ── The section number, as the hero's ground ──────────────────────────
+       It used to be a small disc under the breadcrumb with "// Training
+       section" beside it — a chip and a kicker spending two lines to say
+       something the page barely needs stated. Where you are is what the
+       breadcrumb is for, and WHICH section is a single digit.
+
+       So the digit becomes the hero itself: set at the full height of the
+       band, anchored to the left edge and running off it, drawn in the
+       ground rather than in the content. It is scenery, not a label — you
+       read the title, and the number is simply the size of the place you are
+       standing in.
+
+       An SVG rather than a font-size, because "as tall as the hero" is a
+       relationship CSS cannot express when the hero's height comes from its
+       own content. preserveAspectRatio does it exactly, at any content
+       length and any viewport, with no clamp to keep in sync.
+
+       It sits WHOLE in the frame — nothing of it runs off the left edge — and
+       --numbered indents the copy past it, so the number and the title occupy
+       the band side by side instead of on top of each other.
+
+       aria-hidden: the section is named in the breadcrumb and the title. A
+       screen reader announcing "zero two" before either of those is noise. ── --}}
+  {{#get "posts" filter="tag:hash-training-section+published_at:<='{{published_at}}'" limit="1"}}
+    <svg class="ns-track-hero__num" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"
+         aria-hidden="true" focusable="false">
+      <text x="0" y="50" text-anchor="start" dominant-baseline="central">{{pagination.total}}</text>
+    </svg>
+  {{/get}}
+
   <div class="ns-hero__inner">
     {{!-- The one breadcrumb on the page, in the hero. --}}
     <nav class="ns-crumbs ns-crumbs--sm ns-crumbs--light" aria-label="{{t "Breadcrumb"}}">
@@ -50,13 +80,6 @@
       <span class="ns-crumbs__current"><i class="ph ph-stack" aria-hidden="true"></i><span>{{title}}</span></span>
     </nav>
 
-    <div class="ns-cluster">
-      <span class="ns-track-hero__index">
-        {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1"}}{{#if pagination.total}}{{pagination.total}}{{else}}0{{/if}}{{/get}}
-      </span>
-    </div>
-
-    <span class="ns-kicker ns-kicker--light">{{t "Training section"}}</span>
     <h1 class="ns-hero__title">{{title}}</h1>
     {{#if custom_excerpt}}<p class="ns-hero__sub">{{custom_excerpt}}</p>{{/if}}
 
