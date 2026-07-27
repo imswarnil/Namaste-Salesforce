@@ -6,15 +6,40 @@
    about what the page will look like once a campaign is live.
 
    PARTS __ph (placeholder) · __arrow · __label
+   SIZE  --wide  fills the page measure rather than the column it sits in
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Ads ────────────────────────────────────────────────────────────────── */
 .ns-ad { margin: 2rem 0; text-align: center; }
+/* Full page measure — a leaderboard squeezed into a narrow column reads as a
+   broken image, not as inventory. */
+.ns-ad--wide {
+  margin-inline: auto;
+  max-width: var(--container-page);
+  padding-inline: var(--space-gutter);
+}
 /* Always a WHITE creative surface — real ad units render on white regardless
    of site theme, and it makes the empty slot read as "ready for a real ad"
    rather than themed chrome. */
-.ns-ad__ph { display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;
+.ns-ad__ph { position: relative; overflow: hidden; isolation: isolate;
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;
   border: 1px dashed var(--color-border); border-radius: var(--radius-card); background: #ffffff; }
+/* The contour pattern, so an empty slot reads as a designed placeholder rather
+   than a missing image — and so it is obviously OURS, not a blank ad frame. */
+.ns-ad__ph::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  color: var(--color-brand-500);
+  background-image:
+    repeating-radial-gradient(circle at 100% 0%,
+      transparent 0 18px, currentColor 18px 19px, transparent 19px 40px);
+  opacity: 0.12;
+  -webkit-mask-image: radial-gradient(110% 130% at 100% 0%, #000 8%, transparent 70%);
+  mask-image: radial-gradient(110% 130% at 100% 0%, #000 8%, transparent 70%);
+}
 .ns-ad__arrow { flex-shrink: 0; font-size: 1.35rem; color: var(--color-brand-500); }
 .ns-ad__label { display: inline-flex; align-items: center; gap: 0.4rem;
   font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;

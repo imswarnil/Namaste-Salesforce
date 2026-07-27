@@ -49,6 +49,7 @@
   .ns-sidenav {
     display: flex;
     flex-direction: column;
+    min-height: 100%;
     gap: 0.15rem;
     min-width: 0;
     overflow-x: hidden;      /* a rail that scrolls sideways cannot be read */
@@ -253,12 +254,41 @@
   }
   .ns-sidenav--flush .ns-sidenav__head { padding-inline: 0; }
 
-  /* ── Footer action (back to the track, finish, etc.) ───────────────────── */
+  /* ── Back out of the training — the first thing in the rail, because a
+     back-path buried under the navigation is a back-path nobody finds. ───── */
+  .ns-sidenav__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    padding: 0.2rem 0.1rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+    transition: color var(--duration-fast) var(--ease-out), gap var(--duration-fast) var(--ease-out);
+  }
+  .ns-sidenav__back:hover { color: var(--color-brand-600); gap: 0.6rem; }
+  [data-theme="dark"] .ns-sidenav__back:hover { color: var(--color-brand-300); }
+
+  /* ── Foot — the progress readout, pinned to the bottom of the rail ─────── */
   .ns-sidenav__foot {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
     border-top: var(--border-hairline) solid var(--color-border);
   }
+  /* Sticky, so the readout stays in view while a long section scrolls past.
+     It is a status line — you glance at it, you do not navigate to it. */
+  .ns-sidenav__foot--sticky {
+    position: sticky;
+    bottom: 0;
+    margin-top: auto;
+    background: var(--color-surface);
+    padding-bottom: 0.5rem;
+  }
+  .ns-sidenav__foot--sticky .ns-sidenav__readout { margin-top: 0.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

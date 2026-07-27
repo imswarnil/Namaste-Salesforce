@@ -41,6 +41,12 @@
     <div class="ns-lesson-panel__body">
       <div class="ns-sidenav ns-sidenav--sm">
 
+        {{!-- Out of the training, before anything else — a back-path belongs
+             at the top of a rail, not buried under it. --}}
+        <a href="/training/" class="ns-sidenav__back">
+          <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "Back to training"}}
+        </a>
+
         {{!-- Search: filters lessons; a section hides when nothing matches. --}}
         <label class="ns-input-icon mb-2">
           <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
@@ -53,10 +59,19 @@
         <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
            x-cloak class="ns-empty ns-empty--sm text-sm">{{t "No lessons match."}}</p>
 
-        <div class="ns-sidenav__foot">
-          <a href="/training/" class="ns-btn ns-btn--outline ns-btn--sm ns-btn--block">
-            <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "All sections"}}
-          </a>
+        {{!-- Progress sits at the FOOT of the rail and stays there: it is a
+             status readout, so it should be where you glance, not where you
+             navigate. --}}
+        <div class="ns-sidenav__foot ns-sidenav__foot--sticky">
+          <div class="ns-progress ns-progress--xs">
+            <span class="ns-progress__bar js-train-progress"></span>
+          </div>
+          <div class="ns-sidenav__readout">
+            <span class="js-train-done"></span>
+            {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+              <span>{{pagination.total}} {{t "lessons"}}</span>
+            {{/get}}
+          </div>
         </div>
 
       </div>

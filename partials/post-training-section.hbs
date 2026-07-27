@@ -23,8 +23,6 @@
 
 {{> "jsonld/training-section"}}
 
-{{> "training/subbar" section=title}}
-
 <div class="ns-reader ns-reader--rail ns-reader--fluid">
 
   {{!-- ── The rail. `cur` marks this section's Overview row active; no curId,
@@ -39,7 +37,29 @@
          readout, and the way in. A band rather than a plain page head, so a
          section reads as a place you have arrived at. ── --}}
     <header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--section">
+      {{!-- The section image, blended into the trailing edge rather than
+           placed beside the copy — it is atmosphere, not information, so it
+           must never compete with the title or fail in dark mode. --}}
+      {{#if primary_tag.feature_image}}
+        <div class="ns-hero__bleed" aria-hidden="true">
+          <img src="{{img_url primary_tag.feature_image size="l"}}" alt="" loading="lazy" decoding="async">
+        </div>
+      {{else}}{{#if feature_image}}
+        <div class="ns-hero__bleed" aria-hidden="true">
+          <img src="{{img_url feature_image size="l"}}" alt="" loading="lazy" decoding="async">
+        </div>
+      {{/if}}{{/if}}
+
       <div class="ns-hero__inner">
+        {{!-- The one breadcrumb on the page, in the hero. --}}
+        <nav class="ns-crumbs ns-crumbs--sm ns-crumbs--light" aria-label="{{t "Breadcrumb"}}">
+          <a class="ns-crumbs__link" href="/"><i class="ph ph-house" aria-hidden="true"></i></a>
+          <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+          <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
+          <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+          <span class="ns-crumbs__current"><span>{{title}}</span></span>
+        </nav>
+
         <div class="ns-cluster">
           <span class="ns-track-hero__index">
             {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1"}}{{#if pagination.total}}{{pagination.total}}{{else}}0{{/if}}{{/get}}
@@ -87,9 +107,9 @@
     {{/if}}
 
     {{!-- ── The section's own body: what it covers, prerequisites, whatever the
-         author wrote. Only rendered when there IS content, so an empty section
-         post does not leave a stray gap. ── --}}
-    {{#if content}}
+         author wrote. `html` rather than `content` — `content` is a HELPER, so
+         {{#if content}} is always false and this never rendered. ── --}}
+    {{#if html}}
       <div class="ns-reader__body gh-content prose">
         {{content}}
       </div>

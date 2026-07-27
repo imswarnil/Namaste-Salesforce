@@ -13,6 +13,9 @@
    LAYOUT   --center (default) · --start · --split (copy + media)
    PATTERN  --grid --dots --lines
    PARTS    __inner __eyebrow __title __sub __actions __media __meta __aside
+            __bleed  an image blended into the trailing edge — atmosphere, not
+                     information, so it never competes with the title and it
+                     works on both grounds
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -102,6 +105,45 @@
   @media (min-width: 1024px) {
     .ns-hero--split .ns-hero__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); }
     .ns-hero--split-media-first .ns-hero__media { order: -1; }
+  }
+
+  /* ── A blended image layer ─────────────────────────────────────────────
+     The image fades out towards the copy from BOTH sides, so the title never
+     lands on busy pixels. On a dark hero it also sits under a navy wash, which
+     is what makes the same image work in both themes without a second asset. */
+  .ns-hero__bleed {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: -1;
+    width: min(56%, 40rem);
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to left, #000 25%, transparent 92%);
+    mask-image: linear-gradient(to left, #000 25%, transparent 92%);
+  }
+  .ns-hero__bleed > img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+  }
+  /* The wash: navy on dark grounds, surface on light ones. */
+  .ns-hero__bleed::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left,
+      color-mix(in srgb, var(--color-brand-900) 45%, transparent),
+      color-mix(in srgb, var(--color-brand-900) 80%, transparent));
+  }
+  :where(.ns-hero--plain, .ns-hero--sunken) .ns-hero__bleed > img { opacity: 0.35; }
+  :where(.ns-hero--plain, .ns-hero--sunken) .ns-hero__bleed::after {
+    background: linear-gradient(to left,
+      color-mix(in srgb, var(--color-surface) 40%, transparent),
+      var(--color-surface));
+  }
+  @media (max-width: 639.98px) {
+    /* On a phone there is no room for atmosphere beside the copy. */
+    .ns-hero__bleed { width: 100%; opacity: 0.5; }
   }
 
   /* ── Section hero — a hero used INSIDE a reader column rather than at the

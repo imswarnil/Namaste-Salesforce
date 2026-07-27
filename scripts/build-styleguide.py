@@ -317,6 +317,28 @@ page("Components", "hero", "Hero &amp; page header",
               '<div class="ns-hero__actions"><a class="ns-btn ns-btn--white" href="#!">Start</a></div></div>'
               '<div class="ns-hero__media"><div class="ns-media ns-media--frame demo-media"><i class="ph ph-image"></i></div></div>'
               '</div></div>', wide=True)),
+     head("A blended image"),
+     note("<code>__bleed</code> fades an image into the trailing edge and puts a wash over it, so the "
+          "title never lands on busy pixels and the SAME asset works on a navy hero and a light one — "
+          "no second image, no dark-mode variant. Below <code>sm</code> it spans the full width at "
+          "lower opacity, because there is no room for atmosphere beside the copy."),
+     row(spec("__bleed",
+              '<div class="ns-hero ns-hero--xs ns-hero--start ns-hero--section">'
+              '<div class="ns-hero__bleed"><div class="demo-media demo-w-full" '
+              'style-free="1"><i class="ph ph-image"></i></div></div>'
+              '<div class="ns-hero__inner">'
+              '<nav class="ns-crumbs ns-crumbs--sm ns-crumbs--light">'
+              '<a class="ns-crumbs__link" href="#!"><i class="ph ph-house"></i></a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<a class="ns-crumbs__link" href="#!">Training</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<span class="ns-crumbs__current"><span>Build Your First App</span></span></nav>'
+              '<span class="ns-kicker ns-kicker--light">Training section</span>'
+              '<h1 class="ns-hero__title">Build Your First App</h1>'
+              '<p class="ns-hero__sub">A custom object, the fields that matter, and a report that '
+              'proves it works.</p></div></div>', wide=True)),
+     note("The breadcrumb lives HERE now, in the hero, rather than in a bar of its own under the main "
+          "menu. One row of chrome fewer, and the crumb sits with the title it belongs to."),
      head("Light grounds"),
      row(spec("--plain", '<div class="ns-hero ns-hero--plain ns-hero--xs ns-hero--grid"><div class="ns-hero__inner">'
                          '<h1 class="ns-hero__title">On the page surface</h1>'
@@ -1600,7 +1622,10 @@ _LESSONS = (
 
 
 def _sidenav(open_index=1):
-    out = ['<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">']
+    out = ['<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">',
+           '<a class="ns-sidenav__back" href="#!"><i class="ph ph-arrow-left"></i>Back to training</a>',
+           '<label class="ns-input-icon demo-mb"><i class="ph ph-magnifying-glass"></i>'
+           '<input class="ns-input ns-input--sm" placeholder="Search this training…"></label>']
     for i, (title, _, count, _dur, state) in enumerate(_SECTIONS):
         is_open = " open" if i == open_index else ""
         out.append('<details class="ns-sidenav__group" name="sg-training"%s>' % is_open)
@@ -1621,13 +1646,12 @@ def _sidenav(open_index=1):
                        '<i class="ns-sidenav__type ph-fill %s"></i>'
                        '<span class="ns-sidenav__text">%s</span>'
                        '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, icon, lt, ld))
-        if i + 1 < len(_SECTIONS):
-            out.append('<a class="ns-sidenav__next" href="#!">Next<span>%s</span>'
-                       '<i class="ph ph-arrow-right"></i></a>' % _SECTIONS[i + 1][0])
         out.append('</div></details>')
-    out.append('<div class="ns-sidenav__foot">'
-               '<a class="ns-btn ns-btn--outline ns-btn--sm ns-btn--block" href="#!">'
-               '<i class="ph ph-arrow-left"></i>All sections</a></div>')
+    out.append('<div class="ns-sidenav__foot ns-sidenav__foot--sticky">'
+               '<div class="ns-progress ns-progress--xs">'
+               '<span class="ns-progress__bar" data-demo-width="35"></span></div>'
+               '<div class="ns-sidenav__readout"><span>4 / 13 done</span>'
+               '<span>13 lessons</span></div></div>')
     out.append('</nav>')
     return "".join(out)
 
@@ -1798,6 +1822,11 @@ page("Training", "training-nav", "Training navigation",
                                '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
                                '<span class="ns-sidenav__stitle">Open section</span>'
                                '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
+     head("Where things sit"),
+     note("<b>Back to training</b> is the FIRST thing in the rail, above the search — a back-path "
+          "buried under the navigation is a back-path nobody finds. <b>Progress</b> is the LAST, "
+          "pinned to the bottom: it is a status readout you glance at, not somewhere you navigate to, "
+          "so it stays in view while a long section scrolls past."),
      head("Sections are ruled, not spaced"),
      note("A hairline separates one section from the next, and an open section is bracketed top and "
           "bottom so its lessons read as belonging to it. Gaps alone would not survive a collapsed "
@@ -1837,29 +1866,6 @@ page("Training", "training-nav", "Training navigation",
               '<span class="ns-sidenav__text">Objects and fields</span>'
               '<i class="ns-sidenav__meta ph ph-lock"></i></a>'
               '</div></nav>', wide=True)))
-
-page("Training", "training-subbar", "Training sub bar",
-     "A second bar directly under the site header. It carries TWO things, and it is the only place "
-     "either of them appears on the page. It held a third — a &ldquo;Training content&rdquo; button — until that "
-     "proved redundant: the rail is on the page from <code>lg</code> up and the player header opens it "
-     "below that, so the button was a control for something already reachable twice.",
-     row(spec(".ns-subbar", SUBBAR, wide=True)),
-     head("1 · The breadcrumb — once"),
-     note("Here, and not again above the page title. It uses <code>.ns-crumbs--sm</code> with icon-only "
-          "leading crumbs: the bar is a back-path, not a headline, so it should be the quietest line on "
-          "the page."),
-     head("2 · Progress"),
-     note("How far through the training you are. It sat at the top of the rail before, where it "
-          "repeated on every page and pushed the actual navigation down — it belongs to the page, so "
-          "it lives with the page chrome. The bar drops on very narrow screens; the readout stays."),
-     head("The crumbs on their own"),
-     row(spec(".ns-crumbs--sm",
-              '<nav class="ns-crumbs ns-crumbs--sm"><a class="ns-crumbs__link" href="#!">'
-              '<i class="ph ph-flow-arrow"></i>Training</a>'
-              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
-              '<a class="ns-crumbs__link" href="#!">Build Your First App</a>'
-              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
-              '<span class="ns-crumbs__current"><span>Create a custom object</span></span></nav>', wide=True)))
 
 page("Training", "training-section", "Training section",
      "A section page is the contents page for that section: what it covers, what you will be able to "
