@@ -12,7 +12,7 @@
 
   Built from components — see /styleguide/training-section.html:
     .ns-reader--rail --fluid   rail + content, filling the window
-    .ns-hero--xs --start --dots   the section hero band
+    .ns-hero--xs --start --flush  the section header, full width above the reader
     .ns-sidenav        the rail, via training/curriculum
     .ns-list--boxed    the lessons in this section
     .ns-reader__foot   on to the next section
@@ -23,6 +23,72 @@
 
 {{> "jsonld/training-section"}}
 
+{{!-- ── The section hero, as designed: index disc, state, title, the
+     readout, and the way in. A band rather than a plain page head, so a
+     section reads as a place you have arrived at. ── --}}
+<header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--flush">
+  {{!-- The section image, blended into the trailing edge rather than
+       placed beside the copy — it is atmosphere, not information, so it
+       must never compete with the title or fail in dark mode. --}}
+  {{#if primary_tag.feature_image}}
+    <div class="ns-hero__bleed" aria-hidden="true">
+      <img src="{{img_url primary_tag.feature_image size="l"}}" alt="" loading="lazy" decoding="async">
+    </div>
+  {{else}}{{#if feature_image}}
+    <div class="ns-hero__bleed" aria-hidden="true">
+      <img src="{{img_url feature_image size="l"}}" alt="" loading="lazy" decoding="async">
+    </div>
+  {{/if}}{{/if}}
+
+  <div class="ns-hero__inner">
+    {{!-- The one breadcrumb on the page, in the hero. --}}
+    <nav class="ns-crumbs ns-crumbs--sm ns-crumbs--light" aria-label="{{t "Breadcrumb"}}">
+      <a class="ns-crumbs__link" href="/"><i class="ph ph-house" aria-hidden="true"></i></a>
+      <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+      <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
+      <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+      <span class="ns-crumbs__current"><span>{{title}}</span></span>
+    </nav>
+
+    <div class="ns-cluster">
+      <span class="ns-track-hero__index">
+        {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1"}}{{#if pagination.total}}{{pagination.total}}{{else}}0{{/if}}{{/get}}
+      </span>
+      {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:-public" limit="1"}}
+        {{#if posts}}
+          <span class="ns-badge ns-badge--glass"><i class="ph ph-lock" aria-hidden="true"></i>{{t "Members"}}</span>
+        {{else}}
+          <span class="ns-badge ns-badge--glass ns-badge--dot">{{t "Free"}}</span>
+        {{/if}}
+      {{/get}}
+    </div>
+
+    <span class="ns-kicker ns-kicker--light">{{t "Training section"}}</span>
+    <h1 class="ns-hero__title">{{title}}</h1>
+    {{#if custom_excerpt}}<p class="ns-hero__sub">{{custom_excerpt}}</p>{{/if}}
+
+    <div class="ns-track-hero__meta">
+      {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
+        <div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "lessons"}}</span></div>
+      {{/get}}
+      {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:public" limit="1"}}
+        <div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "free"}}</span></div>
+      {{/get}}
+    </div>
+
+    <div class="ns-hero__actions">
+      {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="1"}}
+        {{#foreach posts}}
+          <a href="{{url}}" class="ns-btn ns-btn--white">
+            <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start this section"}}
+          </a>
+        {{/foreach}}
+      {{/get}}
+    </div>
+  </div>
+</header>
+
+
 <div class="ns-reader ns-reader--rail ns-reader--fluid">
 
   {{!-- ── The rail. `cur` marks this section's Overview row active; no curId,
@@ -32,71 +98,6 @@
   </aside>
 
   <div class="ns-reader__main">
-
-    {{!-- ── The section hero, as designed: index disc, state, title, the
-         readout, and the way in. A band rather than a plain page head, so a
-         section reads as a place you have arrived at. ── --}}
-    <header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--section">
-      {{!-- The section image, blended into the trailing edge rather than
-           placed beside the copy — it is atmosphere, not information, so it
-           must never compete with the title or fail in dark mode. --}}
-      {{#if primary_tag.feature_image}}
-        <div class="ns-hero__bleed" aria-hidden="true">
-          <img src="{{img_url primary_tag.feature_image size="l"}}" alt="" loading="lazy" decoding="async">
-        </div>
-      {{else}}{{#if feature_image}}
-        <div class="ns-hero__bleed" aria-hidden="true">
-          <img src="{{img_url feature_image size="l"}}" alt="" loading="lazy" decoding="async">
-        </div>
-      {{/if}}{{/if}}
-
-      <div class="ns-hero__inner">
-        {{!-- The one breadcrumb on the page, in the hero. --}}
-        <nav class="ns-crumbs ns-crumbs--sm ns-crumbs--light" aria-label="{{t "Breadcrumb"}}">
-          <a class="ns-crumbs__link" href="/"><i class="ph ph-house" aria-hidden="true"></i></a>
-          <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
-          <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
-          <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
-          <span class="ns-crumbs__current"><span>{{title}}</span></span>
-        </nav>
-
-        <div class="ns-cluster">
-          <span class="ns-track-hero__index">
-            {{#get "posts" filter="tag:hash-training-section+published_at:<'{{published_at}}'" limit="1"}}{{#if pagination.total}}{{pagination.total}}{{else}}0{{/if}}{{/get}}
-          </span>
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:-public" limit="1"}}
-            {{#if posts}}
-              <span class="ns-badge ns-badge--glass"><i class="ph ph-lock" aria-hidden="true"></i>{{t "Members"}}</span>
-            {{else}}
-              <span class="ns-badge ns-badge--glass ns-badge--dot">{{t "Free"}}</span>
-            {{/if}}
-          {{/get}}
-        </div>
-
-        <span class="ns-kicker ns-kicker--light">{{t "Training section"}}</span>
-        <h1 class="ns-hero__title">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="ns-hero__sub">{{custom_excerpt}}</p>{{/if}}
-
-        <div class="ns-track-hero__meta">
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
-            <div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "lessons"}}</span></div>
-          {{/get}}
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:public" limit="1"}}
-            <div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "free"}}</span></div>
-          {{/get}}
-        </div>
-
-        <div class="ns-hero__actions">
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="1"}}
-            {{#foreach posts}}
-              <a href="{{url}}" class="ns-btn ns-btn--white">
-                <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start this section"}}
-              </a>
-            {{/foreach}}
-          {{/get}}
-        </div>
-      </div>
-    </header>
 
     {{#if feature_image}}
       <div class="ns-reader__media">

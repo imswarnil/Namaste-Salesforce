@@ -339,6 +339,10 @@ page("Components", "hero", "Hero &amp; page header",
               'proves it works.</p></div></div>', wide=True)),
      note("The breadcrumb lives HERE now, in the hero, rather than in a bar of its own under the main "
           "menu. One row of chrome fewer, and the crumb sits with the title it belongs to."),
+     note("<code>--flush</code> is what a section header uses: square corners, edge to edge, no gap "
+          "above it, and an inner measure matching the reader below so the title lines up with the "
+          "content. It sits ABOVE the reader rather than inside one of its columns — a page header "
+          "belongs to the page, not to a column of it."),
      head("Light grounds"),
      row(spec("--plain", '<div class="ns-hero ns-hero--plain ns-hero--xs ns-hero--grid"><div class="ns-hero__inner">'
                          '<h1 class="ns-hero__title">On the page surface</h1>'
@@ -1822,6 +1826,11 @@ page("Training", "training-nav", "Training navigation",
                                '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
                                '<span class="ns-sidenav__stitle">Open section</span>'
                                '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
+     head("Room to scan"),
+     note("Rows are taller than the type strictly needs. A rail is SCANNED, not read, and a scannable "
+          "list needs air between its items far more than it needs to fit one more row on screen. "
+          "Sections carry that further: half a rem of padding either side of the rule, so it reads as "
+          "a separation rather than as a line."),
      head("Where things sit"),
      note("<b>Back to training</b> is the FIRST thing in the rail, above the search — a back-path "
           "buried under the navigation is a back-path nobody finds. <b>Progress</b> is the LAST, "
@@ -1975,6 +1984,16 @@ page("Training", "training-lesson", "Training lesson",
               '<div class="ns-widget__body"><p>Comments are open under every lesson.</p>'
               '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Ask a question</a></div></div>'
               '</aside></div>', wide=True)),
+     head("Where the page starts"),
+     note("The reader has NO top padding. A page should start at the site header, not float below it, "
+          "so whatever runs first — a hero band or the lesson head — supplies its own breathing room "
+          "and there is never a dead strip under the navbar. The COLUMNS carry the top space instead, "
+          "which is what lets a full-bleed hero sit flush above the reader while the rails still clear "
+          "the header."),
+     note("Inside, the rhythm is deliberately loose: the column gap scales with the viewport "
+          "(<code>clamp(1.75rem, 3.5vw, 3.5rem)</code>), blocks are 2.5rem apart and the rules "
+          "between them 3.5rem. Cramped is the failure mode of a three-column layout — the columns "
+          "already do the work of separating things, so the content inside them can afford air."),
      head("Full width + rules"),
      note("The reader shell is <code>--fluid</code>: the reading column is already capped at "
           "<code>--container-read</code>, so letting the SHELL fill the window just gives the rails "
