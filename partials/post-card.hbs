@@ -1,114 +1,88 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-card.hbs — Post summary card (used by index / tag / author)
+  partials/post-card.hbs — one post in a collection
   ----------------------------------------------------------------------------
-  Context: a single post inside {{#foreach posts}}. Reads url, feature_image,
-  primary_tag, title, excerpt, access/visibility, reading_time, comments.
-  Aceternity-style hover (spotlight) is layered on in Phase 4 via .js-spotlight.
-═══════════════════════════════════════════════════════════════════════════ --}}
-<article class="js-spotlight group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface-raised ns-transition hover:border-brand-500">
+  Context: a single post inside {{#foreach posts}} (index / tag / author / home
+  / blog). Renders the .ns-pcard COMPONENT — see 2-components/post-card.css and
+  /styleguide/home-post-card.html.
 
-  {{!-- ── Cover image (16:9) ── --}}
-  <a href="{{url}}" tabindex="-1" aria-hidden="true" class="relative block aspect-[16/9] overflow-hidden bg-surface-sunken">
+  Param: variant — any .ns-pcard modifier, e.g.
+      {{> post-card variant="ns-pcard--row"}}
+      {{> post-card variant="ns-pcard--overlay"}}
+      {{> post-card variant="ns-pcard--compact"}}
+
+  The TITLE carries the stretched link, so the whole card is clickable while
+  the title stays the real anchor — screen readers announce it and middle-click
+  still works. That is why the cover is not itself a link.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<article class="ns-pcard js-spotlight group {{variant}}">
+
+  {{!-- ── Cover ── --}}
+  <div class="ns-pcard__media">
     {{#if feature_image}}
-      <img decoding="async"
-        class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+      <img decoding="async" loading="lazy"
         srcset="{{img_url feature_image size="s"}} 300w,
                 {{img_url feature_image size="m"}} 600w,
                 {{img_url feature_image size="l"}} 1000w"
         sizes="(max-width: 1000px) 400px, 800px"
         src="{{img_url feature_image size="m"}}"
-        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-        loading="lazy">
+        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
     {{else}}
-      <span class="flex h-full w-full items-center justify-center bg-brand-900 text-white/40">
-        <i class="ph ph-image text-5xl" aria-hidden="true"></i>
-      </span>
+      <span class="ns-pcard__fallback"><i class="ph ph-image" aria-hidden="true"></i></span>
     {{/if}}
 
-    {{!-- Locked (members/paid) overlay --}}
+    {{!-- Access state — a badge, not a wash, unless the cover must be obscured --}}
     {{#unless access}}
       {{^has visibility="public"}}
-        <div class="absolute inset-0 flex items-center justify-center bg-black/55">
-          <span class="ns-badge ns-badge--glass">
-            {{#match visibility "members"}}<i class="ph-fill ph-user-circle" aria-hidden="true"></i>{{t "Members only"}}
-            {{else match visibility "paid"}}<i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Paid-members only"}}
-            {{else}}<i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Tier exclusive"}}{{/match}}
-          </span>
-        </div>
+        <span class="ns-pcard__badge ns-badge ns-badge--glass">
+          {{#match visibility "members"}}<i class="ph-fill ph-user-circle" aria-hidden="true"></i>{{t "Members only"}}
+          {{else match visibility "paid"}}<i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Paid-members only"}}
+          {{else}}<i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Tier exclusive"}}{{/match}}
+        </span>
       {{/has}}
     {{/unless}}
 
-    {{!-- Video play overlay --}}
+    {{#if featured}}
+      <span class="ns-pcard__badge ns-badge ns-badge--solid"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}</span>
+    {{/if}}
+
     {{#has tag="#video"}}
       {{#if access}}
-        <div class="absolute inset-0 flex items-center justify-center">
-          <span class="flex h-16 w-16 items-center justify-center rounded-full bg-black/45 text-white">
-            <i class="ph-fill ph-play-circle text-4xl" aria-hidden="true"></i>
-          </span>
-        </div>
+        <span class="ns-video-poster__play"><span><i class="ph-fill ph-play" aria-hidden="true"></i></span></span>
       {{/if}}
     {{/has}}
-  </a>
+  </div>
 
   {{!-- ── Body ── --}}
-  <div class="flex flex-1 flex-col p-5">
+  <div class="ns-pcard__body">
+    {{#primary_tag}}<span class="ns-kicker ns-kicker--sm">{{name}}</span>{{/primary_tag}}
 
-    {{!-- Tag + featured badges --}}
-    <div class="mb-3 flex flex-wrap items-center gap-2">
-      {{#primary_tag}}
-        <a href="{{url}}" class="ns-badge ns-transition hover:text-brand-700">
-          {{name}}
-        </a>
-      {{/primary_tag}}
-      {{#if featured}}
-        <span class="ns-badge-featured">
-          <i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}
-        </span>
-      {{/if}}
-    </div>
-
-    {{!-- Title --}}
-    <h2 class="mb-2 font-heading text-lg font-bold leading-snug">
-      <a href="{{url}}" class="transition-colors hover:text-brand-600 dark:hover:text-brand-400">
+    <h2 class="ns-pcard__title">
+      <a href="{{url}}">
         {{#unless access}}{{^has visibility="public"}}{{#unless feature_image}}
-          <i class="ph-fill ph-lock mr-1 align-middle text-sm text-muted" aria-hidden="true"></i>
+          <i class="ph-fill ph-lock align-middle text-sm text-muted" aria-hidden="true"></i>
         {{/unless}}{{/has}}{{/unless}}
         {{title}}
       </a>
     </h2>
 
-    {{!-- Excerpt --}}
     {{#if excerpt}}
-      <p class="mb-4 flex-1 text-sm leading-relaxed text-muted">{{excerpt words="22"}}&hellip;</p>
+      <p class="ns-pcard__excerpt">{{excerpt words="22"}}&hellip;</p>
     {{/if}}
 
-    {{!-- Footer: course CTA, or standard meta --}}
+    {{!-- Courses get a CTA instead of meta; everything else gets the readout --}}
     {{#has tag="#course"}}
-      <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--sm mt-auto w-full">
+      <span class="ns-btn ns-btn--primary ns-btn--sm mt-3 w-full">
         {{#unless access}}
-          <i class="ph ph-lock" aria-hidden="true"></i><span>{{t "Enroll to Access"}}</span>
+          <i class="ph ph-lock" aria-hidden="true"></i>{{t "Enroll to Access"}}
         {{else}}
-          <i class="ph ph-play" aria-hidden="true"></i><span>{{t "Start Course"}}</span>
+          <i class="ph ph-play" aria-hidden="true"></i>{{t "Start Course"}}
         {{/unless}}
-      </a>
+      </span>
     {{else}}
-      <div class="mt-auto flex flex-wrap items-center justify-between gap-2 font-mono text-xs text-label">
-        <div class="flex items-center gap-3">
-          <span class="inline-flex items-center gap-1">
-            <i class="ph ph-calendar-blank" aria-hidden="true"></i>
-            <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
-          </span>
-          {{#if reading_time}}
-            <span class="inline-flex items-center gap-1">
-              <i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}
-            </span>
-          {{/if}}
-        </div>
-        {{#if @site.comments_enabled}}
-          <span class="inline-flex items-center gap-1">
-            <i class="ph ph-chat-circle" aria-hidden="true"></i>{{comment_count}}
-          </span>
-        {{/if}}
+      <div class="ns-pcard__meta">
+        <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+        {{#if reading_time}}<span>{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>{{/if}}
+        {{#if @site.comments_enabled}}<span>{{comment_count}} {{t "comments"}}</span>{{/if}}
       </div>
     {{/has}}
   </div>

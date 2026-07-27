@@ -1,200 +1,216 @@
 {{!< default}}
 {{!-- ════════════════════════════════════════════════════════════════════════
-  home.hbs — Landing page.
+  home.hbs — the landing page.
 
-  One design system across every section:
-    · Backgrounds ALTERNATE surface ↔ surface-sunken so each block reads as its
-      own band (never two of the same in a row).
-    · Every section opens with the same eyebrow: an icon + uppercase brand label.
-    · Section padding rhythm is uniform (py-16 sm:py-20 lg:py-24); the sponsor
-      strip and hero are the only exceptions.
-    · Headings: the Training flagship is text-3xl→4xl; every other section is
-      text-2xl→3xl, so hierarchy is deliberate, not accidental.
+  Assembled from documented components, in this order:
 
-  Order: Hero → Training (flagship) → Courses → Blog → Resources → Stats →
-         Open source → Sponsor ad.
+    1  .ns-hero--split        the pitch + the publication cover / video
+    2  .ns-band  --sunken     the guided training, with its live counts
+    3  .ns-collection         featured courses
+    4  .ns-collection --sunken  latest blog posts
+    5  .ns-band               the resource toolbox
+    6  .ns-band  --sunken     the library, counted live
+    7  .ns-band  --grid       open source + the closing CTA
+    8  .ns-band  --flush      the sponsor leaderboard
+
+  The bands alternate surface ↔ sunken so each reads as its own block, and
+  every one of them uses the SAME vertical rhythm (--space-section) and the
+  same page measure — that consistency is the whole point of the components.
+  See /styleguide/home.html for the same stack, documented.
+
+  No inline styles and no ad-hoc section wrappers: the grid pattern behind the
+  hero and the open-source band is the `--grid` variant, not a background-image
+  written into the markup.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- ── HERO: copy + subscribe left · publication cover (with optional video) right ── --}}
-<section class="relative overflow-hidden border-b border-border bg-surface">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0"
-       style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 52px 52px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 78%); mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, #000 30%, transparent 78%);"></div>
+{{!-- ── 1 · HERO ──────────────────────────────────────────────────────────
+     Copy and the subscribe CTA on the left, the Ghost publication cover on
+     the right (with an optional in-place video from @custom.hero_video_url). --}}
+<header class="ns-hero ns-hero--split ns-hero--plain ns-hero--grid ns-hero--lg">
+  <div class="ns-hero__inner">
 
-  <div class="relative mx-auto grid max-w-[85rem] items-center gap-10 px-4 py-14 sm:px-6 lg:min-h-[calc(100vh-3.6rem)] lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
+    <div>
+      <span class="ns-kicker">{{t "Salesforce skills for the AI era"}}</span>
 
-    {{!-- ── Left: copy + subscribe CTA ── --}}
-    <div class="text-center lg:text-left">
-      <span class="ns-kicker">
-        {{t "Salesforce skills for the AI era"}}
-      </span>
-
-      <h1 class="mt-5 font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl xl:text-6xl">
+      <h1 class="ns-hero__title">
         {{t "Become a"}} <span class="text-brand-600 dark:text-brand-400">{{t "Salesforce engineer"}}</span>
       </h1>
 
-      <p class="mx-auto mt-5 max-w-md text-muted sm:text-lg lg:mx-0">
+      <p class="ns-hero__sub">
         {{t "Master Admin, Apex and LWC — then go further with Agentforce, Data Cloud and Einstein AI. Hands-on courses, training and docs, free and open source."}}
       </p>
 
-      {{!-- CTA: one seamless pill — Ghost members subscribe form, portal fallback ── --}}
-      <div class="mt-8">
+      {{!-- One seamless pill: the Ghost members form, with a Portal fallback --}}
+      <div class="mt-8 max-w-md">
         {{#if @site.members_enabled}}
-          <form data-members-form="subscribe" class="mx-auto flex max-w-md overflow-hidden rounded-btn border border-border bg-surface-raised p-1 ns-transition focus-within:border-brand-500 lg:mx-0">
-            <input data-members-email type="email" required placeholder="{{t "you@email.com"}}" aria-label="{{t "Your email address"}}"
-                   class="w-full min-w-0 border-0 bg-transparent px-4 py-2.5 text-ink placeholder:text-muted focus:outline-none">
+          <form data-members-form="subscribe" class="ns-input-group ns-transition">
+            <input data-members-email type="email" required placeholder="{{t "you@email.com"}}"
+                   aria-label="{{t "Your email address"}}" class="ns-input">
             <button type="submit" class="ns-btn ns-btn--primary shrink-0">
               <i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start free"}}
             </button>
           </form>
-          <p data-members-success class="mt-3 text-sm font-semibold text-success hidden">{{t "Check your inbox to confirm! 🎉"}}</p>
-          <p data-members-error class="mt-3 text-sm font-semibold text-error hidden">{{t "Please enter a valid email."}}</p>
+          <p data-members-success class="mt-3 hidden text-sm font-semibold text-success">{{t "Check your inbox to confirm! 🎉"}}</p>
+          <p data-members-error class="mt-3 hidden text-sm font-semibold text-error">{{t "Please enter a valid email."}}</p>
         {{else}}
-          <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--lg"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}</a>
+          <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--lg">
+            <i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}
+          </a>
         {{/if}}
-        <p class="mt-3 text-xs text-muted">{{t "No credit card. One click to unsubscribe."}} <a href="/courses/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "or browse courses →"}}</a></p>
+        <p class="mt-3 text-xs text-muted">
+          {{t "No credit card. One click to unsubscribe."}}
+          <a href="/courses/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "or browse courses →"}}</a>
+        </p>
       </div>
 
-      {{!-- reassurance --}}
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs font-semibold text-muted lg:justify-start">
-        <span class="inline-flex items-center gap-1.5"><i class="ph-fill ph-check-circle text-success" aria-hidden="true"></i>{{t "Free forever"}}</span>
-        <span class="inline-flex items-center gap-1.5"><i class="ph-fill ph-git-branch text-brand-500" aria-hidden="true"></i>{{t "Open source"}}</span>
-        <span class="inline-flex items-center gap-1.5"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Certificates included"}}</span>
-      </div>
+      <ul class="ns-list ns-list--inline ns-list--icon ns-list--sm mt-7">
+        <li class="ns-list__item"><i class="ns-list__icon ph-fill ph-check-circle text-success" aria-hidden="true"></i>{{t "Free forever"}}</li>
+        <li class="ns-list__item"><i class="ns-list__icon ph-fill ph-git-branch" aria-hidden="true"></i>{{t "Open source"}}</li>
+        <li class="ns-list__item"><i class="ns-list__icon ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Certificates included"}}</li>
+      </ul>
     </div>
 
-    {{!-- ── Right: the Ghost publication cover image (Admin → Settings →
-         General → Publication identity), falling back to the logo/icon so the
-         frame is never empty. A small play button opens @custom.hero_video_url
-         in place, hiding the image. ── --}}
-    <div class="relative mx-auto w-full max-w-xl lg:max-w-none">
-      <div class="relative aspect-video w-full overflow-hidden rounded-card border border-border bg-surface-sunken"
-           {{#if @custom.hero_video_url}}x-data="{ playing: false }"{{/if}}>
-        {{!-- Branded fallback base layer — always present, so if the cover image
-             is unset or its URL 404s the frame still reads as the publication. --}}
-        <div class="absolute inset-0 flex items-center justify-center bg-surface-sunken p-12" {{#if @custom.hero_video_url}}x-show="!playing"{{/if}} aria-hidden="true">
+    {{!-- The publication cover (Admin → Settings → General). The branded
+         fallback sits underneath, so a missing or 404ing cover still reads as
+         the publication rather than an empty frame. --}}
+    <div class="ns-hero__media">
+      <div class="ns-media ns-media--frame" {{#if @custom.hero_video_url}}x-data="{ playing: false }"{{/if}}>
+        <span class="ns-media__fallback" {{#if @custom.hero_video_url}}x-show="!playing"{{/if}} aria-hidden="true">
           {{#if @site.logo}}
-            <img src="{{img_url @site.logo size="l"}}" alt="" loading="eager" decoding="async" class="h-auto w-full max-w-[200px] object-contain opacity-90">
+            <img src="{{img_url @site.logo size="l"}}" alt="" loading="eager" decoding="async" class="max-w-[200px] object-contain opacity-90">
           {{else}}
-            <img src="{{asset "logo/icon-512.png"}}" alt="" loading="eager" decoding="async" class="h-auto w-full max-w-[200px] object-contain opacity-90">
+            <img src="{{asset "logo/icon-512.png"}}" alt="" loading="eager" decoding="async" class="max-w-[200px] object-contain opacity-90">
           {{/if}}
-        </div>
-        {{!-- The publication cover, laid over the fallback. onerror removes a
-             broken image so the branded layer below shows through cleanly. --}}
+        </span>
         {{#if @site.cover_image}}
           <img src="{{img_url @site.cover_image size="xl"}}" alt="{{@site.title}}" onerror="this.remove()"
                {{#if @custom.hero_video_url}}x-show="!playing"{{/if}}
-               loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+               loading="eager" fetchpriority="high" decoding="async">
         {{/if}}
         {{#if @custom.hero_video_url}}
           <button type="button" @click="playing = true" x-show="!playing" aria-label="{{t "Play video"}}"
-                  class="group absolute inset-0 flex items-center justify-center">
-            <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 ns-transition">
-              <i class="ph-fill ph-play text-xl text-brand-600" aria-hidden="true"></i>
-            </span>
+                  class="ns-video-poster__play">
+            <span><i class="ph-fill ph-play" aria-hidden="true"></i></span>
           </button>
           <template x-if="playing">
-            <iframe src="{{@custom.hero_video_url}}" title="{{@site.title}}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy" class="absolute inset-0 h-full w-full"></iframe>
+            <iframe src="{{@custom.hero_video_url}}" title="{{@site.title}}"
+                    allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
           </template>
         {{/if}}
       </div>
     </div>
+
   </div>
-</section>
+</header>
 
-{{!-- ── TRAINING OVERVIEW: pitch + stats + CTA left · a contained roadmap card
-     right (view="overview"). Deliberately lighter than the full photo track on
-     /training/. ── --}}
-<section class="relative overflow-hidden border-b border-border bg-surface-sunken">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid text-brand-500/50"></div>
+{{!-- ── 2 · GUIDED TRAINING ───────────────────────────────────────────────
+     The flagship. Pitch and live counts on the left, a contained roadmap card
+     on the right — deliberately lighter than the full track on /training/. --}}
+<section class="ns-band ns-band--sunken ns-band--edge-bottom">
+  <div class="ns-band__inner">
+    <div class="ns-split ns-split--wide-media">
 
-  <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-
-      {{!-- ── Left: the pitch ── --}}
-      <div class="text-center lg:text-left">
+      <div class="ns-split__body">
         <span class="ns-kicker">{{t "Guided training"}}</span>
-        <h2 class="mt-3 font-heading text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{{t "Follow a path, not a maze"}}</h2>
-        <p class="mx-auto mt-4 max-w-md text-muted sm:text-lg lg:mx-0">{{t "One guided training, in order — from your first org to certified. Finish a section and the next unlocks."}}</p>
+        <h2 class="ns-split__title">{{t "Follow a path, not a maze"}}</h2>
+        <p class="ns-split__lede">{{t "One guided training, in order — from your first org to certified. Finish a section and the next unlocks."}}</p>
 
-        <dl class="mt-8 flex flex-wrap justify-center gap-x-8 gap-y-4 lg:justify-start">
+        <div class="ns-stats ns-stats--divided mt-2">
           {{#get "posts" filter="tag:hash-training-section" limit="1"}}
-            <div class="text-center lg:text-left"><dd class="font-mono text-2xl font-extrabold tabular-nums text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 ns-label">{{t "sections"}}</dt></div>
+            <div class="ns-stat ns-stat--brand"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "sections"}}</span></div>
           {{/get}}
           {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-            <div class="text-center lg:text-left"><dd class="font-mono text-2xl font-extrabold tabular-nums text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 ns-label">{{t "lessons"}}</dt></div>
+            <div class="ns-stat ns-stat--brand"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "lessons"}}</span></div>
           {{/get}}
           {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
-            <div class="text-center lg:text-left"><dd class="font-mono text-2xl font-extrabold tabular-nums text-brand-600 dark:text-brand-400">{{pagination.total}}</dd><dt class="mt-0.5 ns-label">{{t "free to read"}}</dt></div>
+            <div class="ns-stat ns-stat--brand"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "free to read"}}</span></div>
           {{/get}}
-        </dl>
+        </div>
 
-        <div class="mt-8">
-          <a href="/training/" class="ns-btn ns-btn--primary ns-btn--lg">{{t "See the full roadmap"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+        <div>
+          <a href="/training/" class="ns-btn ns-btn--primary ns-btn--lg">
+            {{t "See the full roadmap"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
 
-      {{!-- ── Right: the roadmap card ── --}}
-      <div class="rounded-card border border-border bg-surface-raised p-4 sm:p-5">
-        <div class="mb-2 flex items-center justify-between px-1.5">
-          <span class="ns-label">{{t "Your roadmap"}}</span>
-          <span class="ns-badge"><i class="ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Cert-ready"}}</span>
+      <div class="ns-split__media">
+        <div class="ns-card ns-card--sm">
+          <div class="ns-card__header">
+            <span class="ns-card__meta">{{t "Your roadmap"}}</span>
+            <span class="ns-badge"><i class="ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Cert-ready"}}</span>
+          </div>
+          <ol class="ns-plist mt-2">
+            {{> "training/sections" view="overview"}}
+          </ol>
         </div>
-        <ol class="ns-plist">
-          {{> "training/sections" view="overview"}}
-        </ol>
       </div>
 
     </div>
   </div>
 </section>
 
-{{!-- ── FEATURED COURSES ─────────────────────────────────────────────────── --}}
-<section class="border-t border-border bg-surface">
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+{{!-- ── 3 · FEATURED COURSES ──────────────────────────────────────────────
+     A rail: swipeable on a phone, a grid from lg. --}}
+<section class="ns-collection ns-collection--rail">
+  <div class="ns-collection__inner">
+    <div class="ns-collection__head">
       <div>
         <span class="ns-kicker">{{t "Courses"}}</span>
-        <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Featured courses"}}</h2>
-        <p class="mt-2 text-muted">{{t "Hands-on, video-first, structured like a syllabus."}}</p>
+        <h2 class="ns-collection__title">{{t "Featured courses"}}</h2>
+        <p class="ns-collection__sub">{{t "Hands-on, video-first, structured like a syllabus."}}</p>
       </div>
-      <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm group">{{t "All courses"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
+      <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action">
+        {{t "All courses"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+      </a>
     </div>
+
     {{#get "posts" filter="tag:hash-course" limit="3" include="tags,authors"}}
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="ns-collection__items">
         {{#foreach posts}}{{> "courses/course-card"}}{{/foreach}}
       </div>
     {{else}}
-      <p class="ns-empty">{{t "Courses coming soon."}}</p>
+      <div class="ns-empty">{{t "Courses coming soon."}}</div>
     {{/get}}
   </div>
 </section>
 
-{{!-- ── LATEST BLOG ──────────────────────────────────────────────────────── --}}
-<section class="border-t border-border bg-surface-sunken">
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+{{!-- ── 4 · LATEST BLOG ───────────────────────────────────────────────────
+     Featured layout: the newest post large, the rest as rows beside it. --}}
+<section class="ns-collection ns-collection--feature ns-collection--sunken">
+  <div class="ns-collection__inner">
+    <div class="ns-collection__head">
       <div>
         <span class="ns-kicker">{{t "Blog"}}</span>
-        <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "From the blog"}}</h2>
-        <p class="mt-2 text-muted">{{t "Tips, deep dives and updates from the Salesforce ecosystem."}}</p>
+        <h2 class="ns-collection__title">{{t "From the blog"}}</h2>
+        <p class="ns-collection__sub">{{t "Tips, deep dives and updates from the Salesforce ecosystem."}}</p>
       </div>
-      <a href="/blog/" class="ns-btn ns-btn--outline ns-btn--sm group">{{t "All posts"}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-0.5" aria-hidden="true"></i></a>
+      <a href="/blog/" class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action">
+        {{t "All posts"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+      </a>
     </div>
-    {{#get "posts" filter="tag:hash-blog" limit="6" include="tags,authors"}}
+
+    {{#get "posts" filter="tag:hash-blog" limit="5" include="tags,authors"}}
       {{#if posts}}
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {{#foreach posts}}{{> post-card}}{{/foreach}}
+        <div class="ns-collection__items">
+          {{#foreach posts}}
+            {{#if @first}}{{> post-card variant="ns-pcard--overlay"}}
+            {{else}}{{> post-card variant="ns-pcard--row"}}{{/if}}
+          {{/foreach}}
         </div>
       {{else}}
         {{!-- No #blog-tagged posts yet → fall back to the latest articles that
-             aren't course/training/docs content, so the section is never empty --}}
-        {{#get "posts" filter="tag:-[hash-course,hash-lesson,hash-training,hash-training-content,documentation,hash-resource]" limit="6" include="tags,authors"}}
+             are not course/training/docs content, so this is never empty. --}}
+        {{#get "posts" filter="tag:-[hash-course,hash-lesson,hash-training,hash-training-content,documentation,hash-resource]" limit="5" include="tags,authors"}}
           {{#if posts}}
-            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {{#foreach posts}}{{> post-card}}{{/foreach}}
+            <div class="ns-collection__items">
+              {{#foreach posts}}
+                {{#if @first}}{{> post-card variant="ns-pcard--overlay"}}
+                {{else}}{{> post-card variant="ns-pcard--row"}}{{/if}}
+              {{/foreach}}
             </div>
           {{else}}
-            <p class="ns-empty">{{t "Blog posts coming soon."}}</p>
+            <div class="ns-empty">{{t "Blog posts coming soon."}}</div>
           {{/if}}
         {{/get}}
       {{/if}}
@@ -202,131 +218,137 @@
   </div>
 </section>
 
-{{!-- ── RESOURCES: pitch left · floating icon-card grid right ── --}}
-<section class="border-t border-border bg-surface">
-  <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-    <div class="grid items-center gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+{{!-- ── 5 · THE TOOLBOX ───────────────────────────────────────────────────
+     Pitch on the left, the picks as compact rows on the right. --}}
+<section class="ns-band">
+  <div class="ns-band__inner">
+    <div class="ns-split ns-split--wide-media">
 
-      {{!-- ── Left: the pitch ── --}}
-      <div class="text-center lg:text-left">
+      <div class="ns-split__body">
         <span class="ns-kicker">{{t "The toolbox"}}</span>
-        <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Books, tools and cheat sheets we actually use"}}</h2>
-        <p class="mx-auto mt-4 max-w-md text-muted lg:mx-0">{{t "Hand-picked, not sponsored — every pick has earned its place in the library."}}</p>
-        <div class="mt-7">
-          <a href="/resources/" class="ns-btn ns-btn--primary ns-btn--lg">{{t "Browse the toolbox"}}{{> "icons/arrow-right" class="h-4 w-4"}}</a>
+        <h2 class="ns-split__title">{{t "Books, tools and cheat sheets we actually use"}}</h2>
+        <p class="ns-split__lede">{{t "Hand-picked, not sponsored — every pick has earned its place in the library."}}</p>
+        <div>
+          <a href="/resources/" class="ns-btn ns-btn--primary ns-btn--lg">
+            {{t "Browse the toolbox"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
 
-      {{!-- ── Right: floating resource cards, icon-first, gently staggered ── --}}
-      {{#get "posts" filter="tag:hash-resource" limit="4"}}
-        {{#if posts}}
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
-            {{#foreach posts}}
-              <a href="{{url}}" class="group flex items-center gap-3.5 rounded-card border border-border bg-surface-raised p-4 ns-transition hover:border-brand-500 {{#match @number "2"}}sm:mt-8{{else match @number "4"}}sm:mt-8{{/match}}">
-                <span class="ns-chip shrink-0 ns-transition group-hover:bg-brand-500 group-hover:text-white">
-                  <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
-                </span>
-                <span class="min-w-0">
-                  <span class="block truncate text-sm font-bold leading-snug transition group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
-                  <span class="ns-label mt-0.5 block">
-                    {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
+      <div class="ns-split__media">
+        {{#get "posts" filter="tag:hash-resource" limit="4"}}
+          {{#if posts}}
+            <div class="ns-grid ns-grid--2 ns-grid--tight">
+              {{#foreach posts}}
+                <a href="{{url}}" class="ns-card ns-card--sm ns-card--interactive ns-card--row flex-row items-center gap-3">
+                  <span class="ns-chip ns-chip--sm">
+                    <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
                   </span>
-                </span>
-                <i class="ph ph-arrow-right ml-auto shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:text-brand-500" aria-hidden="true"></i>
-              </a>
-            {{/foreach}}
-          </div>
-        {{else}}
-          <p class="ns-empty">{{t "Resources coming soon."}}</p>
-        {{/if}}
-      {{/get}}
+                  <span class="min-w-0">
+                    <span class="ns-truncate block text-sm font-bold leading-snug">{{title}}</span>
+                    <span class="ns-card__meta">
+                      {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
+                    </span>
+                  </span>
+                </a>
+              {{/foreach}}
+            </div>
+          {{else}}
+            <div class="ns-empty">{{t "Resources coming soon."}}</div>
+          {{/if}}
+        {{/get}}
+      </div>
+
     </div>
   </div>
 </section>
 
-{{!-- ── STATS: live counts of every collection ───────────────────────────── --}}
-<section class="border-t border-border bg-surface-sunken">
-  <div class="mx-auto max-w-[85rem] px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-    <div class="mb-10 text-center">
-      <span class="ns-kicker ns-kicker--center">{{t "The library"}}</span>
-      <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Everything we've published, counted live"}}</h2>
+{{!-- ── 6 · THE LIBRARY, COUNTED LIVE ─────────────────────────────────────
+     Six {{#get}} counts, animated by .js-count (assets/js/course.js). --}}
+<section class="ns-band ns-band--sunken">
+  <div class="ns-band__inner">
+    <div class="ns-section-head ns-section-head--center">
+      <div>
+        <span class="ns-kicker ns-kicker--center">{{t "The library"}}</span>
+        <h2 class="ns-section-head__title">{{t "Everything we've published, counted live"}}</h2>
+      </div>
     </div>
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+
+    <div class="ns-stats ns-stats--cards">
       {{#get "posts" filter="tag:hash-course" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
-          <i class="ph-fill ph-graduation-cap pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="ns-chip"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
-          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="ns-label mt-1">{{t "Courses"}}</div>
+        <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
+          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
+          <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
+          <span class="ns-stat__label">{{t "Courses"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-lesson" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
-          <i class="ph-fill ph-play-circle pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="ns-chip"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
-          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="ns-label mt-1">{{t "Lessons"}}</div>
+        <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
+          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
+          <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
+          <span class="ns-stat__label">{{t "Lessons"}}</span>
         </div>
       {{/get}}
-      {{!-- Counts training LESSONS, not trainings: there is one training now,
-           so "1" would be a pointless stat. --}}
+      {{!-- Training LESSONS, not trainings: there is one training, so "1"
+           would be a pointless stat. --}}
       {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
-          <i class="ph-fill ph-steps pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="ns-chip"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
-          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="ns-label mt-1">{{t "Training lessons"}}</div>
+        <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
+          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
+          <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
+          <span class="ns-stat__label">{{t "Training lessons"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-training-section" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
-          <i class="ph-fill ph-stack pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="ns-chip"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
-          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="ns-label mt-1">{{t "Sections"}}</div>
+        <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
+          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
+          <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
+          <span class="ns-stat__label">{{t "Sections"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:documentation" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
-          <i class="ph-fill ph-book-open-text pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="ns-chip"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
-          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="ns-label mt-1">{{t "Docs"}}</div>
+        <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
+          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
+          <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
+          <span class="ns-stat__label">{{t "Docs"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-blog" limit="1"}}
-        <div class="js-reveal group relative overflow-hidden rounded-card border border-border bg-surface-raised p-6 text-left ns-transition hover:border-brand-500">
-          <i class="ph-fill ph-newspaper pointer-events-none absolute -right-3 -top-3 text-5xl text-brand-500/[0.07] transition group-hover:text-brand-500/[0.12] sm:text-7xl" aria-hidden="true"></i>
-          <span class="ns-chip"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
-          <div class="mt-4 font-mono text-3xl font-extrabold tabular-nums tracking-tight text-brand-600 dark:text-brand-400 sm:text-4xl lg:text-5xl"><span class="js-count" data-to="{{pagination.total}}">0</span>+</div>
-          <div class="ns-label mt-1">{{t "Blog posts"}}</div>
+        <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
+          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
+          <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
+          <span class="ns-stat__label">{{t "Blog posts"}}</span>
         </div>
       {{/get}}
     </div>
   </div>
 </section>
 
-{{!-- ── OPEN SOURCE (grid-line background) ───────────────────────────────── --}}
-<section class="relative overflow-hidden border-t border-border bg-surface">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0"
-       style="background-image: linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px); background-size: 40px 40px; opacity: .5; -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 60% 80% at 50% 50%, #000 20%, transparent 75%);"></div>
-  <div class="relative mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:py-24">
-    <span class="ns-kicker ns-kicker--center">{{t "Open source"}}</span>
-    <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Built in the open, on Ghost"}}</h2>
-    <p class="mx-auto mt-4 max-w-xl text-muted">{{t "The whole platform — a custom Ghost theme, the courses, the docs — is an open-source project. Read the code, fix a typo, write a lesson or improve the help center: every contribution ships."}}</p>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-      <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--primary">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
-      <a href="/docs/" class="ns-btn ns-btn--outline"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
-      <a href="/become-author/" class="ns-btn ns-btn--outline">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
-      <a href="/sponsor/" class="ns-btn ns-btn--outline text-pink-600 hover:border-pink-500"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
+{{!-- ── 7 · OPEN SOURCE + CLOSING CTA ─────────────────────────────────────
+     The `--grid` variant supplies the pattern; no inline background. --}}
+<section class="ns-band ns-band--dark ns-band--grid">
+  <div class="ns-band__inner">
+    <div class="ns-cta-band ns-cta-band--dark">
+      <span class="ns-kicker ns-kicker--light ns-kicker--center">{{t "Open source"}}</span>
+      <h2 class="ns-cta-band__title">{{t "Built in the open, on Ghost"}}</h2>
+      <p class="ns-cta-band__sub">{{t "The whole platform — a custom Ghost theme, the courses, the docs — is an open-source project. Read the code, fix a typo, write a lesson or improve the help center: every contribution ships."}}</p>
+      <div class="ns-cta-band__actions">
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--white">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
+        <a href="/docs/" class="ns-btn ns-btn--glass"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
+        <a href="/become-author/" class="ns-btn ns-btn--glass">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
+        <a href="/sponsor/" class="ns-btn ns-btn--glass"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
+      </div>
+      <p class="text-sm text-white/60">
+        {{t "Powered by"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-semibold text-white">Ghost</a> ·
+        {{t "Styled with"}} <a href="https://tailwindcss.com" target="_blank" rel="noopener" class="font-semibold text-white">Tailwind CSS</a> ·
+        {{t "MIT-licensed theme"}}
+      </p>
     </div>
-    <p class="mt-7 text-sm text-muted">{{t "Powered by"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Ghost</a> · {{t "Styled with"}} <a href="https://tailwindcss.com" target="_blank" rel="noopener" class="font-semibold hover:text-brand-600">Tailwind CSS</a> · {{t "MIT-licensed theme"}}</p>
   </div>
 </section>
 
-{{!-- ── SPONSOR: 728×90 leaderboard, shrinks on mobile — last before the footer ── --}}
-<section class="border-t border-border bg-surface">
-  <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+{{!-- ── 8 · SPONSOR — the 728×90 leaderboard, last before the footer ────── --}}
+<section class="ns-band ns-band--sm">
+  <div class="ns-band__inner">
     {{> "ads/leaderboard"}}
   </div>
 </section>
