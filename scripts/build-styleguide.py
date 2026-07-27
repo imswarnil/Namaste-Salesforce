@@ -1645,8 +1645,6 @@ SUBBAR = ('<div class="ns-subbar ns-subbar--static demo-w-full">'
           '<div class="ns-subbar__progress">'
           '<div class="ns-progress ns-progress--xs"><span class="ns-progress__bar" data-demo-width="35"></span></div>'
           '<span class="ns-subbar__readout">4 / 13 done</span></div>'
-          '<button class="ns-btn ns-btn--outline ns-btn--xs ns-subbar__action">'
-          '<i class="ph ph-list"></i>Training content</button>'
           '</div></div>')
 
 
@@ -1684,7 +1682,7 @@ def _track_card(i, title, excerpt, count, dur, state):
             '</div></article>' % (cls, title, badge, excerpt, count, dur, lessons, more, progress))
 
 
-page("Training", "training-overview", "/training/ — the path",
+page("Training", "training-overview", "Training home",
      "The training is ONE ordered path, so the landing page draws it as a path: sections on a single "
      "connected rail, each showing what it covers, how long it takes and where you got to. A grid "
      "would say &ldquo;pick one&rdquo;; a rail says &ldquo;this comes after that&rdquo;, which is the truth.",
@@ -1745,7 +1743,7 @@ page("Training", "training-overview", "/training/ — the path",
           "<code>.is-current</code> rings it in brand and marks the box, <code>.is-locked</code> sinks "
           "it. <code>--compact</code> drops the lesson preview when the list gets long."))
 
-page("Training", "training-nav", "Section navigation",
+page("Training", "training-nav", "Training navigation",
      "The rail that runs down every training and lesson page — and the answer to the rule you set: "
      "<b>the section you are in stays open, every other one is closed.</b>",
      head("How the behaviour works"),
@@ -1830,19 +1828,17 @@ page("Training", "training-nav", "Section navigation",
               '<i class="ns-sidenav__meta ph ph-lock"></i></a>'
               '</div></nav>', wide=True)))
 
-page("Training", "training-subbar", "Sub bar",
-     "A second bar directly under the site header. It carries THREE things, and it is the only place "
-     "any of them appear on the page.",
+page("Training", "training-subbar", "Training sub bar",
+     "A second bar directly under the site header. It carries TWO things, and it is the only place "
+     "either of them appears on the page. It held a third — a &ldquo;Training content&rdquo; button — until that "
+     "proved redundant: the rail is on the page from <code>lg</code> up and the player header opens it "
+     "below that, so the button was a control for something already reachable twice.",
      row(spec(".ns-subbar", SUBBAR, wide=True)),
      head("1 · The breadcrumb — once"),
      note("Here, and not again above the page title. It uses <code>.ns-crumbs--sm</code> with icon-only "
           "leading crumbs: the bar is a back-path, not a headline, so it should be the quietest line on "
           "the page."),
-     head("2 · Training content"),
-     note("The button opens the rail as a PANEL at every screen size — not just on mobile. On desktop "
-          "the rail is already visible, but the panel is where the SEARCH lives, so the button is how "
-          "you reach it without hunting. The panel dismisses on the scrim, the ✕, or Escape."),
-     head("3 · Progress"),
+     head("2 · Progress"),
      note("How far through the training you are. It sat at the top of the rail before, where it "
           "repeated on every page and pushed the actual navigation down — it belongs to the page, so "
           "it lives with the page chrome. The bar drops on very narrow screens; the readout stays."),
@@ -1855,7 +1851,7 @@ page("Training", "training-subbar", "Sub bar",
               '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
               '<span class="ns-crumbs__current"><span>Create a custom object</span></span></nav>', wide=True)))
 
-page("Training", "training-section", "/training/{section}/ — the overview",
+page("Training", "training-section", "Training section",
      "A section page is the contents page for that section: what it covers, what you will be able to "
      "do, and the lessons in order. The rail is on the left, breadcrumbs above, and the same "
      "components as everywhere else in between.",
@@ -1909,7 +1905,7 @@ page("Training", "training-section", "/training/{section}/ — the overview",
      note("The rail uses <code>.ns-shell--sidebar</code>, so it is one column below <code>lg</code> "
           "with the navigation stacked above the content — the order a reader on a phone wants."))
 
-page("Training", "training-lesson", "/training/{section}/{lesson}/ — the lesson",
+page("Training", "training-lesson", "Training lesson",
      "The reading shell. Three columns at the top end: the section rail, the lesson, and an "
      "on-this-page rail. The reading column stays capped at the prose measure whatever the window "
      "does — line length decides whether a lesson gets read.",
@@ -1963,6 +1959,48 @@ page("Training", "training-lesson", "/training/{section}/{lesson}/ — the lesso
               '<div class="ns-widget__body"><p>Comments are open under every lesson.</p>'
               '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Ask a question</a></div></div>'
               '</aside></div>', wide=True)),
+     head("Full width + rules"),
+     note("The reader shell is <code>--fluid</code>: the reading column is already capped at "
+          "<code>--container-read</code>, so letting the SHELL fill the window just gives the rails "
+          "their natural width on a big screen instead of stranding everything in the middle. Blocks "
+          "inside are separated by <code>__sep</code> — a hairline, because that is how this system "
+          "divides things, rather than by space alone."),
+     row(spec(".ns-reader__sep",
+              '<div class="demo-w-full"><p class="demo-type-small">The lesson</p>'
+              '<hr class="ns-reader__sep"><p class="demo-type-small">Prev / next</p>'
+              '<hr class="ns-reader__sep"><p class="demo-type-small">Comments</p>'
+              '<hr class="ns-reader__sep"><p class="demo-type-small">The newsletter band</p></div>', wide=True)),
+     head("Access state"),
+     note("Free or members-only is stated as a badge in the head AND, when a lesson is locked and you "
+          "are signed out, as a note above the content — a chip alone is easy to miss when the article "
+          "simply stops."),
+     row(spec("locked",
+              '<div class="ns-note ns-note--warning demo-w-xl"><i class="ns-note__icon ph-fill ph-lock"></i>'
+              '<div class="ns-note__body"><span class="ns-note__title">Members only</span> — sign in to '
+              'read the rest of this lesson. Membership is free.</div>'
+              '<a class="ns-btn ns-btn--primary ns-btn--sm ns-note__action" href="#!">Sign in</a></div>', wide=True)),
+     head("The newsletter band"),
+     note("One ask, after everything else is read, with room to explain what subscribing actually "
+          "does. It replaced a rail widget that said &ldquo;new lessons by email&rdquo; and nothing more. Medium "
+          "height on purpose — tall enough to be a real explanation, short enough not to compete with "
+          "the lesson above it."),
+     row(spec(".ns-news-band",
+              '<div class="ns-news-band ns-news-band--brand demo-w-full">'
+              '<div><span class="ns-kicker"><i class="ph-fill ph-envelope-simple"></i>Training newsletter</span>'
+              '<h2 class="ns-news-band__title">Get every new lesson as it lands</h2>'
+              '<p class="ns-news-band__body">Turn this on and anything added to the training — a new '
+              'lesson, a new section, a rewrite of one you have already read — arrives in your inbox. '
+              'Nothing else is sent to it.</p>'
+              '<ul class="ns-list ns-list--check ns-list--sm ns-news-band__points">'
+              '<li class="ns-list__item">New lessons and sections, the day they publish</li>'
+              '<li class="ns-list__item">Updates to lessons you have already worked through</li>'
+              '<li class="ns-list__item">No marketing, no digest, no third parties</li></ul></div>'
+              '<form class="ns-news-band__form">'
+              '<label class="ns-field"><span class="ns-field__label">Email address</span>'
+              '<input class="ns-input" placeholder="you@example.com"></label>'
+              '<button class="ns-btn ns-btn--primary ns-btn--block">Turn on training updates</button>'
+              '<span class="ns-news-band__note">Free. One click to unsubscribe.</span></form>'
+              '</div>', wide=True)),
      head("Prev / next"),
      row(spec(".ns-reader__foot",
               '<div class="ns-reader__foot demo-w-full">'
@@ -1971,7 +2009,11 @@ page("Training", "training-lesson", "/training/{section}/{lesson}/ — the lesso
               '<span class="ns-reader__step-label">Next →</span>'
               '<span class="ns-reader__step-title">Fields that earn their place</span></a></div>', wide=True)),
      note("An empty slot keeps &ldquo;next&rdquo; on the right when there is no previous lesson, so the "
-          "control never jumps sides between the first lesson and the second."))
+          "control never jumps sides between the first lesson and the second."),
+     note("The sequence includes section OVERVIEWS, not just lessons: finishing a section lands you on "
+          "the next section's overview, because you want to know what it is about before its first "
+          "lesson drops you into it. Overview rows carry an explicit label naming their section — "
+          "&ldquo;Overview&rdquo; alone tells you nothing in a pager."))
 
 
 

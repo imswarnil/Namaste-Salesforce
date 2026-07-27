@@ -12,11 +12,12 @@
      .js-train-prev  .js-train-next  .js-train-finish
    plus an optional .js-train-label span that we fill with the target title.
 
-   The rail is the .ns-sidenav component, so the lesson rows are
-   `a.ns-sidenav__link` and their titles are `.ns-sidenav__text`. Section
-   OVERVIEW rows are excluded — stepping "next" from the last lesson of a
-   section should land on the next section's first LESSON, not on its overview
-   page, which the reader has no reason to revisit.
+   The rail is the .ns-sidenav component, so every row is `a.ns-sidenav__link`
+   and titles are `.ns-sidenav__text`. Overview rows are KEPT in the sequence:
+   finishing the last lesson of a section should land on the next section's
+   OVERVIEW — you want to know what the next section is about before its first
+   lesson drops you into it. Within a section, "previous" from lesson 1 goes
+   back to that section's own overview for the same reason.
    ========================================================================== */
 (function () {
   'use strict';
@@ -24,10 +25,9 @@
   var nav = document.getElementById('training-curriculum');
   if (!nav) return;
 
-  // Lesson rows only: an overview row has an icon in its __num slot, a lesson
-  // has a number, so `.ns-sidenav__num > span` is what tells them apart.
-  var links = Array.prototype.slice.call(nav.querySelectorAll('a.ns-sidenav__link'))
-    .filter(function (a) { return a.querySelector('.ns-sidenav__num > span'); });
+  // Every row, overviews included — the sequence a reader actually walks is
+  // overview, lessons, next overview, its lessons, and so on.
+  var links = Array.prototype.slice.call(nav.querySelectorAll('a.ns-sidenav__link'));
   if (!links.length) return;
 
   function normalise(href) {
@@ -51,6 +51,10 @@
   var next = links[idx + 1] || null;
 
   function labelOf(a) {
+    // An overview row reads "Overview" in the rail, where its section heading
+    // is directly above it. In the pager there is no such context, so the row
+    // carries an explicit label naming the section.
+    if (a.dataset.navLabel) return a.dataset.navLabel.trim();
     var t = a.querySelector('.ns-sidenav__text');
     return (t ? t.textContent : a.textContent).trim();
   }

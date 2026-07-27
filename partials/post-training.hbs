@@ -23,14 +23,13 @@
 
 {{> "training/subbar" section=primary_tag.name sectionUrl=primary_tag.url lesson=title}}
 
-<div class="ns-reader ns-reader--both ns-reader--wide-media">
+<div class="ns-reader ns-reader--both ns-reader--fluid ns-reader--wide-media">
 
   {{!-- ── The section rail. cur/curId drive the active row: the lesson's
        primary tag IS its section, and curId marks the lesson itself, so the
        section's "Overview" row correctly stays inactive. ── --}}
   <aside class="ns-reader__rail">
     {{> "training/curriculum" cur=primary_tag.slug curId=id}}
-    {{> "training/newsletter-widget"}}
   </aside>
 
   <div class="ns-reader__main">
@@ -53,9 +52,9 @@
         {{/has}}
         <span class="ns-lesson-chip"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% min"}}</span>
         {{#match visibility "public"}}
-          <span class="ns-badge ns-badge--dot ns-badge--success">{{t "Free"}}</span>
+          <span class="ns-badge ns-badge--dot ns-badge--success">{{t "Free to read"}}</span>
         {{else}}
-          <span class="ns-badge ns-badge--neutral"><i class="ph ph-lock" aria-hidden="true"></i>{{t "Members"}}</span>
+          <span class="ns-badge ns-badge--neutral"><i class="ph ph-lock" aria-hidden="true"></i>{{t "Members only"}}</span>
         {{/match}}
       </div>
     </div>
@@ -89,8 +88,27 @@
       {{> "components/toc"}}
     </div>
 
+    {{!-- A locked lesson says so plainly, above the excerpt Ghost leaves
+         visible — a chip alone is easy to miss when the content just stops. --}}
+    {{^has visibility="public"}}
+      {{#unless @member}}
+        <div class="ns-reader__body">
+          <div class="ns-note ns-note--warning">
+            <i class="ns-note__icon ph-fill ph-lock" aria-hidden="true"></i>
+            <div class="ns-note__body">
+              <span class="ns-note__title">{{t "Members only"}}</span> —
+              {{t "sign in to read the rest of this lesson. Membership is free."}}
+            </div>
+            <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm ns-note__action">{{t "Sign in"}}</a>
+          </div>
+        </div>
+      {{/unless}}
+    {{/has}}
+
     {{!-- ── The lesson ── --}}
     <div class="ns-reader__body gh-content prose">{{content}}</div>
+
+    <hr class="ns-reader__sep">
 
     {{!-- ── Prev / next. training-nav.js fills these in and flows across
          section boundaries, then swaps in "finish" on the last lesson. The
@@ -119,6 +137,44 @@
         <i class="ph-fill ph-chats-circle text-brand-500" aria-hidden="true"></i>{{t "Questions & discussion"}}
       </h2>
       {{comments title=""}}
+    </section>
+
+    {{!-- ── The one ask on the page, after everything else is read. It is a
+         BAND rather than a rail widget because it needs room to explain what
+         subscribing actually does — the widget in the sidebar said "new
+         lessons by email" and nothing more. ── --}}
+    <hr class="ns-reader__sep">
+
+    <section class="ns-reader__body">
+      <div class="ns-news-band ns-news-band--brand">
+        <div>
+          <span class="ns-kicker"><i class="ph-fill ph-envelope-simple" aria-hidden="true"></i>{{t "Training newsletter"}}</span>
+          <h2 class="ns-news-band__title">{{t "Get every new lesson as it lands"}}</h2>
+          <p class="ns-news-band__body">
+            {{t "Turn this on and anything added to the training — a new lesson, a new section, a rewrite of one you have already read — arrives in your inbox. Nothing else is sent to it."}}
+          </p>
+          <ul class="ns-list ns-list--check ns-list--sm ns-news-band__points">
+            <li class="ns-list__item">{{t "New lessons and sections, the day they publish"}}</li>
+            <li class="ns-list__item">{{t "Updates to lessons you have already worked through"}}</li>
+            <li class="ns-list__item">{{t "No marketing, no digest, no third parties"}}</li>
+          </ul>
+        </div>
+
+        <form data-members-form="subscribe" class="ns-news-band__form">
+          <label class="ns-field">
+            <span class="ns-field__label">{{t "Email address"}}</span>
+            <input data-members-email type="email" required placeholder="{{t "you@example.com"}}"
+                   aria-label="{{t "Email address"}}" class="ns-input">
+          </label>
+          <button type="submit" class="ns-btn ns-btn--primary ns-btn--block">
+            <span data-members-loading class="hidden"><i class="ph ph-circle-notch animate-spin" aria-hidden="true"></i></span>
+            <span data-members-default>{{t "Turn on training updates"}}</span>
+          </button>
+          <span class="ns-news-band__note">{{t "Free. One click to unsubscribe."}}</span>
+          <p data-members-success class="text-sm font-semibold text-success" hidden>{{t "Check your inbox — your magic link is on its way!"}}</p>
+          <p data-members-error class="text-sm font-semibold text-error" hidden>{{t "Something went wrong — try again."}}</p>
+        </form>
+      </div>
     </section>
 
   </div>

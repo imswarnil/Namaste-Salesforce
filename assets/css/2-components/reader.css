@@ -21,7 +21,10 @@
        __aside               on-this-page + support
 
    LAYOUT  --rail (nav only) · --both (nav + toc) · --narrow (article measure)
+           --fluid (fill the window, not the 92rem shell)
            --wide-media (the video runs past the reading column)
+   DIVIDERS  __sep between blocks — a hairline is how this system separates
+             things, so a lesson's sections are ruled, not just spaced
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -32,6 +35,13 @@
     margin-inline: auto;
     max-width: 92rem;
     padding: var(--space-section-sm) var(--space-gutter) var(--space-section);
+  }
+  /* Fluid — the reading column is already capped, so letting the SHELL fill
+     the window just gives the rails their natural width on a big screen
+     instead of stranding them in the middle. */
+  .ns-reader--fluid { max-width: none; }
+  @media (min-width: 1536px) {
+    .ns-reader--fluid { padding-inline: clamp(var(--space-gutter), 4vw, 4rem); }
   }
   @media (min-width: 1024px) {
     .ns-reader--rail { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr); }
@@ -51,6 +61,11 @@
       /* one scroll container per column — never a scrollbar inside a scrollbar */
       scrollbar-width: thin;
     }
+    /* Both rails start at the same y and use the same gap between their
+       stacked blocks, so the TOC, the ads and the section list line up
+       across the page rather than each finding its own rhythm. */
+    .ns-reader__aside { display: grid; gap: var(--grid-gutter); align-content: start; }
+    .ns-reader__rail  { display: grid; gap: var(--grid-gutter); align-content: start; }
   }
 
   .ns-reader__main { min-width: 0; }
@@ -126,6 +141,16 @@
   .ns-reader__step-title { font-weight: var(--weight-semibold); line-height: var(--leading-heading); }
   /* An empty slot keeps "next" on the right when there is no "previous" */
   .ns-reader__step--empty { border: 0; background: transparent; pointer-events: none; }
+
+  /* ── Separators — the system divides with a hairline, so a lesson's blocks
+     are ruled rather than merely spaced. ─────────────────────────────────── */
+  .ns-reader__sep {
+    max-width: var(--container-read);
+    margin-block: 2.5rem;
+    border: 0;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-reader--fluid .ns-reader__sep { max-width: none; }
 
   /* ── The mobile section bar ────────────────────────────────────────────── */
   .ns-reader__bar {
