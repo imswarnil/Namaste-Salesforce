@@ -31,6 +31,10 @@
    and the title belongs to the page, not to every section row — both moved
    out to keep the rail scannable. Progress now lives in .ns-subbar.
 
+   A section or lesson name can never break out of the rail: every ancestor is
+   min-width:0 and every text cell truncates, so a long title shortens rather
+   than widening its container.
+
    The rail never scrolls — in either axis. Sideways: every text cell is
    min-width:0 + truncate and the rail clips the x axis. Vertically: only one
    section is ever open, so the list stays short enough to fit; the rail column
@@ -79,7 +83,20 @@
 
   /* ── Group (a section) ─────────────────────────────────────────────────── */
   .ns-sidenav__group { min-width: 0; border-radius: var(--radius-btn); }
-  .ns-sidenav__group + .ns-sidenav__group { margin-top: 0.1rem; }
+  /* A rule between sections, not a gap: it holds the structure even when every
+     section is collapsed, which is most of the time. */
+  .ns-sidenav__group + .ns-sidenav__group {
+    margin-top: 0.25rem;
+    padding-top: 0.25rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  /* An open section is bracketed top and bottom, so its lessons read as
+     belonging to it rather than to the list in general. */
+  .ns-sidenav__group[open] {
+    padding-bottom: 0.25rem;
+    border-bottom: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-sidenav__group[open] + .ns-sidenav__group { border-top: 0; }
 
   .ns-sidenav__summary {
     display: flex;
@@ -235,39 +252,6 @@
     padding: 0.75rem;
   }
   .ns-sidenav--flush .ns-sidenav__head { padding-inline: 0; }
-
-  /* ── End of a section: on to the next one, without going back out to the
-     path. The last lesson of section 2 should lead into section 3. ───────── */
-  .ns-sidenav__next {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.3rem;
-    padding: 0.4rem 0.6rem;
-    border-top: var(--border-hairline) solid var(--color-border);
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    font-weight: var(--weight-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-label);
-    transition: color var(--duration-fast) var(--ease-out);
-  }
-  .ns-sidenav__next:hover { color: var(--color-brand-600); }
-  [data-theme="dark"] .ns-sidenav__next:hover { color: var(--color-brand-300); }
-  .ns-sidenav__next > span {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-transform: none;
-    letter-spacing: normal;
-    font-family: var(--font-sans);
-    font-size: var(--size-small);
-    font-weight: var(--weight-semibold);
-    color: var(--color-ink);
-  }
 
   /* ── Footer action (back to the track, finish, etc.) ───────────────────── */
   .ns-sidenav__foot {

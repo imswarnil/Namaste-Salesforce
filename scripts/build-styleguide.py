@@ -1798,16 +1798,26 @@ page("Training", "training-nav", "Training navigation",
                                '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
                                '<span class="ns-sidenav__stitle">Open section</span>'
                                '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
-     head("End of a section"),
-     note("When a section's lessons run out, the next section starts — without a trip back out to the "
-          "path. That row is the last thing in every list but the final one."),
-     row(spec(".ns-sidenav__next",
-              '<div class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
-              '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>3</span></span>'
-              '<span class="ns-sidenav__text">How to use this training</span>'
-              '<span class="ns-sidenav__meta">5m</span></a>'
-              '<a class="ns-sidenav__next" href="#!">Next<span>Build Your First App</span>'
-              '<i class="ph ph-arrow-right"></i></a></div></div>', wide=True)),
+     head("Sections are ruled, not spaced"),
+     note("A hairline separates one section from the next, and an open section is bracketed top and "
+          "bottom so its lessons read as belonging to it. Gaps alone would not survive a collapsed "
+          "accordion — which is most of the time — where the whole rail becomes one undifferentiated "
+          "list. Getting from one section to the next is the pager's job at the foot of the lesson, "
+          "not a row inside the navigation."),
+     head("A title can never break out"),
+     note("Every ancestor of the rail is <code>min-width: 0</code> and every text cell truncates, so a "
+          "long section or lesson name shortens rather than widening its container."),
+     row(spec("long titles truncate",
+              '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">'
+              '<details class="ns-sidenav__group" open><summary class="ns-sidenav__summary">'
+              '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
+              '<span class="ns-sidenav__stitle">A section with a deliberately very long name</span>'
+              '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary>'
+              '<div class="ns-sidenav__list">'
+              '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>1</span></span>'
+              '<i class="ns-sidenav__type ph-fill ph-play-circle"></i>'
+              '<span class="ns-sidenav__text">A lesson title that runs on far past the rail width</span>'
+              '<span class="ns-sidenav__meta">12m</span></a></div></details></nav>', wide=True)),
      head("States"),
      note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
           "uses. <code>.is-done</code> swaps the number for a tick and steps the title back. "
