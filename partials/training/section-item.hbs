@@ -92,7 +92,7 @@
   {{!-- ── One section row in the training search results ── --}}
   <a href="{{url}}" data-t="{{title}}"
      x-show="$el.dataset.t.toLowerCase().includes(q.trim().toLowerCase())"
-     class="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition hover:bg-surface-sunken">
+     class="flex items-center gap-2.5 rounded-btn px-2.5 py-2 text-sm transition hover:bg-surface-sunken">
     <i class="ph-fill ph-steps shrink-0 text-brand-500" aria-hidden="true"></i>
     <span class="min-w-0 flex-1 truncate font-semibold text-ink">{{title}}</span>
     <span class="ns-badge shrink-0">{{t "Section"}}</span>
@@ -138,11 +138,11 @@
        section expanded. ── --}}
   <details class="train-sec group/sec" data-sec="{{slug}}" {{#match cur slug}}open{{/match}}
            x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))">
-    <summary class="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-semibold text-ink transition hover:bg-surface-sunken [&::-webkit-details-marker]:hidden">
+    <summary class="flex cursor-pointer select-none items-center gap-2.5 rounded-btn px-2 py-2 text-sm font-semibold text-ink transition hover:bg-surface-sunken [&::-webkit-details-marker]:hidden">
       <i class="ph-fill ph-steps shrink-0 text-base text-brand-500" aria-hidden="true"></i>
       <span class="min-w-0 flex-1">{{title}}</span>
       {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
-        <span class="shrink-0 rounded-pill bg-surface-sunken px-1.5 py-0.5 text-[0.65rem] font-bold text-muted">{{pagination.total}}</span>
+        <span class="ns-index shrink-0 text-xs text-label">{{pagination.total}}</span>
       {{/get}}
       <i class="ph ph-caret-right shrink-0 text-xs text-muted transition-transform group-open/sec:rotate-90" aria-hidden="true"></i>
     </summary>
@@ -153,7 +153,7 @@
            current section. --}}
       <li class="{{#unless curId}}{{#match cur slug}}is-active{{/match}}{{/unless}}">
         <a href="{{url}}" data-title="{{title}} overview" @click="$store.lessonNav.close()"
-           class="doc-nav-link flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#unless curId}}{{#match cur slug}}is-doc-active{{/match}}{{/unless}}">
+           class="doc-nav-link flex items-center justify-between gap-2 rounded-btn px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#unless curId}}{{#match cur slug}}is-doc-active{{/match}}{{/unless}}">
           <span class="flex min-w-0 items-center gap-2">
             <i class="{{#unless curId}}{{#match cur slug}}ph-fill ph-play-circle{{else}}ph ph-squares-four{{/match}}{{else}}ph ph-squares-four{{/unless}} shrink-0" aria-hidden="true"></i>
             <span class="truncate">{{t "Overview"}}</span>
@@ -166,7 +166,7 @@
           <li x-show="q === '' || $el.querySelector('a').dataset.title.toLowerCase().includes(q.toLowerCase())"
               class="{{#match id ../../curId}}is-active{{/match}}">
             <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
-               class="doc-nav-link flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../curId}}is-doc-active{{/match}}">
+               class="doc-nav-link flex items-center justify-between gap-2 rounded-btn px-2 py-1.5 text-sm text-muted transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../curId}}is-doc-active{{/match}}">
               <span class="flex min-w-0 items-center gap-2">
                 <i class="{{#match id ../../curId}}ph-fill ph-play-circle{{else has tag="#training-type-video"}}ph ph-video-camera{{else has tag="#training-type-exercise"}}ph ph-barbell{{else has tag="#training-type-quiz"}}ph ph-exam{{else}}ph ph-file-text{{/match}} shrink-0" aria-hidden="true"></i>
                 <span class="truncate">{{title}}</span>

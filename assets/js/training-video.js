@@ -2,7 +2,7 @@
    training-video.js — video-module hero player + timestamp deep links
    ----------------------------------------------------------------------------
    On #training-type-video modules, post-training.hbs renders a hero media slot
-   `[data-video-hero]` (poster image / gradient fallback). This script:
+   `[data-video-hero]` (poster image, else a hairline-bordered black slot). This script:
    1. Moves the FIRST embedded video found in `.gh-content` (YouTube/Vimeo
       iframe or a native <video>) up into that hero slot, replacing the poster
       — so the video always plays from the hero, not mid-article.

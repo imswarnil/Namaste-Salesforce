@@ -1,21 +1,20 @@
 # Namaste Salesforce — Changes & TODO
 
-A running log of what's been built on the theme and what's left. Nothing is
-committed to git yet — review, then commit when you're happy.
+A running log of what's been built on the theme and what's left.
 
 ---
 
 ## ✅ Done
 
-### Design system — "Namaste UI" (SLDS blue)
-- `assets/css/namaste-ui/` — `tokens · base · overrides · components · navbar · course` (imported by `screen.css`).
-- SLDS-blue palette, primitives: `.ns-btn` (solid brand, **no gradient**), `.ns-kicker`, `.ns-chip`, `.ns-badge`, `.ns-input`, `.ns-aurora`, `.ns-level`, `.ns-price-tag`, etc.
-- Dark mode, branded scrollbar, `overflow-x: clip` guard.
+### Design system — "Developer Console"
+- Three numbered layers imported by `screen.css`: `assets/css/0-foundation/` (tokens, vars, `@utility` mixins — nothing that paints UI) → `assets/css/1-elements/` (bare HTML) → `assets/css/2-components/` (the UI library). The old `namaste-ui/` and `theme/` folders are gone.
+- Primitives: `.ns-btn` (+`--primary/--accent/--white/--glass/--outline`, `--sm/--lg`), `.ns-kicker` (a mono `//` comment), `.ns-chip`, `.ns-badge`, `.ns-input`, `.ns-code`, plus the mixins `ns-label` / `ns-index` / `ns-hairline` / `ns-dot-marker` / `ns-transition`.
+- Five rules (`0-foundation/README.md`): hairline borders are the structure, one signal blue, mono for every label/index, sharp geometry (6px card / 4px button, pills only for true tags), instant 120–180ms motion. No gradients, glass, glow, or hover lifts.
+- Fira Code is the mono face; dark mode is brand navy. Live docs at `/docs/design-system/`; specimen sheet in `demo.html`.
 
 ### Navigation & headers
 - **Full-width navbar**, menu items **centered**; plain login icon that becomes an **avatar + dropdown** (with "Become Author") when signed in.
 - **Custom settings** (Ghost Admin → Design): `navbar_behavior` (Sticky / Fixed on scroll / Island on scroll / Static), show search/github/sponsor toggles, become-author URL.
-- **"# Topics" hover dropdown** next to the logo → tag cloud.
 - **Course-player header** for lessons/modules (logo · centered nav · ✕ back-to-course); mobile **left hamburger** opens the lesson drawer below the navbar; **minimal lesson footer**.
 
 ### URLs (routes.yaml)

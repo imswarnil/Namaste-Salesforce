@@ -222,4 +222,4 @@ a lesson whose section has no route still resolves, but links back to a 404.
 | `partials/training/curriculum.hbs` | the left-hand lesson rail |
 | `partials/post-training.hbs` | a lesson page |
 | `assets/js/training-video.js` | hero video adoption + timestamp seeking |
-| `assets/css/theme/course.css` | `.ns-road*` roadmap styles, rail, lesson page |
+| `assets/css/2-components/course.css` | `.ns-road*` roadmap styles, rail, lesson page |

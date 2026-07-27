@@ -240,4 +240,4 @@ drop shadow, bevel, emboss, dark vignette
 - Keep one image per section/course consistent over time — the roadmap reads as
   a set, and a mismatched thumbnail is obvious in the grid.
 - Sources of truth if you ever need to re-derive the palette:
-  `assets/css/screen.css` (`@theme` block) and `assets/css/theme/tokens.css`.
+  `assets/css/0-foundation/colors.css` and the rest of `assets/css/0-foundation/`.
