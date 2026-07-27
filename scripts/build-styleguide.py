@@ -1933,6 +1933,13 @@ page("Training", "training-nav", "Training navigation",
           "actually true: one page, with navigation down one side and contents down the other. It is "
           "the house rule at page scale, the same reason a section in the rail is divided by a rule "
           "rather than a gap."),
+     note("<b>Neither side column is boxed.</b> The rule beside a column already separates it from the "
+          "lesson, so a border around what is inside it draws the same boundary a second time, one "
+          "centimetre in. Both rails sit directly on the page: no card around the contents widget, no "
+          "rule under the progress readout, no line under a widget head. That is the whole point of "
+          "having one strong divider — once the page is ruled into columns, everything inside a column "
+          "can be flat, and flat is what makes a rail scannable, because every hairline is a thing the "
+          "eye has to decide is not a boundary it cares about."),
      note("<b>The rules run the full height of the page</b>, header to footer — not the height of what "
           "is in each column. That is why they are pseudo-elements on the shell rather than borders on "
           "the rails: a rail is sticky and only as tall as the viewport, so a border on it would stop "

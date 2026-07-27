@@ -80,6 +80,34 @@
        calc. A clamped gap would drift the line off centre as the viewport
        changed, which is worse than no line at all. */
     .ns-reader--ruled { position: relative; gap: var(--grid-gutter); }
+
+    /* ── Neither side column is BOXED ──────────────────────────────────────
+       The rule beside a column already separates it from the lesson, so a
+       border around what is inside it draws the same boundary a second time,
+       one centimetre in. Both rails sit directly on the page: no card around
+       the contents widget, no rule under the progress readout, no line under
+       the rail's head.
+
+       This is the whole point of having one strong divider. Once the page is
+       ruled into columns, everything inside a column can be flat — and flat is
+       what makes a rail scannable, because every hairline is a thing the eye
+       has to decide is not a boundary it cares about. */
+    .ns-reader--ruled :where(.ns-reader__rail, .ns-reader__aside) .ns-widget {
+      border: 0;
+      background: none;
+      padding: 0;
+    }
+    .ns-reader--ruled :where(.ns-reader__rail, .ns-reader__aside) .ns-widget + .ns-widget {
+      margin-top: var(--space-gap);
+    }
+    /* The widget head keeps its label and loses its rule — the label is doing
+       the work, and a hairline under two words is a box drawn round nothing. */
+    .ns-reader--ruled :where(.ns-reader__rail, .ns-reader__aside) .ns-widget__head {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .ns-reader--ruled .ns-sidenav__head,
+    .ns-reader--ruled .ns-sidenav__foot { border: 0; }
     .ns-reader--ruled::before,
     .ns-reader--ruled::after {
       content: "";
