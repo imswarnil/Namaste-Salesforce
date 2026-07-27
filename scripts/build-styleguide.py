@@ -1655,7 +1655,8 @@ def _sidenav(open_index=1):
             icon = ("ph-play-circle" if n == 0 else
                     "ph-barbell" if n == 2 else "ph-article")
             out.append('<a class="ns-sidenav__link%s" href="#!">'
-                       '<span class="ns-sidenav__num"><span>%d</span></span>'
+                       '<span class="ns-sidenav__num"><span>%d</span>'
+                       '<i class="ph-fill ph-lock-simple"></i></span>'
                        '<i class="ns-sidenav__type ph-fill %s"></i>'
                        '<span class="ns-sidenav__text">%s</span>'
                        '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, icon, lt, ld))
@@ -1878,12 +1879,22 @@ page("Training", "training-nav", "Training navigation",
      head("States"),
      note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
           "uses. <code>.is-done</code> swaps the number for a tick and steps the title back."),
-     note("<code>.is-locked</code> does NOT grey the row out. Greying says &ldquo;broken&rdquo;, when what is "
-          "true is &ldquo;you need an account&rdquo; — so the row stays readable, the type icon steps back, and "
-          "the lock carries the warning colour as the single signal."),
+     note("All three states read in ONE place — the marker slot. Normally it holds the lesson number; "
+          "<code>.is-done</code> swaps it for a tick, <code>.is-locked</code> for a lock. The eye "
+          "learns one position instead of three, and the row itself never has to change colour to "
+          "carry the message: a members-only lesson looks like every other lesson except for the glyph "
+          "where its number would be. Greying it out would say &ldquo;broken&rdquo;, when what is true is &ldquo;you "
+          "need an account&rdquo;."),
+     head("Spacing"),
+     note("The rail spends the foundation's tokens — <code>--space-row-sm</code> and "
+          "<code>--space-inline</code> for rows, <code>--space-gap-sm</code> for gaps and either side "
+          "of the section rules. It had drifted onto its own invented scale (0.2, 0.35, 0.45, 0.5, "
+          "0.65, 0.75rem …), which is exactly how a component stops looking like the rest of the "
+          "theme."),
      row(spec("link states",
               '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
-              '<a class="ns-sidenav__link is-done" href="#!"><span class="ns-sidenav__num"><span>1</span></span>'
+              '<a class="ns-sidenav__link is-done" href="#!">'
+              '<span class="ns-sidenav__num"><span>1</span><i class="ph-fill ph-lock-simple"></i></span>'
               '<span class="ns-sidenav__text">What is Salesforce?</span>'
               '<span class="ns-sidenav__meta">6m</span></a>'
               '<a class="ns-sidenav__link is-current" href="#!"><span class="ns-sidenav__num"><span>2</span></span>'
@@ -1892,10 +1903,11 @@ page("Training", "training-nav", "Training navigation",
               '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>3</span></span>'
               '<span class="ns-sidenav__text">How to use this training</span>'
               '<span class="ns-sidenav__meta">5m</span></a>'
-              '<a class="ns-sidenav__link is-locked" href="#!"><span class="ns-sidenav__num"><span>4</span></span>'
+              '<a class="ns-sidenav__link is-locked" href="#!">'
+              '<span class="ns-sidenav__num"><span>4</span><i class="ph-fill ph-lock-simple"></i></span>'
               '<i class="ns-sidenav__type ph-fill ph-article"></i>'
               '<span class="ns-sidenav__text">Objects and fields</span>'
-              '<span class="ns-sidenav__meta"><i class="ph-fill ph-lock"></i>Members</span></a>'
+              '<span class="ns-sidenav__meta">18m</span></a>'
               '</div></nav>', wide=True)))
 
 page("Training", "training-section", "Training section",

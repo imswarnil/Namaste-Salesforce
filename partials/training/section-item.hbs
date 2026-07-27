@@ -198,12 +198,16 @@
           <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
              x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
              class="ns-sidenav__link{{#match id ../../curId}} is-current{{/match}}{{^has visibility="public"}} is-locked{{/has}}">
-            <span class="ns-sidenav__num"><span>{{@number}}</span></span>
+            {{!-- One marker slot, three states: the number normally, a tick
+                 when done, a lock when members-only. Same slot every time, so
+                 the eye only has to learn one place to look. --}}
+            <span class="ns-sidenav__num">
+              <span>{{@number}}</span>
+              <i class="ph-fill ph-lock-simple" aria-hidden="true"></i>
+            </span>
             <i class="ns-sidenav__type {{#has tag="#training-video"}}ph-fill ph-play-circle{{else has tag="#training-exercise"}}ph-fill ph-barbell{{else has tag="#training-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
             <span class="ns-sidenav__text">{{title}}</span>
-            <span class="ns-sidenav__meta">
-              {{^has visibility="public"}}<i class="ph ph-lock" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
-            </span>
+            <span class="ns-sidenav__meta">{{reading_time minute="1m" minutes="%m"}}</span>
           </a>
         {{/foreach}}
       {{/get}}
