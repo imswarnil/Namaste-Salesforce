@@ -60,6 +60,16 @@
   /* Numbered — a mono index, the same readout as steps and curriculum rows. */
   .ns-list--num { counter-reset: ns-list; }
   .ns-list--num .ns-list__item { counter-increment: ns-list; }
+
+  /* ── Locked row ────────────────────────────────────────────────────────────
+     A members-only row steps back rather than shouting. Dimming is the honest
+     signal: everything you can act on is at full strength, everything you
+     cannot is quieter — no warning colour, because "you need an account" is
+     not an error. Hover restores it, since the row is still a link and must
+     never look disabled under the cursor. */
+  .ns-list__item.is-locked { opacity: 0.5; transition: opacity var(--duration-fast) var(--ease-out); }
+  .ns-list__item.is-locked:hover,
+  .ns-list__item.is-locked:focus-within { opacity: 1; }
   .ns-list--num .ns-list__item::before {
     content: counter(ns-list, decimal-leading-zero);
     flex-shrink: 0;

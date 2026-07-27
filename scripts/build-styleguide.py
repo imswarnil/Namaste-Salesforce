@@ -1881,10 +1881,18 @@ page("Training", "training-nav", "Training navigation",
           "uses. <code>.is-done</code> swaps the number for a tick and steps the title back."),
      note("All three states read in ONE place — the marker slot. Normally it holds the lesson number; "
           "<code>.is-done</code> swaps it for a tick, <code>.is-locked</code> for a lock. The eye "
-          "learns one position instead of three, and the row itself never has to change colour to "
-          "carry the message: a members-only lesson looks like every other lesson except for the glyph "
-          "where its number would be. Greying it out would say &ldquo;broken&rdquo;, when what is true is &ldquo;you "
-          "need an account&rdquo;."),
+          "learns one position instead of three, and the row never has to move or resize to carry "
+          "the message."),
+     note("<code>.is-locked</code> additionally DIMS the row to 50%. Dimming is the honest signal in "
+          "a scanned list: everything you can act on sits at full strength, everything you cannot is "
+          "quieter — no warning colour, because &ldquo;you need an account&rdquo; is not an error. Hover "
+          "restores it completely, since the row is still a link (it goes to the lesson page, which is "
+          "where the sign-up is) and must never look disabled under the cursor. The same rule applies "
+          "wherever a locked lesson appears: <code>.ns-list__item.is-locked</code> on a section page "
+          "and <code>.ns-track-card__lesson.is-locked</code> in a track card preview."),
+     note("What you will NOT find anywhere: a count of how many lessons are free, or a badge naming a "
+          "tier. A tally like &ldquo;1 free&rdquo; is noise at best and looks broken at worst, and a section is "
+          "a section — not a price. The lock on the individual row is the whole access story."),
      head("Spacing"),
      note("The rail spends the foundation's tokens — <code>--space-row-sm</code> and "
           "<code>--space-inline</code> for rows, <code>--space-gap-sm</code> for gaps and either side "

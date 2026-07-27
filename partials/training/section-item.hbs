@@ -49,9 +49,6 @@
 
       <div class="ns-track-card__head">
         <h3 class="ns-track-card__title"><a href="{{url}}">{{title}}</a></h3>
-        {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:-public" limit="1"}}
-          {{#if posts}}<span class="ns-badge ns-badge--neutral"><i class="ph ph-lock" aria-hidden="true"></i>{{t "Members"}}</span>{{/if}}
-        {{/get}}
       </div>
 
       {{#if custom_excerpt}}<p class="ns-track-card__excerpt">{{custom_excerpt}}</p>{{/if}}
@@ -59,9 +56,6 @@
       <div class="ns-track-card__meta">
         {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
           <span>{{pagination.total}} {{t "lessons"}}</span>
-        {{/get}}
-        {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:public" limit="1"}}
-          {{#if pagination.total}}<span>{{pagination.total}} {{t "free"}}</span>{{/if}}
         {{/get}}
       </div>
 
@@ -71,11 +65,11 @@
         {{#if posts}}
           <div class="ns-track-card__lessons">
             {{#foreach posts}}
-              <a class="ns-track-card__lesson" href="{{url}}">
+              <a class="ns-track-card__lesson{{^has visibility="public"}} is-locked{{/has}}" href="{{url}}">
                 <i class="ph-fill {{#has tag="#training-video"}}ph-play-circle{{else has tag="#training-exercise"}}ph-barbell{{else has tag="#training-quiz"}}ph-exam{{else}}ph-article{{/has}}" aria-hidden="true"></i>
                 <span>{{title}}</span>
                 <span class="ns-track-card__lesson-meta">
-                  {{^has visibility="public"}}<i class="ph ph-lock" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
+                  {{^has visibility="public"}}<i class="ph-fill ph-lock-simple" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
                 </span>
               </a>
             {{/foreach}}
@@ -97,7 +91,6 @@
         <span class="ns-plist__title">{{title}}</span>
         <span class="ns-plist__meta">
           {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}<i class="ph ph-stack" aria-hidden="true"></i>{{pagination.total}} {{t "lessons"}}{{/get}}
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content+visibility:public" limit="1"}}{{#if pagination.total}} · {{pagination.total}} {{t "free"}}{{/if}}{{/get}}
         </span>
       </span>
       <i class="ph ph-caret-right ns-plist__arrow" aria-hidden="true"></i>

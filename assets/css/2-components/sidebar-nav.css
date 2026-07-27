@@ -25,7 +25,9 @@
              __num  __text  __meta
          __next             on to the next section, at the end of a list
      STATES  .is-current (the open page) · .is-done · .is-locked
-             — all three read in the MARKER slot: number, tick, lock
+             — all three read in the MARKER slot: number, tick, lock.
+               .is-locked additionally dims the whole row, and hover
+               restores it — see the states block at the bottom.
 
    Deliberately NOT here: a lesson count on the section row, and the training
    title + progress. The count repeats what the expanded list already shows,
@@ -45,11 +47,14 @@
    SIZE    --sm  (default)  --lg
    FORM    --boxed (a card around the rail) · --flush (no outer padding)
 
-   SPACING comes from the foundation, not from this file. Rows use
-   --space-row-sm / --space-inline, gaps use --space-gap-sm, and the section
-   rules use --space-gap-sm either side. The rail had drifted onto its own
-   invented scale (0.2, 0.35, 0.45, 0.5, 0.65, 0.75rem …), which is exactly
-   how a component stops looking like the rest of the theme.
+   SPACING comes from the foundation, not from this file — every value in here
+   is a --space-* token. Rows use --space-row-sm / --space-inline (--space-row-xs
+   in the --sm variant), gaps use --space-gap-xs, and the section rules use
+   --space-gap-sm either side. The rail had drifted onto its own invented scale
+   (0.15, 0.25, 0.35, 0.4, 0.45, 0.5, 0.6, 0.65, 0.75rem …), which is exactly how
+   a component stops looking like the rest of the theme. Note that the SIZE
+   variant is the thing to check first when rail spacing looks wrong: it sets
+   padding-block, so a hard-coded value there silently beats the base rule.
 
    Rows are deliberately taller than the type needs. A rail is scanned, not
    read, and a scannable list needs air between its items far more than it
@@ -66,7 +71,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100%;
-    gap: 0.15rem;
+    gap: var(--space-gap-xs);
     min-width: 0;
     overflow-x: hidden;      /* a rail that scrolls sideways cannot be read */
     font-size: var(--size-small);
@@ -76,7 +81,7 @@
   .ns-sidenav__head {
     padding: 0 var(--space-inline) var(--space-gap-sm);
     border-bottom: var(--border-hairline) solid var(--color-border);
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-gap-sm);
   }
   .ns-sidenav__title {
     display: block;
@@ -87,9 +92,9 @@
     text-transform: uppercase;
     color: var(--color-label);
   }
-  .ns-sidenav__progress { margin-top: 0.6rem; }
+  .ns-sidenav__progress { margin-top: var(--space-gap-sm); }
   .ns-sidenav__readout {
-    margin-top: 0.35rem;
+    margin-top: var(--space-gap-xs);
     display: flex;
     justify-content: space-between;
     font-family: var(--font-mono);
@@ -186,9 +191,9 @@
      lesson title, which is the only thing in the row worth reading. */
   .ns-sidenav__list {
     display: grid;
-    gap: 0.125rem;
+    gap: var(--space-gap-xs);
     min-width: 0;
-    margin: 0.25rem 0 var(--space-gap-sm) var(--space-card);
+    margin: var(--space-gap-xs) 0 var(--space-gap-sm) var(--space-card);
     padding-left: var(--space-gap-sm);
     border-left: var(--border-hairline) solid var(--color-border);
   }
@@ -262,20 +267,28 @@
   .ns-sidenav__link.is-done .ns-sidenav__num > span { display: none; }
   .ns-sidenav__link.is-done .ns-sidenav__text { color: var(--color-muted); }
 
-  /* Members-only. The row stays fully readable — greying it out says "broken"
-     when what is true is "you need an account" — and the lock simply takes the
-     marker slot. No colour shouting, no second signal: a locked lesson looks
-     like every other lesson except for the glyph where its number would be. */
+  /* Members-only: the row STEPS BACK. It dims and the lock takes the marker
+     slot — no warning colour, because a locked lesson is not an error, it is
+     simply not yours yet. Dimming says that in the one language a scanned list
+     already speaks: things you can act on are at full strength, things you
+     cannot are quieter.
+
+     Hover restores it completely. The row is still a link — it goes to the
+     lesson page, which is where the sign-up is — so it must never look
+     disabled under the cursor. */
+  .ns-sidenav__link.is-locked { opacity: 0.5; }
+  .ns-sidenav__link.is-locked:hover { opacity: 1; }
   .ns-sidenav__link.is-locked .ns-sidenav__num > span { display: none; }
   .ns-sidenav__link.is-locked .ns-sidenav__num > i { display: inline; font-size: 0.8em; }
-  .ns-sidenav__link.is-locked .ns-sidenav__num { color: var(--color-label); }
-  .ns-sidenav__link.is-locked:hover .ns-sidenav__num { color: var(--color-brand-600); }
-  [data-theme="dark"] .ns-sidenav__link.is-locked:hover .ns-sidenav__num { color: var(--color-brand-300); }
-  .ns-sidenav__link.is-current.is-locked .ns-sidenav__num { color: rgb(255 255 255 / 0.8); }
+  .ns-sidenav__link.is-locked :where(.ns-sidenav__num, .ns-sidenav__text) { color: var(--color-label); }
+  .ns-sidenav__link.is-locked:hover :where(.ns-sidenav__num, .ns-sidenav__text) { color: inherit; }
+  /* …unless it is the page you are on. You are reading it, so it is yours. */
+  .ns-sidenav__link.is-current.is-locked { opacity: 1; }
+  .ns-sidenav__link.is-current.is-locked :where(.ns-sidenav__num, .ns-sidenav__text) { color: inherit; }
 
   /* ── Sizes + forms ─────────────────────────────────────────────────────── */
   .ns-sidenav--sm { font-size: 0.8125rem; }
-  .ns-sidenav--sm :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: 0.45rem; }
+  .ns-sidenav--sm :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: var(--space-row-xs); }
   .ns-sidenav--lg :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: var(--space-row); }
   .ns-sidenav--lg { font-size: var(--size-body); }
 
@@ -283,7 +296,7 @@
     border: var(--border-hairline) solid var(--color-border);
     border-radius: var(--radius-card);
     background: var(--color-surface-raised);
-    padding: 0.75rem;
+    padding: var(--space-gap-sm);
   }
   .ns-sidenav--flush .ns-sidenav__head { padding-inline: 0; }
 
@@ -292,9 +305,9 @@
   .ns-sidenav__back {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: var(--space-gap-xs);
     margin-bottom: var(--space-card);
-    padding: 0.25rem var(--space-inline);
+    padding: var(--space-gap-xs) var(--space-inline);
     font-family: var(--font-mono);
     font-size: var(--size-label);
     font-weight: var(--weight-label);
@@ -303,7 +316,7 @@
     color: var(--color-label);
     transition: color var(--duration-fast) var(--ease-out), gap var(--duration-fast) var(--ease-out);
   }
-  .ns-sidenav__back:hover { color: var(--color-brand-600); gap: 0.6rem; }
+  .ns-sidenav__back:hover { color: var(--color-brand-600); gap: calc(var(--space-gap-xs) * 2); }
   [data-theme="dark"] .ns-sidenav__back:hover { color: var(--color-brand-300); }
 
   /* ── Foot — the progress readout, pinned to the bottom of the rail ─────── */
@@ -321,7 +334,7 @@
     background: var(--color-surface);
     padding-block: var(--space-gap-sm);
   }
-  .ns-sidenav__foot--sticky .ns-sidenav__readout { margin-top: 0.4rem; }
+  .ns-sidenav__foot--sticky .ns-sidenav__readout { margin-top: var(--space-gap-xs); }
 }
 
 @media (prefers-reduced-motion: reduce) {
