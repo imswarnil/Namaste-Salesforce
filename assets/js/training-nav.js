@@ -82,6 +82,14 @@
   apply('.js-train-prev', prev, 'prev');
   apply('.js-train-next', next, 'next');
 
+  // With a previous link present the pair fills both columns, so the no-JS
+  // spacer would push "next" onto a second row — drop it.
+  if (prev) {
+    document.querySelectorAll('.ns-reader__foot').forEach(function (el) {
+      el.classList.add('has-prev');
+    });
+  }
+
   // No next module anywhere → reveal the Finish button.
   if (!next) {
     document.querySelectorAll('.js-train-finish').forEach(function (el) {

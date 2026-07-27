@@ -2002,14 +2002,24 @@ page("Training", "training-lesson", "Training lesson",
               '<span class="ns-news-band__note">Free. One click to unsubscribe.</span></form>'
               '</div>', wide=True)),
      head("Prev / next"),
-     row(spec(".ns-reader__foot",
+     row(spec("both — half and half",
+              '<div class="ns-reader__foot has-prev demo-w-full">'
+              '<a class="ns-reader__step" href="#!">'
+              '<span class="ns-reader__step-label">← Previous</span>'
+              '<span class="ns-reader__step-title">What is Salesforce?</span></a>'
+              '<a class="ns-reader__step ns-reader__step--next" href="#!">'
+              '<span class="ns-reader__step-label">Next →</span>'
+              '<span class="ns-reader__step-title">Fields that earn their place</span></a></div>', wide=True)),
+     row(spec("next only", 
               '<div class="ns-reader__foot demo-w-full">'
               '<span class="ns-reader__step ns-reader__step--empty"></span>'
               '<a class="ns-reader__step ns-reader__step--next" href="#!">'
               '<span class="ns-reader__step-label">Next →</span>'
               '<span class="ns-reader__step-title">Fields that earn their place</span></a></div>', wide=True)),
-     note("An empty slot keeps &ldquo;next&rdquo; on the right when there is no previous lesson, so the "
-          "control never jumps sides between the first lesson and the second."),
+     note("Prev and next are pinned to explicit grid columns, so the pair always reads half-and-half "
+          "on ONE row and a lone &ldquo;next&rdquo; still sits on the right rather than stretching across. The "
+          "spacer is only a no-JS fallback — <code>.has-prev</code> removes it once a previous link "
+          "exists, which is what stopped &ldquo;next&rdquo; wrapping to a second row."),
      note("The sequence includes section OVERVIEWS, not just lessons: finishing a section lands you on "
           "the next section's overview, because you want to know what it is about before its first "
           "lesson drops you into it. Overview rows carry an explicit label naming their section — "

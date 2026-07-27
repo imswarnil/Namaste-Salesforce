@@ -66,6 +66,11 @@
        across the page rather than each finding its own rhythm. */
     .ns-reader__aside { display: grid; gap: var(--grid-gutter); align-content: start; }
     .ns-reader__rail  { display: grid; gap: var(--grid-gutter); align-content: start; }
+    /* Both rails scroll inside themselves, so the last block needs room under
+       it — otherwise the ad or the "All sections" button ends flush against
+       the bottom edge with nothing to show the column has ended. */
+    .ns-reader__rail,
+    .ns-reader__aside { padding-bottom: var(--space-section-sm); }
   }
 
   .ns-reader__main { min-width: 0; }
@@ -117,6 +122,7 @@
     max-width: var(--container-read);
   }
   @media (min-width: 640px) { .ns-reader__foot { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 639.98px) { .ns-reader__step--empty { display: none; } }
 
   .ns-reader__step {
     display: flex;
@@ -130,6 +136,11 @@
   }
   .ns-reader__step:hover { border-color: var(--color-brand-500); }
   .ns-reader__step--next { text-align: right; }
+  /* Prev is always the first column and next always the second, whichever of
+     them exists — so the pair reads half-and-half on one row and a lone
+     "next" still sits on the right instead of stretching across. */
+  .ns-reader__step:not(.ns-reader__step--next) { grid-column: 1; }
+  .ns-reader__step--next { grid-column: 2; }
   .ns-reader__step-label {
     font-family: var(--font-mono);
     font-size: var(--size-label);
@@ -139,8 +150,10 @@
     color: var(--color-label);
   }
   .ns-reader__step-title { font-weight: var(--weight-semibold); line-height: var(--leading-heading); }
-  /* An empty slot keeps "next" on the right when there is no "previous" */
+  /* The spacer is a fallback for no-JS: explicit grid columns already keep
+     "next" on the right, so it is hidden as soon as a previous link exists. */
   .ns-reader__step--empty { border: 0; background: transparent; pointer-events: none; }
+  .ns-reader__foot.has-prev .ns-reader__step--empty { display: none; }
 
   /* ── Separators — the system divides with a hairline, so a lesson's blocks
      are ruled rather than merely spaced. ─────────────────────────────────── */
