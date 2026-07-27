@@ -169,6 +169,14 @@
                       {{else has tag="#training-quiz"}}<i class="ph-fill ph-exam" aria-hidden="true"></i>{{t "Quiz"}}
                       {{else}}<i class="ph-fill ph-article" aria-hidden="true"></i>{{t "Article"}}{{/has}}
                     </span>
+                    {{!-- Only the locked ones are badged. A "Free" badge on
+                         everything else would be a label on the normal case,
+                         which is how a list ends up saying nothing: if almost
+                         every row carries a badge, the badge stops being a
+                         signal and becomes part of the row. --}}
+                    {{^has visibility="public"}}
+                      <span class="ns-badge ns-badge--sm ns-badge--neutral"><i class="ph-fill ph-lock-simple" aria-hidden="true"></i>{{t "Members only"}}</span>
+                    {{/has}}
                   </span>
                 </a>
                 <span class="ns-list__meta">{{reading_time minute="1 min" minutes="% mins"}}</span>
