@@ -4,8 +4,10 @@
   ----------------------------------------------------------------------------
   Layout: brand (logo + title) left · course name + inline progress centered
   (desktop only) · actions + a ✕ close at the END that returns to the parent
-  course/track. On mobile a HAMBURGER (right side) opens the lesson list as a
-  drawer below the navbar (Alpine store `lessonNav`, panel lives in the aside).
+  course/track. On a COURSE, a hamburger opens the lesson list as a drawer
+  below the navbar (Alpine store `lessonNav`, panel lives in the aside). The
+  training does not use it — it has a floating button instead, so the site
+  header never doubles as a training control.
   Progress is computed from the lesson list (.doc-nav-link + .is-doc-active).
 ═══════════════════════════════════════════════════════════════════════════ --}}
 {{!-- Register the cross-component store BEFORE the deferred Alpine bundle runs
@@ -25,13 +27,18 @@
   <div class="ns-nav__bar relative flex w-full items-center gap-2 px-4 py-2.5 sm:gap-3 sm:px-6 lg:px-8">
 
     {{!-- Hamburger — LEFT of the brand; opens the lesson drawer (mobile/tablet
-         only; desktop shows the static aside). --}}
-    <button type="button" class="icon-btn shrink-0 lg:hidden"
-            @click="$store.lessonNav.toggle()" :aria-expanded="$store.lessonNav.open.toString()"
-            aria-controls="lesson-list" aria-label="{{t "Course lessons"}}">
-      <span x-show="!$store.lessonNav.open">{{> "icons/menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
-      <span x-show="$store.lessonNav.open" x-cloak>{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}</span>
-    </button>
+         only; desktop shows the static aside). COURSES ONLY: the training has
+         its own floating button (training/nav-button.hbs), because a menu icon
+         in the site header that opens a lesson list is a lie about what the
+         site menu does. --}}
+    {{#has tag="#lesson"}}
+      <button type="button" class="icon-btn shrink-0 lg:hidden"
+              @click="$store.lessonNav.toggle()" :aria-expanded="$store.lessonNav.open.toString()"
+              aria-controls="lesson-list" aria-label="{{t "Course lessons"}}">
+        <span x-show="!$store.lessonNav.open">{{> "icons/menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
+        <span x-show="$store.lessonNav.open" x-cloak>{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}</span>
+      </button>
+    {{/has}}
 
     {{!-- Brand: logo + site title (title truncates if space is tight) --}}
     <a href="{{@site.url}}" class="flex min-w-0 shrink items-center gap-2" aria-label="{{@site.title}}">

@@ -12,10 +12,12 @@
    To add a component, add a file here and one line below — nothing else in the
    build needs to know about it.
 
-   `site-*.css` at the foot are the FEATURE files: styling that only exists on
-   one part of the site (the navbar's scroll behaviours, the course catalog,
-   the training roadmap). They come last because they may lean on anything
-   above them; nothing above may lean on them.
+   `site-*.css` at the foot are the SHARED feature files: styling that more
+   than one part of the site uses (the navbar's scroll behaviours, the
+   curriculum list that courses and training both render). They come last
+   because they may lean on anything above them; nothing above may lean on
+   them. Styling that belongs to exactly ONE feature is not here at all — it
+   lives in 3-modules/, and the training moved out wholesale.
 
    Import order = specificity insurance: primitives, then the things built out
    of them, then layout, then chrome, then decoration, then features.
@@ -48,6 +50,7 @@
 @import "./progress.css";     /* .ns-progress */
 @import "./table.css";        /* .ns-table */
 @import "./list.css";         /* .ns-list · .ns-list-group */
+@import "./plist.css";        /* .ns-plist    the numbered path list */
 @import "./steps.css";        /* .ns-steps */
 @import "./timeline.css";     /* .ns-timeline */
 
@@ -66,8 +69,6 @@
 @import "./section.css";      /* .ns-band · .ns-split · .ns-cta-band · … */
 @import "./collection.css";   /* .ns-collection  a band that lists a collection */
 @import "./page.css";         /* .ns-page · .ns-legal · .ns-contact · .ns-404 */
-@import "./track.css";        /* .ns-track-list · .ns-track-card  the training path */
-@import "./reader.css";       /* .ns-reader   the lesson reading shell */
 @import "./breadcrumb.css";   /* .ns-crumbs */
 @import "./pagination.css";   /* .ns-pager */
 
@@ -79,8 +80,8 @@
 @import "./tooltip.css";      /* .nav-tip */
 @import "./toc.css";          /* .toc-link */
 @import "./sidebar.css";      /* .doc-nav-link · .doc-spy · .doc-toc-link */
-@import "./sidebar-nav.css";  /* .ns-sidenav  collapsible section rail */
 @import "./subnav.css";       /* .subnav-bar · .subnav-panel */
+@import "./lesson-panel.css"; /* .ns-lesson-panel  the player navigation sheet */
 @import "./share.css";        /* .ns-share */
 @import "./ad.css";           /* .ns-ad */
 
@@ -89,9 +90,8 @@
 @import "./effects.css";      /* .js-reveal · .js-spotlight · .ns-aurora · … */
 
 /* ── Features — site-specific, always last ─────────────────────────────── */
-@import "./site-navbar.css";      /* header scroll behaviours, lesson drawer */
+@import "./site-navbar.css";      /* header scroll behaviours */
 @import "./site-curriculum.css";  /* .ns-curriculum, shared by course + training */
 @import "./site-course.css";      /* single course page */
 @import "./site-catalog.css";     /* /courses/ index */
 @import "./site-lesson.css";      /* single lesson page */
-@import "./site-training.css";    /* tracks, roadmap, rail */

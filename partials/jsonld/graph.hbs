@@ -1,5 +1,5 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/structured-data.hbs — ONE @graph JSON-LD block for the whole page
+  partials/jsonld/graph.hbs — ONE @graph JSON-LD block for the whole page
   ----------------------------------------------------------------------------
   Emits a single <script type="application/ld+json"> holding a @graph array of
   linked nodes (the Yoast/RankMath pattern Google prefers). The site-wide base
@@ -22,10 +22,10 @@
   "@graph": [
     {{> "jsonld/base"}}
     {{!-- Per-page nodes (each partial starts with a comma). --}}
-    {{#is "post"}}{{#post}}{{#has tag="#course"}}{{> "jsonld/course"}}{{/has}}{{#has tag="#lesson"}}{{> "jsonld/lesson"}}{{/has}}{{#has tag="#training-content"}}{{> "jsonld/training-lesson"}}{{/has}}{{/post}}{{/is}}
+    {{#is "post"}}{{#post}}{{#has tag="#course"}}{{> "jsonld/course/index"}}{{/has}}{{#has tag="#lesson"}}{{> "jsonld/course/lesson"}}{{/has}}{{#has tag="#training-content"}}{{> "jsonld/training/lesson"}}{{/has}}{{/post}}{{/is}}
     {{!-- /training/ and /training/{section}/ are CUSTOM ROUTES, so {{#is "post"}}
          never matches them and their nodes can't join this graph. They emit
-         their own ld+json from jsonld/training.hbs and jsonld/training-section.hbs.
+         their own ld+json from jsonld/training/index.hbs and jsonld/training/section.hbs.
          Still blank: #blog, documentation, pages, collections. --}}
   ]
 }

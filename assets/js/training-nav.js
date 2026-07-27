@@ -8,7 +8,9 @@
    adjacent links — so the last module of a track flows into the next track's
    first module automatically.
 
-   Buttons in post-training.hbs start hidden (style="display:none") and carry:
+   Buttons in post-training.hbs start hidden — with the CLASS .is-hidden, not
+   an inline style: no CSS may live in a template, including the two words of
+   it that an inline `style` attribute is. They carry:
      .js-train-prev  .js-train-next  .js-train-finish
    plus an optional .js-train-label span that we fill with the target title.
 
@@ -63,7 +65,7 @@
     if (!link) return;
     document.querySelectorAll(selector).forEach(function (el) {
       el.setAttribute('href', link.getAttribute('href'));
-      el.style.display = '';
+      el.classList.remove('is-hidden');
       var lab = el.querySelector('.js-train-label');
       if (lab) lab.textContent = labelOf(link);
       el.addEventListener('click', function () {
@@ -93,7 +95,7 @@
   // No next module anywhere → reveal the Finish button.
   if (!next) {
     document.querySelectorAll('.js-train-finish').forEach(function (el) {
-      el.style.display = '';
+      el.classList.remove('is-hidden');
       el.addEventListener('click', function () {
         if (window.posthog) window.posthog.capture('training curriculum completed', {
           current_url:   window.location.href,

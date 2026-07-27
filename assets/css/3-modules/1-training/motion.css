@@ -1,0 +1,119 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MODULE · training — arrival motion
+   ----------------------------------------------------------------------------
+   A training is read one lesson at a time, and every lesson is a full page
+   load. Without motion each load is a hard cut: the whole page replaced in one
+   frame, and the reader has to find their place again from scratch.
+
+   So the lesson ARRIVES instead of appearing — title, meta, media, body, then
+   the pager, each a beat behind the last. The order is not decorative: it is
+   the order you read them in, so the page assembles itself along the path your
+   eye was going to take anyway.
+
+   IT IS FAST. Every step is 240ms and they are 40ms apart, so the whole
+   sequence is done in under half a second — a lesson you have opened before
+   should never feel like it is being performed at you. The house rule (120–180ms
+   for state changes) still governs everything you can interact with; this is
+   arrival, which is the one place a slightly longer curve is honest.
+
+   Nothing here moves more than 0.4rem, and nothing scales. The page is
+   settling, not flying in.
+
+   RESILIENCE: every animation uses `both`, so if it never runs — reduced
+   motion, an old engine, a stylesheet that failed — the element is simply
+   there at full opacity. Motion is never load-bearing.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@keyframes ns-arrive {
+  from { opacity: 0; transform: translateY(0.4rem); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes ns-arrive-x {
+  from { opacity: 0; transform: translateX(-0.35rem); }
+  to   { opacity: 1; transform: none; }
+}
+
+@layer components {
+  /* ── The lesson, assembling in reading order ───────────────────────────── */
+  .ns-reader__main > * {
+    animation: ns-arrive 240ms var(--ease-out-strong) both;
+  }
+  .ns-reader__main > :nth-child(1) { animation-delay: 0ms; }
+  .ns-reader__main > :nth-child(2) { animation-delay: 40ms; }
+  .ns-reader__main > :nth-child(3) { animation-delay: 80ms; }
+  .ns-reader__main > :nth-child(4) { animation-delay: 120ms; }
+  .ns-reader__main > :nth-child(n+5) { animation-delay: 160ms; }
+
+  /* Inside the head, the same idea one level down — the title lands first and
+     its meta follows, rather than the two appearing as one block. */
+  .ns-reader__title { animation: ns-arrive 240ms var(--ease-out-strong) 40ms both; }
+  .ns-reader__meta  { animation: ns-arrive 240ms var(--ease-out-strong) 100ms both; }
+
+  /* ── The rail, filling in top to bottom ────────────────────────────────
+     Sideways rather than upward: the rail is a column at the edge of the
+     page, so motion along its own axis would fight the page's. Only the OPEN
+     section's rows animate — collapsed sections have nothing to show, and
+     animating fifty hidden rows costs frames for nothing. */
+  .ns-sidenav__group[open] > .ns-sidenav__list > .ns-sidenav__link {
+    animation: ns-arrive-x 200ms var(--ease-out-strong) both;
+  }
+  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(1) { animation-delay: 20ms; }
+  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(2) { animation-delay: 45ms; }
+  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(3) { animation-delay: 70ms; }
+  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(4) { animation-delay: 95ms; }
+  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(5) { animation-delay: 120ms; }
+  .ns-sidenav__group[open] > .ns-sidenav__list > :nth-child(n+6) { animation-delay: 145ms; }
+
+  /* ── Moving between lessons ────────────────────────────────────────────
+     The active row is the one thing on the page that has to survive a
+     navigation intact — it is how the reader knows the click worked. A marker
+     that redraws instantly reads as a new page; one that GROWS into place
+     reads as the same rail, one row further down.
+
+     The bar is a pseudo-element rather than a border so it can scale from
+     nothing without moving the row's text by a pixel. */
+  .ns-sidenav__link { --ns-mark: 0; }
+  .ns-sidenav__link::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    bottom: 0.25rem;
+    width: 2px;
+    border-radius: var(--radius-pill);
+    background: var(--color-brand-500);
+    transform: scaleY(var(--ns-mark));
+    transform-origin: center;
+    transition: transform var(--duration-base) var(--ease-out-strong);
+  }
+  .ns-sidenav__link.is-current { --ns-mark: 1; }
+  .ns-sidenav__link.is-current::before { background: #fff; }
+
+  /* An open section's caret and its list arrive together, so expanding a
+     section reads as one movement rather than two. */
+  .ns-sidenav__group[open] > .ns-sidenav__list {
+    animation: ns-arrive 180ms var(--ease-out-strong) both;
+  }
+
+  /* ── The pager ─────────────────────────────────────────────────────────
+     training-nav.js unhides these once it knows where prev/next go, which is
+     after first paint. Fading them in stops the foot of the page from
+     visibly popping a second layout. */
+  .ns-reader__step:not(.is-hidden) {
+    animation: ns-arrive 200ms var(--ease-out-strong) both;
+  }
+}
+
+/* Everything above is optional polish; `both` already leaves each element in
+   its finished state, so switching the animations off needs nothing else. */
+@media (prefers-reduced-motion: reduce) {
+  .ns-reader__main > *,
+  .ns-reader__title,
+  .ns-reader__meta,
+  .ns-reader__step,
+  .ns-sidenav__group[open] > .ns-sidenav__list,
+  .ns-sidenav__group[open] > .ns-sidenav__list > .ns-sidenav__link {
+    animation: none;
+  }
+  .ns-sidenav__link::before { transition: none; }
+}

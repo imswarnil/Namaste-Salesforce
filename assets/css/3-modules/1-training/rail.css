@@ -58,7 +58,13 @@
 
    Rows are deliberately taller than the type needs. A rail is scanned, not
    read, and a scannable list needs air between its items far more than it
-   needs to fit one more row on screen.
+   needs to fit one more row on screen. The SIZE variants honour that: --sm
+   makes the type smaller and leaves the rhythm alone, because --sm is what
+   every page uses and a padding override there governs the whole component.
+
+   The vertical rhythm is one step: rows are --space-row-sm apart, sections are
+   --space-card apart. Two spacings, not five — a rail whose gaps all differ
+   slightly reads as accidental even when nobody can say why.
 
    MOTION follows the house rule: 120ms, ease-out, colour and background only.
    A hovered row also slides 2px toward the reader — the one transform allowed
@@ -79,9 +85,9 @@
 
   /* ── Head ──────────────────────────────────────────────────────────────── */
   .ns-sidenav__head {
-    padding: 0 var(--space-inline) var(--space-gap-sm);
+    padding: 0 var(--space-inline) var(--space-card);
     border-bottom: var(--border-hairline) solid var(--color-border);
-    margin-bottom: var(--space-gap-sm);
+    margin-bottom: var(--space-card);
   }
   .ns-sidenav__title {
     display: block;
@@ -108,14 +114,14 @@
   /* A rule between sections, not a gap: it holds the structure even when every
      section is collapsed, which is most of the time. */
   .ns-sidenav__group + .ns-sidenav__group {
-    margin-top: var(--space-gap-sm);
-    padding-top: var(--space-gap-sm);
+    margin-top: var(--space-card);
+    padding-top: var(--space-card);
     border-top: var(--border-hairline) solid var(--color-border);
   }
   /* An open section is bracketed top and bottom, so its lessons read as
      belonging to it rather than to the list in general. */
   .ns-sidenav__group[open] {
-    padding-bottom: var(--space-gap-sm);
+    padding-bottom: var(--space-card);
     border-bottom: var(--border-hairline) solid var(--color-border);
   }
   .ns-sidenav__group[open] + .ns-sidenav__group { border-top: 0; }
@@ -193,7 +199,7 @@
     display: grid;
     gap: var(--space-gap-xs);
     min-width: 0;
-    margin: var(--space-gap-xs) 0 var(--space-gap-sm) var(--space-card);
+    margin: var(--space-gap-xs) 0 var(--space-gap-sm) var(--space-gap-sm);
     padding-left: var(--space-gap-sm);
     border-left: var(--border-hairline) solid var(--color-border);
   }
@@ -220,6 +226,10 @@
 
   .ns-sidenav__num {
     flex-shrink: 0;
+    /* A fixed slot: the number, the tick and the lock are different widths, so
+       without one the row's text would shift as a lesson is completed. */
+    width: 1.15em;
+    text-align: center;
     font-family: var(--font-mono);
     font-size: var(--size-label);
     font-variant-numeric: tabular-nums;
@@ -287,10 +297,13 @@
   .ns-sidenav__link.is-current.is-locked :where(.ns-sidenav__num, .ns-sidenav__text) { color: inherit; }
 
   /* ── Sizes + forms ─────────────────────────────────────────────────────── */
+  /* The size variants change TYPE, not rhythm. A rail that shrinks its row
+     padding as well as its text stops being scannable at exactly the size
+     where scanning matters most — and --sm is what every page actually uses,
+     so a padding override here silently governs the whole component. */
   .ns-sidenav--sm { font-size: 0.8125rem; }
-  .ns-sidenav--sm :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: var(--space-row-xs); }
-  .ns-sidenav--lg :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: var(--space-row); }
   .ns-sidenav--lg { font-size: var(--size-body); }
+  .ns-sidenav--lg :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: var(--space-row); }
 
   .ns-sidenav--boxed {
     border: var(--border-hairline) solid var(--color-border);
@@ -341,4 +354,20 @@
   .ns-sidenav__caret { transition: none; }
   .ns-sidenav__link { transition: none; }
   .ns-sidenav__link:hover { transform: none; }
+}
+
+/* ── In the bottom sheet ───────────────────────────────────────────────────
+   Below lg the rail is not a rail, it is the whole navigation on a phone
+   screen. The type steps down so a section name and its duration fit on one
+   line without truncating, and the rows tighten slightly because the sheet is
+   scrolled with a thumb rather than scanned with an eye at arm's length. */
+@media (max-width: 1023.98px) {
+  .ns-lesson-panel--sheet .ns-sidenav { font-size: 0.78125rem; }
+  .ns-lesson-panel--sheet .ns-sidenav__link { padding-block: var(--space-row-xs); }
+  .ns-lesson-panel--sheet .ns-sidenav__stitle { font-size: 0.8125rem; }
+  .ns-lesson-panel--sheet .ns-sidenav__icon { height: 1.35rem; width: 1.35rem; font-size: 0.72rem; }
+  .ns-lesson-panel--sheet .ns-sidenav__group + .ns-sidenav__group {
+    margin-top: var(--space-gap-sm);
+    padding-top: var(--space-gap-sm);
+  }
 }

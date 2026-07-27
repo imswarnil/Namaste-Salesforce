@@ -8,6 +8,9 @@
   Renders the .ns-sidenav COMPONENT — 2-components/sidebar-nav.css, documented
   at /styleguide/training-nav.html.
 
+  No inline <script>: the progress readout and the search behaviour live in
+  assets/js/training-progress.js, bundled into built/casper.js.
+
   The training NAME and PROGRESS are not here — they moved to .ns-subbar, the
   bar under the site header. They belong to the page, not to the navigation,
   and repeating them above every rail was the single biggest source of clutter.
@@ -23,14 +26,19 @@
   Params: cur   — slug of the section being viewed
           curId — id of the lesson being viewed (absent on a section overview)
 
-  Static rail on lg; below that it is the drawer the player header opens.
+  Static rail on lg; below that it is a bottom sheet, opened by the floating
+  button rather than by the site header's hamburger — see training/nav-button.hbs
+  for why that moved.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 <div x-data="{ q: '' }" class="js-lesson-nav" @keydown.escape.window="$store.lessonNav.close()">
+
+  {{!-- Below lg this is the only way in — see training/nav-button.hbs. --}}
+  {{> "training/nav-button"}}
 
   {{!-- The scrim, so an open panel can be dismissed by clicking away. --}}
   <div x-show="$store.lessonNav.open" x-cloak class="ns-lesson-scrim"
        @click="$store.lessonNav.close()" aria-hidden="true"></div>
-  <nav id="training-curriculum" class="ns-lesson-panel" data-cur="{{cur}}"
+  <nav id="training-curriculum" class="ns-lesson-panel ns-lesson-panel--sheet" data-cur="{{cur}}"
          :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
 
     <div class="ns-lesson-panel__bar">
@@ -78,49 +86,3 @@
     </div>
   </nav>
 </div>
-
-{{!-- Progress. Everything BEFORE the current lesson counts as done — that is
-     the only thing a static site can honestly know without a member record.
-     While a search is running, open every section so matches are visible;
-     `name` would otherwise keep collapsing them to one. --}}
-<script>
-  (function () {
-    var panel = document.querySelector('#training-curriculum');
-    if (!panel) return;
-
-    var links = Array.prototype.slice.call(panel.querySelectorAll('.ns-sidenav__link'));
-    var current = panel.querySelector('.ns-sidenav__link.is-current');
-
-    if (current) {
-      for (var i = 0; i < links.length; i++) {
-        if (links[i] === current) break;
-        // the section overview rows are not lessons — don't count them
-        if (links[i].querySelector('.ns-sidenav__num > span')) links[i].classList.add('is-done');
-      }
-      var done = panel.querySelectorAll('.ns-sidenav__link.is-done').length;
-      var total = panel.querySelectorAll('.ns-sidenav__num > span').length;
-      // The readout lives in the sub bar above, not in this rail.
-      var bar = document.querySelector('.js-train-progress');
-      var out = document.querySelector('.js-train-done');
-      if (bar && total) bar.style.width = Math.round((done / total) * 100) + '%';
-      if (out) out.textContent = done + ' / ' + total + ' done';
-    } else {
-      var out0 = document.querySelector('.js-train-done');
-      var tot0 = panel.querySelectorAll('.ns-sidenav__num > span').length;
-      if (out0) out0.textContent = '0 / ' + tot0 + ' done';
-    }
-
-    // Searching needs every section open at once, which is exactly what the
-    // exclusive `name` prevents — so drop it while a query is active.
-    var search = panel.querySelector('input[type="search"]');
-    if (!search) return;
-    var groups = Array.prototype.slice.call(panel.querySelectorAll('.ns-sidenav__group'));
-    search.addEventListener('input', function () {
-      var searching = search.value.trim() !== '';
-      groups.forEach(function (g) {
-        if (searching) { g.removeAttribute('name'); g.open = true; }
-        else { g.setAttribute('name', 'ns-training-nav'); g.open = g.dataset.sec === panel.dataset.cur; }
-      });
-    });
-  })();
-</script>

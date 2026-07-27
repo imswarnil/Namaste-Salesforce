@@ -1,0 +1,111 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   MODULE · training — .ns-train-fab, the floating navigation button
+   ----------------------------------------------------------------------------
+   Below lg there is no room for the section rail, so the training needs a way
+   to open it. It used to be a hamburger in the site header — which quietly
+   turned the SITE menu into a training control, so a reader tapping the
+   familiar hamburger got a lesson list instead of the site menu.
+
+   So the header goes back to being the header, and the training gets its own
+   control: a small button floating at the BOTTOM CENTRE. Bottom, because that
+   is where a thumb rests on a phone and a lesson is read with one hand. Centre,
+   because it belongs to neither the back gesture on the left nor the system
+   affordances on the right.
+
+   It is the one elevated thing in a system built on hairlines. That is
+   deliberate and it is the exception that proves the rule: it floats ABOVE the
+   page rather than sitting in it, so a shadow is the honest description of
+   where it is, not decoration.
+
+   It hides itself while the panel is open (the panel has its own ✕) and
+   whenever the static rail is on screen at lg+.
+
+   THE PANEL it opens is .ns-lesson-panel, styled for this breakpoint below: a
+   full-height sheet that rises from the bottom edge, so the motion starts at
+   the button that summoned it.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-train-fab {
+    position: fixed;
+    left: 50%;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-card));
+    z-index: var(--z-drawer);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-gap-xs);
+    transform: translateX(-50%);
+    border: var(--border-hairline) solid var(--color-brand-600);
+    border-radius: var(--radius-pill);
+    background: var(--color-brand-500);
+    padding: var(--space-row-sm) var(--space-card);
+    box-shadow: 0 6px 20px rgb(3 20 40 / 0.28);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: background-color var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out),
+                opacity var(--duration-fast) var(--ease-out);
+  }
+  .ns-train-fab:active { transform: translateX(-50%) scale(0.97); }
+  .ns-train-fab:hover  { background: var(--color-brand-600); }
+  .ns-train-fab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .ns-train-fab > i { font-size: 1rem; }
+
+  /* The count is the reason to tap it — "where am I" answered before you open
+     anything. Mono and tabular so it never reflows the button as it changes. */
+  .ns-train-fab__count {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
+  }
+
+  /* Off at lg: the rail is on the page, so a button that opens the rail is
+     just a second way to reach what you are already looking at. */
+  @media (min-width: 1024px) { .ns-train-fab { display: none; } }
+}
+
+/* ── The panel, as a bottom sheet ──────────────────────────────────────────
+   Overrides the component's default (a drawer under the navbar) for the
+   training only. It rises from the bottom edge because that is where the
+   button that opens it lives — motion that starts anywhere else makes the
+   reader look for the source. */
+@media (max-width: 1023.98px) {
+  .ns-lesson-panel--sheet {
+    top: auto;
+    bottom: 0;
+    max-height: min(78vh, calc(100vh - var(--space-navbar)));
+    border-bottom: 0;
+    border-top: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transform: translateY(1rem);
+    box-shadow: 0 -10px 30px rgb(3 20 40 / 0.24);
+  }
+  .ns-lesson-panel--sheet.is-open { transform: none; }
+
+  /* A grab handle above the bar: it says "this came from the bottom and it
+     goes back there" without a word of copy. */
+  .ns-lesson-panel--sheet .ns-lesson-panel__bar { position: sticky; top: 0; z-index: 1;
+    background: var(--color-surface); }
+  .ns-lesson-panel--sheet .ns-lesson-panel__bar::before {
+    content: "";
+    position: absolute;
+    top: 0.35rem;
+    left: 50%;
+    height: 3px;
+    width: 2.25rem;
+    transform: translateX(-50%);
+    border-radius: var(--radius-pill);
+    background: var(--color-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-train-fab { transition: none; }
+  .ns-train-fab:active { transform: translateX(-50%); }
+  .ns-lesson-panel--sheet { transform: none; }
+}

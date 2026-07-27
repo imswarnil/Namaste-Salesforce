@@ -1894,11 +1894,52 @@ page("Training", "training-nav", "Training navigation",
           "tier. A tally like &ldquo;1 free&rdquo; is noise at best and looks broken at worst, and a section is "
           "a section — not a price. The lock on the individual row is the whole access story."),
      head("Spacing"),
-     note("The rail spends the foundation's tokens — <code>--space-row-sm</code> and "
-          "<code>--space-inline</code> for rows, <code>--space-gap-sm</code> for gaps and either side "
-          "of the section rules. It had drifted onto its own invented scale (0.2, 0.35, 0.45, 0.5, "
-          "0.65, 0.75rem …), which is exactly how a component stops looking like the rest of the "
-          "theme."),
+     note("Every value in the rail is a <code>--space-*</code> token: rows use "
+          "<code>--space-row-sm</code> / <code>--space-inline</code>, sections are "
+          "<code>--space-card</code> apart, and the smallest gaps are <code>--space-gap-xs</code>. "
+          "Two vertical spacings, not five — a rail whose gaps all differ slightly reads as "
+          "accidental even when nobody can say why."),
+     note("<b>The size variant is the first place to look when rail spacing is wrong.</b> "
+          "<code>--sm</code> used to override <code>padding-block</code>, and since <code>--sm</code> "
+          "is what every real page uses, that one line silently governed the whole component and beat "
+          "every token on the base rule. The size variants now change TYPE only; <code>--lg</code> is "
+          "the sole exception and says so explicitly."),
+     head("The floating button"),
+     note("Below <code>lg</code> the rail has nowhere to live. It used to be opened by the hamburger "
+          "in the site header — which meant the SITE menu icon opened a lesson list, so the most "
+          "familiar control on the page did not do what it says. The header is the header again, and "
+          "the training carries its own control: <code>.ns-train-fab</code>, floating at the bottom "
+          "centre. Bottom, because a lesson is read one-handed and that is where the thumb is; centre, "
+          "because it belongs to neither the back gesture on the left nor the system affordances on "
+          "the right."),
+     note("It is the one elevated thing in a system built on hairlines — the exception that proves the "
+          "rule. It genuinely floats above the page rather than sitting in it, so a shadow is an "
+          "honest description of where it is rather than decoration. It carries the lesson count, "
+          "because &ldquo;3/9&rdquo; answers <i>where am I</i> before anything opens, and it hides itself "
+          "while the panel is open and at <code>lg</code>+ where the rail is already on screen."),
+     row(spec(".ns-train-fab",
+              '<div class="demo-fab-stage">'
+              '<span class="ns-train-fab demo-fab-static">'
+              '<i class="ph-fill ph-list-checks"></i><span>Contents</span>'
+              '<span class="ns-train-fab__count">3/9</span></span></div>', wide=True)),
+     note("It opens <code>.ns-lesson-panel--sheet</code>: the shared player panel, restyled for the "
+          "training as a sheet that rises from the BOTTOM edge — the edge the button that summoned it "
+          "sits on. Motion that starts anywhere else makes the reader look for its source."),
+     head("Motion"),
+     note("A lesson is a full page load, so without motion every navigation is a hard cut. The lesson "
+          "ARRIVES instead: title, meta, media, body, then the pager, each 40ms behind the last — the "
+          "order you read them in, so the page assembles along the path your eye was going to take "
+          "anyway. Steps are 240ms and nothing moves more than <code>0.4rem</code>; the whole sequence "
+          "is done inside half a second, because a lesson you have opened before should never feel "
+          "performed at you."),
+     note("The rail fills in sideways rather than upward — it is a column at the edge of the page, so "
+          "motion along its own axis would fight the page's. Only the OPEN section animates; fifty "
+          "hidden rows cost frames for nothing. The active marker <i>scales</i> into place instead of "
+          "redrawing, so moving between lessons reads as the same rail one row further down rather "
+          "than as a new page."),
+     note("Every animation uses <code>both</code>, so if it never runs — reduced motion, an old "
+          "engine, a stylesheet that failed — the element is simply there. Motion is never "
+          "load-bearing."),
      row(spec("link states",
               '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
               '<a class="ns-sidenav__link is-done" href="#!">'

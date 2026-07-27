@@ -11,7 +11,11 @@
      0-foundation/  tokens, vars, mixins, helpers — declares values, paints nothing
      1-elements/    bare HTML — one file per element family
      2-components/  the UI library — one file per component, with variants.
-                    The site-*.css files at the end are the feature styling.
+                    The site-*.css files at the end are shared feature styling.
+     3-modules/     the features — one numbered folder per part of the SITE.
+                    Nothing in 0–2 may depend on a module, and no module may
+                    import another; a piece two features want gets promoted
+                    into 2-components/ instead.
 
    The order is the dependency order: a later layer spends what the earlier
    ones declare, never the other way round. For what's inside a layer and why
@@ -38,6 +42,7 @@
 @import "./0-foundation/index.css";
 @import "./1-elements/index.css";
 @import "./2-components/index.css";
+@import "./3-modules/index.css";
 
 /* Dark mode is driven by data-theme="dark" on <html> (set before paint by the
    inline script in default.hbs). This re-points the `dark:` variant at that

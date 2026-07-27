@@ -12,7 +12,7 @@ assets/css/screen.css        the final stylesheet — Tailwind + the four layers
   ├── 0-foundation/index.css tokens, vars, mixins   ← you are here
   ├── 1-elements/index.css   bare HTML, one file per element family
   ├── 2-components/index.css the UI library, one file per component + variants
-  └── 3-modules/index.css    features: navbar, curriculum, course, catalog, …
+  └── 3-modules/index.css    the features — one numbered folder each (1-training/)
 ```
 
 Each layer lists its own files in its `index.css`, so `screen.css` never needs
@@ -63,8 +63,11 @@ needed. Give every component the full set up front (`--sm/--lg`, `--pill/
 --sharp`, the tones it can legitimately take) so the next page doesn't have to
 invent one-off utilities.
 
-**A feature** → `3-modules/`. If a module piece turns out to be reusable,
-promote it into `2-components/` with a proper variant set — that's how
+**A feature** → a numbered folder in `3-modules/` with its own `index.css`,
+plus one line in `3-modules/index.css`. Nothing in layers 0–2 may depend on a
+module and no module may import another; when a module piece turns out to be
+reusable, it is not imported across — it is
+promoted into `2-components/` with a proper variant set. That's how
 `.ns-video-poster`, `.ns-ad` and `.ns-share` got there.
 
 ## Design principles (the "Developer Console" rules)

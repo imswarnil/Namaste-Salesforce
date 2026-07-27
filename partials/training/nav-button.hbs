@@ -1,0 +1,32 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+  training/nav-button.hbs — the floating training-navigation button.
+
+  Below lg the section rail has nowhere to live, so this is how it is opened.
+  It replaces the hamburger that used to sit in the site header: that button
+  made the SITE menu behave like a training control, so a reader tapping the
+  most familiar icon on the page got a lesson list instead of the navigation
+  they asked for. The header is the header again, and the training carries its
+  own control.
+
+  Bottom centre, because a lesson is read one-handed and that is where the
+  thumb already is. Elevated, because it floats above the page rather than
+  sitting in it — the one place a shadow is a description rather than a
+  decoration in a system built on hairlines.
+
+  It opens .ns-lesson-panel (the shared player sheet) via the `lessonNav`
+  Alpine store — the same store the panel and the ✕ in its bar already use, so
+  there is exactly one source of truth for "is the navigation open".
+
+  The lesson count is filled in by training-progress.js. It is the reason to
+  tap: "3/9" answers where am I before anything opens.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<div x-data x-cloak>
+  <button type="button" class="ns-train-fab" x-show="!$store.lessonNav.open"
+          @click="$store.lessonNav.open = true"
+          :aria-expanded="$store.lessonNav.open.toString()"
+          aria-controls="training-curriculum" aria-label="{{t "Training navigation"}}">
+    <i class="ph-fill ph-list-checks" aria-hidden="true"></i>
+    <span>{{t "Contents"}}</span>
+    <span class="ns-train-fab__count js-train-count"></span>
+  </button>
+</div>
