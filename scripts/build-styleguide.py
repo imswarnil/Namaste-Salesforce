@@ -1655,8 +1655,7 @@ def _sidenav(open_index=1):
             icon = ("ph-play-circle" if n == 0 else
                     "ph-barbell" if n == 2 else "ph-article")
             out.append('<a class="ns-sidenav__link%s" href="#!">'
-                       '<span class="ns-sidenav__num"><span>%d</span>'
-                       '<i class="ph-fill ph-lock-simple"></i></span>'
+                       '<span class="ns-sidenav__num"><span>%d</span></span>'
                        '<i class="ns-sidenav__type ph-fill %s"></i>'
                        '<span class="ns-sidenav__text">%s</span>'
                        '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, icon, lt, ld))
@@ -1885,13 +1884,16 @@ page("Training", "training-nav", "Training navigation",
      head("States"),
      note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
           "uses. <code>.is-done</code> swaps the number for a tick and steps the title back."),
-     note("All three states read in ONE place — the marker slot. Normally it holds the lesson number; "
-          "<code>.is-done</code> swaps it for a tick, <code>.is-locked</code> for a lock. The eye "
-          "learns one position instead of three, and the row never has to move or resize to carry "
-          "the message."),
-     note("A locked row shows the lock and NOTHING ELSE — its type glyph is hidden. Two icons is two "
-          "answers to a question asked once, and locked is the more useful of the two: what kind of "
-          "lesson it is only matters once you can open it."),
+     note("<b>A row is two leading cells, and exactly one thing goes in each.</b> Cell one is the "
+          "index — the lesson number, or a tick once it is behind you. Cell two is ONE icon: the lock "
+          "if the lesson is members-only, otherwise what kind of lesson it is. Both cells are "
+          "fixed-width flex boxes, so every title in the rail starts at the same x no matter which "
+          "glyph landed above it."),
+     note("<b>Which icon goes in cell two is decided in the TEMPLATE, not by CSS.</b> The row used to "
+          "ship both a lock and a type glyph and hide one of them with a rule — and a row like that "
+          "shows both the moment the stylesheet is stale, cached or slow to arrive, which is exactly "
+          "what kept happening. It cannot overlap if it was never rendered. Prefer not emitting a "
+          "thing over emitting it and hiding it, every time."),
      note("<code>.is-locked</code> additionally DIMS the row to 50%. Dimming is the honest signal in "
           "a scanned list: everything you can act on sits at full strength, everything you cannot is "
           "quieter — no warning colour, because &ldquo;you need an account&rdquo; is not an error. Hover "
@@ -1979,7 +1981,8 @@ page("Training", "training-nav", "Training navigation",
      row(spec("link states",
               '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
               '<a class="ns-sidenav__link is-done" href="#!">'
-              '<span class="ns-sidenav__num"><span>1</span><i class="ph-fill ph-lock-simple"></i></span>'
+              '<span class="ns-sidenav__num"><span>1</span></span>'
+              '<i class="ns-sidenav__type ph-fill ph-article"></i>'
               '<span class="ns-sidenav__text">What is Salesforce?</span>'
               '<span class="ns-sidenav__meta">6m</span></a>'
               '<a class="ns-sidenav__link is-current" href="#!"><span class="ns-sidenav__num"><span>2</span></span>'
@@ -1989,8 +1992,8 @@ page("Training", "training-nav", "Training navigation",
               '<span class="ns-sidenav__text">How to use this training</span>'
               '<span class="ns-sidenav__meta">5m</span></a>'
               '<a class="ns-sidenav__link is-locked" href="#!">'
-              '<span class="ns-sidenav__num"><span>4</span><i class="ph-fill ph-lock-simple"></i></span>'
-              '<i class="ns-sidenav__type ph-fill ph-article"></i>'
+              '<span class="ns-sidenav__num"><span>4</span></span>'
+              '<i class="ns-sidenav__type ns-sidenav__type--lock ph-fill ph-lock-simple"></i>'
               '<span class="ns-sidenav__text">Objects and fields</span>'
               '<span class="ns-sidenav__meta">18m</span></a>'
               '</div></nav>', wide=True)))

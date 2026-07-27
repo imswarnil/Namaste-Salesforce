@@ -182,7 +182,8 @@
       <a href="{{url}}" data-title="{{title}} overview" data-nav-label="{{title}} — {{t "Overview"}}"
          @click="$store.lessonNav.close()"
          class="ns-sidenav__link{{#unless curId}}{{#match cur slug}} is-current{{/match}}{{/unless}}">
-        <span class="ns-sidenav__num"><i class="ph ph-squares-four" aria-hidden="true"></i></span>
+        <span class="ns-sidenav__num"></span>
+        <i class="ns-sidenav__type ph-fill ph-squares-four" aria-hidden="true"></i>
         <span class="ns-sidenav__text">{{t "Overview"}}</span>
       </a>
 
@@ -191,14 +192,22 @@
           <a href="{{url}}" data-title="{{title}}" @click="$store.lessonNav.close()"
              x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
              class="ns-sidenav__link{{#match id ../../curId}} is-current{{/match}}{{^has visibility="public"}} is-locked{{/has}}">
-            {{!-- One marker slot, three states: the number normally, a tick
-                 when done, a lock when members-only. Same slot every time, so
-                 the eye only has to learn one place to look. --}}
-            <span class="ns-sidenav__num">
-              <span>{{@number}}</span>
-              <i class="ph-fill ph-lock-simple" aria-hidden="true"></i>
-            </span>
-            <i class="ns-sidenav__type {{#has tag="#training-video"}}ph-fill ph-play-circle{{else has tag="#training-exercise"}}ph-fill ph-barbell{{else has tag="#training-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
+            {{!-- TWO CELLS, and exactly one thing in each — decided HERE, in
+                 the markup, not by CSS hiding one of two glyphs it emitted
+                 anyway. A row that ships both a lock and a type icon and then
+                 relies on a stylesheet to hide one of them is a row that shows
+                 both the moment that stylesheet is stale, cached or slow. It
+                 cannot overlap if it was never rendered.
+
+                   cell 1  the number — or a tick, once the lesson is behind you
+                   cell 2  ONE icon: the lock if it is members-only, otherwise
+                           what kind of lesson it is --}}
+            <span class="ns-sidenav__num"><span>{{@number}}</span></span>
+            {{^has visibility="public"}}
+              <i class="ns-sidenav__type ns-sidenav__type--lock ph-fill ph-lock-simple" aria-hidden="true"></i>
+            {{else}}
+              <i class="ns-sidenav__type {{#has tag="#training-video"}}ph-fill ph-play-circle{{else has tag="#training-exercise"}}ph-fill ph-barbell{{else has tag="#training-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
+            {{/has}}
             <span class="ns-sidenav__text">{{title}}</span>
             <span class="ns-sidenav__meta">{{reading_time minute="1m" minutes="%m"}}</span>
           </a>

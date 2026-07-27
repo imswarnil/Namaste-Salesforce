@@ -24,10 +24,16 @@
            __link           one lesson
              __num  __text  __meta
          __next             on to the next section, at the end of a list
+   A ROW IS THREE CELLS: an index, ONE icon, the title, and a duration at the
+   end. Both leading cells are fixed-width flex boxes, so every title in the
+   rail starts at the same x — and the icon cell holds exactly one glyph,
+   chosen in the TEMPLATE rather than by hiding one of two that were rendered
+   anyway. A row that ships a lock and a type icon and asks CSS to hide one
+   shows both the moment that CSS is stale, cached or slow to arrive.
+
      STATES  .is-current (the open page) · .is-done · .is-locked
-             — all three read in the MARKER slot: number, tick, lock.
-               .is-locked additionally dims the whole row, and hover
-               restores it — see the states block at the bottom.
+             .is-done turns the index into a tick; .is-locked puts a lock in
+             the icon cell, dims the row, and hover restores it.
 
    Deliberately NOT here: a lesson count on the section row, and the training
    title + progress. The count repeats what the expanded list already shows,
@@ -235,12 +241,16 @@
   }
   [data-theme="dark"] .ns-sidenav__link:hover { color: var(--color-brand-300); }
 
+  /* ── Cell 1 · the index ────────────────────────────────────────────────
+     The number, or a tick once the lesson is behind you. A fixed inline-flex
+     box, because a number and a tick are different widths and the row's title
+     must not shift as lessons are completed. Nothing else ever goes in here. */
   .ns-sidenav__num {
-    flex-shrink: 0;
-    /* A fixed slot: the number, the tick and the lock are different widths, so
-       without one the row's text would shift as a lesson is completed. */
-    width: 1.15em;
-    text-align: center;
+    flex: 0 0 1.25em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     font-family: var(--font-mono);
     font-size: var(--size-label);
     font-variant-numeric: tabular-nums;
@@ -249,19 +259,28 @@
   /* What KIND of lesson this is — video, exercise, quiz or article. The number
      says where you are in the section; the icon says what you are about to
      open, which is the thing you actually scan for. */
+  /* ── Cell 2 · the one icon ─────────────────────────────────────────────
+     WHAT this row is: the lesson type normally, the lock when it is
+     members-only. Exactly one glyph is ever rendered here — section-item.hbs
+     decides which, so there is nothing for CSS to hide and nothing to overlap.
+
+     Also a fixed box. A play glyph and a lock glyph have different advance
+     widths, and a rail whose titles start at four slightly different x
+     positions is the sort of thing that reads as "off" without anyone being
+     able to say why. */
   .ns-sidenav__type {
-    flex-shrink: 0;
-    margin-right: 0.1rem;
-    font-size: 0.85rem;
+    flex: 0 0 1.1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 0.9em;
     color: var(--color-brand-500);
   }
-  .ns-sidenav__link.is-current .ns-sidenav__type { color: rgb(255 255 255 / 0.9); }
-  /* ONE icon per row. A locked row was carrying two — the lock in the marker
-     slot AND its type glyph — which is two answers to a question the reader
-     asked once. Locked is the more useful of the two: what kind of lesson it
-     is only matters once you can open it. So the type glyph steps aside and
-     the lock is the row's single icon. */
-  .ns-sidenav__link.is-locked .ns-sidenav__type { display: none; }
+  /* The lock is not a lesson type, so it does not take the signal colour —
+     brand blue in this system means "this is the thing to click". */
+  .ns-sidenav__type--lock { color: var(--color-label); }
+  .ns-sidenav__link.is-current :where(.ns-sidenav__type) { color: rgb(255 255 255 / 0.9); }
 
   .ns-sidenav__text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ns-sidenav__meta {
@@ -283,13 +302,8 @@
   .ns-sidenav__link.is-current:hover { background: var(--color-brand-600); color: #fff; }
   .ns-sidenav__link.is-current :where(.ns-sidenav__num, .ns-sidenav__meta) { color: rgb(255 255 255 / 0.75); }
 
-  /* ── The marker slot ────────────────────────────────────────────────────
-     One slot, three states — the number normally, a tick when the lesson is
-     done, a lock when it is members-only. Keeping all three in the SAME place
-     means the eye learns one position instead of three, and the row itself
-     never has to change colour to carry the message. */
-  .ns-sidenav__num > i { display: none; }
-
+  /* ── Done ──────────────────────────────────────────────────────────────
+     The index becomes a tick. Same cell, same width, so nothing moves. */
   .ns-sidenav__link.is-done .ns-sidenav__num { color: var(--color-success); }
   .ns-sidenav__link.is-done .ns-sidenav__num::before { content: "✓"; }
   .ns-sidenav__link.is-done .ns-sidenav__num > span { display: none; }
@@ -306,8 +320,6 @@
      disabled under the cursor. */
   .ns-sidenav__link.is-locked { opacity: 0.5; }
   .ns-sidenav__link.is-locked:hover { opacity: 1; }
-  .ns-sidenav__link.is-locked .ns-sidenav__num > span { display: none; }
-  .ns-sidenav__link.is-locked .ns-sidenav__num > i { display: inline; font-size: 0.8em; }
   .ns-sidenav__link.is-locked :where(.ns-sidenav__num, .ns-sidenav__text) { color: var(--color-label); }
   .ns-sidenav__link.is-locked:hover :where(.ns-sidenav__num, .ns-sidenav__text) { color: inherit; }
   /* …unless it is the page you are on. You are reading it, so it is yours. */
