@@ -11,6 +11,8 @@
    SIZE      --xs  --sm  (default)  --lg  --xl
    SHAPE     --pill  --sharp  --square (1:1, icon only)  --block (full width)
    STATE     :disabled, [aria-busy="true"], .is-loading
+   CONTENT   __icon (a glyph that nudges on hover) · __media (avatar/logo)
+             --icon-end (push the icon to the trailing edge)
 
    Press is an instant opacity dim — never a lift, never a shadow bloom.
    ════════════════════════════════════════════════════════════════════════ */
@@ -107,6 +109,32 @@
   }
   .ns-btn--outline.is-loading::after,
   .ns-btn--ghost.is-loading::after { color: var(--color-ink); }
+
+  /* ── Content — icons and small media inside a button ───────────────────── */
+  .ns-btn__icon {
+    flex-shrink: 0;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .ns-btn:hover .ns-btn__icon--nudge { transform: translateX(2px); }
+  .ns-btn--icon-end .ns-btn__icon { margin-left: auto; }
+  /* An avatar or logo riding in the button — sized to the cap height */
+  .ns-btn__media {
+    flex-shrink: 0;
+    height: 1.25em;
+    width: 1.25em;
+    border-radius: var(--radius-pill);
+    object-fit: cover;
+    margin-left: -0.25rem;
+  }
+  .ns-btn__media--square { border-radius: var(--radius-sm); }
+  /* A count or shortcut pinned to the trailing edge */
+  .ns-btn__meta {
+    margin-left: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+  }
 
   /* ── Button group — hairlines collapse into one shared edge ────────────── */
   .ns-btn-group { display: inline-flex; }

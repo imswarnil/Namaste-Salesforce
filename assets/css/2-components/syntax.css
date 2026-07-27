@@ -1,0 +1,176 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · syntax highlighter — .ns-syntax   (was .ns-code)
+   ----------------------------------------------------------------------------
+   A code block that looks like the tool the reader is learning: a title bar
+   carrying the filename and language, a copy button that confirms itself, and
+   optional line numbers. `code.js` tokenises and injects the `.tok-*` spans —
+   there is no highlighting library.
+
+   THEME   (default) light editor on a navy bar — the Developer Console
+           --dark      navy editor surface, for dark-first pages
+           --terminal  a shell session: no filename, a $ prompt gutter
+           --plain     no bar at all, just the block
+   WIDTH   --full   breaks out of the reading column to the full content width
+   EXTRAS  --numbered   line numbers in a hairline gutter
+           --wrap       soft-wrap instead of scrolling (prose-heavy snippets)
+   PARTS   __bar __name __lang __copy __body __pre
+   STATES  .is-copied on the copy button
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-syntax {
+    position: relative;
+    margin-block: 1.5rem;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+    background: var(--color-surface-raised);
+  }
+
+  /* ── Title bar ─────────────────────────────────────────────────────────── */
+  .ns-syntax__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.65rem 0.45rem 0.85rem;
+    background: var(--color-brand-900);
+    color: rgb(255 255 255 / 0.85);
+  }
+  .ns-syntax__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .ns-syntax__lang {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-brand-200);
+  }
+  .ns-syntax__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: auto;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: rgb(255 255 255 / 0.08);
+    padding: 0.28rem 0.55rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgb(255 255 255 / 0.85);
+    transition: background-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-syntax__copy:hover { background: rgb(255 255 255 / 0.18); color: #fff; }
+  .ns-syntax__copy.is-copied { color: #9ee8b0; background: rgb(158 232 176 / 0.16); }
+
+  /* ── Code surface ──────────────────────────────────────────────────────── */
+  .ns-syntax__body { position: relative; background: #fff; }
+  [data-theme="dark"] .ns-syntax__body { background: #06182c; }
+
+  .ns-syntax pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    background: transparent;
+    font-size: var(--size-mono);
+    line-height: 1.65;
+    tab-size: 2;
+  }
+  .ns-syntax code {
+    font-family: var(--font-mono);
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+    color: #16325c;
+    box-shadow: none;
+  }
+  [data-theme="dark"] .ns-syntax code { color: #d6e4f5; }
+
+  /* ── Line numbers — a counter, so the digits can't be copied with the code */
+  .ns-syntax--numbered pre { counter-reset: ns-line; padding-left: 0; }
+  .ns-syntax--numbered code { display: block; }
+  .ns-syntax--numbered .ns-syntax__line {
+    display: block;
+    counter-increment: ns-line;
+    padding-left: 3.25rem;
+    position: relative;
+  }
+  .ns-syntax--numbered .ns-syntax__line::before {
+    content: counter(ns-line);
+    position: absolute;
+    left: 0;
+    width: 2.5rem;
+    text-align: right;
+    color: color-mix(in srgb, var(--color-muted) 70%, transparent);
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+  }
+  .ns-syntax--numbered .ns-syntax__line:hover { background: color-mix(in srgb, var(--color-brand-500) 5%, transparent); }
+
+  /* ── Wrap instead of scroll ────────────────────────────────────────────── */
+  .ns-syntax--wrap pre { white-space: pre-wrap; word-break: break-word; overflow-x: visible; }
+
+  /* ── Full width — break the reading column ─────────────────────────────── */
+  .ns-syntax--full {
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+  }
+  @media (min-width: 1024px) {
+    :where(.gh-content, .ns-prose) .ns-syntax--full {
+      width: min(var(--container-page), 92vw);
+      margin-inline: calc(50% - min(var(--container-page), 92vw) / 2);
+    }
+  }
+
+  /* ── Themes ────────────────────────────────────────────────────────────── */
+  .ns-syntax--dark .ns-syntax__body { background: #06182c; }
+  .ns-syntax--dark code { color: #d6e4f5; }
+  .ns-syntax--plain .ns-syntax__bar { display: none; }
+
+  .ns-syntax--terminal .ns-syntax__bar { background: #04101f; }
+  .ns-syntax--terminal .ns-syntax__body { background: #04101f; }
+  .ns-syntax--terminal code { color: #cfe3f7; }
+  .ns-syntax--terminal .ns-syntax__line { padding-left: 1.4rem; }
+  .ns-syntax--terminal .ns-syntax__line::before {
+    content: "$";
+    left: 0;
+    width: 1rem;
+    color: var(--color-brand-300);
+  }
+
+  /* ── Token palette — all-blue, the Developer Console reading ────────────── */
+  .tok-comment  { color: #6b8bb0; font-style: italic; }
+  .tok-keyword  { color: #0b5cab; font-weight: 600; }
+  .tok-string   { color: #1b7faf; }
+  .tok-number   { color: #3b6fb0; }
+  .tok-function { color: #0070d2; }
+  .tok-tag      { color: #0b5cab; }
+  .tok-attr     { color: #1b96ff; }
+  .tok-punct    { color: #5a7194; }
+  .tok-builtin  { color: #1b96ff; }
+
+  /* On dark surfaces the same roles lift so they stay legible. */
+  :where([data-theme="dark"] .ns-syntax, .ns-syntax--dark, .ns-syntax--terminal) {
+    .tok-comment  { color: #6f8bab; }
+    .tok-keyword  { color: #7cc0ff; }
+    .tok-string   { color: #86d8c0; }
+    .tok-number   { color: #a8c7ff; }
+    .tok-function { color: #58b0ff; }
+    .tok-tag      { color: #7cc0ff; }
+    .tok-attr     { color: #9ee0ff; }
+    .tok-punct    { color: #8ba3bf; }
+    .tok-builtin  { color: #9ee0ff; }
+  }
+}

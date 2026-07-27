@@ -90,6 +90,20 @@ function css(done) {
     ], handleError(done));
 }
 
+// The style-guide chrome — same pipeline (Tailwind + cssnano), its own file, so
+// the pages in styleguide/ need no <style> block and no inline styles.
+function styleguideCss(done) {
+    pump([
+        src('assets/css/styleguide.css', {sourcemaps: true}),
+        postcss([
+            tailwindcss(),
+            cssnano()
+        ]),
+        dest('assets/built/', {sourcemaps: '.'}),
+        livereload()
+    ], handleError(done));
+}
+
 // Concatenate our small scripts (theme toggle, TOC, effects) and minify.
 // Note: assets/js/vendor/* (e.g. Alpine) is loaded separately in default.hbs,
 // so it is intentionally NOT part of this bundle.
@@ -134,12 +148,12 @@ function locales(done) {
 
 // Recompile CSS when the entry changes OR when templates change (new class
 // names in .hbs need Tailwind to regenerate utilities).
-const cssWatcher = () => watch(['assets/css/**/*.css', '*.hbs', 'partials/**/*.hbs'], css);
+const cssWatcher = () => watch(['assets/css/**/*.css', '*.hbs', 'partials/**/*.hbs'], series(css, styleguideCss));
 const jsWatcher = () => watch('assets/js/**', js);
 const hbsWatcher = () => watch(['*.hbs', 'partials/**/*.hbs'], hbs);
 const localesWatcher = () => watch('./locales-local/**/*.json', locales);
 const watcher = parallel(cssWatcher, jsWatcher, hbsWatcher, localesWatcher);
-const build = series(css, js, locales);
+const build = series(css, styleguideCss, js, locales);
 
 exports.build = build;
 exports.zip = series(build, zipper);

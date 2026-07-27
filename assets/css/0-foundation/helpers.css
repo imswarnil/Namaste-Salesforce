@@ -1,0 +1,133 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   FOUNDATION · helpers.css — the utility recipes markup reaches for
+   ----------------------------------------------------------------------------
+   Tailwind covers the one-property utilities. These are the small PATTERNS
+   that would otherwise be retyped as four or five utilities every time, and
+   the few things Tailwind has no opinion about (aspect boxes with a fallback,
+   scroll containers that don't push the page sideways, reduced-motion-safe
+   animation).
+
+   Each is a Tailwind `@utility`, so it works as a class in markup AND via
+   `@apply` inside component CSS.
+
+   Naming: `ns-` prefix, verb-or-shape names — `ns-stack`, `ns-cluster`,
+   `ns-center`. If a helper needs a variant, it is a component, not a helper.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Flow: vertical rhythm without touching every child ─────────────────────
+   The "owl" — space BETWEEN children, never above the first or below the last,
+   so a stack drops into any container without fighting its padding. */
+@utility ns-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-gap);
+}
+@utility ns-stack-sm { display: flex; flex-direction: column; gap: var(--space-gap-sm); }
+@utility ns-stack-lg { display: flex; flex-direction: column; gap: var(--space-section-sm); }
+
+/* ── Cluster: things that sit in a row and wrap gracefully ─────────────────
+   Tag lists, button rows, meta lines. Wrapping is the default because a row
+   that can't wrap is a horizontal scrollbar waiting to happen. */
+@utility ns-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+@utility ns-cluster-sm { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
+@utility ns-cluster-lg { display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem; }
+
+/* ── Split: first child left, last child right, wraps to a stack ─────────── */
+@utility ns-split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* ── Center: the reading column, gutters included ──────────────────────────── */
+@utility ns-center {
+  margin-inline: auto;
+  padding-inline: var(--space-gutter);
+  max-width: var(--container-page);
+}
+
+/* ── Aspect boxes — media that reserves its space before it loads ────────── */
+@utility ns-aspect-video   { aspect-ratio: 16 / 9;  }
+@utility ns-aspect-wide    { aspect-ratio: 21 / 9;  }
+@utility ns-aspect-photo   { aspect-ratio: 4 / 3;   }
+@utility ns-aspect-square  { aspect-ratio: 1 / 1;   }
+@utility ns-aspect-portrait{ aspect-ratio: 3 / 4;   }
+@utility ns-aspect-story   { aspect-ratio: 9 / 16;  }
+
+/* ── Text clamping ──────────────────────────────────────────────────────── */
+@utility ns-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@utility ns-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@utility ns-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Scroll containers — wide content scrolls ITSELF, never the page ─────── */
+@utility ns-scroll-x {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+/* A horizontally scrolling row that snaps — mobile card carousels. */
+@utility ns-snap-x {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  gap: var(--grid-gutter);
+  scrollbar-width: none;
+}
+
+/* ── Accessibility ──────────────────────────────────────────────────────── */
+@utility ns-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+/* Anchor targets that must clear the sticky header. */
+@utility ns-anchor { scroll-margin-top: calc(var(--space-navbar) + 1.5rem); }
+
+/* ── Surfaces + edges, as one word ──────────────────────────────────────── */
+@utility ns-surface {
+  background-color: var(--color-surface-raised);
+  border: var(--border-hairline) solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+@utility ns-divide-y {
+  & > * + * { border-top: var(--border-hairline) solid var(--color-border); }
+}
+
+/* ── Motion, reduced-motion-safe by construction ────────────────────────── */
+@utility ns-animate-in {
+  animation: fade-up var(--duration-base) var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ns-animate-in { animation: none; }
+}
+
+/* ── Print: hide the chrome ─────────────────────────────────────────────── */
+@utility ns-no-print { @media print { display: none !important; } }

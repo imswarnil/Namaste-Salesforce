@@ -1,0 +1,240 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · content sections — .ns-band and friends
+   ----------------------------------------------------------------------------
+   The marketing furniture a landing page is assembled from. Every one of these
+   is a BAND: full-bleed ground, content constrained to the page measure, one
+   consistent vertical rhythm. Pages get built by stacking bands, not by
+   inventing a new wrapper each time.
+
+   .ns-band          the band itself (ground + rhythm + inner measure)
+   .ns-band__inner   the measured content column
+   .ns-split         copy one side, media the other — the workhorse
+   .ns-cta-band      the closing call to action
+   .ns-logos         a trust strip of marks
+   .ns-steps-row     numbered "how it works" across the page
+   .ns-compare       two columns, before/after or us/them
+   .ns-metrics       a row of big numbers on a ground
+   .ns-faq           an accordion in a band, with a heading beside it
+
+   BAND TONE   --plain (default) --sunken --dark --brand
+   BAND SIZE   --sm --lg --flush
+   PATTERN     --grid --dots --lines   (dark bands only)
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── The band ──────────────────────────────────────────────────────────── */
+  .ns-band {
+    position: relative;
+    padding-block: var(--space-section);
+    isolation: isolate;
+  }
+  .ns-band__inner {
+    margin-inline: auto;
+    max-width: var(--container-page);
+    padding-inline: var(--space-gutter);
+  }
+  .ns-band--sm    { padding-block: var(--space-section-sm); }
+  .ns-band--lg    { padding-block: calc(var(--space-section) * 1.35); }
+  .ns-band--flush { padding-block: 0; }
+
+  .ns-band--sunken { background: var(--color-surface-sunken); }
+  .ns-band--dark   { background: var(--color-brand-900); color: #fff; }
+  .ns-band--brand  { background: var(--color-brand-500); color: #fff; }
+  .ns-band--dark :where(p, li) { color: rgb(255 255 255 / 0.78); }
+
+  /* Hairline seams so stacked bands of the same tone still read as separate */
+  .ns-band--edge-top    { border-top: var(--border-hairline) solid var(--color-border); }
+  .ns-band--edge-bottom { border-bottom: var(--border-hairline) solid var(--color-border); }
+
+  /* Pattern layer — dark bands only; on light grounds it's visual noise. */
+  .ns-band--grid::before,
+  .ns-band--dots::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.4;
+    mask-image: radial-gradient(120% 100% at 50% 0%, #000 25%, transparent 78%);
+  }
+  .ns-band--grid::before {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .ns-band--dots::before {
+    background-image: radial-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* ── Split — the workhorse marketing row ───────────────────────────────── */
+  .ns-split {
+    display: grid;
+    gap: var(--grid-gutter-lg);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .ns-split { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ns-split--media-first .ns-split__media { order: -1; }
+    .ns-split--wide-copy { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+    .ns-split--wide-media { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+  }
+  .ns-split__body { display: grid; gap: 0.85rem; align-content: start; }
+  .ns-split__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.25rem);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+    letter-spacing: -0.015em;
+  }
+  .ns-split__lede { font-size: var(--size-lead); color: var(--color-muted); line-height: var(--leading-body); }
+  .ns-band--dark .ns-split__lede { color: rgb(255 255 255 / 0.78); }
+
+  /* Stack several splits and they alternate sides automatically. */
+  .ns-split-stack { display: grid; gap: calc(var(--space-section) * 0.8); }
+  @media (min-width: 900px) {
+    .ns-split-stack > .ns-split:nth-child(even) .ns-split__media { order: -1; }
+  }
+
+  /* ── CTA band ──────────────────────────────────────────────────────────── */
+  .ns-cta-band {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: center;
+    text-align: center;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+    background: var(--color-surface-raised);
+    padding: clamp(1.75rem, 4vw, 3rem);
+  }
+  .ns-cta-band--dark {
+    background: var(--color-brand-900);
+    border-color: color-mix(in srgb, #fff 12%, transparent);
+    color: #fff;
+  }
+  .ns-cta-band--brand { background: var(--color-brand-500); border-color: var(--color-brand-500); color: #fff; }
+  .ns-cta-band--start { justify-items: start; text-align: left; }
+  .ns-cta-band__title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.35rem, 1.1rem + 1vw, 2rem);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+  }
+  .ns-cta-band__sub { max-width: 38rem; color: inherit; opacity: 0.8; }
+  .ns-cta-band__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+  .ns-cta-band--start .ns-cta-band__actions { justify-content: flex-start; }
+
+  /* ── Logo / trust strip ────────────────────────────────────────────────── */
+  .ns-logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem 2.75rem;
+  }
+  .ns-logos__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+    opacity: 0.85;
+    transition: opacity var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+  }
+  .ns-logos__item:hover { opacity: 1; color: var(--color-brand-600); }
+  .ns-band--dark .ns-logos__item { color: rgb(255 255 255 / 0.6); }
+
+  /* ── Steps across the page ─────────────────────────────────────────────── */
+  .ns-steps-row {
+    display: grid;
+    gap: var(--grid-gutter);
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    counter-reset: ns-steps-row;
+  }
+  .ns-steps-row__item {
+    position: relative;
+    counter-increment: ns-steps-row;
+    padding-top: 2.25rem;
+  }
+  .ns-steps-row__item::before {
+    content: counter(ns-steps-row, decimal-leading-zero);
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--color-brand-500) 45%, transparent);
+  }
+  /* The connecting rule between steps, on wide screens only. */
+  @media (min-width: 900px) {
+    .ns-steps-row__item::after {
+      content: "";
+      position: absolute;
+      top: 0.75rem;
+      left: 3rem;
+      right: -1rem;
+      height: var(--border-hairline);
+      background: var(--color-border);
+    }
+    .ns-steps-row__item:last-child::after { display: none; }
+  }
+  .ns-steps-row__title { font-family: var(--font-heading); font-weight: 700; }
+  .ns-steps-row__body { margin-top: 0.35rem; font-size: var(--size-small); color: var(--color-muted); }
+
+  /* ── Comparison ────────────────────────────────────────────────────────── */
+  .ns-compare { display: grid; gap: var(--grid-gutter); }
+  @media (min-width: 768px) { .ns-compare { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .ns-compare__col {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    background: var(--color-surface-raised);
+  }
+  .ns-compare__col--good { border-color: color-mix(in srgb, var(--color-success) 40%, transparent); }
+  .ns-compare__col--bad  { background: var(--color-surface-sunken); }
+  .ns-compare__title {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* ── Metrics row ───────────────────────────────────────────────────────── */
+  .ns-metrics {
+    display: grid;
+    gap: var(--grid-gutter);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    text-align: center;
+  }
+  @media (min-width: 768px) { .ns-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .ns-metrics__value {
+    font-family: var(--font-mono);
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.75rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .ns-metrics__label {
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .ns-band--dark .ns-metrics__label { color: rgb(255 255 255 / 0.6); }
+
+  /* ── FAQ band — heading beside the questions ───────────────────────────── */
+  .ns-faq { display: grid; gap: var(--grid-gutter-lg); align-items: start; }
+  @media (min-width: 1024px) { .ns-faq { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); } }
+}

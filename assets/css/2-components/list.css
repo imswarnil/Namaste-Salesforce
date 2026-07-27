@@ -1,0 +1,118 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · list — .ns-list
+   ----------------------------------------------------------------------------
+   Lists you build in a template, grouped and marked deliberately — as opposed
+   to the bare <ul>/<ol> ELEMENT, which styles what an author writes in a post.
+
+   MARKER   --check  --cross  --dot  --arrow  --num  --icon
+   FORM     --divided (hairline between rows) · --boxed (a card around it)
+            --inline (a wrapping row) · --grid (two columns from `sm`)
+   SIZE     --sm  (default)  --lg
+   GROUP    .ns-list-group  __title   several lists under mono section labels
+   PARTS    __item __icon __title __meta
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-list { display: grid; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+
+  .ns-list__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    min-width: 0;
+    line-height: var(--leading-body);
+  }
+  .ns-list__title { font-weight: var(--weight-semibold); }
+  .ns-list__meta {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* ── Markers — a pseudo-element, so the marker can never be selected or
+        read aloud as content ─────────────────────────────────────────────── */
+  .ns-list--check .ns-list__item::before,
+  .ns-list--cross .ns-list__item::before,
+  .ns-list--dot   .ns-list__item::before,
+  .ns-list--arrow .ns-list__item::before {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    line-height: inherit;
+  }
+  .ns-list--check .ns-list__item::before { content: "✓"; color: var(--color-success); }
+  .ns-list--cross .ns-list__item::before { content: "✕"; color: var(--color-error); }
+  .ns-list--arrow .ns-list__item::before { content: "→"; color: var(--color-brand-500); }
+  .ns-list--dot .ns-list__item::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-top: 0.55em;
+    border-radius: var(--radius-pill);
+    background: var(--color-brand-400);
+  }
+
+  /* Numbered — a mono index, the same readout as steps and curriculum rows. */
+  .ns-list--num { counter-reset: ns-list; }
+  .ns-list--num .ns-list__item { counter-increment: ns-list; }
+  .ns-list--num .ns-list__item::before {
+    content: counter(ns-list, decimal-leading-zero);
+    flex-shrink: 0;
+    min-width: 1.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--weight-label);
+    color: var(--color-label);
+    line-height: inherit;
+  }
+
+  .ns-list--icon .ns-list__icon { flex-shrink: 0; color: var(--color-brand-500); margin-top: 0.15em; }
+
+  /* ── Forms ─────────────────────────────────────────────────────────────── */
+  .ns-list--divided { gap: 0; }
+  .ns-list--divided .ns-list__item { padding-block: 0.6rem; }
+  .ns-list--divided .ns-list__item + .ns-list__item {
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+
+  .ns-list--boxed {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: 0.35rem 1rem;
+    gap: 0;
+  }
+  .ns-list--boxed .ns-list__item { padding-block: 0.6rem; }
+  .ns-list--boxed .ns-list__item + .ns-list__item {
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+
+  .ns-list--inline { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  .ns-list--grid { grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .ns-list--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.45rem 1.5rem; } }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-list--sm { font-size: var(--size-small); gap: 0.3rem; }
+  .ns-list--lg { font-size: var(--size-body-lg); gap: 0.7rem; }
+
+  /* ── Grouping — several lists under mono section labels ────────────────── */
+  .ns-list-group { display: grid; gap: 1.5rem; }
+  .ns-list-group__title {
+    display: block;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: var(--border-hairline) solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+}

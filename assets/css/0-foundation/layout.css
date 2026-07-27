@@ -1,0 +1,46 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   FOUNDATION · layout.css — the grid, the gutters, the breakpoints
+   ----------------------------------------------------------------------------
+   How a page is measured. Everything above this layer spends these values, so
+   a three-column band on the homepage and a three-column band in the catalog
+   are the same three columns.
+
+   THE GRID: 12 columns, because 12 divides by 2, 3, 4 and 6 — every layout the
+   site needs (halves, thirds, quarters, sidebar+content) falls out of it
+   without a custom track list.
+
+   THE GUTTER scales with the viewport: tight on a phone where every pixel is
+   reading width, generous on a desktop where columns need separating.
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* The grid */
+  --grid-columns:    12;
+  --grid-gutter:     clamp(1rem, 2.5vw, 1.5rem);   /* between columns */
+  --grid-gutter-sm:  0.75rem;
+  --grid-gutter-lg:  clamp(1.5rem, 4vw, 2.5rem);
+
+  /* Minimum comfortable column width before a grid should re-flow. Feed it to
+     `repeat(auto-fit, minmax(var(--grid-min), 1fr))` and the layout collapses
+     on content, not on a breakpoint you guessed. */
+  --grid-min:        16rem;
+  --grid-min-sm:     11rem;
+  --grid-min-lg:     22rem;
+
+  /* The sidebar shells the site uses (docs, lesson player, catalog filters) */
+  --layout-sidebar:      16rem;
+  --layout-sidebar-wide: 18rem;
+  --layout-rail:         14rem;   /* the narrow right-hand TOC rail */
+}
+
+/* Breakpoints are Tailwind's defaults — documented here so custom media
+   queries in this codebase never invent a new one:
+
+     sm   640px    large phone / small tablet
+     md   768px    tablet
+     lg  1024px    laptop — where sidebars become permanent
+     xl  1280px    desktop
+     2xl 1536px    wide desktop
+
+   `lg` is the important one: below it the site is a single column with
+   drawers; at and above it, rails and sidebars are always visible. */

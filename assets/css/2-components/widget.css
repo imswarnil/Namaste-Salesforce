@@ -1,13 +1,21 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   COMPONENT · sidebar widget — .ns-widget
+   COMPONENT · widgets — .ns-widget and its presets
    ----------------------------------------------------------------------------
-   The boxes that stack in a sidebar: "Explore", "Popular topics", the
-   newsletter signup, an ad slot. A card with a mono heading and a hairline
-   under it, so a column of them reads as one rail.
+   The boxes that stack in a sidebar. One base (a card with a mono heading and
+   a hairline under it, so a column of them reads as one rail) plus the presets
+   the site actually uses, each of which is just the base with its own body:
 
-   TONE  (default card) --plain --sunken --brand
-   SIZE  --sm  (default)
-   PARTS __head __title __body __footer
+     --newsletter   email capture
+     --tags         a tag cloud
+     --author       who wrote this
+     --toc          an in-page contents rail
+     --cta          a single call to action
+     --stats        a small vertical readout
+     --promo        sponsor / ad slot framing
+
+   TONE   (default card) --plain --sunken --brand --dark
+   SIZE   --sm  (default)  --lg
+   PARTS  __head __title __action __body __footer __empty
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -18,13 +26,6 @@
     padding: 1.25rem;
   }
   .ns-widget + .ns-widget { margin-top: 1rem; }
-  .ns-widget--sm     { padding: 0.9rem; }
-  .ns-widget--plain  { border-color: transparent; background: transparent; padding-inline: 0; }
-  .ns-widget--sunken { background: var(--color-surface-sunken); }
-  .ns-widget--brand  {
-    border-color: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
-    background: color-mix(in srgb, var(--color-brand-500) 4%, transparent);
-  }
 
   .ns-widget__head {
     display: flex;
@@ -36,6 +37,9 @@
     border-bottom: var(--border-hairline) solid var(--color-border);
   }
   .ns-widget__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     font-family: var(--font-mono);
     font-size: var(--size-label);
     font-weight: var(--weight-label);
@@ -43,10 +47,97 @@
     text-transform: uppercase;
     color: var(--color-label);
   }
+  .ns-widget__action {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    color: var(--color-brand-600);
+  }
+  [data-theme="dark"] .ns-widget__action { color: var(--color-brand-300); }
+  .ns-widget__body { font-size: var(--size-small); }
   .ns-widget__footer {
     margin-top: 0.85rem;
     padding-top: 0.65rem;
     border-top: var(--border-hairline) solid var(--color-border);
     font-size: var(--size-small);
+    color: var(--color-muted);
+  }
+  .ns-widget__empty { font-size: var(--size-small); color: var(--color-muted); }
+
+  /* ── Sizes + tones ─────────────────────────────────────────────────────── */
+  .ns-widget--sm { padding: 0.9rem; }
+  .ns-widget--lg { padding: 1.6rem; }
+  .ns-widget--plain  { border-color: transparent; background: transparent; padding-inline: 0; }
+  .ns-widget--sunken { background: var(--color-surface-sunken); }
+  .ns-widget--brand {
+    border-color: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+    background: color-mix(in srgb, var(--color-brand-500) 4%, transparent);
+  }
+  .ns-widget--dark {
+    background: var(--color-brand-900);
+    border-color: color-mix(in srgb, #fff 12%, transparent);
+    color: #fff;
+  }
+  .ns-widget--dark :where(.ns-widget__head, .ns-widget__footer) { border-color: rgb(255 255 255 / 0.14); }
+  .ns-widget--dark .ns-widget__title { color: rgb(255 255 255 / 0.6); }
+
+  /* ── Preset: newsletter ────────────────────────────────────────────────── */
+  .ns-widget--newsletter .ns-widget__body { display: grid; gap: 0.55rem; }
+  .ns-widget--newsletter p { color: var(--color-muted); line-height: var(--leading-body); }
+  .ns-widget--newsletter .ns-widget__note {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    color: var(--color-label);
+  }
+
+  /* ── Preset: tag cloud ─────────────────────────────────────────────────── */
+  .ns-widget--tags .ns-widget__body { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+  /* ── Preset: author ────────────────────────────────────────────────────── */
+  .ns-widget--author .ns-widget__body { display: flex; gap: 0.85rem; align-items: flex-start; }
+  .ns-widget--author .ns-widget__name { font-weight: var(--weight-semibold); }
+  .ns-widget--author .ns-widget__role { font-size: 0.75rem; color: var(--color-muted); }
+
+  /* ── Preset: in-page contents ──────────────────────────────────────────── */
+  .ns-widget--toc .ns-widget__body { display: grid; gap: 0.1rem; }
+
+  /* ── Preset: single CTA ────────────────────────────────────────────────── */
+  .ns-widget--cta { text-align: center; }
+  .ns-widget--cta .ns-widget__head { justify-content: center; border-bottom: 0; padding-bottom: 0; }
+  .ns-widget--cta .ns-widget__body { display: grid; gap: 0.75rem; justify-items: center; }
+
+  /* ── Preset: vertical stat readout ─────────────────────────────────────── */
+  .ns-widget--stats .ns-widget__body { display: grid; gap: 0.6rem; }
+  .ns-widget--stats .ns-widget__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .ns-widget--stats .ns-widget__row + .ns-widget__row {
+    padding-top: 0.6rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-widget--stats .ns-widget__num {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Preset: promo / sponsor ───────────────────────────────────────────── */
+  .ns-widget--promo { padding: 0; overflow: hidden; }
+  .ns-widget--promo .ns-widget__head {
+    margin: 0;
+    padding: 0.5rem 0.9rem;
+    background: var(--color-surface-sunken);
+    border-bottom: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-widget--promo .ns-widget__body { padding: 0.9rem; }
+
+  /* ── Sticky rail behaviour ─────────────────────────────────────────────── */
+  @media (min-width: 1024px) {
+    .ns-widget--sticky {
+      position: sticky;
+      top: calc(var(--space-navbar) + 1rem);
+    }
   }
 }

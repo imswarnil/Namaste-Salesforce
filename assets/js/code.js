@@ -112,7 +112,7 @@
   var ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 
   function copyText(text, btn) {
-    var label = btn.querySelector('.ns-code__copy-label');
+    var label = btn.querySelector('.ns-syntax__copy-label');
     function done() {
       btn.classList.add('is-copied');
       if (label) label.textContent = 'Copied!';
@@ -133,7 +133,7 @@
 
   // ── process each block ──
   blocks.forEach(function (pre) {
-    if (pre.closest('.ns-code')) return;
+    if (pre.closest('.ns-syntax')) return;
     var codeEl = pre.querySelector('code') || pre;
     var raw = codeEl.textContent;
     var lang = ((codeEl.className + ' ' + pre.className).match(/language-([\w-]+)/) || [])[1] || '';
@@ -142,24 +142,28 @@
     codeEl.innerHTML = isMarkup(lang) ? highlightMarkup(raw) : highlightCode(raw, lang);
 
     var wrap = document.createElement('div');
-    wrap.className = 'ns-code';
+    wrap.className = 'ns-syntax';
     var bar = document.createElement('div');
-    bar.className = 'ns-code__bar';
+    bar.className = 'ns-syntax__bar';
     bar.innerHTML =
-      '<span class="ns-code__tab">' +
+      '<span class="ns-syntax__name">' +
         '<svg viewBox="0 0 24 24" fill="currentColor" class="h-3.5 w-3.5"><path d="M7 19a5 5 0 0 1-.8-9.9 6 6 0 0 1 11.5-1.2A4.5 4.5 0 0 1 17.5 19H7Z"/></svg>' +
         '<span>' + (lang || 'code') + '</span>' +
       '</span>';
     var btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'ns-code__copy';
+    btn.className = 'ns-syntax__copy';
     btn.setAttribute('aria-label', 'Copy code');
-    btn.innerHTML = ICON_COPY + '<span class="ns-code__copy-label">Copy</span>';
+    btn.innerHTML = ICON_COPY + '<span class="ns-syntax__copy-label">Copy</span>';
     bar.appendChild(btn);
+
+    var body = document.createElement('div');
+    body.className = 'ns-syntax__body';
 
     pre.parentNode.insertBefore(wrap, pre);
     wrap.appendChild(bar);
-    wrap.appendChild(pre);
+    wrap.appendChild(body);
+    body.appendChild(pre);
 
     btn.addEventListener('click', function () { copyText(raw, btn); });
   });

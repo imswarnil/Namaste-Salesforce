@@ -1,0 +1,115 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · accordion — .ns-accordion
+   ----------------------------------------------------------------------------
+   Built on <details>/<summary>, so it works with no JavaScript, is keyboard
+   operable for free, and is findable by in-page search when open.
+
+   The open/close animation uses `grid-template-rows: 0fr → 1fr`, which is the
+   only way to transition to an unknown content height without measuring it in
+   JS. Browsers without `interpolate-size` still get an instant, correct
+   toggle — the component never depends on the animation.
+
+   TONE    (default hairline) --plain --sunken --brand
+   SIZE    --sm  (default)  --lg
+   FORM    --flush   rows share one edge, no gaps (FAQ lists)
+           --cards   each row is its own card
+   PARTS   __item __summary __title __icon __body
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-accordion { display: grid; gap: 0.5rem; }
+
+  .ns-accordion__item {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .ns-accordion__item[open] { border-color: var(--color-brand-500); }
+
+  /* ── The row you click ─────────────────────────────────────────────────── */
+  .ns-accordion__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    cursor: pointer;
+    font-weight: var(--weight-semibold);
+    list-style: none;
+    transition: background-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-accordion__summary::-webkit-details-marker { display: none; }
+  .ns-accordion__summary:hover { color: var(--color-brand-600); }
+  [data-theme="dark"] .ns-accordion__summary:hover { color: var(--color-brand-300); }
+  .ns-accordion__summary:focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: -2px;
+  }
+
+  .ns-accordion__title { flex: 1; min-width: 0; }
+
+  /* The marker rotates rather than swapping glyphs — one element, no flash. */
+  .ns-accordion__icon {
+    flex-shrink: 0;
+    color: var(--color-label);
+    transition: transform var(--duration-base) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-accordion__item[open] .ns-accordion__icon {
+    transform: rotate(90deg);
+    color: var(--color-brand-500);
+  }
+
+  /* ── The panel ─────────────────────────────────────────────────────────── */
+  .ns-accordion__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-base) var(--ease-out);
+  }
+  .ns-accordion__body > * { overflow: hidden; }
+  .ns-accordion__item[open] .ns-accordion__body { grid-template-rows: 1fr; }
+  .ns-accordion__body > * > :first-child { margin-top: 0; }
+  .ns-accordion__body-inner {
+    padding: 0 1.1rem 1rem;
+    font-size: var(--size-small);
+    line-height: var(--leading-body);
+    color: var(--color-muted);
+  }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-accordion--sm .ns-accordion__summary { padding: 0.55rem 0.8rem; font-size: var(--size-small); }
+  .ns-accordion--sm .ns-accordion__body-inner { padding: 0 0.8rem 0.75rem; }
+  .ns-accordion--lg .ns-accordion__summary { padding: 1.1rem 1.4rem; font-size: var(--size-body-lg); }
+  .ns-accordion--lg .ns-accordion__body-inner { padding: 0 1.4rem 1.25rem; font-size: var(--size-body); }
+
+  /* ── Tones ─────────────────────────────────────────────────────────────── */
+  .ns-accordion--plain .ns-accordion__item { border-color: transparent; background: transparent; }
+  .ns-accordion--plain .ns-accordion__item[open] { border-color: transparent; }
+  .ns-accordion--sunken .ns-accordion__item { background: var(--color-surface-sunken); }
+  .ns-accordion--brand .ns-accordion__item[open] {
+    background: color-mix(in srgb, var(--color-brand-500) 4%, transparent);
+  }
+
+  /* ── Flush — one continuous list, the FAQ shape ────────────────────────── */
+  .ns-accordion--flush { gap: 0; }
+  .ns-accordion--flush .ns-accordion__item {
+    border-radius: 0;
+    border-inline: 0;
+    border-top: 0;
+    background: transparent;
+  }
+  .ns-accordion--flush .ns-accordion__item:first-child {
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-accordion--flush .ns-accordion__item[open] {
+    border-color: var(--color-border);
+    box-shadow: inset 2px 0 0 0 var(--color-brand-500);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-accordion__body { transition: none; }
+  .ns-accordion__icon { transition: none; }
+}

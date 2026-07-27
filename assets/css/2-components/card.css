@@ -12,7 +12,8 @@
    STATE    --interactive  hover: border → brand + a top accent line
             --active / .is-active   the selected card in a set
    PATTERN  --grid  --dots  --lines   the foundation background patterns
-   PARTS    .ns-card__header  __media  __body  __footer  __title  __meta
+   PARTS    __media __header __body __footer __title __meta __actions __link
+            __badge (a corner label on the media)
 
    Compose freely: `.ns-card .ns-card--lg .ns-card--interactive .ns-card--grid`.
    ════════════════════════════════════════════════════════════════════════ */
@@ -134,15 +135,59 @@
     justify-content: space-between;
     gap: 0.75rem;
   }
-  .ns-card__media { margin: -1.25rem -1.25rem 1rem; overflow: hidden; }
+  /* ── Media — pulls out to the card's edges, keeps the top corners ─────── */
+  .ns-card__media {
+    position: relative;
+    margin: -1.25rem -1.25rem 1rem;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface-sunken);
+  }
   .ns-card--flush .ns-card__media { margin: 0; }
-  .ns-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ns-card--xs .ns-card__media { margin: -0.65rem -0.65rem 0.75rem; }
+  .ns-card--sm .ns-card__media { margin: -0.9rem -0.9rem 0.85rem; }
+  .ns-card--lg .ns-card__media { margin: -1.75rem -1.75rem 1.25rem; }
+  .ns-card__media > :where(img, video, iframe) {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .ns-card__media--photo   { aspect-ratio: 4 / 3; }
+  .ns-card__media--square  { aspect-ratio: 1 / 1; }
+  .ns-card__media--wide    { aspect-ratio: 21 / 9; }
+  .ns-card__media--auto    { aspect-ratio: auto; }
+  /* The image lifts a hair when the card is hovered — media's one exception. */
+  .ns-card--interactive .ns-card__media > :where(img, video) {
+    transition: transform 0.4s var(--ease-out);
+  }
+  .ns-card--interactive:hover .ns-card__media > :where(img, video) { transform: scale(1.03); }
+  .ns-card__badge {
+    position: absolute;
+    left: 0.6rem;
+    top: 0.6rem;
+    z-index: 1;
+  }
   .ns-card__body   { flex: 1 1 auto; min-width: 0; }
   .ns-card__footer {
-    margin-top: 1rem;
+    margin-top: auto;
     padding-top: 0.85rem;
     border-top: var(--border-hairline) solid var(--color-border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
   }
+  .ns-card__footer > * + * { margin-left: auto; }
+  /* A footer that sits flush against the card edges (image-led cards) */
+  .ns-card__footer--flush {
+    margin-inline: -1.25rem;
+    margin-bottom: -1.25rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-surface-sunken);
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+  }
+  .ns-card__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  /* Stretched link — the whole card is clickable, the anchor stays real */
+  .ns-card__link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
   .ns-card__title {
     font-family: var(--font-heading);
     font-weight: var(--weight-heading);

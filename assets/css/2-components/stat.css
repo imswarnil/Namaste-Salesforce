@@ -1,24 +1,24 @@
 /* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · stat — .ns-stat, .ns-stats
    ----------------------------------------------------------------------------
-   A number and what it counts: catalog totals, course hero figures, homepage
-   counters. The value is ALWAYS mono and tabular so a row of them lines up;
-   the label is the mono label scale. This is the spec-sheet readout that makes
-   the site feel like a console rather than a brochure.
+   A number and what it counts. The value is ALWAYS mono and tabular so a row
+   of them lines up — this readout is what makes the site read as a console
+   rather than a brochure.
 
-   LAYOUT  .ns-stats (row, wraps)  --grid  --center  --tight
-   SIZE    --sm  (default)  --lg
-   TONE    --brand (value in brand)  --light (on dark grounds)
-   PARTS   __value __label __icon
+   LAYOUT   .ns-stats           a wrapping row
+            --grid --center --tight --divided --cards
+   SIZE     --xs --sm (default) --lg --xl
+   TONE     --brand --light (dark grounds) --success --warning --danger
+   FORM     --inline   icon + value + label on one baseline
+            --card     each stat in its own hairline box
+            --stacked  label above the value (dashboard reading)
+            --trend    a delta with direction
+   PARTS    __value __label __icon __delta __sub
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-stats {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1.25rem 2.5rem;
-  }
+  /* ── Layouts ───────────────────────────────────────────────────────────── */
+  .ns-stats { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1.25rem 2.5rem; }
   .ns-stats--center { justify-content: center; }
   .ns-stats--tight  { gap: 0.75rem 1.5rem; }
   .ns-stats--grid {
@@ -29,8 +29,25 @@
   @media (min-width: 768px) {
     .ns-stats--grid { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); }
   }
+  /* Hairline rules between stats — the spec-sheet reading */
+  .ns-stats--divided { gap: 0; }
+  .ns-stats--divided .ns-stat { padding-inline: 1.5rem; }
+  .ns-stats--divided .ns-stat:first-child { padding-left: 0; }
+  .ns-stats--divided .ns-stat + .ns-stat {
+    border-left: var(--border-hairline) solid var(--color-border);
+  }
+  /* Each stat as its own card */
+  .ns-stats--cards { display: grid; gap: var(--grid-gutter-sm);
+    grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr)); }
+  .ns-stats--cards .ns-stat {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: 1rem;
+  }
 
-  .ns-stat { display: inline-flex; flex-direction: column; gap: 0.15rem; }
+  /* ── The stat ──────────────────────────────────────────────────────────── */
+  .ns-stat { display: inline-flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
 
   .ns-stat__value {
     font-family: var(--font-mono);
@@ -48,21 +65,59 @@
     text-transform: uppercase;
     color: var(--color-label);
   }
+  .ns-stat__sub { font-size: 0.75rem; color: var(--color-muted); }
   .ns-stat__icon { color: var(--color-brand-500); font-size: 1.15rem; }
 
   /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-stat--xs .ns-stat__value { font-size: 1rem; }
   .ns-stat--sm .ns-stat__value { font-size: 1.15rem; }
   .ns-stat--lg .ns-stat__value { font-size: 2.25rem; }
+  .ns-stat--xl .ns-stat__value { font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
 
   /* ── Tones ─────────────────────────────────────────────────────────────── */
   .ns-stat--brand .ns-stat__value { color: var(--color-brand-600); }
   [data-theme="dark"] .ns-stat--brand .ns-stat__value { color: var(--color-brand-300); }
+  .ns-stat--success .ns-stat__value { color: var(--color-success); }
+  .ns-stat--warning .ns-stat__value { color: var(--color-warning); }
+  .ns-stat--danger  .ns-stat__value { color: var(--color-error); }
   .ns-stat--light .ns-stat__value { color: #fff; }
   .ns-stat--light .ns-stat__label { color: rgb(255 255 255 / 0.65); }
   .ns-stat--light .ns-stat__icon  { color: var(--color-brand-200); }
 
-  /* Inline form — icon, value and label on one baseline */
+  /* ── Forms ─────────────────────────────────────────────────────────────── */
   .ns-stat--inline { flex-direction: row; align-items: baseline; gap: 0.4rem; }
   .ns-stat--inline .ns-stat__icon { align-self: center; }
-  .ns-stat--inline .ns-stat__label { text-transform: none; letter-spacing: normal; font-family: var(--font-sans); font-size: 0.8rem; color: var(--color-muted); }
+  .ns-stat--inline .ns-stat__label {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--color-muted);
+  }
+
+  .ns-stat--stacked { gap: 0.35rem; }
+  .ns-stat--stacked .ns-stat__label { order: -1; }
+
+  .ns-stat--card {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: 1rem;
+  }
+
+  /* ── Trend — a delta that says which way ───────────────────────────────── */
+  .ns-stat__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+  .ns-stat__delta--up   { color: var(--color-success); }
+  .ns-stat__delta--down { color: var(--color-error); }
+  .ns-stat__delta--up::before   { content: "▲"; font-size: 0.7em; }
+  .ns-stat__delta--down::before { content: "▼"; font-size: 0.7em; }
 }

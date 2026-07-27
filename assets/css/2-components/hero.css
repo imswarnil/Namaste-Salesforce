@@ -1,0 +1,149 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · hero — .ns-hero
+   ----------------------------------------------------------------------------
+   The top of a page — everything from a full landing hero down to the short
+   band above a collection. Replaces the old .ns-page-header; the
+   components/page-header.hbs partial is now a thin wrapper over this.
+
+   The ground is always SOLID — navy, surface, or sunken — never a gradient.
+   Depth comes from the pattern layer behind the copy, not from a colour ramp.
+
+   TONE     --dark (navy, default) · --plain · --sunken · --brand
+   SIZE     --xs --sm (default) --lg --xl --screen
+   LAYOUT   --center (default) · --start · --split (copy + media)
+   PATTERN  --grid --dots --lines
+   PARTS    __inner __eyebrow __title __sub __actions __media __meta __aside
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: var(--border-hairline) solid var(--color-border);
+    background-color: var(--color-brand-900);
+    color: #fff;
+    isolation: isolate;
+  }
+
+  .ns-hero__inner {
+    position: relative;
+    margin-inline: auto;
+    max-width: var(--container-page);
+    padding: 3.5rem var(--space-gutter);
+    text-align: center;
+  }
+  @media (min-width: 1024px) { .ns-hero__inner { padding-block: 5rem; } }
+
+  .ns-hero__title {
+    margin-top: 0.5rem;
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+    font-weight: var(--weight-heading);
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    text-wrap: balance;
+  }
+  .ns-hero__sub {
+    margin: 1rem auto 0;
+    max-width: 42rem;
+    font-size: var(--size-lead);
+    line-height: var(--leading-body);
+    color: rgb(255 255 255 / 0.8);
+  }
+  .ns-hero__actions {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .ns-hero__meta {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 2rem;
+  }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-hero--xs .ns-hero__inner { padding-block: 1.75rem; }
+  .ns-hero--sm .ns-hero__inner { padding-block: 2.5rem; }
+  @media (min-width: 1024px) {
+    .ns-hero--xs .ns-hero__inner { padding-block: 2.25rem; }
+    .ns-hero--sm .ns-hero__inner { padding-block: 3.5rem; }
+    .ns-hero--lg .ns-hero__inner { padding-block: 7rem; }
+    .ns-hero--xl .ns-hero__inner { padding-block: 9rem; }
+  }
+  .ns-hero--screen { display: grid; align-items: center; min-height: min(46rem, 88vh); }
+
+  /* ── Tones ─────────────────────────────────────────────────────────────── */
+  .ns-hero--plain,
+  .ns-hero--sunken { color: var(--color-ink); }
+  .ns-hero--plain  { background-color: var(--color-surface); }
+  .ns-hero--sunken { background-color: var(--color-surface-sunken); }
+  :where(.ns-hero--plain, .ns-hero--sunken) .ns-hero__sub { color: var(--color-muted); }
+  .ns-hero--brand  { background-color: var(--color-brand-500); }
+
+  /* ── Alignment ─────────────────────────────────────────────────────────── */
+  .ns-hero--start .ns-hero__inner { text-align: left; }
+  .ns-hero--start .ns-hero__sub { margin-inline: 0; }
+  .ns-hero--start :where(.ns-hero__actions, .ns-hero__meta) { justify-content: flex-start; }
+
+  /* ── Split — copy on one side, media on the other ──────────────────────── */
+  .ns-hero--split .ns-hero__inner {
+    display: grid;
+    gap: var(--grid-gutter-lg);
+    text-align: left;
+    align-items: center;
+  }
+  .ns-hero--split .ns-hero__sub { margin-inline: 0; }
+  .ns-hero--split :where(.ns-hero__actions, .ns-hero__meta) { justify-content: flex-start; }
+  @media (min-width: 1024px) {
+    .ns-hero--split .ns-hero__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); }
+    .ns-hero--split-media-first .ns-hero__media { order: -1; }
+  }
+
+  /* ── Pattern layer — sits behind the copy, never over it ───────────────── */
+  .ns-hero--grid::before,
+  .ns-hero--dots::before,
+  .ns-hero--lines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.5;
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 75%);
+  }
+  .ns-hero--grid::before {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.09) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.09) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .ns-hero--dots::before {
+    background-image: radial-gradient(rgb(255 255 255 / 0.14) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .ns-hero--lines::before {
+    background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 11px);
+  }
+  /* On a light ground the pattern must be ink, not white. */
+  :where(.ns-hero--plain, .ns-hero--sunken) :where(.ns-hero--grid, .ns-hero--dots, .ns-hero--lines)::before,
+  .ns-hero--plain::before, .ns-hero--sunken::before {
+    background-image: none;
+  }
+  .ns-hero--plain.ns-hero--grid::before,
+  .ns-hero--sunken.ns-hero--grid::before {
+    background-image:
+      linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .ns-hero--plain.ns-hero--dots::before,
+  .ns-hero--sunken.ns-hero--dots::before {
+    background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+}

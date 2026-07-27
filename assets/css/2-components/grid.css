@@ -1,0 +1,93 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · grid + shell — .ns-grid, .ns-shell
+   ----------------------------------------------------------------------------
+   How a page is laid out. Two things live here:
+
+   .ns-grid   a content-driven grid. The default REFLOWS on content
+              (auto-fit + --grid-min) rather than at a breakpoint you guessed,
+              so a 3-up becomes a 2-up becomes a 1-up on its own. Fixed column
+              counts are available when the design genuinely needs them.
+
+   .ns-shell  the page shells: sidebar + content, content + rail, or both.
+              Below `lg` every shell is one column — that's the rule the whole
+              site follows, and it's why drawers exist on mobile.
+
+   SIZES    --tight  --loose        (gutter)
+   COUNTS   --2 --3 --4 --auto-sm --auto-lg
+   SHELLS   --sidebar --rail --both --wide-sidebar
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── Content grid ──────────────────────────────────────────────────────── */
+  .ns-grid {
+    display: grid;
+    gap: var(--grid-gutter);
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min), 100%), 1fr));
+  }
+  .ns-grid--auto-sm { grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min-sm), 100%), 1fr)); }
+  .ns-grid--auto-lg { grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min-lg), 100%), 1fr)); }
+
+  /* Fixed counts — they still collapse to one column on a phone. */
+  .ns-grid--2, .ns-grid--3, .ns-grid--4 { grid-template-columns: 1fr; }
+  @media (min-width: 640px) {
+    .ns-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ns-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ns-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .ns-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ns-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  .ns-grid--tight { gap: var(--grid-gutter-sm); }
+  .ns-grid--loose { gap: var(--grid-gutter-lg); }
+
+  /* Span helpers for the odd feature cell */
+  .ns-grid__span-2 { grid-column: span 2; }
+  .ns-grid__span-all { grid-column: 1 / -1; }
+  @media (max-width: 639.98px) { .ns-grid__span-2 { grid-column: auto; } }
+
+  /* ── Page shells ───────────────────────────────────────────────────────── */
+  .ns-shell {
+    display: grid;
+    gap: var(--grid-gutter-lg);
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .ns-shell--sidebar      { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr); }
+    .ns-shell--wide-sidebar { grid-template-columns: var(--layout-sidebar-wide) minmax(0, 1fr); }
+    .ns-shell--rail         { grid-template-columns: minmax(0, 1fr) var(--layout-rail); }
+    .ns-shell--both         { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr) var(--layout-rail); }
+  }
+
+  /* A shell column that sticks under the header while its neighbour scrolls. */
+  .ns-shell__aside {
+    position: static;
+  }
+  @media (min-width: 1024px) {
+    .ns-shell__aside {
+      position: sticky;
+      top: calc(var(--space-navbar) + 1rem);
+      max-height: calc(100vh - var(--space-navbar) - 2rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+
+  /* ── Carousel row — the mobile answer to a grid that won't fit ─────────── */
+  .ns-rail {
+    display: flex;
+    gap: var(--grid-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0.5rem;
+  }
+  .ns-rail > * { scroll-snap-align: start; flex: 0 0 min(19rem, 82%); }
+  @media (min-width: 1024px) {
+    .ns-rail--grid-lg { display: grid; overflow: visible;
+      grid-template-columns: repeat(auto-fit, minmax(var(--grid-min), 1fr)); }
+    .ns-rail--grid-lg > * { flex: initial; }
+  }
+}

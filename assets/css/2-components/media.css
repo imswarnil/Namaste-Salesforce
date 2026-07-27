@@ -1,0 +1,152 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · media — .ns-media, .ns-embed, .ns-figure
+   ----------------------------------------------------------------------------
+   Every image, video and embed the templates place. Three jobs:
+
+   1. RESERVE THE SPACE. Media always declares an aspect ratio, so the page
+      never jumps as it loads. This is the single biggest layout-stability win
+      on a content site.
+   2. FRAME IT. A hairline, the card radius, and `object-fit: cover` — media
+      sits in the same geometry as every other box.
+   3. STAY RESPONSIVE. Ratios can change per breakpoint (a 21:9 hero is
+      unreadable on a phone; it becomes 4:3).
+
+   RATIO    --video 16:9 · --wide 21:9 · --photo 4:3 · --square · --portrait
+            --story 9:16 · --auto (intrinsic)
+   FORM     --frame (hairline + radius) · --plain · --round · --bleed
+   FIT      --contain (logos, screenshots that must not crop)
+   EXTRAS   --zoom (hover scale, media's one allowed transform)
+            .ns-media__overlay  gradient scrim for text over media
+            .ns-media__badge    a corner label (duration, type)
+   EMBED    .ns-embed wraps a YouTube/Vimeo iframe at a fixed ratio
+   FIGURE   .ns-figure + __caption for captioned media
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius-card);
+  }
+  .ns-media > :where(img, video, iframe, picture, svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── Ratios ────────────────────────────────────────────────────────────── */
+  .ns-media--video    { aspect-ratio: 16 / 9; }
+  .ns-media--wide     { aspect-ratio: 21 / 9; }
+  .ns-media--photo    { aspect-ratio: 4 / 3; }
+  .ns-media--square   { aspect-ratio: 1 / 1; }
+  .ns-media--portrait { aspect-ratio: 3 / 4; }
+  .ns-media--story    { aspect-ratio: 9 / 16; }
+  .ns-media--auto     { aspect-ratio: auto; }
+  .ns-media--auto > :where(img, video) { height: auto; }
+
+  /* A 21:9 band is a letterbox slot on a phone — give it back some height. */
+  @media (max-width: 639.98px) {
+    .ns-media--wide { aspect-ratio: 16 / 9; }
+    .ns-media--portrait, .ns-media--story { aspect-ratio: 4 / 3; }
+  }
+
+  /* ── Framing ───────────────────────────────────────────────────────────── */
+  .ns-media--frame { border: var(--border-hairline) solid var(--color-border); }
+  .ns-media--plain { border-radius: 0; background: transparent; }
+  .ns-media--round { border-radius: var(--radius-pill); }
+  .ns-media--bleed { border-radius: 0; margin-inline: calc(var(--space-gutter) * -1); }
+  @media (min-width: 768px) { .ns-media--bleed { margin-inline: 0; border-radius: var(--radius-card); } }
+
+  .ns-media--contain { background: var(--color-surface); }
+  .ns-media--contain > :where(img, svg) { object-fit: contain; padding: 0.75rem; }
+
+  /* ── Hover zoom — media is the ONE exception to the no-transform rule ──── */
+  .ns-media--zoom > :where(img, video) {
+    transition: transform 0.4s var(--ease-out);
+  }
+  .ns-media--zoom:hover > :where(img, video),
+  .group:hover .ns-media--zoom > :where(img, video) { transform: scale(1.04); }
+
+  /* ── Overlays + corner labels ──────────────────────────────────────────── */
+  .ns-media__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.6), rgb(0 0 0 / 0.05) 55%, transparent);
+    pointer-events: none;
+  }
+  .ns-media__badge {
+    position: absolute;
+    right: 0.55rem;
+    bottom: 0.55rem;
+    z-index: 1;
+    border-radius: var(--radius-sm);
+    background: rgb(0 0 0 / 0.72);
+    padding: 0.15rem 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: 0.04em;
+    color: #fff;
+  }
+  .ns-media__badge--start { right: auto; left: 0.55rem; }
+  .ns-media__badge--top   { bottom: auto; top: 0.55rem; }
+
+  /* Empty state — media that has no image yet reads as a slot, not a bug. */
+  .ns-media__fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+    font-size: 2rem;
+    background: var(--color-surface-sunken);
+  }
+
+  /* ── Embeds — YouTube, Vimeo, anything iframe-shaped ───────────────────── */
+  .ns-embed {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+    background: #000;
+  }
+  .ns-embed > iframe,
+  .ns-embed > video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .ns-embed--square { aspect-ratio: 1 / 1; }
+  .ns-embed--story  { aspect-ratio: 9 / 16; }
+  .ns-embed--plain  { border: 0; border-radius: 0; }
+
+  /* ── Figure + caption ──────────────────────────────────────────────────── */
+  .ns-figure { margin: 0; display: grid; gap: 0.5rem; }
+  .ns-figure__caption {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    letter-spacing: 0.04em;
+    color: var(--color-label);
+  }
+  .ns-figure--center { justify-items: center; text-align: center; }
+
+  /* ── Gallery ───────────────────────────────────────────────────────────── */
+  .ns-media-grid {
+    display: grid;
+    gap: var(--grid-gutter-sm);
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-media--zoom > :where(img, video) { transition: none; }
+  .ns-media--zoom:hover > :where(img, video) { transform: none; }
+}
