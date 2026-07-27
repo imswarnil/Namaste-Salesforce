@@ -1,0 +1,213 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · track — .ns-track-card, .ns-track-list, .ns-track-hero
+   ----------------------------------------------------------------------------
+   The training is ONE ordered path made of sections, and a section is made of
+   lessons. These are the pieces that present it:
+
+     .ns-track-list   the ordered set of sections on /training/, drawn on a
+                      single connected rail so the page reads as a PATH rather
+                      than a grid of unrelated cards
+     .ns-track-card   one section: index, title, what it covers, its lessons,
+                      progress and the way in
+     .ns-track-hero   the band at the top of a section page
+
+   Why a rail and not a grid: a course catalogue is a set of choices, so a grid
+   is right there. A training is a sequence — the reader needs to see that
+   section 3 comes after section 2, and a grid actively hides that.
+
+   STATE    .is-done · .is-current · .is-locked on the card
+   VARIANT  --compact (no lesson preview) · --plain (no rail, for a sidebar)
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── The path ──────────────────────────────────────────────────────────── */
+  .ns-track-list {
+    position: relative;
+    display: grid;
+    gap: var(--grid-gutter);
+    counter-reset: ns-track;
+  }
+  /* The connecting rail, behind the index discs */
+  .ns-track-list::before {
+    content: "";
+    position: absolute;
+    left: 1.35rem;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    width: var(--border-hairline);
+    background: var(--color-border);
+  }
+  @media (max-width: 639.98px) { .ns-track-list::before { display: none; } }
+  .ns-track-list--plain::before { display: none; }
+
+  /* ── One section ───────────────────────────────────────────────────────── */
+  .ns-track-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0 1.1rem;
+    counter-increment: ns-track;
+  }
+  @media (max-width: 639.98px) {
+    .ns-track-card { grid-template-columns: minmax(0, 1fr); }
+    .ns-track-card__index { display: none; }
+  }
+
+  /* The disc that sits on the rail */
+  .ns-track-card__index {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.75rem;
+    width: 2.75rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-border), 0 0 0 4px var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+  .ns-track-card__index::before { content: counter(ns-track, decimal-leading-zero); }
+
+  .ns-track-card__box {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: 1.25rem;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .ns-track-card:hover .ns-track-card__box { border-color: var(--color-brand-500); }
+
+  .ns-track-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .ns-track-card__title {
+    font-family: var(--font-heading);
+    font-size: var(--size-body-lg);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+  }
+  .ns-track-card__title > a { color: inherit; }
+  .ns-track-card__title > a::after { content: ""; position: absolute; inset: 0; z-index: 2; }
+  .ns-track-card:hover .ns-track-card__title { color: var(--color-brand-600); }
+  [data-theme="dark"] .ns-track-card:hover .ns-track-card__title { color: var(--color-brand-300); }
+
+  .ns-track-card__excerpt {
+    margin-top: 0.4rem;
+    font-size: var(--size-small);
+    line-height: var(--leading-body);
+    color: var(--color-muted);
+  }
+
+  .ns-track-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1rem;
+    margin-top: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* The lessons this section contains — a preview, not the whole list */
+  .ns-track-card__lessons {
+    display: grid;
+    gap: 0.1rem;
+    margin-top: 0.9rem;
+    padding-top: 0.75rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-track-card__lesson {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.35rem;
+    border-radius: var(--radius-btn);
+    font-size: var(--size-small);
+    color: var(--color-muted);
+    transition: background-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-track-card__lesson:hover {
+    background: color-mix(in srgb, var(--color-brand-500) 7%, transparent);
+    color: var(--color-brand-600);
+  }
+  [data-theme="dark"] .ns-track-card__lesson:hover { color: var(--color-brand-300); }
+  .ns-track-card__lesson > i:first-child { flex-shrink: 0; color: var(--color-brand-500); }
+  .ns-track-card__lesson > span:first-of-type { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ns-track-card__lesson-meta {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+  .ns-track-card__more {
+    margin-top: 0.35rem;
+    padding-left: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  .ns-track-card__progress { margin-top: 0.9rem; }
+
+  /* ── States ────────────────────────────────────────────────────────────── */
+  .ns-track-card.is-done .ns-track-card__index {
+    background: var(--color-success);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--color-surface);
+  }
+  .ns-track-card.is-done .ns-track-card__index::before { content: "✓"; }
+
+  .ns-track-card.is-current .ns-track-card__index {
+    background: var(--color-brand-500);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--color-surface),
+                0 0 0 6px color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+  }
+  .ns-track-card.is-current .ns-track-card__box { border-color: var(--color-brand-500); }
+
+  .ns-track-card.is-locked .ns-track-card__box { background: var(--color-surface-sunken); }
+  .ns-track-card.is-locked .ns-track-card__title { color: var(--color-muted); }
+
+  .ns-track-card--compact .ns-track-card__lessons,
+  .ns-track-card--compact .ns-track-card__excerpt { display: none; }
+
+  /* ── Section hero — the band at the top of /training/{section}/ ────────── */
+  .ns-track-hero__index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, #fff 14%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+  }
+  .ns-track-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 1.25rem;
+  }
+}

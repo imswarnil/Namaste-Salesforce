@@ -1,0 +1,209 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · sidebar navigation — .ns-sidenav
+   ----------------------------------------------------------------------------
+   The rail that runs down the left of training, course and docs pages. This
+   replaces the old ad-hoc sidebar: it is a real component, it uses the system's
+   language (mono indices, hairline rails, one signal colour), and it behaves
+   the way a course sidebar has to behave.
+
+   THE BEHAVIOUR RULE — the section you are IN stays open, every other section
+   is closed. That is native: each group is a <details> sharing one `name`, so
+   the browser itself enforces "only one open at a time" and opening another
+   closes the current one. No JavaScript, no flash, and it still works if the
+   script never loads. Browsers without exclusive-details support simply allow
+   more than one open, which degrades correctly.
+
+   STRUCTURE
+     .ns-sidenav            the rail
+       __head               title + progress readout
+       __group              <details name="..."> — one section
+         __summary          the clickable section row
+           __index          01, 02 … mono, tabular
+           __title
+           __count          "6 lessons"
+           __caret          rotates on open
+         __list             the lessons
+           __link           one lesson
+             __num  __text  __meta
+     STATES  .is-current (the open page) · .is-done · .is-locked
+
+   SIZE    --sm  (default)  --lg
+   FORM    --boxed (a card around the rail) · --flush (no outer padding)
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-sidenav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: var(--size-small);
+  }
+
+  /* ── Head ──────────────────────────────────────────────────────────────── */
+  .ns-sidenav__head {
+    padding: 0 0.6rem 0.75rem;
+    border-bottom: var(--border-hairline) solid var(--color-border);
+    margin-bottom: 0.5rem;
+  }
+  .ns-sidenav__title {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .ns-sidenav__progress { margin-top: 0.6rem; }
+  .ns-sidenav__readout {
+    margin-top: 0.35rem;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+
+  /* ── Group (a section) ─────────────────────────────────────────────────── */
+  .ns-sidenav__group { border-radius: var(--radius-btn); }
+  .ns-sidenav__group + .ns-sidenav__group { margin-top: 0.1rem; }
+
+  .ns-sidenav__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius-btn);
+    cursor: pointer;
+    list-style: none;
+    font-weight: var(--weight-semibold);
+    color: var(--color-ink);
+    transition: background-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-sidenav__summary::-webkit-details-marker { display: none; }
+  .ns-sidenav__summary:hover {
+    background: color-mix(in srgb, var(--color-brand-500) 7%, transparent);
+    color: var(--color-brand-600);
+  }
+  [data-theme="dark"] .ns-sidenav__summary:hover { color: var(--color-brand-300); }
+  .ns-sidenav__summary:focus-visible { outline: 2px solid var(--color-brand-500); outline-offset: -2px; }
+
+  .ns-sidenav__index {
+    flex-shrink: 0;
+    min-width: 1.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+  .ns-sidenav__stitle { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .ns-sidenav__count {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+  .ns-sidenav__caret {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    color: var(--color-label);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .ns-sidenav__group[open] > .ns-sidenav__summary .ns-sidenav__caret { transform: rotate(90deg); }
+
+  /* The open section is the one you are in — mark it, quietly. */
+  .ns-sidenav__group[open] > .ns-sidenav__summary { color: var(--color-brand-600); }
+  [data-theme="dark"] .ns-sidenav__group[open] > .ns-sidenav__summary { color: var(--color-brand-300); }
+  .ns-sidenav__group[open] > .ns-sidenav__summary .ns-sidenav__index { color: var(--color-brand-500); }
+
+  /* ── The lesson list ───────────────────────────────────────────────────── */
+  .ns-sidenav__list {
+    display: grid;
+    gap: 0.05rem;
+    margin: 0.15rem 0 0.4rem;
+    padding-left: 0.6rem;
+    /* the rail the lessons hang off */
+    border-left: var(--border-hairline) solid var(--color-border);
+    margin-left: 1.05rem;
+  }
+
+  .ns-sidenav__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radius-btn);
+    color: var(--color-muted);
+    transition: background-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-sidenav__link:hover {
+    background: color-mix(in srgb, var(--color-brand-500) 7%, transparent);
+    color: var(--color-brand-600);
+  }
+  [data-theme="dark"] .ns-sidenav__link:hover { color: var(--color-brand-300); }
+
+  .ns-sidenav__num {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+  .ns-sidenav__text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ns-sidenav__meta {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-label);
+  }
+
+  /* ── States ────────────────────────────────────────────────────────────── */
+  /* The page you are on: solid brand, the way the docs rail already marks it */
+  .ns-sidenav__link.is-current {
+    background: var(--color-brand-500);
+    color: #fff;
+    font-weight: var(--weight-semibold);
+  }
+  .ns-sidenav__link.is-current:hover { background: var(--color-brand-600); color: #fff; }
+  .ns-sidenav__link.is-current :where(.ns-sidenav__num, .ns-sidenav__meta) { color: rgb(255 255 255 / 0.75); }
+
+  /* Finished: the number becomes a tick, the title steps back */
+  .ns-sidenav__link.is-done .ns-sidenav__num { color: var(--color-success); }
+  .ns-sidenav__link.is-done .ns-sidenav__num::before { content: "✓"; }
+  .ns-sidenav__link.is-done .ns-sidenav__num > * { display: none; }
+  .ns-sidenav__link.is-done .ns-sidenav__text { color: var(--color-muted); }
+
+  .ns-sidenav__link.is-locked { color: var(--color-muted); cursor: not-allowed; }
+  .ns-sidenav__link.is-locked .ns-sidenav__meta { color: var(--color-muted); }
+
+  /* ── Sizes + forms ─────────────────────────────────────────────────────── */
+  .ns-sidenav--sm { font-size: 0.8125rem; }
+  .ns-sidenav--sm :where(.ns-sidenav__summary, .ns-sidenav__link) { padding-block: 0.3rem; }
+  .ns-sidenav--lg { font-size: var(--size-body); }
+
+  .ns-sidenav--boxed {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: 0.75rem;
+  }
+  .ns-sidenav--flush .ns-sidenav__head { padding-inline: 0; }
+
+  /* ── Footer action (back to the track, finish, etc.) ───────────────────── */
+  .ns-sidenav__foot {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-sidenav__caret { transition: none; }
+}

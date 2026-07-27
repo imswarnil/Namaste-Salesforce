@@ -1578,11 +1578,303 @@ page("Pages", "page-404", "404 &amp; dead ends",
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# TRAINING — /training/, /training/{section}/, /training/{section}/{lesson}/
+# ═════════════════════════════════════════════════════════════════════════════
+_SECTIONS = (
+    ("Start Here", "Get oriented: what the platform is, how this training works, and a free org "
+                   "of your own.", 3, "45m", "done"),
+    ("Build Your First App", "A custom object, the fields that matter, a layout people can use, "
+                             "and one report that proves it.", 4, "1h 20m", "current"),
+    ("Automate the Work", "Validation rules, your first Flow, and how to pick the right tool for "
+                          "a requirement.", 3, "55m", ""),
+    ("Ship and Maintain", "Deployments, sandboxes, and the habits that keep an org healthy.",
+     3, "1h", "locked"),
+)
+
+_LESSONS = (
+    ("What is Salesforce?", "6m", "done"),
+    ("Set up a free Developer org", "12m", "done"),
+    ("How to use this training", "5m", "current"),
+    ("Objects, fields and relationships", "18m", ""),
+)
+
+
+def _sidenav(open_index=1):
+    out = ['<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">',
+           '<div class="ns-sidenav__head">',
+           '<span class="ns-sidenav__title">Salesforce training</span>',
+           '<div class="ns-progress ns-progress--sm ns-sidenav__progress">'
+           '<span class="ns-progress__bar" data-demo-width="35"></span></div>',
+           '<div class="ns-sidenav__readout"><span>4 / 13 lessons</span><span>35%</span></div>',
+           '</div>']
+    for i, (title, _, count, _dur, state) in enumerate(_SECTIONS):
+        is_open = " open" if i == open_index else ""
+        out.append('<details class="ns-sidenav__group" name="sg-training"%s>' % is_open)
+        out.append('<summary class="ns-sidenav__summary">'
+                   '<span class="ns-sidenav__index">%02d</span>'
+                   '<span class="ns-sidenav__stitle">%s</span>'
+                   '<span class="ns-sidenav__count">%d</span>'
+                   '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary>' % (i + 1, title, count))
+        out.append('<div class="ns-sidenav__list">')
+        for n, (lt, ld, ls) in enumerate(_LESSONS[:count]):
+            cls = " is-current" if ls == "current" else (" is-done" if ls == "done" else "")
+            out.append('<a class="ns-sidenav__link%s" href="#!">'
+                       '<span class="ns-sidenav__num"><span>%d</span></span>'
+                       '<span class="ns-sidenav__text">%s</span>'
+                       '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, lt, ld))
+        out.append('</div></details>')
+    out.append('<div class="ns-sidenav__foot">'
+               '<a class="ns-btn ns-btn--outline ns-btn--sm ns-btn--block" href="#!">'
+               '<i class="ph ph-arrow-left"></i>All training</a></div>')
+    out.append('</nav>')
+    return "".join(out)
+
+
+def _track_card(i, title, excerpt, count, dur, state):
+    cls = {"done": " is-done", "current": " is-current", "locked": " is-locked"}.get(state, "")
+    lessons = "".join(
+        '<a class="ns-track-card__lesson" href="#!">'
+        '<i class="ph-fill %s"></i><span>%s</span>'
+        '<span class="ns-track-card__lesson-meta">%s</span></a>'
+        % ("ph-play-circle" if n % 2 == 0 else "ph-article", lt, ld)
+        for n, (lt, ld, _s) in enumerate(_LESSONS[:min(count, 3)]))
+    more = ('<div class="ns-track-card__more">+ %d more</div>' % (count - 3)) if count > 3 else ""
+    progress = ""
+    if state == "done":
+        progress = ('<div class="ns-progress ns-progress--sm ns-progress--success ns-track-card__progress">'
+                    '<span class="ns-progress__bar" data-demo-width="100"></span></div>')
+    elif state == "current":
+        progress = ('<div class="ns-progress ns-progress--sm ns-track-card__progress">'
+                    '<span class="ns-progress__bar" data-demo-width="45"></span></div>')
+    badge = ""
+    if state == "done":
+        badge = '<span class="ns-badge ns-badge--dot ns-badge--success">Complete</span>'
+    elif state == "current":
+        badge = '<span class="ns-badge ns-badge--dot">In progress</span>'
+    elif state == "locked":
+        badge = '<span class="ns-badge ns-badge--neutral"><i class="ph ph-lock"></i>Soon</span>'
+    return ('<article class="ns-track-card%s">'
+            '<div class="ns-track-card__index"></div>'
+            '<div class="ns-track-card__box">'
+            '<div class="ns-track-card__head">'
+            '<h3 class="ns-track-card__title"><a href="#!">%s</a></h3>%s</div>'
+            '<p class="ns-track-card__excerpt">%s</p>'
+            '<div class="ns-track-card__meta"><span>%d lessons</span><span>%s</span></div>'
+            '<div class="ns-track-card__lessons">%s</div>%s%s'
+            '</div></article>' % (cls, title, badge, excerpt, count, dur, lessons, more, progress))
+
+
+page("Training", "training-overview", "/training/ — the path",
+     "The training is ONE ordered path, so the landing page draws it as a path: sections on a single "
+     "connected rail, each showing what it covers, how long it takes and where you got to. A grid "
+     "would say &ldquo;pick one&rdquo;; a rail says &ldquo;this comes after that&rdquo;, which is the truth.",
+     head("Hero"),
+     row(spec(".ns-hero--split",
+              '<div class="ns-hero ns-hero--split ns-hero--sm ns-hero--grid">'
+              '<div class="ns-hero__inner"><div>'
+              '<p class="ns-kicker ns-kicker--light">Guided training</p>'
+              '<h1 class="ns-hero__title">From your first login to your first automation</h1>'
+              '<p class="ns-hero__sub">Four sections, thirteen lessons, in order. Finish one and the '
+              'next opens — no prior experience assumed.</p>'
+              '<div class="ns-hero__actions">'
+              '<a class="ns-btn ns-btn--white" href="#!">Resume section 2</a>'
+              '<a class="ns-btn ns-btn--glass" href="#!">Start from the beginning</a></div>'
+              '<div class="ns-hero__meta">'
+              + "".join('<div class="ns-stat ns-stat--light ns-stat--sm">'
+                        '<span class="ns-stat__value">%s</span>'
+                        '<span class="ns-stat__label">%s</span></div>' % (v, l)
+                        for v, l in (("4", "sections"), ("13", "lessons"), ("4h", "total"), ("100%", "free")))
+              + '</div></div>'
+              '<div class="ns-hero__media"><div class="ns-media ns-media--frame demo-media">'
+              '<i class="ph ph-image"></i></div></div>'
+              '</div></div>', wide=True)),
+     head("Your progress"),
+     row(spec(".ns-progress + .ns-stats",
+              '<div class="ns-card demo-w-full">'
+              '<div class="ns-split"><div>'
+              '<span class="ns-kicker">Where you are</span>'
+              '<h2 class="ns-card__title demo-mt">Building Your First App</h2>'
+              '<p class="ns-card__body demo-type-small">Next up: layouts, list views and a report.</p>'
+              '</div><div>'
+              '<div class="ns-progress"><span class="ns-progress__bar" data-demo-width="35"></span></div>'
+              '<div class="ns-progress__label demo-mt">4 / 13 lessons · 35%</div>'
+              '<a class="ns-btn ns-btn--primary ns-btn--sm demo-mt" href="#!">Continue '
+              '<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right"></i></a>'
+              '</div></div></div>', wide=True)),
+     head("The path"),
+     row(spec(".ns-track-list + .ns-track-card",
+              '<div class="ns-track-list demo-w-full">'
+              + "".join(_track_card(i, *s) for i, s in enumerate(_SECTIONS))
+              + '</div>', wide=True)),
+     note("States on the card: <code>.is-done</code> turns the disc into a tick, "
+          "<code>.is-current</code> rings it in brand and marks the box, <code>.is-locked</code> sinks "
+          "it. <code>--compact</code> drops the lesson preview when the list gets long."))
+
+page("Training", "training-nav", "Section navigation",
+     "The rail that runs down every training and lesson page — and the answer to the rule you set: "
+     "<b>the section you are in stays open, every other one is closed.</b>",
+     head("How the behaviour works"),
+     note("Each section is a <code>&lt;details&gt;</code> sharing one <code>name</code> attribute. That "
+          "is a native HTML exclusive accordion: the browser itself keeps exactly one open and closes "
+          "the previous when another is opened. No JavaScript, no flash on load, and it still behaves "
+          "if the script never runs. A browser without exclusive-details support just allows more than "
+          "one open — which degrades correctly rather than breaking."),
+     note("Open section 3 below and section 2 closes on its own."),
+     head("The rail"),
+     row(spec(".ns-sidenav--boxed", _sidenav(), wide=True)),
+     head("States"),
+     note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
+          "uses. <code>.is-done</code> swaps the number for a tick and steps the title back. "
+          "<code>.is-locked</code> greys the row for members-only lessons."),
+     row(spec("link states",
+              '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
+              '<a class="ns-sidenav__link is-done" href="#!"><span class="ns-sidenav__num"><span>1</span></span>'
+              '<span class="ns-sidenav__text">What is Salesforce?</span>'
+              '<span class="ns-sidenav__meta">6m</span></a>'
+              '<a class="ns-sidenav__link is-current" href="#!"><span class="ns-sidenav__num"><span>2</span></span>'
+              '<span class="ns-sidenav__text">Set up a free org</span>'
+              '<span class="ns-sidenav__meta">12m</span></a>'
+              '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>3</span></span>'
+              '<span class="ns-sidenav__text">How to use this training</span>'
+              '<span class="ns-sidenav__meta">5m</span></a>'
+              '<a class="ns-sidenav__link is-locked" href="#!"><span class="ns-sidenav__num"><span>4</span></span>'
+              '<span class="ns-sidenav__text">Objects and fields</span>'
+              '<i class="ns-sidenav__meta ph ph-lock"></i></a>'
+              '</div></nav>', wide=True)),
+     head("On mobile"),
+     note("Below <code>lg</code> the rail is not a column — it collapses into the bar below, which "
+          "opens the same markup as a drawer. Same component, two shapes."),
+     row(spec(".ns-reader__bar",
+              '<div class="demo-w-lg"><button class="ns-reader__bar demo-flex">'
+              '<span><span class="ns-label">Section 2</span><br>Build Your First App</span>'
+              '<i class="ph ph-caret-down"></i></button></div>', wide=True)))
+
+page("Training", "training-section", "/training/{section}/ — the overview",
+     "A section page is the contents page for that section: what it covers, what you will be able to "
+     "do, and the lessons in order. The rail is on the left, breadcrumbs above, and the same "
+     "components as everywhere else in between.",
+     head("Head — breadcrumb, index, title, meta"),
+     row(spec(".ns-hero + .ns-track-hero",
+              '<div class="ns-hero ns-hero--sm ns-hero--start ns-hero--dots">'
+              '<div class="ns-hero__inner">'
+              '<nav class="ns-crumbs"><a class="ns-crumbs__link" href="#!">'
+              '<i class="ph ph-house"></i>Home</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<a class="ns-crumbs__link" href="#!"><i class="ph ph-flow-arrow"></i>Training</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<span class="ns-crumbs__current"><span>Build Your First App</span></span></nav>'
+              '<div class="ns-cluster demo-mt"><span class="ns-track-hero__index">02</span>'
+              '<span class="ns-badge ns-badge--glass ns-badge--dot">In progress</span></div>'
+              '<h1 class="ns-hero__title">Build Your First App</h1>'
+              '<p class="ns-hero__sub">A custom object, the fields that matter, a layout people can '
+              'actually use, and one report that proves it works.</p>'
+              '<div class="ns-track-hero__meta">'
+              + "".join('<div class="ns-stat ns-stat--light ns-stat--sm">'
+                        '<span class="ns-stat__value">%s</span><span class="ns-stat__label">%s</span></div>'
+                        % (v, l) for v, l in (("4", "lessons"), ("1h 20m", "length"), ("45%", "complete")))
+              + '</div>'
+              '<div class="ns-hero__actions"><a class="ns-btn ns-btn--white" href="#!">Continue lesson 3</a>'
+              '</div></div></div>', wide=True)),
+     head("The page — rail, overview, lessons"),
+     row(spec(".ns-page--rail-start",
+              '<div class="ns-page demo-fill"><div class="ns-page__inner">'
+              '<div class="ns-page__main ns-shell ns-shell--sidebar">'
+              '<aside class="ns-shell__aside">' + _sidenav() + '</aside>'
+              '<div>'
+              '<div class="ns-prose demo-w-2xl"><h2>What this section covers</h2>'
+              '<p>You will build a small but complete app: a custom object, the fields that matter, a '
+              'layout people can use, and a report that answers a question.</p></div>'
+              '<h3 class="sg-h3">By the end you can</h3>'
+              '<ul class="ns-list ns-list--check demo-w-2xl">'
+              '<li class="ns-list__item">Create a custom object and choose its record name</li>'
+              '<li class="ns-list__item">Pick field types that will not need reworking</li>'
+              '<li class="ns-list__item">Build a layout and a list view people actually use</li></ul>'
+              '<h3 class="sg-h3">Lessons</h3>'
+              '<ul class="ns-list ns-list--boxed demo-w-2xl">'
+              + "".join('<li class="ns-list__item"><span class="ns-list__title">%s</span>'
+                        '<span class="ns-list__meta">%s</span></li>' % (t, d)
+                        for t, d, _s in _LESSONS)
+              + '</ul>'
+              '<div class="ns-note ns-note--info demo-w-2xl demo-mt">'
+              '<i class="ns-note__icon ph-fill ph-info"></i>'
+              '<div class="ns-note__body"><span class="ns-note__title">Before you start</span> — '
+              'you need the free Developer org from section 1.</div></div>'
+              '</div></div></div></div>', wide=True)),
+     note("The rail uses <code>.ns-shell--sidebar</code>, so it is one column below <code>lg</code> "
+          "with the navigation stacked above the content — the order a reader on a phone wants."))
+
+page("Training", "training-lesson", "/training/{section}/{lesson}/ — the lesson",
+     "The reading shell. Three columns at the top end: the section rail, the lesson, and an "
+     "on-this-page rail. The reading column stays capped at the prose measure whatever the window "
+     "does — line length decides whether a lesson gets read.",
+     head("The shell"),
+     note("<code>.ns-reader--both</code> &rarr; <code>__rail</code> · <code>__main</code> "
+          "(<code>__head</code>, <code>__media</code>, <code>__body</code>, <code>__foot</code>) · "
+          "<code>__aside</code>. Both rails stick under the header and scroll independently; below "
+          "<code>lg</code> they become the bar and a drawer."),
+     row(spec(".ns-reader--both",
+              '<div class="ns-reader ns-reader--both demo-fill demo-w-full">'
+              '<aside class="ns-reader__rail">' + _sidenav() + '</aside>'
+              '<div class="ns-reader__main">'
+              '<div class="ns-reader__head">'
+              '<nav class="ns-crumbs"><a class="ns-crumbs__link" href="#!">Training</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<a class="ns-crumbs__link" href="#!">Build Your First App</a>'
+              '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
+              '<span class="ns-crumbs__current"><span>Create a custom object</span></span></nav>'
+              '<h1 class="ns-reader__title">Create a custom object</h1>'
+              '<div class="ns-reader__meta">'
+              '<span class="ns-lesson-type ns-lesson-type--video"><i class="ph-fill ph-video"></i>Video</span>'
+              '<span class="ns-lesson-chip"><i class="ph ph-clock"></i>12 min</span>'
+              '<span class="ns-lesson-chip"><i class="ph ph-flag"></i>Lesson 1 of 4</span>'
+              '<span class="ns-badge ns-badge--dot ns-badge--success">Free</span>'
+              '</div></div>'
+              '<div class="ns-reader__media"><div class="ns-video demo-media">'
+              '<i class="ph ph-video"></i></div></div>'
+              '<div class="ns-reader__body ns-prose">'
+              '<p>Naming, the record name field, and the settings that are painful to change later.</p>'
+              '<h2>Create the object</h2>'
+              '<p>Setup &rarr; Object Manager &rarr; Create. The plural label is what shows in the tab, '
+              'so get it right the first time.</p>'
+              '<pre><code>Label:        Project\nPlural:       Projects\nRecord Name:  Project Name</code></pre>'
+              '</div>'
+              '<div class="ns-reader__foot">'
+              '<a class="ns-reader__step" href="#!"><span class="ns-reader__step-label">← Previous</span>'
+              '<span class="ns-reader__step-title">How to use this training</span></a>'
+              '<a class="ns-reader__step ns-reader__step--next" href="#!">'
+              '<span class="ns-reader__step-label">Next →</span>'
+              '<span class="ns-reader__step-title">Fields that earn their place</span></a>'
+              '</div></div>'
+              '<aside class="ns-reader__aside">'
+              '<div class="ns-widget ns-widget--toc ns-widget--sunken">'
+              '<div class="ns-widget__head"><span class="ns-widget__title">On this page</span></div>'
+              '<div class="ns-widget__body">'
+              '<a class="toc-link is-active" href="#!">Create the object</a>'
+              '<a class="toc-link" href="#!">Name it properly</a>'
+              '<a class="toc-link is-h3" href="#!">Record name</a></div></div>'
+              '<div class="ns-widget ns-widget--cta ns-widget--brand">'
+              '<div class="ns-widget__head"><span class="ns-widget__title">Stuck?</span></div>'
+              '<div class="ns-widget__body"><p>Comments are open under every lesson.</p>'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Ask a question</a></div></div>'
+              '</aside></div>', wide=True)),
+     head("Prev / next"),
+     row(spec(".ns-reader__foot",
+              '<div class="ns-reader__foot demo-w-full">'
+              '<span class="ns-reader__step ns-reader__step--empty"></span>'
+              '<a class="ns-reader__step ns-reader__step--next" href="#!">'
+              '<span class="ns-reader__step-label">Next →</span>'
+              '<span class="ns-reader__step-title">Fields that earn their place</span></a></div>', wide=True)),
+     note("An empty slot keeps &ldquo;next&rdquo; on the right when there is no previous lesson, so the "
+          "control never jumps sides between the first lesson and the second."))
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # RENDERING
 # ═════════════════════════════════════════════════════════════════════════════
 # Sidebar order: the vocabulary first, then the pieces, then the pages built
 # out of them. Home comes LAST because it is the payoff, not the primer.
-GROUPS = ["Foundation", "Components", "Home", "Pages"]
+GROUPS = ["Foundation", "Components", "Home", "Training", "Pages"]
 
 RULES = [
     ("Hairlines, not shadows",
