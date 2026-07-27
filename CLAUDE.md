@@ -13,9 +13,12 @@ yarn install     # install dependencies (Yarn; package-lock.json is gitignored)
 yarn dev         # gulp default: build + livereload watch
 yarn build       # one-off build into assets/built/
 yarn zip         # build + package into dist/namaste-salesforce.zip
+yarn preview     # build, then open preview.html — the design-system gallery (no Ghost needed)
 yarn test        # gscan . — validate against Ghost's theme rules
 yarn test:ci     # gscan --fatal --verbose .
 ```
+
+**Previewing the design system:** `preview.html` at the theme root is a standalone gallery of every component and variant, rendered against the real `assets/built/screen.css` — `yarn preview` builds and serves it on `127.0.0.1:4321` (Ghost not required). It has a dark-mode toggle and prints each specimen's class string. It's generated, so regenerate rather than hand-editing, and note that any `ph-*` glyph it uses must exist in the subsetted icon font. `demo.html` is the different thing: a fragment to paste into a Ghost HTML card.
 
 "Testing" means **gscan** validation — run `yarn test` after template changes. `pretest` runs `gulp build` first, so the committed `assets/built/` output is what gets validated.
 
