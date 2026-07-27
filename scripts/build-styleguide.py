@@ -1836,6 +1836,12 @@ page("Training", "training-nav", "Training navigation",
                                '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
                                '<span class="ns-sidenav__stitle">Open section</span>'
                                '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
+     head("Icons in the pager"),
+     note("The pager's title slot carries the TYPE glyph of what it points at — a video, an exercise, "
+          "a section overview — so it says what you are about to open rather than only naming it. "
+          "<code>training-nav.js</code> copies the glyph off the rail row it is already pointing at "
+          "rather than working it out a second time, so the rail and the pager can never disagree "
+          "about what a lesson is."),
      head("Motion"),
      note("The house rule, applied consistently: 120ms, ease-out, colour and background only — plus a "
           "2px slide toward the reader on hover. That transform is the one allowed here, because it "
@@ -1883,6 +1889,9 @@ page("Training", "training-nav", "Training navigation",
           "<code>.is-done</code> swaps it for a tick, <code>.is-locked</code> for a lock. The eye "
           "learns one position instead of three, and the row never has to move or resize to carry "
           "the message."),
+     note("A locked row shows the lock and NOTHING ELSE — its type glyph is hidden. Two icons is two "
+          "answers to a question asked once, and locked is the more useful of the two: what kind of "
+          "lesson it is only matters once you can open it."),
      note("<code>.is-locked</code> additionally DIMS the row to 50%. Dimming is the honest signal in "
           "a scanned list: everything you can act on sits at full strength, everything you cannot is "
           "quieter — no warning colour, because &ldquo;you need an account&rdquo; is not an error. Hover "
@@ -1913,13 +1922,21 @@ page("Training", "training-nav", "Training navigation",
           "the sole exception and says so explicitly."),
      head("Ruled columns"),
      note("Three columns separated by whitespace alone read as three pages that happen to be side by "
-          "side. <code>.ns-reader--ruled</code> puts a hairline on the inner edge of each rail — right "
-          "of the navigation, left of the contents — which says what is actually true: one page, with "
-          "navigation down one side and contents down the other. It is the house rule at page scale, "
-          "the same reason a section in the rail is divided by a rule rather than a gap. The rules run "
-          "the full height of the sticky column, so they read as a column edge rather than an "
-          "underline that stopped early, and the gap either side comes down to match: a rule needs "
-          "less room than a void to do the same job."),
+          "side. <code>.ns-reader--ruled</code> puts a hairline in each gutter, which says what is "
+          "actually true: one page, with navigation down one side and contents down the other. It is "
+          "the house rule at page scale, the same reason a section in the rail is divided by a rule "
+          "rather than a gap."),
+     note("<b>The rules run the full height of the page</b>, header to footer — not the height of what "
+          "is in each column. That is why they are pseudo-elements on the shell rather than borders on "
+          "the rails: a rail is sticky and only as tall as the viewport, so a border on it would stop "
+          "wherever that column happened to end and read as an underline that gave up. A line that "
+          "divides a page has to be as tall as the page. They are centred in the gutter with a calc "
+          "over the same track widths the grid is built from, which is also why "
+          "<code>--ruled</code> pins the gap to <code>--grid-gutter</code>: a clamped gap would drift "
+          "the line off centre as the viewport changed."),
+     note("With those in place the lesson carries NO horizontal rules — not under the breadcrumb, not "
+          "between the article and the pager. The page is already divided the other way, and a "
+          "hairline crossing the column rules turns a clean grid into a box."),
      head("The floating button"),
      note("Below <code>lg</code> the rail has nowhere to live. It used to be opened by the hamburger "
           "in the site header — which meant the SITE menu icon opened a lesson list, so the most "

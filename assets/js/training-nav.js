@@ -68,6 +68,16 @@
       el.classList.remove('is-hidden');
       var lab = el.querySelector('.js-train-label');
       if (lab) lab.textContent = labelOf(link);
+      // Carry the target's TYPE glyph across from the rail row, so the pager
+      // says what you are about to open — a video, an exercise, a section
+      // overview — rather than just naming it. The rail already worked this
+      // out; copying it means the two can never disagree.
+      var src = link.querySelector('.ns-sidenav__type') || link.querySelector('.ns-sidenav__num > i');
+      var dst = el.querySelector('.js-train-icon');
+      if (dst) {
+        dst.className = 'js-train-icon ' +
+          (src ? src.className.replace('ns-sidenav__type', '').trim() : 'ph-fill ph-squares-four');
+      }
       el.addEventListener('click', function () {
         if (window.posthog) window.posthog.capture('training module navigated', {
           direction:        direction,

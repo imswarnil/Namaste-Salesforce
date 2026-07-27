@@ -61,28 +61,51 @@
 
     /* ── The columns are RULED apart ───────────────────────────────────────
        Three columns separated by whitespace alone read as three pages that
-       happen to be side by side. A hairline on the inner edge of each rail
-       says what is actually true: one page, with navigation down one side and
-       contents down the other.
+       happen to be side by side. A hairline in each gutter says what is
+       actually true: ONE page, with navigation down one side and contents down
+       the other. It is the house rule at page scale — the same reason a
+       section in the rail is divided by a rule rather than a gap.
 
-       It is the house rule applied at page scale — the same reason a section
-       in the rail is divided by a rule rather than a gap. Structure is drawn,
-       not implied by distance.
+       THE RULES RUN THE FULL HEIGHT, header to footer, not the height of the
+       column's contents. That is why they are drawn on the SHELL as absolutely
+       positioned pseudo-elements rather than as borders on the rails: a rail is
+       sticky and as tall as the viewport, so a border on it would stop wherever
+       that column happened to end and read as an underline that gave up. A line
+       that divides a page has to be as tall as the page.
 
-       The rules run the FULL height of the sticky column, not the height of
-       what is in it, so they read as the edge of a column rather than as an
-       underline that stopped early. The gap either side comes down to match:
-       a rule needs less room than a void to do the same job. */
-    .ns-reader--ruled { gap: 0; }
-    .ns-reader--ruled .ns-reader__rail {
-      border-right: var(--border-hairline) solid var(--color-border);
-      padding-right: var(--space-gap);
-      margin-right: var(--space-gap);
+       They sit in the middle of each gutter, computed from the same track
+       widths the grid is built from, so they stay centred whatever the gutter
+       clamps to. */
+    /* The gap becomes a fixed token so the rules can be centred in it with a
+       calc. A clamped gap would drift the line off centre as the viewport
+       changed, which is worse than no line at all. */
+    .ns-reader--ruled { position: relative; gap: var(--grid-gutter); }
+    .ns-reader--ruled::before,
+    .ns-reader--ruled::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: var(--border-hairline);
+      background: var(--color-border);
+      pointer-events: none;
     }
-    .ns-reader--ruled .ns-reader__aside {
-      border-left: var(--border-hairline) solid var(--color-border);
-      padding-left: var(--space-gap);
-      margin-left: var(--space-gap);
+    .ns-reader--ruled::before {
+      left: calc(var(--space-gutter) + var(--layout-sidebar) + var(--grid-gutter) / 2);
+    }
+    /* Only --both has a third column, so only --both draws the second rule. */
+    .ns-reader--ruled::after { content: none; }
+    .ns-reader--both.ns-reader--ruled::after {
+      content: "";
+      right: calc(var(--space-gutter) + var(--layout-rail) + var(--grid-gutter) / 2);
+    }
+    @media (min-width: 1536px) {
+      .ns-reader--fluid.ns-reader--ruled::before {
+        left: calc(clamp(var(--space-gutter), 4vw, 4rem) + var(--layout-sidebar) + var(--grid-gutter) / 2);
+      }
+      .ns-reader--fluid.ns-reader--both.ns-reader--ruled::after {
+        right: calc(clamp(var(--space-gutter), 4vw, 4rem) + var(--layout-rail) + var(--grid-gutter) / 2);
+      }
     }
   }
 
@@ -186,6 +209,19 @@
   }
   .ns-reader__step:hover { border-color: var(--color-brand-500); }
   .ns-reader__step--next { text-align: right; }
+  /* The title line carries the target's type glyph, so the icon has to sit ON
+     the line rather than above it — inline-flex, and the glyph in the brand
+     colour it has everywhere else in the training. */
+  .ns-reader__step-title {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-gap-xs);
+    min-width: 0;
+  }
+  .ns-reader__step--next .ns-reader__step-title { justify-content: flex-end; }
+  .ns-reader__step-title > i { flex-shrink: 0; color: var(--color-brand-500); }
+  .ns-reader__step-title > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  [data-theme="dark"] .ns-reader__step-title > i { color: var(--color-brand-300); }
   /* Prev is always the first column and next always the second, whichever of
      them exists — so the pair reads half-and-half on one row and a lone
      "next" still sits on the right instead of stretching across. */
