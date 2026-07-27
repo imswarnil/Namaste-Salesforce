@@ -1,10 +1,25 @@
 # 0-foundation — the SFUI foundation layer
 
-Everything above this layer (`1-elements/` components, templates, off-site
-brand assets) is built from the variables defined here. Change a token here
-and the site, the course pages, and the YouTube/blog covers all follow.
+Everything above this layer (`1-elements/`, `2-components/`, `3-modules/`,
+templates, off-site brand assets) is built from the variables defined here.
+Change a token here and the site, the course pages, and the YouTube/blog
+covers all follow.
 
-## Files (imported in this order by `assets/css/screen.css`)
+## Where this sits
+
+```
+assets/css/screen.css        the final stylesheet — Tailwind + the four layers
+  ├── 0-foundation/index.css tokens, vars, mixins   ← you are here
+  ├── 1-elements/index.css   bare HTML, one file per element family
+  ├── 2-components/index.css the UI library, one file per component + variants
+  └── 3-modules/index.css    features: navbar, curriculum, course, catalog, …
+```
+
+Each layer lists its own files in its `index.css`, so `screen.css` never needs
+to change when you add a token, an element or a component — add the file and
+one import line in that layer's index.
+
+## Files (imported in this order by `0-foundation/index.css`)
 
 | File | What it owns |
 | --- | --- |
@@ -19,8 +34,38 @@ and the site, the course pages, and the YouTube/blog covers all follow.
 | `mixins.css` | `@utility` recipes — `ns-label`, `ns-index`, `ns-hairline`, `ns-dot-marker`, `ns-transition` (markup classes AND `@apply`-able) |
 | `backgrounds.css` | Brand patterns (`.bg-grid`, `.bg-dots`, `.bg-lines`, …) and the `.ns-cover-*` canvases for content assets |
 
-Element defaults (body, headings, scrollbar, focus ring) now live in
-`../1-elements/base.css` — this layer holds no selectors that paint UI.
+Element defaults (body, headings, scrollbar, focus ring) live in
+`../1-elements/` — this layer holds no selectors that paint UI.
+
+## Adding to the system
+
+**A token** → the file above that owns that kind of value. Nothing else to do;
+every layer already imports this one.
+
+**An element** → a new file in `1-elements/` plus a line in its `index.css`.
+Scope it: reading-context rules use `:where(.gh-content, .ns-prose)` (zero
+specificity, so utilities still win), global rules guard with `:not([class])`
+so utility-styled markup is never second-guessed.
+
+**A component** → a new file in `2-components/` plus a line in its
+`index.css`. Follow the naming contract:
+
+| Pattern | Means |
+| --- | --- |
+| `.ns-thing` | the base — the smallest version that stands alone |
+| `.ns-thing--variant` | one axis at a time: SIZE, SHAPE, TONE, STATE |
+| `.ns-thing__part` | a named internal part |
+| `.is-state` | a runtime state a script toggles |
+
+Variants compose, so a large interactive card with a grid pattern is
+`.ns-card .ns-card--lg .ns-card--interactive .ns-card--grid` — no new class
+needed. Give every component the full set up front (`--sm/--lg`, `--pill/
+--sharp`, the tones it can legitimately take) so the next page doesn't have to
+invent one-off utilities.
+
+**A feature** → `3-modules/`. If a module piece turns out to be reusable,
+promote it into `2-components/` with a proper variant set — that's how
+`.ns-video-poster`, `.ns-ad` and `.ns-share` got there.
 
 ## Design principles (the "Developer Console" rules)
 

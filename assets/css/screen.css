@@ -1,21 +1,28 @@
-/* ============================================================================
-   screen.css — Tailwind entry for the Namaste Salesforce theme
+/* ════════════════════════════════════════════════════════════════════════════
+   screen.css — the final stylesheet: Tailwind + the four layers, in order
    ----------------------------------------------------------------------------
    Compiled by gulp (@tailwindcss/postcss) → assets/built/screen.css, which is
    what default.hbs loads via {{asset "built/screen.css"}}.
 
-   THE SYSTEM — the "Developer Console" design system, in numbered layers:
+   THE SYSTEM — the "Developer Console" design system, in numbered layers.
+   Each layer has its own index.css listing its files, so THIS file never
+   changes when you add a token, an element or a component:
 
-     0-foundation/   tokens, vars, mixins — no selectors that paint UI
-     1-elements/     bare HTML elements — headings, links, tables, quotes …
-     2-components/   the UI library — buttons, badges, navbar, course, cards
+     0-foundation/  tokens, vars, mixins — declares values, paints nothing
+     1-elements/    bare HTML — one file per element family
+     2-components/  the UI library — one file per component, with variants
+     3-modules/     features — navbar, curriculum, course, catalog, lesson, training
 
-   Live docs: /docs/design-system/ — a docs section whose posts (imported
-   from dummy-content/design-system.json) document every token and component.
+   The order is the dependency order: a later layer spends what the earlier
+   ones declare, never the other way round. For what's inside a layer and why
+   it's in that position, read that layer's index.css.
+
+   Live docs: /docs/design-system/ — a docs section whose posts (imported from
+   dummy-content/design-system.json) document every token and component.
    Identity (0-foundation/README.md): one working blue, hairline borders as
    structure, mono as the label material, sharp 6px/4px geometry, instant
    motion, navy dark mode. No gradients, glass, or glow.
-   ========================================================================== */
+   ════════════════════════════════════════════════════════════════════════ */
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";   /* `.prose` styling for post/page content */
@@ -26,28 +33,11 @@
 @source "../../partials/**/*.hbs";
 @source "../../demo.html";   /* editor-pasteable specimen sheet — keep its utilities compiled */
 
-/* LAYER 0 · FOUNDATION — tokens, variables and mixins only. */
-@import "./0-foundation/fonts.css";        /* self-hosted Inter + Fira Code */
-@import "./0-foundation/icons.css";        /* subsetted Phosphor — generated, see scripts/ */
-@import "./0-foundation/colors.css";       /* brand scales, status, semantic roles, dark mode */
-@import "./0-foundation/typography.css";   /* font stacks, prose scale, mono/label scale */
-@import "./0-foundation/spacing.css";      /* semantic rhythm, containers, safe areas */
-@import "./0-foundation/borders.css";      /* border widths + corner radii */
-@import "./0-foundation/elevation.css";    /* shadows + z-index ladder */
-@import "./0-foundation/motion.css";       /* easing, durations, keyframes */
-@import "./0-foundation/mixins.css";       /* @utility recipes: ns-label, ns-index, … */
-@import "./0-foundation/backgrounds.css";  /* brand patterns + cover canvases */
-
-/* LAYER 1 · ELEMENTS — bare HTML, styled by the foundation. */
-@import "./1-elements/base.css";           /* html, body, scrollbar, selection, focus */
-@import "./1-elements/typography.css";     /* headings, links, inline text */
-@import "./1-elements/content.css";        /* quotes, tables, lists, code, media, .prose bridge */
-
-/* LAYER 2 · COMPONENTS — the UI library. */
-@import "./2-components/chrome.css";       /* nav links, icon buttons, TOC, docs sidebar */
-@import "./2-components/components.css";   /* buttons, kickers, badges, inputs, code window */
-@import "./2-components/navbar.css";       /* header behaviours, lesson drawer, tag chips */
-@import "./2-components/course.css";       /* LMS modules: catalog, course, lesson, training */
+/* ── The four layers, in dependency order ─────────────────────────────────── */
+@import "./0-foundation/index.css";
+@import "./1-elements/index.css";
+@import "./2-components/index.css";
+@import "./3-modules/index.css";
 
 /* Dark mode is driven by data-theme="dark" on <html> (set before paint by the
    inline script in default.hbs). This re-points the `dark:` variant at that

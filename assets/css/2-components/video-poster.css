@@ -1,0 +1,32 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · video poster — .ns-video-poster
+   ----------------------------------------------------------------------------
+   A click-to-play cover: the image zooms a hair and the play disc grows. Media
+   is the ONE exception to the no-transform rule — a poster that doesn't
+   respond feels broken, and the motion is on the image, not on the box.
+
+   VARIANT --lesson (16:9 instead of 4:3) · __play · __fallback
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Video poster — media may keep its zoom + play ring; the one exception ── */
+.ns-video-poster { position: relative; display: block; border-radius: var(--radius-card); overflow: hidden;
+  border: 1px solid var(--color-border); }
+.ns-video-poster img { display: block; width: 100%; aspect-ratio: 4/3; object-fit: cover;
+  transition: transform 0.4s var(--ease-out); }
+.ns-video-poster:hover img { transform: scale(1.03); }
+.ns-video-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(0 0 0 / 0.45), transparent 60%); }
+.ns-video-poster__play { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
+.ns-video-poster__play i { display: flex; align-items: center; justify-content: center;
+  height: 4.5rem; width: 4.5rem; border-radius: 9999px; background: rgb(255 255 255 / 0.92);
+  color: var(--color-brand-600); font-size: 1.75rem; transition: transform var(--duration-base) var(--ease-out); }
+.ns-video-poster:hover .ns-video-poster__play i { transform: scale(1.08); }
+
+/* ── Variants ─────────────────────────────────────────────────────────────── */
+.ns-video-poster--lesson { aspect-ratio: 16/9; }
+.ns-video-poster--lesson img { aspect-ratio: 16/9; }
+.ns-video-poster__fallback { display: block; width: 100%; aspect-ratio: 16/9;
+  background: var(--color-brand-800); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-video-poster img, .ns-video-poster__play i { transition: none; }
+}

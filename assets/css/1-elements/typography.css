@@ -1,13 +1,14 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   ELEMENTS · typography.css — headings, links, inline text elements
+   ELEMENTS · typography.css — headings, paragraphs, inline text semantics
    ----------------------------------------------------------------------------
-   Bare-tag styling built on the foundation scales. Global rules stay minimal
-   (font + weight only) so template utilities keep full control of size;
-   FULL sizing applies inside reading contexts: Ghost content (.gh-content),
-   the typography plugin (.prose), and the design-system docs (.ns-prose).
+   Global rules stay minimal (family + weight only) so template utilities keep
+   full control of size. FULL sizing applies inside reading contexts:
+   .gh-content (Ghost post content), .prose (typography plugin), .ns-prose
+   (design-system docs).
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
+  /* ── Headings ──────────────────────────────────────────────────────────── */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: var(--weight-heading);
@@ -16,37 +17,72 @@
   }
   h1 { line-height: var(--leading-tight); }
 
-  strong, b { font-weight: var(--weight-semibold); }
-  small { font-size: var(--size-small); }
-
-  /* Code + keyboard input are always the mono material */
-  code, kbd, samp, pre { font-family: var(--font-mono); }
-
   /* The reading contexts get the full scale */
   :where(.gh-content, .ns-prose) h1 { font-size: var(--size-h1); }
   :where(.gh-content, .ns-prose) h2 { font-size: var(--size-h2); }
   :where(.gh-content, .ns-prose) h3 { font-size: var(--size-h3); }
   :where(.gh-content, .ns-prose) h4 { font-size: var(--size-h4); }
+  :where(.gh-content, .ns-prose) h5 { font-size: var(--size-h5, 1rem); }
+  :where(.gh-content, .ns-prose) h6 {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* Headings breathe above, hug below — the paragraph belongs to its heading */
+  :where(.gh-content, .ns-prose) :where(h2, h3, h4) { margin-top: 2em; margin-bottom: 0.6em; }
+  :where(.gh-content, .ns-prose) :where(h2, h3, h4) + * { margin-top: 0; }
+
+  /* ── Body copy ─────────────────────────────────────────────────────────── */
   :where(.gh-content, .ns-prose) p,
   :where(.gh-content, .ns-prose) li {
     line-height: var(--leading-body);
   }
+  :where(.gh-content, .ns-prose) p { margin-block: 1em; }
 
-  /* Links: brand only inside reading contexts — chrome/component links keep
-     their own classes and colors. */
-  :where(.gh-content, .ns-prose) a:not([class]) {
-    color: var(--color-brand-600);
-    text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--color-brand-500) 35%, transparent);
+  /* ── Inline semantics ──────────────────────────────────────────────────── */
+  strong, b { font-weight: var(--weight-semibold); }
+  em, i     { font-style: italic; }
+  small     { font-size: var(--size-small); }
+
+  /* Data-ish inline bits read as data: mono, label-colored */
+  :where(.gh-content, .ns-prose) time { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  :where(.gh-content, .ns-prose) abbr[title] {
+    text-decoration: underline dotted;
     text-underline-offset: 2px;
-    transition: color var(--duration-fast) var(--ease-out),
-                text-decoration-color var(--duration-fast) var(--ease-out);
+    cursor: help;
   }
-  :where(.gh-content, .ns-prose) a:not([class]):hover {
-    color: var(--color-brand-500);
-    text-decoration-color: currentColor;
+  :where(.gh-content, .ns-prose) del { color: var(--color-muted); text-decoration-thickness: 1px; }
+  :where(.gh-content, .ns-prose) ins {
+    text-decoration: none;
+    background: color-mix(in srgb, var(--color-success) 14%, transparent);
+    padding: 0.05em 0.15em;
+    border-radius: 2px;
   }
-  [data-theme="dark"] :where(.gh-content, .ns-prose) a:not([class]) {
-    color: var(--color-brand-300);
+  :where(.gh-content, .ns-prose) s { color: var(--color-muted); }
+
+  /* Sub/sup that don't disturb the line box */
+  sub, sup { font-size: 0.72em; line-height: 0; position: relative; vertical-align: baseline; }
+  sup { top: -0.5em; }
+  sub { bottom: -0.25em; }
+
+  /* ── Highlight — the one allowed brand wash on text ────────────────────── */
+  :where(.gh-content, .ns-prose) mark {
+    background: color-mix(in srgb, var(--color-brand-500) 18%, transparent);
+    color: var(--color-ink);
+    padding: 0.05em 0.15em;
+    border-radius: 2px;
+  }
+
+  /* ── Address / lead paragraph ──────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) address { font-style: normal; color: var(--color-muted); }
+  :where(.gh-content, .ns-prose) .lead {
+    font-size: var(--size-lead, 1.125rem);
+    color: var(--color-muted);
+    line-height: var(--leading-body);
   }
 }

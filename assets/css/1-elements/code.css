@@ -1,0 +1,57 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   ELEMENTS · code.css — code, kbd, samp, var, pre
+   ----------------------------------------------------------------------------
+   Inline code is a hairline-ringed chip on the sunken surface; a bare <pre> is
+   a quiet navy console. The full Developer Console window (tab bar + copy
+   button + token palette) is the .ns-code COMPONENT — see
+   2-components/code-window.css. This file only handles bare tags.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* Every code-ish tag is the mono material, everywhere — not just in prose */
+  code, kbd, samp, var, pre { font-family: var(--font-mono); }
+  var { font-style: normal; color: var(--color-brand-600); }
+
+  /* ── Inline code ───────────────────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) :not(pre) > code {
+    font-size: 0.875em;
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-sunken);
+    box-shadow: inset 0 0 0 var(--border-hairline) var(--color-border);
+  }
+
+  /* ── Keyboard input — a key cap, one hairline deep ─────────────────────── */
+  :where(.gh-content, .ns-prose) kbd {
+    font-size: 0.8em;
+    padding: 0.15em 0.45em;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 var(--border-hairline) var(--color-border),
+                0 1px 0 var(--color-border);
+  }
+
+  /* ── Program output ────────────────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) samp {
+    font-size: 0.875em;
+    color: var(--color-muted);
+  }
+
+  /* ── Bare pre blocks (anything not inside the .ns-code window) ─────────── */
+  :where(.gh-content, .ns-prose) pre:not(.ns-code pre) {
+    margin-block: 1.25rem;
+    padding: 1rem 1.15rem;
+    overflow-x: auto;
+    border-radius: var(--radius-card);
+    background: var(--color-brand-900);
+    color: #e6edf3;
+    font-size: var(--size-mono);
+    line-height: 1.6;
+  }
+  :where(.gh-content, .ns-prose) pre:not(.ns-code pre) code {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    font-size: inherit;
+  }
+}

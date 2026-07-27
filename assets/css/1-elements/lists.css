@@ -1,0 +1,50 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   ELEMENTS · lists.css — ul, ol, dl
+   ----------------------------------------------------------------------------
+   Markers are part of the type system: bullets take the brand tint, ordered
+   markers run through the mono/label scale so a numbered list reads like the
+   numbered rows elsewhere in the system (curriculum, steps, roadmap).
+   `:not([class])` keeps utility-driven lists in templates untouched.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* ── Unordered ─────────────────────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) ul:not([class]) { padding-left: 1.35rem; list-style: disc; }
+  :where(.gh-content, .ns-prose) ul:not([class]) li::marker { color: var(--color-brand-400); }
+
+  /* ── Ordered — mono, tabular, label-colored ────────────────────────────── */
+  :where(.gh-content, .ns-prose) ol:not([class]) { padding-left: 1.35rem; list-style: decimal; }
+  :where(.gh-content, .ns-prose) ol:not([class]) li::marker {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--weight-label);
+    color: var(--color-label);
+  }
+
+  /* ── Shared rhythm + nesting ───────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) li { margin-block: 0.3rem; }
+  :where(.gh-content, .ns-prose) li > ul,
+  :where(.gh-content, .ns-prose) li > ol { margin-block: 0.3rem; }
+  :where(.gh-content, .ns-prose) ul:not([class]) ul { list-style: circle; }
+  :where(.gh-content, .ns-prose) ol:not([class]) ol { list-style: lower-alpha; }
+
+  /* ── Task lists (checkbox items in content) ────────────────────────────── */
+  :where(.gh-content, .ns-prose) li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.35rem; }
+  :where(.gh-content, .ns-prose) li > input[type="checkbox"] { margin-right: 0.5rem; accent-color: var(--color-brand-500); }
+
+  /* ── Definition lists — the term is a label, the definition is prose ───── */
+  :where(.gh-content, .ns-prose) dl { margin-block: 1.25rem; }
+  :where(.gh-content, .ns-prose) dt {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  :where(.gh-content, .ns-prose) dd {
+    margin: 0.25rem 0 1rem;
+    padding-left: 1rem;
+    border-left: var(--border-hairline) solid var(--color-border);
+  }
+}

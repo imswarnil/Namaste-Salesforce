@@ -1,0 +1,163 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · card — .ns-card
+   ----------------------------------------------------------------------------
+   The system's box. A hairline border on a raised surface — the border IS the
+   structure, so there is no default shadow and no hover lift.
+
+   SIZE     --xs  --sm  (default)  --lg  --xl        padding only
+   SURFACE  --flat (page surface)  --sunken  --raised (the one elevated case)
+            --dark (navy ground, for heroes and callouts)
+   SHAPE    --sharp (0)  --pill  --flush (no padding, for media-first cards)
+   EDGE     --strong (2px border)  --rail (brand left rail)  --dashed (empty state)
+   STATE    --interactive  hover: border → brand + a top accent line
+            --active / .is-active   the selected card in a set
+   PATTERN  --grid  --dots  --lines   the foundation background patterns
+   PARTS    .ns-card__header  __media  __body  __footer  __title  __meta
+
+   Compose freely: `.ns-card .ns-card--lg .ns-card--interactive .ns-card--grid`.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+    background-color: var(--color-surface-raised);
+    padding: 1.25rem;
+    color: var(--color-ink);
+  }
+
+  /* ── Sizes — padding only; layout stays the template's business ────────── */
+  .ns-card--xs { padding: 0.65rem; }
+  .ns-card--sm { padding: 0.9rem; }
+  .ns-card--lg { padding: 1.75rem; }
+  .ns-card--xl { padding: 2.25rem; }
+  @media (min-width: 640px) {
+    .ns-card--lg { padding: 2rem; }
+    .ns-card--xl { padding: 2.75rem; }
+  }
+
+  /* ── Surfaces ──────────────────────────────────────────────────────────── */
+  .ns-card--flat   { background-color: var(--color-surface); }
+  .ns-card--sunken { background-color: var(--color-surface-sunken); }
+  .ns-card--raised { box-shadow: var(--shadow-card); }
+  .ns-card--dark {
+    background-color: var(--color-brand-900);
+    border-color: color-mix(in srgb, #fff 12%, transparent);
+    color: #fff;
+  }
+  .ns-card--dark .ns-card__meta { color: rgb(255 255 255 / 0.65); }
+
+  /* ── Shapes ────────────────────────────────────────────────────────────── */
+  .ns-card--sharp { border-radius: 0; }
+  .ns-card--pill  { border-radius: var(--radius-pill); }
+  .ns-card--flush { padding: 0; overflow: hidden; }
+
+  /* ── Edges ─────────────────────────────────────────────────────────────── */
+  .ns-card--strong { border-width: var(--border-strong); }
+  .ns-card--dashed { border-style: dashed; background-color: transparent; }
+  .ns-card--rail   { border-left: var(--border-strong) solid var(--color-brand-500); }
+
+  /* ── Interactive — the house hover: border brightens, accent line draws ── */
+  .ns-card--interactive {
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-out),
+                background-color var(--duration-fast) var(--ease-out);
+  }
+  .ns-card--interactive::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: var(--border-strong);
+    background: var(--color-brand-500);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .ns-card--interactive:hover { border-color: var(--color-brand-500); }
+  .ns-card--interactive:hover::after,
+  .ns-card--interactive:focus-within::after { transform: scaleX(1); }
+
+  /* Row-shaped cards take the accent on the left edge instead of the top */
+  .ns-card--interactive.ns-card--row::after {
+    inset: 0 auto 0 0;
+    width: var(--border-strong);
+    height: auto;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .ns-card--interactive.ns-card--row:hover::after { transform: scaleY(1); }
+
+  /* ── Selected ──────────────────────────────────────────────────────────── */
+  .ns-card--active,
+  .ns-card.is-active { border-color: var(--color-brand-500); }
+  .ns-card--active::after,
+  .ns-card.is-active::after { transform: scaleX(1); }
+
+  /* ── Patterns — the foundation's background layer, clipped to the card ─── */
+  .ns-card--grid,
+  .ns-card--dots,
+  .ns-card--lines { position: relative; overflow: hidden; isolation: isolate; }
+  .ns-card--grid::before,
+  .ns-card--dots::before,
+  .ns-card--lines::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  .ns-card--grid::before {
+    background-image:
+      linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .ns-card--dots::before {
+    background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .ns-card--lines::before {
+    background-image: repeating-linear-gradient(
+      135deg, var(--color-grid) 0 1px, transparent 1px 9px);
+  }
+
+  /* ── Parts ─────────────────────────────────────────────────────────────── */
+  .ns-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .ns-card__media { margin: -1.25rem -1.25rem 1rem; overflow: hidden; }
+  .ns-card--flush .ns-card__media { margin: 0; }
+  .ns-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ns-card__body   { flex: 1 1 auto; min-width: 0; }
+  .ns-card__footer {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-card__title {
+    font-family: var(--font-heading);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+  }
+  .ns-card__meta {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-card--interactive::after { transition: none; }
+}

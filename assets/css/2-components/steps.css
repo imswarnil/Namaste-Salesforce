@@ -1,0 +1,65 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · steps — .ns-steps, .ns-step-num
+   ----------------------------------------------------------------------------
+   A numbered procedure: a hairline rail behind solid brand number discs. The
+   disc carries a surface-colored ring so the rail appears to pass behind it.
+
+   SIZE    --sm  (default)  --lg      the disc, and the rail offset with it
+   VARIANT --quiet   hairline discs with ink numerals, for long lists
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-steps { position: relative; }
+  .ns-steps::before {
+    content: "";
+    position: absolute;
+    left: 1.35rem;
+    top: 1rem;
+    bottom: 1rem;
+    width: 1px;
+    background-color: var(--color-border);
+  }
+  @media (min-width: 640px) { .ns-steps::before { left: 1.6rem; } }
+
+  .ns-step-num {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    height: 2.75rem;
+    width: 2.75rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: var(--color-brand-500);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--color-surface);
+  }
+  @media (min-width: 640px) { .ns-step-num { height: 3.25rem; width: 3.25rem; } }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-steps--sm::before { left: 1rem; }
+  .ns-steps--sm .ns-step-num { height: 2rem; width: 2rem; font-size: 0.8125rem; }
+  @media (min-width: 640px) {
+    .ns-steps--sm::before { left: 1rem; }
+    .ns-steps--sm .ns-step-num { height: 2rem; width: 2rem; }
+  }
+  .ns-steps--lg .ns-step-num { height: 3.25rem; width: 3.25rem; font-size: 1.125rem; }
+
+  /* ── Quiet — hairline disc, ink numeral ────────────────────────────────── */
+  .ns-steps--quiet .ns-step-num {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-border), 0 0 0 4px var(--color-surface);
+  }
+  /* The completed step in a quiet set goes solid */
+  .ns-steps--quiet .ns-step-num.is-done {
+    background-color: var(--color-brand-500);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--color-surface);
+  }
+}

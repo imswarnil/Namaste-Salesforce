@@ -1,0 +1,25 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · marquee — .marquee, .marquee-track
+   ----------------------------------------------------------------------------
+   The infinite logo/skill strip. The track is DUPLICATED in markup and the
+   keyframe travels -50%, which is what makes the loop seamless. Edges fade via
+   a mask so items enter and leave instead of popping.
+
+   VARIANT --slow  --fast  ·  --reverse
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .marquee {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+
+  .marquee--slow .marquee-track { animation-duration: 48s; }
+  .marquee--fast .marquee-track { animation-duration: 20s; }
+  .marquee--reverse .marquee-track { animation-direction: reverse; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none !important; }
+}

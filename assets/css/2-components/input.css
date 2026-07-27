@@ -1,0 +1,116 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · input — .ns-input and the form furniture around it
+   ----------------------------------------------------------------------------
+   Sharp geometry, hairline border, a quiet brand focus ring. Works on <input>,
+   <textarea> and <select> alike.
+
+   SIZE    --sm  (default)  --lg
+   SHAPE   --pill  --sharp
+   STATE   --error  --success  (or :user-invalid on the bare element)
+   PARTS   .ns-field       label + control + hint stack
+           .ns-field__hint mono helper / error text
+           .ns-input-group control with a leading/trailing affix
+           .ns-input-icon  absolutely-placed glyph inside the control
+           .ns-check       checkbox / radio row
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-input {
+    width: 100%;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    padding: 0.6rem 0.9rem;
+    color: var(--color-ink);
+    transition: border-color var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .ns-input::placeholder { color: var(--color-muted); }
+  .ns-input:focus {
+    outline: none;
+    border-color: var(--color-brand-500);
+    box-shadow: var(--shadow-focus);
+  }
+  .ns-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background-color: var(--color-surface-sunken);
+  }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-input--sm { padding: 0.4rem 0.65rem; font-size: var(--size-small); }
+  .ns-input--lg { padding: 0.8rem 1.1rem;  font-size: var(--size-body-lg); }
+
+  /* ── Shapes ────────────────────────────────────────────────────────────── */
+  .ns-input--pill  { border-radius: var(--radius-pill); }
+  .ns-input--sharp { border-radius: 0; }
+
+  /* ── States ────────────────────────────────────────────────────────────── */
+  .ns-input--error   { border-color: var(--color-error); }
+  .ns-input--error:focus   { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 20%, transparent); }
+  .ns-input--success { border-color: var(--color-success); }
+  .ns-input--success:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 20%, transparent); }
+
+  /* Textarea + select inherit the control, only sizing differs */
+  textarea.ns-input { min-height: 6rem; resize: vertical; }
+  select.ns-input   { padding-right: 2rem; }
+
+  /* ── Field stack ───────────────────────────────────────────────────────── */
+  .ns-field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .ns-field__label {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .ns-field__hint {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    color: var(--color-muted);
+  }
+  .ns-field__hint--error   { color: var(--color-error); }
+  .ns-field__hint--success { color: var(--color-success); }
+
+  /* ── Input group — control plus affix, one shared hairline ─────────────── */
+  .ns-input-group { display: flex; align-items: stretch; }
+  .ns-input-group > .ns-input { border-radius: 0; }
+  .ns-input-group > :first-child { border-start-start-radius: var(--radius-btn); border-end-start-radius: var(--radius-btn); }
+  .ns-input-group > :last-child  { border-start-end-radius: var(--radius-btn);   border-end-end-radius: var(--radius-btn); }
+  .ns-input-group > * + * { margin-left: -1px; }
+  .ns-input-group__affix {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-sunken);
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    color: var(--color-label);
+    white-space: nowrap;
+  }
+
+  /* ── Icon inside a control ─────────────────────────────────────────────── */
+  .ns-input-icon { position: relative; display: block; }
+  .ns-input-icon > :where(i, svg) {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--color-muted);
+  }
+  .ns-input-icon > .ns-input { padding-left: 2.25rem; }
+
+  /* ── Checkbox / radio row ──────────────────────────────────────────────── */
+  .ns-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: var(--size-small);
+  }
+  .ns-check input { accent-color: var(--color-brand-500); width: 1rem; height: 1rem; }
+  .ns-check:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
+}

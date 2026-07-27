@@ -1,0 +1,99 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · effects — the scripted and decorative treatments
+   ----------------------------------------------------------------------------
+   Everything here is optional polish: if the JS never runs, the page must
+   still read correctly. That's why each effect's resting state is the VISIBLE
+   one wherever possible, and why every one of them is fully disabled under
+   prefers-reduced-motion.
+
+     .js-reveal      scroll reveal            (reveal.js → .is-visible)
+     .js-spotlight   pointer spotlight        (effects.js → --spot-x/y)
+     .js-manifesto   words ink in on scroll   (script in home.hbs)
+     .js-tl-*        roadmap timeline draw    (script in home.hbs)
+     .ns-aurora      the one soft glow, for dark heroes only
+     .ns-underline   link underline that wipes in
+     .ns-ba-*        become-author illustration loops
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* ── Reveal on scroll ──────────────────────────────────────────────────── */
+  .js-reveal {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  .js-reveal.is-visible { opacity: 1; transform: none; }
+
+  /* ── Manifesto: words ink in as the reader scrolls ─────────────────────── */
+  .js-manifesto span { opacity: 0.15; transition: opacity 0.25s var(--ease-out); }
+  .js-manifesto span.on { opacity: 1; }
+
+  /* ── Pointer spotlight — a faint brand tint: presence, not glow ────────── */
+  .js-spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+    background: radial-gradient(220px circle at var(--spot-x, 50%) var(--spot-y, 0),
+                color-mix(in srgb, var(--color-brand-500) 12%, transparent), transparent 60%);
+  }
+  .js-spotlight:hover::before { opacity: 1; }
+
+  /* ── Aurora — kept for dark heroes, dialled way down ───────────────────── */
+  .ns-aurora::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: -25%;
+    left: -10%;
+    width: 60%;
+    height: 75%;
+    border-radius: 9999px;
+    filter: blur(80px);
+    pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-brand-400) 22%, transparent), transparent);
+  }
+
+  /* ── Inline link underline that wipes in ───────────────────────────────── */
+  .ns-underline {
+    background-image: linear-gradient(90deg, currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1.5px;
+    transition: background-size var(--duration-base) var(--ease-out);
+    text-decoration: none;
+  }
+  .ns-underline:hover { background-size: 100% 1.5px; }
+}
+
+/* ── Homepage roadmap timeline (scroll-drawn) ─────────────────────────────── */
+.js-tl-item { opacity: 0.45; transition: opacity 0.35s var(--ease-out); }
+.js-tl-item.is-on { opacity: 1; }
+.js-tl-item.is-on .js-tl-dot {
+  border-color: var(--color-brand-500);
+  background: var(--color-brand-500);
+  color: #fff;
+}
+.js-tl-line { transition: height 0.15s linear; }
+
+/* ── Become-author animated SVG (illustration — the one allowed float) ───── */
+.ns-ba-ring { transform-origin: 100px 100px; animation: ns-ba-spin 22s linear infinite; }
+.ns-ba-pen { transform-origin: 100px 90px; animation: ns-ba-float 4s ease-in-out infinite; }
+.ns-ba-underline { stroke-dasharray: 160; stroke-dashoffset: 160; animation: ns-ba-draw 2.4s ease-in-out infinite alternate; }
+@keyframes ns-ba-spin { to { transform: rotate(360deg); } }
+@keyframes ns-ba-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes ns-ba-draw { to { stroke-dashoffset: 0; } }
+
+/* ── Every effect off when motion is unwelcome ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal { opacity: 1; transform: none; transition: none; }
+  .js-manifesto span { opacity: 1; transition: none; }
+  .js-spotlight:hover::before { opacity: 0; }
+  .js-tl-item { opacity: 1; transition: none; }
+  .js-tl-line { transition: none; }
+  .ns-ba-ring, .ns-ba-pen, .ns-ba-underline { animation: none; }
+  .ns-ba-underline { stroke-dashoffset: 0; }
+}

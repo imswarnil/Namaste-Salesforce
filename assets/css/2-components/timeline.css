@@ -1,0 +1,48 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · timeline — .ns-timeline
+   ----------------------------------------------------------------------------
+   A vertical hairline rail behind milestone dots (the mission timeline, the
+   changelog). Same idea as .ns-steps but without the numbered discs — a
+   timeline marks moments, a stepper marks actions.
+
+   VARIANT --right  rail on the trailing edge
+           --dashed a dashed rail, for "planned" stretches
+   PARTS   .ns-timeline__dot
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-timeline { position: relative; }
+  .ns-timeline::before {
+    content: "";
+    position: absolute;
+    left: 17px;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    width: 1px;
+    background-color: var(--color-border);
+  }
+
+  .ns-timeline--right::before { left: auto; right: 17px; }
+  .ns-timeline--dashed::before {
+    width: 0;
+    border-left: 1px dashed var(--color-border);
+    background: none;
+  }
+
+  /* The milestone marker itself — a hairline dot that fills in when reached */
+  .ns-timeline__dot {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    height: 0.75rem;
+    width: 0.75rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 1px var(--color-border), 0 0 0 3px var(--color-surface);
+  }
+  .ns-timeline__dot.is-on {
+    background: var(--color-brand-500);
+    box-shadow: 0 0 0 1px var(--color-brand-500), 0 0 0 3px var(--color-surface);
+  }
+}

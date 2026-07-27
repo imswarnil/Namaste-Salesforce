@@ -1,0 +1,45 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   ELEMENTS · media.css — img, picture, video, audio, iframe, figure, figcaption
+   ----------------------------------------------------------------------------
+   Media carries the card radius so it sits in the same geometry as everything
+   else, and captions are mono labels. Nothing here adds a shadow: media is
+   framed by the hairline, like every other box in the system.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* Never let media overflow its column, anywhere on the site. Deliberately
+     NOT svg/canvas — icons are sized by utilities and must not be clamped. */
+  img, picture, video { max-width: 100%; }
+  img, video { height: auto; }
+
+  :where(.gh-content, .ns-prose) img,
+  :where(.gh-content, .ns-prose) video {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+  }
+
+  /* Embeds keep a 16:9 box so the page doesn't jump while they load */
+  :where(.gh-content, .ns-prose) iframe {
+    max-width: 100%;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+  }
+  :where(.gh-content) .kg-embed-card iframe { aspect-ratio: 16 / 9; width: 100%; }
+
+  :where(.gh-content, .ns-prose) audio { width: 100%; }
+
+  /* ── Figures + captions ────────────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) figure { margin-block: 1.5rem; }
+  :where(.gh-content, .ns-prose) figcaption {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    letter-spacing: 0.04em;
+    color: var(--color-label);
+    text-align: center;
+  }
+
+  /* Images inside a link shouldn't inherit the link's underline offset box */
+  :where(.gh-content, .ns-prose) a > img { display: block; }
+}

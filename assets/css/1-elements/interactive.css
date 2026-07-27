@@ -1,0 +1,50 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   ELEMENTS · interactive.css — details, summary, dialog, progress, meter
+   ----------------------------------------------------------------------------
+   The native disclosure/feedback elements, dressed in system geometry so a
+   docs FAQ or a Ghost toggle card needs no extra markup. Open state is signed
+   by the border going brand — the same signal a hovered card gives.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* ── Details / summary ─────────────────────────────────────────────────── */
+  :where(.gh-content, .ns-prose) details {
+    margin-block: 0.75rem;
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: 0.75rem 1rem;
+  }
+  :where(.gh-content, .ns-prose) details[open] { border-color: var(--color-brand-500); }
+  :where(.gh-content, .ns-prose) summary {
+    cursor: pointer;
+    font-weight: var(--weight-semibold);
+  }
+  :where(.gh-content, .ns-prose) summary::marker { color: var(--color-brand-400); }
+  :where(.gh-content, .ns-prose) details[open] > summary { margin-bottom: 0.5rem; }
+
+  /* ── Dialog — a hairline card on a calm scrim ──────────────────────────── */
+  dialog:not([class]) {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    color: var(--color-ink);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-raised);
+  }
+  dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+
+  /* ── Progress + meter — a flat brand bar on the sunken track ───────────── */
+  progress:not([class]) {
+    width: 100%;
+    height: 0.4rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-sunken);
+    overflow: hidden;
+  }
+  progress:not([class])::-webkit-progress-bar { background: var(--color-surface-sunken); }
+  progress:not([class])::-webkit-progress-value { background: var(--color-brand-500); }
+  progress:not([class])::-moz-progress-bar { background: var(--color-brand-500); }
+
+  meter:not([class]) { width: 100%; height: 0.4rem; }
+}

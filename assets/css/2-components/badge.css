@@ -1,0 +1,72 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · badge — .ns-badge
+   ----------------------------------------------------------------------------
+   Status as DATA: mono, uppercase, hairline-ringed. Never a filled pastel
+   wash — the ring carries the color, the text stays legible on any surface.
+
+   TONE   (default brand) --accent --success --warning --danger --neutral
+          --glass (on dark media)
+   SIZE   --sm  (default)  --lg
+   SHAPE  --pill  --square (icon only)
+   FORM   --solid  a filled badge for the rare "this is THE state" case
+          --dot    prefixes a status dot; recolor with the tone variants
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: var(--radius-sm);
+    padding: 0.2rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-brand-600);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brand-500) 35%, transparent);
+  }
+  [data-theme="dark"] .ns-badge { color: var(--color-brand-300); }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-badge--sm { padding: 0.1rem 0.4rem; font-size: 0.625rem; }
+  .ns-badge--lg { padding: 0.3rem 0.7rem; font-size: var(--size-small); }
+
+  /* ── Shapes ────────────────────────────────────────────────────────────── */
+  .ns-badge--pill   { border-radius: var(--radius-pill); }
+  .ns-badge--square { padding: 0.2rem; aspect-ratio: 1; justify-content: center; }
+
+  /* ── Tones — the ring takes the color, the label follows ───────────────── */
+  .ns-badge--accent { color: var(--color-accent-600); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent-500, var(--color-accent-600)) 35%, transparent); }
+  [data-theme="dark"] .ns-badge--accent { color: var(--color-accent-300); }
+
+  .ns-badge--success { color: var(--color-success); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-success) 40%, transparent); }
+  .ns-badge--warning { color: var(--color-warning); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-warning) 45%, transparent); }
+  .ns-badge--danger  { color: var(--color-error);   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-error) 40%, transparent); }
+  .ns-badge--neutral { color: var(--color-label);   box-shadow: inset 0 0 0 1px var(--color-border); }
+
+  .ns-badge--glass {
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+  }
+
+  /* ── Solid form — reserved for the one state that must dominate ────────── */
+  .ns-badge--solid { color: #fff; background-color: var(--color-brand-500); box-shadow: none; }
+  .ns-badge--solid.ns-badge--success { background-color: var(--color-success); color: #fff; }
+  .ns-badge--solid.ns-badge--warning { background-color: var(--color-warning); color: #fff; }
+  .ns-badge--solid.ns-badge--danger  { background-color: var(--color-error);   color: #fff; }
+  [data-theme="dark"] .ns-badge--solid { color: #fff; }
+
+  /* ── Dot form — status = dot + mono text, the house pattern ────────────── */
+  .ns-badge--dot::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+    background: currentColor;
+  }
+}
