@@ -1,0 +1,68 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · stat — .ns-stat, .ns-stats
+   ----------------------------------------------------------------------------
+   A number and what it counts: catalog totals, course hero figures, homepage
+   counters. The value is ALWAYS mono and tabular so a row of them lines up;
+   the label is the mono label scale. This is the spec-sheet readout that makes
+   the site feel like a console rather than a brochure.
+
+   LAYOUT  .ns-stats (row, wraps)  --grid  --center  --tight
+   SIZE    --sm  (default)  --lg
+   TONE    --brand (value in brand)  --light (on dark grounds)
+   PARTS   __value __label __icon
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem 2.5rem;
+  }
+  .ns-stats--center { justify-content: center; }
+  .ns-stats--tight  { gap: 0.75rem 1.5rem; }
+  .ns-stats--grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .ns-stats--grid { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); }
+  }
+
+  .ns-stat { display: inline-flex; flex-direction: column; gap: 0.15rem; }
+
+  .ns-stat__value {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--color-ink);
+  }
+  .ns-stat__label {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .ns-stat__icon { color: var(--color-brand-500); font-size: 1.15rem; }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-stat--sm .ns-stat__value { font-size: 1.15rem; }
+  .ns-stat--lg .ns-stat__value { font-size: 2.25rem; }
+
+  /* ── Tones ─────────────────────────────────────────────────────────────── */
+  .ns-stat--brand .ns-stat__value { color: var(--color-brand-600); }
+  [data-theme="dark"] .ns-stat--brand .ns-stat__value { color: var(--color-brand-300); }
+  .ns-stat--light .ns-stat__value { color: #fff; }
+  .ns-stat--light .ns-stat__label { color: rgb(255 255 255 / 0.65); }
+  .ns-stat--light .ns-stat__icon  { color: var(--color-brand-200); }
+
+  /* Inline form — icon, value and label on one baseline */
+  .ns-stat--inline { flex-direction: row; align-items: baseline; gap: 0.4rem; }
+  .ns-stat--inline .ns-stat__icon { align-self: center; }
+  .ns-stat--inline .ns-stat__label { text-transform: none; letter-spacing: normal; font-family: var(--font-sans); font-size: 0.8rem; color: var(--color-muted); }
+}

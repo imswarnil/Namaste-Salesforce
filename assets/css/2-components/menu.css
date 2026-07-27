@@ -1,0 +1,84 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · menu — .ns-menu
+   ----------------------------------------------------------------------------
+   The dropdown panel: the account menu, the share menu, any Alpine popover. A
+   floating layer genuinely sits above the page, so this is one of the few
+   places allowed to carry --shadow-raised.
+
+   PLACEMENT --end (align right) --up (open upwards)
+   SIZE      --sm  (default)  --lg  --wide
+   PARTS     __item __group __head __sep
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-menu {
+    position: absolute;
+    z-index: var(--z-dropdown);
+    min-width: 12rem;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+    background: var(--color-surface-raised);
+    box-shadow: var(--shadow-raised);
+    padding: 0.4rem;
+  }
+  .ns-menu--end  { right: 0; }
+  .ns-menu--up   { bottom: calc(100% + 0.5rem); }
+  .ns-menu--sm   { min-width: 9rem; }
+  .ns-menu--lg   { min-width: 16rem; }
+  .ns-menu--wide { min-width: 22rem; max-width: 90vw; }
+
+  /* ── Rows ──────────────────────────────────────────────────────────────── */
+  .ns-menu__item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.6rem;
+    border: 0;
+    border-radius: var(--radius-btn);
+    background: transparent;
+    padding: 0.5rem 0.7rem;
+    font-size: var(--size-small);
+    color: var(--color-ink);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-menu__item:hover {
+    background: color-mix(in srgb, var(--color-brand-500) 8%, transparent);
+    color: var(--color-brand-600);
+  }
+  [data-theme="dark"] .ns-menu__item:hover { color: var(--color-brand-300); }
+  .ns-menu__item--brand { color: var(--color-brand-600); font-weight: var(--weight-semibold); }
+  [data-theme="dark"] .ns-menu__item--brand { color: var(--color-brand-300); }
+  .ns-menu__item--quiet { color: var(--color-muted); }
+
+  /* ── Structure ─────────────────────────────────────────────────────────── */
+  .ns-menu__head {
+    padding: 0.6rem 0.7rem;
+    border-bottom: var(--border-hairline) solid var(--color-border);
+    margin: -0.4rem -0.4rem 0.4rem;
+  }
+  .ns-menu__group + .ns-menu__group {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-menu__sep {
+    height: var(--border-hairline);
+    margin: 0.35rem -0.4rem;
+    background: var(--color-border);
+  }
+  .ns-menu__label {
+    display: block;
+    padding: 0.35rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+}

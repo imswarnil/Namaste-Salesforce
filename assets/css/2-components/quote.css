@@ -1,0 +1,45 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · quote — .ns-quote
+   ----------------------------------------------------------------------------
+   A learner testimonial: stars, the quote, then who said it. Distinct from the
+   <blockquote> ELEMENT (1-elements/quotes.css) which styles quotes inside
+   article content — this is a card you place in a grid.
+
+   TONE  (default card) --plain (no border) --dark
+   SIZE  --sm  (default)  --lg
+   PARTS __stars __body __author __name __role
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-quote {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid var(--color-border);
+    background: var(--color-surface-raised);
+    padding: 1.5rem;
+  }
+  .ns-quote--sm { padding: 1rem; }
+  .ns-quote--lg { padding: 2rem; }
+  .ns-quote--plain { border-color: transparent; background: transparent; padding-inline: 0; }
+  .ns-quote--dark {
+    background: var(--color-brand-900);
+    border-color: color-mix(in srgb, #fff 12%, transparent);
+    color: #fff;
+  }
+  .ns-quote--dark .ns-quote__body,
+  .ns-quote--dark .ns-quote__role { color: rgb(255 255 255 / 0.75); }
+
+  .ns-quote__stars { display: flex; gap: 0.125rem; color: var(--color-warning); }
+  .ns-quote__body {
+    margin-top: 0.75rem;
+    flex: 1;
+    font-size: var(--size-small);
+    line-height: var(--leading-body);
+    color: var(--color-muted);
+  }
+  .ns-quote__author { margin-top: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+  .ns-quote__name { font-size: var(--size-small); font-weight: var(--weight-semibold); }
+  .ns-quote__role { font-size: 0.75rem; color: var(--color-muted); }
+}

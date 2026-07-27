@@ -1,0 +1,34 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · layout — .ns-container, .ns-section
+   ----------------------------------------------------------------------------
+   The two measurements every page agrees on: how wide the content column is,
+   and how much air sits between bands. Templates mostly use Tailwind's
+   max-w-* / py-* directly, but these exist so custom CSS (and markup that
+   shouldn't have to remember the numbers) can spend the SAME tokens —
+   --container-* and --space-section from 0-foundation/spacing.css.
+
+   WIDTH   --prose 45rem · --narrow 34rem · (default) 80rem · --wide 85rem · --full
+   RHYTHM  .ns-section  --sm  --lg  --flush (no block padding)
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-container {
+    width: 100%;
+    margin-inline: auto;
+    max-width: var(--container-page);
+    padding-inline: var(--space-gutter);
+  }
+  .ns-container--prose  { max-width: var(--container-prose); }
+  .ns-container--narrow { max-width: var(--container-narrow); }
+  .ns-container--wide   { max-width: 85rem; }
+  .ns-container--full   { max-width: none; }
+
+  .ns-section { padding-block: var(--space-section); }
+  .ns-section--sm    { padding-block: var(--space-section-sm); }
+  .ns-section--lg    { padding-block: calc(var(--space-section) * 1.4); }
+  .ns-section--flush { padding-block: 0; }
+
+  /* A band that needs its own ground colour, full-bleed but content-aligned */
+  .ns-section--sunken { background: var(--color-surface-sunken); }
+  .ns-section--dark   { background: var(--color-brand-900); color: #fff; }
+}

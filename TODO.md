@@ -7,8 +7,9 @@ A running log of what's been built on the theme and what's left.
 ## ✅ Done
 
 ### Design system — "Developer Console"
-- Three numbered layers imported by `screen.css`: `assets/css/0-foundation/` (tokens, vars, `@utility` mixins — nothing that paints UI) → `assets/css/1-elements/` (bare HTML) → `assets/css/2-components/` (the UI library). The old `namaste-ui/` and `theme/` folders are gone.
-- Primitives: `.ns-btn` (+`--primary/--accent/--white/--glass/--outline`, `--sm/--lg`), `.ns-kicker` (a mono `//` comment), `.ns-chip`, `.ns-badge`, `.ns-input`, `.ns-code`, plus the mixins `ns-label` / `ns-index` / `ns-hairline` / `ns-dot-marker` / `ns-transition`.
+- **Four layers, one file per thing**, each with its own `index.css`; `screen.css` is just Tailwind + four imports. `0-foundation/` (tokens) → `1-elements/` (one file per element family) → `2-components/` (one file per component) → `3-modules/` (per-feature). The old `namaste-ui/` and `theme/` folders are gone.
+- **Components** (`.ns-thing` / `.ns-thing--variant` / `.ns-thing__part` / `.is-state`, variants compose): button · badge · chip · tag · kicker · avatar · card · feature · quote · widget · note · empty-state · stat · progress · input · code-window · video-poster · steps · timeline · page-header · section-head · breadcrumb · pagination · nav-link · icon-button · menu · tooltip · toc · sidebar · subnav · share · ad · marquee · effects.
+- Foundation mixins: `ns-label` / `ns-index` / `ns-hairline` / `ns-dot-marker` / `ns-transition`.
 - Five rules (`0-foundation/README.md`): hairline borders are the structure, one signal blue, mono for every label/index, sharp geometry (6px card / 4px button, pills only for true tags), instant 120–180ms motion. No gradients, glass, glow, or hover lifts.
 - Fira Code is the mono face; dark mode is brand navy. Live docs at `/docs/design-system/`; specimen sheet in `demo.html`.
 
@@ -33,12 +34,11 @@ A running log of what's been built on the theme and what's left.
 - `@graph` with Organization + WebSite + navigation ItemList (all pages).
 - **Course** (+ CourseInstance, hasPart→lessons) on `#course`; **LearningResource** (+ VideoObject for `#lesson-type-video`) on `#lesson`.
 
-### Dummy content (`dummy-content/`) — one importable per collection
-- **`course.json`** — Ghost-importable courses + lessons (was `import.json`; **already imported**). `course-spec.json` keeps the readable outline.
-- **`training.json`** — Ghost-importable tracks + section content (3 roadmaps → 12 sections → 37 lessons). Model: track slug == track tag; a training-content lesson's PRIMARY tag = the track tag (nests at `/training/{track}/{slug}/`), section = a secondary `train-{track}-NN-*` tag for grouping.
-- **`docs.json`** — Ghost-importable docs (6 sections → 22 docs). Doc PRIMARY tag = its `docs-NN-*` section tag (nests at `/docs/{section}/{slug}/`).
-- `taxonomy.json`, `navigation.json` — reference (not imports).
-- Import each collection separately in **Settings → Labs → Import**.
+### Demo content (`dummy-content/import.json`)
+- **One importable bundle**, not a file per collection. Import it in **Settings → Labs → Import**.
+- Contains 2–3 posts for every collection and section: 3 courses × 3 lessons · 3 training sections × 3 lessons · 10 docs sections × 2 articles · 3 blog posts · 3 resources · the `about` and `training` pages · every tag the templates branch on.
+- Encodes the `routes.yaml` rules: course slug == course tag, section slug == section tag, lesson primary tag == its parent course/section tag.
+
 
 ### Routes updated (2 changes)
 - **Docs moved to `/docs/`** (was `/documentation/`) and now **section-nested**: `/docs/{section}/{doc}/`. All in-theme links repointed.
@@ -49,7 +49,7 @@ A running log of what's been built on the theme and what's left.
 
 ## 📋 To do on your Ghost site
 1. **Routes** — already synced to `content/settings/routes.yaml`; if you move hosts, upload `routes.yaml` in **Settings → Labs → Routes**.
-2. **Navigation** — set primary + secondary from `dummy-content/navigation.json` in **Settings → Navigation**.
+2. **Navigation** — set the primary + secondary menus in **Settings → Navigation** (Home · Courses · Training · Docs · Blog · Resources · About).
 3. **Custom settings** — pick a navbar style in **Settings → Design → Site-wide**.
 4. **Pages** — `/about/` and `/become-author/` work via routes; create real Ghost pages with those slugs only if you want editable bodies.
 5. **Course images** — cards/heroes look fuller with feature images; upload one per course (tag `#show-image`).
@@ -64,7 +64,7 @@ A running log of what's been built on the theme and what's left.
 - **Training curriculum** (`training/curriculum.hbs`) — THIS track's modules grouped by **section** (`train-{track}-NN-*`); `training-nav.js` flows Prev/Next across sections → Finish.
 
 ## 🔜 Pending (next up — requested, not yet built)
-- **Import** `dummy-content/training.json` + `dummy-content/docs.json` (Settings → Labs → Import) — live site still shows the old training/docs data, so the new section grouping only appears after import.
+- **Import** `dummy-content/import.json` (Settings → Labs → Import) — the live site still shows older content until you do.
 - **Hero variants** — flesh out all 5 distinct course-hero layouts (2 = centered, 5 = video already differ).
 - **JSON-LD** — add branches for blog, docs, training, collection pages.
 

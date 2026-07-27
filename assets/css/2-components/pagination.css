@@ -1,0 +1,49 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · pagination — .ns-pager
+   ----------------------------------------------------------------------------
+   Newer / Older plus a mono page count. Pills are legitimate here: a pager
+   control is a discrete token, the same family as a tag.
+
+   ALIGN --start --between   (default: centered)
+   PARTS __link __count
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .ns-pager--start   { justify-content: flex-start; }
+  .ns-pager--between { justify-content: space-between; }
+
+  .ns-pager__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: var(--radius-pill);
+    border: var(--border-hairline) solid var(--color-border);
+    background: var(--color-surface);
+    padding: 0.5rem 1rem;
+    font-size: var(--size-small);
+    font-weight: var(--weight-medium);
+    transition: border-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-pager__link:hover { border-color: var(--color-brand-500); color: var(--color-brand-600); }
+  [data-theme="dark"] .ns-pager__link:hover { color: var(--color-brand-300); }
+
+  /* The count is data — mono, tabular, quiet */
+  .ns-pager__count {
+    border-radius: var(--radius-pill);
+    border: var(--border-hairline) solid var(--color-border);
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+}

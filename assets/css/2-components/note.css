@@ -1,0 +1,53 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · note — .ns-note
+   ----------------------------------------------------------------------------
+   The inline callout: "this lesson is for members", "heads up", "you're all
+   set". The system forbids status washes on badges, but a note is a BLOCK the
+   reader is meant to stop at, so it gets one tint — held at 4–6%, one step
+   above transparent, with the color carried by the border and the icon.
+
+   TONE  (default brand) --info --success --warning --danger --neutral
+   SIZE  --sm  (default)  --lg
+   PARTS __icon __body __title __action
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-note {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    border-radius: var(--radius-card);
+    border: var(--border-hairline) solid color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+    background: color-mix(in srgb, var(--color-brand-500) 4%, transparent);
+    padding: 0.9rem 1.1rem;
+  }
+  .ns-note__icon { flex-shrink: 0; font-size: 1.4rem; color: var(--color-brand-500); }
+  .ns-note__body { min-width: 0; flex: 1; font-size: var(--size-small); }
+  .ns-note__title { font-weight: var(--weight-semibold); color: var(--color-ink); }
+  .ns-note__action { flex-shrink: 0; }
+
+  /* ── Sizes ─────────────────────────────────────────────────────────────── */
+  .ns-note--sm { padding: 0.6rem 0.8rem; gap: 0.6rem; }
+  .ns-note--sm .ns-note__icon { font-size: 1.1rem; }
+  .ns-note--lg { padding: 1.25rem 1.4rem; }
+
+  /* ── Tones ─────────────────────────────────────────────────────────────── */
+  .ns-note--info    { border-color: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+                      background: color-mix(in srgb, var(--color-brand-500) 4%, transparent); }
+  .ns-note--info .ns-note__icon { color: var(--color-brand-500); }
+
+  .ns-note--success { border-color: color-mix(in srgb, var(--color-success) 40%, transparent);
+                      background: color-mix(in srgb, var(--color-success) 5%, transparent); }
+  .ns-note--success .ns-note__icon { color: var(--color-success); }
+
+  .ns-note--warning { border-color: color-mix(in srgb, var(--color-warning) 45%, transparent);
+                      background: color-mix(in srgb, var(--color-warning) 6%, transparent); }
+  .ns-note--warning .ns-note__icon { color: var(--color-warning); }
+
+  .ns-note--danger  { border-color: color-mix(in srgb, var(--color-error) 40%, transparent);
+                      background: color-mix(in srgb, var(--color-error) 5%, transparent); }
+  .ns-note--danger .ns-note__icon { color: var(--color-error); }
+
+  .ns-note--neutral { border-color: var(--color-border); background: var(--color-surface-sunken); }
+  .ns-note--neutral .ns-note__icon { color: var(--color-muted); }
+}
