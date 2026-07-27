@@ -1,0 +1,145 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · collection — .ns-collection
+   ----------------------------------------------------------------------------
+   A band that shows part of a collection: "Latest posts", "Featured courses",
+   "New in docs". It is the unit a home page is built from, and it is always
+   the same four things in the same order —
+
+       kicker + title + link  →  the items  →  (optional) a footer action
+
+   so a visitor learns the shape once. The component owns the RHYTHM and the
+   listing LAYOUT; the items themselves are .ns-pcard, so a collection of
+   courses and a collection of blog posts read as siblings.
+
+   LAYOUT   --grid (default, reflows on content) · --grid-2 · --grid-4
+            --rows      a divided vertical list
+            --rail      a snap-scrolling row on mobile, grid from lg
+            --feature   one large item, the rest beside it
+            --split     copy on the left, items on the right
+   TONE     --sunken · --dark  (inherits the band tones)
+   PARTS    __head __title __sub __action __items __footer __empty
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-collection { padding-block: var(--space-section); }
+  .ns-collection--sm { padding-block: var(--space-section-sm); }
+  .ns-collection--flush { padding-block: 0; }
+  .ns-collection--sunken { background: var(--color-surface-sunken); }
+  .ns-collection--dark { background: var(--color-brand-900); color: #fff; }
+  .ns-collection--dark .ns-collection__sub { color: rgb(255 255 255 / 0.75); }
+
+  .ns-collection__inner {
+    margin-inline: auto;
+    max-width: var(--container-page);
+    padding-inline: var(--space-gutter);
+  }
+
+  /* ── Head ──────────────────────────────────────────────────────────────── */
+  .ns-collection__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .ns-collection__title {
+    margin-top: 0.35rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.85rem);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+    letter-spacing: -0.01em;
+  }
+  .ns-collection__sub {
+    margin-top: 0.4rem;
+    max-width: 44rem;
+    font-size: var(--size-small);
+    color: var(--color-muted);
+  }
+  .ns-collection__action { flex-shrink: 0; }
+  @media (max-width: 559.98px) {
+    .ns-collection__head { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ── Items ─────────────────────────────────────────────────────────────── */
+  .ns-collection__items {
+    display: grid;
+    gap: var(--grid-gutter);
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min), 100%), 1fr));
+  }
+  .ns-collection--grid-2 .ns-collection__items { grid-template-columns: 1fr; }
+  .ns-collection--grid-4 .ns-collection__items { grid-template-columns: 1fr; }
+  @media (min-width: 640px) {
+    .ns-collection--grid-2 .ns-collection__items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ns-collection--grid-4 .ns-collection__items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .ns-collection--grid-4 .ns-collection__items { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  /* Rows — a divided list, for text-led collections (docs, changelog) */
+  .ns-collection--rows .ns-collection__items {
+    display: block;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  .ns-collection--rows .ns-collection__items > * {
+    border-bottom: var(--border-hairline) solid var(--color-border);
+  }
+
+  /* Rail — swipeable on a phone, a grid once there is room */
+  .ns-collection--rail .ns-collection__items {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+  .ns-collection--rail .ns-collection__items::-webkit-scrollbar { display: none; }
+  .ns-collection--rail .ns-collection__items > * {
+    scroll-snap-align: start;
+    flex: 0 0 min(19rem, 82%);
+  }
+  @media (min-width: 1024px) {
+    .ns-collection--rail .ns-collection__items {
+      display: grid;
+      overflow: visible;
+      grid-template-columns: repeat(auto-fit, minmax(min(var(--grid-min), 100%), 1fr));
+    }
+    .ns-collection--rail .ns-collection__items > * { flex: initial; }
+  }
+
+  /* Feature — one big item, the rest stacked beside it */
+  .ns-collection--feature .ns-collection__items { grid-template-columns: 1fr; }
+  @media (min-width: 1024px) {
+    .ns-collection--feature .ns-collection__items {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    .ns-collection--feature .ns-collection__items > :first-child { grid-row: span 3; }
+  }
+
+  /* Split — a standing column of copy, items to the side */
+  .ns-collection--split .ns-collection__inner { display: grid; gap: var(--grid-gutter-lg); }
+  @media (min-width: 1024px) {
+    .ns-collection--split .ns-collection__inner {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+      align-items: start;
+    }
+    .ns-collection--split .ns-collection__head {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 0;
+      position: sticky;
+      top: calc(var(--space-navbar) + 1.5rem);
+    }
+  }
+
+  /* ── Footer + empty ────────────────────────────────────────────────────── */
+  .ns-collection__footer {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  .ns-collection__empty { grid-column: 1 / -1; }
+}

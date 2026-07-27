@@ -1123,9 +1123,267 @@ page("Components", "effects", "Effects &amp; ads",
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# HOME — the sections a home page is assembled from
+# ═════════════════════════════════════════════════════════════════════════════
+def pcard(mod="", title="Why I reach for Flow before Apex", cover=True, badge=None,
+          excerpt="Apex is not the senior choice. Choosing the least powerful tool that solves the "
+                  "problem is."):
+    media = ""
+    if cover:
+        media = ('<div class="ns-pcard__media">'
+                 '<span class="ns-pcard__fallback"><i class="ph ph-image"></i></span>'
+                 + (f'<span class="ns-pcard__badge ns-badge ns-badge--solid">{badge}</span>' if badge else "")
+                 + '</div>')
+    return (f'<article class="ns-pcard {mod}">{media}'
+            f'<div class="ns-pcard__body">'
+            f'<span class="ns-kicker ns-kicker--sm">Blog</span>'
+            f'<h3 class="ns-pcard__title"><a href="#!">{title}</a></h3>'
+            f'<p class="ns-pcard__excerpt">{excerpt}</p>'
+            f'<div class="ns-pcard__meta"><span class="ns-pcard__author">'
+            f'<span class="ns-avatar ns-avatar--xs demo-avatar-fill"></span>Swarnil</span>'
+            f'<span>6 min</span><span>Mar 2026</span></div>'
+            f'</div></article>')
+
+
+HEADER_DEMO = (
+    '<header class="ns-header demo-static">'
+    '<div class="ns-header__bar">'
+    '<a class="ns-header__brand" href="#!">'
+    '<span class="ns-chip ns-chip--xs ns-chip--solid"><i class="ph-fill ph-terminal-window"></i></span>'
+    '<span class="ns-header__name">Namaste Salesforce</span></a>'
+    '<nav class="ns-header__nav"><ul>'
+    '<li><a class="nav-link is-current" href="#!"><i class="ph ph-house"></i>Home</a></li>'
+    '<li><a class="nav-link" href="#!"><i class="ph ph-graduation-cap"></i>Courses</a></li>'
+    '<li><a class="nav-link" href="#!"><i class="ph ph-flow-arrow"></i>Training</a></li>'
+    '<li><a class="nav-link" href="#!"><i class="ph ph-books"></i>Docs</a></li>'
+    '</ul></nav>'
+    '<div class="ns-header__actions">'
+    '<button class="icon-btn"><i class="ph ph-magnifying-glass"></i></button>'
+    '<button class="icon-btn"><i class="ph ph-gear-six"></i></button>'
+    '<span class="ns-header__divider"></span>'
+    '<button class="icon-btn icon-btn--brand"><i class="ph ph-user"></i></button>'
+    '<button class="icon-btn ns-header__burger"><i class="ph ph-list"></i></button>'
+    '</div></div></header>')
+
+page("Home", "home", "Home page",
+     "The whole page, assembled from the sections below. A home page is nothing but a stack of "
+     "bands: one hero, then collections, then proof, then the ask. Every band uses the page measure "
+     "and the same vertical rhythm, which is what stops a long landing page feeling improvised.",
+     head("The stack"),
+     note("<b>1.</b> Header &rarr; <b>2.</b> Hero &rarr; <b>3.</b> Collection: courses &rarr; "
+          "<b>4.</b> Feature grid &rarr; <b>5.</b> Collection: latest posts &rarr; <b>6.</b> Metrics "
+          "&rarr; <b>7.</b> Testimonials &rarr; <b>8.</b> Closing CTA. Nothing here is new — each is a "
+          "component documented on its own page."),
+     head("1 · Header"),
+     row(spec(".ns-header", HEADER_DEMO, wide=True)),
+     head("2 · Hero"),
+     row(spec(".ns-hero--split",
+              '<div class="ns-hero ns-hero--split ns-hero--sm ns-hero--grid">'
+              '<div class="ns-hero__inner">'
+              '<div><p class="ns-kicker ns-kicker--light">Free forever</p>'
+              '<h1 class="ns-hero__title">Learn Salesforce by building it</h1>'
+              '<p class="ns-hero__sub">Project-led courses and one guided path from your first login '
+              'to your first automation.</p>'
+              '<div class="ns-hero__actions"><a class="ns-btn ns-btn--white" href="#!">Start the training</a>'
+              '<a class="ns-btn ns-btn--glass" href="#!">Browse courses</a></div>'
+              '<div class="ns-hero__meta">'
+              '<div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">24</span>'
+              '<span class="ns-stat__label">courses</span></div>'
+              '<div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">312</span>'
+              '<span class="ns-stat__label">lessons</span></div>'
+              '<div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">100%</span>'
+              '<span class="ns-stat__label">free</span></div></div></div>'
+              '<div class="ns-hero__media"><div class="ns-media ns-media--frame demo-media">'
+              '<i class="ph ph-image"></i></div></div>'
+              '</div></div>', wide=True)),
+     head("3 · Collection — courses"),
+     row(spec(".ns-collection--rail",
+              '<div class="ns-collection ns-collection--sm ns-collection--rail ns-collection--sunken">'
+              '<div class="ns-collection__inner">'
+              '<div class="ns-collection__head"><div><span class="ns-kicker">Courses</span>'
+              '<h2 class="ns-collection__title">Start with the fundamentals</h2>'
+              '<p class="ns-collection__sub">Self-contained, one topic each.</p></div>'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action" href="#!">All courses</a></div>'
+              '<div class="ns-collection__items">'
+              + pcard(badge="Free", title="Admin Foundations",
+                      excerpt="Objects, fields, users and security — the groundwork.")
+              + pcard(title="Apex Programming", excerpt="Bulk-safe patterns and tests that mean something.")
+              + pcard(title="Lightning Web Components", excerpt="Modern web standards, on platform.")
+              + '</div></div></div>', wide=True)),
+     head("4 · Feature grid"),
+     row(spec(".ns-band + .ns-grid",
+              '<div class="ns-band ns-band--sm"><div class="ns-band__inner">'
+              '<div class="ns-section-head ns-section-head--center"><div>'
+              '<span class="ns-kicker ns-kicker--center">Why here</span>'
+              '<h2 class="ns-section-head__title">Built for people who want to build</h2></div></div>'
+              '<div class="ns-grid ns-grid--3">'
+              + "".join('<div class="ns-feature"><span class="ns-chip"><i class="ph-fill ' + ic + '"></i></span>'
+                        '<h3 class="ns-feature__title">' + t + '</h3>'
+                        '<p class="ns-feature__body">' + b + '</p></div>'
+                        for ic, t, b in (
+                            ("ph-graduation-cap", "Project-led",
+                             "Every lesson ends with something you built, not something you watched."),
+                            ("ph-users-three", "Community reviewed",
+                             "Drafts get a technical review before they go live."),
+                            ("ph-lock-open", "Free forever",
+                             "The whole beginner track is open. No card, no trial.")))
+              + '</div></div></div>', wide=True)),
+     head("5 · Collection — latest posts"),
+     row(spec(".ns-collection--feature",
+              '<div class="ns-collection ns-collection--sm ns-collection--feature">'
+              '<div class="ns-collection__inner">'
+              '<div class="ns-collection__head"><div><span class="ns-kicker">Blog</span>'
+              '<h2 class="ns-collection__title">Field notes</h2></div>'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action" href="#!">All posts</a></div>'
+              '<div class="ns-collection__items">'
+              + pcard("ns-pcard--overlay", badge="New")
+              + pcard("ns-pcard--row", title="A mental model for governor limits", cover=True,
+                      excerpt="Stop memorising the numbers.")
+              + pcard("ns-pcard--row", title="Your first 90 days as an admin", cover=True,
+                      excerpt="What to do when you inherit an org you did not build.")
+              + '</div></div></div>', wide=True)),
+     head("6 · Metrics"),
+     row(spec(".ns-metrics",
+              '<div class="ns-band ns-band--sm ns-band--dark ns-band--grid"><div class="ns-band__inner">'
+              '<div class="ns-metrics">'
+              + "".join('<div><div class="ns-metrics__value">' + v + '</div>'
+                        '<div class="ns-metrics__label">' + l + '</div></div>'
+                        for v, l in (("24", "courses"), ("312", "lessons"),
+                                     ("9", "roadmaps"), ("1.2k", "learners")))
+              + '</div></div></div>', wide=True)),
+     head("7 · Testimonials"),
+     row(spec(".ns-testimonial-grid",
+              '<div class="ns-band ns-band--sm ns-band--sunken"><div class="ns-band__inner">'
+              '<div class="ns-testimonial-grid">'
+              + f'<figure class="ns-testimonial ns-testimonial--sm">{TESTI_BODY}</figure>' * 3
+              + '</div></div></div>', wide=True)),
+     head("8 · Closing CTA"),
+     row(spec(".ns-cta-band--dark",
+              '<div class="ns-band ns-band--sm"><div class="ns-band__inner">'
+              '<div class="ns-cta-band ns-cta-band--dark">'
+              '<span class="ns-kicker ns-kicker--light ns-kicker--center">Free forever</span>'
+              '<h2 class="ns-cta-band__title">Start with the fundamentals</h2>'
+              '<p class="ns-cta-band__sub">No card, no trial — the whole beginner track is open.</p>'
+              '<div class="ns-cta-band__actions"><a class="ns-btn ns-btn--white" href="#!">Create an account</a>'
+              '<a class="ns-btn ns-btn--glass" href="#!">Browse first</a></div></div>'
+              '</div></div>', wide=True)))
+
+page("Home", "home-header", "Header",
+     "The bar at the top of every page, as a component rather than a pile of utilities. Three "
+     "regions on one row — brand, navigation, actions — and the layout variant decides where the "
+     "middle one sits.",
+     head("Centred — the site default"),
+     row(spec(".ns-header--center", HEADER_DEMO, wide=True)),
+     note("The nav is centred on the BAR, not on the space left over, so it does not shift when the "
+          "brand or the action cluster changes width."),
+     head("Nav beside the brand"),
+     row(spec("--start",
+              HEADER_DEMO.replace('class="ns-header demo-static"', 'class="ns-header ns-header--start demo-static"'),
+              wide=True)),
+     head("Nav pushed right"),
+     row(spec("--split",
+              HEADER_DEMO.replace('class="ns-header demo-static"', 'class="ns-header ns-header--split demo-static"'),
+              wide=True)),
+     head("Dark"),
+     row(spec("--dark",
+              HEADER_DEMO.replace('class="ns-header demo-static"', 'class="ns-header ns-header--dark demo-static"'),
+              wide=True)),
+     head("Announcement strip"),
+     row(spec("__strip",
+              '<div class="demo-w-full"><div class="ns-header__strip">'
+              '<i class="ph ph-megaphone"></i>New — the Agentforce track is live '
+              '<a href="#!">Start it</a></div>'
+              + HEADER_DEMO + '</div>', wide=True)),
+     head("Mobile panel"),
+     row(spec("__panel",
+              '<div class="demo-w-lg">' + HEADER_DEMO +
+              '<div class="ns-header__panel demo-block">'
+              '<div class="ns-header__panel-nav">'
+              '<a class="nav-link nav-link--block is-current" href="#!"><i class="ph ph-house"></i>Home</a>'
+              '<a class="nav-link nav-link--block" href="#!"><i class="ph ph-graduation-cap"></i>Courses</a>'
+              '<a class="nav-link nav-link--block" href="#!"><i class="ph ph-flow-arrow"></i>Training</a></div>'
+              '<div class="ns-header__panel-actions">'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Star</a>'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Sponsor</a>'
+              '<a class="ns-btn ns-btn--primary ns-btn--sm ns-header__panel-wide" href="#!">Create account</a>'
+              '</div></div></div>', wide=True)),
+     note("Scroll behaviours — sticky, fixed-on-scroll, island — are driven by the "
+          "<code>@custom.navbar_behavior</code> Ghost setting and live in "
+          "<code>site-navbar.css</code>. This file owns the shape only."))
+
+page("Home", "home-post-card", "Post card",
+     "One entry in a collection: a blog post, a course, a doc, a resource. The generic card is the "
+     "box; this is what goes IN it when the thing being shown is content — so every collection on "
+     "the site presents the same shape.",
+     head("Default"),
+     row(spec(".ns-pcard", f'<div class="demo-w-md">{pcard()}</div>', wide=True),
+         spec("--sm", f'<div class="demo-w-sm">{pcard("ns-pcard--sm")}</div>', wide=True)),
+     head("Row"),
+     row(spec("--row", f'<div class="demo-w-xl">{pcard("ns-pcard--row")}</div>', wide=True)),
+     head("Wide — the featured item"),
+     row(spec("--wide", f'<div class="demo-w-full">{pcard("ns-pcard--wide")}</div>', wide=True)),
+     head("Overlay"),
+     row(spec("--overlay", f'<div class="demo-w-md">{pcard("ns-pcard--overlay", badge="Featured")}</div>', wide=True)),
+     head("Compact + minimal"),
+     row(spec("--compact", f'<div class="demo-w-sm">{pcard("ns-pcard--compact", cover=False)}</div>', wide=True),
+         spec("--minimal", f'<div class="demo-w-md">{pcard("ns-pcard--minimal", cover=False)}</div>', wide=True)),
+     note("The whole card is clickable through a stretched link on the title, so the title stays the "
+          "real anchor — screen readers announce it and middle-click still works."))
+
+page("Home", "home-collection", "Collection",
+     "A band that shows part of a collection. It is the unit a home page is built from, and it is "
+     "always the same four things in the same order — kicker, title, link, items — so a visitor "
+     "learns the shape once.",
+     head("Grid — the default"),
+     row(spec(".ns-collection",
+              '<div class="ns-collection ns-collection--sm"><div class="ns-collection__inner">'
+              '<div class="ns-collection__head"><div><span class="ns-kicker">Courses</span>'
+              '<h2 class="ns-collection__title">Start with the fundamentals</h2></div>'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action" href="#!">All courses</a></div>'
+              '<div class="ns-collection__items">' + pcard() * 3 + '</div>'
+              '<div class="ns-collection__footer">'
+              '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Load more</a></div>'
+              '</div></div>', wide=True)),
+     head("Rows — a divided list"),
+     row(spec("--rows",
+              '<div class="ns-collection ns-collection--sm ns-collection--rows"><div class="ns-collection__inner">'
+              '<div class="ns-collection__head"><div><span class="ns-kicker">Docs</span>'
+              '<h2 class="ns-collection__title">Recently updated</h2></div></div>'
+              '<div class="ns-collection__items">'
+              + pcard("ns-pcard--minimal", cover=False, title="Create your account")
+              + pcard("ns-pcard--minimal", cover=False, title="How a course is structured")
+              + pcard("ns-pcard--minimal", cover=False, title="Cancel or change your plan")
+              + '</div></div></div>', wide=True)),
+     head("Feature — one big, the rest beside"),
+     row(spec("--feature",
+              '<div class="ns-collection ns-collection--sm ns-collection--feature ns-collection--sunken">'
+              '<div class="ns-collection__inner">'
+              '<div class="ns-collection__head"><div><span class="ns-kicker">Blog</span>'
+              '<h2 class="ns-collection__title">Field notes</h2></div></div>'
+              '<div class="ns-collection__items">'
+              + pcard("ns-pcard--overlay")
+              + pcard("ns-pcard--row", title="A mental model for governor limits")
+              + pcard("ns-pcard--row", title="Your first 90 days as an admin")
+              + '</div></div></div>', wide=True)),
+     head("Split — standing copy, items beside"),
+     row(spec("--split",
+              '<div class="ns-collection ns-collection--sm ns-collection--split"><div class="ns-collection__inner">'
+              '<div class="ns-collection__head"><div><span class="ns-kicker">Training</span>'
+              '<h2 class="ns-collection__title">One guided path</h2>'
+              '<p class="ns-collection__sub">Nine sections, in order, from zero.</p>'
+              '<a class="ns-btn ns-btn--primary ns-btn--sm" href="#!">Start</a></div></div>'
+              '<div class="ns-collection__items">'
+              + pcard("ns-pcard--row", title="Start here") + pcard("ns-pcard--row", title="Build your first app")
+              + '</div></div></div>', wide=True)),
+     note("<code>--rail</code> makes the items swipeable on a phone and a grid from <code>lg</code> — "
+          "the right answer when a collection has more items than a phone can show."))
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # RENDERING
 # ═════════════════════════════════════════════════════════════════════════════
-GROUPS = ["Foundation", "Components"]
+GROUPS = ["Home", "Foundation", "Components"]
 
 RULES = [
     ("Hairlines, not shadows",
