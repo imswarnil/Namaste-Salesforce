@@ -1927,6 +1927,28 @@ page("Training", "training-nav", "Training navigation",
           "is what every real page uses, that one line silently governed the whole component and beat "
           "every token on the base rule. The size variants now change TYPE only; <code>--lg</code> is "
           "the sole exception and says so explicitly."),
+     head("The gate"),
+     note("Ghost stops rendering a members-only post partway and leaves the excerpt visible. Without "
+          "something in that gap the lesson simply appears to end mid-thought, which reads as a broken "
+          "page rather than as a boundary. <code>.ns-lock</code> fills it."),
+     note("<b>Full width and centred</b> — every other block in the lesson is capped at the reading "
+          "measure and ranged left, because that is what prose wants. This is not prose, it is the END "
+          "of it, and breaking both rules at once is what makes it impossible to mistake for another "
+          "paragraph. The copy inside still keeps a measure, though: a centred line running the full "
+          "width of a 58rem column is unreadable."),
+     note("Quiet otherwise — a hairline, one glyph, one heading, two buttons. No tinted panel, no "
+          "gradient, no urgency: the reader is being told &ldquo;not yet&rdquo;, not sold to. The wording "
+          "follows Ghost's <code>visibility</code>, so a <code>paid</code> lesson offers plans and a "
+          "<code>members</code> lesson offers a free account — promising the wrong thing at a paywall "
+          "is worse than saying nothing."),
+     row(spec(".ns-lock",
+              '<div class="ns-lock"><span class="ns-lock__mark"><i class="ph-fill ph-lock-simple"></i></span>'
+              '<h2 class="ns-lock__title">This lesson is for members</h2>'
+              '<p class="ns-lock__body">Sign in to read the rest of it. Membership is free, and it '
+              'unlocks every members-only lesson in the training.</p>'
+              '<div class="ns-lock__actions">'
+              '<a class="ns-btn ns-btn--primary" href="#!"><i class="ph-fill ph-lock-simple-open"></i>Create a free account</a>'
+              '<a class="ns-btn ns-btn--outline" href="#!">Sign in</a></div></div>', wide=True)),
      head("Flat columns"),
      note("<code>.ns-reader--flat</code>: nothing between the columns but the gutter, and nothing "
           "inside them boxed. There was a full-height hairline in each gutter for a while, and it "

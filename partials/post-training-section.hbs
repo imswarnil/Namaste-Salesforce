@@ -175,7 +175,12 @@
                          every row carries a badge, the badge stops being a
                          signal and becomes part of the row. --}}
                     {{^has visibility="public"}}
-                      <span class="ns-badge ns-badge--sm ns-badge--neutral"><i class="ph-fill ph-lock-simple" aria-hidden="true"></i>{{t "Members only"}}</span>
+                      <span class="ns-badge ns-badge--sm ns-badge--neutral">
+                        <i class="ph-fill ph-lock-simple" aria-hidden="true"></i>
+                        {{#match visibility "paid"}}{{t "Paid only"}}
+                        {{else match visibility "tiers"}}{{t "Selected tiers"}}
+                        {{else}}{{t "Members only"}}{{/match}}
+                      </span>
                     {{/has}}
                   </span>
                 </a>

@@ -107,18 +107,38 @@
       {{> "components/toc"}}
     </div>
 
-    {{!-- A locked lesson says so plainly, above the excerpt Ghost leaves
-         visible — a chip alone is easy to miss when the content just stops. --}}
+    {{!-- ── The gate ────────────────────────────────────────────────────────
+         Ghost stops the content and leaves the excerpt visible, which on its
+         own just looks like a lesson that ends abruptly. This says why.
+
+         It is the full width of the column rather than the reading measure,
+         and centred inside it: a gate is not part of the prose, it is the end
+         of it, and the one thing on the page that should be impossible to
+         mistake for another paragraph. Everything else about it stays quiet —
+         a hairline, one glyph, one button — because the reader is being told
+         "not yet", not sold to. ── --}}
     {{^has visibility="public"}}
       {{#unless @member}}
-        <div class="ns-reader__body">
-          <div class="ns-note ns-note--warning">
-            <i class="ns-note__icon ph-fill ph-lock" aria-hidden="true"></i>
-            <div class="ns-note__body">
-              <span class="ns-note__title">{{t "Members only"}}</span> —
-              {{t "sign in to read the rest of this lesson. Membership is free."}}
-            </div>
-            <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm ns-note__action">{{t "Sign in"}}</a>
+        <div class="ns-lock">
+          <span class="ns-lock__mark"><i class="ph-fill ph-lock-simple" aria-hidden="true"></i></span>
+          <h2 class="ns-lock__title">
+            {{#match visibility "paid"}}{{t "This lesson is for paid members"}}
+            {{else match visibility "tiers"}}{{t "This lesson is for selected tiers"}}
+            {{else}}{{t "This lesson is for members"}}{{/match}}
+          </h2>
+          <p class="ns-lock__body">
+            {{#match visibility "paid"}}{{t "Upgrade to read the rest of this lesson and everything else behind the paywall."}}
+            {{else match visibility "tiers"}}{{t "Your plan does not include this lesson. Change tier to read the rest of it."}}
+            {{else}}{{t "Sign in to read the rest of it. Membership is free, and it unlocks every members-only lesson in the training."}}{{/match}}
+          </p>
+          <div class="ns-lock__actions">
+            {{#match visibility "public"}}{{else}}
+              <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary">
+                <i class="ph-fill ph-lock-simple-open" aria-hidden="true"></i>
+                {{#match visibility "paid"}}{{t "See plans"}}{{else}}{{t "Create a free account"}}{{/match}}
+              </a>
+            {{/match}}
+            <a href="#/portal/signin" data-portal="signin" class="ns-btn ns-btn--outline">{{t "Sign in"}}</a>
           </div>
         </div>
       {{/unless}}
