@@ -6,55 +6,55 @@
   Ghost PAGE with slug `training` exists, its title/excerpt win (the {{#page}}
   fork below) — otherwise the copy here is used.
 
-  The page is: a full-width two-column hero (short copy + subscribe, beside the
-  trail artwork that names every stage), then every section as a stop on a
-  roadmap.sh-style trail. Section ORDER lives in partials/training/sections.hbs
-  — see that file for why.
+  Built from components — see /styleguide/training-overview.html:
+
+    .ns-hero--split      the pitch, live counts, and the trail artwork
+    .ns-card             "where you are", with the resume action
+    .ns-track-list       every section as a stop on ONE connected rail
+    .ns-cta-band         the closing ask
+
+  Why a rail and not a grid: a catalogue is a set of choices, so a grid is
+  right there. A training is a SEQUENCE — the reader needs to see that section
+  3 comes after section 2, and a grid actively hides that.
+
+  Section ORDER lives in partials/training/sections.hbs (published_at asc).
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
 {{> "jsonld/training"}}
 
 {{!-- ── Hero ─────────────────────────────────────────────────────────────────
-     Medium height and left-aligned on every breakpoint. The previous cut was
-     centre-on-mobile / left-on-desktop, which made the kicker, heading, stats
-     and CTAs each shift axis at the lg breakpoint — nothing lined up with
-     anything. One axis, one column of text, art beside it.
-     `items-center` on the grid keeps the trail optically level with the copy
-     rather than pinned to the top of a taller text column. --}}
-{{!-- No overflow-hidden here: it would clip the search dropdown out of
-     existence. The grid layer below is inset-0 + masked, so it can't overflow. --}}
-<header class="relative border-b border-border bg-surface">
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid-corner text-brand-500/70"></div>
-
-  <div class="relative grid items-center gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,30rem)_minmax(0,1fr)] lg:gap-14 lg:px-10 lg:py-10 xl:px-16">
+     No overflow-hidden anywhere above the search: it would clip the results
+     dropdown out of existence. The pattern layer is the --grid variant, which
+     is inset and masked, so it cannot overflow either. --}}
+<header class="ns-hero ns-hero--split ns-hero--plain ns-hero--grid ns-hero--sm">
+  <div class="ns-hero__inner">
 
     <div>
-      {{!-- Breadcrumb ── --}}
-      <nav aria-label="{{t "Breadcrumb"}}" class="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-        <a href="/" class="inline-flex items-center transition hover:text-brand-600" aria-label="{{t "Home"}}"><i class="ph ph-house" aria-hidden="true"></i></a>
-        <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
-        <span class="text-ink">{{t "Training"}}</span>
+      <nav class="ns-crumbs mb-4" aria-label="{{t "Breadcrumb"}}">
+        <a class="ns-crumbs__link" href="/"><i class="ph ph-house" aria-hidden="true"></i><span>{{t "Home"}}</span></a>
+        <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+        <span class="ns-crumbs__current"><i class="ph ph-flow-arrow" aria-hidden="true"></i><span>{{t "Training"}}</span></span>
       </nav>
 
-      <p class="ns-kicker">{{t "Salesforce Training"}}</p>
+      <span class="ns-kicker">{{t "Salesforce Training"}}</span>
 
       {{#page}}
-        <h1 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">{{title}}</h1>
-        <p class="mt-2.5 max-w-lg text-muted">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "One training, in order — from your first org to certified."}}{{/if}}</p>
+        <h1 class="ns-hero__title">{{title}}</h1>
+        <p class="ns-hero__sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "One training, in order — from your first org to certified."}}{{/if}}</p>
       {{else}}
-        <h1 class="mt-2 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl lg:text-4xl">{{t "From zero to Salesforce Engineer."}}</h1>
-        <p class="mt-2.5 max-w-lg text-muted">{{t "One training, in order — no guessing what to learn next. Start with what Salesforce even is, finish able to build, automate and secure a real org."}}</p>
+        <h1 class="ns-hero__title">{{t "From zero to Salesforce Engineer."}}</h1>
+        <p class="ns-hero__sub">{{t "One training, in order — no guessing what to learn next. Start with what Salesforce even is, finish able to build, automate and secure a real org."}}</p>
       {{/page}}
 
-      {{!-- ── CTA + a search that stays out of the way until wanted.
-           The magnifier is a toggle: the panel only exists once opened, so the
-           hero stays a headline + one action rather than a form wall. `open`
-           lives on the same x-data as `q` so closing also clears the query. --}}
-      <div x-data="{ open: false, q: '' }" class="mt-5">
-        <div class="flex flex-wrap items-center gap-3">
+      {{!-- CTA + a search that stays out of the way until it is wanted. The
+           magnifier is a toggle: the panel only exists once opened, so the hero
+           stays a headline and one action rather than a form wall. `open` lives
+           on the same x-data as `q`, so closing also clears the query. --}}
+      <div x-data="{ open: false, q: '' }" class="ns-hero__actions">
+        <div class="ns-cluster">
           {{!-- "Start learning" = the first lesson of the first section. Both
-               hops are derived, so this no longer hardcodes a section slug —
-               reordering or replacing the opening section just works. --}}
+               hops are derived, so no section slug is hardcoded — reordering or
+               replacing the opening section just works. --}}
           {{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="1"}}
             {{#foreach posts}}
               {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="1"}}
@@ -67,89 +67,140 @@
             {{/foreach}}
           {{/get}}
 
+          <a href="#sections" class="ns-btn ns-btn--outline">{{t "See the path"}}</a>
+
           <button type="button" @click="open = !open; open ? $nextTick(() => $refs.searchInput?.focus()) : q = ''"
                   :aria-expanded="open ? 'true' : 'false'" aria-controls="training-search"
-                  class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-ink ns-transition hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-300"
-                  :class="open && 'border-brand-500 text-brand-600'"
-                  aria-label="{{t "Search training"}}">
+                  :class="open && 'is-active'"
+                  class="icon-btn icon-btn--outline" aria-label="{{t "Search training"}}">
             <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
           </button>
         </div>
 
         {{> "training/search"}}
-
-        {{!-- ── What you get, inline and small ── --}}
-        <ul class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted">
-          {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
-            <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-lock-simple-open text-brand-500" aria-hidden="true"></i>{{pagination.total}} {{t "lessons free to read"}}</li>
-          {{/get}}
-          <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-video-camera text-brand-500" aria-hidden="true"></i>{{t "Video + hands-on"}}</li>
-          <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-clock-countdown text-brand-500" aria-hidden="true"></i>{{t "Self-paced"}}</li>
-          <li class="inline-flex items-center gap-1.5"><i class="ph-fill ph-seal-check text-brand-500" aria-hidden="true"></i>{{t "Cert-ready"}}</li>
-        </ul>
       </div>
 
+      {{!-- What you get, as a readout rather than a paragraph. --}}
+      <div class="ns-hero__meta">
+        {{#get "posts" filter="tag:hash-training-section" limit="1"}}
+          <div class="ns-stat ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "sections"}}</span></div>
+        {{/get}}
+        {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+          <div class="ns-stat ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "lessons"}}</span></div>
+        {{/get}}
+        {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
+          <div class="ns-stat ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "free to read"}}</span></div>
+        {{/get}}
+        <div class="ns-stat ns-stat--sm"><span class="ns-stat__value">∞</span><span class="ns-stat__label">{{t "self-paced"}}</span></div>
+      </div>
     </div>
 
-    {{!-- the trail names every stage, so the copy beside it stays short --}}
-    <div class="hidden lg:block">
+    {{!-- The trail names every stage, so the copy beside it stays short. --}}
+    <div class="ns-hero__media hidden lg:block">
       {{> "training/hero-trail"}}
     </div>
   </div>
 </header>
 
-{{!-- ── Every section, in order ── --}}
-<section id="sections" class="scroll-mt-20 border-t border-border bg-surface-sunken">
-  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
-    <div class="mb-12 text-center">
-      <span class="ns-kicker ns-kicker--center"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "The path"}}</span>
-      <h2 class="mt-3 font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "Every section, in order"}}</h2>
-      <p class="mx-auto mt-3 text-muted">{{t "Each one assumes the last — follow the trail from the top."}}</p>
+{{!-- ── The path — every section, in order ────────────────────────────────
+     Two columns from lg: the path on the left, a sticky rail on the right
+     carrying progress, a jump list and the asks. Before this the track sat in
+     a narrow centred column with the whole right-hand side empty. --}}
+<section id="sections" class="ns-band ns-band--sunken ns-anchor">
+  <div class="ns-band__inner">
+
+    <div class="ns-section-head">
+      <div>
+        <span class="ns-kicker"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "The path"}}</span>
+        <h2 class="ns-section-head__title">{{t "Every section, in order"}}</h2>
+        <p class="ns-section-head__sub">{{t "Each one assumes the last — follow the rail from the top."}}</p>
+      </div>
+      {{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="1"}}
+        {{#foreach posts}}
+          <a href="{{url}}" class="ns-btn ns-btn--outline ns-btn--sm ns-section-head__action">
+            {{t "Start at the top"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+          </a>
+        {{/foreach}}
+      {{/get}}
     </div>
 
-  {{!-- The track: a START dot, then every section as a numbered stop on a
-       single left-aligned spine (see .ns-track in course.css). Pure CSS +
-       Handlebars — no JS. --}}
-  <ol class="ns-track mx-auto max-w-3xl">
-    <li class="ns-track__start"><span>{{t "Start here"}}</span></li>
-    {{> "training/sections" view="card"}}
+    <div class="ns-shell ns-shell--rail">
 
-    {{!-- ── The trail terminates in the newsletter: you've seen the whole path,
-         so the ask is "tell me when the next lesson lands", not a generic
-         signup. Ghost's members form — no theme JS. ── --}}
-    <li class="ns-track__end">
-      <span class="ns-track__num ns-track__num--flag"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i></span>
-      <div class="ns-road__finish">
-        <p class="ns-road__finish-kicker"><i class="ph-fill ph-flag-checkered" aria-hidden="true"></i>{{t "End of the trail — for now"}}</p>
-        <h3 class="ns-road__finish-title">{{t "Get notified the moment I publish new training content"}}</h3>
-        <p class="ns-road__finish-desc">{{t "New lessons and sections land regularly. Drop your email and the next one comes straight to your inbox — free, unsubscribe in one click."}}</p>
+      {{!-- ── The path itself ── --}}
+      <div class="ns-track-list">
+        {{> "training/sections" view="card"}}
+      </div>
 
-        <form data-members-form="subscribe" class="ns-road__finish-form">
-          <div class="flex overflow-hidden rounded-btn border border-border bg-surface-raised focus-within:border-brand-500">
-            <input data-members-email type="email" required placeholder="{{t "you@example.com"}}" aria-label="{{t "Email address"}}"
-                   class="w-full min-w-0 border-0 bg-transparent px-4 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none">
-            <button type="submit" class="shrink-0 bg-brand-500 px-5 text-sm font-bold text-white transition hover:bg-brand-600">
-              <span data-members-loading class="hidden"><i class="ph ph-circle-notch animate-spin" aria-hidden="true"></i></span>
-              <span data-members-default>{{t "Notify me"}}</span>
-            </button>
+      {{!-- ── The rail: where you are, where to jump, and the asks. Sticky from
+           lg, so it stays with you as the path scrolls. ── --}}
+      <aside class="ns-shell__aside">
+
+        <div class="ns-widget ns-widget--stats">
+          <div class="ns-widget__head"><span class="ns-widget__title">{{t "This training"}}</span></div>
+          <div class="ns-widget__body">
+            {{#get "posts" filter="tag:hash-training-section" limit="1"}}
+              <div class="ns-widget__row"><span>{{t "Sections"}}</span><span class="ns-widget__num">{{pagination.total}}</span></div>
+            {{/get}}
+            {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+              <div class="ns-widget__row"><span>{{t "Lessons"}}</span><span class="ns-widget__num">{{pagination.total}}</span></div>
+            {{/get}}
+            {{#get "posts" filter="tag:hash-training-content+visibility:public" limit="1"}}
+              <div class="ns-widget__row"><span>{{t "Free to read"}}</span><span class="ns-widget__num">{{pagination.total}}</span></div>
+            {{/get}}
           </div>
-          <p data-members-success class="mt-2 text-sm font-semibold text-success" hidden>{{t "Check your inbox — your magic link is on its way!"}}</p>
-          <p data-members-error class="mt-2 text-sm font-semibold text-error" hidden>{{t "Something went wrong — try again."}}</p>
-        </form>
-      </div>
-    </li>
-  </ol>
-
-    {{!-- Request a topic --}}
-    <div class="mt-16 flex flex-col items-center justify-between gap-5 rounded-card border border-border bg-surface-raised p-6 sm:flex-row sm:p-8">
-      <div class="flex items-center gap-4 text-center sm:text-left">
-        <span class="ns-chip hidden h-12 w-12 shrink-0 text-2xl sm:inline-flex"><i class="ph-fill ph-lightbulb" aria-hidden="true"></i></span>
-        <div>
-          <h2 class="font-heading text-lg font-bold text-ink sm:text-xl">{{t "Looking for a specific topic?"}}</h2>
-          <p class="mt-1 text-sm text-muted">{{t "New lessons are added every month. Tell us what to build next."}}</p>
         </div>
-      </div>
-      <a href="/contact/" class="ns-btn ns-btn--primary shrink-0">{{> "icons/mail" class="h-5 w-5"}}{{t "Request a topic"}}</a>
+
+        {{!-- Jump straight to a section — the same rail language as the reader. --}}
+        <div class="ns-widget ns-widget--toc">
+          <div class="ns-widget__head"><span class="ns-widget__title">{{t "Jump to"}}</span></div>
+          <div class="ns-widget__body">
+            {{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="50"}}
+              {{#foreach posts}}
+                <a class="nav-link nav-link--block nav-link--sm" href="{{url}}">
+                  <span class="ns-index text-label">{{@number}}</span>
+                  <span class="ns-truncate">{{title}}</span>
+                  {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
+                    <span class="nav-link__meta">{{pagination.total}}</span>
+                  {{/get}}
+                </a>
+              {{/foreach}}
+            {{/get}}
+          </div>
+        </div>
+
+        {{!-- The ask, at the end of the path. --}}
+        <div class="ns-widget ns-widget--newsletter ns-widget--brand">
+          <div class="ns-widget__head">
+            <span class="ns-widget__title"><i class="ph ph-envelope-simple" aria-hidden="true"></i>{{t "New lessons"}}</span>
+          </div>
+          <div class="ns-widget__body">
+            <p>{{t "Sections land regularly. Get the next one in your inbox."}}</p>
+            <form data-members-form="subscribe">
+              <input data-members-email type="email" required placeholder="{{t "you@example.com"}}"
+                     aria-label="{{t "Email address"}}" class="ns-input ns-input--sm">
+              <button type="submit" class="ns-btn ns-btn--primary ns-btn--sm ns-btn--block mt-2">
+                <span data-members-loading class="hidden"><i class="ph ph-circle-notch animate-spin" aria-hidden="true"></i></span>
+                <span data-members-default>{{t "Notify me"}}</span>
+              </button>
+              <p data-members-success class="mt-2 text-sm font-semibold text-success" hidden>{{t "Check your inbox — your magic link is on its way!"}}</p>
+              <p data-members-error class="mt-2 text-sm font-semibold text-error" hidden>{{t "Something went wrong — try again."}}</p>
+            </form>
+            <span class="ns-widget__note">{{t "Free. One click to unsubscribe."}}</span>
+          </div>
+        </div>
+
+        <div class="ns-widget ns-widget--cta ns-widget--sunken">
+          <div class="ns-widget__head"><span class="ns-widget__title">{{t "Missing something?"}}</span></div>
+          <div class="ns-widget__body">
+            <p>{{t "Tell us what to build next."}}</p>
+            <a href="/contact/" class="ns-btn ns-btn--outline ns-btn--sm">
+              {{> "icons/mail" class="h-4 w-4"}}{{t "Request a topic"}}
+            </a>
+          </div>
+        </div>
+
+      </aside>
     </div>
+
   </div>
 </section>

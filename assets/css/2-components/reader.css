@@ -6,10 +6,10 @@
    the lesson itself, and an on-this-page rail — collapsing to one column with
    drawers below `lg`.
 
-   The reading column is capped at --container-prose whatever the window does.
-   A lesson is prose with a video on top; line length is the thing that decides
-   whether it gets read, so the layout protects it rather than filling the
-   screen.
+   The reading column is capped at --container-read (58rem) — wider than the
+   45rem article measure, because a lesson is prose PLUS code blocks, tables
+   and screenshots, and those need the room. Add --narrow for a lesson that
+   really is only text.
 
      .ns-reader              the grid
        __rail                the section navigation (.ns-sidenav lives here)
@@ -20,7 +20,8 @@
          __foot              prev / next
        __aside               on-this-page + support
 
-   LAYOUT  --rail (nav only) · --both (nav + toc, default) · --plain (just prose)
+   LAYOUT  --rail (nav only) · --both (nav + toc) · --narrow (article measure)
+           --wide-media (the video runs past the reading column)
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -29,7 +30,7 @@
     gap: var(--grid-gutter-lg);
     align-items: start;
     margin-inline: auto;
-    max-width: var(--container-page);
+    max-width: 92rem;
     padding: var(--space-section-sm) var(--space-gutter) var(--space-section);
   }
   @media (min-width: 1024px) {
@@ -52,7 +53,7 @@
   .ns-reader__main { min-width: 0; }
 
   /* ── Head ──────────────────────────────────────────────────────────────── */
-  .ns-reader__head { max-width: var(--container-prose); }
+  .ns-reader__head { max-width: var(--container-read); }
   .ns-reader__title {
     margin-top: 0.6rem;
     font-family: var(--font-heading);
@@ -78,10 +79,15 @@
   }
 
   /* ── Body ──────────────────────────────────────────────────────────────── */
+  /* A lesson is prose PLUS code, tables and screenshots, so it reads at
+     --container-read rather than the narrower article measure. Add
+     --narrow when a lesson really is just text. */
   .ns-reader__body {
     margin-top: 1.75rem;
-    max-width: var(--container-prose);
+    max-width: var(--container-read);
   }
+  .ns-reader--narrow .ns-reader__body,
+  .ns-reader--narrow .ns-reader__head { max-width: var(--container-prose); }
 
   /* ── Foot — prev / next ────────────────────────────────────────────────── */
   .ns-reader__foot {
@@ -90,7 +96,7 @@
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: var(--border-hairline) solid var(--color-border);
-    max-width: var(--container-prose);
+    max-width: var(--container-read);
   }
   @media (min-width: 640px) { .ns-reader__foot { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 

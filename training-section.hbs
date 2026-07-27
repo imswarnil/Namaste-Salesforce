@@ -2,32 +2,35 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
   training-section.hbs — the /training-sections/ COLLECTION INDEX.
 
-  This used to be the section page itself, rendered from a tag via a
-  `data: tag.{slug}` route. That model is gone: a section is now a POST and its
-  page renders through post.hbs → partials/post-training-section.hbs.
-
-  What is left here is only the collection's archive index. Ghost requires a
-  collection to have a path, and `/training-sections/` is that path — but the
-  real entry point is /training/, so this just shows the same roadmap rather
-  than 404ing or duplicating a listing nobody links to.
+  A section is a POST, and its page renders through post.hbs →
+  partials/post-training-section.hbs. Ghost still requires the collection to
+  have a path, and /training-sections/ is it — but the real entry point is
+  /training/, so this shows the same path rather than 404ing or duplicating a
+  listing nobody links to.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-<section class="mx-auto max-w-[85rem] px-4 py-14 sm:px-6 lg:py-16">
-  <nav aria-label="{{t "Breadcrumb"}}" class="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-muted">
-    <a href="/" class="inline-flex items-center transition hover:text-brand-600" aria-label="{{t "Home"}}"><i class="ph ph-house" aria-hidden="true"></i></a>
-    <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
-    <a href="/training/" class="transition hover:text-brand-600">{{t "Training"}}</a>
-    <i class="ph ph-caret-right text-[0.6rem]" aria-hidden="true"></i>
-    <span class="text-ink">{{t "All sections"}}</span>
-  </nav>
+<section class="ns-page">
+  <div class="ns-page__inner">
 
-  <div class="mb-10 max-w-2xl">
-    <h1 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{t "The path"}}</h1>
-    <p class="mt-2 text-muted">{{t "Every section, in order. Each one assumes the last."}}</p>
+    <nav class="ns-crumbs" aria-label="{{t "Breadcrumb"}}">
+      <a class="ns-crumbs__link" href="/"><i class="ph ph-house" aria-hidden="true"></i><span>{{t "Home"}}</span></a>
+      <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+      <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
+      <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+      <span class="ns-crumbs__current"><span>{{t "All sections"}}</span></span>
+    </nav>
+
+    <div class="ns-page__head">
+      <span class="ns-kicker">{{t "The path"}}</span>
+      <h1 class="ns-page__title">{{t "Every section, in order"}}</h1>
+      <p class="ns-page__lede">{{t "Each one assumes the last."}}</p>
+    </div>
+
+    <div class="ns-page__main">
+      <div class="ns-track-list">
+        {{> "training/sections" view="card"}}
+      </div>
+    </div>
+
   </div>
-
-  <ol class="ns-track mx-auto max-w-3xl">
-    <li class="ns-track__start"><span>{{t "Start here"}}</span></li>
-    {{> "training/sections" view="card"}}
-  </ol>
 </section>

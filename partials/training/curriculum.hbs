@@ -1,17 +1,29 @@
-{{!-- training/curriculum.hbs — the whole training, grouped by section.
-     There is ONE training, so this always lists every section (from
-     training/sections.hbs, which owns their order) — not just the current
-     post's. A section's lessons are #training-content posts whose PRIMARY tag
-     is that section.
-     • Search box on top filters modules AND hides emptied sections (Alpine q).
-     • Sections are collapsible <details> with a keyword-matched icon + module
-       count; the section containing the current module opens on load (script
-       below), the rest start closed — and all stay user-toggleable.
-     • Each module shows a type icon and its ACCESS state (lock for members/
-       paid, tier star) straight from Ghost visibility.
-     Static sidebar on lg; mobile drawer via the course-player hamburger. --}}
-<div x-data="{ q: '' }" x-effect="if (q !== '') $el.querySelectorAll('details.train-sec').forEach(d => d.open = true)" class="js-lesson-nav">
-  <nav id="training-curriculum" class="ns-lesson-panel" :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
+{{!-- ════════════════════════════════════════════════════════════════════════
+  training/curriculum.hbs — the section rail.
+
+  There is ONE training, so this always lists every section (order comes from
+  training/sections.hbs); a section's lessons are #training-content posts whose
+  PRIMARY tag is that section.
+
+  Renders the .ns-sidenav COMPONENT — 2-components/sidebar-nav.css, documented
+  at /styleguide/training-nav.html.
+
+  THE OPEN/CLOSED RULE is native and server-rendered: each section is a
+  <details> sharing one `name`, which is an exclusive accordion, and the
+  current section gets `open` from Handlebars. So the right section is open on
+  first paint (no flash), opening another closes it, and none of that needs
+  JavaScript. The old version opened the section from a script on load and
+  painted a progress rail by measuring element positions on every toggle and
+  resize — all of that is gone.
+
+  Params: cur   — slug of the section being viewed
+          curId — id of the lesson being viewed (absent on a section overview)
+
+  Static rail on lg; below that it is the drawer the player header opens.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<div x-data="{ q: '' }" class="js-lesson-nav">
+  <nav id="training-curriculum" class="ns-lesson-panel" data-cur="{{cur}}"
+         :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
 
     <div class="ns-lesson-panel__bar">
       <span class="flex items-center gap-2 font-heading font-bold"><i class="ph-fill ph-books text-brand-500" aria-hidden="true"></i>{{t "Training content"}}</span>
@@ -19,89 +31,82 @@
     </div>
 
     <div class="ns-lesson-panel__body">
-      <div class="mb-3 hidden items-center gap-2 lg:flex">
-        <i class="ph-fill ph-books text-xl text-brand-500" aria-hidden="true"></i>
-        <h3 class="font-heading font-bold">{{t "Training content"}}</h3>
-      </div>
+      <div class="ns-sidenav ns-sidenav--sm">
 
-      {{!-- Search: filters modules; a section hides when nothing matches --}}
-      <label class="relative mb-3 block">
-        <i class="ph ph-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted" aria-hidden="true"></i>
-        <input x-model="q" type="search" placeholder="{{t "Search this training…"}}" aria-label="{{t "Search lessons"}}"
-               class="w-full rounded-btn border border-border bg-surface py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none">
-      </label>
+        {{!-- Head: what this is, and how far through it you are. --}}
+        <div class="ns-sidenav__head">
+          <span class="ns-sidenav__title">{{t "Salesforce training"}}</span>
+          {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+            <div class="ns-progress ns-progress--sm ns-sidenav__progress">
+              <span class="ns-progress__bar js-train-progress"></span>
+            </div>
+            <div class="ns-sidenav__readout">
+              <span class="js-train-done">0</span>
+              <span>{{pagination.total}} {{t "lessons"}}</span>
+            </div>
+          {{/get}}
+        </div>
 
-      {{!-- One .train-rail around every section so the timeline is a single
-           unbroken line through sections AND lessons (see course.css).
-           Order comes from training/sections.hbs — section slugs are clean, so
-           there's no query that can order them. --}}
-      <div class="train-rail">
+        {{!-- Search: filters lessons; a section hides when nothing matches. --}}
+        <label class="ns-input-icon mb-2">
+          <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          <input x-model="q" type="search" placeholder="{{t "Search this training…"}}"
+                 aria-label="{{t "Search lessons"}}" class="ns-input ns-input--sm">
+        </label>
+
         {{> "training/sections" view="nav" cur=cur curId=curId}}
-      </div>
 
-      <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-         x-cloak class="ns-empty ns-empty--sm text-sm">{{t "No lessons match."}}</p>
+        <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
+           x-cloak class="ns-empty ns-empty--sm text-sm">{{t "No lessons match."}}</p>
+
+        <div class="ns-sidenav__foot">
+          <a href="/training/" class="ns-btn ns-btn--outline ns-btn--sm ns-btn--block">
+            <i class="ph ph-arrow-left" aria-hidden="true"></i>{{t "All sections"}}
+          </a>
+        </div>
+
+      </div>
     </div>
   </nav>
 </div>
 
-{{!-- Curriculum progress.
-
-     1. Open the section containing the current module (others stay closed; on a
-        training OVERVIEW open the first).
-     2. Mark every lesson BEFORE the active one .is-done, and every section
-        before the active section .is-done / the active one .is-current.
-     3. Paint the rail: --tl-fill is the distance from the rail's top to the
-        CENTRE of the active lesson, so the blue line stops exactly at "you are
-        here". It's measured rather than computed in CSS because the rail spans
-        collapsed <details> whose heights only exist at runtime — so it's
-        re-measured whenever a section is toggled or the panel reflows. --}}
+{{!-- Progress. Everything BEFORE the current lesson counts as done — that is
+     the only thing a static site can honestly know without a member record.
+     While a search is running, open every section so matches are visible;
+     `name` would otherwise keep collapsing them to one. --}}
 <script>
   (function () {
     var panel = document.querySelector('#training-curriculum');
     if (!panel) return;
-    var rail = panel.querySelector('.train-rail');
-    var active = panel.querySelector('.is-doc-active');
 
-    if (active) {
-      var d = active.closest('details');
-      if (d) d.open = true;
-    } else {
-      var first = panel.querySelector('details.train-sec');
-      if (first) first.open = true;
-    }
+    var links = Array.prototype.slice.call(panel.querySelectorAll('.ns-sidenav__link'));
+    var current = panel.querySelector('.ns-sidenav__link.is-current');
 
-    var activeLi = active ? active.closest('li') : null;
-
-    // Progress only exists relative to a current module. On a training OVERVIEW
-    // there is none, so nothing is done and the rail stays unpainted.
-    if (activeLi) {
-      // lessons: everything before the current module counts as done
-      var items = panel.querySelectorAll('.train-tl li');
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].classList.contains('is-active')) break;
-        items[i].classList.add('is-done');
+    if (current) {
+      for (var i = 0; i < links.length; i++) {
+        if (links[i] === current) break;
+        // the section overview rows are not lessons — don't count them
+        if (links[i].querySelector('.ns-sidenav__num > span')) links[i].classList.add('is-done');
       }
-      // sections: done if they end before the active lesson; current if they hold it
-      var secs = panel.querySelectorAll('details.train-sec');
-      for (var s = 0; s < secs.length; s++) {
-        if (secs[s].contains(activeLi)) { secs[s].classList.add('is-current'); break; }
-        secs[s].classList.add('is-done');
-      }
+      var done = panel.querySelectorAll('.ns-sidenav__link.is-done').length;
+      var total = panel.querySelectorAll('.ns-sidenav__num > span').length;
+      var bar = panel.querySelector('.js-train-progress');
+      var out = panel.querySelector('.js-train-done');
+      if (bar && total) bar.style.width = Math.round((done / total) * 100) + '%';
+      if (out) out.textContent = done + ' / ' + total + ' done';
     }
 
-    function paint() {
-      if (!rail) return;
-      if (!activeLi) { rail.style.setProperty('--tl-fill', '0px'); return; }
-      // only measurable when laid out; a collapsed section reports height 0
-      var r = activeLi.getBoundingClientRect();
-      if (!r.height) { rail.style.setProperty('--tl-fill', '0px'); return; }
-      var top = rail.getBoundingClientRect().top + 16; // matches the rail's 1rem inset
-      rail.style.setProperty('--tl-fill', Math.max(0, r.top + r.height / 2 - top) + 'px');
-    }
-    paint();
-    panel.addEventListener('toggle', paint, true);   // <details> toggle doesn't bubble
-    window.addEventListener('resize', paint);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(paint);
+    // Searching needs every section open at once, which is exactly what the
+    // exclusive `name` prevents — so drop it while a query is active.
+    var search = panel.querySelector('input[type="search"]');
+    if (!search) return;
+    var groups = Array.prototype.slice.call(panel.querySelectorAll('.ns-sidenav__group'));
+    search.addEventListener('input', function () {
+      var searching = search.value.trim() !== '';
+      groups.forEach(function (g) {
+        if (searching) { g.removeAttribute('name'); g.open = true; }
+        else { g.setAttribute('name', 'ns-training-nav'); g.open = g.dataset.sec === panel.dataset.cur; }
+      });
+    });
   })();
 </script>

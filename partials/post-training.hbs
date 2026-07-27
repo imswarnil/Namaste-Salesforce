@@ -1,142 +1,150 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-training.hbs — the training LESSON player (#training-content).
-  ----------------------------------------------------------------------------
-  Layout (module player):  curriculum sidebar LEFT (docs-style, sticky)
-  · right region = full-width medium hero (VIDEO modules put the video itself
-  in the hero — training-video.js adopts the first embed and wires timestamp
-  tables to seek it; other modules get a clean light hero with title)
-  · below the hero, two columns: article content + right rail where TOC and
-  ad/sponsor widgets pin one after another (sticky deck).
-  Mobile: curriculum stays in the drawer under the navbar (player header
-  hamburger), the TOC renders inline above the content. Context: {{#post}}.
+  partials/post-training.hbs — the training LESSON at
+  /training/{section}/{lesson}/ (#training-content). Context: {{#post}}.
+
+  Renders the .ns-reader COMPONENT — 2-components/reader.css, documented at
+  /styleguide/training-lesson.html. Three columns from lg: the section rail,
+  the lesson, and the on-this-page rail. Below lg it is one column, the rail
+  becomes the drawer the player header opens, and the contents render inline
+  above the article.
+
+  The reading column stays capped at --container-prose however wide the window
+  gets. Line length is what decides whether a lesson gets read, so the layout
+  protects it rather than filling the screen — the video is the one thing
+  allowed to run wider.
+
+  VIDEO lessons put the player in __media; training-video.js adopts the first
+  embed found in the content and wires chapter-table timestamps to seek it.
+
+  There is no training-overview branch: /training/ is a route, not a post, so
+  this partial only ever renders a lesson. See routes.yaml.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-{{!-- Full-bleed: edge to edge, sections divided by hairline borders --}}
-<section class="w-full">
-  <div class="grid lg:grid-cols-[19rem_minmax(0,1fr)]">
 
-    {{!-- ── Left: curriculum (sticky on lg; mobile drawer via player header) ── --}}
-    <aside class="lg:border-r lg:border-border">
-      <div class="lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto lg:p-4">
-        {{!-- cur/curId drive the rail's active row: the lesson's primary tag IS
-             its section, and curId marks the lesson itself (so the section's
-             "Overview" row correctly stays inactive). --}}
-        {{> "training/curriculum" cur=primary_tag.slug curId=id}}
-        {{> "training/newsletter-widget"}}
-      </div>
-    </aside>
+<div class="ns-reader ns-reader--both ns-reader--wide-media">
 
-    <div class="min-w-0 px-4 py-8 sm:px-6 lg:px-8">
+  {{!-- ── The section rail. cur/curId drive the active row: the lesson's
+       primary tag IS its section, and curId marks the lesson itself, so the
+       section's "Overview" row correctly stays inactive. ── --}}
+  <aside class="ns-reader__rail">
+    {{> "training/curriculum" cur=primary_tag.slug curId=id}}
+    {{> "training/newsletter-widget"}}
+  </aside>
 
-      {{!-- There is no training-overview branch any more: /training/ is the
-           training (a route, not a post), so this partial only ever renders a
-           LESSON. See routes.yaml. --}}
+  <div class="ns-reader__main">
 
-      {{!-- ─── The lesson player ─── --}}
-      {{#has tag="#training-content"}}
-        {{!-- Hero: medium height, full width of the content region.
-             VIDEO modules → the video lives here (poster until
-             training-video.js adopts the embed); others → light title hero --}}
+    {{!-- The mobile way into the rail — hidden from lg up. --}}
+    <button type="button" class="ns-reader__bar mb-4" @click="$store.lessonNav.open = true">
+      <span>
+        <span class="ns-label">{{#if primary_tag}}{{primary_tag.name}}{{else}}{{t "Training"}}{{/if}}</span><br>
+        {{t "All lessons"}}
+      </span>
+      <i class="ph ph-list" aria-hidden="true"></i>
+    </button>
+
+    {{!-- ── Head ── --}}
+    <div class="ns-reader__head">
+      <nav class="ns-crumbs" aria-label="{{t "Breadcrumb"}}">
+        <a class="ns-crumbs__link" href="/training/"><i class="ph ph-flow-arrow" aria-hidden="true"></i>{{t "Training"}}</a>
+        {{#primary_tag}}
+          <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+          <a class="ns-crumbs__link" href="/training/{{slug}}/">{{name}}</a>
+        {{/primary_tag}}
+        <i class="ns-crumbs__sep ph ph-caret-right" aria-hidden="true"></i>
+        <span class="ns-crumbs__current"><span>{{title}}</span></span>
+      </nav>
+
+      <h1 class="ns-reader__title">{{title}}</h1>
+      {{#if custom_excerpt}}<p class="ns-page__lede">{{custom_excerpt}}</p>{{/if}}
+
+      <div class="ns-reader__meta">
         {{#has tag="#training-type-video"}}
-          <div data-video-hero class="relative aspect-video max-h-[32rem] w-full overflow-hidden rounded-card border border-border bg-black">
-            {{#if feature_image}}
-              <img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="h-full w-full object-cover opacity-90">
-            {{else}}
-              <div class="h-full w-full bg-brand-900"></div>
-            {{/if}}
-            <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <span class="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-brand-600 shadow-raised"><i class="ph-fill ph-play text-2xl" aria-hidden="true"></i></span>
-            </span>
-          </div>
+          <span class="ns-lesson-type ns-lesson-type--video"><i class="ph-fill ph-video-camera" aria-hidden="true"></i>{{t "Video"}}</span>
+        {{else has tag="#training-type-exercise"}}
+          <span class="ns-lesson-type ns-lesson-type--article"><i class="ph-fill ph-barbell" aria-hidden="true"></i>{{t "Exercise"}}</span>
+        {{else has tag="#training-type-quiz"}}
+          <span class="ns-lesson-type ns-lesson-type--article"><i class="ph-fill ph-exam" aria-hidden="true"></i>{{t "Quiz"}}</span>
         {{else}}
-          {{!-- Light hero. When the lesson HAS an image it goes two-column and
-               shows it; without one the copy simply spans the full width, so
-               there's no empty slot to fill. The grid hugs the image side and
-               dissolves before it reaches the text. --}}
-          <header class="relative overflow-hidden rounded-card border border-border bg-surface p-6 sm:p-10">
-            <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid-corner text-brand-500/70"></div>
-            <div class="relative grid items-center gap-6 {{#if feature_image}}sm:grid-cols-[minmax(0,1fr)_14rem]{{/if}}">
-              <div>
-                {{#if primary_tag}}
-                  {{!-- the primary tag IS the section, so link it there --}}
-                  <a href="/training/{{primary_tag.slug}}/" class="ns-badge ns-transition hover:text-brand-700"><i class="ph-fill ph-folder-open" aria-hidden="true"></i>{{primary_tag.name}}</a>
-                {{/if}}
-                <h1 class="mt-4 font-heading text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">{{title}}</h1>
-                {{#if custom_excerpt}}<p class="mt-2 max-w-2xl text-muted">{{custom_excerpt}}</p>{{/if}}
-              </div>
-              {{#if feature_image}}
-                <img decoding="async" src="{{img_url feature_image size="m"}}" alt="" loading="eager"
-                     class="hidden aspect-[4/3] w-full rounded-card border border-border object-cover sm:block">
-              {{/if}}
-            </div>
-          </header>
+          <span class="ns-lesson-type ns-lesson-type--article"><i class="ph-fill ph-article" aria-hidden="true"></i>{{t "Article"}}</span>
         {{/has}}
-
-        {{!-- Below the hero: content left · TOC + widgets right --}}
-        <div class="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_16rem]">
-
-          <article class="min-w-0">
-            {{!-- Video modules carry their title here, under the player --}}
-            {{#has tag="#training-type-video"}}
-              <h1 class="font-heading text-2xl font-extrabold tracking-tight sm:text-3xl">{{title}}</h1>
-              {{#if custom_excerpt}}<p class="mt-2 text-lg text-muted">{{custom_excerpt}}</p>{{/if}}
-            {{/has}}
-
-            <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
-              {{#if primary_tag}}<span class="ns-badge">{{primary_tag.name}}</span>{{/if}}
-              {{!-- Module type chip --}}
-              {{#has tag="#training-type-video"}}<span class="ns-lesson-type ns-lesson-type--video"><i class="ph-fill ph-video-camera" aria-hidden="true"></i>{{t "Video"}}</span>
-              {{else has tag="#training-type-exercise"}}<span class="ns-lesson-type ns-lesson-type--article"><i class="ph-fill ph-barbell" aria-hidden="true"></i>{{t "Exercise"}}</span>
-              {{else has tag="#training-type-quiz"}}<span class="ns-lesson-type ns-lesson-type--article"><i class="ph-fill ph-exam" aria-hidden="true"></i>{{t "Quiz"}}</span>
-              {{else}}<span class="ns-lesson-type ns-lesson-type--article"><i class="ph-fill ph-article" aria-hidden="true"></i>{{t "Article"}}</span>{{/has}}
-              <span class="inline-flex items-center gap-1 font-mono text-xs text-label"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% min"}}</span>
-            </div>
-
-            {{!-- Mobile/tablet TOC (the xl rail has its own instance) --}}
-            <div class="mt-6 border-l-2 border-brand-500/30 pl-4 xl:hidden">
-              {{> "components/toc"}}
-            </div>
-
-            <div class="prose mt-6 max-w-none gh-content">{{content}}</div>
-
-            {{!-- Bottom prev/next (training-nav.js flows across tracks) --}}
-            <div class="mt-10 grid grid-cols-2 gap-3 border-t border-border pt-6">
-              <a class="js-train-prev flex h-full flex-col justify-center rounded-card border border-border p-4 ns-transition hover:border-brand-500" href="#" style="display:none">
-                <span class="text-xs text-muted"><i class="ph ph-arrow-left" aria-hidden="true"></i> {{t "Previous"}}</span>
-                <span class="js-train-label mt-1 font-bold leading-snug"></span>
-              </a>
-              <a class="js-train-next flex h-full flex-col justify-center rounded-card border border-border p-4 text-right ns-transition hover:border-brand-500 sm:col-start-2" href="#" style="display:none">
-                <span class="text-xs text-muted">{{t "Next"}} <i class="ph ph-arrow-right" aria-hidden="true"></i></span>
-                <span class="js-train-label mt-1 font-bold leading-snug"></span>
-              </a>
-              <a class="js-train-finish flex h-full flex-col justify-center rounded-card border border-success/40 p-4 text-right ns-transition hover:border-success sm:col-start-2" href="/training/" style="display:none">
-                <span class="text-xs font-semibold text-success"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> {{t "Training complete"}}</span>
-                <span class="mt-1 font-bold leading-snug text-success">{{t "Back to all sections"}}</span>
-              </a>
-            </div>
-
-            {{!-- ── Comments, after the lesson ──────────────────────────────
-                 Ghost renders nothing here unless commenting is enabled in
-                 Admin → Settings → Access, so this is safe to always emit.
-                 title="" because the heading below already labels the block. --}}
-            <section class="mt-12 border-t border-border pt-8">
-              <h2 class="mb-5 flex items-center gap-2 font-heading text-lg font-extrabold text-ink">
-                <i class="ph-fill ph-chats-circle text-brand-500" aria-hidden="true"></i>{{t "Questions & discussion"}}
-              </h2>
-              {{comments title=""}}
-            </section>
-          </article>
-
-          {{!-- Right rail: TOC → ad → ad, sequential sticky handoff (each widget
-               pins inside its own flex-1 segment, then cycles to the next) --}}
-          <aside class="hidden xl:block xl:border-l xl:border-border xl:pl-8">
-            <div class="flex h-full flex-col gap-10">
-              <div class="flex-1"><div class="sticky top-20">{{> "components/toc"}}</div></div>
-              <div class="flex-1"><div class="sticky top-20">{{> "ads/slot" format="rail"}}</div></div>
-              <div class="flex-1"><div class="sticky top-20 pb-10">{{> "ads/slot" format="square"}}</div></div>
-            </div>
-          </aside>
-        </div>
-      {{/has}}
+        <span class="ns-lesson-chip"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time minute="1 min" minutes="% min"}}</span>
+        {{#match visibility "public"}}
+          <span class="ns-badge ns-badge--dot ns-badge--success">{{t "Free"}}</span>
+        {{else}}
+          <span class="ns-badge ns-badge--neutral"><i class="ph ph-lock" aria-hidden="true"></i>{{t "Members"}}</span>
+        {{/match}}
+      </div>
     </div>
+
+    {{!-- ── Media. Video lessons get the player frame (training-video.js swaps
+         the poster for the embed); everything else shows its image, if it has
+         one. ── --}}
+    {{#has tag="#training-type-video"}}
+      <div class="ns-reader__media">
+        <div data-video-hero class="ns-video">
+          {{#if feature_image}}
+            <img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}">
+          {{else}}
+            <span class="ns-video-poster__fallback"></span>
+          {{/if}}
+          <span class="ns-video-poster__play"><span><i class="ph-fill ph-play" aria-hidden="true"></i></span></span>
+        </div>
+      </div>
+    {{else}}
+      {{#if feature_image}}
+        <div class="ns-reader__media">
+          <div class="ns-media ns-media--frame">
+            <img decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}" loading="eager">
+          </div>
+        </div>
+      {{/if}}
+    {{/has}}
+
+    {{!-- Contents, inline — the rail carries its own copy from lg up. --}}
+    <div class="ns-reader__body xl:hidden">
+      {{> "components/toc"}}
+    </div>
+
+    {{!-- ── The lesson ── --}}
+    <div class="ns-reader__body gh-content prose">{{content}}</div>
+
+    {{!-- ── Prev / next. training-nav.js fills these in and flows across
+         section boundaries, then swaps in "finish" on the last lesson. The
+         empty slot keeps "next" on the right when there is no previous. ── --}}
+    <div class="ns-reader__foot">
+      <a class="js-train-prev ns-reader__step" href="#" style="display:none">
+        <span class="ns-reader__step-label"><i class="ph ph-arrow-left" aria-hidden="true"></i> {{t "Previous"}}</span>
+        <span class="js-train-label ns-reader__step-title"></span>
+      </a>
+      <span class="ns-reader__step ns-reader__step--empty"></span>
+      <a class="js-train-next ns-reader__step ns-reader__step--next" href="#" style="display:none">
+        <span class="ns-reader__step-label">{{t "Next"}} <i class="ph ph-arrow-right" aria-hidden="true"></i></span>
+        <span class="js-train-label ns-reader__step-title"></span>
+      </a>
+      <a class="js-train-finish ns-reader__step ns-reader__step--next" href="/training/" style="display:none">
+        <span class="ns-reader__step-label"><i class="ph-fill ph-check-circle" aria-hidden="true"></i> {{t "Training complete"}}</span>
+        <span class="ns-reader__step-title">{{t "Back to all sections"}}</span>
+      </a>
+    </div>
+
+    {{!-- ── Comments. Ghost renders nothing unless commenting is enabled in
+         Admin → Settings → Access, so this is safe to always emit.
+         title="" because the heading below already labels the block. ── --}}
+    <section class="ns-reader__body mt-12 border-t border-border pt-8">
+      <h2 class="mb-5 flex items-center gap-2 font-heading text-lg font-extrabold text-ink">
+        <i class="ph-fill ph-chats-circle text-brand-500" aria-hidden="true"></i>{{t "Questions & discussion"}}
+      </h2>
+      {{comments title=""}}
+    </section>
+
   </div>
-</section>
+
+  {{!-- ── The on-this-page rail — contents, then the sponsor slots. ── --}}
+  <aside class="ns-reader__aside hidden xl:block">
+    <div class="ns-widget ns-widget--toc ns-widget--sunken">
+      <div class="ns-widget__head"><span class="ns-widget__title">{{t "On this page"}}</span></div>
+      <div class="ns-widget__body">{{> "components/toc"}}</div>
+    </div>
+    {{> "ads/slot" format="rail"}}
+  </aside>
+
+</div>
