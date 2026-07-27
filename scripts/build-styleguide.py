@@ -1383,7 +1383,9 @@ page("Home", "home-collection", "Collection",
 # ═════════════════════════════════════════════════════════════════════════════
 # RENDERING
 # ═════════════════════════════════════════════════════════════════════════════
-GROUPS = ["Home", "Foundation", "Components"]
+# Sidebar order: the vocabulary first, then the pieces, then the pages built
+# out of them. Home comes LAST because it is the payoff, not the primer.
+GROUPS = ["Foundation", "Components", "Home"]
 
 RULES = [
     ("Hairlines, not shadows",
