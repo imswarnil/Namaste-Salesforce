@@ -1381,11 +1381,208 @@ page("Home", "home-collection", "Collection",
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# PAGES — the standing pages: about, contact, legal, 404
+# ═════════════════════════════════════════════════════════════════════════════
+def _toc_rail():
+    items = ("Who we are", "What we collect", "How we use it", "Your rights", "Contact us")
+    links = "".join(
+        '<a class="toc-link%s" href="#!">%s</a>' % (" is-active" if i == 0 else "", t)
+        for i, t in enumerate(items))
+    return ('<div class="ns-widget ns-widget--toc ns-widget--sunken">'
+            '<div class="ns-widget__head"><span class="ns-widget__title">On this page</span></div>'
+            '<div class="ns-widget__body">' + links + '</div></div>')
+
+
+TOC_RAIL = _toc_rail()
+
+page("Pages", "page-anatomy", "Page anatomy",
+     "The standing pages — about, contact, terms, privacy, 404 — are neither collections nor posts, "
+     "so they share their own small shell: head, body, optional sticky rail, closing action. Get this "
+     "right once and every informational page on the site is the same job.",
+     head("The shell"),
+     note("<code>.ns-page</code> &rarr; <code>__inner</code> &rarr; <code>__head</code> (kicker, title, "
+          "lede, meta) &rarr; <code>__main</code> (<code>__body</code> + optional <code>__aside</code>) "
+          "&rarr; <code>__foot</code>. Layouts: <code>--narrow</code> for a single reading column, "
+          "<code>--rail</code> for prose plus a contents rail, <code>--rail-start</code> when the "
+          "contents should lead."),
+     head("Narrow — the default for most pages"),
+     row(spec(".ns-page--narrow",
+              '<div class="ns-page ns-page--narrow demo-fill"><div class="ns-page__inner">'
+              '<div class="ns-page__head"><span class="ns-kicker">About</span>'
+              '<h1 class="ns-page__title">Why this exists</h1>'
+              '<p class="ns-page__lede">Salesforce learning material is either a sales pitch or a wall '
+              'of reference docs. This site is the thing in between.</p></div>'
+              '<div class="ns-page__main"><div class="ns-page__body ns-prose">'
+              '<p>Objects are tables, fields are columns, records are rows — and relationships are what '
+              'make it a CRM rather than a spreadsheet.</p></div></div>'
+              '</div></div>', wide=True)),
+     head("With a contents rail"),
+     row(spec(".ns-page--rail",
+              '<div class="ns-page ns-page--rail demo-fill"><div class="ns-page__inner">'
+              '<div class="ns-page__head"><span class="ns-kicker">Legal</span>'
+              '<h1 class="ns-page__title">Privacy policy</h1>'
+              '<div class="ns-page__meta"><span>Last updated 12 March 2026</span>'
+              '<span>Effective immediately</span></div></div>'
+              '<div class="ns-page__main">'
+              '<div class="ns-page__body ns-prose"><p>We collect the minimum needed to run the site, and '
+              'we do not sell it. The detail is below.</p></div>'
+              '<aside class="ns-page__aside">' + TOC_RAIL + '</aside>'
+              '</div></div></div>', wide=True)),
+     note("The rail is sticky from <code>lg</code> and scrolls independently; below that it stacks above "
+          "the prose, which is the right order — a reader on a phone wants the contents first."))
+
+page("Pages", "page-legal", "Legal pages",
+     "Terms, privacy, cookies, refunds. Numbered anchored sections with a generated index, so "
+     "re-ordering a section cannot leave a stale &ldquo;4.&rdquo; behind in the copy, and every section has a "
+     "stable link to quote in an email.",
+     head("Summary first"),
+     note("A good policy opens with the short version. <code>.ns-legal__summary</code> is that box — a "
+          "brand rail on the sunken surface, not a wall of defensive prose."),
+     row(spec(".ns-legal__summary",
+              '<div class="ns-legal__summary demo-w-2xl">'
+              '<span class="ns-kicker">In short</span>'
+              '<p class="demo-mt">We collect your email so you can sign in, and anonymous page counts so '
+              'we know which lessons help. We do not sell anything to anyone, ever.</p></div>', wide=True)),
+     head("Numbered sections"),
+     row(spec(".ns-legal",
+              '<div class="ns-legal demo-w-2xl">'
+              + "".join('<section><h2 class="ns-legal__title">%s</h2>'
+                        '<div class="ns-legal__body ns-prose"><p>%s</p></div></section>' % (t, b)
+                        for t, b in (
+                            ("Who we are",
+                             "Namaste Salesforce is an independent learning site run from Bengaluru, "
+                             "India. It is not affiliated with Salesforce, Inc."),
+                            ("What we collect",
+                             "An email address when you create an account, and anonymous page counts. "
+                             "Nothing else — there is no advertising profile here."),
+                            ("How we use it",
+                             "To send your sign-in link, to send the newsletter if you asked for it, and "
+                             "to work out which lessons need rewriting.")))
+              + '</div>', wide=True)),
+     note("Headings carry <code>scroll-margin-top</code>, so a link from the contents rail lands below "
+          "the sticky header rather than underneath it."))
+
+page("Pages", "page-contact", "Contact page",
+     "Two columns: how to reach a human on one side, a form on the other. The methods come first in "
+     "the source, because most people want the email address rather than the form.",
+     head("Methods"),
+     row(spec(".ns-contact-method",
+              '<div class="ns-contact__methods demo-w-md">'
+              + "".join('<a class="ns-contact-method" href="#!">'
+                        '<span class="ns-chip ns-chip--sm"><i class="ph-fill %s"></i></span>'
+                        '<span class="ns-contact-method__body">'
+                        '<span class="ns-contact-method__title">%s</span>'
+                        '<span class="ns-contact-method__value">%s</span>'
+                        '<span class="ns-contact-method__note">%s</span></span></a>' % (ic, t, v, n)
+                        for ic, t, v, n in (
+                            ("ph-envelope-simple", "Email", "hello@namastesalesforce.com",
+                             "Usually answered within two days"),
+                            ("ph-chat-circle-text", "Ask under a lesson", "Comments are open",
+                             "The author reads them — fastest route for anything technical"),
+                            ("ph-git-branch", "Open an issue", "github.com/imswarnil",
+                             "For typos, broken links and code that does not run")))
+              + '</div>', wide=True)),
+     head("The form"),
+     row(spec(".ns-contact__form + .ns-form",
+              '<div class="ns-contact__form demo-w-lg"><form class="ns-form">'
+              '<div class="ns-form__row ns-form__row--2">'
+              '<label class="ns-field"><span class="ns-field__label">Name</span>'
+              '<input class="ns-input" placeholder="Priya R."></label>'
+              '<label class="ns-field"><span class="ns-field__label">Email</span>'
+              '<input class="ns-input" type="email" placeholder="you@email.com"></label></div>'
+              '<label class="ns-field"><span class="ns-field__label">Subject</span>'
+              '<select class="ns-input"><option>A question about a lesson</option>'
+              '<option>Something is broken</option><option>Writing for the site</option>'
+              '<option>Sponsorship</option></select></label>'
+              '<label class="ns-field"><span class="ns-field__label">Message</span>'
+              '<textarea class="ns-input" placeholder="What are you stuck on?"></textarea></label>'
+              '<label class="ns-choice"><input type="checkbox" class="ns-checkbox">'
+              '<span class="ns-choice__label">Send me the fortnightly newsletter too</span></label>'
+              '<div class="ns-form__actions">'
+              '<span class="ns-form__note">We only use this to reply.</span>'
+              '<button type="submit" class="ns-btn ns-btn--primary">Send message</button></div>'
+              '</form></div>', wide=True)),
+     head("Together"),
+     row(spec(".ns-contact",
+              '<div class="ns-contact demo-w-full">'
+              '<div class="ns-contact__methods">'
+              '<a class="ns-contact-method" href="#!">'
+              '<span class="ns-chip ns-chip--sm"><i class="ph-fill ph-envelope-simple"></i></span>'
+              '<span class="ns-contact-method__body"><span class="ns-contact-method__title">Email</span>'
+              '<span class="ns-contact-method__value">hello@namastesalesforce.com</span></span></a>'
+              '<a class="ns-contact-method" href="#!">'
+              '<span class="ns-chip ns-chip--sm"><i class="ph-fill ph-git-branch"></i></span>'
+              '<span class="ns-contact-method__body"><span class="ns-contact-method__title">Open an issue</span>'
+              '<span class="ns-contact-method__value">github.com/imswarnil</span></span></a></div>'
+              '<div class="ns-contact__form"><form class="ns-form">'
+              '<label class="ns-field"><span class="ns-field__label">Email</span>'
+              '<input class="ns-input" type="email" placeholder="you@email.com"></label>'
+              '<label class="ns-field"><span class="ns-field__label">Message</span>'
+              '<textarea class="ns-input"></textarea></label>'
+              '<div class="ns-form__actions"><span class="ns-form__note">We only use this to reply.</span>'
+              '<button class="ns-btn ns-btn--primary">Send</button></div></form></div>'
+              '</div>', wide=True)),
+     note("Add <code>--form-first</code> when the form is the point of the page — a sponsorship enquiry, "
+          "say — and the methods become the supporting column."))
+
+page("Pages", "page-about", "About page",
+     "Not a legal page and not a collection: a story told in bands. It reuses the marketing sections "
+     "wholesale, which is the test of whether those components were general enough.",
+     head("Founder"),
+     row(spec("split + list + tags",
+              '<div class="ns-split demo-w-full">'
+              '<div class="ns-split__media"><div class="ns-media ns-media--photo ns-media--frame demo-media">'
+              '<i class="ph ph-user"></i></div></div>'
+              '<div class="ns-split__body"><span class="ns-kicker">The team</span>'
+              '<h2 class="ns-split__title">Hi, I am Swarnil</h2>'
+              '<p class="ns-split__lede">I have spent years building on the platform — Apex and LWC '
+              'through to data architecture and AI.</p>'
+              '<ul class="ns-list ns-list--check ns-list--sm">'
+              '<li class="ns-list__item">Writes and reviews every course</li>'
+              '<li class="ns-list__item">Ships open-source tooling for the community</li></ul>'
+              '<div class="ns-cluster"><a class="ns-tagchip" href="#!">Apex</a>'
+              '<a class="ns-tagchip" href="#!">LWC</a><a class="ns-tagchip" href="#!">Flow</a></div>'
+              '</div></div>', wide=True)),
+     head("Milestones"),
+     row(spec(".ns-timeline--icon",
+              '<div class="ns-timeline ns-timeline--icon demo-w-md">'
+              + "".join('<div class="ns-timeline__item %s">'
+                        '<span class="ns-timeline__dot"><i class="ph-fill %s"></i></span>'
+                        '<div class="ns-timeline__body"><div class="ns-timeline__title">%s</div>'
+                        '<div class="ns-timeline__meta">%s</div></div></div>' % (st, ic, t, d)
+                        for t, d, ic, st in (
+                            ("Site launched", "Jan 2026", "ph-rocket-launch", "is-on"),
+                            ("First course published", "Mar 2026", "ph-graduation-cap", "is-on"),
+                            ("Certificates", "Planned", "ph-seal-check", "is-next")))
+              + '</div>', wide=True)),
+     note("Everything else an about page needs — metrics, testimonials, the closing CTA — is on the "
+          "<a href=\"sections.html\">Content sections</a> page. Nothing new was needed here, which is "
+          "the point."))
+
+page("Pages", "page-404", "404 &amp; dead ends",
+     "The page that says the thing you asked for is not here. A big mono code, one sentence, and the "
+     "two or three places a lost visitor actually wants — not a dead end.",
+     row(spec(".ns-404",
+              '<div class="ns-404 demo-w-full">'
+              '<div class="ns-404__code">404</div>'
+              '<h1 class="ns-404__title">That page has moved on</h1>'
+              '<p class="ns-404__body">The link may be old, or the lesson may have been folded into '
+              'another course. Here is where most people were heading:</p>'
+              '<div class="ns-404__actions">'
+              '<a class="ns-btn ns-btn--primary" href="#!">Browse courses</a>'
+              '<a class="ns-btn ns-btn--outline" href="#!">Start the training</a>'
+              '<a class="ns-btn ns-btn--outline" href="#!">Search the docs</a></div></div>', wide=True)),
+     note("The same shape covers a maintenance page or a members-only wall — swap the code for a glyph "
+          "and the actions for a sign-in button."))
+
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # RENDERING
 # ═════════════════════════════════════════════════════════════════════════════
 # Sidebar order: the vocabulary first, then the pieces, then the pages built
 # out of them. Home comes LAST because it is the payoff, not the primer.
-GROUPS = ["Foundation", "Components", "Home"]
+GROUPS = ["Foundation", "Components", "Home", "Pages"]
 
 RULES = [
     ("Hairlines, not shadows",

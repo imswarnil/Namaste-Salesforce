@@ -1,0 +1,209 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · page — .ns-page and the pieces static pages need
+   ----------------------------------------------------------------------------
+   The standing pages: about, contact, terms, privacy, 404. They are not
+   collections and they are not posts, so they share their own small shell:
+
+     .ns-page          the wrapper — measure + rhythm
+     .ns-page__head    title block (kicker, title, lede, meta)
+     .ns-page__body    the prose column
+     .ns-page__aside   a sticky rail (contents, contact card, related)
+     .ns-page__foot    the closing action
+
+   LAYOUT   --rail    prose + a sticky rail from lg (legal, long about pages)
+            --narrow  a single centred reading column (most pages)
+            --wide    full page measure (contact grids, 404)
+
+   Plus the two shapes that only exist on these pages:
+
+     .ns-legal     numbered, anchored sections with an "updated" stamp
+     .ns-contact   the methods grid + the form card
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-page { padding-block: var(--space-section); }
+  .ns-page__inner {
+    margin-inline: auto;
+    max-width: var(--container-page);
+    padding-inline: var(--space-gutter);
+  }
+
+  /* ── Head ──────────────────────────────────────────────────────────────── */
+  .ns-page__head { max-width: var(--container-prose); }
+  .ns-page__title {
+    margin-top: 0.5rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.85rem, 1.5rem + 1.6vw, 2.75rem);
+    font-weight: var(--weight-heading);
+    letter-spacing: -0.02em;
+    line-height: var(--leading-tight);
+    text-wrap: balance;
+  }
+  .ns-page__lede {
+    margin-top: 0.9rem;
+    font-size: var(--size-lead);
+    line-height: var(--leading-body);
+    color: var(--color-muted);
+  }
+  /* The mono stamp under a legal title: "Last updated 12 March 2026" */
+  .ns-page__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1rem;
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* ── Layouts ───────────────────────────────────────────────────────────── */
+  .ns-page__main { margin-top: 2.5rem; }
+  .ns-page--narrow .ns-page__inner { max-width: calc(var(--container-prose) + var(--space-gutter) * 2); }
+
+  .ns-page--rail .ns-page__main {
+    display: grid;
+    gap: var(--grid-gutter-lg);
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .ns-page--rail .ns-page__main { grid-template-columns: minmax(0, 1fr) var(--layout-rail); }
+    /* The rail leads on legal pages — you want the contents before the text */
+    .ns-page--rail-start .ns-page__main { grid-template-columns: var(--layout-sidebar) minmax(0, 1fr); }
+    .ns-page--rail-start .ns-page__aside { order: -1; }
+    .ns-page__aside {
+      position: sticky;
+      top: calc(var(--space-navbar) + 1.5rem);
+      max-height: calc(100vh - var(--space-navbar) - 3rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+  .ns-page__body { min-width: 0; max-width: var(--container-prose); }
+
+  .ns-page__foot {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+
+  /* ── Legal — terms, privacy, cookies, refunds ──────────────────────────── */
+  .ns-legal { counter-reset: ns-legal; }
+  .ns-legal > section { scroll-margin-top: calc(var(--space-navbar) + 1.5rem); }
+  .ns-legal > section + section {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: var(--border-hairline) solid var(--color-border);
+  }
+  /* Numbered headings: the number is generated, so re-ordering a section
+     cannot leave a stale "4." behind in the copy. */
+  .ns-legal__title {
+    display: flex;
+    gap: 0.75rem;
+    font-family: var(--font-heading);
+    font-size: var(--size-h3);
+    font-weight: var(--weight-heading);
+    line-height: var(--leading-heading);
+    counter-increment: ns-legal;
+  }
+  .ns-legal__title::before {
+    content: counter(ns-legal, decimal-leading-zero);
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    font-weight: var(--weight-label);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-label);
+    color: var(--color-brand-500);
+    padding-top: 0.45em;
+  }
+  .ns-legal__body { margin-top: 0.75rem; }
+  /* The summary box a good privacy policy opens with */
+  .ns-legal__summary {
+    margin-bottom: 2rem;
+    border: var(--border-hairline) solid var(--color-border);
+    border-left: var(--border-strong) solid var(--color-brand-500);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-sunken);
+    padding: 1.1rem 1.25rem;
+  }
+
+  /* ── Contact ───────────────────────────────────────────────────────────── */
+  .ns-contact {
+    display: grid;
+    gap: var(--grid-gutter-lg);
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .ns-contact { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+    .ns-contact--form-first .ns-contact__form { order: -1; }
+  }
+
+  .ns-contact__methods { display: grid; gap: 0.75rem; }
+  .ns-contact-method {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: 1rem 1.1rem;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .ns-contact-method:hover { border-color: var(--color-brand-500); }
+  /* Spans are inline by default — these are stacked rows, so say so. */
+  .ns-contact-method__body { display: grid; gap: 0.1rem; min-width: 0; }
+  .ns-contact-method__title { display: block; font-weight: var(--weight-semibold); }
+  .ns-contact-method__value {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--size-small);
+    color: var(--color-brand-600);
+    word-break: break-word;
+  }
+  [data-theme="dark"] .ns-contact-method__value { color: var(--color-brand-300); }
+  .ns-contact-method__note { display: block; font-size: 0.75rem; color: var(--color-muted); }
+
+  /* The form card */
+  .ns-contact__form {
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+  }
+  .ns-form { display: grid; gap: 1rem; }
+  .ns-form__row { display: grid; gap: 1rem; }
+  @media (min-width: 560px) { .ns-form__row--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .ns-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.25rem;
+  }
+  .ns-form__note { font-size: 0.75rem; color: var(--color-muted); }
+
+  /* ── 404 ───────────────────────────────────────────────────────────────── */
+  .ns-404 {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    padding-block: clamp(3rem, 10vh, 6rem);
+  }
+  .ns-404__code {
+    font-family: var(--font-mono);
+    font-size: clamp(3.5rem, 3rem + 6vw, 7rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--color-brand-500);
+  }
+  .ns-404__title { font-family: var(--font-heading); font-size: var(--size-h2); font-weight: var(--weight-heading); }
+  .ns-404__body { max-width: 32rem; color: var(--color-muted); }
+  .ns-404__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-top: 0.75rem; }
+}
