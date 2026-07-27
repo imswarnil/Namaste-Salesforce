@@ -62,14 +62,20 @@
 
    THE RAIL IS DENSE, and that is the point. It is a table of contents, not a
    menu: the value of it is seeing where you are in the WHOLE training at once,
-   and every rem of padding is a lesson pushed off the screen. So rows sit on
-   --space-row-xs, they touch each other with no gap between them, and the only
-   real space in the component is the --space-gap-sm either side of a section
-   rule. Two spacings, and one of them is zero.
+   and every rem of padding is a lesson pushed off the screen. Rows sit on
+   --space-row-xs and touch each other; sections sit --space-gap-xs apart. One
+   spacing, essentially, and it is the smallest the system has.
 
-   Separation comes from RULES, not from air — which is the house rule for the
-   whole system, and the reason this rail can be tight without reading as
-   cramped.
+   NOTHING IN HERE IS RULED. The rail used to divide its sections with
+   hairlines and run a guide line down the side of each lesson list, and with
+   the page rule now drawn beside the whole column that was three sets of lines
+   in a space two inches wide. The section rows are already the heaviest thing
+   in the component — bold, with an icon and a caret — so they read as headings
+   without help, and the indent is enough to say which lessons belong to them.
+
+   The rule the rail spends is elsewhere: 3-modules/1-training/reader.css draws
+   the full-height line between this column and the lesson. One line does the
+   dividing, at the scale where dividing matters.
 
    MOTION follows the house rule: 120ms, ease-out, colour and background only.
    A hovered row also slides 2px toward the reader — the one transform allowed
@@ -118,20 +124,13 @@
 
   /* ── Group (a section) ─────────────────────────────────────────────────── */
   .ns-sidenav__group { min-width: 0; border-radius: var(--radius-btn); }
-  /* A rule between sections, not a gap: it holds the structure even when every
-     section is collapsed, which is most of the time. */
-  .ns-sidenav__group + .ns-sidenav__group {
-    margin-top: var(--space-gap-sm);
-    padding-top: var(--space-gap-sm);
-    border-top: var(--border-hairline) solid var(--color-border);
-  }
-  /* An open section is bracketed top and bottom, so its lessons read as
-     belonging to it rather than to the list in general. */
-  .ns-sidenav__group[open] {
-    padding-bottom: var(--space-gap-sm);
-    border-bottom: var(--border-hairline) solid var(--color-border);
-  }
-  .ns-sidenav__group[open] + .ns-sidenav__group { border-top: 0; }
+  /* No rule between sections, and barely a gap. The section rows are already
+     the heaviest thing in the rail — bold, with an icon and a caret — so they
+     read as headings on their own; a hairline between every pair only added a
+     third horizontal line to a column that already has the page rule beside
+     it. Sections sit a hair apart and nothing more. */
+  .ns-sidenav__group + .ns-sidenav__group { margin-top: var(--space-gap-xs); }
+  .ns-sidenav__group[open] { padding-bottom: var(--space-gap-xs); }
 
   .ns-sidenav__summary {
     display: flex;
@@ -208,9 +207,10 @@
     display: grid;
     gap: 0;
     min-width: 0;
-    margin: var(--space-gap-xs) 0 0 var(--space-gap-sm);
-    padding-left: var(--space-gap-sm);
-    border-left: var(--border-hairline) solid var(--color-border);
+    /* Indent alone, no guide line. The indent already says these lessons
+       belong to the section above them, and a rule down the side of a list
+       that is one level deep is decoration. */
+    margin: 0 0 0 var(--space-gap-sm);
   }
 
   .ns-sidenav__link {
@@ -396,8 +396,4 @@
   .ns-lesson-panel--sheet .ns-sidenav__link { padding-block: var(--space-row-xs); }
   .ns-lesson-panel--sheet .ns-sidenav__stitle { font-size: 0.8125rem; }
   .ns-lesson-panel--sheet .ns-sidenav__icon { height: 1.35rem; width: 1.35rem; font-size: 0.72rem; }
-  .ns-lesson-panel--sheet .ns-sidenav__group + .ns-sidenav__group {
-    margin-top: var(--space-gap-sm);
-    padding-top: var(--space-gap-sm);
-  }
 }

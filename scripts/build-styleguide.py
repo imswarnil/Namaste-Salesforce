@@ -1908,10 +1908,15 @@ page("Training", "training-nav", "Training navigation",
      note("<b>The rail is dense, and that is the point.</b> It is a table of contents, not a menu: "
           "the value of it is seeing where you are in the WHOLE training at once, and every rem of "
           "padding is a lesson pushed off the screen. Rows sit on <code>--space-row-xs</code> and "
-          "touch each other with no gap; the only real space in the component is the "
-          "<code>--space-gap-sm</code> either side of a section rule. Two spacings, and one of them "
-          "is zero — separation comes from RULES, not from air, which is why it can be tight without "
-          "reading as cramped."),
+          "touch each other; sections sit <code>--space-gap-xs</code> apart. One spacing, essentially, "
+          "and it is the smallest the system has."),
+     note("<b>Nothing inside the rail is ruled.</b> It used to divide its sections with hairlines and "
+          "run a guide line down the side of each lesson list — and with the page rule now drawn "
+          "beside the whole column, that was three sets of lines in a space two inches wide. The "
+          "section rows are already the heaviest thing in the component (bold, an icon, a caret), so "
+          "they read as headings without help, and the indent is enough to say which lessons belong "
+          "to them. The one rule the rail spends is the full-height line between this column and the "
+          "lesson — one line, doing the dividing at the scale where dividing matters."),
      note("<b>Every row is one line.</b> A row is four things — marker, type, title, duration — and "
           "only the title may take the leftover room: the rest are <code>flex-shrink:0</code> and the "
           "row is <code>nowrap</code>, so a long title shortens rather than pushing its duration onto "
