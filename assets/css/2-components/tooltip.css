@@ -26,4 +26,16 @@
 
   /* Keyboard users get it too */
   :where(.group:focus-within) > .nav-tip { opacity: 1; }
+
+  /* Not on a touch device. A hover hint has nothing to say to a finger, and
+     because it is absolute and nowrap the tip on the LAST icon in the header
+     still reached past the right edge — invisible, but wide enough to put the
+     whole document into horizontal scroll. Every one of these buttons carries
+     an aria-label, so nothing is lost.
+
+     The width guard covers the same bug on a narrowed desktop window, where
+     hover exists but the room for a tip does not. */
+  @media (hover: none), (max-width: 1023.98px) {
+    .nav-tip { display: none; }
+  }
 }

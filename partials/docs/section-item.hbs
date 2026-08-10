@@ -34,7 +34,11 @@
 {{else match view "card"}}
   <article data-cat data-section="{{slug}}"
            x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-           class="group/card flex flex-col rounded-card border border-border bg-surface-raised p-6 ns-transition hover:border-brand-500">
+           {{!-- min-w-0: the article is a grid item, so without it the track is
+                 sized to the LONGEST article title in the list — those titles
+                 are `truncate` (nowrap), which has no break opportunity to
+                 give, and one long one widened every card past the phone. --}}
+           class="group/card flex min-w-0 flex-col rounded-card border border-border bg-surface-raised p-6 ns-transition hover:border-brand-500">
     <div class="flex items-start gap-3.5">
       <span class="ns-chip shrink-0">
         <i class="ph-fill {{icon}}" aria-hidden="true"></i>

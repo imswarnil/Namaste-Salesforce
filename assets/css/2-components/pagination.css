@@ -11,9 +11,18 @@
 @layer components {
   .ns-pager {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
+  }
+  /* The three pills total more than a 320px screen, so on a phone they lose a
+     little padding rather than squeezing the count until "Page 2 of 12" breaks
+     across two lines inside its own pill. */
+  @media (max-width: 400px) {
+    .ns-pager { gap: 0.5rem; }
+    .ns-pager__link,
+    .ns-pager__count { padding-inline: 0.7rem; }
   }
   .ns-pager--start   { justify-content: flex-start; }
   .ns-pager--between { justify-content: space-between; }
@@ -36,6 +45,7 @@
 
   /* The count is data — mono, tabular, quiet */
   .ns-pager__count {
+    white-space: nowrap;
     border-radius: var(--radius-pill);
     border: var(--border-hairline) solid var(--color-border);
     padding: 0.5rem 1rem;
