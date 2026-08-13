@@ -20,6 +20,27 @@ Then add your brief ("a course on Apex triggers for admins moving into code").
 If you can only paste one file, paste the type prompt — each one repeats the
 handful of rules that would break *that* type.
 
+**For anything that is not one of the seven content types** — a question about
+the site, a change to the theme, an image to generate, a model that needs to
+know what it is looking at — paste [`SITE-CONTEXT.md`](SITE-CONTEXT.md)
+instead. It is the full briefing: the product, the two domains, the routing
+model, the build, the design system, the palette, the image rules, and the list
+of things that fail silently. It also supersedes the old `prompt.md` and
+`prompt-banner.md`, which were image-only and are gone.
+
+## Two websites, one brand
+
+Before writing anything, be sure which surface it is for:
+
+- **www.namastesalesforce.com** — this Ghost site. Public, indexable, free to
+  read: marketing, blog, docs, the free training track, the course catalog.
+- **app.namastesalesforce.com** — the Next.js LMS. Anything gated, enrolled in,
+  tracked or graded: the course player, progress, accounts.
+
+Everything in *this* folder produces content for the Ghost site. Both products
+share the same design system, so the writing rules below hold on either — but
+the tag model, the routes and the templates described here are Ghost's.
+
 ## The prompts
 
 | File | Produces | Lands at |
@@ -83,5 +104,7 @@ resources need no theme edit and no `routes.yaml` edit.
 The tag vocabulary is the one in `dummy-content/import.json`; the page anatomy
 is read from `partials/post-*.hbs`; the content-body behaviours (code windows,
 video adoption, timestamp seeking, table-of-contents) are read from
-`assets/js/`. The design language is `assets/css/0-foundation/README.md` and
-`design-system/guidelines/`.
+`assets/js/`. The design language is the **NS Design System**, which lives in
+its own repository beside the Ghost install and is vendored into this theme at
+`assets/css/ds/` — see `NS-Design-System/readme.md` and its
+`docs/INTEGRATION.md`.

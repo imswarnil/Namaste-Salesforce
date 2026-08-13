@@ -2,8 +2,13 @@
 {{!-- author.hbs — author archive: profile header + post grid --}}
 
 {{#author}}
-  <header class="relative overflow-hidden border-b border-border bg-brand-900 text-white"
-    {{#if cover_image}}style="background-image: linear-gradient(rgba(3,45,96,0.85), rgba(0,26,62,0.92)), url('{{cover_image}}'); background-size: cover; background-position: center;"{{/if}}>
+  <header class="ns-coverhead border-b border-border bg-brand-900 text-white">
+    {{#if cover_image}}
+      {{!-- Decorative: the author's name is the heading below, so the cover
+            carries no information a screen reader needs. --}}
+      <img class="ns-coverhead__img" src="{{img_url cover_image size='xl'}}" alt=""
+           aria-hidden="true" loading="lazy" decoding="async">
+    {{/if}}
     <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:py-20">
       {{#if profile_image}}
         <img loading="lazy" decoding="async" src="{{img_url profile_image size='s'}}" alt="{{name}}"

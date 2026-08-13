@@ -4,11 +4,19 @@
    Compiled by gulp (@tailwindcss/postcss) → assets/built/screen.css, which is
    what default.hbs loads via {{asset "built/screen.css"}}.
 
-   THE SYSTEM — the "Developer Console" design system, in numbered layers.
-   Each layer has its own index.css listing its files, so THIS file never
-   changes when you add a token, an element or a component:
+   THE SYSTEM — the "Developer Console" design system. It is no longer defined
+   here: it lives in NS-Design-System, beside the Ghost install, and is
+   VENDORED into assets/css/ds/ by `yarn design:sync`. The same system is
+   vendored into the Next.js LMS at app.namastesalesforce.com, which is what
+   keeps the two products from drifting. Everything under assets/css/ds/ is
+   generated — never hand-edit it; change NS-Design-System and re-sync.
 
-     0-foundation/  tokens, vars, mixins, helpers — declares values, paints nothing
+   On top of the system, the theme keeps its own numbered layers. Each has an
+   index.css listing its files, so THIS file never changes when you add an
+   element or a component:
+
+     ds/            THE DESIGN SYSTEM — tokens, base elements, the .ns-* layer
+     0-foundation/  what the system does not own: the bridge, grid, mixins
      1-elements/    bare HTML — one file per element family
      2-components/  the UI library — one file per component, with variants.
                     The site-*.css files at the end are shared feature styling.
@@ -38,7 +46,13 @@
 @source "../../demo.html";     /* editor-pasteable specimen sheet — keep its utilities compiled */
 @source "../../styleguide/*.html";  /* the style-guide site (`yarn styleguide`) */
 
-/* ── The three layers, in dependency order ────────────────────────────────── */
+/* ── The design system, then the theme's layers, in dependency order ──────────
+   The system comes first so the theme's layers can spend its tokens and
+   override its components; the Tailwind bridge comes with it, because
+   `@theme` has to be declared before a utility can resolve against it. */
+@import "./ds/styles.css";          /* tokens + base elements + the .ns-* layer */
+@import "./ds/tokens/tailwind.css"; /* @theme bridge: bg-brand-500, p-card, text-label … */
+
 @import "./0-foundation/index.css";
 @import "./1-elements/index.css";
 @import "./2-components/index.css";

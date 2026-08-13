@@ -1,0 +1,58 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · cover header — .ns-coverhead
+   ----------------------------------------------------------------------------
+   The dark banner at the top of an author archive or a tag archive, optionally
+   backed by that author's / tag's cover image.
+
+   PARTS  __img   the cover photograph (omit it and the band is flat brand navy)
+
+   WHY THIS EXISTS AT ALL. The image is chosen by an editor in Ghost Admin, so
+   its URL is only known at render time — which is how both templates ended up
+   with a `style="background-image: …"` attribute. Two problems with that:
+
+     1. It is inline CSS, which this theme does not ship.
+     2. A CSS background cannot carry srcset, so every visitor downloaded the
+        full-size original — on an author page whose banner is 200px tall on a
+        phone.
+
+   Rendering the cover as a real <img> fixes both: Ghost's {{img_url}} picks a
+   width from the theme's image_sizes, the browser lazy-loads it, and the
+   scrim below is a plain stylesheet rule.
+
+   The scrim is two navy stops rather than one flat overlay because a
+   photograph's own contrast varies across the frame; a gradient keeps the
+   kicker legible at the top and the badge legible at the bottom without
+   washing the picture out entirely.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .ns-coverhead {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .ns-coverhead__img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  /* The scrim only exists when there is a photograph under it — on a flat
+     brand-navy band it would darken the band itself for no reason. :has() is
+     doing real work here: it is what lets one class serve both cases without
+     the template branching on a second modifier. */
+  .ns-coverhead:has(.ns-coverhead__img)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: linear-gradient(
+      color-mix(in srgb, var(--color-brand-800) 85%, transparent),
+      color-mix(in srgb, var(--color-brand-900) 92%, transparent)
+    );
+  }
+}

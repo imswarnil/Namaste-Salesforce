@@ -2,24 +2,36 @@
    LAYER 0 · FOUNDATION — the vocabulary
    ----------------------------------------------------------------------------
    Tokens, variables and mixins ONLY. Nothing in this layer paints a component;
-   every file here just declares values that layers 1–3 spend. If you find
-   yourself writing a selector that renders UI, it belongs in 1-elements or
-   2-components instead.
+   every file here just declares values that layers 1–3 spend.
 
-   Import order matters: colors before everything that references a color,
-   typography before the label/mono scales are used, mixins last so its
-   @utility recipes can spend every token above it.
+   MOST OF THIS LAYER NOW LIVES IN THE DESIGN SYSTEM. assets/css/ds/ (vendored
+   from NS-Design-System by `yarn design:sync`, imported by screen.css before
+   this file) owns colors, type, spacing, layout, geometry, elevation, motion,
+   the @font-face rules and the Phosphor subset — 62 of the 92 custom
+   properties layers 1–3 spend, under the same names they always had.
+
+   What is left here is what the system does not own:
+
+     ds-bridge.css   the other 30 tokens — theme-local names for system values,
+                     plus the grid, the lesson column and the spotlight. Read
+                     its header before adding anything to it.
+     backgrounds.css brand pattern canvases (grid corner, trail, cover art)
+     mixins.css      @utility recipes: ns-label, ns-index, ns-hairline, …
+     helpers.css     @utility helpers: ns-stack, ns-cluster, ns-aspect-*, …
+
+   REMOVED in the migration: colors.css, typography.css, fonts.css, icons.css,
+   spacing.css, layout.css, borders.css, elevation.css and motion.css. The
+   design system supersedes all nine — it declares the same custom properties
+   under the same names, so layers 1–3 did not change. If this migration ever
+   has to be undone, those files are one `git revert` away; do not recreate
+   them by hand, because a second set of token declarations is exactly the
+   drift the vendoring exists to prevent.
+
+   Import order matters: the bridge first, so the @utility recipes below it can
+   spend every token — the system's and the bridge's alike.
    ════════════════════════════════════════════════════════════════════════ */
 
-@import "./fonts.css";        /* @font-face — self-hosted Inter + Fira Code */
-@import "./icons.css";        /* generated: subsetted Phosphor (scripts/subset-icons.py) */
-@import "./colors.css";       /* brand + accent scales, status, semantic roles, dark mode */
-@import "./typography.css";   /* font stacks, prose scale, mono/label scale */
-@import "./spacing.css";      /* semantic rhythm, containers, safe areas */
-@import "./layout.css";       /* the grid, gutters, shells, breakpoints */
-@import "./borders.css";      /* border widths + corner radii */
-@import "./elevation.css";    /* shadows + the z-index ladder */
-@import "./motion.css";       /* easing, durations, keyframes */
+@import "./ds-bridge.css";    /* the 30 tokens the design system does not declare */
 @import "./backgrounds.css";  /* brand patterns + content-creation cover canvases */
 @import "./mixins.css";       /* @utility recipes: ns-label, ns-index, ns-transition … */
 @import "./helpers.css";      /* @utility helpers: ns-stack, ns-cluster, ns-aspect-* … */

@@ -2470,8 +2470,10 @@ def build():
         raise SystemExit("INLINE CSS found in: " + ", ".join(inline)
                          + "\n  → move it to assets/css/styleguide.css as a .sg-* or .demo-* class.")
 
+    # The Phosphor subset ships with the design system now (vendored by
+    # `yarn design:sync`), not from the theme's own generated icons.css.
     subset = set(re.findall(r"\.(ph-[a-z0-9-]+)",
-                            pathlib.Path("assets/css/0-foundation/icons.css").read_text()))
+                            pathlib.Path("assets/css/ds/icons/phosphor.css").read_text()))
     used = set(re.findall(r"\b(ph-[a-z0-9-]+)", html)) - {"ph-fill"}
     missing = sorted(used - subset)
 

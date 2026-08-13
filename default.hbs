@@ -33,14 +33,16 @@
         Phosphor fill CSS      86 KB  │ to draw the ~123 icons this theme uses
         Phosphor woff2 ×2     279 KB  ┘
 
-      Now: one local stylesheet, fonts declared in theme/fonts.css, and a
-      Phosphor subset built by scripts/subset-icons.py (443 KB → 26 KB). The
-      only fonts preloaded are the two on the critical path — Inter, needed by
-      every page, and the regular icon weight used in the header. JetBrains
-      Mono and the fill weight are fetched on demand: browsers only download a
-      webfont when rendered text actually matches it.
+      Now: one local stylesheet, and both the N&M cuts and the Phosphor subset
+      shipped by the design system (yarn design:sync). The only fonts preloaded
+      are the three on the critical path — N&M Text, which sets every paragraph,
+      N&M Display, which sets the heading above the fold, and the regular icon
+      weight used in the header. N&M Mono and the icon fill weight are fetched
+      on demand: browsers only download a webfont when rendered text actually
+      matches it, and neither appears before the first screen on most pages.
     ───────────────────────────────────────────────────────────────────── --}}
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/inter-var-latin.woff2"}}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/nmtext-var-latin.woff2"}}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/nmdisplay-var-latin.woff2"}}">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/phosphor-subset.woff2"}}">
 
     {{!-- Theme stylesheet (Tailwind build) — carries the @font-face rules --}}
