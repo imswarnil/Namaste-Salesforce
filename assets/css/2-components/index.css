@@ -90,6 +90,50 @@
 @import "./marquee.css";      /* .marquee */
 @import "./effects.css";      /* .js-reveal · .js-spotlight · .ns-aurora · … */
 
+/* ════════════════════════════════════════════════════════════════════════════
+   BEFORE YOU "DE-DUPLICATE" ANYTHING IN THIS LAYER — READ THIS
+   ----------------------------------------------------------------------------
+   81 class names in this folder also exist in the design system
+   (assets/css/ds/components/css/). It is tempting to delete ours and let the
+   system's win, and for .ns-btn that was exactly right: same markup contract,
+   and our version was 150 lines re-deriving the system's design from raw
+   literals. Nine of its eleven extra variants had zero uses anywhere.
+
+   IT IS NOT RIGHT IN GENERAL. A shared class name does not mean a shared
+   component. Two confirmed cases:
+
+     .ns-progress   ours is <div class="ns-progress"><span class="ns-progress__bar">
+                    theirs is <progress class="ns-progress"> — a NATIVE element
+                    styled through ::-webkit-progress-value / ::-moz-progress-bar.
+                    Delete ours and every progress bar silently goes blank: the
+                    system's rules target pseudo-elements a <div> does not have.
+
+     .ns-avatar     ours puts the class on the <img>; theirs is a <span> wrapper
+                    with `.ns-avatar img` inside, so it can fall back to initials.
+                    Delete ours and avatars lose object-fit and inherit mono
+                    letter-spacing meant for those initials.
+
+   And sometimes OURS is the better one and should keep winning: .ns-grid here
+   is token-driven (--grid-min), carries fixed-count and span variants, and
+   already has the min() guard the system added later. The system's is a
+   simpler subset.
+
+   THE CHECK, before removing any rule that the system also defines:
+     1. Does our markup match theirs? Compare a real template against
+        NS-Design-System/templates/ — not the class list, the ELEMENT and the
+        child structure.
+     2. Is their variant set a superset of the ones we actually use? Grep the
+        variant across *.hbs, demo.html, styleguide/ AND dummy-content/
+        import.json — post bodies use these classes too, and 159 classes that
+        look dead in the templates are live in the styleguide.
+     3. Only if both hold, delete ours and keep the genuinely theme-only
+        variants on top — see button.css for the worked example.
+
+   Where the contracts differ, the real fix is migrating the TEMPLATES to the
+   system's markup, which is a bigger job than editing this stylesheet and
+   should be done one component at a time, with the page open.
+   ════════════════════════════════════════════════════════════════════════ */
+
 /* ── Features — site-specific, always last ─────────────────────────────── */
 @import "./site-navbar.css";      /* header scroll behaviours */
 @import "./site-curriculum.css";  /* .ns-curriculum, shared by course + training */
