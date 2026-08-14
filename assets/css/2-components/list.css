@@ -108,7 +108,13 @@
     border-top: var(--border-hairline) solid var(--color-border);
   }
 
-  .ns-list--inline { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+  /* `flex-direction: row` is REQUIRED, not redundant. The vendored design
+     system's .ns-list is `display: flex; flex-direction: column`; the theme's
+     base overrides the display to grid but has no reason to touch a property
+     grid ignores — so the stale column direction survives, and the moment this
+     variant switches back to flex the "inline" list renders as a vertical
+     stack. Stating the direction is what makes the variant mean anything. */
+  .ns-list--inline { display: flex; flex-direction: row; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
   .ns-list--grid { grid-template-columns: 1fr; }
   @media (min-width: 640px) { .ns-list--grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.45rem 1.5rem; } }
 

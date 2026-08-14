@@ -22,6 +22,15 @@
   .ns-hero {
     position: relative;
     overflow: hidden;
+    /* ZERO, deliberately — do not delete. The vendored design system also
+       declares .ns-hero, and gives it `padding-block: var(--space-20)
+       var(--space-16)` (80px / 64px). The theme's hero puts its padding on
+       __inner instead, so without this reset the two STACK: 80px of dead space
+       above every hero on the site before the theme's own padding even starts,
+       which is what made the landing page open a screen and a half below the
+       header. This is the shared-class-name hazard documented at the bottom of
+       2-components/index.css — same name, different box model. */
+    padding-block: 0;
     border-bottom: var(--border-hairline) solid var(--color-border);
     background-color: var(--color-brand-900);
     color: #fff;
@@ -79,6 +88,20 @@
     .ns-hero--xl .ns-hero__inner { padding-block: 9rem; }
   }
   .ns-hero--screen { display: grid; align-items: center; min-height: min(46rem, 88vh); }
+
+  /* A SPLIT hero sets its own height. A centered hero is a title floating in
+     space, so it buys presence with symmetrical padding; a split hero already
+     carries a full copy stack beside a piece of media, and the same padding
+     just pushes the headline below the fold. So: asymmetric, and the top is
+     the smaller number — the site header already occupies that space, and a
+     landing page should start at the header rather than a screen under it.
+     Placed after the size block so it wins on source order at equal weight;
+     the --lg pairing is one class heavier and wins outright. */
+  .ns-hero--split .ns-hero__inner { padding-block: 2.5rem 3.25rem; }
+  @media (min-width: 1024px) {
+    .ns-hero--split .ns-hero__inner { padding-block: 3.25rem 4.25rem; }
+    .ns-hero--split.ns-hero--lg .ns-hero__inner { padding-block: 3.75rem 5rem; }
+  }
 
   /* ── Tones ─────────────────────────────────────────────────────────────── */
   .ns-hero--plain,
