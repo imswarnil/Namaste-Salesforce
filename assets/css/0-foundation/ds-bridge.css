@@ -30,10 +30,15 @@
      Ghost Admin → Design lets a publisher choose a body/heading font, which
      arrives as --gh-font-body / --gh-font-heading. The design system has no
      reason to know that, so the fallback chain is re-declared here with the
-     system's N&M stacks as the default. Drop this and an admin's font choice
-     silently does nothing. */
-  --font-sans:    var(--gh-font-body, "N&M Text", "N&M Text Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
-  --font-heading: var(--gh-font-heading, "N&M Display", "N&M Text", "N&M Text Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+     system's Switzer stack as the default. Drop this and an admin's font
+     choice silently does nothing.
+
+     The system now sets heading and body in the SAME face (Switzer at two
+     weights) — see ds/tokens/typography.css. Both lines are still declared,
+     because Ghost exposes two separate pickers and an admin who sets only one
+     of them must not have the other fall back to something else. */
+  --font-sans:    var(--gh-font-body, "Switzer", "Switzer Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  --font-heading: var(--gh-font-heading, "Switzer", "Switzer Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
 
   /* Re-point Tailwind's `ease-out` utility at the house curve. The design
      system declares --ease-out for its own CSS, but Tailwind only rewrites the

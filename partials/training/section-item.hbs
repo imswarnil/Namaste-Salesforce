@@ -43,7 +43,7 @@
         {{else}}{{#if feature_image}}
           <img src="{{img_url feature_image size="s"}}" alt="" loading="lazy" decoding="async">
         {{else}}
-          <i class="ph-fill ph-stack" aria-hidden="true"></i>
+          {{> icons name="stack"}}
         {{/if}}{{/if}}
       </span>
 
@@ -66,10 +66,10 @@
           <div class="ns-track-card__lessons">
             {{#foreach posts}}
               <a class="ns-track-card__lesson{{^has visibility="public"}} is-locked{{/has}}" href="{{url}}">
-                <i class="ph-fill {{#has tag="#training-video"}}ph-play-circle{{else has tag="#training-exercise"}}ph-barbell{{else has tag="#training-quiz"}}ph-exam{{else}}ph-article{{/has}}" aria-hidden="true"></i>
+                {{#has tag="#training-video"}}{{> icons name="play-circle"}}{{else has tag="#training-exercise"}}{{> icons name="barbell"}}{{else has tag="#training-quiz"}}{{> icons name="exam"}}{{else}}{{> icons name="article"}}{{/has}}
                 <span>{{title}}</span>
                 <span class="ns-track-card__lesson-meta">
-                  {{^has visibility="public"}}<i class="ph-fill ph-lock-simple" aria-hidden="true"></i>{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
+                  {{^has visibility="public"}}{{> icons name="lock"}}{{else}}{{reading_time minute="1m" minutes="%m"}}{{/has}}
                 </span>
               </a>
             {{/foreach}}
@@ -90,10 +90,10 @@
       <span class="ns-plist__main">
         <span class="ns-plist__title">{{title}}</span>
         <span class="ns-plist__meta">
-          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}<i class="ph ph-stack" aria-hidden="true"></i>{{pagination.total}} {{t "lessons"}}{{/get}}
+          {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}{{> icons name="stack"}}{{pagination.total}} {{t "lessons"}}{{/get}}
         </span>
       </span>
-      <i class="ph ph-caret-right ns-plist__arrow" aria-hidden="true"></i>
+      {{> icons name="caret-right" class="ns-plist__arrow"}}
     </a>
   </li>
 {{/match}}
@@ -103,7 +103,7 @@
   <a href="{{url}}" data-t="{{title}}"
      x-show="$el.dataset.t.toLowerCase().includes(q.trim().toLowerCase())"
      class="flex items-center gap-2.5 rounded-btn px-2.5 py-2 text-sm transition hover:bg-surface-sunken">
-    <i class="ph-fill ph-steps shrink-0 text-brand-500" aria-hidden="true"></i>
+    {{> icons name="steps" class="shrink-0 text-brand-500"}}
     <span class="min-w-0 flex-1 truncate font-semibold text-ink">{{title}}</span>
     <span class="ns-badge shrink-0">{{t "Section"}}</span>
   </a>
@@ -169,11 +169,11 @@
         {{else}}{{#if feature_image}}
           <img src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" decoding="async">
         {{else}}
-          <i class="ph-fill ph-stack" aria-hidden="true"></i>
+          {{> icons name="stack"}}
         {{/if}}{{/if}}
       </span>
       <span class="ns-sidenav__stitle">{{title}}</span>
-      <i class="ns-sidenav__caret ph ph-caret-right" aria-hidden="true"></i>
+      {{> icons name="caret-right" class="ns-sidenav__caret"}}
     </summary>
 
     <div class="ns-sidenav__list">
@@ -183,7 +183,7 @@
          @click="$store.lessonNav.close()"
          class="ns-sidenav__link{{#unless curId}}{{#match cur slug}} is-current{{/match}}{{/unless}}">
         <span class="ns-sidenav__num"></span>
-        <i class="ns-sidenav__type ph-fill ph-squares-four" aria-hidden="true"></i>
+        {{> icons name="squares-four" class="ns-sidenav__type"}}
         <span class="ns-sidenav__text">{{t "Overview"}}</span>
       </a>
 
@@ -204,9 +204,9 @@
                            what kind of lesson it is --}}
             <span class="ns-sidenav__num"><span>{{@number}}</span></span>
             {{^has visibility="public"}}
-              <i class="ns-sidenav__type ns-sidenav__type--lock ph-fill ph-lock-simple" aria-hidden="true"></i>
+              {{> icons name="lock" class="ns-sidenav__type ns-sidenav__type--lock"}}
             {{else}}
-              <i class="ns-sidenav__type {{#has tag="#training-video"}}ph-fill ph-play-circle{{else has tag="#training-exercise"}}ph-fill ph-barbell{{else has tag="#training-quiz"}}ph-fill ph-exam{{else}}ph-fill ph-article{{/has}}" aria-hidden="true"></i>
+              {{#has tag="#training-video"}} {{> icons name="play-circle" class="ns-sidenav__type"}}{{else has tag="#training-exercise"}} {{> icons name="barbell" class="ns-sidenav__type"}}{{else has tag="#training-quiz"}} {{> icons name="exam" class="ns-sidenav__type"}}{{else}} {{> icons name="article" class="ns-sidenav__type"}}{{/has}}
             {{/has}}
             <span class="ns-sidenav__text">{{title}}</span>
             <span class="ns-sidenav__meta">{{reading_time minute="1m" minutes="%m"}}</span>

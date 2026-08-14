@@ -1,14 +1,27 @@
 {{!-- components/nav-icon.hbs — maps a navigation item's slug to an icon.
-     Param: slug. Unknown slugs render nothing. Uses independent {{#match}}
-     blocks (Ghost's match helper doesn't support {{else match}} chaining). --}}
-{{#match slug "home"}}{{> "icons/home" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "courses"}}{{> "icons/courses" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "training"}}{{> "icons/training" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "roadmaps"}}{{> "icons/training" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "blog"}}{{> "icons/blog" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "documentation"}}{{> "icons/documentation" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "docs"}}{{> "icons/documentation" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "about"}}{{> "icons/about" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "contact"}}{{> "icons/mail" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "tags"}}{{> "icons/tag" class="h-4 w-4 shrink-0"}}{{/match}}
-{{#match slug "authors"}}{{> "icons/users" class="h-4 w-4 shrink-0"}}{{/match}}
+     Param: slug. An unknown slug renders NOTHING, which is the point: a
+     publisher can add any menu item in Ghost Admin and it simply appears
+     without an icon rather than with a wrong one.
+
+     Independent {{#match}} blocks, not an {{else match}} chain: every slug is
+     tested, exactly one can win, and adding a row can never break the row
+     above it. Icon names are the canonical ones from partials/icons.hbs —
+     several slugs deliberately share a glyph (docs/documentation,
+     training/roadmaps), because they are the same destination by two names. --}}
+{{#match slug "home"}}{{> icons name="house" class="h-4 w-4"}}{{/match}}
+{{#match slug "courses"}}{{> icons name="graduation-cap" class="h-4 w-4"}}{{/match}}
+{{#match slug "training"}}{{> icons name="steps" class="h-4 w-4"}}{{/match}}
+{{#match slug "roadmaps"}}{{> icons name="map-trifold" class="h-4 w-4"}}{{/match}}
+{{#match slug "blog"}}{{> icons name="article" class="h-4 w-4"}}{{/match}}
+{{#match slug "documentation"}}{{> icons name="book-open" class="h-4 w-4"}}{{/match}}
+{{#match slug "docs"}}{{> icons name="book-open" class="h-4 w-4"}}{{/match}}
+{{#match slug "resources"}}{{> icons name="books" class="h-4 w-4"}}{{/match}}
+{{#match slug "about"}}{{> icons name="info" class="h-4 w-4"}}{{/match}}
+{{#match slug "contact"}}{{> icons name="mail" class="h-4 w-4"}}{{/match}}
+{{#match slug "tags"}}{{> icons name="tag" class="h-4 w-4"}}{{/match}}
+{{#match slug "authors"}}{{> icons name="users" class="h-4 w-4"}}{{/match}}
+{{#match slug "community"}}{{> icons name="chats" class="h-4 w-4"}}{{/match}}
+{{#match slug "sponsor"}}{{> icons name="heart" class="h-4 w-4"}}{{/match}}
+{{#match slug "welcome"}}{{> icons name="sparkle" class="h-4 w-4"}}{{/match}}
+{{#match slug "membership"}}{{> icons name="credit-card" class="h-4 w-4"}}{{/match}}
+{{#match slug "app"}}{{> icons name="rocket" class="h-4 w-4"}}{{/match}}

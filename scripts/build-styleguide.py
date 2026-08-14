@@ -10,8 +10,12 @@ TWO RULES THIS GENERATOR ENFORCES, because the theme follows them too:
   1. No <style> blocks and no inline style attributes. Page chrome comes from
      assets/built/styleguide.css; specimen scaffolding uses the `demo-*`
      classes defined there. The build FAILS if a `style="` slips in.
-  2. Every ph-* glyph must exist in the SUBSETTED icon font, or it silently
-     renders as a blank box.
+  2. Every icon name must exist in partials/icons.hbs. The theme draws icons
+     as INLINE SVG from that one partial — there is no icon font any more — so
+     a name with no entry would render as nothing at all. Specimens here are
+     still WRITTEN as `<i class="ph ph-name">`, because that is compact to
+     type; render_icons() below rewrites them into the same inline SVG the
+     theme ships, from the same source, so the guide cannot drift from it.
 
 Edit THIS file, never the generated HTML. `yarn styleguide` regenerates.
 """
@@ -20,6 +24,62 @@ import re
 
 OUT = pathlib.Path("styleguide")
 PAGES = []
+
+# ── The icon set ─────────────────────────────────────────────────────────────
+# Read straight out of the partial the theme renders, so a specimen here IS the
+# icon on the site — not a copy of it that has to be kept in step by hand.
+ICONS = dict(re.findall(r'\{\{#match name "([a-z0-9-]+)"\}\}(.*?)\{\{/match\}\}',
+                        pathlib.Path("partials/icons.hbs").read_text()))
+
+# Specimens are written with Phosphor's old vocabulary because it is terser than
+# the markup it stands for. This is the same mapping the templates were migrated
+# through, kept only so the generator source stays readable.
+ALIASES = {
+    "magnifying-glass": "search", "envelope-simple": "mail", "users-three": "users",
+    "rocket-launch": "rocket", "lock-simple": "lock", "lock-simple-open": "lock-open",
+    "book-open-text": "book-open", "chat-circle-text": "chat", "chats-circle": "chats",
+    "chart-line-up": "chart-line", "video-camera": "video", "crown-simple": "crown",
+    "gear-six": "gear", "link-simple": "link", "share-network": "share",
+    "paper-plane-tilt": "paper-plane", "rss-simple": "rss", "twitter-logo": "x-logo",
+    "linkedin-logo": "linkedin", "facebook-logo": "facebook", "rows": "list",
+    "globe-hemisphere-east": "globe", "flag-banner-fold": "flag", "strategy": "arrows-clockwise",
+    "terminal-window": "terminal", "identification-badge": "user-circle", "note-pencil": "pen-nib",
+    "chat-teardrop-text": "chat", "bookmark-simple": "book-bookmark", "list-bullets": "list",
+    "dots-three": "list", "caret-up-down": "caret-down", "arrow-square-out": "arrow-up-right",
+    "warning-circle": "warning", "bell-ringing": "megaphone", "note": "file-text",
+}
+
+WEIGHTS = {"ph", "ph-fill", "ph-bold", "ph-duotone", "ph-thin", "ph-light", "ph-regular"}
+
+
+def icon(name, cls=""):
+    """One inline SVG, drawn exactly as partials/icons.hbs draws it."""
+    name = ALIASES.get(name, name)
+    body = ICONS.get(name)
+    if body is None:
+        raise SystemExit(f"NO SUCH ICON: {name!r}\n  \u2192 add it to partials/icons.hbs, "
+                         "or use one of: " + ", ".join(sorted(ICONS)))
+    klass = "ns-icon" + (" " + cls if cls else "")
+    return (f'<svg class="{klass}" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            f'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" '
+            f'aria-hidden="true" focusable="false">{body}</svg>')
+
+
+def render_icons(html):
+    """Rewrite every `<i class="… ph-name …"></i>` specimen into inline SVG."""
+    def one(m):
+        keep, glyph = [], None
+        for c in m.group(1).split():
+            if c in WEIGHTS:
+                continue
+            if c.startswith("ph-") and glyph is None:
+                glyph = c[3:]
+                continue
+            keep.append(c)
+        if glyph is None:
+            return m.group(0)
+        return icon(glyph, " ".join(keep))
+    return re.sub(r'<i class="([^"]*?)"\s*(?:aria-hidden="true")?\s*></i>', one, html)
 
 
 # ── Page + block helpers ─────────────────────────────────────────────────────
@@ -169,6 +229,33 @@ page("Foundation", "helpers", "Helpers &amp; mixins",
      note("Also here: <code>ns-center</code>, <code>ns-scroll-x</code>, <code>ns-snap-x</code>, "
           "<code>ns-sr-only</code>, <code>ns-anchor</code>, <code>ns-surface</code>, "
           "<code>ns-divide-y</code>, <code>ns-animate-in</code>, <code>ns-no-print</code>."))
+
+page("Foundation", "icons", "Icons",
+     "One partial, one <code>&lt;svg&gt;</code>, no third party. Every icon on the site is inline SVG "
+     "drawn from <code>partials/icons.hbs</code> — there is no icon font, no CDN and no request "
+     "before an icon paints. Rendered here straight from that file, so this page cannot go stale.",
+     head("How to use one"),
+     row(spec("default \u2014 1em, inherits colour",
+              '<span class="ns-cluster">' + icon("rocket") + icon("graduation-cap") + icon("seal-check") + '</span>'),
+         spec("sized with utilities",
+              '<span class="ns-cluster">' + icon("rocket", "h-4 w-4") + icon("rocket", "h-6 w-6") + icon("rocket", "h-8 w-8") + '</span>'),
+         spec("coloured by its container",
+              '<span class="ns-cluster text-brand-600">' + icon("heart") + icon("star") + icon("check-circle") + '</span>')),
+     note("<code>{{&gt; icons name=\"arrow-right\"}}</code> is the whole API. The "
+          "<code>class</code> parameter adds utilities; <code>title</code> swaps "
+          "<code>aria-hidden</code> for a label when the icon carries meaning the text does not. "
+          "Every svg also carries <code>.ns-icon</code>, the design system\u2019s icon primitive: "
+          "1em square, baseline-aligned, <code>flex: none</code>, <code>currentColor</code> \u2014 "
+          "the same contract the app\u2019s sprite icons use."),
+     head(f"The set \u2014 {len(ICONS)} icons"),
+     row(*[spec(n, '<span class="demo-index-lg">' + icon(n) + '</span>')
+           for n in sorted(ICONS)]),
+     note("Adding one is adding a <code>{{#match name=\u2026}}</code> line to "
+          "<code>partials/icons.hbs</code>: 24\u00d724 viewBox, stroke-width 1.7, round caps and "
+          "joins, artwork inside a ~3px margin, <code>currentColor</code>. The brand marks at the "
+          "foot of that file are the one exception \u2014 they are drawn solid, because that is how "
+          "those marks are specified."))
+
 
 # ═════════════════════════════════════════════════════════════════════════════
 # COMPONENTS — basics
@@ -2440,9 +2527,9 @@ def build():
         </tbody>
       </table>
     '''
-    (OUT / "index.html").write_text(SHELL.format(
+    (OUT / "index.html").write_text(render_icons(SHELL.format(
         title="Overview", group="Overview", sidebar=sidebar("index"),
-        content=home, moon=MOON, sun=SUN))
+        content=home, moon=MOON, sun=SUN)))
 
     for idx, (group, slug, title, blurb, blocks) in enumerate(PAGES):
         prev_ = order[idx - 1] if idx else None
@@ -2456,9 +2543,9 @@ def build():
 
         content = (f'<h1 class="sg-h1">{title}</h1><p class="sg-lede">{blurb}</p>'
                    + "".join(render_block(b) for b in blocks) + "".join(pager))
-        (OUT / f"{slug}.html").write_text(SHELL.format(
+        (OUT / f"{slug}.html").write_text(render_icons(SHELL.format(
             title=title, group=group, sidebar=sidebar(slug),
-            content=content, moon=MOON, sun=SUN))
+            content=content, moon=MOON, sun=SUN)))
 
     # ── Guards ──────────────────────────────────────────────────────────────
     pages = sorted(OUT.glob("*.html"))
@@ -2470,19 +2557,22 @@ def build():
         raise SystemExit("INLINE CSS found in: " + ", ".join(inline)
                          + "\n  → move it to assets/css/styleguide.css as a .sg-* or .demo-* class.")
 
-    # The Phosphor subset ships with the design system now (vendored by
-    # `yarn design:sync`), not from the theme's own generated icons.css.
-    subset = set(re.findall(r"\.(ph-[a-z0-9-]+)",
-                            pathlib.Path("assets/css/ds/icons/phosphor.css").read_text()))
-    used = set(re.findall(r"\b(ph-[a-z0-9-]+)", html)) - {"ph-fill"}
-    missing = sorted(used - subset)
+    # No icon font ships any more, so nothing may reach the output still
+    # asking for one. render_icons() has already turned every `<i class="ph-*">`
+    # specimen into inline SVG (and raised on an unknown name); anything left is
+    # a glyph class written somewhere it could not reach, which would render as
+    # empty space on the page.
+    leftover = sorted(set(re.findall(r"\bph-[a-z0-9-]+", html)))
+    drawn = len(re.findall(r'class="ns-icon', html))
 
-    print(f"styleguide/ — {len(pages)} pages, {len(used)} glyphs, no inline CSS")
-    if missing:
-        raise SystemExit("NOT IN THE ICON SUBSET (would render blank): " + ", ".join(missing)
-                         + "\n  → pick another glyph, or add it to CONTENT_SAFELIST in"
-                           " scripts/subset-icons.py and re-run it.")
-    print("all glyphs present in the subset")
+    print(f"styleguide/ — {len(pages)} pages, {drawn} inline icons "
+          f"from {len(ICONS)} in the set, no inline CSS")
+    if leftover:
+        raise SystemExit("ICON-FONT CLASSES LEFT IN THE OUTPUT: " + ", ".join(leftover)
+                         + "\n  → these render as nothing. Write them as"
+                           " <i class=\"ph ph-name\"></i> so render_icons() can convert"
+                           " them, or call icon(\"name\") directly.")
+    print("every icon resolved against partials/icons.hbs")
 
 
 if __name__ == "__main__":

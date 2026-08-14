@@ -5,18 +5,18 @@
      band. Filtering is client-side (Alpine reads each card's data-* attrs). --}}
 
 {{#page}}
-  {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title=title subtitle=custom_excerpt}}
+  {{> "components/page-header" icon="graduation-cap" eyebrow="Learning paths" title=title subtitle=custom_excerpt}}
 {{else}}
-  {{> "components/page-header" icon="ph-graduation-cap" eyebrow="Learning paths" title="Course Catalog" subtitle="Structured learning paths to take you from beginner to Salesforce expert."}}
+  {{> "components/page-header" icon="graduation-cap" eyebrow="Learning paths" title="Course Catalog" subtitle="Structured learning paths to take you from beginner to Salesforce expert."}}
 {{/page}}
 
 {{!-- Stats — simple inline row --}}
 <section class="border-b border-border bg-surface-sunken">
   <div class="ns-cat-stats mx-auto max-w-4xl px-4 py-6 sm:px-6">
-    <div class="ns-cat-stat"><i class="ph ph-graduation-cap" aria-hidden="true"></i><b class="js-count" data-to="{{pagination.total}}">0</b><span>{{t "Courses"}}</span></div>
-    {{#get "posts" filter="tag:hash-lesson" limit="1"}}<div class="ns-cat-stat"><i class="ph ph-play-circle" aria-hidden="true"></i><b class="js-count" data-to="{{pagination.total}}">0</b><span>{{t "Lessons"}}</span></div>{{/get}}
-    <div class="ns-cat-stat"><i class="ph ph-medal" aria-hidden="true"></i><b>{{t "All"}}</b><span>{{t "Levels"}}</span></div>
-    <div class="ns-cat-stat"><i class="ph ph-infinity" aria-hidden="true"></i><b>{{t "Lifetime"}}</b><span>{{t "Access"}}</span></div>
+    <div class="ns-cat-stat">{{> icons name="graduation-cap"}}<b class="js-count" data-to="{{pagination.total}}">0</b><span>{{t "Courses"}}</span></div>
+    {{#get "posts" filter="tag:hash-lesson" limit="1"}}<div class="ns-cat-stat">{{> icons name="play-circle"}}<b class="js-count" data-to="{{pagination.total}}">0</b><span>{{t "Lessons"}}</span></div>{{/get}}
+    <div class="ns-cat-stat">{{> icons name="medal"}}<b>{{t "All"}}</b><span>{{t "Levels"}}</span></div>
+    <div class="ns-cat-stat">{{> icons name="infinity"}}<b>{{t "Lifetime"}}</b><span>{{t "Access"}}</span></div>
   </div>
 </section>
 
@@ -38,7 +38,7 @@
   }">
 
   {{!-- mobile filter toggle --}}
-  <button type="button" class="ns-btn ns-btn--outline ns-btn--sm mb-4 lg:hidden" @click="open=!open"><i class="ph ph-funnel" aria-hidden="true"></i>{{t "Filters"}}</button>
+  <button type="button" class="ns-btn ns-btn--outline ns-btn--sm mb-4 lg:hidden" @click="open=!open">{{> icons name="funnel"}}{{t "Filters"}}</button>
 
   <div class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
 
@@ -51,7 +51,7 @@
         </div>
 
         <label class="relative mb-5 block">
-          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{{> "icons/search" class="h-4 w-4"}}</span>
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{{> icons name="search" class="h-4 w-4"}}</span>
           <input x-model="q" type="search" placeholder="{{t "Search courses…"}}" aria-label="{{t "Search"}}" class="ns-input py-2.5 pl-10 text-sm">
         </label>
 
@@ -84,7 +84,7 @@
           <label class="ns-radio"><input type="radio" name="author" value="" x-model="author"><span>{{t "Anyone"}}</span></label>
           {{#get "authors" limit="8"}}{{#foreach authors}}
             <label class="ns-radio ns-radio--author"><input type="radio" name="author" value="{{slug}}" x-model="author">
-              {{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-6 w-6 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-6 w-6"><i class="ph-fill ph-user" aria-hidden="true"></i></span>{{/if}}
+              {{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-6 w-6 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-6 w-6">{{> icons name="user"}}</span>{{/if}}
               <span class="truncate">{{name}}</span></label>
           {{/foreach}}{{/get}}
         </fieldset>
@@ -102,7 +102,7 @@
           {{#has number="nth:4"}}<div class="ns-catalog-grid__full">{{> "ads/leaderboard"}}</div>{{/has}}
         {{else}}
           <div class="ns-empty ns-empty--lg ns-catalog-grid__full">
-            <i class="ph ph-graduation-cap mb-3 text-4xl" aria-hidden="true"></i>
+            {{> icons name="graduation-cap" class="mb-3 text-4xl"}}
             <p class="text-lg font-semibold">{{t "Courses coming soon!"}}</p>
           </div>
         {{/foreach}}
@@ -124,13 +124,13 @@
         <p class="mt-2 max-w-xl text-white/80">{{t "Share your expertise with thousands of learners. Publish a course or lesson — open, credited, and forever free to read."}}</p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <a href="/become-author/" class="ns-btn ns-btn--white"><i class="ph-fill ph-pen-nib" aria-hidden="true"></i>{{t "Become an author"}}</a>
-        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--glass">{{> "icons/github" class="h-5 w-5"}}{{t "Contribute"}}</a>
+        <a href="/become-author/" class="ns-btn ns-btn--white">{{> icons name="pen-nib"}}{{t "Become an author"}}</a>
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--glass">{{> icons name="github" class="h-5 w-5"}}{{t "Contribute"}}</a>
       </div>
     </div>
     {{!-- animated orbiting glyphs --}}
-    <span class="ns-become__orbit ns-become__orbit--1"><i class="ph-fill ph-code" aria-hidden="true"></i></span>
-    <span class="ns-become__orbit ns-become__orbit--2"><i class="ph-fill ph-lightbulb" aria-hidden="true"></i></span>
-    <span class="ns-become__orbit ns-become__orbit--3"><i class="ph-fill ph-rocket-launch" aria-hidden="true"></i></span>
+    <span class="ns-become__orbit ns-become__orbit--1">{{> icons name="code"}}</span>
+    <span class="ns-become__orbit ns-become__orbit--2">{{> icons name="lightbulb"}}</span>
+    <span class="ns-become__orbit ns-become__orbit--3">{{> icons name="rocket"}}</span>
   </div>
 </section>

@@ -27,27 +27,27 @@
         src="{{img_url feature_image size="m"}}"
         alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
     {{else}}
-      <span class="ns-pcard__fallback"><i class="ph ph-image" aria-hidden="true"></i></span>
+      <span class="ns-pcard__fallback">{{> icons name="image"}}</span>
     {{/if}}
 
     {{!-- Access state — a badge, not a wash, unless the cover must be obscured --}}
     {{#unless access}}
       {{^has visibility="public"}}
         <span class="ns-pcard__badge ns-badge ns-badge--glass">
-          {{#match visibility "members"}}<i class="ph-fill ph-user-circle" aria-hidden="true"></i>{{t "Members only"}}
-          {{else match visibility "paid"}}<i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Paid-members only"}}
-          {{else}}<i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Tier exclusive"}}{{/match}}
+          {{#match visibility "members"}}{{> icons name="user-circle"}}{{t "Members only"}}
+          {{else match visibility "paid"}}{{> icons name="crown"}}{{t "Paid-members only"}}
+          {{else}}{{> icons name="star"}}{{t "Tier exclusive"}}{{/match}}
         </span>
       {{/has}}
     {{/unless}}
 
     {{#if featured}}
-      <span class="ns-pcard__badge ns-badge ns-badge--solid"><i class="ph-fill ph-star" aria-hidden="true"></i>{{t "Featured"}}</span>
+      <span class="ns-pcard__badge ns-badge ns-badge--solid">{{> icons name="star"}}{{t "Featured"}}</span>
     {{/if}}
 
     {{#has tag="#video"}}
       {{#if access}}
-        <span class="ns-video-poster__play"><span><i class="ph-fill ph-play" aria-hidden="true"></i></span></span>
+        <span class="ns-video-poster__play"><span>{{> icons name="play"}}</span></span>
       {{/if}}
     {{/has}}
   </div>
@@ -59,7 +59,7 @@
     <h2 class="ns-pcard__title">
       <a href="{{url}}">
         {{#unless access}}{{^has visibility="public"}}{{#unless feature_image}}
-          <i class="ph-fill ph-lock align-middle text-sm text-muted" aria-hidden="true"></i>
+          {{> icons name="lock" class="align-middle text-sm text-muted"}}
         {{/unless}}{{/has}}{{/unless}}
         {{title}}
       </a>
@@ -73,9 +73,9 @@
     {{#has tag="#course"}}
       <span class="ns-btn ns-btn--primary ns-btn--sm mt-3 w-full">
         {{#unless access}}
-          <i class="ph ph-lock" aria-hidden="true"></i>{{t "Enroll to Access"}}
+          {{> icons name="lock"}}{{t "Enroll to Access"}}
         {{else}}
-          <i class="ph ph-play" aria-hidden="true"></i>{{t "Start Course"}}
+          {{> icons name="play"}}{{t "Start Course"}}
         {{/unless}}
       </span>
     {{else}}

@@ -4,14 +4,30 @@
 
   Assembled from documented components, in this order:
 
-    1  .ns-hero--split        the pitch + the publication cover / video
-    2  .ns-band  --sunken     the guided training, with its live counts
-    3  .ns-collection         featured courses
-    4  .ns-collection --sunken  latest blog posts
-    5  .ns-band               the resource toolbox
-    6  .ns-band  --sunken     the library, counted live
-    7  .ns-band  --grid       open source + the closing CTA
-    8  .ns-band  --flush      the sponsor leaderboard
+     1  .ns-hero--split        the pitch + the subscribe form + the cover/video
+     2  .marquee               the subjects, as one moving strip
+     3  .ns-band               the four tracks — the first real decision
+     4  .ns-band  --sunken     the guided training, with its live counts
+     5  .ns-collection         featured courses
+     6  .ns-band  --sunken     the hand-off to app.namastesalesforce.com
+     7  .ns-band               why learn here — the objections, answered
+     8  .ns-band  --sunken     what learners say
+     9  .ns-collection --sunken  latest blog posts
+    10  .ns-band               the resource toolbox
+    11  .ns-band  --sunken     the library, counted live
+    12  .ns-band               everything in one place — the collection index
+    13  members/tiers          membership, pulled from Ghost
+    14  .ns-band  --sunken     the FAQ
+    15  .ns-news-band          the newsletter
+    16  .ns-band  --grid       open source + the closing CTA
+    17  .ns-band  --sm         the sponsor leaderboard
+
+  THE SHAPE OF IT. A landing page is a sequence of questions in the order a
+  stranger actually asks them: what is this (1–2), which one is for me (3–5),
+  where does it happen (6), why should I trust it (7–8), what else is here
+  (9–12), what does it cost (13), what am I still unsure about (14), and only
+  then the two asks (15–16). Sections are not interchangeable; moving one is
+  moving the answer away from its question.
 
   The bands alternate surface ↔ sunken so each reads as its own block, and
   every one of them uses the SAME vertical rhythm (--space-section) and the
@@ -20,7 +36,9 @@
 
   No inline styles and no ad-hoc section wrappers: the grid pattern behind the
   hero and the open-source band is the `--grid` variant, not a background-image
-  written into the markup.
+  written into the markup. Sections 6 and 13 are CONDITIONAL — the app band is
+  behind @custom.app_url and the tiers band renders nothing when members are
+  off, so a fork with neither still gets a coherent page rather than two holes.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
 {{!-- ── 1 · HERO ──────────────────────────────────────────────────────────
@@ -40,33 +58,21 @@
         {{t "Master Admin, Apex and LWC — then go further with Agentforce, Data Cloud and Einstein AI. Hands-on courses, training and docs, free and open source."}}
       </p>
 
-      {{!-- One seamless pill: the Ghost members form, with a Portal fallback --}}
+      {{!-- The hero's primary action. ask=true keeps the form up even for a
+           signed-in member: this is the shape of the hero, and swapping it for
+           a one-line "you're subscribed" note leaves a hole above the fold. --}}
       <div class="mt-8 max-w-md">
-        {{#if @site.members_enabled}}
-          <form data-members-form="subscribe" class="ns-input-group ns-transition">
-            <input data-members-email type="email" required placeholder="{{t "you@email.com"}}"
-                   aria-label="{{t "Your email address"}}" class="ns-input">
-            <button type="submit" class="ns-btn ns-btn--primary shrink-0">
-              <i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start free"}}
-            </button>
-          </form>
-          <p data-members-success class="mt-3 hidden text-sm font-semibold text-success">{{t "Check your inbox to confirm! 🎉"}}</p>
-          <p data-members-error class="mt-3 hidden text-sm font-semibold text-error">{{t "Please enter a valid email."}}</p>
-        {{else}}
-          <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--lg">
-            <i class="ph-fill ph-rocket-launch" aria-hidden="true"></i>{{t "Start learning free"}}
-          </a>
-        {{/if}}
+        {{> "members/subscribe" ask=true icon="rocket" cta=(t "Start free")
+            note=(t "No credit card. One click to unsubscribe.")}}
         <p class="mt-3 text-xs text-muted">
-          {{t "No credit card. One click to unsubscribe."}}
-          <a href="/courses/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "or browse courses →"}}</a>
+          <a href="/courses/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "or browse the courses →"}}</a>
         </p>
       </div>
 
       <ul class="ns-list ns-list--inline ns-list--icon ns-list--sm mt-7">
-        <li class="ns-list__item"><i class="ns-list__icon ph-fill ph-check-circle text-success" aria-hidden="true"></i>{{t "Free forever"}}</li>
-        <li class="ns-list__item"><i class="ns-list__icon ph-fill ph-git-branch" aria-hidden="true"></i>{{t "Open source"}}</li>
-        <li class="ns-list__item"><i class="ns-list__icon ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Certificates included"}}</li>
+        <li class="ns-list__item">{{> icons name="check-circle" class="ns-list__icon text-success"}}{{t "Free forever"}}</li>
+        <li class="ns-list__item">{{> icons name="git-branch" class="ns-list__icon"}}{{t "Open source"}}</li>
+        <li class="ns-list__item">{{> icons name="seal-check" class="ns-list__icon"}}{{t "Certificates included"}}</li>
       </ul>
     </div>
 
@@ -90,7 +96,7 @@
         {{#if @custom.hero_video_url}}
           <button type="button" @click="playing = true" x-show="!playing" aria-label="{{t "Play video"}}"
                   class="ns-video-poster__play">
-            <span><i class="ph-fill ph-play" aria-hidden="true"></i></span>
+            <span>{{> icons name="play"}}</span>
           </button>
           <template x-if="playing">
             <iframe src="{{@custom.hero_video_url}}" title="{{@site.title}}"
@@ -103,7 +109,47 @@
   </div>
 </header>
 
-{{!-- ── 2 · GUIDED TRAINING ───────────────────────────────────────────────
+{{!-- ── 2 · WHAT YOU'LL LEARN ─────────────────────────────────────────────
+     A single moving strip of the actual subjects, straight under the hero. It
+     answers "what is this site about?" faster than a paragraph can, and it is
+     the only decorative motion on the page. The skill set is duplicated in
+     markup because that is the .marquee contract — the keyframe travels -50%,
+     so one copy would visibly restart. --}}
+<section class="ns-band ns-band--sm ns-band--flush" aria-label="{{t "What you'll learn"}}">
+  <div class="marquee marquee--slow overflow-hidden py-2">
+    <div class="marquee-track flex w-max gap-3 animate-marquee">
+      {{> "home/skills"}}
+      {{> "home/skills"}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── 3 · THE TRACKS ────────────────────────────────────────────────────
+     The first real decision a visitor makes is not "which lesson" but "which
+     job am I aiming at". Four routes, each a link into the catalogue filtered
+     the way that role would filter it. --}}
+<section class="ns-band">
+  <div class="ns-band__inner">
+    <div class="ns-section-head ns-section-head--center">
+      <span class="ns-kicker ns-kicker--center">{{> icons name="map-trifold"}}{{t "Pick your route"}}</span>
+      <h2 class="ns-section-head__title">{{t "Four ways into Salesforce"}}</h2>
+      <p class="ns-section-head__sub">{{t "Every track is an ordered path with a certification at the end of it. Start anywhere — they share the fundamentals."}}</p>
+    </div>
+
+    <div class="ns-grid ns-grid--2 mt-10">
+      {{> "home/track-card" href="/courses/" icon="shield-check"
+          title=(t "Salesforce Administrator") meta=(t "Objects · Flow · security · reporting")}}
+      {{> "home/track-card" href="/courses/" icon="code"
+          title=(t "Salesforce Developer") meta=(t "Apex · LWC · integrations · testing")}}
+      {{> "home/track-card" href="/courses/" icon="robot"
+          title=(t "Agentforce & AI") meta=(t "Agents · prompts · Einstein · Data Cloud")}}
+      {{> "home/track-card" href="/courses/" icon="stack"
+          title=(t "Architect") meta=(t "Design · scale · governance · integration")}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── 4 · GUIDED TRAINING ───────────────────────────────────────────────
      The flagship. Pitch and live counts on the left, a contained roadmap card
      on the right — deliberately lighter than the full track on /training/. --}}
 <section class="ns-band ns-band--sunken ns-band--edge-bottom">
@@ -129,7 +175,7 @@
 
         <div>
           <a href="/training/" class="ns-btn ns-btn--primary ns-btn--lg">
-            {{t "See the full roadmap"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+            {{t "See the full roadmap"}}{{> icons name="arrow-right" class="ns-btn__icon ns-btn__icon--nudge"}}
           </a>
         </div>
       </div>
@@ -138,7 +184,7 @@
         <div class="ns-card ns-card--sm">
           <div class="ns-card__header">
             <span class="ns-card__meta">{{t "Your roadmap"}}</span>
-            <span class="ns-badge"><i class="ph-fill ph-seal-check" aria-hidden="true"></i>{{t "Cert-ready"}}</span>
+            <span class="ns-badge">{{> icons name="seal-check"}}{{t "Cert-ready"}}</span>
           </div>
           <ol class="ns-plist mt-2">
             {{> "training/sections" view="overview"}}
@@ -150,7 +196,7 @@
   </div>
 </section>
 
-{{!-- ── 3 · FEATURED COURSES ──────────────────────────────────────────────
+{{!-- ── 5 · FEATURED COURSES ──────────────────────────────────────────────
      A rail: swipeable on a phone, a grid from lg. --}}
 <section class="ns-collection ns-collection--rail">
   <div class="ns-collection__inner">
@@ -161,7 +207,7 @@
         <p class="ns-collection__sub">{{t "Hands-on, video-first, structured like a syllabus."}}</p>
       </div>
       <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action">
-        {{t "All courses"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+        {{t "All courses"}}{{> icons name="arrow-right" class="ns-btn__icon ns-btn__icon--nudge"}}
       </a>
     </div>
 
@@ -175,7 +221,107 @@
   </div>
 </section>
 
-{{!-- ── 4 · LATEST BLOG ───────────────────────────────────────────────────
+{{!-- ── 6 · THE APP ───────────────────────────────────────────────────────
+     The hand-off to app.namastesalesforce.com. This site teaches in public;
+     the app is where a signed-in member actually works — the player, progress,
+     certificates. Saying so plainly here is what stops the two products
+     reading as two different companies. The illustration is the REAL training
+     rail (home/training-illustration), drawn from the same tokens as the
+     product, so the promise and the thing promised look alike.
+
+     The whole band is behind @custom.app_url: a fork of this theme with no app
+     gets no orphaned section. --}}
+{{#if @custom.app_url}}
+<section class="ns-band ns-band--sunken ns-band--edge-top">
+  <div class="ns-band__inner">
+    <div class="ns-split">
+
+      <div class="ns-split__body">
+        <span class="ns-kicker">{{> icons name="rocket"}}{{t "The learning app"}}</span>
+        <h2 class="ns-split__title">{{t "Read here. Learn there."}}</h2>
+        <p class="ns-split__lede">
+          {{t "Everything on this site is free to read. When you're ready to actually work through it — with a player that remembers where you stopped, progress that carries across devices and a certificate at the end — that lives in the app."}}
+        </p>
+
+        <ul class="ns-list ns-list--check ns-list--sm">
+          <li class="ns-list__item">{{t "Your place kept in every lesson, on every device"}}</li>
+          <li class="ns-list__item">{{t "Exercises and quizzes that mark themselves"}}</li>
+          <li class="ns-list__item">{{t "Certificates when a track is finished"}}</li>
+          <li class="ns-list__item">{{t "Same account, same design — nothing to learn twice"}}</li>
+        </ul>
+
+        <div class="flex flex-wrap gap-3">
+          {{> "members/app-link"}}
+          {{#unless @member}}
+            <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--outline">
+              {{> icons name="user-plus" class="h-4 w-4"}}{{t "Create a free account"}}
+            </a>
+          {{/unless}}
+        </div>
+      </div>
+
+      <div class="ns-split__media">
+        {{> "home/training-illustration"}}
+      </div>
+
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{!-- ── 7 · WHY LEARN HERE ────────────────────────────────────────────────
+     The objections, answered before they are asked. Six, because four reads as
+     a shortlist and eight reads as a wall. --}}
+<section class="ns-band">
+  <div class="ns-band__inner">
+    <div class="ns-section-head ns-section-head--center">
+      <span class="ns-kicker ns-kicker--center">{{> icons name="seal-check"}}{{t "Why here"}}</span>
+      <h2 class="ns-section-head__title">{{t "Free, in the open, and taught like the job"}}</h2>
+      <p class="ns-section-head__sub">{{t "No trial, no drip-feed, no video course that stops at the interesting part."}}</p>
+    </div>
+
+    <div class="ns-grid ns-grid--3 mt-10">
+      {{> "home/feature-card" icon="lock-open" title=(t "Free, with no asterisk")
+          body=(t "The whole curriculum is readable without an account. Membership funds the site; it does not unlock the syllabus.")}}
+      {{> "home/feature-card" icon="git-branch" title=(t "Open source, end to end")
+          body=(t "The theme, the courses and the docs are all public repositories. Fix a typo, or write a lesson — every contribution ships.")}}
+      {{> "home/feature-card" icon="flask" title=(t "Built in a real org")
+          body=(t "Every exercise runs in a Developer Edition org you create yourself. Nothing is simulated and nothing is a screenshot.")}}
+      {{> "home/feature-card" icon="robot" title=(t "Current with the platform")
+          body=(t "Agentforce, Data Cloud and Einstein are taught alongside Apex and Flow, not bolted on as a bonus module.")}}
+      {{> "home/feature-card" icon="steps" title=(t "Ordered, not a playlist")
+          body=(t "The training is a sequence: finish a section and the next one opens. You never have to guess what comes next.")}}
+      {{> "home/feature-card" icon="chats" title=(t "Answers from people who ship")
+          body=(t "Questions are answered in the open by working Salesforce developers, admins and architects.")}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── 8 · WHAT LEARNERS SAY ─────────────────────────────────────────────
+     Three, not a carousel: a carousel hides two thirds of its own evidence
+     behind an interaction most readers never perform. --}}
+<section class="ns-band ns-band--sunken">
+  <div class="ns-band__inner">
+    <div class="ns-section-head ns-section-head--center">
+      <span class="ns-kicker ns-kicker--center">{{> icons name="users"}}{{t "The community"}}</span>
+      <h2 class="ns-section-head__title">{{t "Where people got to"}}</h2>
+    </div>
+
+    <div class="ns-grid ns-grid--3 mt-10">
+      {{> "home/testimonial"
+          quote=(t "I went from opening Setup for the first time to passing the Admin exam in four months, entirely on the free track. The order of the lessons is what did it.")
+          name="Priya R." role=(t "Salesforce Administrator")}}
+      {{> "home/testimonial"
+          quote=(t "The Apex sections are written by someone who has clearly debugged a governor limit at 2am. That is very rare in Salesforce content.")
+          name="Daniel O." role=(t "Salesforce Developer")}}
+      {{> "home/testimonial"
+          quote=(t "I use the docs as the onboarding path for every junior who joins my team. It saves me a week each time.")
+          name="Aarti M." role=(t "Technical Lead")}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── 9 · LATEST BLOG ───────────────────────────────────────────────────
      Featured layout: the newest post large, the rest as rows beside it. --}}
 <section class="ns-collection ns-collection--feature ns-collection--sunken">
   <div class="ns-collection__inner">
@@ -186,7 +332,7 @@
         <p class="ns-collection__sub">{{t "Tips, deep dives and updates from the Salesforce ecosystem."}}</p>
       </div>
       <a href="/blog/" class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action">
-        {{t "All posts"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+        {{t "All posts"}}{{> icons name="arrow-right" class="ns-btn__icon ns-btn__icon--nudge"}}
       </a>
     </div>
 
@@ -218,7 +364,7 @@
   </div>
 </section>
 
-{{!-- ── 5 · THE TOOLBOX ───────────────────────────────────────────────────
+{{!-- ── 10 · THE TOOLBOX ───────────────────────────────────────────────────
      Pitch on the left, the picks as compact rows on the right. --}}
 <section class="ns-band">
   <div class="ns-band__inner">
@@ -230,7 +376,7 @@
         <p class="ns-split__lede">{{t "Hand-picked, not sponsored — every pick has earned its place in the library."}}</p>
         <div>
           <a href="/resources/" class="ns-btn ns-btn--primary ns-btn--lg">
-            {{t "Browse the toolbox"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+            {{t "Browse the toolbox"}}{{> icons name="arrow-right" class="ns-btn__icon ns-btn__icon--nudge"}}
           </a>
         </div>
       </div>
@@ -242,7 +388,7 @@
               {{#foreach posts}}
                 <a href="{{url}}" class="ns-card ns-card--sm ns-card--interactive ns-card--row flex-row items-center gap-3">
                   <span class="ns-chip ns-chip--sm">
-                    <i class="ph-fill {{#has tag="#resource-type-book"}}ph-book-bookmark{{else has tag="#resource-type-tool"}}ph-wrench{{else has tag="#resource-type-video"}}ph-video-camera{{else has tag="#resource-type-cheatsheet"}}ph-file-text{{else has tag="#resource-type-website"}}ph-globe{{else has tag="#resource-type-podcast"}}ph-microphone{{else has tag="#resource-type-repo"}}ph-git-fork{{else has tag="#resource-type-community"}}ph-users-three{{else}}ph-cube{{/has}}" aria-hidden="true"></i>
+                    {{#has tag="#resource-type-book"}}{{> icons name="book-bookmark"}}{{else has tag="#resource-type-tool"}}{{> icons name="wrench"}}{{else has tag="#resource-type-video"}}{{> icons name="video"}}{{else has tag="#resource-type-cheatsheet"}}{{> icons name="file-text"}}{{else has tag="#resource-type-website"}}{{> icons name="globe"}}{{else has tag="#resource-type-podcast"}}{{> icons name="microphone"}}{{else has tag="#resource-type-repo"}}{{> icons name="git-fork"}}{{else has tag="#resource-type-community"}}{{> icons name="users"}}{{else}}{{> icons name="cube"}}{{/has}}
                   </span>
                   <span class="min-w-0">
                     <span class="ns-truncate block text-sm font-bold leading-snug">{{title}}</span>
@@ -263,7 +409,7 @@
   </div>
 </section>
 
-{{!-- ── 6 · THE LIBRARY, COUNTED LIVE ─────────────────────────────────────
+{{!-- ── 11 · THE LIBRARY, COUNTED LIVE ─────────────────────────────────────
      Six {{#get}} counts, animated by .js-count (assets/js/course.js). --}}
 <section class="ns-band ns-band--sunken">
   <div class="ns-band__inner">
@@ -277,14 +423,14 @@
     <div class="ns-stats ns-stats--cards">
       {{#get "posts" filter="tag:hash-course" limit="1"}}
         <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
-          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-graduation-cap" aria-hidden="true"></i></span>
+          <span class="ns-chip ns-chip--sm">{{> icons name="graduation-cap"}}</span>
           <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
           <span class="ns-stat__label">{{t "Courses"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-lesson" limit="1"}}
         <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
-          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-play-circle" aria-hidden="true"></i></span>
+          <span class="ns-chip ns-chip--sm">{{> icons name="play-circle"}}</span>
           <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
           <span class="ns-stat__label">{{t "Lessons"}}</span>
         </div>
@@ -293,28 +439,28 @@
            would be a pointless stat. --}}
       {{#get "posts" filter="tag:hash-training-content" limit="1"}}
         <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
-          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-steps" aria-hidden="true"></i></span>
+          <span class="ns-chip ns-chip--sm">{{> icons name="steps"}}</span>
           <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
           <span class="ns-stat__label">{{t "Training lessons"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-training-section" limit="1"}}
         <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
-          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-stack" aria-hidden="true"></i></span>
+          <span class="ns-chip ns-chip--sm">{{> icons name="stack"}}</span>
           <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
           <span class="ns-stat__label">{{t "Sections"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:documentation" limit="1"}}
         <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
-          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-book-open-text" aria-hidden="true"></i></span>
+          <span class="ns-chip ns-chip--sm">{{> icons name="book-open"}}</span>
           <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
           <span class="ns-stat__label">{{t "Docs"}}</span>
         </div>
       {{/get}}
       {{#get "posts" filter="tag:hash-blog" limit="1"}}
         <div class="ns-stat ns-stat--lg ns-stat--brand js-reveal">
-          <span class="ns-chip ns-chip--sm"><i class="ph-fill ph-newspaper" aria-hidden="true"></i></span>
+          <span class="ns-chip ns-chip--sm">{{> icons name="newspaper"}}</span>
           <span class="ns-stat__value mt-3"><span class="js-count" data-to="{{pagination.total}}">0</span>+</span>
           <span class="ns-stat__label">{{t "Blog posts"}}</span>
         </div>
@@ -323,7 +469,106 @@
   </div>
 </section>
 
-{{!-- ── 7 · OPEN SOURCE + CLOSING CTA ─────────────────────────────────────
+{{!-- ── 12 · EVERYTHING IN ONE PLACE ──────────────────────────────────────
+     The site is five collections and a visitor has met three of them by now.
+     This is the index — including the two (docs, help) that have no other
+     entry point from the landing page. --}}
+<section class="ns-band">
+  <div class="ns-band__inner">
+    <div class="ns-section-head ns-section-head--center">
+      <span class="ns-kicker ns-kicker--center">{{> icons name="squares-four"}}{{t "Everything"}}</span>
+      <h2 class="ns-section-head__title">{{t "The whole site, in one place"}}</h2>
+    </div>
+
+    <div class="ns-grid ns-grid--3 mt-10">
+      {{> "home/collection-card" href="/courses/" icon="graduation-cap"
+          title=(t "Courses") body=(t "Video-first, syllabus-shaped, one subject at a time.") cta=(t "Browse courses")}}
+      {{> "home/collection-card" href="/training/" icon="steps"
+          title=(t "Guided training") body=(t "One ordered path from your first org to certified.") cta=(t "See the roadmap")}}
+      {{> "home/collection-card" href="/docs/" icon="book-open"
+          title=(t "Docs & help centre") body=(t "How the platform works, and what to do when it doesn't.") cta=(t "Read the docs")}}
+      {{> "home/collection-card" href="/blog/" icon="newspaper"
+          title=(t "Blog") body=(t "Release notes, deep dives and things worth knowing this week.") cta=(t "Read the blog")}}
+      {{> "home/collection-card" href="/resources/" icon="books"
+          title=(t "Toolbox") body=(t "The books, tools and cheat sheets we actually use.") cta=(t "Open the toolbox")}}
+      {{> "home/collection-card" href="/become-author/" icon="pen-nib"
+          title=(t "Write for us") body=(t "Teach something you know. Every published lesson is credited.") cta=(t "Become an author")}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── 13 · MEMBERSHIP ───────────────────────────────────────────────────
+     Tiers straight from Ghost Admin — see partials/members/tiers.hbs. Renders
+     nothing at all if members are off or no tier exists, which is why there is
+     no {{#if}} around it here. --}}
+{{> "members/tiers"
+    title=(t "Learn free. Fund it if it's worth it.")
+    body=(t "Every lesson is readable without paying. A membership is how the hosting, the editing and the time get paid for — and it is cancellable in one click.")}}
+
+{{!-- ── 14 · FAQ ──────────────────────────────────────────────────────────
+     Native <details>, so it works before Alpine loads and is findable by the
+     browser's own in-page search. --}}
+<section class="ns-band ns-band--sunken">
+  <div class="ns-band__inner">
+    <div class="ns-faq">
+      <div>
+        <span class="ns-kicker">{{> icons name="question"}}{{t "Questions"}}</span>
+        <h2 class="ns-section-head__title">{{t "The ones we get asked most"}}</h2>
+        <p class="ns-section-head__sub">
+          {{t "Anything else?"}}
+          <a href="/docs/" class="font-semibold text-brand-600 hover:underline dark:text-brand-300">{{t "The help centre has the long answers."}}</a>
+        </p>
+      </div>
+
+      <div class="grid gap-3">
+        {{> "courses/faq-item"
+            q=(t "Is it really free?")
+            a=(t "Yes. Every course, every training lesson and every doc is readable without an account or a card. Membership pays for the site; it does not gate the curriculum.")}}
+        {{> "courses/faq-item"
+            q=(t "Do I need a Salesforce org?")
+            a=(t "You need a free Developer Edition org, which Salesforce gives out at no cost and never expires. The first lesson walks you through creating one.")}}
+        {{> "courses/faq-item"
+            q=(t "What's the difference between the courses and the training?")
+            a=(t "A course covers one subject in depth and can be taken on its own. The training is a single ordered path through all of them, from your first login to certification-ready.")}}
+        {{> "courses/faq-item"
+            q=(t "Why is there a separate app?")
+            a=(t "This site is the public library — readable by anyone, indexed by search engines. app.namastesalesforce.com is the workspace: the lesson player, your progress and your certificates. Same account, same design system, different job.")}}
+        {{> "courses/faq-item"
+            q=(t "Will this get me certified?")
+            a=(t "It covers the exam objectives and every lesson maps to one, but no course can sit the exam for you. Treat the training as the syllabus and the practice questions as the rehearsal.")}}
+        {{> "courses/faq-item"
+            q=(t "Can I contribute?")
+            a=(t "Please do. The theme, the courses and the docs are open source — corrections, new lessons and new translations are all welcome, and authors are credited on everything they write.")}}
+      </div>
+    </div>
+  </div>
+</section>
+
+{{!-- ── 15 · NEWSLETTER ───────────────────────────────────────────────────
+     The last ask before the closing CTA. The hero already carried a form, so
+     this one earns its place by being specific about what gets sent — which is
+     the only thing that changes a subscribe rate. --}}
+<section class="ns-band">
+  <div class="ns-band__inner">
+    <div class="ns-news-band ns-news-band--brand">
+      <div>
+        <span class="ns-kicker">{{> icons name="mail"}}{{t "Newsletter"}}</span>
+        <h2 class="ns-news-band__title">{{t "One email when something new lands"}}</h2>
+        <p class="ns-news-band__body">
+          {{t "Not a digest and not a drip campaign — a note when a course, a training section or a substantial rewrite is published, and nothing in between."}}
+        </p>
+        <ul class="ns-list ns-list--check ns-list--sm ns-news-band__points">
+          <li class="ns-list__item">{{t "New courses, lessons and training sections"}}</li>
+          <li class="ns-list__item">{{t "Occasional deep dives worth your time"}}</li>
+          <li class="ns-list__item">{{t "No sponsors in your inbox, ever"}}</li>
+        </ul>
+      </div>
+      {{> "members/subscribe" layout="stacked" cta=(t "Subscribe free")}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── 16 · OPEN SOURCE + CLOSING CTA ────────────────────────────────────
      The `--grid` variant supplies the pattern; no inline background. --}}
 <section class="ns-band ns-band--dark ns-band--grid">
   <div class="ns-band__inner">
@@ -332,10 +577,10 @@
       <h2 class="ns-cta-band__title">{{t "Built in the open, on Ghost"}}</h2>
       <p class="ns-cta-band__sub">{{t "The whole platform — a custom Ghost theme, the courses, the docs — is an open-source project. Read the code, fix a typo, write a lesson or improve the help center: every contribution ships."}}</p>
       <div class="ns-cta-band__actions">
-        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--white">{{> "icons/github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
-        <a href="/docs/" class="ns-btn ns-btn--glass"><i class="ph ph-book-open-text" aria-hidden="true"></i>{{t "Docs & help center"}}</a>
-        <a href="/become-author/" class="ns-btn ns-btn--glass">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
-        <a href="/sponsor/" class="ns-btn ns-btn--glass"><i class="ph-fill ph-heart" aria-hidden="true"></i>{{t "Sponsor"}}</a>
+        <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" class="ns-btn ns-btn--white">{{> icons name="github" class="h-4 w-4"}}{{t "Star on GitHub"}}</a>
+        <a href="/docs/" class="ns-btn ns-btn--glass">{{> icons name="book-open"}}{{t "Docs & help center"}}</a>
+        <a href="/become-author/" class="ns-btn ns-btn--glass">{{> icons name="user-plus" class="h-4 w-4"}}{{t "Contribute content"}}</a>
+        <a href="/sponsor/" class="ns-btn ns-btn--glass">{{> icons name="heart"}}{{t "Sponsor"}}</a>
       </div>
       <p class="text-sm text-white/60">
         {{t "Powered by"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-semibold text-white">Ghost</a> ·
@@ -346,7 +591,7 @@
   </div>
 </section>
 
-{{!-- ── 8 · SPONSOR — the 728×90 leaderboard, last before the footer ────── --}}
+{{!-- ── 17 · SPONSOR — the 728×90 leaderboard, last before the footer ────── --}}
 <section class="ns-band ns-band--sm">
   <div class="ns-band__inner">
     {{> "ads/leaderboard"}}

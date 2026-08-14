@@ -9,7 +9,7 @@
    Every pattern here also carries its state in an ARIA attribute
    (aria-selected, aria-expanded, aria-current) rather than a class, so the
    visual state and the announced state are the same fact. */
-@layer components {
+@layer ns-components {
 
   /* --- Tabs ---------------------------------------------------------------
      Markup: role="tablist" > role="tab"[aria-selected][aria-controls], with
@@ -129,6 +129,22 @@
     padding-inline-end: var(--space-4);
   }
   .ns-sidebar__group + .ns-sidebar__group { margin-block-start: var(--space-6); }
+  /* A group may be a <details>, which makes the section collapsible with no
+     JS and no ARIA of its own. assets/js/rail.js then opens the one holding
+     aria-current="page" and closes the rest — but the markup ships every
+     section `open`, so a JS failure leaves the nav long rather than hidden. */
+  details.ns-sidebar__group > summary {
+    display: flex; align-items: center; gap: var(--space-2);
+    cursor: pointer; list-style: none;
+    border-radius: var(--radius-sm);
+  }
+  details.ns-sidebar__group > summary::-webkit-details-marker { display: none; }
+  details.ns-sidebar__group > summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-brand-500);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+  .ns-sidebar__twist { flex: none; margin-inline-start: auto; color: var(--color-label); transition: rotate var(--duration-fast) var(--ease-out); }
+  details.ns-sidebar__group[open] > summary .ns-sidebar__twist { rotate: 90deg; }
   .ns-sidebar__label {
     display: block; margin-block-end: var(--space-2);
     font-family: var(--font-mono); font-size: var(--size-label);
@@ -158,4 +174,48 @@
      The bar and its family — brand, links, dropdown and mega panels, account
      menu, theme toggle, hamburger, mobile sheet — live in navbar.css. It is
      enough component for its own file. */
+
+  /* --- Tree ---------------------------------------------------------------
+     Nested, expandable structure: a metadata explorer, a repo of examples, a
+     nested category list. Every branch is a native <details>, so open/closed
+     state, keyboard operation and in-page find all come from the platform and
+     the component ships no JS at all.
+
+     Indentation is a padding on the nested list rather than a margin per node,
+     so a node's hover and focus ring still span the full width of the rail —
+     an indented hover target that starts 2rem in is a hit area people miss.
+
+     Depth is capped in practice at three: past that the indent eats the label
+     and it wants to be a search box. */
+  .ns-tree { list-style: none; margin: 0; padding: 0; font-size: var(--size-small); }
+  .ns-tree ul { list-style: none; margin: 0; padding-inline-start: var(--space-4); }
+  .ns-tree__node,
+  .ns-tree__branch > summary {
+    display: flex; align-items: center; gap: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted); text-decoration: none; cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
+  }
+  .ns-tree__branch > summary { list-style: none; }
+  .ns-tree__branch > summary::-webkit-details-marker { display: none; }
+  .ns-tree__node:hover, .ns-tree__branch > summary:hover { background: var(--color-surface-sunken); color: var(--color-ink); }
+  .ns-tree__node:focus-visible, .ns-tree__branch > summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-brand-500);
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+  /* aria-current, not a class — the highlighted node and the announced node
+     come from one attribute. */
+  .ns-tree__node[aria-current] {
+    color: var(--color-brand-600); font-weight: var(--weight-medium);
+    background: var(--color-surface-sunken);
+  }
+  [data-theme="dark"] .ns-tree__node[aria-current] { color: var(--color-brand-300); }
+  .ns-tree__twist { flex: none; color: var(--color-label); transition: rotate var(--duration-fast) var(--ease-out); }
+  .ns-tree__branch[open] > summary .ns-tree__twist { rotate: 90deg; }
+  .ns-tree__icon { flex: none; color: var(--color-label); }
+  .ns-tree__label { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ns-tree__meta { margin-inline-start: auto; flex: none; font-family: var(--font-mono); font-size: var(--size-label); color: var(--color-label); }
+
 }

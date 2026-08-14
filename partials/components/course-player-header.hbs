@@ -35,8 +35,8 @@
       <button type="button" class="icon-btn shrink-0 lg:hidden"
               @click="$store.lessonNav.toggle()" :aria-expanded="$store.lessonNav.open.toString()"
               aria-controls="lesson-list" aria-label="{{t "Course lessons"}}">
-        <span x-show="!$store.lessonNav.open">{{> "icons/menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
-        <span x-show="$store.lessonNav.open" x-cloak>{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}</span>
+        <span x-show="!$store.lessonNav.open">{{> icons name="menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
+        <span x-show="$store.lessonNav.open" x-cloak>{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}</span>
       </button>
     {{/has}}
 
@@ -57,12 +57,12 @@
 
       {{#if @custom.navbar_show_search}}
         <a href="#/search" data-ghost-search aria-label="{{t "Search"}}" class="icon-btn group hidden sm:inline-flex">
-          {{> "icons/search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
+          {{> icons name="search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
         </a>
       {{/if}}
 
       <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}" class="icon-btn group hidden sm:inline-flex">
-        {{> "icons/github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
+        {{> icons name="github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
       </a>
 
       {{> "components/theme-toggle"}}
@@ -76,7 +76,7 @@
             {{#if @member.avatar_image}}
               <img loading="lazy" decoding="async" src="{{img_url @member.avatar_image size="xs"}}" alt="{{@member.name}}" class="h-full w-full object-cover">
             {{else}}
-              <span class="flex h-full w-full items-center justify-center bg-brand-500 text-white">{{> "icons/user" class="h-[1.05rem] w-[1.05rem]"}}</span>
+              <span class="flex h-full w-full items-center justify-center bg-brand-500 text-white">{{> icons name="user" class="h-[1.05rem] w-[1.05rem]"}}</span>
             {{/if}}
           </button>
           <div x-show="acct" x-cloak
@@ -85,15 +85,16 @@
                x-transition:enter-end="opacity-100 translate-y-0"
                class="ns-menu ns-menu--end mt-2" role="menu">
             <div class="ns-menu__group">
-              <a href="#/portal/account" data-portal="account" role="menuitem" class="ns-menu__item">{{> "icons/user" class="h-4 w-4"}}{{t "Account"}}</a>
-              <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" role="menuitem" class="ns-menu__item ns-menu__item--brand">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Become Author"}}</a>
-              <a href="javascript:;" data-members-signout role="menuitem" class="ns-menu__item ns-menu__item--quiet">{{> "icons/login" class="h-4 w-4"}}{{t "Sign out"}}</a>
+              {{> "members/app-link" style="menu"}}
+              <a href="#/portal/account" data-portal="account" role="menuitem" class="ns-menu__item">{{> icons name="user" class="h-4 w-4"}}{{t "Account"}}</a>
+              <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" role="menuitem" class="ns-menu__item ns-menu__item--brand">{{> icons name="user-plus" class="h-4 w-4"}}{{t "Become Author"}}</a>
+              <a href="javascript:;" data-members-signout role="menuitem" class="ns-menu__item ns-menu__item--quiet">{{> icons name="login" class="h-4 w-4"}}{{t "Sign out"}}</a>
             </div>
           </div>
         </div>
       {{else}}
         <a href="#/portal/signin" data-portal="signin" aria-label="{{t "Log in"}}" class="icon-btn group hidden sm:inline-flex">
-          {{> "icons/user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
+          {{> icons name="user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
         </a>
       {{/if}}
 
@@ -101,18 +102,18 @@
       <span class="mx-0.5 hidden h-6 w-px bg-border sm:block" aria-hidden="true"></span>
       {{#has tag="#lesson"}}
         {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
-          <a href="{{url}}" class="icon-btn group" aria-label="{{t "Exit to course"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit to course"}}</span></a>
+          <a href="{{url}}" class="icon-btn group" aria-label="{{t "Exit to course"}}">{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit to course"}}</span></a>
         {{else}}
-          <a href="/courses/" class="icon-btn group" aria-label="{{t "Exit to courses"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
+          <a href="/courses/" class="icon-btn group" aria-label="{{t "Exit to courses"}}">{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
         {{/foreach}}{{/get}}
       {{else has tag="#training-content"}}
         {{#get "posts" filter="tag:hash-training+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
-          <a href="{{url}}" class="icon-btn group" aria-label="{{t "Exit to track"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit to track"}}</span></a>
+          <a href="{{url}}" class="icon-btn group" aria-label="{{t "Exit to track"}}">{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit to track"}}</span></a>
         {{else}}
-          <a href="/training/" class="icon-btn group" aria-label="{{t "Exit to training"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
+          <a href="/training/" class="icon-btn group" aria-label="{{t "Exit to training"}}">{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
         {{/foreach}}{{/get}}
       {{else}}
-        <a href="/training/" class="icon-btn group" aria-label="{{t "Exit to training"}}">{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
+        <a href="/training/" class="icon-btn group" aria-label="{{t "Exit to training"}}">{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}<span class="nav-tip">{{t "Exit"}}</span></a>
       {{/has}}
     </div>
   </div>

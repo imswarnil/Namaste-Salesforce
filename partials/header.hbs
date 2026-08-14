@@ -32,23 +32,32 @@
 
       {{#if @custom.navbar_show_search}}
         <a href="#/search" data-ghost-search aria-label="{{t "Search"}}" class="icon-btn group">
-          {{> "icons/search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
+          {{> icons name="search" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Search"}}</span>
         </a>
       {{/if}}
 
       {{#if @custom.navbar_show_github}}
         <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}" class="icon-btn group hidden sm:inline-flex">
-          {{> "icons/github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
+          {{> icons name="github" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Star on GitHub"}}</span>
         </a>
       {{/if}}
 
       {{#if @custom.navbar_show_sponsor}}
         <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener" aria-label="{{t "Become a sponsor"}}" class="icon-btn icon-btn--pink group hidden sm:inline-flex">
-          {{> "icons/heart" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Become a sponsor"}}</span>
+          {{> icons name="heart" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Become a sponsor"}}</span>
         </a>
       {{/if}}
 
       {{> "components/theme-toggle"}}
+
+      {{!-- Through to the LMS at app.namastesalesforce.com. Desktop only: on a
+           phone the bar is already at its icon budget, so the mobile panel
+           below carries it as a full-width button instead. --}}
+      {{#if @custom.navbar_show_app}}
+        <span class="hidden lg:inline-flex">
+          {{> "members/app-link" style="outline"}}
+        </span>
+      {{/if}}
 
       {{!-- Account: plain user icon (log in) OR member avatar + dropdown --}}
       {{#if @member}}
@@ -60,7 +69,7 @@
               <img loading="lazy" decoding="async" src="{{img_url @member.avatar_image size="xs"}}" alt="{{@member.name}}" class="h-full w-full object-cover">
             {{else}}
               <span class="flex h-full w-full items-center justify-center bg-brand-500 text-white">
-                {{> "icons/user" class="h-[1.05rem] w-[1.05rem]"}}
+                {{> icons name="user" class="h-[1.05rem] w-[1.05rem]"}}
               </span>
             {{/if}}
           </button>
@@ -76,31 +85,32 @@
               {{#if @member.email}}<p class="truncate text-xs text-muted">{{@member.email}}</p>{{/if}}
             </div>
             <div class="ns-menu__group">
+              {{> "members/app-link" style="menu"}}
               <a href="#/portal/account" data-portal="account" role="menuitem" class="ns-menu__item">
-                {{> "icons/user" class="h-4 w-4"}}{{t "Account"}}
+                {{> icons name="user" class="h-4 w-4"}}{{t "Account"}}
               </a>
               <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" role="menuitem" class="ns-menu__item ns-menu__item--brand">
-                {{> "icons/user-plus" class="h-4 w-4"}}{{t "Become Author "}}
+                {{> icons name="user-plus" class="h-4 w-4"}}{{t "Become Author "}}
               </a>
             </div>
             <div class="ns-menu__group">
               <a href="javascript:;" data-members-signout role="menuitem" class="ns-menu__item ns-menu__item--quiet">
-                {{> "icons/login" class="h-4 w-4"}}{{t "Sign out"}}
+                {{> icons name="login" class="h-4 w-4"}}{{t "Sign out"}}
               </a>
             </div>
           </div>
         </div>
       {{else}}
         <a href="#/portal/signin" data-portal="signin" aria-label="{{t "Log in"}}" class="icon-btn group">
-          {{> "icons/user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
+          {{> icons name="user" class="h-[1.15rem] w-[1.15rem]"}}<span class="nav-tip">{{t "Log in"}}</span>
         </a>
       {{/if}}
 
       {{!-- Mobile menu toggle — borderless --}}
       <button type="button" class="icon-btn lg:hidden"
               @click="open = !open" :aria-expanded="open.toString()" aria-controls="mobile-menu" aria-label="{{t "Menu"}}">
-        <span x-show="!open">{{> "icons/menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
-        <span x-show="open" x-cloak>{{> "icons/x" class="h-[1.3rem] w-[1.3rem]"}}</span>
+        <span x-show="!open">{{> icons name="menu" class="h-[1.3rem] w-[1.3rem]"}}</span>
+        <span x-show="open" x-cloak>{{> icons name="x" class="h-[1.3rem] w-[1.3rem]"}}</span>
       </button>
     </div>
   </div>
@@ -116,16 +126,19 @@
       <div class="mt-3 grid grid-cols-2 gap-2 border-t border-border pt-3">
         <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener"
            class="ns-btn ns-btn--outline ns-btn--sm">
-          {{> "icons/github" class="h-4 w-4"}}{{t "Star"}}
+          {{> icons name="github" class="h-4 w-4"}}{{t "Star"}}
         </a>
         <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener"
            class="inline-flex items-center justify-center gap-1.5 rounded-btn px-3 py-2 text-sm font-semibold text-pink-600 ring-1 ring-pink-500/30 ns-transition hover:bg-pink-500/10">
-          {{> "icons/heart" class="h-4 w-4"}}{{t "Sponsor"}}
+          {{> icons name="heart" class="h-4 w-4"}}{{t "Sponsor"}}
         </a>
+        {{#if @custom.navbar_show_app}}
+          <span class="col-span-2">{{> "members/app-link" block=true}}</span>
+        {{/if}}
         {{#if @member}}
-          <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" class="col-span-2 ns-btn ns-btn--primary ns-btn--sm">{{> "icons/user-plus" class="h-4 w-4"}}{{t "Become an author"}}</a>
+          <a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}" class="col-span-2 ns-btn ns-btn--outline ns-btn--sm">{{> icons name="user-plus" class="h-4 w-4"}}{{t "Become an author"}}</a>
         {{else}}
-          <a href="#/portal/signup" data-portal="signup" class="col-span-2 ns-btn ns-btn--primary ns-btn--sm">{{t "Create free account"}}</a>
+          <a href="#/portal/signup" data-portal="signup" class="col-span-2 ns-btn ns-btn--outline ns-btn--sm">{{> icons name="user-plus" class="h-4 w-4"}}{{t "Create free account"}}</a>
         {{/if}}
       </div>
     </nav>

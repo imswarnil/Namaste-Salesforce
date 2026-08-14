@@ -3,21 +3,21 @@
      Alpine-driven; responsive. --}}
 <div class="ns-share" x-data="{ open: false, copied: false }">
   <button type="button" class="ns-btn ns-btn--outline ns-btn--sm" @click="open = !open" :aria-expanded="open.toString()">
-    <i class="ph ph-share-network" aria-hidden="true"></i>{{t "Share this course"}}
+    {{> icons name="share"}}{{t "Share this course"}}
   </button>
   <div class="ns-share__menu" x-show="open" x-cloak @click.outside="open = false"
        x-transition:enter="transition ease-out duration-150"
        x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
     <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" rel="noopener"
-       onclick="window.open(this.href,'share','width=580,height=460');return false;"><i class="ph ph-x-logo" aria-hidden="true"></i>{{t "Share on X"}}</a>
+       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="x-logo"}}{{t "Share on X"}}</a>
     <a href="https://www.linkedin.com/sharing/share-offsite/?url={{url absolute='true'}}" target="_blank" rel="noopener"
-       onclick="window.open(this.href,'share','width=580,height=460');return false;"><i class="ph ph-linkedin-logo" aria-hidden="true"></i>{{t "Share on LinkedIn"}}</a>
+       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="linkedin"}}{{t "Share on LinkedIn"}}</a>
     <a href="https://www.facebook.com/sharer/sharer.php?u={{url absolute='true'}}" target="_blank" rel="noopener"
-       onclick="window.open(this.href,'share','width=580,height=460');return false;"><i class="ph ph-facebook-logo" aria-hidden="true"></i>{{t "Share on Facebook"}}</a>
-    <a href="mailto:?subject={{encode title}}&body={{url absolute='true'}}"><i class="ph ph-envelope-simple" aria-hidden="true"></i>{{t "Email"}}</a>
+       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="facebook"}}{{t "Share on Facebook"}}</a>
+    <a href="mailto:?subject={{encode title}}&body={{url absolute='true'}}">{{> icons name="mail"}}{{t "Email"}}</a>
     <button type="button" data-copy="{{url absolute="true"}}"
             @click="navigator.clipboard && navigator.clipboard.writeText($el.dataset.copy); copied = true; setTimeout(() => copied = false, 1600)">
-      <i class="ph ph-link-simple" aria-hidden="true"></i>
+      {{> icons name="link"}}
       <span x-show="!copied">{{t "Copy link"}}</span>
       <span x-show="copied" x-cloak>{{t "Copied!"}}</span>
     </button>

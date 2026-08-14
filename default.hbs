@@ -24,26 +24,24 @@
       })();
     </script>
 
-    {{!-- ── Fonts & icons: ALL self-hosted ────────────────────────────────
-      Everything below used to come from two third-party origins — Google Fonts
-      and unpkg — as four render-blocking stylesheets:
+    {{!-- ── Fonts & icons: ALL self-hosted, ZERO third-party ──────────────
+      Type used to come from Google Fonts and icons from unpkg's two full
+      Phosphor fonts (~1,500 glyphs, 279 KB of woff2) — four render-blocking
+      stylesheets across two origins.
 
-        Google Fonts CSS      round-trip before font URLs were even known
-        Phosphor regular CSS   78 KB  ┐ two full icon fonts (~1,500 glyphs)
-        Phosphor fill CSS      86 KB  │ to draw the ~123 icons this theme uses
-        Phosphor woff2 ×2     279 KB  ┘
+      Now: one local stylesheet carrying the @font-face rules, and ONE
+      preloaded font. Switzer is the entire interface and reading face
+      (headings and body, separated by weight, not by cut), so it is the only
+      thing on the critical path. Sentient — the editorial serif used for
+      pull-quotes — is fetched on demand, because browsers only download a
+      webfont when rendered text actually matches it, and a pull-quote is
+      never the first thing on screen. Mono is the platform's own console
+      face and downloads nothing at all.
 
-      Now: one local stylesheet, and both the N&M cuts and the Phosphor subset
-      shipped by the design system (yarn design:sync). The only fonts preloaded
-      are the three on the critical path — N&M Text, which sets every paragraph,
-      N&M Display, which sets the heading above the fold, and the regular icon
-      weight used in the header. N&M Mono and the icon fill weight are fetched
-      on demand: browsers only download a webfont when rendered text actually
-      matches it, and neither appears before the first screen on most pages.
+      ICONS ARE INLINE SVG — {{> icons name="…"}}. No icon font, no icon
+      request, no flash of blank boxes, and they inherit currentColor.
     ───────────────────────────────────────────────────────────────────── --}}
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/nmtext-var-latin.woff2"}}">
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/nmdisplay-var-latin.woff2"}}">
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/phosphor-subset.woff2"}}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/switzer-var-latin.woff2"}}">
 
     {{!-- Theme stylesheet (Tailwind build) — carries the @font-face rules --}}
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">

@@ -20,6 +20,29 @@
   .icon-btn--sm { @apply h-8 w-8 text-sm; }
   .icon-btn--lg { @apply h-11 w-11 text-lg; }
 
+  /* ── TOUCH ───────────────────────────────────────────────────────────────
+     36px (and 32px at --sm) is a comfortable mouse target and a bad thumb
+     target — both are under the 44px both platforms' guidelines ask for, and
+     these are the navbar's only controls on a phone: search, theme, account,
+     menu. Rather than grow the button and open up the bar, the HIT AREA is
+     extended past the painted circle with a pseudo-element. The glyph keeps
+     its size and spacing; the thumb gets its 44px.
+
+     Scoped to `pointer: coarse` so a mouse still gets the tight target it can
+     actually hit, and the invisible pad never eats a neighbouring hover. */
+  @media (pointer: coarse) {
+    .icon-btn::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 44px;
+      min-height: 44px;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
   /* ── Shape ─────────────────────────────────────────────────────────────── */
   .icon-btn--square { border-radius: var(--radius-btn); }
 

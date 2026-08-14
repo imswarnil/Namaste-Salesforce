@@ -1,0 +1,141 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPONENT · .ns-subscribe — the newsletter signup, and the members contract
+   ----------------------------------------------------------------------------
+   THE BUG THIS FILE FIXES. Ghost's members script does exactly one thing to a
+   `<form data-members-form="subscribe">`: it puts a class on the FORM —
+   `loading` while the request is in flight, then `success` or `error`. It does
+   not touch the spinner. It does not reveal a message. It does not disable the
+   button. Every one of those is the theme's job, and until this file existed
+   the theme wasn't doing them: five hand-rolled copies of the form each
+   carried a `data-members-loading` spinner and success/error paragraphs marked
+   `hidden`, and nothing anywhere ever un-hid them. Subscribing appeared to do
+   nothing at all.
+
+   So the state machine lives here, once, and partials/members/subscribe.hbs is
+   the only markup that spends it.
+
+     idle      the field and the button
+     loading   button label swaps for the spinner, pointer events off
+     success   the FORM is replaced by the confirmation — the ask is answered,
+               and leaving an empty field under a "check your inbox" message
+               invites a second submit
+     error     the form stays (so the address can be corrected) and the error
+               appears beneath it
+
+   TONES. The band this sits in decides the tone, because the form has to read
+   on three different surfaces: the page (default), a brand-900 panel
+   (`--dark`), and a light sunken band (`--brand`). Only the fine print and the
+   message colours change — the field and the button are .ns-input / .ns-btn in
+   every tone, which is what stops this becoming a fourth button implementation.
+   ════════════════════════════════════════════════════════════════════════ */
+@layer components {
+
+  .ns-subscribe { display: grid; gap: var(--space-gap-sm); }
+
+  /* The two shapes. `inline` is the one-line pill used in heroes — field and
+     button fused, because at that size the pair reads as a single control.
+     `stacked` is the labelled, full-width form used inside a newsletter band,
+     where there is room to say what the field is for. */
+  .ns-subscribe__form { display: grid; gap: var(--space-gap-sm); }
+  .ns-subscribe--inline { max-width: 30rem; }
+
+  /* `display: flex` is declared HERE and not inherited from .ns-input-group.
+     Both selectors are one class deep, so which one wins is decided by import
+     order — and this file is imported after input.css, which means the grid
+     above would silently beat the group's flex and stack the pill. Two classes
+     deep, the intent wins regardless of import order. */
+  .ns-subscribe--inline .ns-subscribe__form { display: flex; align-items: stretch; }
+
+  /* The label is a flex row of its own so an icon passed to the button sits a
+     gap away from the words. The button's own gap separates the spinner from
+     this span, not the icon from the text inside it. */
+  .ns-subscribe__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* THE PHONE. `inline` fuses the field and the button into one .ns-input-group
+     pill, and .ns-input-group is an unwrapping flex row — which on a 360px
+     screen crushes the field down to about four visible characters next to a
+     button reading "Start free". Below 540px the pair therefore stacks and the
+     fused corners are given back. This is the one place the component breaks
+     its own shape, and it breaks it because a form you cannot read what you
+     typed into is not a form. */
+  @media (max-width: 33.75rem) {
+    .ns-subscribe--inline .ns-subscribe__form {
+      display: grid;
+      gap: var(--space-gap-sm);
+    }
+    .ns-subscribe--inline .ns-subscribe__form > * {
+      margin-left: 0;
+      border-radius: var(--radius-btn);
+    }
+    .ns-subscribe--inline .ns-subscribe__form > .ns-btn { width: 100%; }
+  }
+
+  /* ── loading ──────────────────────────────────────────────────────────── */
+  .ns-subscribe__spin { display: none; }
+  .ns-subscribe__form.loading .ns-subscribe__spin { display: inline-flex; }
+  .ns-subscribe__form.loading .ns-subscribe__label { display: none; }
+  .ns-subscribe__form.loading button { pointer-events: none; opacity: 0.7; }
+
+  /* ── success / error ──────────────────────────────────────────────────── */
+  .ns-subscribe__msg {
+    display: none;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: var(--size-small);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-body);
+  }
+  .ns-subscribe__msg--ok  { color: var(--color-success); }
+  .ns-subscribe__msg--err { color: var(--color-error); }
+
+  .ns-subscribe__form.success ~ .ns-subscribe__msg--ok  { display: flex; }
+  .ns-subscribe__form.error   ~ .ns-subscribe__msg--err { display: flex; }
+  /* Last, so it beats the display rules for both shapes above. */
+  .ns-subscribe__form.success { display: none; }
+  /* The fine print explains a form that is no longer there. */
+  .ns-subscribe__form.success ~ .ns-subscribe__note { display: none; }
+
+  /* ── Fine print ───────────────────────────────────────────────────────── */
+  .ns-subscribe__note {
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    line-height: var(--leading-body);
+    color: var(--color-label);
+  }
+
+  /* ── Already-a-member state ───────────────────────────────────────────────
+     A signed-in reader is not a lead. Showing them an email field they have
+     already filled in is the small insult that makes a site feel unaware of
+     who is using it — so they get a confirmation and the link to change it. */
+  .ns-subscribe__known {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: var(--border-hairline) solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-sunken);
+    padding: var(--space-row) var(--space-card);
+    font-size: var(--size-small);
+  }
+  .ns-subscribe__known svg { color: var(--color-success); }
+
+  /* ── TONE · dark — on brand-900 / navy panels ───────────────────────────
+     The field label and the fine print are the two things that do NOT flip on
+     their own: both resolve to --color-label, which is a slate grey chosen
+     against the light page surface, and a navy panel is not the page. Left
+     alone they land at roughly 2:1 against brand-900 — legible to nobody. */
+  .ns-subscribe--dark .ns-field__label { color: rgb(255 255 255 / 0.65); }
+  .ns-subscribe--dark .ns-subscribe__note { color: rgb(255 255 255 / 0.55); }
+  .ns-subscribe--dark .ns-subscribe__msg--ok  { color: rgb(255 255 255 / 0.92); }
+  .ns-subscribe--dark .ns-subscribe__msg--err { color: var(--color-warning-300, #fcd34d); }
+  .ns-subscribe--dark .ns-subscribe__known {
+    border-color: rgb(255 255 255 / 0.18);
+    background: rgb(255 255 255 / 0.08);
+    color: rgb(255 255 255 / 0.9);
+  }
+  .ns-subscribe--dark .ns-subscribe__known svg { color: #fff; }
+}

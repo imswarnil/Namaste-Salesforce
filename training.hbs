@@ -54,7 +54,7 @@
               {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" order="published_at asc" limit="1"}}
                 {{#foreach posts}}
                   <a href="{{url}}" class="ns-btn ns-btn--primary">
-                    <i class="ph-fill ph-play" aria-hidden="true"></i>{{t "Start learning"}}
+                    {{> icons name="play"}}{{t "Start learning"}}
                   </a>
                 {{/foreach}}
               {{/get}}
@@ -94,7 +94,7 @@
               <span class="ns-chip ns-chip--sm">
                 {{#if primary_tag.feature_image}}
                   <img src="{{img_url primary_tag.feature_image size="xs"}}" alt="" loading="lazy" class="h-full w-full rounded-[inherit] object-cover">
-                {{else}}<i class="ph-fill ph-stack" aria-hidden="true"></i>{{/if}}
+                {{else}}{{> icons name="stack"}}{{/if}}
               </span>
             </div>
 
@@ -120,7 +120,7 @@
                 <span class="ns-card__meta">{{pagination.total}} {{t "lessons"}}</span>
               {{/get}}
               <span class="ns-btn ns-btn--outline ns-btn--xs">
-                {{t "Open section"}}<i class="ns-btn__icon ph ph-arrow-right" aria-hidden="true"></i>
+                {{t "Open section"}}{{> icons name="arrow-right" class="ns-btn__icon"}}
               </span>
             </div>
           </article>
@@ -139,14 +139,14 @@
 
     <div class="ns-section-head">
       <div>
-        <span class="ns-kicker"><i class="ph-fill ph-map-trifold" aria-hidden="true"></i>{{t "The path"}}</span>
+        <span class="ns-kicker">{{> icons name="map-trifold"}}{{t "The path"}}</span>
         <h2 class="ns-section-head__title">{{t "Every section, in order"}}</h2>
         <p class="ns-section-head__sub">{{t "Each one assumes the last — follow the rail from the top."}}</p>
       </div>
       {{#get "posts" filter="tag:hash-training-section" order="published_at asc" limit="1"}}
         {{#foreach posts}}
           <a href="{{url}}" class="ns-btn ns-btn--outline ns-btn--sm ns-section-head__action">
-            {{t "Start at the top"}}<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right" aria-hidden="true"></i>
+            {{t "Start at the top"}}{{> icons name="arrow-right" class="ns-btn__icon ns-btn__icon--nudge"}}
           </a>
         {{/foreach}}
       {{/get}}
@@ -196,21 +196,11 @@
         {{!-- The ask, at the end of the path. --}}
         <div class="ns-widget ns-widget--newsletter ns-widget--brand">
           <div class="ns-widget__head">
-            <span class="ns-widget__title"><i class="ph ph-envelope-simple" aria-hidden="true"></i>{{t "New lessons"}}</span>
+            <span class="ns-widget__title">{{> icons name="mail"}}{{t "New lessons"}}</span>
           </div>
           <div class="ns-widget__body">
             <p>{{t "Sections land regularly. Get the next one in your inbox."}}</p>
-            <form data-members-form="subscribe">
-              <input data-members-email type="email" required placeholder="{{t "you@example.com"}}"
-                     aria-label="{{t "Email address"}}" class="ns-input ns-input--sm">
-              <button type="submit" class="ns-btn ns-btn--primary ns-btn--sm ns-btn--block mt-2">
-                <span data-members-loading class="hidden"><i class="ph ph-circle-notch animate-spin" aria-hidden="true"></i></span>
-                <span data-members-default>{{t "Notify me"}}</span>
-              </button>
-              <p data-members-success class="mt-2 text-sm font-semibold text-success" hidden>{{t "Check your inbox — your magic link is on its way!"}}</p>
-              <p data-members-error class="mt-2 text-sm font-semibold text-error" hidden>{{t "Something went wrong — try again."}}</p>
-            </form>
-            <span class="ns-widget__note">{{t "Free. One click to unsubscribe."}}</span>
+            {{> "members/subscribe" layout="stacked" cta=(t "Notify me")}}
           </div>
         </div>
 
@@ -219,7 +209,7 @@
           <div class="ns-widget__body">
             <p>{{t "Tell us what to build next."}}</p>
             <a href="/contact/" class="ns-btn ns-btn--outline ns-btn--sm">
-              {{> "icons/mail" class="h-4 w-4"}}{{t "Request a topic"}}
+              {{> icons name="mail" class="h-4 w-4"}}{{t "Request a topic"}}
             </a>
           </div>
         </div>

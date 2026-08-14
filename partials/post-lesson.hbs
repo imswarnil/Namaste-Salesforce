@@ -21,14 +21,14 @@
           {{!-- Type · duration · access --}}
           <div class="mb-4 flex flex-wrap items-center gap-2">
             {{#has tag="#lesson-type-video"}}
-              <span class="ns-lesson-type ns-lesson-type--video"><i class="ph-fill ph-play-circle" aria-hidden="true"></i>{{t "Video"}}</span>
-              <span class="ns-lesson-chip"><i class="ph ph-clock" aria-hidden="true"></i>{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}</span>
+              <span class="ns-lesson-type ns-lesson-type--video">{{> icons name="play-circle"}}{{t "Video"}}</span>
+              <span class="ns-lesson-chip">{{> icons name="clock"}}{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}</span>
             {{else}}
-              <span class="ns-lesson-type ns-lesson-type--article"><i class="ph ph-article" aria-hidden="true"></i>{{t "Article"}}</span>
-              <span class="ns-lesson-chip"><i class="ph ph-clock" aria-hidden="true"></i>{{reading_time}}</span>
+              <span class="ns-lesson-type ns-lesson-type--article">{{> icons name="article"}}{{t "Article"}}</span>
+              <span class="ns-lesson-chip">{{> icons name="clock"}}{{reading_time}}</span>
             {{/has}}
-            {{#has tag="#preview"}}<span class="ns-curriculum__badge ns-curriculum__badge--preview"><i class="ph-fill ph-eye" aria-hidden="true"></i>{{t "Free preview"}}</span>
-            {{else has tag="#paid"}}<span class="ns-price-tag ns-price-tag--paid"><i class="ph-fill ph-crown-simple" aria-hidden="true"></i>{{t "Members"}}</span>
+            {{#has tag="#preview"}}<span class="ns-curriculum__badge ns-curriculum__badge--preview">{{> icons name="eye"}}{{t "Free preview"}}</span>
+            {{else has tag="#paid"}}<span class="ns-price-tag ns-price-tag--paid">{{> icons name="crown"}}{{t "Members"}}</span>
             {{else has tag="#free"}}<span class="ns-price-tag ns-price-tag--free">{{t "Free"}}</span>{{/has}}
           </div>
           <h1 class="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{title}}</h1>
@@ -39,7 +39,7 @@
         {{#has tag="#lesson-type-video"}}
           <div class="ns-video-poster ns-video-poster--lesson mb-8">
             {{#if feature_image}}<img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}">{{else}}<span class="ns-video-poster__fallback" aria-hidden="true"></span>{{/if}}
-            <span class="ns-video-poster__play"><i class="ph-fill ph-play" aria-hidden="true"></i></span>
+            <span class="ns-video-poster__play">{{> icons name="play"}}</span>
           </div>
         {{else}}
           {{#if feature_image}}<img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="mb-8 w-full rounded-card border border-border object-cover">{{/if}}
@@ -48,7 +48,7 @@
         {{!-- Members gate (locked, non-preview, signed out) --}}
         {{#has tag="#paid"}}{{#has tag="#preview"}}{{else}}{{#unless @member}}
           <div class="ns-note ns-note--warning mb-6">
-            <i class="ph-fill ph-lock-simple" aria-hidden="true"></i>
+            {{> icons name="lock"}}
             <div>
               <p class="font-bold">{{t "Members-only lesson"}}</p>
               <p class="text-sm">{{t "You're reading the preview. Sign in with a membership to unlock the full lesson."}}</p>
@@ -70,25 +70,25 @@
           <div>
             {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
               <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">
-                <i class="ph ph-arrow-left" aria-hidden="true"></i><span>{{t "Previous"}}</span>
+                {{> icons name="arrow-left"}}<span>{{t "Previous"}}</span>
               </a>
             {{/prev_post}}
           </div>
           <div>
             {{#next_post in="primary_tag" filter="tag:hash-lesson"}}
               <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--sm w-full">
-                <span>{{t "Next"}}</span><i class="ph ph-arrow-right" aria-hidden="true"></i>
+                <span>{{t "Next"}}</span>{{> icons name="arrow-right"}}
               </a>
             {{else}}
               {{!-- Last lesson of the course → finish (back to the course page) --}}
               {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
                 {{#foreach posts}}
                   <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
-                    <span>{{t "Finish course"}}</span><i class="ph-fill ph-check-circle" aria-hidden="true"></i>
+                    <span>{{t "Finish course"}}</span>{{> icons name="check-circle"}}
                   </a>
                 {{else}}
                   <a href="/courses/" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
-                    <span>{{t "Finish course"}}</span><i class="ph-fill ph-check-circle" aria-hidden="true"></i>
+                    <span>{{t "Finish course"}}</span>{{> icons name="check-circle"}}
                   </a>
                 {{/foreach}}
               {{/get}}
@@ -103,7 +103,7 @@
         {{#if @site.comments_enabled}}
           <section class="mt-12 border-t border-border pt-8" aria-label="{{t "Discussion"}}">
             <h2 class="mb-4 flex items-center gap-2 font-heading text-xl font-extrabold">
-              <i class="ph ph-chat-circle-text text-brand-500" aria-hidden="true"></i>{{t "Discussion"}}
+              {{> icons name="chat" class="text-brand-500"}}{{t "Discussion"}}
             </h2>
             {{comments title=""}}
           </section>

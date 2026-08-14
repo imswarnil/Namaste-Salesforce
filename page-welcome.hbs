@@ -1,0 +1,135 @@
+{{!< default}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  page-welcome.hbs — Custom template for the page with slug `welcome`.
+  ----------------------------------------------------------------------------
+  WHERE THIS PAGE COMES FROM. Ghost sends a member here the moment they finish
+  signing up: Admin → Settings → Tiers → each tier has a "Welcome page" field,
+  and the free tier's should point at /welcome/. So this template is read by
+  someone who has just handed over their email address and is waiting to be
+  told what happens next. That framing decides everything below:
+
+    · It never sells. The decision has already been made.
+    · It is a SEQUENCE, not a menu. Four steps, numbered, in the order they
+      should actually be done — confirm, open the app, pick a track, join in.
+    · It is member-aware. `{{@member.name}}` when Ghost has it, the email as
+      the fallback, and a generic greeting when someone arrives here logged
+      out (which happens constantly — the confirmation link opens in whichever
+      browser owns the mail client, not the one that submitted the form).
+
+  It is a normal Ghost page underneath, so the editable body still renders in
+  the middle: the sequence and the app hand-off are structural and belong in
+  the theme, but the words of the welcome are the publisher's to change without
+  touching a template.
+═══════════════════════════════════════════════════════════════════════════ --}}
+
+{{!-- ── Hero — the confirmation ─────────────────────────────────────────── --}}
+<section class="relative overflow-hidden bg-brand-900 text-white">
+  {{> "components/hero-bg"}}
+  <div class="relative mx-auto max-w-3xl px-4 py-14 text-center sm:px-6 lg:py-20">
+
+    <span class="ns-kicker ns-kicker--light ns-kicker--center">
+      {{> icons name="seal-check"}}{{t "You're in"}}
+    </span>
+
+    <h1 class="mt-5 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+      {{#if @member}}
+        {{#if @member.name}}{{t "Welcome"}}, {{@member.name}}.{{else}}{{t "Welcome aboard."}}{{/if}}
+      {{else}}
+        {{#if title}}{{title}}{{else}}{{t "Welcome aboard."}}{{/if}}
+      {{/if}}
+    </h1>
+
+    <p class="mx-auto mt-5 max-w-2xl text-base text-white/80 sm:text-lg">
+      {{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Your account is live and the whole curriculum is open to you — courses, training, docs and every lesson. Here is the fastest route in."}}{{/if}}
+    </p>
+
+    {{#if @member}}
+      <p class="mt-4 font-mono text-xs text-white/50">{{t "Signed in as"}} {{@member.email}}</p>
+    {{/if}}
+
+    <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+      {{> "members/app-link" label=(t "Open the learning app")}}
+      <a href="/courses/" class="ns-btn ns-btn--glass ns-btn--lg">
+        {{> icons name="graduation-cap"}}{{t "Browse the courses"}}
+      </a>
+    </div>
+  </div>
+</section>
+
+{{!-- ── The sequence — what to do, in order ─────────────────────────────── --}}
+<section class="ns-section">
+  <div class="ns-container">
+    <div class="ns-section-head ns-section-head--center">
+      <span class="ns-kicker">{{> icons name="steps"}}{{t "Next"}}</span>
+      <h2 class="ns-section-head__title">{{t "Four steps and you're learning"}}</h2>
+      <p class="ns-section-head__sub">{{t "None of them take more than a minute. Do them in this order and nothing will be waiting on anything else."}}</p>
+    </div>
+
+    <div class="ns-grid ns-grid--4 mt-10">
+      {{> "home/step" num="1" icon="mail" title=(t "Confirm your email")
+          body=(t "Ghost has sent a magic link. Clicking it is what keeps you signed in — without it you will be asked for your address again on every visit.")}}
+      {{> "home/step" num="2" icon="rocket" title=(t "Open the app")
+          body=(t "app.namastesalesforce.com is where lessons actually run — the player, your progress and your certificates all live there.")}}
+      {{> "home/step" num="3" icon="map-trifold" title=(t "Pick a track")
+          body=(t "Admin, Developer or Architect. Each one is an ordered path, so you never have to guess what comes next.")}}
+      {{> "home/step" num="4" icon="chats" title=(t "Say hello")
+          body=(t "Questions get answered fastest in the open. Bring the one you are stuck on — that is what the community is for.")}}
+    </div>
+  </div>
+</section>
+
+{{!-- ── Where to start — real courses, pulled from Ghost ────────────────── --}}
+{{#get "posts" filter="tag:hash-course" limit="3" include="tags,authors"}}
+  {{#if posts}}
+    <section class="ns-section ns-section--sunken">
+      <div class="ns-container">
+        <div class="ns-section-head">
+          <span class="ns-kicker">{{> icons name="graduation-cap"}}{{t "Start here"}}</span>
+          <h2 class="ns-section-head__title">{{t "The three most-taken courses"}}</h2>
+          <a href="/courses/" class="ns-section-head__action">{{t "All courses"}} {{> icons name="arrow-right"}}</a>
+        </div>
+        <div class="ns-grid ns-grid--3 mt-8">
+          {{#foreach posts}}{{> "courses/course-card"}}{{/foreach}}
+        </div>
+      </div>
+    </section>
+  {{/if}}
+{{/get}}
+
+{{!-- ── The publisher's own words ───────────────────────────────────────── --}}
+{{#page}}
+  {{#if content}}
+    <section class="ns-section">
+      <div class="mx-auto max-w-prose px-4 sm:px-6">
+        <div class="prose gh-content max-w-none">{{content}}</div>
+      </div>
+    </section>
+  {{/if}}
+{{/page}}
+
+{{!-- ── Membership — shown last, and only if tiers exist ────────────────── --}}
+{{> "members/tiers"
+    eyebrow=(t "Your membership")
+    title=(t "You're on the free plan")
+    body=(t "Everything published is already yours. A paid tier is how the site is funded, and it is the only thing that changes below.")}}
+
+{{!-- ── Newsletter — the one remaining ask ──────────────────────────────── --}}
+<section class="ns-section">
+  <div class="ns-container">
+    <div class="ns-news-band ns-news-band--brand">
+      <div>
+        <span class="ns-kicker">{{> icons name="mail"}}{{t "Newsletter"}}</span>
+        <h2 class="ns-news-band__title">{{t "Get new lessons as they land"}}</h2>
+        <p class="ns-news-band__body">
+          {{t "One email when something is published — a new course, a new training section, or a rewrite of a lesson you have already worked through. Nothing else is ever sent to it."}}
+        </p>
+        <ul class="ns-list ns-list--check ns-list--sm ns-news-band__points">
+          <li class="ns-list__item">{{t "New lessons and sections, the day they publish"}}</li>
+          <li class="ns-list__item">{{t "No marketing, no digest, no third parties"}}</li>
+          <li class="ns-list__item">{{t "One click to unsubscribe, from any email"}}</li>
+        </ul>
+      </div>
+      {{> "members/subscribe" layout="stacked" cta=(t "Turn on new-lesson emails")}}
+    </div>
+  </div>
+</section>

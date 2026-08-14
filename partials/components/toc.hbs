@@ -13,7 +13,10 @@
     <p class="ns-label">{{t "On this page"}}</p>
     <button type="button" class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-btn border border-border text-muted"
             @click="open = !open" :aria-expanded="open.toString()" aria-label="{{t "Toggle contents"}}">
-      <i class="ph" :class="open ? 'ph-x' : 'ph-list'" aria-hidden="true"></i>
+      {{!-- Two icons swapped by state, rather than one element whose class is
+            rewritten — inline SVG carries its artwork, not a font codepoint. --}}
+      <span x-show="!open">{{> icons name="list"}}</span>
+      <span x-show="open" x-cloak>{{> icons name="x"}}</span>
     </button>
   </div>
 

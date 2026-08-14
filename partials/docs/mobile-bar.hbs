@@ -8,15 +8,19 @@
   <button type="button" @click="dopen = !dopen" :aria-expanded="dopen.toString()" aria-controls="docs-mobile-panel"
           class="flex w-full items-center justify-between gap-2 px-4 py-2.5 text-sm font-semibold text-ink">
     <span class="inline-flex min-w-0 items-center gap-2">
-      <i class="ph ph-book-open-text shrink-0 text-brand-500" aria-hidden="true"></i>
+      {{> icons name="book-open" class="shrink-0 text-brand-500"}}
       <span class="truncate">{{#if label}}{{label}}{{else}}{{t "Documentation"}}{{/if}}</span>
     </span>
-    <i class="ph ph-caret-down shrink-0 text-muted transition-transform" :class="dopen && 'rotate-180'" aria-hidden="true"></i>
+    {{!-- The chevron flips on open. Alpine binds the class on a wrapper rather
+          than on the icon, because {{> icons}} owns the <svg>'s own class. --}}
+    <span class="inline-flex shrink-0 text-muted transition-transform" :class="dopen && 'rotate-180'">
+      {{> icons name="caret-down"}}
+    </span>
   </button>
   <div id="docs-mobile-panel" x-show="dopen" x-cloak @click.outside="dopen = false"
        class="absolute inset-x-0 top-full z-30 max-h-[70vh] overflow-y-auto border-b border-border bg-surface px-3 pb-4 pt-2 shadow-raised">
     <a href="/docs/" class="mb-1 flex items-center gap-2.5 rounded-btn px-2.5 py-2 text-sm font-semibold text-ink ns-transition hover:bg-surface-sunken">
-      <i class="ph ph-books text-brand-500" aria-hidden="true"></i>{{t "Docs home"}}
+      {{> icons name="books" class="text-brand-500"}}{{t "Docs home"}}
     </a>
     {{> "docs/sections" view="nav"}}
   </div>

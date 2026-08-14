@@ -20,7 +20,8 @@
  *   assets/css/ds/icons/*.css       phosphor.css + icons-gap.css
  *   assets/css/ds/patterns/*.css    patterns.css
  *   assets/css/ds/components/css/   the .ns-* class layer shared with the app
- *   assets/fonts/nm*.woff2          N&M Display / Text / Mono
+ *   assets/fonts/switzer-*.woff2    Switzer — the interface AND reading face
+ *   assets/fonts/sentient-*.woff2   Sentient — the editorial serif (quotes)
  *   assets/fonts/phosphor*.woff2    the subsetted icon font
  *   assets/icons/namaste-icons.svg  the <use href> sprite
  *

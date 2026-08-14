@@ -16,7 +16,7 @@ already done for you, and your job is to supply *correctly structured* prose and
 | Rule | What it means for you |
 | --- | --- |
 | **The hairline is the structure, not the shadow** | Borders separate things. Do not describe or request boxes, cards, shadows or panels in body copy — the theme decides those. |
-| **Monospace is structural** | Every index (`01`), duration, timestamp, status and kicker is set in N&M Mono *by the theme*. Never type a fake kicker like `// Getting started` into the body. |
+| **Monospace is structural** | Every index (`01`), duration, timestamp, status and kicker is set in the mono face *by the theme*. Never type a fake kicker like `// Getting started` into the body. |
 | **One signal color** | Brand blue `#0176D3` means "interactive". Nothing you write should imply another accent colour, and nothing should be coloured by hand. |
 | **Sharp, specific geometry** | 6px cards, 4px buttons, pills only for true tags. Not your concern — but do not add your own radii or classes. |
 | **Motion is instant** | 120–180ms ease-out. Do not write copy that promises animation. |

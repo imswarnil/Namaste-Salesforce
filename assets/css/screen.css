@@ -36,6 +36,39 @@
    motion, navy dark mode. No gradients, glass, or glow.
    ════════════════════════════════════════════════════════════════════════ */
 
+/* ⚠️ THIS STATEMENT MUST COME FIRST — BEFORE @import "tailwindcss".
+   ----------------------------------------------------------------------------
+   Cascade-layer order is fixed by the FIRST statement that names each layer,
+   and a later statement can only APPEND names it introduces. Two statements
+   reach the compiled file:
+
+     Tailwind's        @layer theme, base, components, utilities;
+     the system's      @layer theme, base, ns-components, components, utilities;
+
+   Tailwind's is emitted first, so by the time the design system asks for
+   `ns-components` to sit between `base` and `components`, the other four are
+   already ordered and the new name is appended to the END:
+
+     theme · base · components · utilities · ns-components     ← WRONG
+
+   Layer order beats specificity, so in that arrangement EVERY design-system
+   component rule wins over the theme's layer 2 and over Tailwind utilities —
+   the exact opposite of the contract in ds/styles.css and in this theme's
+   2-components/index.css. Symptom: `.ns-subscribe--dark .ns-field__label`
+   (two classes, theme layer) silently lost to `.ns-field__label` (one class,
+   system layer), and `hidden` / `p-4` / `bg-brand-500` could not override a
+   system default without !important.
+
+   Naming the full order here, before anything else, fixes it: this statement
+   establishes all five layers in the intended sequence, and both statements
+   below become no-ops that introduce nothing new.
+
+     theme · base · ns-components · components · utilities     ← RIGHT
+
+   A bare @layer statement is one of only two things CSS allows to precede an
+   @import, which is why this can sit above the Tailwind import at all. */
+@layer theme, base, ns-components, components, utilities;
+
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";   /* `.prose` styling for post/page content */
 

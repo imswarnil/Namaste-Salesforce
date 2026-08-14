@@ -1,12 +1,14 @@
 {{!-- home/collection-card.hbs — links to a content section ("everything in one
-     place"). Params: href, icon (Phosphor class), title, body, cta. --}}
+     place"). Params: href, icon (an icons.hbs name), title, body, cta.
+     The card is one <a>, and the design system colours every anchor brand-600 —
+     so the title states text-ink explicitly rather than inheriting link blue. --}}
 <a href="{{href}}" class="js-spotlight group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface-raised p-6 ns-transition hover:border-brand-500">
   <span class="ns-chip relative">
-    <i class="ph-fill {{icon}}" aria-hidden="true"></i>
+    {{> icons name=icon}}
   </span>
-  <h3 class="relative mt-4 font-heading text-lg font-bold">{{title}}</h3>
+  <h3 class="relative mt-4 font-heading text-lg font-bold text-ink">{{title}}</h3>
   <p class="relative mt-1 flex-1 text-sm leading-relaxed text-muted">{{body}}</p>
   <span class="relative mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 dark:text-brand-300">
-    {{#if cta}}{{cta}}{{else}}{{t "Explore"}}{{/if}}<i class="ph ph-arrow-right transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
+    {{#if cta}}{{cta}}{{else}}{{t "Explore"}}{{/if}}{{> icons name="arrow-right" class="transition-transform group-hover:translate-x-1"}}
   </span>
 </a>

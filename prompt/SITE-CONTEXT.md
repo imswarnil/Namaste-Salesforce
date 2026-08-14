@@ -155,7 +155,7 @@ and your change disappears. Change the system in its own repo and re-sync.
 | Rule | What it means when you are writing or generating |
 |---|---|
 | **The hairline is the structure, not the shadow** | 1px borders separate things. Never ask for boxes, cards, drop shadows, glass or glow. |
-| **Mono is the structural material** | Every index (`01`), duration, timestamp, status and kicker is set in **N&M Mono**, uppercase and tracked, *by the theme*. Never type a fake kicker like `// Getting started` into body copy. |
+| **Mono is the structural material** | Every index (`01`), duration, timestamp, status and kicker is set in the **mono face** (the platform's own console font — no mono webfont ships), uppercase and tracked, *by the theme*. Never type a fake kicker like `// Getting started` into body copy. |
 | **One signal colour** | Brand blue `#0176D3` is the only colour that means "interactive". Nothing you write or draw should imply a second accent. |
 | **Sharp, specific geometry** | 6px cards, 4px buttons; pills only for true tags. Never introduce your own radii. |
 | **Motion is instant** | 120–180ms ease-out. No spring, no bounce, no translateY lift. Do not write copy promising animation. |
@@ -167,15 +167,27 @@ their theme when crossing between the two domains.
 
 ### 3.2 Type
 
-Three self-hosted variable cuts, all latin-subset:
+Two self-hosted variable cuts, both latin-subset — and one face deliberately
+not shipped:
 
-- **N&M Display** — headings (Manrope cut)
-- **N&M Text** — body copy (Nunito Sans cut). Body sets at weight **450**, not
-  400: 400 renders optically grey at 16px.
-- **N&M Mono** — every index, label, duration, status and code block (Red Hat
-  Mono cut)
+- **Switzer** — headings AND body (Fontshare / Indian Type Foundry). One
+  grotesque across the whole range, separated by WEIGHT and SIZE rather than by
+  face. Reading copy sets at **14px / weight 400**; Switzer's Regular is
+  properly fitted and does not render grey the way the previous cut did, so
+  there is no "Book" 450 step. Inline `<strong>` is 600, not 700.
+- **Sentient** — the editorial serif (same foundry). Pull-quotes, drop caps and
+  section quotations only: the register that *quotes* rather than argues. It is
+  the one place a second face earns its download, and it is never on the
+  critical path.
+- **Mono is the platform's own** — `ui-monospace` / SF Mono / Consolas. Every
+  index, label, duration and status still runs through it, but always in short
+  tracked uppercase runs where the system face is more familiar than anything
+  we could ship. Consequence: mono column widths are **not** identical across
+  platforms, so never rely on a mono run being an exact width.
 
-They are OFL faces renamed under the licence's derivative-work terms.
+Both shipped faces are under the Fontshare Free Font EULA (free for personal
+and commercial use, self-hosting explicitly permitted); the EULA travels with
+them in `NS-Design-System/fonts/`.
 
 ### 3.3 Colour, exactly
 

@@ -1,0 +1,61 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+     members/subscribe.hbs — THE newsletter signup form. There is one.
+     ------------------------------------------------------------------------
+     Before this partial the theme carried five hand-rolled copies of the same
+     form (home hero, training index, training post, the CTA band, the blog
+     sidebar), each with slightly different markup and all five with the same
+     bug: a spinner and success/error messages that nothing ever revealed. The
+     state machine now lives in 2-components/subscribe.css and the markup lives
+     here, so fixing one fixes all of them.
+
+     Params — every one optional:
+       layout   "inline" (default) fuses field + button into one pill, for
+                heroes and sidebars. "stacked" gives the field a visible label
+                and a full-width button, for a newsletter band that has room.
+       tone     "dark" when the surface underneath is brand-900 / navy.
+       cta      button label.            Default: "Subscribe"
+       icon     an icons.hbs name for the button.
+       note     fine print under the form. Pass note=false to drop it.
+       ok       success message.         Default: check your inbox
+       err      error message.
+       label    the field label (stacked layout only).
+       place    input placeholder.
+
+     MEMBER-AWARE. A signed-in reader is already on the list, so they get a
+     confirmation and a link to their account instead of a field asking for the
+     address Ghost already has. Pass ask=true to force the form anyway — the
+     home hero does, because there the form is the page's primary action and an
+     empty space where it was reads as a broken hero.
+
+     PORTAL FALLBACK. With members disabled in Ghost Admin there is no endpoint
+     to post to, so the form is replaced by the Portal signup link rather than
+     rendering a control that silently fails.
+     ════════════════════════════════════════════════════════════════════════ --}}
+
+{{#unless @site.members_enabled}}
+  <a href="#/portal/signup" data-portal="signup" class="ns-btn {{#match tone "dark"}}ns-btn--white{{else}}ns-btn--primary{{/match}} ns-btn--lg">
+    {{#if icon}}{{> icons name=icon}}{{/if}}{{#if cta}}{{cta}}{{else}}{{t "Subscribe"}}{{/if}}
+  </a>
+{{else}}
+
+  <div class="ns-subscribe {{#match layout "stacked"}}ns-subscribe--stacked{{else}}ns-subscribe--inline{{/match}}{{#match tone "dark"}} ns-subscribe--dark{{/match}}">
+
+    {{#if @member}}
+      {{#if ask}}
+        {{> "members/subscribe-form" layout=layout tone=tone cta=cta icon=icon note=note ok=ok err=err label=label place=place}}
+      {{else}}
+        {{!-- Already signed in — confirm, don't re-ask. --}}
+        <p class="ns-subscribe__known">
+          {{> icons name="check-circle"}}
+          <span>
+            {{t "You're subscribed as"}} <strong>{{@member.email}}</strong> ·
+            <a href="#/portal/account" data-portal="account" class="font-semibold underline">{{t "manage"}}</a>
+          </span>
+        </p>
+      {{/if}}
+    {{else}}
+      {{> "members/subscribe-form" layout=layout tone=tone cta=cta icon=icon note=note ok=ok err=err label=label place=place}}
+    {{/if}}
+  </div>
+
+{{/unless}}

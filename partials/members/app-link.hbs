@@ -1,0 +1,35 @@
+{{!-- ════════════════════════════════════════════════════════════════════════
+     members/app-link.hbs — the way through to app.namastesalesforce.com
+     ------------------------------------------------------------------------
+     The site and the app are two products sharing one design system: this Ghost
+     theme is the public surface (courses, docs, training, the blog) and the
+     Next.js LMS at app.namastesalesforce.com is where a signed-in member
+     actually works through a lesson. This partial is the seam, and it exists
+     once so that seam is consistent — a hand-written <a> to the app in nine
+     templates is nine places to forget the target, the label, or the setting
+     that turns it off.
+
+     Params
+       style   "btn" (default) · "outline" · "quiet" · "menu" — how it renders.
+       block   truthy for a full-width button.
+       label   override the label. Defaults to @custom.app_label.
+
+     The URL is @custom.app_url (Ghost Admin → Design), so a fork of this theme
+     points at its own app — or at nothing, in which case this renders nothing
+     rather than a dead link to somebody else's product.
+
+     Not target="_blank": the app is the same product, not an outbound link,
+     and a new tab per lesson is how a learner ends up with fourteen of them. --}}
+
+{{#if @custom.app_url}}
+  {{#match style "menu"}}
+    <a href="{{@custom.app_url}}" role="menuitem" class="ns-menu__item ns-menu__item--brand">
+      {{> icons name="rocket" class="h-4 w-4"}}{{#if label}}{{label}}{{else}}{{@custom.app_label}}{{/if}}
+    </a>
+  {{else}}
+    <a href="{{@custom.app_url}}"
+       class="ns-btn {{#match style "outline"}}ns-btn--outline{{else}}{{#match style "quiet"}}ns-btn--ghost{{else}}ns-btn--primary{{/match}}{{/match}}{{#if block}} ns-btn--block{{/if}}">
+      {{> icons name="rocket"}}{{#if label}}{{label}}{{else}}{{@custom.app_label}}{{/if}}
+    </a>
+  {{/match}}
+{{/if}}
