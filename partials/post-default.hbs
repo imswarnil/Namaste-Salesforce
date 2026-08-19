@@ -1,61 +1,57 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-default.hbs — Generic single-post article layout
-  ----------------------------------------------------------------------------
-  Context: {{#post}} (set by post.hbs router). Centred reading column with a
-  header (tag, title, byline), feature image, .prose content, tag footer,
-  social share, comments and related posts.
+  partials/post-default.hbs — the generic single post.
+
+  The fallback the post.hbs router lands on when a post carries none of the
+  type tags. It is the SAME reading surface as a blog post — `.ns-posthead`
+  over `.ns-post` — because a post with no type is still a post, and giving it
+  a second layout is how two article pages end up disagreeing about where the
+  title sits.
+
+  The difference from post-blog is what it does NOT have: no head variants (an
+  untyped post has no art direction to pick from), no series box, no left
+  rail. The outline and the share rail still earn their place, and the
+  component drops both on narrow screens on its own.
+
+  Context: {{#post}}, set by the post.hbs router.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<article class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
 
-  {{> "components/breadcrumb"}}
+<header class="ns-posthead ns-posthead--center">
+  <div class="ns-posthead__inner">
+    {{#primary_tag}}<a href="{{url}}" class="ns-tag ns-posthead__cat">{{name}}</a>{{/primary_tag}}
+    <h1 class="ns-posthead__title">{{title}}</h1>
+    {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
+    {{> "components/author-byline"}}
 
-  {{!-- ── Header ── --}}
-  <header class="mb-8">
-    {{#primary_tag}}
-      <a href="{{url}}" class="inline-flex items-center rounded-pill border border-border px-3 py-1 font-mono text-xs text-label ns-transition hover:border-brand-500 hover:text-brand-600 dark:hover:text-brand-300">{{name}}</a>
-    {{/primary_tag}}
-
-    <h1 class="mt-4 font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{{title}}</h1>
-
-    {{#if custom_excerpt}}
-      <p class="mt-4 text-lg text-muted">{{custom_excerpt}}</p>
+    {{#if feature_image}}
+      {{!-- The cover under the title is the LCP element on this route. --}}
+      {{> "components/img" src=feature_image class="ns-posthead__cover" eager=true
+          alt=feature_image_alt sizes="(min-width: 48rem) 44rem, 100vw"}}
+      {{#if feature_image_caption}}<span class="ns-posthead__credit">{{feature_image_caption}}</span>{{/if}}
     {{/if}}
-
-    {{!-- Byline (reusable component) --}}
-    <div class="mt-6 border-y border-border py-4">
-      {{> "components/author-byline"}}
-    </div>
-  </header>
-
-  {{!-- ── Feature image ── --}}
-  {{#if feature_image}}
-    <figure class="mb-8">
-      <img loading="lazy" decoding="async" src="{{img_url feature_image size='l'}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-           class="w-full rounded-card border border-border object-cover">
-      {{#if feature_image_caption}}
-        <figcaption class="mt-2 text-center text-sm text-muted">{{feature_image_caption}}</figcaption>
-      {{/if}}
-    </figure>
-  {{/if}}
-
-  {{!-- ── Content ── --}}
-  <div class="prose prose-lg max-w-none gh-content">
-    {{content}}
   </div>
+</header>
 
-  {{!-- In-content ad --}}
-  <div class="mt-8">{{> "ads/slot" format="horizontal"}}</div>
+<div class="ns-post">
+  <div class="ns-post__rail">{{> "components/toc"}}</div>
 
-  {{!-- ── Footer: all tags + share ── --}}
-  <footer class="mt-10 flex flex-col gap-6 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-    {{> "components/tag-pills"}}
-    {{> social-share}}
-  </footer>
+  <article class="ns-post__body">
+    {{> "components/breadcrumb"}}
 
-  {{!-- ── Comments ── --}}
-  {{comments}}
+    <div class="ns-prose gh-content">{{content}}</div>
 
-</article>
+    {{> "ads/slot" format="horizontal"}}
 
-{{!-- ── Related posts ── --}}
+    <footer class="ns-postfoot">
+      {{> "components/tag-pills"}}
+      {{> "components/share"}}
+    </footer>
+
+    <div class="mt-10">{{> "components/author-box"}}</div>
+
+    {{#if @site.comments_enabled}}{{comments}}{{/if}}
+  </article>
+
+  <div class="ns-post__aside">{{> "components/share" layout="rail"}}</div>
+</div>
+
 {{> related-posts}}

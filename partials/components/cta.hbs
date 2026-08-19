@@ -1,22 +1,23 @@
-{{!-- components/cta.hbs
-     Newsletter / subscribe call-to-action. Uses Ghost members signup when
-     enabled, otherwise links to the Portal. Reusable on listings, posts, home. --}}
-<section class="mx-auto my-14 max-w-4xl px-4 sm:px-6">
-  <div class="relative overflow-hidden rounded-card bg-brand-900 px-6 py-12 text-center text-white sm:px-12">
+{{!-- components/cta.hbs — the closing ask.
 
-    {{!-- decorative faded grid + cloud motif --}}
-    <div aria-hidden="true" class="pointer-events-none absolute inset-0 text-white">
-      <div class="bg-grid absolute inset-0"></div>
-      {{> icons name="cloud" class="absolute -right-4 -top-6 h-32 w-32 text-white/[0.06]"}}
-    </div>
+     The design system's `.ns-cta` inside a `.ns-band--dark --grid`: the band
+     supplies the navy ground and the hairline grid, the CTA supplies the
+     anatomy (title, actions, the fine print under them). The theme's version
+     was a hand-built rounded box with its own grid overlay and a decorative
+     cloud — three things the band already does, drawn a fourth way.
 
-    <div class="relative">
-      <h2 class="font-heading text-2xl font-extrabold sm:text-3xl">{{t "Join the Ohana"}}</h2>
-      <p class="mx-auto mt-3 max-w-xl text-white/80">{{t "New Salesforce tutorials, courses and tips — straight to your inbox. Free, no spam."}}</p>
-
-      <div class="mx-auto mt-6 max-w-md text-left">
+     ONE CTA PER PAGE, at the end. That is the component's rule and it is why
+     this is a partial rather than something a template assembles: two closing
+     asks on one page is two things competing for the last click. --}}
+<section class="ns-band ns-band--dark ns-band--grid ns-defer ns-defer--sm">
+  <div class="ns-band__inner">
+    <div class="ns-cta">
+      <h2 class="ns-band__title">{{#if title}}{{title}}{{else}}{{t "Join the Ohana"}}{{/if}}</h2>
+      <p class="ns-band__lede">{{#if body}}{{body}}{{else}}{{t "New Salesforce tutorials, courses and tips — straight to your inbox. Free, no spam."}}{{/if}}</p>
+      <div class="ns-cta__actions">
         {{> "members/subscribe" tone="dark" icon="mail"}}
       </div>
+      <span class="ns-cta__fine">{{t "Free. No card. Unsubscribe in one click."}}</span>
     </div>
   </div>
 </section>

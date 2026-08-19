@@ -1,28 +1,24 @@
-{{!-- footer-lesson.hbs — minimal footer for the distraction-free lesson/module
-     player: a full-width 90px sponsored/ad band, then a slim credits strip.
-     The course player header owns navigation. --}}
-<div class="w-full border-t border-border bg-surface-sunken py-4">
-  {{!-- min-h, not h: mobile ad units are typically 320×100 or 300×250, so a
-       hard 90px band either clipped them or left dead space. --}}
-  <div class="mx-auto flex min-h-[100px] max-w-[90rem] items-center justify-center px-4 sm:min-h-[90px] sm:px-6">
-    {{> "ads/leaderboard"}}
-  </div>
-</div>
-<footer class="border-t border-border bg-surface-sunken">
-  <div class="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-4 py-4 text-sm text-muted sm:flex-row sm:px-6">
-    <a href="{{@site.url}}" class="flex items-center gap-2 font-heading font-bold text-ink">
-      {{#if @site.logo}}<img loading="lazy" decoding="async" src="{{img_url @site.logo size="s"}}" alt="" class="h-5 w-auto">{{/if}}{{@site.title}}
-    </a>
-    <p class="flex items-center gap-1.5">{{> icons name="git-branch"}}{{t "Open source"}} · &copy; {{date format="YYYY"}}</p>
-    {{!-- Context-aware collection link: training modules go back to the training list --}}
+{{!-- footer-lesson.hbs — the reading surface's footer.
+
+     A lesson has its own chrome (.ns-coursenav at the top, the docked
+     prev/next at the foot of the article), so this is deliberately the
+     thinnest thing that still closes the page: the sponsor band, then the
+     system's `.ns-footer__bar` — the same legal strip the full footer ends
+     with, so the two do not disagree about what the bottom of the site is.
+
+     No columns, no newsletter, no nav: everything a reader might leave for is
+     already one control away in the bar above the lesson. --}}
+{{> "ads/leaderboard"}}
+
+<footer class="ns-footer">
+  <div class="ns-footer__bar">
+    <a href="{{@site.url}}">{{@site.title}}</a>
+    <span class="ns-footer__spacer"></span>
+    <span>&copy; {{date format="YYYY"}}</span>
     {{#has tag="#training-content"}}
-      <a href="/training/" class="inline-flex items-center gap-1.5 font-semibold hover:text-brand-600 dark:hover:text-brand-300">
-        {{> icons name="map-trifold"}}{{t "All training"}}
-      </a>
+      <a href="/training/">{{> icons name="map-trifold"}}{{t "All training"}}</a>
     {{else}}
-      <a href="/courses/" class="inline-flex items-center gap-1.5 font-semibold hover:text-brand-600 dark:hover:text-brand-300">
-        {{> icons name="squares-four"}}{{t "All courses"}}
-      </a>
+      <a href="/courses/">{{> icons name="squares-four"}}{{t "All courses"}}</a>
     {{/has}}
   </div>
 </footer>

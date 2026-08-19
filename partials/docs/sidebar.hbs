@@ -1,33 +1,29 @@
-{{!-- docs/sidebar.hbs — desktop docs navigation (sticky rail)
-     ---------------------------------------------------------------------------
-     Collapsible per-section groups (docs/sections view="nav"), each with its
-     icon. Desktop-only — mobile navigation is docs/mobile-bar. The script
-     highlights the current doc (pages that print #doc-current-id) as a brand
-     button and pops open its section; section pages print #doc-current-sec
-     so their group opens too. --}}
-<aside class="hidden lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1" aria-label="{{t "Documentation"}}">
-  <a href="/docs/" class="mb-2 flex items-center gap-2.5 rounded-btn px-2.5 py-2 text-sm font-semibold text-ink ns-transition hover:bg-surface-sunken">
-    {{> icons name="books" class="text-brand-500"}}{{t "Docs home"}}
-  </a>
+{{!-- docs/sidebar.hbs — the documentation rail.
+
+     The design system's `.ns-sidebar`: sticky under the navbar, its own
+     scroll region, collapsing to static below lg (the component decides that,
+     not this file). Sections are `.ns-sidebar__group` <details> rendered by
+     docs/sections view="nav".
+
+     THE ONE LINE OF SCRIPT sets `aria-current="page"` on the row for the doc
+     being read. It has to be script rather than a Handlebars `{{#match}}`
+     because the sections are pulled with {{#get}}, which swaps the context —
+     the current post's id is not reachable inside the loop without a `../`
+     path that Ghost 500s on. Everything else is the system's:
+     assets/js/ds/rail.js reads that attribute and closes the groups that do
+     not contain it. --}}
+<aside class="ns-sidebar" aria-label="{{t "Documentation"}}">
+  <a class="ns-sidebar__link" href="/docs/">{{> icons name="books"}}{{t "Docs home"}}</a>
   {{> "docs/sections" view="nav"}}
 </aside>
 
-{{!-- Open + highlight the active doc/section in every nav instance
-     (desktop rail and the mobile panel share the same markup). --}}
 <script>
   (function () {
     var cur = document.getElementById('doc-current-id');
-    if (cur) {
-      document.querySelectorAll('[data-doc-id="' + cur.getAttribute('data-id') + '"]').forEach(function (a) {
-        a.classList.add('is-doc-active');
-        var d = a.closest('details');
-        if (d) d.open = true;
-      });
-    }
-    var sec = document.getElementById('doc-current-sec');
-    if (sec) {
-      var s = sec.getAttribute('data-sec');
-      document.querySelectorAll('details[data-sec="' + s + '"], details[data-sec-legacy="' + s + '"]').forEach(function (d) { d.open = true; });
-    }
+    if (!cur) return;
+    var id = cur.getAttribute('data-id');
+    document.querySelectorAll('[data-doc-id="' + id + '"]').forEach(function (a) {
+      a.setAttribute('aria-current', 'page');
+    });
   })();
 </script>

@@ -1,51 +1,43 @@
-{{!-- blog/sidebar.hbs — blog sidebar WIDGETS (about, tag cloud, quick links,
-     newsletter, sponsor). No outer wrapper: the caller provides
-     <aside class="space-y-6 lg:sticky lg:top-20 lg:self-start"> so it can be
-     reused on both the listing and single-post pages. --}}
+{{!-- blog/sidebar.hbs — the blog's rail widgets.
 
-  {{!-- About --}}
-  <div class="rounded-card border border-border bg-surface-raised p-5">
-    <h3 class="font-heading font-bold">{{t "About the blog"}}</h3>
-    <p class="mt-2 text-sm leading-relaxed text-muted">
-      {{#if @site.description}}{{@site.description}}{{else}}{{t "Notes, tips and deep dives from the Salesforce ecosystem — written by working developers."}}{{/if}}
-    </p>
-    <a href="/about/" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600 dark:text-brand-300">{{t "About us"}}{{> icons name="arrow-right" class="h-4 w-4"}}</a>
+     Each box is the design system's `.ns-railbox` — a hairline card with a
+     mono `__title`. The theme drew the same box four times out of the same
+     five utilities, which is four places for the padding to drift.
+
+     No outer wrapper: the caller supplies the sticky column
+     (.ns-blog-listing__rail on the index, .ns-post__rail on a post), so this
+     partial is placement-agnostic. --}}
+
+{{!-- About --}}
+<div class="ns-railbox">
+  <p class="ns-railbox__title">{{t "About the blog"}}</p>
+  <p class="ns-card__text">
+    {{#if @site.description}}{{@site.description}}{{else}}{{t "Notes, tips and deep dives from the Salesforce ecosystem — written by working developers."}}{{/if}}
+  </p>
+  <a href="/about/" class="ns-btn ns-btn--quiet ns-btn--sm">{{t "About us"}}{{> icons name="arrow-right" class="ns-btn__arrow"}}</a>
+</div>
+
+{{!-- Topics — the system's tag strip, with the real post count on each --}}
+<div class="ns-railbox">
+  <p class="ns-railbox__title">{{t "Topics"}}</p>
+  <div class="ns-strip">
+    {{#get "tags" filter="visibility:public" limit="14" include="count.posts" order="count.posts desc"}}
+      {{#foreach tags}}
+        <a href="{{url}}" class="ns-tag ns-tag--pill">{{name}}<span class="ns-tag__count">{{count.posts}}</span></a>
+      {{/foreach}}
+    {{/get}}
   </div>
+</div>
 
-  {{!-- Tag cloud --}}
-  <div class="rounded-card border border-border bg-surface-raised p-5">
-    <h3 class="font-heading font-bold">{{t "Topics"}}</h3>
-    <div class="mt-3 flex flex-wrap gap-2">
-      {{#get "tags" filter="visibility:public" limit="14" include="count.posts" order="count.posts desc"}}
-        {{#foreach tags}}
-          <a href="{{url}}" class="inline-flex items-center gap-1 rounded-pill border border-border px-3 py-1 font-mono text-xs font-medium text-muted ns-transition hover:border-brand-500 hover:text-brand-600">
-            #{{name}}<span class="text-brand-500">{{count.posts}}</span>
-          </a>
-        {{/foreach}}
-      {{/get}}
-    </div>
+{{!-- Explore --}}
+<nav class="ns-railbox" aria-label="{{t "Explore"}}">
+  <p class="ns-railbox__title">{{t "Explore"}}</p>
+  <div class="ns-sidebar__group">
+    <a class="ns-sidebar__link" href="/courses/">{{> icons name="graduation-cap"}}{{t "Courses"}}</a>
+    <a class="ns-sidebar__link" href="/training/">{{> icons name="steps"}}{{t "Training"}}</a>
+    <a class="ns-sidebar__link" href="/docs/">{{> icons name="book-open"}}{{t "Documentation"}}</a>
+    <a class="ns-sidebar__link" href="{{@site.url}}/rss/">{{> icons name="rss"}}{{t "RSS feed"}}</a>
   </div>
+</nav>
 
-  {{!-- Quick links / archive --}}
-  <div class="rounded-card border border-border bg-surface-raised p-5">
-    <h3 class="font-heading font-bold">{{t "Explore"}}</h3>
-    <ul class="mt-3 space-y-1 text-sm">
-      <li><a href="/courses/" class="nav-link w-full text-sm">{{> icons name="graduation-cap" class="h-4 w-4"}}{{t "Courses"}}</a></li>
-      <li><a href="/training/" class="nav-link w-full text-sm">{{> icons name="steps" class="h-4 w-4"}}{{t "Training"}}</a></li>
-      <li><a href="/docs/" class="nav-link w-full text-sm">{{> icons name="book-open" class="h-4 w-4"}}{{t "Documentation"}}</a></li>
-      <li><a href="{{@site.url}}/rss/" class="nav-link w-full text-sm">{{> icons name="rss" class="text-base"}}{{t "RSS feed"}}</a></li>
-    </ul>
-  </div>
-
-  {{> "ads/slot" format="square"}}
-
-  {{!-- Newsletter — a real form, not a link to one. A sidebar ask that costs
-       a page transition to answer is an ask most readers decline. --}}
-  <div class="rounded-card bg-brand-900 p-5 text-white">
-    <h3 class="font-heading font-bold">{{t "Join the newsletter"}}</h3>
-    <p class="mt-1 mb-4 text-sm text-white/80">{{t "Free Salesforce tips and new posts in your inbox."}}</p>
-    {{> "members/subscribe" layout="stacked" tone="dark" icon="mail"}}
-  </div>
-
-  {{!-- Sponsor / ad --}}
-  {{> "ads/slot" format="rail"}}
+{{> "ads/slot" format="square"}}

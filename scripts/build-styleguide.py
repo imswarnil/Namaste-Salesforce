@@ -1181,14 +1181,21 @@ page("Components", "toc", "Table of contents",
 page("Components", "sidebar", "Docs sidebar",
      "Three different &ldquo;active&rdquo; treatments, because they answer three different questions: which "
      "page am I ON, which section am I IN, which heading am I NEAR.",
-     row(spec(".doc-nav-link.is-doc-active",
-              '<nav class="demo-w-md"><span class="doc-nav-heading">Getting started</span>'
-              '<a class="doc-nav-link nav-link nav-link--block nav-link--sm is-doc-active" href="#!">Create your account</a>'
-              '<a class="doc-nav-link nav-link nav-link--block nav-link--sm" href="#!">Find your way around</a>'
-              '<span class="doc-nav-heading">Courses</span>'
-              '<a class="doc-nav-link nav-link nav-link--block nav-link--sm" href="#!">How a course is structured</a></nav>', wide=True)),
-     note("The active row uses <code>!important</code> on purpose: the markup's <code>text-muted</code> / "
-          "<code>hover:*</code> utilities sit in a later cascade layer and would otherwise wash it out."),
+     row(spec(".ns-sidebar__group",
+              '<nav class="demo-w-md">'
+              '<details class="ns-sidebar__group" open><summary>'
+              '<i class="ph ph-rocket"></i><span class="ns-sidebar__label">Getting started</span>'
+              '<i class="ph ph-caret-right ns-sidebar__twist"></i></summary>'
+              '<a class="ns-sidebar__link" href="#!" aria-current="page">Create your account</a>'
+              '<a class="ns-sidebar__link" href="#!">Find your way around</a></details>'
+              '<details class="ns-sidebar__group" open><summary>'
+              '<i class="ph ph-graduation-cap"></i><span class="ns-sidebar__label">Courses</span>'
+              '<i class="ph ph-caret-right ns-sidebar__twist"></i></summary>'
+              '<a class="ns-sidebar__link" href="#!">How a course is structured</a></details></nav>', wide=True)),
+     note("The active row is <code>aria-current=\"page\"</code>, not a class — the CSS keys off the "
+          "attribute the screen reader already announces. Groups are native <code>&lt;details&gt;</code> "
+          "and ship OPEN, so a script failure leaves the nav long rather than hidden; the system's "
+          "<code>assets/js/ds/rail.js</code> then closes the ones that do not hold the current page."),
      note("The mobile sub-navbar that used to be documented here is gone with "
           "<code>subnav.css</code>: the lesson list is reached through "
           "<code>.ns-lesson-panel</code> on a phone and the system's rail above lg, so a third "

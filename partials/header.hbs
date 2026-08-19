@@ -43,7 +43,10 @@
      the fold — that is what --transparent keys off to go solid over a hero. --}}
 <nav class="ns-topnav{{#match @custom.navbar_behavior "Fixed on scroll"}} ns-topnav--compact{{/match}}{{#match @custom.navbar_behavior "Island on scroll"}} ns-topnav--floating{{/match}}{{#match @custom.navbar_behavior "Static"}} ns-topnav--sunken{{/match}}"
      aria-label="{{t "Main"}}" data-ns-scrolled>
-  <div class="ns-topnav__inner">
+  {{!-- NO .ns-topnav__inner. That wrapper is the system's OPTIONAL width cap
+       (max-inline-size: --container-page); without it the bar is fluid and
+       runs the full viewport, which is what a site menu wants. Add it back
+       only if the bar must line its brand up with a capped page column. --}}
 
     {{!-- Brand. The logo is the one image in the bar and it is above the fold
          on every route, so it is eager with an explicit box — a late logo
@@ -128,18 +131,28 @@
     <div class="ns-topnav__actions">
 
       {{#if @custom.navbar_show_search}}
-        <button type="button" class="ns-navsearch" data-ghost-search aria-label="{{t "Search"}}">
+        {{!-- --icon, not the field. The field shape is honest on a roomy
+             marketing bar and a liability here: .ns-topnav__links is
+             `flex: none`, so nothing in this row shrinks and a 12rem search
+             box is 12rem the nav items no longer have. It is also the one
+             element the system keeps visible below lg
+             (`.ns-navsearch:not(.ns-navsearch--icon)` is hidden there), so
+             the icon is the shape that works at every width. --}}
+        <button type="button" class="ns-navsearch ns-navsearch--icon" data-ghost-search aria-label="{{t "Search"}}">
           {{> icons name="search"}}
-          <span class="ns-navsearch__text">{{t "Search…"}}</span>
-          <kbd class="ns-navsearch__kbd">⌘K</kbd>
         </button>
       {{/if}}
 
-      {{!-- One piece of social proof, and it is a link to the repo. --}}
+      {{!-- The repo link, as one icon. .ns-navstar is the labelled pill with
+           a star count; without a count to show it is a button-shaped link
+           saying "Star", which costs a nav item's worth of row for a word the
+           glyph already says. .ns-navicon is the system's icon control — the
+           same square the theme switch uses, so the trailing cluster reads as
+           a set. --}}
       {{#if @custom.navbar_show_github}}
-        <a class="ns-navstar" href="https://github.com/imswarnil/Namaste-Salesforce"
+        <a class="ns-navicon" href="https://github.com/imswarnil/Namaste-Salesforce"
            target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}">
-          <span class="ns-navstar__label">{{> icons name="github"}}<span>{{t "Star"}}</span></span>
+          {{> icons name="github"}}
         </a>
       {{/if}}
 
@@ -167,7 +180,6 @@
         <span class="ns-burger__bar"></span><span class="ns-burger__bar"></span><span class="ns-burger__bar"></span>
       </button>
     </div>
-  </div>
 </nav>
 
 {{!-- ── Mobile sheet ──────────────────────────────────────────────────────

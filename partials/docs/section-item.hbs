@@ -9,27 +9,25 @@
      Posts are matched on BOTH the clean slug and the legacy docs-NN-* slug so
      the site keeps working until tags are renamed in Ghost Admin. --}}
 {{#match view "nav"}}
-  <details class="doc-sec group/sec" data-sec="{{slug}}" data-sec-legacy="{{legacy}}">
-    <summary class="flex cursor-pointer select-none items-center gap-2.5 rounded-btn px-2.5 py-2 text-sm font-semibold text-ink ns-transition hover:bg-surface-sunken [&::-webkit-details-marker]:hidden">
-      {{> icons name=icon class="shrink-0 text-base text-brand-500"}}
-      <span class="min-w-0 flex-1 truncate">{{name}}</span>
-      {{> icons name="caret-right" class="shrink-0 text-xs text-muted transition-transform group-open/sec:rotate-90"}}
+  {{!-- The design system's `.ns-sidebar__group` as a native <details>: the
+       section collapses with no JavaScript and no ARIA of its own. It ships
+       OPEN, so a script failure leaves the nav long rather than hidden;
+       assets/js/ds/rail.js then closes the ones that do not hold the current
+       page. The active link is `aria-current="page"` — the attribute the
+       system styles and the screen reader announces, so the two cannot
+       disagree. --}}
+  <details class="ns-sidebar__group" data-sec="{{slug}}" data-sec-legacy="{{legacy}}" open>
+    <summary>
+      {{> icons name=icon}}
+      <span class="ns-sidebar__label">{{name}}</span>
+      {{> icons name="caret-right" class="ns-sidebar__twist"}}
     </summary>
-    <ul class="mb-2 ml-[1.15rem] space-y-0.5 border-l border-border pl-2.5 pt-1">
-      {{#get "posts" filter="tag:documentation+primary_tag:[{{slug}},{{legacy}}]" limit="100" order="published_at asc"}}
-        {{#foreach posts}}
-          <li>
-            <a href="{{url}}" data-doc-id="{{id}}"
-               class="doc-nav-link block rounded-btn px-2.5 py-1.5 text-sm text-muted ns-transition hover:bg-surface-sunken hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
-          </li>
-        {{/foreach}}
-      {{/get}}
-      <li>
-        <a href="/docs/{{slug}}/" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-brand-600 transition hover:gap-1.5 dark:text-brand-300">
-          {{t "View section"}} {{> icons name="arrow-right"}}
-        </a>
-      </li>
-    </ul>
+    {{#get "posts" filter="tag:documentation+primary_tag:[{{slug}},{{legacy}}]" limit="100" order="published_at asc"}}
+      {{#foreach posts}}
+        <a class="ns-sidebar__link" href="{{url}}" data-doc-id="{{id}}">{{title}}</a>
+      {{/foreach}}
+    {{/get}}
+    <a class="ns-sidebar__link" href="/docs/{{slug}}/">{{t "View section"}}{{> icons name="arrow-right"}}</a>
   </details>
 {{else match view "card"}}
   <article data-cat data-section="{{slug}}"
