@@ -1,9 +1,13 @@
 /* ============================================================================
    code.js — self-contained syntax highlighter + copy button (no libraries)
    ----------------------------------------------------------------------------
-   Wraps every <pre><code> in .gh-content with a Salesforce Developer
-   Console-style window (navy header, white file tab, copy button) and tokenises
-   the source with a tiny hand-written scanner.
+   Upgrades every <pre><code> in .gh-content into the DESIGN SYSTEM's
+   `.ns-code` figure — bar, line-number gutter, tokenised body — and nothing
+   more. Ghost's Koenig emits a bare <pre><code class="language-x">; the system
+   styles a richer structure; this is the bridge between the two.
+
+   It does NOT handle copy or tabs. That is assets/js/ds/code.js, which wires
+   [data-code="copy"] on the markup this produces.
    The scanner emits escaped text with <span class="tok-*"> wrappers; because it
    builds output left-to-right it never re-matches its own markup (the classic
    regex-highlighter bug). Languages: Apex/SOQL, JS/TS/LWC, HTML/XML, JSON,
@@ -12,6 +16,8 @@
 (function () {
   'use strict';
 
+  var ICON_FILE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="ns-icon"><path d="M13.5 3.5H7A1.5 1.5 0 0 0 5.5 5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5Z"/><path d="M13.5 3.5v5h5"/></svg>';
+
   var blocks = document.querySelectorAll('.gh-content pre');
   if (!blocks.length) return;
 
@@ -19,7 +25,19 @@
   function esc(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
-  function span(cls, text) { return '<span class="tok-' + cls + '">' + esc(text) + '</span>'; }
+  /* The design system's token vocabulary (ds/components/css/code.css) is
+     ns-tok-{kw,str,com,num,fn,type,punct}. This scanner grew its own names;
+     they are mapped here rather than renamed throughout, so the scanner stays
+     readable and there is exactly ONE place that knows the system's names. */
+  var TOK = {
+    keyword: 'kw', string: 'str', comment: 'com', number: 'num',
+    function: 'fn', punct: 'punct',
+    tag: 'type',   /* markup: the element name reads as a type */
+    attr: 'fn'     /* markup: the attribute reads as a callable-ish name */
+  };
+  function span(cls, text) {
+    return '<span class="ns-tok-' + (TOK[cls] || 'punct') + '">' + esc(text) + '</span>';
+  }
   function toSet(str) {
     var s = {};
     str.split(/\s+/).forEach(function (w) { if (w) s[w.toLowerCase()] = true; });
@@ -133,7 +151,7 @@
 
   // ── process each block ──
   blocks.forEach(function (pre) {
-    if (pre.closest('.ns-syntax')) return;
+    if (pre.closest('.ns-code')) return;
     var codeEl = pre.querySelector('code') || pre;
     var raw = codeEl.textContent;
     var lang = ((codeEl.className + ' ' + pre.className).match(/language-([\w-]+)/) || [])[1] || '';
@@ -141,30 +159,45 @@
 
     codeEl.innerHTML = isMarkup(lang) ? highlightMarkup(raw) : highlightCode(raw, lang);
 
-    var wrap = document.createElement('div');
-    wrap.className = 'ns-syntax';
-    var bar = document.createElement('div');
-    bar.className = 'ns-syntax__bar';
+    /* The system's .ns-code is a <figure> with a <figcaption> bar, a line-number
+       gutter and the <pre> beside it. Ghost's Koenig emits a bare
+       <pre><code class="language-x">, so this upgrades one into the other —
+       which is the only reason this file still exists. The BEHAVIOUR (copy,
+       tabs) is the system's assets/js/ds/code.js; nothing here duplicates it. */
+    var fig = document.createElement('figure');
+    fig.className = 'ns-code';
+    if (lang) fig.setAttribute('data-lang', lang);
+
+    var bar = document.createElement('figcaption');
+    bar.className = 'ns-code__bar';
     bar.innerHTML =
-      '<span class="ns-syntax__name">' +
-        '<svg viewBox="0 0 24 24" fill="currentColor" class="h-3.5 w-3.5"><path d="M7 19a5 5 0 0 1-.8-9.9 6 6 0 0 1 11.5-1.2A4.5 4.5 0 0 1 17.5 19H7Z"/></svg>' +
-        '<span>' + (lang || 'code') + '</span>' +
+      '<span class="ns-code__file">' + ICON_FILE + '<span>' + esc(lang || 'code') + '</span></span>' +
+      '<span class="ns-code__actions">' +
+        (lang ? '<span class="ns-code__lang">' + esc(lang) + '</span>' : '') +
+        '<button type="button" class="ns-code__btn" data-code="copy" aria-label="Copy code">' +
+          ICON_COPY + '<span class="ns-code__btn-label"><span>Copy</span></span>' +
+        '</button>' +
       '</span>';
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'ns-syntax__copy';
-    btn.setAttribute('aria-label', 'Copy code');
-    btn.innerHTML = ICON_COPY + '<span class="ns-syntax__copy-label">Copy</span>';
-    bar.appendChild(btn);
 
     var body = document.createElement('div');
-    body.className = 'ns-syntax__body';
+    body.className = 'ns-code__body';
 
-    pre.parentNode.insertBefore(wrap, pre);
-    wrap.appendChild(bar);
-    wrap.appendChild(body);
+    /* The gutter is aria-hidden and a separate <pre> so selecting the code
+       never picks up the line numbers — the reason the system splits them. */
+    var lines = raw.replace(/\n$/, '').split('\n').length;
+    var gutter = document.createElement('pre');
+    gutter.className = 'ns-code__gutter';
+    gutter.setAttribute('aria-hidden', 'true');
+    gutter.textContent = Array.from({ length: lines }, function (_, i) { return i + 1; }).join('\n');
+
+    pre.className = 'ns-code__pre';
+
+    pre.parentNode.insertBefore(fig, pre);
+    fig.appendChild(bar);
+    fig.appendChild(body);
+    body.appendChild(gutter);
     body.appendChild(pre);
 
-    btn.addEventListener('click', function () { copyText(raw, btn); });
+    /* copy is wired by the system's code.js via [data-code="copy"] */
   });
 })();

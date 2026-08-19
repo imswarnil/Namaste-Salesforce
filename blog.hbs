@@ -4,6 +4,20 @@
 
 {{> "components/page-header" eyebrow="Namaste Salesforce" title="The Developer Blog" subtitle="Insights, updates and deep-dives from the Salesforce ecosystem."}}
 
+{{!-- The tag shelf: the system's own way into a collection, and the fastest
+     triage a reader gets on a blog index. --}}
+<section class="ns-band ns-band--tight ns-band--sunken">
+  <div class="ns-band__inner">
+    <div class="ns-strip">
+      {{#get "tags" filter="visibility:public" limit="10" include="count.posts" order="count.posts desc"}}
+        {{#foreach tags}}
+          <a class="ns-tag" href="{{url}}">{{name}}<span class="ns-tag__count">{{count.posts}}</span></a>
+        {{/foreach}}
+      {{/get}}
+    </div>
+  </div>
+</section>
+
 {{!-- .ns-blog-listing is the system's feed layout — the same rail-plus-grid
      shape as the course listing, so a reader who has used one has used both. --}}
 <section class="ns-container ns-section">

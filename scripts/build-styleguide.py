@@ -1026,42 +1026,37 @@ page("Components", "video", "Video",
      note("<code>.ns-embed</code> wraps a YouTube or Vimeo iframe at a fixed ratio so the page holds its "
           "shape while the embed loads. Ratios: <code>--square</code>, <code>--story</code>."))
 
-SNIP = ('  <span class="tok-comment">// bulk-safe: one query, one update</span>\n'
-        '  <span class="tok-keyword">public static void</span> <span class="tok-function">setRating</span>'
-        '(<span class="tok-builtin">List</span>&lt;Account&gt; accs) {\n'
-        '      <span class="tok-keyword">for</span> (Account a : accs) {\n'
-        '          a.Rating = a.AnnualRevenue &gt; <span class="tok-number">1000000</span> '
-        '? <span class="tok-string">Hot</span> : <span class="tok-string">Warm</span>;\n'
+SNIP = ('  <span class="ns-tok-com">// bulk-safe: one query, one update</span>\n'
+        '  <span class="ns-tok-kw">public static void</span> <span class="ns-tok-fn">setRating</span>'
+        '(<span class="ns-tok-type">List</span>&lt;Account&gt; accs) {\n'
+        '      <span class="ns-tok-kw">for</span> (Account a : accs) {\n'
+        '          a.Rating = a.AnnualRevenue &gt; <span class="ns-tok-num">1000000</span> '
+        '? <span class="ns-tok-str">Hot</span> : <span class="ns-tok-str">Warm</span>;\n'
         '      }\n'
-        '      <span class="tok-keyword">update</span> accs;\n'
+        '      <span class="ns-tok-kw">update</span> accs;\n'
         '  }\n')
 
 page("Components", "syntax", "Syntax highlighter",
      "A code block that looks like the tool the reader is learning: a title bar carrying the filename "
      "and language, a copy button that confirms itself, and optional line numbers. "
-     "<code>code.js</code> tokenises and injects the <code>.tok-*</code> spans — there is no "
+     "<code>code.js</code> tokenises and injects the <code>.ns-tok-*</code> spans — there is no "
      "highlighting library.",
      head("Default"),
-     row(spec(".ns-syntax",
-              '<div class="ns-syntax demo-w-xl"><div class="ns-syntax__bar">'
-              '<span class="ns-syntax__name"><i class="ph ph-brackets-curly"></i>AccountHandler.cls</span>'
-              '<span class="ns-syntax__lang">apex</span>'
-              '<button class="ns-syntax__copy"><i class="ph ph-stack"></i>'
-              '<span class="ns-syntax__copy-label">Copy</span></button></div>'
-              f'<div class="ns-syntax__body"><pre><code>{SNIP}</code></pre></div></div>', wide=True)),
-     head("Line numbers"),
-     row(spec("--numbered",
-              '<div class="ns-syntax ns-syntax--numbered demo-w-xl"><div class="ns-syntax__bar">'
-              '<span class="ns-syntax__name"><i class="ph ph-brackets-curly"></i>AccountTrigger.trigger</span>'
-              '<button class="ns-syntax__copy"><i class="ph ph-stack"></i>'
-              '<span class="ns-syntax__copy-label">Copy</span></button></div>'
-              '<div class="ns-syntax__body"><pre><code>'
-              '<span class="ns-syntax__line"><span class="tok-keyword">trigger</span> AccountTrigger <span class="tok-keyword">on</span> Account {</span>'
-              '<span class="ns-syntax__line">    <span class="tok-keyword">if</span> (Trigger.isBefore) {</span>'
-              '<span class="ns-syntax__line">        AccountHandler.<span class="tok-function">setRating</span>(Trigger.new);</span>'
-              '<span class="ns-syntax__line">    }</span>'
-              '<span class="ns-syntax__line">}</span>'
-              '</code></pre></div></div>', wide=True)),
+     row(spec(".ns-code",
+              '<figure class="ns-code demo-w-xl" data-lang="apex">'
+              '<figcaption class="ns-code__bar">'
+              '<span class="ns-code__file"><i class="ph ph-code"></i><span>AccountHandler.cls</span></span>'
+              '<span class="ns-code__actions"><span class="ns-code__lang">apex</span>'
+              '<button type="button" class="ns-code__btn" data-code="copy"><i class="ph ph-copy"></i>'
+              '<span class="ns-code__btn-label"><span>Copy</span></span></button></span></figcaption>'
+              '<div class="ns-code__body">'
+              '<pre class="ns-code__gutter" aria-hidden="true">1\n2\n3\n4\n5\n6\n7</pre>'
+              f'<pre class="ns-code__pre"><code>{SNIP}</code></pre>'
+              '</div></figure>', wide=True)),
+     note("Ghost's editor emits a bare <code>&lt;pre&gt;&lt;code class=\"language-x\"&gt;</code>. "
+          "<code>assets/js/code.js</code> upgrades that into this structure and tokenises it; the "
+          "copy button is wired by the system's own <code>assets/js/ds/code.js</code> through "
+          "<code>[data-code=\"copy\"]</code>. The theme's old <code>.ns-syntax</code> is gone."),
      head("Terminal"),
      row(spec("--terminal",
               '<div class="ns-syntax ns-syntax--terminal demo-w-xl"><div class="ns-syntax__bar">'

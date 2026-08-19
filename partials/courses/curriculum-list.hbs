@@ -1,80 +1,28 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  courses/curriculum-list.hbs — the course's lessons.
+  courses/curriculum-list.hbs — the course's lessons, on the course page.
 
-  Pulled with {{#get}} (Handlebars, not JS) and rendered as the design
-  system's `.ns-curriculum` of `.ns-lesson` rows (ds/components/css/lms.css
-  and player.css).
+  The same `.ns-lesson` rows the player's rail and the mobile drawer render —
+  courses/lesson-row is the single implementation. That is the whole idea of
+  the system's LMS layer: a learner who has read the syllabus already knows
+  how to read the rail.
 
-  THE POINT OF .ns-lesson: a lesson row looks the same everywhere. This list,
-  the player's rail and the mobile drawer are ONE component wearing different
-  containers, so a learner who has read the syllabus already knows how to read
-  the rail. The theme used to draw three of them.
-
-  --flat because Ghost has no sub-sections inside a course: the lessons are
-  the posts whose primary tag is this course. Training, which DOES have
-  sections, uses the sectioned form.
-
-  ACCESS is Ghost's own VISIBILITY, not a tag: public = free, members = a free
-  account, paid = a plan, anything else = tier-specific. A `#preview` lesson is
-  always open regardless. `data-access` carries it to the CSS so a locked row
-  can dim without a second class.
+  --flat because a Ghost course's lessons are flat under one primary tag.
+  Sections belong to TRAINING, which has a real section model.
 
   Context: a #course post.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 <div class="ns-curriculum ns-curriculum--flat">
-  {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags,authors" order="published_at asc" limit="100" as |lessons|}}
+  {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" include="tags" order="published_at asc" limit="100" as |lessons|}}
 
     <div class="ns-curriculum__bar">
-      <span class="ns-curriculum__totals">{{lessons.length}} {{t "lessons"}}</span>
+      <span class="ns-curriculum__totals">
+        {{lessons.length}} {{t "lessons"}}
+        {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}} · {{description}}{{/match}}{{/foreach}}
+      </span>
     </div>
 
-    {{#foreach lessons}}
-      <a class="ns-lesson" href="{{url}}"
-         data-access="{{#has tag="#preview"}}free{{else}}{{#match visibility "public"}}free{{else match visibility "members"}}members{{else match visibility "paid"}}pro{{else}}tiers{{/match}}{{/has}}">
-
-        <span class="ns-lesson__index" aria-hidden="true">{{@number}}</span>
-
-        {{!-- Thumbnail: the lesson's own image, else its author, else nothing.
-             A grey rectangle standing in for a missing image is worse than
-             the row simply not having one. --}}
-        {{#if feature_image}}
-          <img class="ns-lesson__thumb" decoding="async" loading="lazy" src="{{img_url feature_image size="xs"}}" alt="">
-        {{else}}{{#primary_author}}{{#if profile_image}}
-          <img class="ns-lesson__thumb" decoding="async" loading="lazy" src="{{img_url profile_image size="xxs"}}" alt="">
-        {{/if}}{{/primary_author}}{{/if}}
-
-        <span class="ns-lesson__body">
-          <span class="ns-lesson__title">{{title}}</span>
-          <span class="ns-lesson__sub">
-            {{!-- Access, and it never replaces the TYPE — "what kind of thing
-                 is this" and "may I open it" are different questions. Free is
-                 the one that earns colour: in a locked curriculum the free
-                 rows are the whole argument for signing up. --}}
-            {{#has tag="#preview"}}
-              <span class="ns-laccess ns-laccess--free">{{> icons name="eye"}}{{t "Preview"}}</span>
-            {{else}}
-              {{#match visibility "public"}}<span class="ns-laccess ns-laccess--free" title="{{t "Free — no account needed"}}">{{> icons name="lock-open"}}{{t "Free"}}</span>
-              {{else match visibility "members"}}<span class="ns-laccess ns-laccess--members" title="{{t "Free with a member account"}}">{{> icons name="user-circle"}}{{t "Members"}}</span>
-              {{else match visibility "paid"}}<span class="ns-laccess ns-laccess--pro" title="{{t "Requires a paid plan"}}">{{> icons name="crown"}}{{t "Pro"}}</span>
-              {{else}}<span class="ns-laccess" title="{{t "Available on specific tiers"}}">{{> icons name="star"}}{{t "Tier"}}</span>{{/match}}
-            {{/has}}
-            {{#primary_author}}<span class="ns-lesson__badge ns-lesson__badge--quiet">{{name}}</span>{{/primary_author}}
-          </span>
-        </span>
-
-        {{!-- The kind of lesson. Icon plus a real name — the word stays in the
-             DOM even when only the glyph is drawn, so the accessible name is
-             never dropped. --}}
-        <span class="ns-ltype ns-ltype--icon {{#has tag="#lesson-type-video"}}ns-ltype--video{{else}}ns-ltype--article{{/has}}">
-          {{#has tag="#lesson-type-video"}}{{> icons name="video"}}<span>{{t "Video"}}</span>{{else}}{{> icons name="article"}}<span>{{t "Article"}}</span>{{/has}}
-        </span>
-
-        <span class="ns-lesson__time">
-          {{#has tag="#lesson-type-video"}}{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}{{else}}{{reading_time minute="1 min" minutes="% min"}}{{/has}}
-        </span>
-      </a>
-    {{else}}
-      <p class="ns-empty">{{> icons name="wrench"}} {{t "Lessons are being added."}}</p>
+    {{#foreach lessons}}{{> "courses/lesson-row" first=@first}}{{else}}
+      <p class="ns-empty">{{> icons name="wrench" class="ns-empty__icon"}}<span class="ns-empty__title">{{t "Lessons are being added."}}</span></p>
     {{/foreach}}
   {{/get}}
 </div>

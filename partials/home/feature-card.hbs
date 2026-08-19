@@ -1,10 +1,19 @@
-{{!-- home/feature-card.hbs — icon + title + body feature card
-     Params: icon (Phosphor class), title, body
-     Uses the .ns-feature COMPONENT (2-components/feature.css). --}}
-<div class="ns-feature js-spotlight group">
-  <span class="ns-chip relative">
+{{!-- home/feature-card.hbs — one reason, as the design system's `.ns-feature`.
+
+     The system's anatomy is __top (the glyph and the INDEX) then __name then
+     __text. The index is the part the theme's own version was missing, and it
+     is the point of the component: six unnumbered cards read as a wall, and
+     six numbered ones read as a list you can hold in your head.
+
+     The parent is `.ns-features`, which is the auto-fitting grid — not a
+     generic `.ns-grid--3`, so the count reflows on its own terms.
+
+     Params: icon (a name from partials/icons.hbs) · index · title · body --}}
+<article class="ns-feature js-spotlight">
+  <div class="ns-feature__top">
     {{> icons name=icon}}
-  </span>
-  <h3 class="ns-feature__title">{{title}}</h3>
-  <p class="ns-feature__body">{{body}}</p>
-</div>
+    {{#if index}}<span class="ns-feature__num">{{index}}</span>{{/if}}
+  </div>
+  <h3 class="ns-feature__name">{{title}}</h3>
+  <p class="ns-feature__text">{{body}}</p>
+</article>
