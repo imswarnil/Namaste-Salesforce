@@ -131,6 +131,12 @@
     <script defer src="{{asset "js/ds/nav.js"}}"></script>
     {{#is "post, page"}}<script defer src="{{asset "js/ds/toc.js"}}"></script>{{/is}}
     {{#is "post"}}{{#post}}{{#has tag="#lesson, #course, #training-content"}}<script defer src="{{asset "js/ds/lms.js"}}"></script>{{/has}}{{/post}}{{/is}}
+    {{!-- tabs.js implements the ARIA contract the CSS documents: roving
+         tabindex, arrow keys, aria-selected + [hidden] on the panels. Without
+         it the course page's tabs LOOK selectable and are not — and every
+         panel stays visible, which is a longer page but never hidden content.
+         That is why the panels are not hidden in the markup. --}}
+    {{#is "post"}}{{#post}}{{#has tag="#course"}}<script defer src="{{asset "js/ds/tabs.js"}}"></script>{{/has}}{{/post}}{{/is}}
 
     {{!-- Alpine — still the tool for the catalog filters and the small
          disclosure state the system does not model.

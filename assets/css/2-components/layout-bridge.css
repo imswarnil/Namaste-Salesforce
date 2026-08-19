@@ -1,0 +1,39 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   BRIDGE · the handful of placements the system does not name
+   ----------------------------------------------------------------------------
+   THIS FILE EXISTS SO THAT NO .hbs CARRIES A `style=` ATTRIBUTE.
+
+   The design system names components, not positions. A few places in this
+   theme need a component put somewhere the system has no class for — a search
+   field inside a hero, the breadcrumb's gap above a page. Those were inline
+   styles, and an inline style is a value that cannot be themed, cannot flip in
+   dark mode, cannot be overridden by a later layer and cannot be found by
+   grep. Each one is a class here instead.
+
+   EVERY RULE BELOW IS A PLACEMENT — margin, max-width, or a grid the system
+   does not model. If you find yourself adding colour, type or a border here,
+   it belongs in the design system, not in this file.
+
+   Keep it small. It is the pressure valve, not a second component layer.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* The breadcrumb sits above a hero and needs air over it that the component
+     itself should not assume — a breadcrumb inside a card would not want it. */
+  .ns-crumbtrail { padding-block-start: var(--space-4); }
+
+  /* The course hero's author row. .ns-authors is used in cards too, where it
+     is flush; here it follows the actions and needs the gap. */
+  .ns-chero__authors { margin-block-start: var(--space-5); }
+
+  /* Search fields placed INSIDE another component. .ns-input-wrap is a
+     positioning context, not a layout, so where it sits is the page's call. */
+  .ns-filters__search { margin-block: var(--space-3); }
+  .ns-hero__search { max-inline-size: 32rem; margin-block-start: var(--space-6); }
+
+  /* The certification badge is centred in its card and sized from one number;
+     everything inside it is in em, so this is the only value it needs. */
+  .ns-certcard { display: grid; justify-items: center; gap: var(--space-3); }
+  .ns-certcard .ns-certbadge { inline-size: 7rem; }
+}

@@ -1,21 +1,37 @@
-{{!-- partials/pagination.hbs — Newer/Older pager (context: {{pagination}})
-     Uses the .ns-pager COMPONENT (2-components/pagination.css). --}}
-<nav class="ns-pager mx-auto mt-12 max-w-6xl px-4" role="navigation" aria-label="Pagination">
+{{!-- partials/pagination.hbs — the Newer/Older pager.
+
+     RESERVED NAME: Ghost renders this from the `{{pagination}}` helper.
+
+     The design system's `.ns-pagination--compact`: steps at either end with
+     the position between them. The system also ships numbered `__link`s, and
+     they are the better shape for a set you want to jump around in — but
+     Ghost's pagination context gives `prev`, `next`, `page` and `pages` and
+     no page LIST, so numbered links would have to be synthesised. Compact is
+     what this data actually supports.
+
+     A disabled step stays in the DOM rather than being removed: taking it out
+     makes the row reflow at the first and last page, and the position jumps
+     as you page through. `aria-disabled` and not-a-link, per the system. --}}
+{{#if pagination}}
+<nav class="ns-container ns-pagination ns-pagination--compact" role="navigation" aria-label="{{t "Pagination"}}">
 
   {{#if prev}}
-    <a class="ns-pager__link" href="{{page_url prev}}" rel="prev">
+    <a class="ns-pagination__step" href="{{page_url prev}}" rel="prev">
       {{> icons name="arrow-left"}}{{t "Newer"}}
     </a>
+  {{else}}
+    <span class="ns-pagination__step" aria-disabled="true">{{> icons name="arrow-left"}}{{t "Newer"}}</span>
   {{/if}}
 
-  <span class="ns-pager__count">
-    {{t "Page {page} of {pages}" page=page pages=pages}}
-  </span>
+  <span class="ns-pagination__status">{{t "Page {page} of {pages}" page=page pages=pages}}</span>
 
   {{#if next}}
-    <a class="ns-pager__link" href="{{page_url next}}" rel="next">
+    <a class="ns-pagination__step" href="{{page_url next}}" rel="next">
       {{t "Older"}}{{> icons name="arrow-right"}}
     </a>
+  {{else}}
+    <span class="ns-pagination__step" aria-disabled="true">{{t "Older"}}{{> icons name="arrow-right"}}</span>
   {{/if}}
 
 </nav>
+{{/if}}
