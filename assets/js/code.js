@@ -6,7 +6,7 @@
    more. Ghost's Koenig emits a bare <pre><code class="language-x">; the system
    styles a richer structure; this is the bridge between the two.
 
-   It does NOT handle copy or tabs. That is assets/js/ds/code.js, which wires
+   It does NOT handle copy or tabs. That is assets/js/nsds/code.js, which wires
    [data-code="copy"] on the markup this produces.
    The scanner emits escaped text with <span class="tok-*"> wrappers; because it
    builds output left-to-right it never re-matches its own markup (the classic
@@ -25,7 +25,7 @@
   function esc(s) {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
-  /* The design system's token vocabulary (ds/components/css/code.css) is
+  /* The design system's token vocabulary (nsds/components/css/code.css) is
      ns-tok-{kw,str,com,num,fn,type,punct}. This scanner grew its own names;
      they are mapped here rather than renamed throughout, so the scanner stays
      readable and there is exactly ONE place that knows the system's names. */
@@ -163,7 +163,7 @@
        gutter and the <pre> beside it. Ghost's Koenig emits a bare
        <pre><code class="language-x">, so this upgrades one into the other —
        which is the only reason this file still exists. The BEHAVIOUR (copy,
-       tabs) is the system's assets/js/ds/code.js; nothing here duplicates it. */
+       tabs) is the system's assets/js/nsds/code.js; nothing here duplicates it. */
     var fig = document.createElement('figure');
     fig.className = 'ns-code';
     if (lang) fig.setAttribute('data-lang', lang);

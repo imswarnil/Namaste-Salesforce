@@ -1055,7 +1055,7 @@ page("Components", "syntax", "Syntax highlighter",
               '</div></figure>', wide=True)),
      note("Ghost's editor emits a bare <code>&lt;pre&gt;&lt;code class=\"language-x\"&gt;</code>. "
           "<code>assets/js/code.js</code> upgrades that into this structure and tokenises it; the "
-          "copy button is wired by the system's own <code>assets/js/ds/code.js</code> through "
+          "copy button is wired by the system's own <code>assets/js/nsds/code.js</code> through "
           "<code>[data-code=\"copy\"]</code>. The theme's old <code>.ns-syntax</code> is gone."),
      head("Terminal"),
      row(spec("--terminal",
@@ -1195,7 +1195,7 @@ page("Components", "sidebar", "Docs sidebar",
      note("The active row is <code>aria-current=\"page\"</code>, not a class — the CSS keys off the "
           "attribute the screen reader already announces. Groups are native <code>&lt;details&gt;</code> "
           "and ship OPEN, so a script failure leaves the nav long rather than hidden; the system's "
-          "<code>assets/js/ds/rail.js</code> then closes the ones that do not hold the current page."),
+          "<code>assets/js/nsds/rail.js</code> then closes the ones that do not hold the current page."),
      note("The mobile sub-navbar that used to be documented here is gone with "
           "<code>subnav.css</code>: the lesson list is reached through "
           "<code>.ns-lesson-panel</code> on a phone and the system's rail above lg, so a third "
@@ -1419,7 +1419,7 @@ page("Home", "home-header", "Header",
      "<code>.ns-topnav</code> — markup, styling and behaviour all vendored from "
      "NS-Design-System, so the marketing site and the app wear the same bar. "
      "Menus, the mobile sheet and the theme switch are driven by "
-     "<code>assets/js/ds/nav.js</code>; the theme writes no navbar JavaScript.",
+     "<code>assets/js/nsds/nav.js</code>; the theme writes no navbar JavaScript.",
      head("Default"),
      row(spec(".ns-topnav", HEADER_DEMO, wide=True)),
      note("Nav items come from Ghost (Settings &rarr; Navigation) through the reserved "
