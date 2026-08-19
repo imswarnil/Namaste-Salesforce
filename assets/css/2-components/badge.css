@@ -1,4 +1,26 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · badge — theme additions to .ns-badge
+   ----------------------------------------------------------------------------
+   THE COMPONENT IS THE DESIGN SYSTEM'S. `.ns-badge` and its variants live in
+   ds/components/css/core/css/display.css and are the same rules the Next.js app renders.
+   This file no longer redeclares any of them.
+
+   It used to. The theme carried a parallel implementation of .ns-badge — its own
+   box model, its own variant set — and because layer 2 (`components`) sits
+   AFTER the system's layer (`ns-components`) in the cascade, the theme's copy
+   won every collision. The system was vendored, compiled, shipped, and then
+   silently overridden. That is why the design system's look did not appear.
+
+   What remains below is the genuine remainder: the sizes and tones the system does not carry: --sm, --dot,
+   --neutral, --glass and the --solid fills.
+   Each one EXTENDS the system's component rather than replacing it, so the
+   base geometry, colour and motion all still come from the system.
+
+   Before adding anything here, check the system first — its variant set is
+   usually larger than it looks (--accent --success --warning --error and the __dot/__icon parts exist).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · badge — .ns-badge
    ----------------------------------------------------------------------------
    Status as DATA: mono, uppercase, hairline-ringed. Never a filled pastel
@@ -13,51 +35,30 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    border-radius: var(--radius-sm);
-    padding: 0.2rem 0.55rem;
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    font-weight: var(--weight-label);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: var(--color-brand-600);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brand-500) 35%, transparent);
-  }
-  [data-theme="dark"] .ns-badge { color: var(--color-brand-300); }
 
   /* ── Sizes ─────────────────────────────────────────────────────────────── */
   .ns-badge--sm { padding: 0.1rem 0.4rem; font-size: 0.625rem; }
-  .ns-badge--lg { padding: 0.3rem 0.7rem; font-size: var(--size-small); }
 
-  /* ── Shapes ────────────────────────────────────────────────────────────── */
-  .ns-badge--pill   { border-radius: var(--radius-pill); }
-  .ns-badge--square { padding: 0.2rem; aspect-ratio: 1; justify-content: center; }
-
-  /* ── Tones — the ring takes the color, the label follows ───────────────── */
-  .ns-badge--accent { color: var(--color-accent-600); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent-500, var(--color-accent-600)) 35%, transparent); }
-  [data-theme="dark"] .ns-badge--accent { color: var(--color-accent-300); }
-
-  .ns-badge--success { color: var(--color-success); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-success) 40%, transparent); }
-  .ns-badge--warning { color: var(--color-warning); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-warning) 45%, transparent); }
-  .ns-badge--danger  { color: var(--color-error);   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-error) 40%, transparent); }
   .ns-badge--neutral { color: var(--color-label);   box-shadow: inset 0 0 0 1px var(--color-border); }
+
 
   .ns-badge--glass {
     color: #fff;
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
   }
 
+
   /* ── Solid form — reserved for the one state that must dominate ────────── */
   .ns-badge--solid { color: #fff; background-color: var(--color-brand-500); box-shadow: none; }
+
   .ns-badge--solid.ns-badge--success { background-color: var(--color-success); color: #fff; }
+
   .ns-badge--solid.ns-badge--warning { background-color: var(--color-warning); color: #fff; }
+
   .ns-badge--solid.ns-badge--danger  { background-color: var(--color-error);   color: #fff; }
+
   [data-theme="dark"] .ns-badge--solid { color: #fff; }
+
 
   /* ── Dot form — status = dot + mono text, the house pattern ────────────── */
   .ns-badge--dot::before {

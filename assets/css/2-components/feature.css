@@ -1,4 +1,25 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · feature — theme additions to .ns-feature
+   ----------------------------------------------------------------------------
+   THE COMPONENT IS THE DESIGN SYSTEM'S. `.ns-feature` and its variants live in
+   ds/components/css/sections.css and are the same rules the Next.js app renders.
+   This file no longer redeclares any of them.
+
+   It used to. The theme carried a parallel implementation of .ns-feature — its own
+   box model, its own variant set — and because layer 2 (`components`) sits
+   AFTER the system's layer (`ns-components`) in the cascade, the theme's copy
+   won every collision. The system was vendored, compiled, shipped, and then
+   silently overridden. That is why the design system's look did not appear.
+
+   What remains below is the genuine remainder: the --row shape and two parts.
+   Each one EXTENDS the system's component rather than replacing it, so the
+   base geometry, colour and motion all still come from the system.
+
+   Before adding anything here, check the system first — its variant set is
+   usually larger than it looks (__top __num __name __text exist upstream).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · feature — .ns-feature
    ----------------------------------------------------------------------------
    Icon, title, one paragraph. The homepage "what you get" grid, the about
@@ -11,19 +32,6 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-feature {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius-card);
-    border: var(--border-hairline) solid var(--color-border);
-    background: var(--color-surface-raised);
-    padding: 1.5rem;
-    transition: border-color var(--duration-fast) var(--ease-out);
-  }
-  .ns-feature:hover { border-color: var(--color-brand-500); }
-
-  .ns-feature--sm { padding: 1rem; }
-  .ns-feature--lg { padding: 2rem; }
 
   .ns-feature__title {
     position: relative;
@@ -32,6 +40,7 @@
     font-size: var(--size-body-lg);
     font-weight: var(--weight-heading);
   }
+
   .ns-feature__body {
     position: relative;
     margin-top: 0.5rem;
@@ -39,19 +48,6 @@
     line-height: var(--leading-body);
     color: var(--color-muted);
   }
-  .ns-feature__link {
-    position: relative;
-    margin-top: 0.85rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: var(--size-small);
-    font-weight: var(--weight-semibold);
-    color: var(--color-brand-600);
-  }
-  [data-theme="dark"] .ns-feature__link { color: var(--color-brand-300); }
 
-  /* ── Row layout — icon to the side ─────────────────────────────────────── */
-  .ns-feature--row { display: flex; align-items: flex-start; gap: 1rem; }
   .ns-feature--row .ns-feature__title { margin-top: 0; }
 }

@@ -282,7 +282,7 @@ page("Components", "button", "Button",
      row(spec("--block", '<button class="ns-btn ns-btn--outline ns-btn--block demo-w-sm">Full width</button>', wide=True)),
      head("Content"),
      row(spec("__icon", '<button class="ns-btn ns-btn--primary">Start learning <i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right"></i></button>'),
-         spec("__media", '<button class="ns-btn ns-btn--outline"><span class="ns-avatar ns-avatar--xs demo-avatar-fill"></span>Swarnil</button>'),
+         spec("__media", '<button class="ns-btn ns-btn--outline"><span class="ns-avatar ns-avatar--sm demo-avatar-fill"></span>Swarnil</button>'),
          spec("__meta", '<button class="ns-btn ns-btn--outline">Lessons <span class="ns-btn__meta">12</span></button>')),
      head("State"),
      row(spec(":disabled", '<button class="ns-btn ns-btn--primary" disabled>Disabled</button>'),
@@ -1281,7 +1281,7 @@ def pcard(mod="", title="Why I reach for Flow before Apex", cover=True, badge=No
             f'<p class="ns-bcard__excerpt">{excerpt}</p>'
             f'<div class="ns-postmeta ns-postmeta--dotted">'
             f'<span class="ns-postmeta__author">'
-            f'<span class="ns-avatar ns-avatar--xs demo-avatar-fill"></span>Swarnil</span>'
+            f'<span class="ns-avatar ns-avatar--sm demo-avatar-fill"></span>Swarnil</span>'
             f'<span>6 min</span><span>Mar 2026</span></div>'
             f'</div></article>')
 

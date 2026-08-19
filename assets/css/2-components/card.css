@@ -1,4 +1,28 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · card — theme additions to .ns-card
+   ----------------------------------------------------------------------------
+   THE COMPONENT IS THE DESIGN SYSTEM'S. `.ns-card` and its variants live in
+   ds/components/css/core/css/display.css and are the same rules the Next.js app renders.
+   This file no longer redeclares any of them.
+
+   It used to. The theme carried a parallel implementation of .ns-card — its own
+   box model, its own variant set — and because layer 2 (`components`) sits
+   AFTER the system's layer (`ns-components`) in the cascade, the theme's copy
+   won every collision. The system was vendored, compiled, shipped, and then
+   silently overridden. That is why the design system's look did not appear.
+
+   What remains below is the genuine remainder: the sizes the system lacks (--sm, --lg), the --interactive hover,
+   the pattern grounds (--grid --dots --lines --contour --dark) and the
+   __header/__footer/__meta parts.
+   Each one EXTENDS the system's component rather than replacing it, so the
+   base geometry, colour and motion all still come from the system.
+
+   Before adding anything here, check the system first — its variant set is
+   usually larger than it looks (--hover --row --sunken and __body __title __link __media __text
+   __kicker __foot exist upstream — use those names).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · card — .ns-card
    ----------------------------------------------------------------------------
    The system's box. A hairline border on a raised surface — the border IS the
@@ -19,47 +43,18 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: var(--radius-card);
-    border: var(--border-hairline) solid var(--color-border);
-    background-color: var(--color-surface-raised);
-    padding: 1.25rem;
-    color: var(--color-ink);
-  }
-
-  /* ── Sizes — padding only; layout stays the template's business ────────── */
-  .ns-card--xs { padding: 0.65rem; }
-  .ns-card--sm { padding: 0.9rem; }
-  .ns-card--lg { padding: 1.75rem; }
-  .ns-card--xl { padding: 2.25rem; }
+  /* SIZES retune the BODY, not the card. The system puts `padding:
+     var(--pad-card)` on .ns-card__body and NOTHING on the base — so a
+     `padding` here lands on the frame, indents nothing, and leaves the media
+     inset by a rim it should not have. */
+  .ns-card--sm > .ns-card__body { padding: 0.9rem; }
+  .ns-card--lg > .ns-card__body { padding: 1.75rem; }
   @media (min-width: 640px) {
-    .ns-card--lg { padding: 2rem; }
-    .ns-card--xl { padding: 2.75rem; }
+    .ns-card--lg > .ns-card__body { padding: 2rem; }
   }
 
-  /* ── Surfaces ──────────────────────────────────────────────────────────── */
-  .ns-card--flat   { background-color: var(--color-surface); }
-  .ns-card--sunken { background-color: var(--color-surface-sunken); }
-  .ns-card--raised { box-shadow: var(--shadow-card); }
-  .ns-card--dark {
-    background-color: var(--color-brand-900);
-    border-color: color-mix(in srgb, #fff 12%, transparent);
-    color: #fff;
-  }
   .ns-card--dark .ns-card__meta { color: rgb(255 255 255 / 0.65); }
 
-  /* ── Shapes ────────────────────────────────────────────────────────────── */
-  .ns-card--sharp { border-radius: 0; }
-  .ns-card--pill  { border-radius: var(--radius-pill); }
-  .ns-card--flush { padding: 0; overflow: hidden; }
-
-  /* ── Edges ─────────────────────────────────────────────────────────────── */
-  .ns-card--strong { border-width: var(--border-strong); }
-  .ns-card--dashed { border-style: dashed; background-color: transparent; }
-  .ns-card--rail   { border-left: var(--border-strong) solid var(--color-brand-500); }
 
   /* ── Interactive — the house hover: border brightens, accent line draws ── */
   .ns-card--interactive {
@@ -67,6 +62,7 @@
     transition: border-color var(--duration-fast) var(--ease-out),
                 background-color var(--duration-fast) var(--ease-out);
   }
+
   .ns-card--interactive::after {
     content: "";
     position: absolute;
@@ -78,9 +74,12 @@
     transform-origin: left;
     transition: transform var(--duration-base) var(--ease-out);
   }
+
   .ns-card--interactive:hover { border-color: var(--color-brand-500); }
+
   .ns-card--interactive:hover::after,
   .ns-card--interactive:focus-within::after { transform: scaleX(1); }
+
 
   /* Row-shaped cards take the accent on the left edge instead of the top */
   .ns-card--interactive.ns-card--row::after {
@@ -91,19 +90,16 @@
     transform-origin: top;
     transition: transform var(--duration-base) var(--ease-out);
   }
+
   .ns-card--interactive.ns-card--row:hover::after { transform: scaleY(1); }
 
-  /* ── Selected ──────────────────────────────────────────────────────────── */
-  .ns-card--active,
-  .ns-card.is-active { border-color: var(--color-brand-500); }
-  .ns-card--active::after,
-  .ns-card.is-active::after { transform: scaleX(1); }
 
   /* ── Patterns — the foundation's background layer, clipped to the card ─── */
   .ns-card--grid,
   .ns-card--dots,
   .ns-card--lines,
   .ns-card--contour { position: relative; overflow: hidden; isolation: isolate; }
+
   .ns-card--grid::before,
   .ns-card--dots::before,
   .ns-card--lines::before,
@@ -115,20 +111,14 @@
     pointer-events: none;
     opacity: 0.6;
   }
+
   .ns-card--grid::before {
     background-image:
       linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
       linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
     background-size: 28px 28px;
   }
-  .ns-card--dots::before {
-    background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
-    background-size: 18px 18px;
-  }
-  .ns-card--lines::before {
-    background-image: repeating-linear-gradient(
-      135deg, var(--color-grid) 0 1px, transparent 1px 9px);
-  }
+
   /* Contour — concentric arcs off the trailing corner. Reads as progression
      rather than as surface, which is why the training sections use it. */
   .ns-card--contour::before {
@@ -141,47 +131,37 @@
     mask-image: radial-gradient(110% 110% at 100% 0%, #000 8%, transparent 62%);
   }
 
+
   /* ── Parts ─────────────────────────────────────────────────────────────── */
+  /* __header and __footer sit OUTSIDE __body, and the system's base carries no
+     padding of its own — so each has to bring its own or it renders flush to
+     the hairline while the body beside it is inset. */
   .ns-card__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 0.75rem;
+    padding: var(--pad-card) var(--pad-card) 0;
   }
-  /* ── Media — pulls out to the card's edges, keeps the top corners ─────── */
-  .ns-card__media {
-    position: relative;
-    margin: -1.25rem -1.25rem 1rem;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    background: var(--color-surface-sunken);
-  }
-  .ns-card--flush .ns-card__media { margin: 0; }
-  .ns-card--xs .ns-card__media { margin: -0.65rem -0.65rem 0.75rem; }
-  .ns-card--sm .ns-card__media { margin: -0.9rem -0.9rem 0.85rem; }
-  .ns-card--lg .ns-card__media { margin: -1.75rem -1.75rem 1.25rem; }
-  .ns-card__media > :where(img, video, iframe) {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-  }
-  .ns-card__media--photo   { aspect-ratio: 4 / 3; }
-  .ns-card__media--square  { aspect-ratio: 1 / 1; }
-  .ns-card__media--wide    { aspect-ratio: 21 / 9; }
-  .ns-card__media--auto    { aspect-ratio: auto; }
+  .ns-card--sm > .ns-card__header { padding: 0.9rem 0.9rem 0; }
+  .ns-card--lg > .ns-card__header { padding: 1.75rem 1.75rem 0; }
+  /* A header directly above a body would otherwise pay the padding twice. */
+  .ns-card__header + .ns-card__body { padding-block-start: 0.75rem; }
+
+  /* The negative margins that used to pull the media out to the card's edge
+     are gone with the padding they were escaping: the system's base is
+     unpadded and already clips with overflow:hidden. */
+
   /* The image lifts a hair when the card is hovered — media's one exception. */
   .ns-card--interactive .ns-card__media > :where(img, video) {
     transition: transform 0.4s var(--ease-out);
   }
+
   .ns-card--interactive:hover .ns-card__media > :where(img, video) { transform: scale(1.03); }
-  .ns-card__badge {
-    position: absolute;
-    left: 0.6rem;
-    top: 0.6rem;
-    z-index: 1;
-  }
-  .ns-card__body   { flex: 1 1 auto; min-width: 0; }
+
   .ns-card__footer {
     margin-top: auto;
-    padding-top: 0.85rem;
+    padding: 0.85rem var(--pad-card) var(--pad-card);
     border-top: var(--border-hairline) solid var(--color-border);
     display: flex;
     flex-wrap: wrap;
@@ -189,23 +169,16 @@
     justify-content: space-between;
     gap: 0.6rem;
   }
+
   .ns-card__footer > * + * { margin-left: auto; }
-  /* A footer that sits flush against the card edges (image-led cards) */
-  .ns-card__footer--flush {
-    margin-inline: -1.25rem;
-    margin-bottom: -1.25rem;
-    padding: 0.75rem 1.25rem;
-    background: var(--color-surface-sunken);
-    border-radius: 0 0 var(--radius-card) var(--radius-card);
-  }
-  .ns-card__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-  /* Stretched link — the whole card is clickable, the anchor stays real */
-  .ns-card__link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
-  .ns-card__title {
-    font-family: var(--font-heading);
-    font-weight: var(--weight-heading);
-    line-height: var(--leading-heading);
-  }
+
+  /* __meta is a TYPE treatment, so it is valid inside __body (where the body's
+     padding already covers it) and as a direct child of the card (where it is
+     not). Only the direct child needs padding of its own — hence the `>`. */
+  .ns-card > .ns-card__meta { padding: 0 var(--pad-card) var(--pad-card); }
+  .ns-card--sm > .ns-card__meta { padding: 0 0.9rem 0.9rem; }
+  .ns-card--lg > .ns-card__meta { padding: 0 1.75rem 1.75rem; }
+
   .ns-card__meta {
     font-family: var(--font-mono);
     font-size: var(--size-label);
@@ -215,6 +188,7 @@
     color: var(--color-label);
   }
 }
+
 
 @media (prefers-reduced-motion: reduce) {
   .ns-card--interactive::after { transition: none; }

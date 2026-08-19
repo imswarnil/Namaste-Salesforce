@@ -45,7 +45,6 @@
 @import "./badge.css";        /* .ns-badge    status as data */
 @import "./chip.css";         /* .ns-chip     the icon tile */
 @import "./tag.css";          /* .ns-tagchip  the one true pill */
-@import "./kicker.css";       /* .ns-kicker   the // section eyebrow */
 @import "./avatar.css";       /* .ns-avatar · .ns-ring · .ns-avatar-stack */
 @import "./icon-bridge.css";  /* system `i` rules restated for this theme's <svg class="ns-icon"> */
 
@@ -60,20 +59,16 @@
 @import "./widget.css";       /* .ns-widget   sidebar boxes + presets */
 @import "./note.css";         /* .ns-note     inline callout, the one allowed tint */
 @import "./empty-state.css";  /* .ns-empty    "nothing here yet" */
-@import "./accordion.css";    /* .ns-accordion  animated disclosure */
 
 /* ── Data ──────────────────────────────────────────────────────────────── */
 @import "./stat.css";         /* .ns-stat · .ns-stats */
 @import "./progress.css";     /* .ns-progress */
-@import "./table.css";        /* .ns-table */
 @import "./list.css";         /* .ns-list · .ns-list-group */
 @import "./plist.css";        /* .ns-plist    the numbered path list */
 @import "./steps.css";        /* .ns-steps */
-@import "./timeline.css";     /* .ns-timeline */
 
 /* ── Forms ─────────────────────────────────────────────────────────────── */
 @import "./input.css";        /* .ns-input · .ns-field · .ns-input-group */
-@import "./control.css";      /* .ns-checkbox · .ns-radio · .ns-switch · .ns-segment */
 @import "./subscribe.css";    /* .ns-subscribe  the Ghost members form contract */
 @import "./plan.css";         /* .ns-plans · .ns-plan  membership tiers from Ghost */
 
@@ -110,47 +105,66 @@
 @import "./effects.css";      /* .js-reveal · .js-spotlight · .ns-aurora · … */
 
 /* ════════════════════════════════════════════════════════════════════════════
-   BEFORE YOU "DE-DUPLICATE" ANYTHING IN THIS LAYER — READ THIS
+   THE RULE FOR THIS LAYER — THE SYSTEM WINS
    ----------------------------------------------------------------------------
-   81 class names in this folder also exist in the design system
-   (assets/css/ds/components/css/). It is tempting to delete ours and let the
-   system's win, and for .ns-btn that was exactly right: same markup contract,
-   and our version was 150 lines re-deriving the system's design from raw
-   literals. Nine of its eleven extra variants had zero uses anywhere.
+   Layer 2 (`components`) sits AFTER the design system's layer (`ns-components`)
+   in the cascade. That means anything declared here BEATS the system, and it
+   beats it silently — the system is vendored, compiled, shipped, and then
+   overridden by a local copy nobody remembers writing.
 
-   IT IS NOT RIGHT IN GENERAL. A shared class name does not mean a shared
-   component. Two confirmed cases:
+   That is exactly what had happened. 130 class names in this folder also
+   existed in assets/css/ds/, and the theme won every one: `.ns-card`,
+   `.ns-btn`, `.ns-badge`, `.ns-input`, `.ns-table`, `.ns-timeline`,
+   `.ns-menu`, `.ns-band`, `.ns-avatar`, `.ns-authorbox` … A design system was
+   being maintained upstream, synced, and then not used.
 
-     .ns-progress   ours is <div class="ns-progress"><span class="ns-progress__bar">
-                    theirs is <progress class="ns-progress"> — a NATIVE element
-                    styled through ::-webkit-progress-value / ::-moz-progress-bar.
-                    Delete ours and every progress bar silently goes blank: the
-                    system's rules target pseudo-elements a <div> does not have.
+   Every one of those has been handed back. Five files reduced to nothing and
+   were deleted outright (kicker, table, timeline, control, accordion); the
+   rest were cut down to the genuine remainder — the variants and parts the
+   system does not ship — and each carries a header saying so.
 
-     .ns-avatar     ours puts the class on the <img>; theirs is a <span> wrapper
-                    with `.ns-avatar img` inside, so it can fall back to initials.
-                    Delete ours and avatars lose object-fit and inherit mono
-                    letter-spacing meant for those initials.
+   ── THE NINE DELIBERATE EXCEPTIONS ──────────────────────────────────────────
+   Nine bare overrides remain. Each is a decision, not an oversight:
 
-   And sometimes OURS is the better one and should keep winning: .ns-grid here
-   is token-driven (--grid-min), carries fixed-count and span variants, and
-   already has the min() guard the system added later. The system's is a
-   simpler subset.
+     .ns-grid        OURS IS RICHER. Token-driven off --grid-min, with fixed
+                     counts (--2 --3 --4), --tight and span helpers. The
+                     system ships only a base and --sm.
+     .ns-hero        OURS IS THE SITE'S HERO — 14 variants (--split --start
+        __title      --grid --dots --sm --lg --xs --flush --plain …) and the
+        __actions    __inner/__sub/__media/__meta/__bleed parts every page top
+                     uses. The system's .ns-hero is a minimal landing band.
+                     ⚠️ The `padding-block: 0` reset at the top of hero.css is
+                     load-bearing: without it the system's 80px/64px padding
+                     STACKS with ours and every hero opens a screen too low.
+     .ns-progress    MARKUP CONTRACT DIFFERS. Ours is <div> + __bar; the
+        --lg         system's is a native <progress> styled through
+                     ::-webkit-progress-value. Delete ours and every bar goes
+                     blank — the system's rules target pseudo-elements a <div>
+                     does not have.
+     .ns-share       MARKUP CONTRACT DIFFERS. Ours is a positioned dropdown
+        --rail       (the base IS the anchor); the system's is a flat row.
+                     --rail opts back out to the system's shape explicitly.
+     .ns-filters     One media query. The system's rail has no opinion about
+                     being hidden on a phone; this is the mobile disclosure.
 
-   THE CHECK, before removing any rule that the system also defines:
-     1. Does our markup match theirs? Compare a real template against
-        NS-Design-System/templates/ — not the class list, the ELEMENT and the
-        child structure.
-     2. Is their variant set a superset of the ones we actually use? Grep the
-        variant across *.hbs, demo.html, styleguide/ AND dummy-content/
-        import.json — post bodies use these classes too, and 159 classes that
-        look dead in the templates are live in the styleguide.
-     3. Only if both hold, delete ours and keep the genuinely theme-only
-        variants on top — see button.css for the worked example.
+   ── BEFORE YOU ADD ANYTHING HERE ────────────────────────────────────────────
+     1. Check the system first. Its variant sets are usually larger than they
+        look — .ns-btn has 19, .ns-table has 17.
+     2. If the system has the class, do NOT redeclare it. Change the MARKUP to
+        the system's contract instead; that is what the migration did.
+     3. If you genuinely need an addition, add the variant only — never the
+        base — and say in the file header what the system owns.
+     4. A shared class name is not always a shared component. `.ns-mark` was
+        the system's <mark> highlight AND this theme's animated SVG logo; the
+        theme's `width: 100%` was landing on highlighted text in posts. The
+        theme's is now `.ns-brandmark`. Check for that before assuming a
+        collision is a duplicate.
 
-   Where the contracts differ, the real fix is migrating the TEMPLATES to the
-   system's markup, which is a bigger job than editing this stylesheet and
-   should be done one component at a time, with the page open.
+   Verify the count has not crept back up:
+     python3 - <<'EOF'  # bare theme rules that redeclare a system class
+     (see the audit in this file's git history, or grep for `.ns-` selectors
+      in 1-3 layers and intersect with assets/css/ds/)
+     EOF
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Features — site-specific, always last ─────────────────────────────── */

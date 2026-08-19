@@ -1,4 +1,26 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · testimonial — theme additions
+   ----------------------------------------------------------------------------
+   THE COMPONENT IS THE DESIGN SYSTEM'S. `.ns-testimonial` and its variants live in
+   ds/components/css/catalog.css and are the same rules the Next.js app renders.
+   This file no longer redeclares any of them.
+
+   It used to. The theme carried a parallel implementation of .ns-testimonial — its own
+   box model, its own variant set — and because layer 2 (`components`) sits
+   AFTER the system's layer (`ns-components`) in the cascade, the theme's copy
+   won every collision. The system was vendored, compiled, shipped, and then
+   silently overridden. That is why the design system's look did not appear.
+
+   What remains below is the genuine remainder: the shapes and the parts the system names differently.
+   Each one EXTENDS the system's component rather than replacing it, so the
+   base geometry, colour and motion all still come from the system.
+
+   Before adding anything here, check the system first — its variant set is
+   usually larger than it looks (--compact --featured --media and __quote __name __role __who
+   __avatar __result exist upstream).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · testimonial — .ns-testimonial   (was .ns-quote)
    ----------------------------------------------------------------------------
    What a learner said, presented as social proof. Distinct from the
@@ -16,17 +38,9 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-testimonial {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    border-radius: var(--radius-card);
-    border: var(--border-hairline) solid var(--color-border);
-    background: var(--color-surface-raised);
-    padding: 1.5rem;
-  }
 
   .ns-testimonial__stars { display: flex; gap: 0.125rem; color: var(--color-warning); }
+
   .ns-testimonial__body {
     margin-top: 0.75rem;
     flex: 1;
@@ -34,63 +48,23 @@
     line-height: var(--leading-body);
     color: var(--color-muted);
   }
+
   .ns-testimonial__author {
     margin-top: 1.1rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
-  .ns-testimonial__name { font-size: var(--size-small); font-weight: var(--weight-semibold); }
-  .ns-testimonial__role { font-size: 0.75rem; color: var(--color-muted); }
-  .ns-testimonial__logo { margin-left: auto; opacity: 0.6; flex-shrink: 0; }
 
-  /* ── Sizes ─────────────────────────────────────────────────────────────── */
-  .ns-testimonial--sm { padding: 1rem; }
   .ns-testimonial--sm .ns-testimonial__body { font-size: 0.8125rem; }
-  .ns-testimonial--lg { padding: 2rem; }
+
   .ns-testimonial--lg .ns-testimonial__body { font-size: var(--size-body-lg); color: var(--color-ink); }
 
-  /* ── Tones ─────────────────────────────────────────────────────────────── */
-  .ns-testimonial--plain {
-    border-color: transparent;
-    background: transparent;
-    padding-inline: 0;
-  }
-  .ns-testimonial--dark {
-    background: var(--color-brand-900);
-    border-color: color-mix(in srgb, #fff 12%, transparent);
-    color: #fff;
-  }
   .ns-testimonial--dark .ns-testimonial__body,
   .ns-testimonial--dark .ns-testimonial__role { color: rgb(255 255 255 / 0.75); }
-  .ns-testimonial--brand {
-    border-color: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
-    background: color-mix(in srgb, var(--color-brand-500) 4%, transparent);
-    border-left-width: var(--border-strong);
-    border-left-color: var(--color-brand-500);
-  }
 
-  /* ── Mark — a display quotation glyph instead of the stars ─────────────── */
-  .ns-testimonial--mark { position: relative; }
-  .ns-testimonial--mark::before {
-    content: "\201C";
-    position: absolute;
-    top: -0.35rem;
-    right: 1rem;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 4rem;
-    line-height: 1;
-    color: color-mix(in srgb, var(--color-brand-500) 22%, transparent);
-    pointer-events: none;
-  }
   .ns-testimonial--mark .ns-testimonial__stars { display: none; }
 
-  /* ── Wide — the single pull quote, centred ─────────────────────────────── */
-  .ns-testimonial--wide {
-    align-items: center;
-    text-align: center;
-    padding-block: 2.5rem;
-  }
   .ns-testimonial--wide .ns-testimonial__body {
     max-width: 44rem;
     font-family: var(--font-heading);
@@ -99,17 +73,10 @@
     line-height: var(--leading-heading);
     color: var(--color-ink);
   }
+
   .ns-testimonial--wide.ns-testimonial--dark .ns-testimonial__body { color: #fff; }
+
   .ns-testimonial--wide .ns-testimonial__author { justify-content: center; }
 
-  /* ── Row — avatar first, quote beside it ───────────────────────────────── */
-  .ns-testimonial--row { flex-direction: row; align-items: flex-start; gap: 1rem; }
   .ns-testimonial--row .ns-testimonial__author { margin-top: 0.75rem; }
-
-  /* ── A grid of them, matched height ────────────────────────────────────── */
-  .ns-testimonial-grid {
-    display: grid;
-    gap: var(--grid-gutter);
-    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
-  }
 }

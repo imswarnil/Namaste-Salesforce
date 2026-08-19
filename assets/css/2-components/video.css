@@ -1,4 +1,20 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · .ns-video — theme poster
+   ----------------------------------------------------------------------------
+   .ns-video itself is the DESIGN SYSTEM's — ds/components/css/. This file no
+   longer redeclares the base or any variant the system already ships; layer 2
+   sits after the system in the cascade, so anything restated here would win,
+   and the vendored system would be shipped and then silently overridden.
+
+   What remains is the .ns-video-poster component: a click-to-play still with a play badge,
+   which is a different object from the system's .ns-video player frame.
+
+   Rules that still NAME a system class do so in a COMPOUND selector — e.g.
+   `.ns-band--dark .ns-split__lede` — which is a contextual adjustment, not a
+   redefinition of the base. Those are legitimate; a bare `.ns-video { … }` is not.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · video — .ns-video (frame) and .ns-video-poster (cover)
    ----------------------------------------------------------------------------
    Two different jobs that are easy to confuse:
@@ -19,30 +35,6 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  /* ── The frame ─────────────────────────────────────────────────────────── */
-  .ns-video {
-    position: relative;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius-card);
-    border: var(--border-hairline) solid var(--color-border);
-    background: #000;
-  }
-  .ns-video > :where(iframe, video) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-  .ns-video--wide   { aspect-ratio: 21 / 9; }
-  .ns-video--square { aspect-ratio: 1 / 1; }
-  .ns-video--story  { aspect-ratio: 9 / 16; max-width: 24rem; }
-  .ns-video--plain  { border: 0; border-radius: 0; }
-  @media (max-width: 639.98px) {
-    .ns-video--wide { aspect-ratio: 16 / 9; }
-    .ns-video--bleed { border-radius: 0; border-inline: 0; margin-inline: calc(var(--space-gutter) * -1); }
-  }
 
   /* ── The poster ────────────────────────────────────────────────────────── */
   .ns-video-poster {
@@ -54,6 +46,7 @@
     border: var(--border-hairline) solid var(--color-border);
     background: var(--color-surface-sunken);
   }
+
   .ns-video-poster > img {
     display: block;
     width: 100%;
@@ -61,7 +54,9 @@
     object-fit: cover;
     transition: transform 0.4s var(--ease-out);
   }
+
   .ns-video-poster:hover > img { transform: scale(1.03); }
+
 
   /* The scrim keeps the play disc and any title legible on a bright frame. */
   .ns-video-poster::after {
@@ -71,7 +66,7 @@
     background: linear-gradient(to top, rgb(0 0 0 / 0.45), transparent 60%);
     pointer-events: none;
   }
-  .ns-video-poster--minimal::after { display: none; }
+
 
   .ns-video-poster__play {
     position: absolute;
@@ -81,6 +76,7 @@
     align-items: center;
     justify-content: center;
   }
+
   .ns-video-poster__play > * {
     display: flex;
     align-items: center;
@@ -94,17 +90,18 @@
     transition: transform var(--duration-base) var(--ease-out),
                 background-color var(--duration-fast) var(--ease-out);
   }
+
   .ns-video-poster:hover .ns-video-poster__play > * {
     transform: scale(1.08);
     background: #fff;
   }
+
   .ns-video-poster--sm .ns-video-poster__play > * { height: 2.75rem; width: 2.75rem; font-size: 1.1rem; }
+
   .ns-video-poster--lg .ns-video-poster__play > * { height: 5rem; width: 5rem; font-size: 2rem; }
 
-  /* Ratios (a lesson poster is 16:9; a course card poster may be 4:3) */
-  .ns-video-poster--photo  { aspect-ratio: 4 / 3; }
-  .ns-video-poster--square { aspect-ratio: 1 / 1; }
   .ns-video-poster--lesson { aspect-ratio: 16 / 9; }
+
 
   /* No image yet — a flat navy slot, not a broken frame. */
   .ns-video-poster__fallback {
@@ -113,38 +110,13 @@
     height: 100%;
     background: var(--color-brand-800);
   }
-
-  /* Duration + title sitting on the poster */
-  .ns-video-poster__duration {
-    position: absolute;
-    right: 0.55rem;
-    bottom: 0.55rem;
-    z-index: 2;
-    border-radius: var(--radius-sm);
-    background: rgb(0 0 0 / 0.72);
-    padding: 0.15rem 0.4rem;
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    font-weight: var(--weight-label);
-    font-variant-numeric: tabular-nums;
-    color: #fff;
-  }
-  .ns-video-poster__title {
-    position: absolute;
-    left: 0.85rem;
-    right: 0.85rem;
-    bottom: 0.7rem;
-    z-index: 2;
-    color: #fff;
-    font-weight: var(--weight-semibold);
-    line-height: var(--leading-heading);
-    text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
-  }
 }
+
 
 @media (prefers-reduced-motion: reduce) {
   .ns-video-poster > img,
   .ns-video-poster__play > * { transition: none; }
+
   .ns-video-poster:hover > img,
   .ns-video-poster:hover .ns-video-poster__play > * { transform: none; }
 }

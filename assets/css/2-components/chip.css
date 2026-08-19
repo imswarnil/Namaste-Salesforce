@@ -1,4 +1,25 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · chip — theme additions to .ns-chip
+   ----------------------------------------------------------------------------
+   THE COMPONENT IS THE DESIGN SYSTEM'S. `.ns-chip` and its variants live in
+   ds/components/css/core/css/display.css and are the same rules the Next.js app renders.
+   This file no longer redeclares any of them.
+
+   It used to. The theme carried a parallel implementation of .ns-chip — its own
+   box model, its own variant set — and because layer 2 (`components`) sits
+   AFTER the system's layer (`ns-components`) in the cascade, the theme's copy
+   won every collision. The system was vendored, compiled, shipped, and then
+   silently overridden. That is why the design system's look did not appear.
+
+   What remains below is the genuine remainder: the --round shape.
+   Each one EXTENDS the system's component rather than replacing it, so the
+   base geometry, colour and motion all still come from the system.
+
+   Before adding anything here, check the system first — its variant set is
+   usually larger than it looks (--sm --lg --accent exist upstream).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · chip — .ns-chip
    ----------------------------------------------------------------------------
    The icon tile: a square-ish brand-tinted box that fronts a feature card, a
@@ -12,62 +33,7 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-chip {
-    display: inline-flex;
-    height: 2.75rem;
-    width: 2.75rem;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    border-radius: var(--radius-card);
-    font-size: 1.25rem;
-    color: var(--color-brand-600);
-    background-color: color-mix(in srgb, var(--color-brand-500) 8%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brand-500) 22%, transparent);
-  }
-  [data-theme="dark"] .ns-chip { color: var(--color-brand-300); }
-
-  /* ── Sizes ─────────────────────────────────────────────────────────────── */
-  .ns-chip--xs { height: 1.75rem; width: 1.75rem; font-size: 0.875rem; }
-  .ns-chip--sm { height: 2.25rem; width: 2.25rem; font-size: 1rem; }
-  .ns-chip--lg { height: 3.25rem; width: 3.25rem; font-size: 1.5rem; }
-  .ns-chip--xl { height: 4rem;    width: 4rem;    font-size: 1.75rem; }
 
   /* ── Shapes ────────────────────────────────────────────────────────────── */
   .ns-chip--round { border-radius: var(--radius-pill); }
-  .ns-chip--sharp { border-radius: 0; }
-
-  /* ── Tones ─────────────────────────────────────────────────────────────── */
-  .ns-chip--accent {
-    color: var(--color-accent-600);
-    background-color: color-mix(in srgb, var(--color-accent-400) 10%, transparent);
-  }
-  [data-theme="dark"] .ns-chip--accent { color: var(--color-accent-300); }
-
-  .ns-chip--neutral {
-    color: var(--color-label);
-    background-color: var(--color-surface-sunken);
-    box-shadow: inset 0 0 0 1px var(--color-border);
-  }
-  .ns-chip--success {
-    color: var(--color-success);
-    background-color: color-mix(in srgb, var(--color-success) 10%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-success) 28%, transparent);
-  }
-  .ns-chip--warning {
-    color: var(--color-warning);
-    background-color: color-mix(in srgb, var(--color-warning) 12%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-warning) 30%, transparent);
-  }
-  .ns-chip--danger {
-    color: var(--color-error);
-    background-color: color-mix(in srgb, var(--color-error) 10%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-error) 28%, transparent);
-  }
-  .ns-chip--solid {
-    color: #fff;
-    background-color: var(--color-brand-500);
-    box-shadow: none;
-  }
-  [data-theme="dark"] .ns-chip--solid { color: #fff; }
 }

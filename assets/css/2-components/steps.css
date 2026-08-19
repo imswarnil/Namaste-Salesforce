@@ -1,4 +1,19 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · .ns-steps — theme numbering
+   ----------------------------------------------------------------------------
+   .ns-steps itself is the DESIGN SYSTEM's — ds/components/css/. This file no
+   longer redeclares the base or any variant the system already ships; layer 2
+   sits after the system in the cascade, so anything restated here would win,
+   and the vendored system would be shipped and then silently overridden.
+
+   What remains is the .ns-step-num marker.
+
+   Rules that still NAME a system class do so in a COMPOUND selector — e.g.
+   `.ns-band--dark .ns-split__lede` — which is a contextual adjustment, not a
+   redefinition of the base. Those are legitimate; a bare `.ns-steps { … }` is not.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · steps — .ns-steps
    ----------------------------------------------------------------------------
    A numbered procedure. The rail is a hairline; the markers sit on it. Steps
@@ -15,140 +30,6 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-steps {
-    position: relative;
-    display: grid;
-    gap: 1.25rem;
-    counter-reset: ns-step;
-  }
-
-  .ns-steps__item {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    counter-increment: ns-step;
-  }
-
-  /* ── The marker ────────────────────────────────────────────────────────── */
-  .ns-steps__marker {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    height: 2.5rem;
-    width: 2.5rem;
-    border-radius: var(--radius-pill);
-    background: var(--color-brand-500);
-    color: #fff;
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    box-shadow: 0 0 0 4px var(--color-surface);
-  }
-  .ns-steps--number .ns-steps__marker::before { content: counter(ns-step, decimal-leading-zero); }
-  .ns-steps--letter .ns-steps__marker::before { content: counter(ns-step, upper-alpha); }
-
-  /* ── The rail behind the markers ───────────────────────────────────────── */
-  .ns-steps::before {
-    content: "";
-    position: absolute;
-    left: 1.25rem;
-    top: 1.25rem;
-    bottom: 1.25rem;
-    width: var(--border-hairline);
-    background: var(--color-border);
-  }
-
-  .ns-steps__body { min-width: 0; padding-top: 0.3rem; }
-  .ns-steps__title { font-weight: var(--weight-semibold); line-height: var(--leading-heading); }
-  .ns-steps__meta {
-    margin-top: 0.2rem;
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-label);
-  }
-
-  /* ── Sizes ─────────────────────────────────────────────────────────────── */
-  .ns-steps--sm { gap: 0.85rem; }
-  .ns-steps--sm .ns-steps__marker { height: 1.75rem; width: 1.75rem; font-size: 0.7rem; box-shadow: 0 0 0 3px var(--color-surface); }
-  .ns-steps--sm::before { left: 0.875rem; top: 0.875rem; bottom: 0.875rem; }
-  .ns-steps--sm .ns-steps__body { padding-top: 0.1rem; font-size: var(--size-small); }
-
-  .ns-steps--lg { gap: 1.75rem; }
-  .ns-steps--lg .ns-steps__marker { height: 3.25rem; width: 3.25rem; font-size: 1.1rem; }
-  .ns-steps--lg::before { left: 1.625rem; top: 1.625rem; bottom: 1.625rem; }
-
-  /* ── Marker styles ─────────────────────────────────────────────────────── */
-  .ns-steps--quiet .ns-steps__marker {
-    background: var(--color-surface);
-    color: var(--color-ink);
-    box-shadow: inset 0 0 0 1px var(--color-border), 0 0 0 4px var(--color-surface);
-  }
-  .ns-steps--quiet .ns-steps__item.is-done .ns-steps__marker,
-  .ns-steps--quiet .ns-steps__item.is-current .ns-steps__marker {
-    background: var(--color-brand-500);
-    color: #fff;
-    box-shadow: 0 0 0 4px var(--color-surface);
-  }
-  .ns-steps--square .ns-steps__marker { border-radius: var(--radius-card); }
-
-  /* Dot markers — the rail becomes the story, the marker just punctuates it */
-  .ns-steps--dot .ns-steps__marker {
-    height: 0.85rem;
-    width: 0.85rem;
-    margin-top: 0.45rem;
-    box-shadow: 0 0 0 3px var(--color-surface);
-  }
-  .ns-steps--dot::before { left: 0.42rem; }
-  .ns-steps--dot .ns-steps__body { padding-top: 0; }
-
-  /* Icon markers — a chip on the rail */
-  .ns-steps--icon .ns-steps__marker {
-    background: color-mix(in srgb, var(--color-brand-500) 8%, var(--color-surface));
-    color: var(--color-brand-600);
-    font-size: 1.1rem;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-brand-500) 25%, transparent),
-                0 0 0 4px var(--color-surface);
-  }
-  [data-theme="dark"] .ns-steps--icon .ns-steps__marker { color: var(--color-brand-300); }
-
-  /* ── States ────────────────────────────────────────────────────────────── */
-  .ns-steps__item.is-done .ns-steps__title { color: var(--color-muted); }
-  .ns-steps__item.is-current .ns-steps__marker {
-    box-shadow: 0 0 0 4px var(--color-surface), 0 0 0 6px color-mix(in srgb, var(--color-brand-500) 35%, transparent);
-  }
-
-  /* ── Horizontal — the "how it works" row ───────────────────────────────── */
-  .ns-steps--horizontal {
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-    gap: var(--grid-gutter);
-  }
-  .ns-steps--horizontal::before {
-    left: 1.25rem;
-    right: 1.25rem;
-    top: 1.25rem;
-    bottom: auto;
-    width: auto;
-    height: var(--border-hairline);
-  }
-  .ns-steps--horizontal .ns-steps__item { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-  .ns-steps--horizontal .ns-steps__body { padding-top: 0; }
-  /* A row of steps is unreadable on a phone — it stacks. */
-  @media (max-width: 767.98px) {
-    .ns-steps--horizontal { grid-auto-flow: row; grid-auto-columns: auto; }
-    .ns-steps--horizontal::before {
-      left: 1.25rem; right: auto; top: 1.25rem; bottom: 1.25rem;
-      width: var(--border-hairline); height: auto;
-    }
-    .ns-steps--horizontal .ns-steps__item { flex-direction: row; }
-  }
 
   /* ── Legacy alias — .ns-step-num markup from the old stepper ───────────── */
   .ns-step-num {
@@ -169,5 +50,7 @@
     color: #fff;
     box-shadow: 0 0 0 4px var(--color-surface);
   }
-  @media (min-width: 640px) { .ns-step-num { height: 3.25rem; width: 3.25rem; } }
+
+  @media (min-width: 640px) { .ns-step-num { height: 3.25rem; width: 3.25rem; }
+}
 }

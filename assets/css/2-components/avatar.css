@@ -1,44 +1,29 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   COMPONENT · avatar — .ns-avatar, .ns-ring, .ns-avatar-stack
+   EXTENSION · .ns-ring — the brand ring around an avatar
    ----------------------------------------------------------------------------
-   A person is round; everything else in the system is sharp. The ring is a
-   solid brand border (not a gradient halo) and exists to mark an instructor
-   or author, so use it sparingly.
+   THE AVATAR ITSELF IS THE DESIGN SYSTEM'S (ds/components/css/display.css),
+   and the markup contract matters here more than anywhere else in this folder:
 
-   SIZE   --xs 1.5 · --sm 2 · (default) 2.5 · --lg 3.5 · --xl 5rem
-   SHAPE  --square (card radius, for org/brand logos)
+     system   <span class="ns-avatar"><img …></span>     the class WRAPS
+     theme    <img class="ns-avatar">                    the class WAS the img
+
+   The theme's version is gone and the templates were moved onto the wrapper.
+   Keeping both was not an option: the system sizes the box with an internal
+   --_size custom property and styles `.ns-avatar img` inside it, so an <img>
+   carrying the class directly got the mono letter-spacing meant for initials
+   and none of the object-fit. Sizes are --sm --lg --xl (there is no --xs;
+   --sm is 1.75rem and is what the old --xs meant).
+
+   .ns-ring is the one genuine addition — a brand-tinted ring drawn AROUND an
+   avatar for the "instructor" and "written by" contexts, where the face needs
+   to read as attributed rather than decorative. The system has no equivalent.
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-avatar {
-    display: inline-block;
-    height: 2.5rem;
-    width: 2.5rem;
-    flex-shrink: 0;
-    border-radius: var(--radius-pill);
-    object-fit: cover;
-    background-color: var(--color-surface-sunken);
-    box-shadow: inset 0 0 0 var(--border-hairline) var(--color-border);
-  }
-  .ns-avatar--xs { height: 1.5rem;  width: 1.5rem; }
-  .ns-avatar--sm { height: 2rem;    width: 2rem; }
-  .ns-avatar--lg { height: 3.5rem;  width: 3.5rem; }
-  .ns-avatar--xl { height: 5rem;    width: 5rem; }
-  .ns-avatar--square { border-radius: var(--radius-card); }
-
-  /* ── Ring — wrap the <img> to mark an author/instructor ────────────────── */
   .ns-ring {
-    display: inline-flex;
-    border-radius: 9999px;
-    padding: 2px;
-    background-color: var(--color-brand-500);
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-pill); overflow: hidden;
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 3px var(--color-brand-500);
   }
-  .ns-ring > img { border-radius: 9999px; }
-  .ns-ring--accent { background-color: var(--color-accent-600); }
-  .ns-ring--quiet  { background-color: var(--color-border); }
-
-  /* ── Stack — overlapping co-authors, newest on top ─────────────────────── */
-  .ns-avatar-stack { display: inline-flex; }
-  .ns-avatar-stack > * + * { margin-left: -0.6rem; }
-  .ns-avatar-stack > * { box-shadow: 0 0 0 2px var(--color-surface); }
+  .ns-ring img { inline-size: 100%; block-size: 100%; object-fit: cover; }
 }

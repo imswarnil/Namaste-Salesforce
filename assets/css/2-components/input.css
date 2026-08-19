@@ -1,4 +1,26 @@
 /* ════════════════════════════════════════════════════════════════════════════
+   EXTENSION · form controls — theme additions
+   ----------------------------------------------------------------------------
+   THE COMPONENT IS THE DESIGN SYSTEM'S. `.ns-input / .ns-field` and its variants live in
+   ds/components/css/forms/css/form.css and are the same rules the Next.js app renders.
+   This file no longer redeclares any of them.
+
+   It used to. The theme carried a parallel implementation of .ns-input / .ns-field — its own
+   box model, its own variant set — and because layer 2 (`components`) sits
+   AFTER the system's layer (`ns-components`) in the cascade, the theme's copy
+   won every collision. The system was vendored, compiled, shipped, and then
+   silently overridden. That is why the design system's look did not appear.
+
+   What remains below is the genuine remainder: a small size, the input group, and the icon affordance.
+   Each one EXTENDS the system's component rather than replacing it, so the
+   base geometry, colour and motion all still come from the system.
+
+   Before adding anything here, check the system first — its variant set is
+   usually larger than it looks (--has-icon --has-hint --mono and the __label/__help/__error
+   field parts exist upstream — prefer those).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════════════════════════
    COMPONENT · input — .ns-input and the form furniture around it
    ----------------------------------------------------------------------------
    Sharp geometry, hairline border, a quiet brand focus ring. Works on <input>,
@@ -15,84 +37,26 @@
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .ns-input {
-    width: 100%;
-    border-radius: var(--radius-btn);
-    border: 1px solid var(--color-border);
-    background-color: var(--color-surface);
-    padding: 0.6rem 0.9rem;
-    color: var(--color-ink);
-    transition: border-color var(--duration-fast) var(--ease-out),
-                box-shadow var(--duration-fast) var(--ease-out);
-  }
-  .ns-input::placeholder { color: var(--color-muted); }
-  .ns-input:focus {
-    outline: none;
-    border-color: var(--color-brand-500);
-    box-shadow: var(--shadow-focus);
-  }
-  .ns-input:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-    background-color: var(--color-surface-sunken);
-  }
 
   /* ── Sizes ─────────────────────────────────────────────────────────────── */
   .ns-input--sm { padding: 0.4rem 0.65rem; font-size: var(--size-small); }
-  .ns-input--lg { padding: 0.8rem 1.1rem;  font-size: var(--size-body-lg); }
 
-  /* ── Shapes ────────────────────────────────────────────────────────────── */
-  .ns-input--pill  { border-radius: var(--radius-pill); }
-  .ns-input--sharp { border-radius: 0; }
-
-  /* ── States ────────────────────────────────────────────────────────────── */
-  .ns-input--error   { border-color: var(--color-error); }
-  .ns-input--error:focus   { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 20%, transparent); }
-  .ns-input--success { border-color: var(--color-success); }
-  .ns-input--success:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 20%, transparent); }
-
-  /* Textarea + select inherit the control, only sizing differs */
-  textarea.ns-input { min-height: 6rem; resize: vertical; }
-  select.ns-input   { padding-right: 2rem; }
-
-  /* ── Field stack ───────────────────────────────────────────────────────── */
-  .ns-field { display: flex; flex-direction: column; gap: 0.35rem; }
-  .ns-field__label {
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    font-weight: var(--weight-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-label);
-  }
-  .ns-field__hint {
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    color: var(--color-muted);
-  }
-  .ns-field__hint--error   { color: var(--color-error); }
-  .ns-field__hint--success { color: var(--color-success); }
 
   /* ── Input group — control plus affix, one shared hairline ─────────────── */
   .ns-input-group { display: flex; align-items: stretch; }
+
   .ns-input-group > .ns-input { border-radius: 0; }
+
   .ns-input-group > :first-child { border-start-start-radius: var(--radius-btn); border-end-start-radius: var(--radius-btn); }
+
   .ns-input-group > :last-child  { border-start-end-radius: var(--radius-btn);   border-end-end-radius: var(--radius-btn); }
+
   .ns-input-group > * + * { margin-left: -1px; }
-  .ns-input-group__affix {
-    display: inline-flex;
-    align-items: center;
-    padding-inline: 0.75rem;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface-sunken);
-    font-family: var(--font-mono);
-    font-size: var(--size-label);
-    color: var(--color-label);
-    white-space: nowrap;
-  }
+
 
   /* ── Icon inside a control ─────────────────────────────────────────────── */
   .ns-input-icon { position: relative; display: block; }
+
   .ns-input-icon > :where(i, svg) {
     position: absolute;
     left: 0.75rem;
@@ -101,16 +65,6 @@
     pointer-events: none;
     color: var(--color-muted);
   }
-  .ns-input-icon > .ns-input { padding-left: 2.25rem; }
 
-  /* ── Checkbox / radio row ──────────────────────────────────────────────── */
-  .ns-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: var(--size-small);
-  }
-  .ns-check input { accent-color: var(--color-brand-500); width: 1rem; height: 1rem; }
-  .ns-check:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
+  .ns-input-icon > .ns-input { padding-left: 2.25rem; }
 }

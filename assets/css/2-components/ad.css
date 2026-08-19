@@ -1,16 +1,17 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   COMPONENT · ad slot — .ns-ad
+   EXTENSION · .ns-ad — theme ad slot
    ----------------------------------------------------------------------------
-   The placeholder is deliberately a WHITE creative surface whatever the site
-   theme is doing: real ad units render on white, so a themed slot would lie
-   about what the page will look like once a campaign is live.
+   .ns-ad itself is the DESIGN SYSTEM's — ds/components/css/. This file no
+   longer redeclares the base or any variant the system already ships; layer 2
+   sits after the system in the cascade, so anything restated here would win,
+   and the vendored system would be shipped and then silently overridden.
 
-   PARTS __ph (placeholder) · __arrow · __label
-   SIZE  --wide  fills the page measure rather than the column it sits in
+   What remains is the placeholder treatment and the wide shape.
+
+   Rules that still NAME a system class do so in a COMPOUND selector — e.g.
+   `.ns-band--dark .ns-split__lede` — which is a contextual adjustment, not a
+   redefinition of the base. Those are legitimate; a bare `.ns-ad { … }` is not.
    ════════════════════════════════════════════════════════════════════════ */
-
-/* ── Ads ────────────────────────────────────────────────────────────────── */
-.ns-ad { margin: 2rem 0; text-align: center; }
 
 /* AdSense's own snippet ships `style="display:block"` on the <ins>, and it is
    load-bearing — the element is inline by default, so without it the unit
@@ -19,6 +20,7 @@
    real ad slot while the placeholders keep working, which is the worst
    possible failure mode to debug. */
 ins.adsbygoogle { display: block; }
+
 /* Full page measure — a leaderboard squeezed into a narrow column reads as a
    broken image, not as inventory. */
 .ns-ad--wide {
@@ -26,12 +28,14 @@ ins.adsbygoogle { display: block; }
   max-width: var(--container-page);
   padding-inline: var(--space-gutter);
 }
+
 /* Always a WHITE creative surface — real ad units render on white regardless
    of site theme, and it makes the empty slot read as "ready for a real ad"
    rather than themed chrome. */
 .ns-ad__ph { position: relative; overflow: hidden; isolation: isolate;
   display: flex; align-items: center; justify-content: center; gap: 0.6rem; width: 100%;
   border: 1px dashed var(--color-border); border-radius: var(--radius-card); background: #ffffff; }
+
 /* The contour pattern, so an empty slot reads as a designed placeholder rather
    than a missing image — and so it is obviously OURS, not a blank ad frame. */
 .ns-ad__ph::before {
@@ -48,7 +52,5 @@ ins.adsbygoogle { display: block; }
   -webkit-mask-image: radial-gradient(110% 130% at 100% 0%, #000 8%, transparent 70%);
   mask-image: radial-gradient(110% 130% at 100% 0%, #000 8%, transparent 70%);
 }
+
 .ns-ad__arrow { flex-shrink: 0; font-size: 1.35rem; color: var(--color-brand-500); }
-.ns-ad__label { display: inline-flex; align-items: center; gap: 0.4rem;
-  font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
-  letter-spacing: 0.05em; text-transform: uppercase; color: #3d3d3d; }

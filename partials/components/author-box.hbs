@@ -1,19 +1,35 @@
-{{!-- components/author-box.hbs — "Written by" author card, shown after lesson
-     content. Context: a post (uses {{#primary_author}}). --}}
+{{!-- components/author-box.hbs — the "written by" card that closes a post or
+     a lesson.
+
+     The design system's `.ns-authorbox` (ds/components/css/blog.css): a two-
+     column grid of avatar + body, with named parts for the name, the role, the
+     bio and the link row. The theme used to declare its own `.ns-authorbox` —
+     a plain flex box — which won by cascade order and threw away the grid, the
+     avatar sizing and the mono role line. That rule is gone; this markup is the
+     system's contract.
+
+     `__avatar` goes on the <img> itself here (not a wrapper), which is what
+     the system's rule expects — it sets inline-size/block-size/object-fit
+     directly on the element.
+
+     Context: a post (uses {{#primary_author}}). --}}
 {{#primary_author}}
 <div class="ns-authorbox">
-  <span class="ns-ring shrink-0">
-    {{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="s"}}" alt="{{name}}" class="h-16 w-16 object-cover">
-    {{else}}<span class="ns-chip h-16 w-16 rounded-full text-2xl">{{> icons name="user" class="text-2xl"}}</span>{{/if}}
-  </span>
+  {{#if profile_image}}
+    <img class="ns-authorbox__avatar" loading="lazy" decoding="async" src="{{img_url profile_image size="s"}}" alt="">
+  {{else}}
+    <span class="ns-avatar ns-avatar--xl">{{> icons name="user"}}</span>
+  {{/if}}
+
   <div class="min-w-0">
-    <p class="ns-label">{{t "Written by"}}</p>
-    <p class="font-heading text-lg font-bold">{{name}}</p>
-    {{#if bio}}<p class="mt-1 text-sm text-muted">{{bio}}</p>{{/if}}
-    <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-      <a href="{{url}}" class="inline-flex items-center gap-1 font-semibold text-brand-600 hover:underline dark:text-brand-300">{{> icons name="books"}}{{t "More by"}} {{name}}</a>
-      {{#if website}}<a href="{{website}}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-muted hover:text-brand-600">{{> icons name="globe"}}{{t "Website"}}</a>{{/if}}
-      {{#if twitter}}<a href="https://x.com/{{twitter}}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-muted hover:text-brand-600">{{> icons name="x-logo"}}{{twitter}}</a>{{/if}}
+    <span class="ns-authorbox__role">{{t "Written by"}}</span>
+    <p class="ns-authorbox__name"><a href="{{url}}">{{name}}</a></p>
+    {{#if bio}}<p class="ns-authorbox__bio">{{bio}}</p>{{/if}}
+
+    <div class="ns-authorbox__links">
+      <a href="{{url}}" class="ns-btn ns-btn--quiet ns-btn--sm">{{> icons name="books"}}{{t "More by"}} {{name}}</a>
+      {{#if website}}<a href="{{website}}" target="_blank" rel="noopener" class="ns-btn ns-btn--quiet ns-btn--sm">{{> icons name="globe"}}{{t "Website"}}</a>{{/if}}
+      {{#if twitter}}<a href="https://x.com/{{twitter}}" target="_blank" rel="noopener" class="ns-btn ns-btn--quiet ns-btn--sm">{{> icons name="x-logo"}}{{twitter}}</a>{{/if}}
     </div>
   </div>
 </div>
