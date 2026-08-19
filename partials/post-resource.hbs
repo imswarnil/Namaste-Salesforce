@@ -1,76 +1,73 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-resource.hbs — single resource at /resources/{slug}/.
-  Type badge · review/description · "Open resource" CTA (first link in the
-  content is usually the resource itself; we also surface custom fields) ·
-  related resources of the same type in the sidebar. Context: {{#post}}.
+  partials/post-resource.hbs — one resource at /resources/{slug}/.
+
+  The system's `.ns-post` reading surface, the same one a blog post and a doc
+  article get. What makes it a RESOURCE rather than an article is the header:
+  `.ns-resource` — the system's own anatomy for a thing that lives somewhere
+  else (icon, type, title, and the cue that says you are leaving).
+
+  The type comes from a #resource-type-* internal tag, which is also what the
+  /resources/ index filters on.
+
+  The theme's version was a three-column grid with a hand-built "sticky
+  handoff" ad rail — three ad slots each owning a flex-1 segment. That is a
+  lot of layout for advertising; the rail is now the component's own.
+
+  Context: {{#post}}, a #resource post.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<section class="mx-auto max-w-[90rem] px-4 py-10 sm:px-6">
-  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[12rem_minmax(0,1fr)_18rem]">
-
-    {{!-- ── Left rail: ads pinning one after another, equidistant (each owns
-         a flex-1 segment; sticky within it, then hands off to the next) ── --}}
-    <aside class="hidden xl:block">
-      <div class="flex h-full flex-col gap-10">
-        <div class="flex-1"><div class="sticky top-20">{{> "ads/slot" format="square"}}</div></div>
-        <div class="flex-1"><div class="sticky top-20">{{> "ads/slot" format="rail"}}</div></div>
-        <div class="flex-1"><div class="sticky top-20 pb-10">{{> "ads/slot" format="square"}}</div></div>
-      </div>
-    </aside>
-
-    <main class="min-w-0">
-      {{> "components/breadcrumb"}}
-
-      <header class="border-b border-border pb-6">
-        <div class="flex items-center gap-3">
-          <span class="ns-chip h-12 w-12 text-2xl">
-            {{#has tag="#resource-type-book"}}{{> icons name="book-bookmark"}}{{else has tag="#resource-type-tool"}}{{> icons name="wrench"}}{{else has tag="#resource-type-video"}}{{> icons name="video"}}{{else has tag="#resource-type-cheatsheet"}}{{> icons name="file-text"}}{{else has tag="#resource-type-website"}}{{> icons name="globe"}}{{else has tag="#resource-type-podcast"}}{{> icons name="microphone"}}{{else has tag="#resource-type-repo"}}{{> icons name="git-fork"}}{{else has tag="#resource-type-community"}}{{> icons name="users"}}{{else}}{{> icons name="cube"}}{{/has}}
-          </span>
-          <span class="ns-badge">
-            {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
-          </span>
-        </div>
-        <h1 class="mt-4 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="mt-3 max-w-2xl text-lg text-muted">{{custom_excerpt}}</p>{{/if}}
-      </header>
-
-      {{#if feature_image}}
-        {{> "components/img" src=feature_image alt=feature_image_alt eager=true
-            class="mt-8 w-full rounded-card border border-border object-cover"
-            sizes="(min-width: 64rem) 44rem, 100vw"}}
-      {{/if}}
-
-      <div class="prose mt-8 max-w-none gh-content">{{content}}</div>
-
-      {{!-- Back to library --}}
-      <div class="mt-10 border-t border-border pt-6">
-        <a href="/resources/" class="inline-flex items-center gap-2 rounded-pill border border-border px-5 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">
-          {{> icons name="arrow-left"}}{{t "All resources"}}
-        </a>
-      </div>
-    </main>
-
-    {{!-- Sidebar: related + sponsored --}}
-    <aside class="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1">
-      <p class="ns-label mb-3">{{t "More like this"}}</p>
-      <ul class="space-y-2">
-        {{#get "posts" filter="tag:hash-resource+id:-{{id}}" limit="6" include="tags" order="published_at desc"}}
-          {{#foreach posts}}
-            <li>
-              <a href="{{url}}" class="group flex items-center gap-3 rounded-card border border-border bg-surface-raised p-3 ns-transition hover:border-brand-500">
-                <span class="ns-chip h-8 w-8 shrink-0 text-base">
-                  {{#has tag="#resource-type-book"}}{{> icons name="book-bookmark" class="text-sm"}}{{else has tag="#resource-type-tool"}}{{> icons name="wrench" class="text-sm"}}{{else has tag="#resource-type-video"}}{{> icons name="video" class="text-sm"}}{{else has tag="#resource-type-cheatsheet"}}{{> icons name="file-text" class="text-sm"}}{{else has tag="#resource-type-website"}}{{> icons name="globe" class="text-sm"}}{{else has tag="#resource-type-podcast"}}{{> icons name="microphone" class="text-sm"}}{{else has tag="#resource-type-repo"}}{{> icons name="git-fork" class="text-sm"}}{{else has tag="#resource-type-community"}}{{> icons name="users" class="text-sm"}}{{else}}{{> icons name="cube" class="text-sm"}}{{/has}}
-                </span>
-                <span class="min-w-0 truncate text-sm font-semibold group-hover:text-brand-600 dark:group-hover:text-brand-300">{{title}}</span>
-              </a>
-            </li>
-          {{else}}
-            <li class="text-sm italic text-muted">{{t "Nothing else yet."}}</li>
-          {{/foreach}}
-        {{/get}}
-      </ul>
-      {{!-- Sponsored (renders when a sponsor is configured in Admin → Design) --}}
-      <div class="mt-6">{{> "ads/sponsored"}}</div>
-      <div class="mt-6 hidden lg:block">{{> "ads/slot" format="square"}}</div>
-    </aside>
+<div class="ns-post">
+  <div class="ns-post__rail">
+    {{> "components/toc"}}
+    {{> "ads/slot" format="rail"}}
   </div>
-</section>
+
+  <article class="ns-post__body">
+    {{> "components/breadcrumb"}}
+
+    <header class="ns-resource">
+      <span class="ns-resource__icon">
+        {{#has tag="#resource-type-book"}}{{> icons name="book-bookmark"}}{{else has tag="#resource-type-tool"}}{{> icons name="wrench"}}{{else has tag="#resource-type-video"}}{{> icons name="video"}}{{else has tag="#resource-type-cheatsheet"}}{{> icons name="file-text"}}{{else has tag="#resource-type-website"}}{{> icons name="globe"}}{{else has tag="#resource-type-podcast"}}{{> icons name="microphone"}}{{else has tag="#resource-type-repo"}}{{> icons name="git-fork"}}{{else has tag="#resource-type-community"}}{{> icons name="users"}}{{else}}{{> icons name="cube"}}{{/has}}
+      </span>
+      <span class="ns-resource__body">
+        <span class="ns-resource__type">
+          {{#has tag="#resource-type-book"}}{{t "Book"}}{{else has tag="#resource-type-tool"}}{{t "Tool"}}{{else has tag="#resource-type-video"}}{{t "Video"}}{{else has tag="#resource-type-cheatsheet"}}{{t "Cheat sheet"}}{{else has tag="#resource-type-website"}}{{t "Website"}}{{else has tag="#resource-type-podcast"}}{{t "Podcast"}}{{else has tag="#resource-type-repo"}}{{t "Repo"}}{{else has tag="#resource-type-community"}}{{t "Community"}}{{else}}{{t "Resource"}}{{/has}}
+        </span>
+        <span class="ns-resource__title">{{title}}</span>
+      </span>
+    </header>
+
+    <h1 class="ns-posthead__title">{{title}}</h1>
+    {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
+
+    {{#if feature_image}}
+      {{> "components/img" src=feature_image alt=feature_image_alt eager=true
+          class="ns-posthead__cover" sizes="(min-width: 64rem) 44rem, 100vw"}}
+    {{/if}}
+
+    <div class="ns-prose gh-content">{{content}}</div>
+
+    <footer class="ns-postfoot">
+      {{> "components/tag-pills"}}
+      {{> "components/share"}}
+    </footer>
+
+    <nav class="ns-postnav" aria-label="{{t "More resources"}}">
+      {{#prev_post}}
+        <a class="ns-postnav__link" href="{{url}}">
+          <span class="ns-postnav__dir">{{t "Previous"}}</span>
+          <span class="ns-postnav__title">{{title}}</span>
+        </a>
+      {{else}}<span class="ns-postnav__link ns-postnav__link--empty"></span>{{/prev_post}}
+      {{#next_post}}
+        <a class="ns-postnav__link ns-postnav__link--next" href="{{url}}">
+          <span class="ns-postnav__dir">{{t "Next"}}</span>
+          <span class="ns-postnav__title">{{title}}</span>
+        </a>
+      {{else}}<span class="ns-postnav__link ns-postnav__link--empty"></span>{{/next_post}}
+    </nav>
+  </article>
+
+  <div class="ns-post__aside">{{> "components/share" layout="rail"}}</div>
+</div>
+
+{{> related-posts}}

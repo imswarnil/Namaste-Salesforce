@@ -1,100 +1,99 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-documentation.hbs — Single documentation article
-  ----------------------------------------------------------------------------
-  Wide 3-column layout: sticky docs sidebar · article · right rail where the
-  TOC, sponsor widget and ad pin one after another (sticky "deck": each stays
-  fixed for a while, evenly spaced, then hands over to the next).
-  Mobile gets the pinned docs menu bar. Context: {{#post}}.
+  partials/post-documentation.hbs — a single documentation article.
+
+  Three columns, and they are the same three the whole site uses for reading:
+
+    .ns-sidebar    the docs tree — how you LEAVE this page
+    .ns-post__body the article at the measure
+    .ns-post__aside the outline — how you move WITHIN it
+
+  That leave/move-within split is the one every documentation site converged
+  on, and it is why this is the system's `.ns-post` with a sidebar in front of
+  it rather than a bespoke three-column grid: a doc page and a blog post are
+  the same reading surface with a different left rail.
+
+  The theme's version built that grid out of
+  `lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[...]` and a hand-rolled
+  "sticky handoff" rail. Both are gone — the component decides the columns and
+  drops them in the right order on the way down.
+
+  Context: {{#post}}, a #documentation post.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-{{!-- Current post id + section — docs/sidebar highlights the active link and
-     opens its section group --}}
+
+{{!-- The current article's id, read by docs/sidebar to mark aria-current
+     and by rail.js to open the right group. --}}
 <span id="doc-current-id" data-id="{{id}}" data-sec="{{primary_tag.slug}}" hidden aria-hidden="true"></span>
 
 {{> "docs/mobile-bar" label=title}}
 
-<section class="mx-auto max-w-[90rem] px-4 py-10 sm:px-6">
-  <div class="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)_16rem]">
+<div class="ns-docs">
+  {{> "docs/sidebar"}}
 
-    {{> "docs/sidebar"}}
+  <div class="ns-post ns-post--docs">
+    <article class="ns-post__body">
 
-    <main role="main" class="min-w-0">
-      <article>
-        {{!-- Breadcrumb (compact, icon-based) --}}
-        <nav class="mb-4 flex min-w-0 items-center gap-1.5 text-xs text-muted" aria-label="Breadcrumb">
-          <a href="/" class="inline-flex shrink-0 items-center transition hover:text-brand-600" aria-label="{{t "Home"}}">{{> icons name="house"}}</a>
-          {{> icons name="caret-right" class="shrink-0 text-[0.6rem]"}}
-          <a href="/docs/" class="inline-flex shrink-0 items-center gap-1 transition hover:text-brand-600">{{> icons name="book-open"}}{{t "Docs"}}</a>
+      <nav class="ns-breadcrumb" aria-label="Breadcrumb">
+        <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{@site.url}}">{{t "Home"}}</a></span>
+        <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="/docs/">{{t "Docs"}}</a></span>
+        {{#primary_tag}}<span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="/docs/{{slug}}/">{{name}}</a></span>{{/primary_tag}}
+        <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{url}}" aria-current="page">{{title}}</a></span>
+      </nav>
+
+      <header>
+        <h1 class="ns-posthead__title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
+        <p class="ns-postmeta ns-postmeta--dotted">
+          <span>{{> icons name="timer"}}{{reading_time}}</span>
+          {{#primary_author}}<span class="ns-postmeta__author">{{> icons name="user-circle"}}{{name}}</span>{{/primary_author}}
+          <span>{{> icons name="clock-clockwise"}}{{t "Updated"}} {{date updated_at format="D MMM YYYY"}}</span>
+        </p>
+      </header>
+
+      {{#if feature_image}}
+        {{> "components/img" src=feature_image alt=feature_image_alt eager=true
+            class="ns-posthead__cover" sizes="(min-width: 64rem) 44rem, 100vw"}}
+      {{/if}}
+
+      <div class="ns-prose gh-content">{{content}}</div>
+
+      {{!-- Prev / next BY TITLE. The edges switch section: the first article
+           points back at the section overview, the last tees up the next
+           section entirely (docs/next-section-for). --}}
+      <nav class="ns-postnav" aria-label="{{t "Article navigation"}}">
+        {{#prev_post in="primary_tag"}}
+          <a class="ns-postnav__link" href="{{url}}">
+            <span class="ns-postnav__dir">{{t "Previous"}}</span>
+            <span class="ns-postnav__title">{{title}}</span>
+          </a>
+        {{else}}
           {{#primary_tag}}
-            {{> icons name="caret-right" class="shrink-0 text-[0.6rem]"}}
-            <a href="/docs/{{slug}}/" class="truncate transition hover:text-brand-600">{{name}}</a>
+            <a class="ns-postnav__link" href="/docs/{{slug}}/">
+              <span class="ns-postnav__dir">{{t "Section overview"}}</span>
+              <span class="ns-postnav__title">{{name}}</span>
+            </a>
           {{/primary_tag}}
-          {{> icons name="caret-right" class="shrink-0 text-[0.6rem]"}}
-          <span class="truncate text-ink">{{title}}</span>
-        </nav>
+        {{/prev_post}}
 
-        <header class="mb-6">
-          <h1 class="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{title}}</h1>
-          {{#if custom_excerpt}}<p class="mt-3 text-lg text-muted">{{custom_excerpt}}</p>{{/if}}
-          <div class="mt-4 flex flex-wrap items-center gap-4 font-mono text-xs text-label">
-            <span class="inline-flex items-center gap-1">{{> icons name="timer"}}{{reading_time}}</span>
-            {{#primary_author}}<span class="inline-flex items-center gap-1">{{> icons name="user-circle"}}{{name}}</span>{{/primary_author}}
-            <span class="inline-flex items-center gap-1">{{> icons name="clock-clockwise"}}{{t "Updated"}} {{date updated_at format="D MMM YYYY"}}</span>
-          </div>
-        </header>
-
-        {{#if feature_image}}
-          {{> "components/img" src=feature_image alt=feature_image_alt eager=true
-              class="mb-8 w-full rounded-card border border-border object-cover"
-              sizes="(min-width: 64rem) 44rem, 100vw"}}
-        {{/if}}
-
-        <div class="prose max-w-none gh-content">{{content}}</div>
-
-        {{!-- Pagination: prev/next inside the section; the edges switch section
-             (first doc → section overview · last doc → next-section card) --}}
-        <nav class="mt-10 grid gap-4 border-t border-border pt-6 sm:grid-cols-2" aria-label="{{t "Article navigation"}}">
-          {{#prev_post in="primary_tag"}}
-            <a href="{{url}}" class="group rounded-card border border-border p-4 ns-transition hover:border-brand-500">
-              <span class="ns-label">{{> icons name="arrow-left" class="transition group-hover:-translate-x-0.5"}} {{t "Previous"}}</span>
-              <span class="mt-1 block truncate font-semibold">{{title}}</span>
-            </a>
-          {{else}}
-            {{#primary_tag}}
-              <a href="/docs/{{slug}}/" class="group rounded-card border border-border p-4 ns-transition hover:border-brand-500">
-                <span class="ns-label">{{> icons name="squares-four"}} {{t "Section overview"}}</span>
-                <span class="mt-1 block truncate font-semibold">{{name}}</span>
-              </a>
-            {{/primary_tag}}
-          {{/prev_post}}
-          {{#next_post in="primary_tag"}}
-            <a href="{{url}}" class="group rounded-card border border-border p-4 text-right ns-transition hover:border-brand-500 sm:col-start-2">
-              <span class="ns-label">{{t "Next"}} {{> icons name="arrow-right" class="transition group-hover:translate-x-0.5"}}</span>
-              <span class="mt-1 block truncate font-semibold">{{title}}</span>
-            </a>
-          {{/next_post}}
-        </nav>
-
-        {{!-- Last doc of the section → tee up the next section --}}
-        {{#next_post in="primary_tag"}}{{else}}
-          {{#primary_tag}}{{> "docs/next-section-for" current=slug}}{{/primary_tag}}
+        {{#next_post in="primary_tag"}}
+          <a class="ns-postnav__link ns-postnav__link--next" href="{{url}}">
+            <span class="ns-postnav__dir">{{t "Next"}}</span>
+            <span class="ns-postnav__title">{{title}}</span>
+          </a>
+        {{else}}
+          <span class="ns-postnav__link ns-postnav__link--empty"></span>
         {{/next_post}}
+      </nav>
 
-        {{!-- Comments (renders only when enabled in Ghost Admin → Membership) --}}
-        <section class="mt-12 border-t border-border pt-8">
-          {{comments}}
-        </section>
-      </article>
-    </main>
+      {{#next_post in="primary_tag"}}{{else}}
+        {{#primary_tag}}{{> "docs/next-section-for" current=slug}}{{/primary_tag}}
+      {{/next_post}}
 
-    {{!-- Right rail: sticky handoff — each widget owns an equal flex-1 segment
-         of the rail, pins (sticky) while its segment is in view, then scrolls
-         away as the next segment's widget arrives and pins in its place. --}}
-    <aside class="hidden xl:block">
-      <div class="flex h-full flex-col gap-10">
-        <div class="flex-1"><div class="sticky top-20">{{> "components/toc"}}</div></div>
-        <div class="flex-1"><div class="sticky top-20">{{> "ads/slot" format="rail"}}</div></div>
-        <div class="flex-1"><div class="sticky top-20 pb-10">{{> "ads/slot" format="square"}}</div></div>
-      </div>
+      {{#if @site.comments_enabled}}{{comments}}{{/if}}
+    </article>
+
+    <aside class="ns-post__aside ns-post__aside--wide">
+      {{> "components/toc"}}
+      {{> "ads/slot" format="rail"}}
     </aside>
   </div>
-</section>
+</div>

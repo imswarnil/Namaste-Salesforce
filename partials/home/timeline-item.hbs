@@ -1,10 +1,16 @@
-{{!-- home/timeline-item.hbs — a milestone on the mission timeline.
-     Params: year, title, body. Render inside an <ol class="ns-timeline">. --}}
-<li class="relative pl-12">
-  <span class="absolute left-0 top-0 flex h-9 w-9 items-center justify-center rounded-full bg-brand-500 text-white ring-4 ring-surface">
-    {{> icons name="flag" class="text-sm"}}
-  </span>
-  <p class="ns-label">{{year}}</p>
-  <h3 class="mt-0.5 font-heading font-bold">{{title}}</h3>
-  <p class="mt-1 text-sm leading-relaxed text-muted">{{body}}</p>
+{{!-- home/timeline-item.hbs — one milestone.
+
+     The design system's `.ns-timeline__item`, which supplies the rail, the
+     node and the spacing. The theme positioned its own dot with
+     `absolute left-0 top-0 … ring-4` inside a `pl-12` list item — a second
+     timeline drawn beside the one the system already ships.
+
+     Params: year, title, body. Render inside <ol class="ns-timeline">. --}}
+<li class="ns-timeline__item">
+  <span class="ns-timeline__icon" aria-hidden="true">{{> icons name="flag"}}</span>
+  <div class="ns-timeline__text">
+    <span class="ns-timeline__time">{{year}}</span>
+    <h3 class="ns-timeline__title">{{title}}</h3>
+    <p>{{body}}</p>
+  </div>
 </li>

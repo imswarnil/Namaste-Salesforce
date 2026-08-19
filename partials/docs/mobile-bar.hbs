@@ -1,27 +1,36 @@
-{{!-- docs/mobile-bar.hbs — mobile docs menu, pinned right under the navbar
-     ---------------------------------------------------------------------------
-     Full-bleed bar (no page padding) that sticks to the bottom edge of the
-     sticky site header on <lg screens. Tapping it reveals a dropdown-style
-     panel with the whole docs tree (docs/sections view="nav").
-     Param: label — current section/article name shown in the bar. --}}
-<div class="sticky top-14 z-30 border-b border-border bg-surface lg:hidden" x-data="{ dopen: false }">
-  <button type="button" @click="dopen = !dopen" :aria-expanded="dopen.toString()" aria-controls="docs-mobile-panel"
-          class="flex w-full items-center justify-between gap-2 px-4 py-2.5 text-sm font-semibold text-ink">
-    <span class="inline-flex min-w-0 items-center gap-2">
-      {{> icons name="book-open" class="shrink-0 text-brand-500"}}
-      <span class="truncate">{{#if label}}{{label}}{{else}}{{t "Documentation"}}{{/if}}</span>
-    </span>
-    {{!-- The chevron flips on open. Alpine binds the class on a wrapper rather
-          than on the icon, because {{> icons}} owns the <svg>'s own class. --}}
-    <span class="inline-flex shrink-0 text-muted transition-transform" :class="dopen && 'rotate-180'">
-      {{> icons name="caret-down"}}
-    </span>
+{{!-- docs/mobile-bar.hbs — the way into the docs tree on a phone.
+
+     The same problem the lesson player solved, so the same answer: the
+     system's `.ns-panelbar` says where you are, and one control opens the
+     whole tree as a `.ns-lessonmodal` popover.
+
+     A POPOVER, so this needs NO JavaScript. The platform supplies the top
+     layer, light dismiss and Escape. The theme's version was an Alpine
+     dropdown with its own `dopen` state, its own click-outside handler and a
+     hand-rotated chevron — all of which the platform does for free.
+
+     Hidden at lg and up by the component, where the sticky .ns-sidebar is the
+     real navigation.
+
+     Param: label — the current article, shown in the bar. --}}
+<div class="ns-panelbar ns-docs__bar">
+  <span class="ns-panelbar__now">
+    <span class="ns-panelbar__kicker">{{t "Documentation"}}</span>
+    <span class="ns-panelbar__title">{{#if label}}{{label}}{{else}}{{t "Browse the docs"}}{{/if}}</span>
+  </span>
+  <button type="button" class="ns-btn ns-btn--outline ns-btn--sm" popovertarget="docs-tree">
+    {{> icons name="list"}}{{t "Contents"}}
   </button>
-  <div id="docs-mobile-panel" x-show="dopen" x-cloak @click.outside="dopen = false"
-       class="absolute inset-x-0 top-full z-30 max-h-[70vh] overflow-y-auto border-b border-border bg-surface px-3 pb-4 pt-2 shadow-raised">
-    <a href="/docs/" class="mb-1 flex items-center gap-2.5 rounded-btn px-2.5 py-2 text-sm font-semibold text-ink ns-transition hover:bg-surface-sunken">
-      {{> icons name="books" class="text-brand-500"}}{{t "Docs home"}}
-    </a>
+</div>
+
+<div class="ns-lessonmodal" id="docs-tree" popover>
+  <div class="ns-lessonmodal__head">
+    <span class="ns-lessonmodal__title">{{t "Documentation"}}</span>
+    <button class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm" type="button"
+            popovertarget="docs-tree" popovertargetaction="hide" aria-label="{{t "Close"}}">{{> icons name="x"}}</button>
+  </div>
+  <div class="ns-lessonmodal__list">
+    <a class="ns-sidebar__link" href="/docs/">{{> icons name="books"}}{{t "Docs home"}}</a>
     {{> "docs/sections" view="nav"}}
   </div>
 </div>
