@@ -1,26 +1,35 @@
 {{!< default}}
-{{!-- page.hbs — generic Ghost page (centred, prose content) --}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  page.hbs — a generic Ghost page.
 
+  The system's `.ns-page` shell: a centred column at the reading measure, with
+  the title and cover shown only when the editor asked for them (Ghost's
+  per-page "show title and feature image" switch).
+
+  Content renders into `.ns-prose gh-content` — .ns-prose is the system's whole
+  typographic contract for a written page, and .gh-content is what Ghost's own
+  Koenig card styles hook onto. Both are needed; neither is decoration.
+═══════════════════════════════════════════════════════════════════════════ --}}
 {{#page}}
-<article class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
+<article class="ns-page ns-page--narrow">
+  <div class="ns-page__inner">
 
-  {{#if @page.show_title_and_feature_image}}
-    <header class="mb-8 text-center">
-      <h1 class="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">{{title}}</h1>
-      {{#if custom_excerpt}}
-        <p class="mx-auto mt-4 max-w-2xl text-lg text-muted">{{custom_excerpt}}</p>
+    {{#if @page.show_title_and_feature_image}}
+      <header class="ns-page__head">
+        <h1 class="ns-page__title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="ns-page__lede">{{custom_excerpt}}</p>{{/if}}
+      </header>
+
+      {{#if feature_image}}
+        {{!-- The one above-the-fold image on this route, so it is the LCP
+             element and must not be lazy. --}}
+        {{> "components/img" src=feature_image alt=feature_image_alt eager=true
+            class="ns-figure__frame mb-10 w-full object-cover"
+            sizes="(min-width: 48rem) 44rem, 100vw"}}
       {{/if}}
-    </header>
-
-    {{#if feature_image}}
-      <img loading="lazy" decoding="async" src="{{img_url feature_image size='l'}}" alt="{{title}}"
-           class="mb-10 w-full rounded-card border border-border object-cover">
     {{/if}}
-  {{/if}}
 
-  <div class="prose prose-lg max-w-none gh-content">
-    {{content}}
+    <div class="ns-prose gh-content">{{content}}</div>
   </div>
-
 </article>
 {{/page}}

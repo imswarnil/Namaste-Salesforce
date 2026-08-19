@@ -40,7 +40,7 @@
   {{#has tag="#hero-cover, #hero-video, #hero-3, #hero-5"}}
     {{#if feature_image}}
       <div class="ns-chero__bg" aria-hidden="true">
-        <img loading="eager" decoding="async" src="{{img_url feature_image size="xl"}}" alt="">
+        {{> "components/img" src=feature_image alt="" eager=true sizes="100vw"}}
       </div>
     {{/if}}
   {{/has}}
@@ -98,11 +98,11 @@
           <div class="ns-chero__media">
             {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson+tag:hash-lesson-type-video" order="published_at asc" limit="1" as |vids|}}
               {{#if vids.[0]}}
-                <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                {{> "components/img" src=feature_image alt="" eager=true sizes="24rem"}}
                 <a href="{{vids.[0].url}}" class="ns-chero__play" aria-label="{{t "Play the course preview"}}">{{> icons name="play"}}</a>
                 <span class="ns-chero__caption">{{t "Preview"}}</span>
               {{else}}
-                <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                {{> "components/img" src=feature_image alt="" eager=true sizes="24rem"}}
               {{/if}}
             {{/get}}
           </div>
@@ -172,7 +172,7 @@
     <aside class="ns-course-detail__rail">
       <div class="ns-buybox js-spotlight">
         {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
-          <img class="ns-buybox__media" loading="lazy" decoding="async" src="{{img_url feature_image size="m"}}" alt="{{title}}">
+          {{> "components/img" src=feature_image alt="" class="ns-buybox__media" sizes="20rem"}}
         {{/if}}{{/has}}
         <div class="ns-buybox__body">
           <span class="ns-price{{#has tag="#free"}} ns-price--free{{/has}}">

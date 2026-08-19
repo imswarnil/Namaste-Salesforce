@@ -28,7 +28,7 @@
   {{#has tag="#posthead-cover"}}
     {{#if feature_image}}
       <div class="ns-posthead__bg" aria-hidden="true">
-        <img loading="eager" decoding="async" src="{{img_url feature_image size="xl"}}" alt="">
+        {{> "components/img" src=feature_image alt="" eager=true sizes="100vw"}}
       </div>
     {{/if}}
   {{/has}}
@@ -48,9 +48,10 @@
       {{#has tag="#posthead-cover, #posthead-minimal, #posthead-console"}}{{else}}
         {{#if feature_image}}
           <div>
-            <img class="ns-posthead__cover" loading="lazy" decoding="async"
-                 src="{{img_url feature_image size="l"}}"
-                 alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
+            {{!-- The cover under the title is the LCP element on a post. --}}
+            {{> "components/img" src=feature_image class="ns-posthead__cover" eager=true
+                alt=(concat feature_image_alt)
+                sizes="(min-width: 48rem) 44rem, 100vw"}}
             {{#if feature_image_caption}}<span class="ns-posthead__credit">{{feature_image_caption}}</span>{{/if}}
           </div>
         {{/if}}

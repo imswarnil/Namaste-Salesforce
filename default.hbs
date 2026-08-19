@@ -7,22 +7,13 @@
     <title>{{meta_title}}</title>
 
     {{!-- ── Pre-paint theme ───────────────────────────────────────────────
-      Applies the saved theme to <html> BEFORE first paint to prevent a flash
-      of the wrong colours. Falls back to the OS preference on first visit.
-      This is the only inline script in <head>; toggling lives in theme-toggle.js
+      The DESIGN SYSTEM's own bootstrap, generated into a partial by
+      `yarn design:sync` so it cannot drift from the copy the Next.js app
+      runs. It must stay the FIRST thing in <head>, before any stylesheet:
+      it sets data-theme on <html> before first paint, and anything above it
+      that blocks would paint the wrong colours first.
     ─────────────────────────────────────────────────────────────────────── --}}
-    <script>
-      (function () {
-        try {
-          var t = localStorage.getItem('ns-theme');
-          if (t === 'dark' || t === 'light') {
-            document.documentElement.setAttribute('data-theme', t);
-          } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-          }
-        } catch (e) {}
-      })();
-    </script>
+    {{> "ds/theme-init"}}
 
     {{!-- ── Fonts & icons: ALL self-hosted, ZERO third-party ──────────────
       Type used to come from Google Fonts and icons from unpkg's two full
@@ -56,6 +47,17 @@
     {{!-- Theme stylesheet (Tailwind build) — carries the @font-face rules --}}
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
 
+    {{!-- ── Connection warm-up ────────────────────────────────────────────
+      Only for origins this page will ACTUALLY hit, and only when they are
+      switched on. A speculative preconnect to a domain the page never calls
+      costs a DNS lookup, a TCP handshake and a TLS negotiation for nothing —
+      and browsers cap how many they will honour, so a wasted one evicts a
+      real one. Fonts and icons are same-origin, so they need none.
+    ───────────────────────────────────────────────────────────────────── --}}
+    {{#if @custom.enable_ads}}{{#if @custom.adsense_publisher_id}}
+      <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+    {{/if}}{{/if}}
+
     {{!-- Google AdSense loader — only when ads are enabled + a publisher ID is set
          (Ghost Admin → Design). Individual slots are placed via the ads/adsense partial. --}}
     {{#if @custom.enable_ads}}{{#if @custom.adsense_publisher_id}}
@@ -74,12 +76,6 @@
   </head>
 
   <body class="{{body_class}} flex min-h-screen flex-col bg-surface text-ink">
-    {{!-- Accessibility: jump straight to the main content with the keyboard --}}
-    <a href="#main"
-       class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-btn focus:bg-brand-500 focus:px-4 focus:py-2 focus:font-medium focus:text-white">
-      Skip to content
-    </a>
-
     {{!-- Site header. Course/lesson/training posts get the distraction-free
          "course player" header (logo · progress · ✕ back-to-course); everything
          else gets the standard navigation bar. --}}
@@ -118,11 +114,48 @@
       }{{else}}null{{/if}};
     </script>
 
-    {{!-- Alpine.js (self-hosted) — powers the mobile menu, dropdowns and toggles.
-         `defer` keeps it non-blocking and lets it auto-start after DOM parse. --}}
+    {{!-- ── The design system's runtime ──────────────────────────────────
+      Vendored by `yarn design:sync` into assets/js/ds/ — behaviour comes from
+      the system for the same reason the CSS does. Each is an independent
+      module on its own `defer` tag rather than concatenated into casper.js,
+      so a page only pays for what it uses and load order stays explicit.
+
+        nav    the top bar: menus, the mobile sheet, the theme switch, the
+               scrolled state. Every page has a bar, so every page loads it.
+        toc    the outline + scroll-spy — only where there is prose to outline.
+        lms    the lesson rail, curriculum and reading progress.
+
+      `defer` (not `async`) is deliberate: these run after parse, in order,
+      and none of them block the first paint.
+    ───────────────────────────────────────────────────────────────────── --}}
+    <script defer src="{{asset "js/ds/nav.js"}}"></script>
+    {{#is "post, page"}}<script defer src="{{asset "js/ds/toc.js"}}"></script>{{/is}}
+    {{#is "post"}}{{#post}}{{#has tag="#lesson, #course, #training-content"}}<script defer src="{{asset "js/ds/lms.js"}}"></script>{{/has}}{{/post}}{{/is}}
+
+    {{!-- Alpine — still the tool for the catalog filters and the small
+         disclosure state the system does not model.
+
+         The `lessonNav` store is registered HERE, not in a partial, because
+         four separate partials read it (courses/lesson-nav, training/
+         curriculum, training/nav-button, training/section-item) and none of
+         them is guaranteed to render first. It used to live in the course
+         player's header, which meant the store existed only on the routes
+         that happened to use that header. Registered on `alpine:init`, which
+         still fires because this inline script is parsed before the deferred
+         bundle runs. --}}
+    <script>
+      document.addEventListener('alpine:init', function () {
+        window.Alpine && Alpine.store('lessonNav', {
+          open: false,
+          toggle() { this.open = !this.open; },
+          close() { this.open = false; }
+        });
+      });
+    </script>
     <script defer src="{{asset "js/vendor/alpine.js"}}"></script>
 
-    {{!-- Theme toggle + small vanilla helpers (concatenated, minified build) --}}
+    {{!-- The theme's own remaining helpers (scroll reveal, pointer spotlight,
+         count-ups) — concatenated and minified by gulp. --}}
     <script defer src="{{asset "built/casper.js"}}"></script>
 
   </body>

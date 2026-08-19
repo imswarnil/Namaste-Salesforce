@@ -1,12 +1,22 @@
-{{!-- partials/navigation.hbs — primary/secondary nav items
-     Rendered by the {{navigation}} helper. Outputs <li> links with a per-slug
-     icon (components/nav-icon). The parent <ul> handles layout (row in the
-     header, column in the mobile menu / footer). --}}
+{{!-- partials/navigation.hbs — the primary/secondary nav items.
+
+     RESERVED NAME: Ghost renders this from the `{{navigation}}` helper, never
+     from `{{> navigation}}`. It emits only the <li> items — the parent <ul>
+     decides the shape, which is what lets one partial serve three places:
+
+       header   <ul class="ns-topnav__links">   a row
+       footer   <ul>  inside .ns-footer__col    a column
+       sheet    handled separately (see header.hbs) — the mobile sheet wants
+                its own index numerals and chevrons, which would be noise in
+                the other two.
+
+     `aria-current="page"` rather than a class: .ns-topnav__link keys off the
+     attribute a screen reader already announces, so the highlighted item and
+     the announced item cannot drift apart. --}}
 {{#foreach navigation}}
   <li>
-    <a href="{{url absolute="true"}}" class="nav-link{{#if current}} is-current{{/if}}">
-      {{> "components/nav-icon" slug=slug}}
-      <span>{{label}}</span>
+    <a href="{{url absolute="true"}}" class="ns-topnav__link"{{#if current}} aria-current="page"{{/if}}>
+      {{> "components/nav-icon" slug=slug}}<span>{{label}}</span>
     </a>
   </li>
 {{/foreach}}

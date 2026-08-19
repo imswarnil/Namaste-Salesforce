@@ -1,24 +1,27 @@
 {{!< default}}
-{{!-- index.hbs — default post list (home fallback / collection route) --}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  index.hbs — the default post list.
 
-<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
+  Ghost's fallback collection route. The site's real front page is home.hbs
+  and the blog lives at blog.hbs; this is what renders for any collection that
+  has not been given a template of its own, so it is deliberately plain: the
+  system's listing grid, the system's card, and nothing else to go stale.
 
-  {{!-- Post grid --}}
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {{#foreach posts}}
-      <div class="motion-safe:animate-fade-up">
-        {{> post-card}}
-      </div>
-    {{/foreach}}
-  </div>
+  `.ns-defer` on the grid lets the browser skip layout and paint for the cards
+  below the fold until the reader scrolls to them (0-foundation/helpers.css).
+═══════════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-container ns-section">
 
-  {{!-- Empty state --}}
-  {{^posts}}
-    <div class="ns-empty ns-empty--lg">
-      {{> icons name="newspaper" class="mb-3 text-4xl"}}
-      <p class="text-lg font-semibold">{{t "No posts yet"}}</p>
+  {{#if posts}}
+    <div class="ns-blog-grid ns-defer">
+      {{#foreach posts}}{{> post-card}}{{/foreach}}
     </div>
-  {{/posts}}
+  {{else}}
+    <div class="ns-empty ns-empty--lg">
+      {{> icons name="newspaper" class="ns-empty__icon"}}
+      <p class="ns-empty__title">{{t "No posts yet"}}</p>
+    </div>
+  {{/if}}
 
   {{pagination}}
-</section>
+</div>

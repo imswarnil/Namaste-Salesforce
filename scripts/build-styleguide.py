@@ -1130,9 +1130,9 @@ page("Components", "icon-button", "Icon button",
          spec("--sm / --lg", '<button class="icon-btn icon-btn--sm"><i class="ph ph-star"></i></button>'
                              '<button class="icon-btn icon-btn--lg"><i class="ph ph-star"></i></button>')),
      head("With a tooltip"),
-     row(spec(".nav-tip (hover)",
+     row(spec(".ns-tooltip (hover)",
               '<span class="group demo-relative"><button class="icon-btn"><i class="ph ph-info"></i></button>'
-              '<span class="nav-tip">Help</span></span>')))
+              '<span class="ns-tooltip">Help</span></span>')))
 
 page("Components", "menu", "Menu &amp; share",
      "The dropdown panel: the account menu, the share menu, any Alpine popover. A floating layer "
@@ -1194,14 +1194,10 @@ page("Components", "sidebar", "Docs sidebar",
               '<a class="doc-nav-link nav-link nav-link--block nav-link--sm" href="#!">How a course is structured</a></nav>', wide=True)),
      note("The active row uses <code>!important</code> on purpose: the markup's <code>text-muted</code> / "
           "<code>hover:*</code> utilities sit in a later cascade layer and would otherwise wash it out."),
-     head("Mobile sub-navbar"),
-     row(spec(".subnav-bar",
-              '<div class="demo-w-lg"><div class="subnav-bar demo-static">'
-              '<span>Course lessons</span><i class="ph ph-caret-down"></i></div>'
-              '<div class="subnav-panel">'
-              '<a class="nav-link nav-link--block nav-link--sm" href="#!">1 · What Salesforce actually is</a>'
-              '<a class="nav-link nav-link--block nav-link--sm" href="#!">2 · Objects and fields</a></div></div>', wide=True)),
-     note("Shown forced open; on a real page it is <code>lg:hidden</code> and Alpine toggles the panel."))
+     note("The mobile sub-navbar that used to be documented here is gone with "
+          "<code>subnav.css</code>: the lesson list is reached through "
+          "<code>.ns-lesson-panel</code> on a phone and the system's rail above lg, so a third "
+          "way in had no consumer left."))
 
 page("Components", "site", "Site modules",
      "Styling that only exists on one part of the site — the <code>site-*.css</code> files. They are "
@@ -1287,24 +1283,31 @@ def pcard(mod="", title="Why I reach for Flow before Apex", cover=True, badge=No
 
 
 HEADER_DEMO = (
-    '<header class="ns-header demo-static">'
-    '<div class="ns-header__bar">'
-    '<a class="ns-header__brand" href="#!">'
-    '<span class="ns-chip ns-chip--xs ns-chip--solid"><i class="ph-fill ph-terminal-window"></i></span>'
-    '<span class="ns-header__name">Namaste Salesforce</span></a>'
-    '<nav class="ns-header__nav"><ul>'
-    '<li><a class="nav-link is-current" href="#!"><i class="ph ph-house"></i>Home</a></li>'
-    '<li><a class="nav-link" href="#!"><i class="ph ph-graduation-cap"></i>Courses</a></li>'
-    '<li><a class="nav-link" href="#!"><i class="ph ph-flow-arrow"></i>Training</a></li>'
-    '<li><a class="nav-link" href="#!"><i class="ph ph-books"></i>Docs</a></li>'
-    '</ul></nav>'
-    '<div class="ns-header__actions">'
-    '<button class="icon-btn"><i class="ph ph-magnifying-glass"></i></button>'
-    '<button class="icon-btn"><i class="ph ph-gear-six"></i></button>'
-    '<span class="ns-header__divider"></span>'
-    '<button class="icon-btn icon-btn--brand"><i class="ph ph-user"></i></button>'
-    '<button class="icon-btn ns-header__burger"><i class="ph ph-list"></i></button>'
-    '</div></div></header>')
+    '<nav class="ns-topnav demo-static" aria-label="Main">'
+    '<div class="ns-topnav__inner">'
+    '<a class="ns-topnav__brand" href="#!">'
+    '<span class="ns-chip ns-chip--sm"><i class="ph ph-terminal-window"></i></span>'
+    '<span class="ns-topnav__brand-name">Namaste Salesforce</span></a>'
+    '<ul class="ns-topnav__links">'
+    '<li><a class="ns-topnav__link" href="#!" aria-current="page"><i class="ph ph-house"></i>Home</a></li>'
+    '<li><a class="ns-topnav__link" href="#!"><i class="ph ph-graduation-cap"></i>Courses</a></li>'
+    '<li><a class="ns-topnav__link" href="#!"><i class="ph ph-flow-arrow"></i>Training</a></li>'
+    '<li><a class="ns-topnav__link" href="#!"><i class="ph ph-books"></i>Docs</a></li>'
+    '</ul>'
+    '<div class="ns-topnav__actions">'
+    '<button type="button" class="ns-navsearch"><i class="ph ph-magnifying-glass"></i>'
+    '<span class="ns-navsearch__text">Search…</span><kbd class="ns-navsearch__kbd">&#8984;K</kbd></button>'
+    '<a class="ns-navstar" href="#!"><span class="ns-navstar__label"><i class="ph ph-github"></i><span>Star</span></span></a>'
+    '<button type="button" class="ns-themeswitch" role="switch" aria-checked="false" aria-label="Dark mode">'
+    '<span class="ns-themeswitch__mark"></span></button>'
+    '<div class="ns-topnav__auth">'
+    '<a class="ns-btn ns-btn--quiet ns-btn--sm" href="#!">Sign in</a>'
+    '<a class="ns-btn ns-btn--primary ns-btn--sm" href="#!">Start learning</a></div>'
+    '<button type="button" class="ns-burger" aria-label="Menu">'
+    '<span class="ns-burger__bar"></span><span class="ns-burger__bar"></span><span class="ns-burger__bar"></span>'
+    '</button>'
+    '</div></div></nav>')
+
 
 page("Home", "home", "Home page",
      "The whole page, assembled from the sections below. A home page is nothing but a stack of "
@@ -1316,7 +1319,7 @@ page("Home", "home", "Home page",
           "&rarr; <b>7.</b> Testimonials &rarr; <b>8.</b> Closing CTA. Nothing here is new — each is a "
           "component documented on its own page."),
      head("1 · Header"),
-     row(spec(".ns-header", HEADER_DEMO, wide=True)),
+     row(spec(".ns-topnav", HEADER_DEMO, wide=True)),
      head("2 · Hero"),
      row(spec(".ns-hero--split",
               '<div class="ns-hero ns-hero--split ns-hero--sm ns-hero--grid">'
@@ -1410,47 +1413,49 @@ page("Home", "home", "Home page",
               '</div></div>', wide=True)))
 
 page("Home", "home-header", "Header",
-     "The bar at the top of every page, as a component rather than a pile of utilities. Three "
-     "regions on one row — brand, navigation, actions — and the layout variant decides where the "
-     "middle one sits.",
-     head("Centred — the site default"),
-     row(spec(".ns-header--center", HEADER_DEMO, wide=True)),
-     note("The nav is centred on the BAR, not on the space left over, so it does not shift when the "
-          "brand or the action cluster changes width."),
-     head("Nav beside the brand"),
-     row(spec("--start",
-              HEADER_DEMO.replace('class="ns-header demo-static"', 'class="ns-header ns-header--start demo-static"'),
+     "The bar at the top of every page. It is the DESIGN SYSTEM's "
+     "<code>.ns-topnav</code> — markup, styling and behaviour all vendored from "
+     "NS-Design-System, so the marketing site and the app wear the same bar. "
+     "Menus, the mobile sheet and the theme switch are driven by "
+     "<code>assets/js/ds/nav.js</code>; the theme writes no navbar JavaScript.",
+     head("Default"),
+     row(spec(".ns-topnav", HEADER_DEMO, wide=True)),
+     note("Nav items come from Ghost (Settings &rarr; Navigation) through the reserved "
+          "<code>{{navigation}}</code> helper. The active item carries "
+          "<code>aria-current=\"page\"</code> rather than a class, so the highlighted item and the "
+          "announced item cannot drift apart."),
+     head("Compact"),
+     row(spec("--compact",
+              HEADER_DEMO.replace('class="ns-topnav demo-static"', 'class="ns-topnav ns-topnav--compact demo-static"'),
               wide=True)),
-     head("Nav pushed right"),
-     row(spec("--split",
-              HEADER_DEMO.replace('class="ns-header demo-static"', 'class="ns-header ns-header--split demo-static"'),
+     head("Sunken"),
+     row(spec("--sunken",
+              HEADER_DEMO.replace('class="ns-topnav demo-static"', 'class="ns-topnav ns-topnav--sunken demo-static"'),
               wide=True)),
      head("Dark"),
      row(spec("--dark",
-              HEADER_DEMO.replace('class="ns-header demo-static"', 'class="ns-header ns-header--dark demo-static"'),
+              HEADER_DEMO.replace('class="ns-topnav demo-static"', 'class="ns-topnav ns-topnav--dark demo-static"'),
               wide=True)),
-     head("Announcement strip"),
-     row(spec("__strip",
-              '<div class="demo-w-full"><div class="ns-header__strip">'
-              '<i class="ph ph-megaphone"></i>New — the Agentforce track is live '
-              '<a href="#!">Start it</a></div>'
-              + HEADER_DEMO + '</div>', wide=True)),
-     head("Mobile panel"),
-     row(spec("__panel",
-              '<div class="demo-w-lg">' + HEADER_DEMO +
-              '<div class="ns-header__panel demo-block">'
-              '<div class="ns-header__panel-nav">'
-              '<a class="nav-link nav-link--block is-current" href="#!"><i class="ph ph-house"></i>Home</a>'
-              '<a class="nav-link nav-link--block" href="#!"><i class="ph ph-graduation-cap"></i>Courses</a>'
-              '<a class="nav-link nav-link--block" href="#!"><i class="ph ph-flow-arrow"></i>Training</a></div>'
-              '<div class="ns-header__panel-actions">'
-              '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Star</a>'
-              '<a class="ns-btn ns-btn--outline ns-btn--sm" href="#!">Sponsor</a>'
-              '<a class="ns-btn ns-btn--primary ns-btn--sm ns-header__panel-wide" href="#!">Create account</a>'
-              '</div></div></div>', wide=True)),
-     note("Scroll behaviours — sticky, fixed-on-scroll, island — are driven by the "
-          "<code>@custom.navbar_behavior</code> Ghost setting and live in "
-          "<code>site-navbar.css</code>. This file owns the shape only."))
+     note("<code>@custom.navbar_behavior</code> (Ghost Admin &rarr; Design) selects between these: "
+          "Sticky is the base, Fixed-on-scroll maps to <code>--compact</code>, Island to "
+          "<code>--floating</code> and Static to <code>--sunken</code>. The old theme-owned "
+          "<code>site-navbar.css</code> and <code>navbar.js</code> are deleted."),
+     head("Reading chrome"),
+     row(spec(".ns-coursenav",
+              '<nav class="ns-coursenav demo-static" aria-label="Course">'
+              '<a class="ns-coursenav__back" href="#!"><i class="ph ph-arrow-left"></i><span>Salesforce Admin</span></a>'
+              '<span class="ns-topnav__divider"></span>'
+              '<span class="ns-coursenav__id"><span class="ns-coursenav__title">Objects, fields &amp; relationships</span></span>'
+              '<div class="ns-coursenav__progress">'
+              '<div class="ns-coursenav__bar demo-p29" role="progressbar" aria-valuenow="29" aria-valuemin="0" aria-valuemax="100"><span></span></div>'
+              '<span class="ns-coursenav__pct">7 / 24</span></div>'
+              '<div class="ns-coursenav__actions">'
+              '<button type="button" class="ns-themeswitch" role="switch" aria-checked="false" aria-label="Dark mode">'
+              '<span class="ns-themeswitch__mark"></span></button></div>'
+              '</nav>', wide=True)),
+     note("A lesson gets this instead of the marketing bar: leave, where-you-are, how-far. No "
+          "primary action &mdash; finishing a lesson is the docked prev/next at the foot of it, and "
+          "a second solid button up here would compete for the one click a screen is allowed."))
 
 page("Home", "home-post-card", "Post card",
      "One entry in a collection: a blog post, a course, a doc, a resource. The generic card is the "

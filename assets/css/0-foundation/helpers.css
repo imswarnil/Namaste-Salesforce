@@ -140,3 +140,30 @@
    still CSS living in a template, and it also out-specifies every rule in this
    stylesheet, which makes it impossible to override from here. */
 .is-hidden { display: none !important; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PERFORMANCE · deferred rendering
+   ----------------------------------------------------------------------------
+   `content-visibility: auto` lets the browser SKIP layout, paint and style for
+   a subtree that is off screen, and do it when the reader scrolls there
+   instead. On a long page — the home page's stacked bands, a listing of 25
+   cards — that is the single largest saving available, because the work it
+   skips is work the reader may never need.
+
+   `contain-intrinsic-size` is not optional with it. Without a size hint the
+   skipped subtree measures 0, the scrollbar is wrong, and it jumps as each
+   band is rendered. The value is a GUESS at the band's height; being roughly
+   right is enough, and being absent is not.
+
+   Applied by hand with .ns-defer rather than to every section, because it is
+   wrong above the fold (the work is needed immediately) and wrong on anything
+   a fragment link or in-page search has to find while it is still skipped.
+   ════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  .ns-defer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 40rem;
+  }
+  .ns-defer--sm { contain-intrinsic-size: auto 20rem; }
+  .ns-defer--lg { contain-intrinsic-size: auto 60rem; }
+}

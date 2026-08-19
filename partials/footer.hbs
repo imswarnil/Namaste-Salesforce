@@ -1,56 +1,64 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/footer.hbs — Site footer
-  ----------------------------------------------------------------------------
-  Brand + description + social, a secondary-navigation column, a short
-  newsletter prompt, and a legal/credits strip. Stacks to one column on mobile.
-  Reuses components/social-icons.
+  partials/footer.hbs — the site footer.
+
+  THE DESIGN SYSTEM'S `.ns-footer` (ds/components/css/sections.css): an
+  auto-fitting column grid over a legal bar. The theme used to hand-roll this
+  out of Tailwind utilities — four columns, a `md:grid-cols-2 lg:grid-cols-4`
+  guess, and its own social row — which is the same object the system already
+  ships, drawn slightly differently on every breakpoint.
+
+  Columns come from Ghost where possible: the "Explore" column is the
+  SECONDARY navigation (Admin → Settings → Navigation), so the footer can be
+  re-pointed without touching the theme.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<footer class="border-t border-border bg-surface-sunken">
-  <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+<footer class="ns-footer">
+  <div class="ns-footer__grid">
 
-    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+    {{!-- Brand column — the mark, one sentence, and the social row --}}
+    <div class="ns-footer__col">
+      <a href="{{@site.url}}" class="ns-topnav__brand">
+        {{#if @site.logo}}<img src="{{img_url @site.logo size="xs"}}" alt="" width="32" height="32" loading="lazy" decoding="async">{{/if}}
+        <span class="ns-topnav__brand-name">{{@site.title}}</span>
+      </a>
+      <p class="ns-footer__blurb">
+        {{#if @site.description}}{{@site.description}}{{else}}{{t "Open-source Salesforce learning — courses, documentation and hands-on tutorials."}}{{/if}}
+      </p>
+      {{> "components/social-icons"}}
+    </div>
 
-      {{!-- Brand --}}
-      <div class="lg:col-span-2">
-        <a href="{{@site.url}}" class="font-heading text-lg font-extrabold text-brand-600 dark:text-brand-300">{{@site.title}}</a>
-        <p class="mt-3 max-w-sm text-sm text-muted">
-          {{#if @site.description}}{{@site.description}}{{else}}{{t "Open-source Salesforce learning — courses, documentation and hands-on tutorials."}}{{/if}}
-        </p>
-        <div class="mt-4">{{> "components/social-icons"}}</div>
-        <div class="mt-4 flex flex-wrap gap-2">
-          <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener"
-             class="ns-btn ns-btn--outline ns-btn--sm">
-            {{> icons name="github" class="h-4 w-4"}}{{t "Star on GitHub"}}{{> icons name="star" class="h-3.5 w-3.5 text-amber-400"}}
-          </a>
-          <a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener"
-             class="inline-flex items-center gap-1.5 rounded-btn px-3 py-1.5 text-sm font-semibold text-pink-600 ring-1 ring-pink-500/30 ns-transition hover:bg-pink-500/10">
-            {{> icons name="heart" class="h-4 w-4"}}{{t "Become a sponsor"}}
-          </a>
-        </div>
-      </div>
+    {{!-- Explore — Ghost's secondary navigation --}}
+    <nav class="ns-footer__col" aria-label="{{t "Footer"}}">
+      <p class="ns-footer__head">{{t "Explore"}}</p>
+      <ul>{{navigation type="secondary"}}</ul>
+    </nav>
 
-      {{!-- Secondary nav --}}
-      <nav aria-label="{{t "Footer"}}">
-        <p class="ns-label">{{t "Explore"}}</p>
-        <ul class="mt-3 flex flex-col gap-1 text-sm">{{navigation type="secondary"}}</ul>
-      </nav>
+    {{!-- Project --}}
+    <div class="ns-footer__col">
+      <p class="ns-footer__head">{{t "Project"}}</p>
+      <ul>
+        <li><a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener">{{t "Star on GitHub"}}</a></li>
+        <li><a href="https://github.com/sponsors/imswarnil" target="_blank" rel="noopener">{{t "Become a sponsor"}}</a></li>
+        <li><a href="{{#if @custom.become_author_url}}{{@custom.become_author_url}}{{else}}/become-author/{{/if}}">{{t "Become an author"}}</a></li>
+        <li><a href="/contact/">{{t "Contact"}}</a></li>
+      </ul>
+    </div>
 
-      {{!-- Newsletter — the real form, so the footer ask can be answered in
-           the footer rather than costing a page transition. --}}
-      <div>
-        <p class="ns-label">{{t "Stay in the loop"}}</p>
-        <p class="mb-4 mt-3 text-sm text-muted">{{t "Free Salesforce tips & new lessons in your inbox."}}</p>
+    {{!-- The newsletter ask, answered in place rather than at the cost of a
+         page transition. One signup form in the theme — members/subscribe. --}}
+    {{#if @site.members_enabled}}
+      <div class="ns-footer__col">
+        <p class="ns-footer__head">{{t "Stay in the loop"}}</p>
+        <p class="ns-footer__blurb">{{t "Free Salesforce tips & new lessons in your inbox."}}</p>
         {{> "members/subscribe" layout="stacked" icon="mail"}}
       </div>
-    </div>
+    {{/if}}
+  </div>
 
-    {{!-- Legal / credits --}}
-    <div class="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-sm text-muted sm:flex-row">
-      <p>&copy; {{date format="YYYY"}} <span class="font-medium text-ink">{{@site.title}}</span>. {{t "All rights reserved."}}</p>
-      <p class="flex items-center gap-1.5">
-        {{> icons name="git-branch"}}
-        {{t "Open source"}} · {{t "Built with"}} <a href="https://ghost.org" target="_blank" rel="noopener" class="font-medium hover:text-brand-600">Ghost</a>
-      </p>
-    </div>
+  <div class="ns-footer__bar">
+    <span>&copy; {{date format="YYYY"}} {{@site.title}}</span>
+    <span class="ns-footer__spacer"></span>
+    <a href="/privacy/">{{t "Privacy"}}</a>
+    <a href="/terms/">{{t "Terms"}}</a>
+    <a href="https://ghost.org" target="_blank" rel="noopener">{{t "Built with Ghost"}}</a>
   </div>
 </footer>

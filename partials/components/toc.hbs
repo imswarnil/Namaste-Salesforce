@@ -1,47 +1,37 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
   components/toc.hbs — the table of contents.
 
-  Rendered EMPTY. assets/js/toc.js scans the post's `.gh-content` for h2/h3,
-  gives each one an id, and appends an `<a class="ns-toc__link">` per heading
-  into every `[data-toc]` on the page. A post with fewer than two headings
-  gets no TOC at all — the elements stay `hidden` and nothing appears.
+  THE DESIGN SYSTEM'S `.ns-toc`, built and spied by the system's own
+  `assets/js/ds/toc.js`. Rendered EMPTY: the script reads the headings out of
+  whatever `data-toc-from` points at and appends the links.
 
-  This is the design system's `.ns-toc` (ds/components/css/toc.css), the same
-  outline the docs, the lesson player and the Next.js app render. Two things
-  about the contract matter:
+  ⚠️ data-toc-from MUST POINT AT THE PROSE, not at the whole article. Point it
+  at a wrapper that also contains the "Related" shelf and you get four card
+  titles in the outline that are not sections of the post.
 
-    · The links are DIRECT CHILDREN of `.ns-toc`. It is a flex column, not a
-      list — putting a <ul> in between breaks the rail's leading border and
-      the active item's brand bar. That is why toc.js appends to [data-toc]
-      itself rather than to an inner list.
-    · The active item is `aria-current="true"`, NOT a class. The CSS keys off
-      the same attribute the screen reader announces, so the highlighted item
-      and the announced item cannot drift apart.
+  The theme used to ship its own builder AND its own scroll-spy. The system's
+  is better and is now the one that runs: it marks the heading you last
+  scrolled PAST rather than the first one visible, which is the question a
+  reader is actually asking — and it is the only one that behaves when a
+  section is taller than the viewport and no heading is on screen at all.
 
-  TWO INSTANCES, because a sticky rail and a phone need different objects:
-  the <nav> is the rail (lg and up), the <details> is the disclosure that
-  replaces it below lg. toc.js fills both.
+  TWO INSTANCES, because a sticky rail and a phone want different objects: the
+  <nav> is the rail (lg and up), the <details> is the disclosure below it.
+  Both carry data-toc-from, so the script fills each.
 
   Params
-    variant   extra .ns-toc--* on the desktop rail — `ns-toc--card` for a
-              sidebar that already holds other blocks, `ns-toc--numbered` for
-              a procedure where the order is the content.
+    from      prose selector to outline. Defaults to `.gh-content`.
+    variant   extra .ns-toc--* on the rail — `ns-toc--card`, `ns-toc--numbered`.
     title     the rail's label. Defaults to "On this page".
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- Both start hidden and are revealed by toc.js adding `.is-ready` (see
-     2-components/toc.css) — NOT by toggling Tailwind's `hidden`, because each
-     one also carries a responsive display of its own that `hidden` would
-     fight with. --}}
-
-{{!-- The sticky rail — lg and up --}}
-<nav data-toc aria-label="{{t "Table of contents"}}"
-     class="js-toc ns-toc {{variant}} max-lg:hidden">
+<nav class="ns-toc {{variant}} max-lg:hidden"
+     data-toc-from="{{#if from}}{{from}}{{else}}.gh-content{{/if}}"
+     aria-label="{{t "Table of contents"}}">
   <span class="ns-toc__title">{{#if title}}{{title}}{{else}}{{t "On this page"}}{{/if}}</span>
-  <span class="ns-toc__progress" aria-hidden="true"></span>
 </nav>
 
-{{!-- The disclosure — below lg, where a sticky rail has nowhere to stick --}}
-<details data-toc class="js-toc ns-toc ns-toc--collapsible lg:hidden">
+<details class="ns-toc ns-toc--collapsible lg:hidden"
+         data-toc-from="{{#if from}}{{from}}{{else}}.gh-content{{/if}}">
   <summary>{{> icons name="list"}}{{#if title}}{{title}}{{else}}{{t "On this page"}}{{/if}}{{> icons name="caret-down"}}</summary>
 </details>

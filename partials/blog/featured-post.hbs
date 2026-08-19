@@ -10,7 +10,9 @@
 <article class="ns-card ns-bcard ns-bcard--wide js-spotlight mb-10">
   {{#if feature_image}}
     <a href="{{url}}" tabindex="-1" aria-hidden="true" class="ns-bcard__cover">
-      <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
+      {{!-- Top of the feed, so this is usually the LCP element on /blog/. --}}
+      {{> "components/img" src=feature_image alt="" eager=true
+          sizes="(min-width: 48rem) 50vw, 100vw"}}
       {{#primary_tag}}<span class="ns-tag ns-bcard__cat">{{name}}</span>{{/primary_tag}}
     </a>
   {{else}}
