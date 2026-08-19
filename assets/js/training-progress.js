@@ -24,17 +24,19 @@
   var panel = document.querySelector('#training-curriculum');
   if (!panel) return;
 
-  var links = Array.prototype.slice.call(panel.querySelectorAll('.ns-sidenav__link'));
-  var current = panel.querySelector('.ns-sidenav__link.is-current');
+  var links = Array.prototype.slice.call(panel.querySelectorAll('.ns-trainingnav__link'));
+  var current = panel.querySelector('.ns-trainingnav__link[aria-current="page"]');
 
   if (current) {
     for (var i = 0; i < links.length; i++) {
       if (links[i] === current) break;
-      // the section overview rows are not lessons — don't count them
-      if (links[i].querySelector('.ns-sidenav__num > span')) links[i].classList.add('is-done');
+      // The section OVERVIEW row is not a lesson, so it must not count. It is
+      // the only row without a __time, which is what distinguishes it now that
+      // the rail is NSDS's .ns-trainingnav.
+      if (links[i].querySelector('.ns-trainingnav__time')) links[i].setAttribute('data-state', 'done');
     }
-    var done = panel.querySelectorAll('.ns-sidenav__link.is-done').length;
-    var total = panel.querySelectorAll('.ns-sidenav__num > span').length;
+    var done = panel.querySelectorAll('.ns-trainingnav__link[data-state="done"]').length;
+    var total = panel.querySelectorAll('.ns-trainingnav__time').length;
     // The readout lives in the sub bar above, not in this rail.
     var bar = document.querySelector('.js-train-progress');
     var out = document.querySelector('.js-train-done');
@@ -46,23 +48,34 @@
     if (out) out.textContent = done + ' / ' + total + ' done';
   } else {
     var out0 = document.querySelector('.js-train-done');
-    var tot0 = panel.querySelectorAll('.ns-sidenav__num > span').length;
+    var tot0 = panel.querySelectorAll('.ns-trainingnav__time').length;
     if (out0) out0.textContent = '0 / ' + tot0 + ' done';
     document.querySelectorAll('.js-train-count').forEach(function (el) {
       el.textContent = '0/' + tot0;
     });
   }
 
-  // Searching needs every section open at once, which is exactly what the
-  // exclusive `name` prevents — so drop it while a query is active.
+  // SEARCH. NSDS's modules are NOT an exclusive accordion — the system
+  // deliberately does not `name` them, because closing the module you just
+  // navigated out of loses your place. That removes the whole dance the theme
+  // used to do here (drop `name` while querying, restore it after), so this is
+  // now just: hide the rows that do not match, and hide a module with no
+  // surviving rows.
   var search = panel.querySelector('input[type="search"]');
   if (!search) return;
-  var groups = Array.prototype.slice.call(panel.querySelectorAll('.ns-sidenav__group'));
+  var modules = Array.prototype.slice.call(panel.querySelectorAll('.ns-trainingnav__module'));
+
   search.addEventListener('input', function () {
-    var searching = search.value.trim() !== '';
-    groups.forEach(function (g) {
-      if (searching) { g.removeAttribute('name'); g.open = true; }
-      else { g.setAttribute('name', 'ns-training-nav'); g.open = g.dataset.sec === panel.dataset.cur; }
+    var q = search.value.trim().toLowerCase();
+    modules.forEach(function (m) {
+      var any = false;
+      m.querySelectorAll('.ns-trainingnav__link').forEach(function (a) {
+        var hit = !q || (a.dataset.title || a.textContent).toLowerCase().indexOf(q) !== -1;
+        a.hidden = !hit;
+        if (hit) any = true;
+      });
+      m.hidden = !any;
+      if (q && any) m.open = true;
     });
   });
 })();

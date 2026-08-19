@@ -29,7 +29,7 @@
 
   // Every row, overviews included — the sequence a reader actually walks is
   // overview, lessons, next overview, its lessons, and so on.
-  var links = Array.prototype.slice.call(nav.querySelectorAll('a.ns-sidenav__link'));
+  var links = Array.prototype.slice.call(nav.querySelectorAll('a.ns-trainingnav__link'));
   if (!links.length) return;
 
   function normalise(href) {
@@ -47,7 +47,7 @@
   if (idx < 0) return;
 
   // Make sure the matched item is highlighted (independent of server-side match).
-  links[idx].classList.add('is-current');
+  links[idx].setAttribute('aria-current', 'page');
 
   var prev = links[idx - 1] || null;
   var next = links[idx + 1] || null;
@@ -102,7 +102,7 @@
   // With a previous link present the pair fills both columns, so the no-JS
   // spacer would push "next" onto a second row — drop it.
   if (prev) {
-    document.querySelectorAll('.ns-reader__foot').forEach(function (el) {
+    document.querySelectorAll('.ns-tpager').forEach(function (el) {
       el.classList.add('has-prev');
     });
   }

@@ -11,11 +11,11 @@
   between the overview and its lessons never changes the furniture.
 
   Built from components — see /styleguide/training-section.html:
-    .ns-reader--rail --fluid   rail + content, filling the window
+    .ns-training--nav-start --fluid   rail + content, filling the window
     .ns-hero--xs --start --flush  the section header, full width above the reader
     .ns-sidenav        the rail, via training/curriculum
     .ns-list--boxed    the lessons in this section
-    .ns-reader__foot   on to the next section
+    .ns-tpager   on to the next section
 
   `slug` here is the post slug, which by the routing rule equals the section
   tag's slug; that is what every `tag:{{slug}}` lesson query below relies on.
@@ -26,7 +26,7 @@
 {{!-- ── The section hero, as designed: index disc, state, title, the
      readout, and the way in. A band rather than a plain page head, so a
      section reads as a place you have arrived at. ── --}}
-<header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--flush ns-hero--numbered">
+<header class="ns-hero ns-hero--xs ns-hero--start ns-hero--dots ns-hero--flush">
   {{!-- The section image, blended into the trailing edge rather than
        placed beside the copy — it is atmosphere, not information, so it
        must never compete with the title or fail in dark mode. --}}
@@ -64,7 +64,7 @@
        aria-hidden: the section is named in the breadcrumb and the title. A
        screen reader announcing "zero two" before either of those is noise. ── --}}
   {{#get "posts" filter="tag:hash-training-section+published_at:<='{{published_at}}'" limit="1"}}
-    <svg class="ns-track-hero__num" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"
+    <svg class="ns-thero__title" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"
          aria-hidden="true" focusable="false">
       <text x="0" y="50" text-anchor="start" dominant-baseline="central">{{pagination.total}}</text>
     </svg>
@@ -83,7 +83,7 @@
     <h1 class="ns-hero__title">{{title}}</h1>
     {{#if custom_excerpt}}<p class="ns-hero__sub">{{custom_excerpt}}</p>{{/if}}
 
-    <div class="ns-track-hero__meta">
+    <div class="ns-thero__stats">
       {{#get "posts" filter="tag:{{slug}}+tag:hash-training-content" limit="1"}}
         <div class="ns-stat ns-stat--light ns-stat--sm"><span class="ns-stat__value">{{pagination.total}}</span><span class="ns-stat__label">{{t "lessons"}}</span></div>
       {{/get}}
@@ -102,18 +102,16 @@
 </header>
 
 
-<div class="ns-reader ns-reader--rail ns-reader--fluid ns-reader--flat">
+<div class="ns-training ns-training--nav-start ">
 
   {{!-- ── The rail. `cur` marks this section's Overview row active; no curId,
        because no lesson is open. ── --}}
-  <aside class="ns-reader__rail">
     {{> "training/curriculum" cur=slug}}
-  </aside>
 
-  <div class="ns-reader__main">
+  <div class="ns-training__main">
 
     {{#if feature_image}}
-      <div class="ns-reader__media">
+      <div class="ns-figure__frame">
         <div class="ns-media ns-media--frame">
           {{> "components/img" src=feature_image alt="" eager=true sizes="(min-width: 64rem) 40rem, 100vw"}}
         </div>
@@ -124,14 +122,14 @@
          author wrote. `html` rather than `content` — `content` is a HELPER, so
          {{#if content}} is always false and this never rendered. ── --}}
     {{#if html}}
-      <div class="ns-reader__body gh-content prose">
+      <div class="ns-training__reading gh-content prose">
         {{content}}
       </div>
     {{/if}}
 
 
     {{!-- ── Every lesson in this section, in order ── --}}
-    <div class="ns-reader__body">
+    <div class="ns-training__reading">
       <div class="ns-band__head">
         <div>
           <span class="ns-kicker">{{t "Contents"}}</span>
@@ -206,7 +204,7 @@
     </div>
 
     {{!-- ── The way in, once the contents have been read. ── --}}
-    <div class="ns-reader__body">
+    <div class="ns-training__reading">
       <div class="ns-cta-band ns-cta-band--start">
         <div>
           <span class="ns-kicker">{{t "Ready?"}}</span>
@@ -233,11 +231,11 @@
          first one published after this. ── --}}
     {{#get "posts" filter="tag:hash-training-section+published_at:>'{{published_at}}'" order="published_at asc" limit="1"}}
       {{#foreach posts}}
-        <div class="ns-reader__foot ns-reader__foot--spaced">
-          <span class="ns-reader__step ns-reader__step--empty"></span>
-          <a href="{{url}}" class="ns-reader__step ns-reader__step--next">
-            <span class="ns-reader__step-label">{{t "Next section"}} {{> icons name="arrow-right"}}</span>
-            <span class="ns-reader__step-title">{{> icons name="stack"}}{{title}}</span>
+        <div class="ns-tpager ">
+          <span class="ns-tpager__btn" aria-hidden="true"></span>
+          <a href="{{url}}" class="ns-tpager__btn ns-tpager__btn ns-tpager__btn--next">
+            <span class="ns-tpager__dir">{{t "Next section"}} {{> icons name="arrow-right"}}</span>
+            <span class="ns-tpager__title">{{> icons name="stack"}}{{title}}</span>
           </a>
         </div>
       {{/foreach}}

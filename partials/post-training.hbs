@@ -2,7 +2,7 @@
   partials/post-training.hbs — the training LESSON at
   /training/{section}/{lesson}/ (#training-content). Context: {{#post}}.
 
-  Renders the .ns-reader COMPONENT — 2-components/reader.css, documented at
+  Renders the .ns-training COMPONENT — 2-components/reader.css, documented at
   /styleguide/training-lesson.html. Three columns from lg: the section rail,
   the lesson, and the on-this-page rail. Below lg it is one column, the rail
   becomes the drawer the player header opens, and the contents render inline
@@ -21,19 +21,17 @@
   this partial only ever renders a lesson. See routes.yaml.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-<div class="ns-reader ns-reader--both ns-reader--fluid ns-reader--wide-media ns-reader--flat">
+<div class="ns-training ns-training--nav-start ">
 
   {{!-- ── The section rail. cur/curId drive the active row: the lesson's
        primary tag IS its section, and curId marks the lesson itself, so the
        section's "Overview" row correctly stays inactive. ── --}}
-  <aside class="ns-reader__rail">
     {{> "training/curriculum" cur=primary_tag.slug curId=id}}
-  </aside>
 
-  <div class="ns-reader__main">
+  <div class="ns-training__main">
 
         {{!-- ── Head ── --}}
-    <div class="ns-reader__head">
+    <div class="ns-modulehead">
 
       {{!-- ── Where you are. The lesson had no trail at all: the rail says
            which section you are in, but only if you can see it, which below lg
@@ -56,10 +54,10 @@
         <span class="ns-crumbs__current">{{> icons name="stack"}}<span>{{primary_tag.name}}</span></span>
       </nav>
 
-      <h1 class="ns-reader__title">{{title}}</h1>
+      <h1 class="ns-modulehead__title">{{title}}</h1>
       {{#if custom_excerpt}}<p class="ns-page__lede">{{custom_excerpt}}</p>{{/if}}
 
-      <div class="ns-reader__meta">
+      <div class="ns-modulehead__lede">
         {{#has tag="#training-video"}}
           <span class="ns-lesson-type ns-lesson-type--video">{{> icons name="video"}}{{t "Video"}}</span>
         {{else has tag="#training-exercise"}}
@@ -82,7 +80,7 @@
          the poster for the embed); everything else shows its image, if it has
          one. ── --}}
     {{#has tag="#training-video"}}
-      <div class="ns-reader__media">
+      <div class="ns-figure__frame">
         <div data-video-hero class="ns-video">
           {{#if feature_image}}
             {{> "components/img" src=feature_image alt="" eager=true sizes="100vw"}}
@@ -94,7 +92,7 @@
       </div>
     {{else}}
       {{#if feature_image}}
-        <div class="ns-reader__media">
+        <div class="ns-figure__frame">
           <div class="ns-media ns-media--frame">
             {{> "components/img" src=feature_image alt="" eager=true sizes="(min-width: 64rem) 40rem, 100vw"}}
           </div>
@@ -103,7 +101,7 @@
     {{/has}}
 
     {{!-- Contents, inline — the rail carries its own copy from lg up. --}}
-    <div class="ns-reader__body xl:hidden">
+    <div class="ns-training__reading xl:hidden">
       {{> "components/toc"}}
     </div>
 
@@ -130,19 +128,19 @@
          one after the other, in two different design languages. ── --}}
     {{^has visibility="public"}}
       {{#unless access}}
-        <div class="ns-lock">
-          <span class="ns-lock__mark">{{> icons name="lock"}}</span>
-          <h2 class="ns-lock__title">
+        <div class="ns-gate">
+          <span class="ns-gate__icon">{{> icons name="lock"}}</span>
+          <h2 class="ns-gate__title">
             {{#match visibility "paid"}}{{t "This lesson is for paid members"}}
             {{else match visibility "tiers"}}{{t "This lesson is for selected tiers"}}
             {{else}}{{t "This lesson is for members"}}{{/match}}
           </h2>
-          <p class="ns-lock__body">
+          <p class="ns-gate__text">
             {{#match visibility "paid"}}{{t "Upgrade to read the rest of this lesson and everything else behind the paywall."}}
             {{else match visibility "tiers"}}{{t "Your plan does not include this lesson. Change tier to read the rest of it."}}
             {{else}}{{t "Sign in to read the rest of it. Membership is free, and it unlocks every members-only lesson in the training."}}{{/match}}
           </p>
-          <div class="ns-lock__actions">
+          <div class="ns-gate__panel">
             {{#match visibility "public"}}{{else}}
               <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary">
                 {{> icons name="lock-open"}}
@@ -156,7 +154,7 @@
     {{/has}}
 
     {{!-- ── The lesson ── --}}
-    <div class="ns-reader__body gh-content prose">{{content}}</div>
+    <div class="ns-training__reading gh-content prose">{{content}}</div>
 
 
     {{!-- ── Prev / next. training-nav.js fills these in and flows across
@@ -164,26 +162,26 @@
          empty slot keeps "next" on the right when there is no previous.
          They start on .is-hidden — a class, not an inline style: two words of
          CSS in a template are still CSS in a template. ── --}}
-    <div class="ns-reader__foot">
-      <a class="js-train-prev ns-reader__step is-hidden" href="#">
-        <span class="ns-reader__step-label">{{> icons name="arrow-left"}} {{t "Previous"}}</span>
-        <span class="ns-reader__step-title">{{> icons name="article" class="js-train-icon"}}<span class="js-train-label"></span></span>
+    <div class="ns-tpager">
+      <a class="js-train-prev ns-tpager__btn is-hidden" href="#">
+        <span class="ns-tpager__dir">{{> icons name="arrow-left"}} {{t "Previous"}}</span>
+        <span class="ns-tpager__title">{{> icons name="article" class="js-train-icon"}}<span class="js-train-label"></span></span>
       </a>
-      <span class="ns-reader__step ns-reader__step--empty"></span>
-      <a class="js-train-next ns-reader__step ns-reader__step--next is-hidden" href="#">
-        <span class="ns-reader__step-label">{{t "Next"}} {{> icons name="arrow-right"}}</span>
-        <span class="ns-reader__step-title">{{> icons name="article" class="js-train-icon"}}<span class="js-train-label"></span></span>
+      <span class="ns-tpager__btn" aria-hidden="true"></span>
+      <a class="js-train-next ns-tpager__btn ns-tpager__btn ns-tpager__btn--next is-hidden" href="#">
+        <span class="ns-tpager__dir">{{t "Next"}} {{> icons name="arrow-right"}}</span>
+        <span class="ns-tpager__title">{{> icons name="article" class="js-train-icon"}}<span class="js-train-label"></span></span>
       </a>
-      <a class="js-train-finish ns-reader__step ns-reader__step--next is-hidden" href="/training/">
-        <span class="ns-reader__step-label">{{> icons name="check-circle"}} {{t "Training complete"}}</span>
-        <span class="ns-reader__step-title">{{> icons name="flag-checkered"}}{{t "Back to all sections"}}</span>
+      <a class="js-train-finish ns-tpager__btn ns-tpager__btn ns-tpager__btn--next is-hidden" href="/training/">
+        <span class="ns-tpager__dir">{{> icons name="check-circle"}} {{t "Training complete"}}</span>
+        <span class="ns-tpager__title">{{> icons name="flag-checkered"}}{{t "Back to all sections"}}</span>
       </a>
     </div>
 
     {{!-- ── Comments. Ghost renders nothing unless commenting is enabled in
          Admin → Settings → Access, so this is safe to always emit.
          title="" because the heading below already labels the block. ── --}}
-    <section class="ns-reader__body mt-12">
+    <section class="ns-training__reading mt-12">
       <h2 class="mb-5 flex items-center gap-2 font-heading text-lg font-extrabold text-ink">
         {{> icons name="chats" class="text-brand-500"}}{{t "Questions & discussion"}}
       </h2>
@@ -195,7 +193,7 @@
          subscribing actually does — the widget in the sidebar said "new
          lessons by email" and nothing more. ── --}}
 
-    <section class="ns-reader__body">
+    <section class="ns-training__reading">
       <div class="ns-news-band ns-news-band--brand">
         <div>
           <span class="ns-kicker">{{> icons name="mail"}}{{t "Training newsletter"}}</span>
@@ -217,12 +215,12 @@
   </div>
 
   {{!-- ── The on-this-page rail — contents, then the sponsor slots. ── --}}
-  <aside class="ns-reader__aside hidden xl:block">
+  <aside class="ns-training__ads">
     <div class="ns-widget ns-widget--toc ns-widget--sunken">
       <div class="ns-widget__head"><span class="ns-widget__title">{{t "On this page"}}</span></div>
       <div class="ns-widget__body">{{> "components/toc"}}</div>
     </div>
-    <div class="ns-reader__aside-ad">{{> "ads/slot" format="rail"}}</div>
+    <div>{{> "ads/slot" format="rail"}}</div>
   </aside>
 
 </div>

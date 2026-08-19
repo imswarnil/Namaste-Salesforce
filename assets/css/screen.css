@@ -20,10 +20,13 @@
      1-elements/    bare HTML — one file per element family
      2-components/  the UI library — one file per component, with variants.
                     The site-*.css files at the end are shared feature styling.
-     3-modules/     the features — one numbered folder per part of the SITE.
-                    Nothing in 0–2 may depend on a module, and no module may
-                    import another; a piece two features want gets promoted
-                    into 2-components/ instead.
+     LAYER 3 IS GONE. It held one module — the training reader — and every
+     class in it turned out to be an NSDS component under a different name:
+     .ns-reader was .ns-training, .ns-sidenav was .ns-trainingnav, .ns-track-card
+     was .ns-trackcard, .ns-lock was .ns-gate. The templates render the system's
+     names now and the folder was deleted. If a feature ever needs styling that
+     NSDS genuinely lacks, check that list first — the answer was "it already
+     exists" every single time.
 
    The order is the dependency order: a later layer spends what the earlier
    ones declare, never the other way round. For what's inside a layer and why
@@ -89,7 +92,6 @@
 @import "./0-foundation/index.css";
 @import "./1-elements/index.css";
 @import "./2-components/index.css";
-@import "./3-modules/index.css";
 
 /* Dark mode is driven by data-theme="dark" on <html> (set before paint by the
    inline script in default.hbs). This re-points the `dark:` variant at that

@@ -1748,41 +1748,41 @@ _LESSONS = (
 
 
 def _sidenav(open_index=1):
-    out = ['<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">',
-           '<a class="ns-sidenav__back" href="#!"><i class="ph ph-arrow-left"></i>Back to training</a>',
+    out = ['<nav class="ns-trainingnav ns-sidenav--boxed demo-w-sm">',
+           '<a class="ns-trainingnav__track" href="#!"><i class="ph ph-arrow-left"></i>Back to training</a>',
            '<label class="ns-input-icon demo-mb"><i class="ph ph-magnifying-glass"></i>'
            '<input class="ns-input ns-input--sm" placeholder="Search this training…"></label>']
     for i, (title, _, count, _dur, state) in enumerate(_SECTIONS):
         is_open = " open" if i == open_index else ""
-        out.append('<details class="ns-sidenav__group" name="sg-training"%s>' % is_open)
-        out.append('<summary class="ns-sidenav__summary">'
-                   '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
-                   '<span class="ns-sidenav__stitle">%s</span>'
-                   '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary>' % title)
-        out.append('<div class="ns-sidenav__list">')
-        out.append('<a class="ns-sidenav__link" href="#!">'
-                   '<span class="ns-sidenav__num"><i class="ph ph-squares-four"></i></span>'
-                   '<span class="ns-sidenav__text">Overview</span></a>')
+        out.append('<details class="ns-trainingnav__module" name="sg-training"%s>' % is_open)
+        out.append('<summary class="ns-trainingnav__module">'
+                   '<span class="ns-trainingnav__icon"><i class="ph-fill ph-stack"></i></span>'
+                   '<span class="ns-trainingnav__link">%s</span>'
+                   '<i class="ns-trainingnav__twist ph ph-caret-right"></i></summary>' % title)
+        out.append('<div class="ns-trainingnav__list">')
+        out.append('<a class="ns-trainingnav__link" href="#!">'
+                   '<span class="ns-trainingnav__count"><i class="ph ph-squares-four"></i></span>'
+                   '<span class="ns-trainingnav__link">Overview</span></a>')
         for n, (lt, ld, ls) in enumerate(_LESSONS[:count]):
             cls = " is-current" if ls == "current" else (" is-done" if ls == "done" else "")
             icon = ("ph-play-circle" if n == 0 else
                     "ph-barbell" if n == 2 else "ph-article")
-            out.append('<a class="ns-sidenav__link%s" href="#!">'
-                       '<span class="ns-sidenav__num"><span>%d</span></span>'
-                       '<i class="ns-sidenav__type ph-fill %s"></i>'
-                       '<span class="ns-sidenav__text">%s</span>'
-                       '<span class="ns-sidenav__meta">%s</span></a>' % (cls, n + 1, icon, lt, ld))
+            out.append('<a class="ns-trainingnav__link%s" href="#!">'
+                       '<span class="ns-trainingnav__count"><span>%d</span></span>'
+                       '<i class="ns-trainingnav__icon ph-fill %s"></i>'
+                       '<span class="ns-trainingnav__link">%s</span>'
+                       '<span class="ns-trainingnav__time">%s</span></a>' % (cls, n + 1, icon, lt, ld))
         out.append('</div></details>')
-    out.append('<div class="ns-sidenav__foot ns-sidenav__foot--sticky">'
+    out.append('<div class="ns-trainingnav__bar ns-sidenav__foot--sticky">'
                '<div class="ns-progress ns-progress--xs">'
                '<span class="ns-progress__bar" data-demo-width="35"></span></div>'
-               '<div class="ns-sidenav__readout"><span>4 / 13 done</span>'
+               '<div class="ns-trainingnav__count"><span>4 / 13 done</span>'
                '<span>13 lessons</span></div></div>')
     out.append('</nav>')
     return "".join(out)
 
 
-SUBBAR = ('<div class="ns-subbar ns-subbar--static demo-w-full">'
+SUBBAR = ('<div class="ns-panelbar ns-subbar--static demo-w-full">'
           '<div class="ns-subbar__inner">'
           '<nav class="ns-crumbs ns-crumbs--sm">'
           '<a class="ns-crumbs__link" href="#!"><i class="ph ph-house"></i></a>'
@@ -1801,9 +1801,9 @@ SUBBAR = ('<div class="ns-subbar ns-subbar--static demo-w-full">'
 def _track_card(i, title, excerpt, count, dur, state):
     cls = {"done": " is-done", "current": " is-current", "locked": " is-locked"}.get(state, "")
     lessons = "".join(
-        '<a class="ns-track-card__lesson" href="#!">'
+        '<a class="ns-unit" href="#!">'
         '<i class="ph-fill %s"></i><span>%s</span>'
-        '<span class="ns-track-card__lesson-meta">%s</span></a>'
+        '<span class="ns-unit__time">%s</span></a>'
         % ("ph-play-circle" if n % 2 == 0 else "ph-article", lt, ld)
         for n, (lt, ld, _s) in enumerate(_LESSONS[:min(count, 3)]))
     more = ('<div class="ns-track-card__more">+ %d more</div>' % (count - 3)) if count > 3 else ""
@@ -1821,14 +1821,14 @@ def _track_card(i, title, excerpt, count, dur, state):
         badge = '<span class="ns-badge ns-badge--dot">In progress</span>'
     elif state == "locked":
         badge = '<span class="ns-badge ns-badge--neutral"><i class="ph ph-lock"></i>Soon</span>'
-    return ('<article class="ns-track-card%s">'
-            '<div class="ns-track-card__index"></div>'
-            '<div class="ns-track-card__box">'
-            '<div class="ns-track-card__head">'
-            '<h3 class="ns-track-card__title"><a href="#!">%s</a></h3>%s</div>'
-            '<p class="ns-track-card__excerpt">%s</p>'
-            '<div class="ns-track-card__meta"><span>%d lessons</span><span>%s</span></div>'
-            '<div class="ns-track-card__lessons">%s</div>%s%s'
+    return ('<article class="ns-trackcard%s">'
+            '<div class="ns-trackcard__index"></div>'
+            '<div class="ns-trackcard">'
+            '<div class="ns-trackcard__head">'
+            '<h3 class="ns-trackcard__title"><a href="#!">%s</a></h3>%s</div>'
+            '<p class="ns-trackcard__text">%s</p>'
+            '<div class="ns-trackcard__meta"><span>%d lessons</span><span>%s</span></div>'
+            '<div class="ns-units">%s</div>%s%s'
             '</div></article>' % (cls, title, badge, excerpt, count, dur, lessons, more, progress))
 
 
@@ -1885,8 +1885,8 @@ page("Training", "training-overview", "Training home",
               '<i class="ns-btn__icon ns-btn__icon--nudge ph ph-arrow-right"></i></a>'
               '</div></div></div>', wide=True)),
      head("The path"),
-     row(spec(".ns-track-list + .ns-track-card",
-              '<div class="ns-track-list demo-w-full">'
+     row(spec(".ns-roadmap + .ns-trackcard",
+              '<div class="ns-roadmap demo-w-full">'
               + "".join(_track_card(i, *s) for i, s in enumerate(_SECTIONS))
               + '</div>', wide=True)),
      note("States on the card: <code>.is-done</code> turns the disc into a tick, "
@@ -1918,12 +1918,12 @@ page("Training", "training-nav", "Training navigation",
           "where you are in the section; the icon says what you are about to open, which is the thing "
           "you actually scan for."),
      row(spec("__type",
-              '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
-              + "".join('<a class="ns-sidenav__link" href="#!">'
-                        '<span class="ns-sidenav__num"><span>%d</span></span>'
-                        '<i class="ns-sidenav__type ph-fill %s"></i>'
-                        '<span class="ns-sidenav__text">%s</span>'
-                        '<span class="ns-sidenav__meta">%s</span></a>' % (n + 1, ic, t, d)
+              '<nav class="ns-trainingnav ns-sidenav--boxed demo-w-sm"><div class="ns-trainingnav__list">'
+              + "".join('<a class="ns-trainingnav__link" href="#!">'
+                        '<span class="ns-trainingnav__count"><span>%d</span></span>'
+                        '<i class="ns-trainingnav__icon ph-fill %s"></i>'
+                        '<span class="ns-trainingnav__link">%s</span>'
+                        '<span class="ns-trainingnav__time">%s</span></a>' % (n + 1, ic, t, d)
                         for n, (ic, t, d) in enumerate((
                             ("ph-play-circle", "Watch: the data model", "12m"),
                             ("ph-article", "Read: field types", "6m"),
@@ -1941,13 +1941,13 @@ page("Training", "training-nav", "Training navigation",
           "glyph for every section, so a missing image reads as &ldquo;section&rdquo; rather than as a different "
           "kind of thing. The open section's icon goes solid."),
      row(spec("__icon — image",
-              '<span class="ns-sidenav__icon"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 '
+              '<span class="ns-trainingnav__icon"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 '
               'viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%230176d3%22/%3E%3C/svg%3E" alt=""></span>'),
-         spec("__icon — fallback", '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'),
-         spec("__icon — open", '<details class="ns-sidenav__group" open><summary class="ns-sidenav__summary">'
-                               '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
-                               '<span class="ns-sidenav__stitle">Open section</span>'
-                               '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary></details>', wide=True)),
+         spec("__icon — fallback", '<span class="ns-trainingnav__icon"><i class="ph-fill ph-stack"></i></span>'),
+         spec("__icon — open", '<details class="ns-trainingnav__module" open><summary class="ns-trainingnav__module">'
+                               '<span class="ns-trainingnav__icon"><i class="ph-fill ph-stack"></i></span>'
+                               '<span class="ns-trainingnav__link">Open section</span>'
+                               '<i class="ns-trainingnav__twist ph ph-caret-right"></i></summary></details>', wide=True)),
      head("Icons in the pager"),
      note("The pager's title slot carries the TYPE glyph of what it points at — a video, an exercise, "
           "a section overview — so it says what you are about to open rather than only naming it. "
@@ -1984,16 +1984,16 @@ page("Training", "training-nav", "Training navigation",
      note("Every ancestor of the rail is <code>min-width: 0</code> and every text cell truncates, so a "
           "long section or lesson name shortens rather than widening its container."),
      row(spec("long titles truncate",
-              '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm">'
-              '<details class="ns-sidenav__group" open><summary class="ns-sidenav__summary">'
-              '<span class="ns-sidenav__icon"><i class="ph-fill ph-stack"></i></span>'
-              '<span class="ns-sidenav__stitle">A section with a deliberately very long name</span>'
-              '<i class="ns-sidenav__caret ph ph-caret-right"></i></summary>'
-              '<div class="ns-sidenav__list">'
-              '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>1</span></span>'
-              '<i class="ns-sidenav__type ph-fill ph-play-circle"></i>'
-              '<span class="ns-sidenav__text">A lesson title that runs on far past the rail width</span>'
-              '<span class="ns-sidenav__meta">12m</span></a></div></details></nav>', wide=True)),
+              '<nav class="ns-trainingnav ns-sidenav--boxed demo-w-sm">'
+              '<details class="ns-trainingnav__module" open><summary class="ns-trainingnav__module">'
+              '<span class="ns-trainingnav__icon"><i class="ph-fill ph-stack"></i></span>'
+              '<span class="ns-trainingnav__link">A section with a deliberately very long name</span>'
+              '<i class="ns-trainingnav__twist ph ph-caret-right"></i></summary>'
+              '<div class="ns-trainingnav__list">'
+              '<a class="ns-trainingnav__link" href="#!"><span class="ns-trainingnav__count"><span>1</span></span>'
+              '<i class="ns-trainingnav__icon ph-fill ph-play-circle"></i>'
+              '<span class="ns-trainingnav__link">A lesson title that runs on far past the rail width</span>'
+              '<span class="ns-trainingnav__time">12m</span></a></div></details></nav>', wide=True)),
      head("States"),
      note("<code>.is-current</code> is the lesson you are on — solid brand, the same mark the docs rail "
           "uses. <code>.is-done</code> swaps the number for a tick and steps the title back."),
@@ -2013,7 +2013,7 @@ page("Training", "training-nav", "Training navigation",
           "restores it completely, since the row is still a link (it goes to the lesson page, which is "
           "where the sign-up is) and must never look disabled under the cursor. The same rule applies "
           "wherever a locked lesson appears: <code>.ns-list__item.is-locked</code> on a section page "
-          "and <code>.ns-track-card__lesson.is-locked</code> in a track card preview."),
+          "and <code>.ns-unit.is-locked</code> in a track card preview."),
      note("What you will NOT find anywhere: a count of how many lessons are free, or a badge naming a "
           "tier. A tally like &ldquo;1 free&rdquo; is noise at best and looks broken at worst, and a section is "
           "a section — not a price. The lock on the individual row is the whole access story."),
@@ -2043,7 +2043,7 @@ page("Training", "training-nav", "Training navigation",
      head("The gate"),
      note("Ghost stops rendering a members-only post partway and leaves the excerpt visible. Without "
           "something in that gap the lesson simply appears to end mid-thought, which reads as a broken "
-          "page rather than as a boundary. <code>.ns-lock</code> fills it."),
+          "page rather than as a boundary. <code>.ns-gate</code> fills it."),
      note("<b>Full width and centred</b> — every other block in the lesson is capped at the reading "
           "measure and ranged left, because that is what prose wants. This is not prose, it is the END "
           "of it, and breaking both rules at once is what makes it impossible to mistake for another "
@@ -2063,16 +2063,16 @@ page("Training", "training-nav", "Training navigation",
           "follows Ghost's <code>visibility</code>, so a <code>paid</code> lesson offers plans and a "
           "<code>members</code> lesson offers a free account — promising the wrong thing at a paywall "
           "is worse than saying nothing."),
-     row(spec(".ns-lock",
-              '<div class="ns-lock"><span class="ns-lock__mark"><i class="ph-fill ph-lock-simple"></i></span>'
-              '<h2 class="ns-lock__title">This lesson is for members</h2>'
-              '<p class="ns-lock__body">Sign in to read the rest of it. Membership is free, and it '
+     row(spec(".ns-gate",
+              '<div class="ns-gate"><span class="ns-gate__icon"><i class="ph-fill ph-lock-simple"></i></span>'
+              '<h2 class="ns-gate__title">This lesson is for members</h2>'
+              '<p class="ns-gate__text">Sign in to read the rest of it. Membership is free, and it '
               'unlocks every members-only lesson in the training.</p>'
-              '<div class="ns-lock__actions">'
+              '<div class="ns-gate__panel">'
               '<a class="ns-btn ns-btn--primary" href="#!"><i class="ph-fill ph-lock-simple-open"></i>Create a free account</a>'
               '<a class="ns-btn ns-btn--outline" href="#!">Sign in</a></div></div>', wide=True)),
      head("Flat columns"),
-     note("<code>.ns-reader--flat</code>: nothing between the columns but the gutter, and nothing "
+     note("<code>.ns-training</code>: nothing between the columns but the gutter, and nothing "
           "inside them boxed. There was a full-height hairline in each gutter for a while, and it "
           "went — three columns with a strong line down each side of the middle one reads as a FRAME "
           "around the lesson, and a frame is a heavier claim than &ldquo;these are related columns of one "
@@ -2086,7 +2086,7 @@ page("Training", "training-nav", "Training navigation",
      note("Below <code>lg</code> the rail has nowhere to live. It used to be opened by the hamburger "
           "in the site header — which meant the SITE menu icon opened a lesson list, so the most "
           "familiar control on the page did not do what it says. The header is the header again, and "
-          "the training carries its own control: <code>.ns-train-fab</code>, floating at the bottom "
+          "the training carries its own control: <code>.ns-btn</code>, floating at the bottom "
           "centre. Bottom, because a lesson is read one-handed and that is where the thumb is; centre, "
           "because it belongs to neither the back gesture on the left nor the system affordances on "
           "the right."),
@@ -2095,11 +2095,11 @@ page("Training", "training-nav", "Training navigation",
           "honest description of where it is rather than decoration. It carries the lesson count, "
           "because &ldquo;3/9&rdquo; answers <i>where am I</i> before anything opens, and it hides itself "
           "while the panel is open and at <code>lg</code>+ where the rail is already on screen."),
-     row(spec(".ns-train-fab",
+     row(spec(".ns-btn",
               '<div class="demo-fab-stage">'
-              '<span class="ns-train-fab demo-fab-static">'
+              '<span class="ns-btn demo-fab-static">'
               '<i class="ph-fill ph-list-checks"></i><span>Contents</span>'
-              '<span class="ns-train-fab__count">3/9</span></span></div>', wide=True)),
+              '<span class="ns-btn__count">3/9</span></span></div>', wide=True)),
      note("It opens <code>.ns-lesson-panel--sheet</code>: the shared player panel, restyled for the "
           "training as a FULL-SCREEN sheet that rises from the bottom edge — the edge the button that "
           "summoned it sits on. Full screen because the rail is the contents of an entire training, "
@@ -2122,23 +2122,23 @@ page("Training", "training-nav", "Training navigation",
           "engine, a stylesheet that failed — the element is simply there. Motion is never "
           "load-bearing."),
      row(spec("link states",
-              '<nav class="ns-sidenav ns-sidenav--boxed demo-w-sm"><div class="ns-sidenav__list">'
-              '<a class="ns-sidenav__link is-done" href="#!">'
-              '<span class="ns-sidenav__num"><span>1</span></span>'
-              '<i class="ns-sidenav__type ph-fill ph-article"></i>'
-              '<span class="ns-sidenav__text">What is Salesforce?</span>'
-              '<span class="ns-sidenav__meta">6m</span></a>'
-              '<a class="ns-sidenav__link is-current" href="#!"><span class="ns-sidenav__num"><span>2</span></span>'
-              '<span class="ns-sidenav__text">Set up a free org</span>'
-              '<span class="ns-sidenav__meta">12m</span></a>'
-              '<a class="ns-sidenav__link" href="#!"><span class="ns-sidenav__num"><span>3</span></span>'
-              '<span class="ns-sidenav__text">How to use this training</span>'
-              '<span class="ns-sidenav__meta">5m</span></a>'
-              '<a class="ns-sidenav__link is-locked" href="#!">'
-              '<span class="ns-sidenav__num"><span>4</span></span>'
-              '<i class="ns-sidenav__type ns-sidenav__type--lock ph-fill ph-lock-simple"></i>'
-              '<span class="ns-sidenav__text">Objects and fields</span>'
-              '<span class="ns-sidenav__meta">18m</span></a>'
+              '<nav class="ns-trainingnav ns-sidenav--boxed demo-w-sm"><div class="ns-trainingnav__list">'
+              '<a class="ns-trainingnav__link is-done" href="#!">'
+              '<span class="ns-trainingnav__count"><span>1</span></span>'
+              '<i class="ns-trainingnav__icon ph-fill ph-article"></i>'
+              '<span class="ns-trainingnav__link">What is Salesforce?</span>'
+              '<span class="ns-trainingnav__time">6m</span></a>'
+              '<a class="ns-trainingnav__link is-current" href="#!"><span class="ns-trainingnav__count"><span>2</span></span>'
+              '<span class="ns-trainingnav__link">Set up a free org</span>'
+              '<span class="ns-trainingnav__time">12m</span></a>'
+              '<a class="ns-trainingnav__link" href="#!"><span class="ns-trainingnav__count"><span>3</span></span>'
+              '<span class="ns-trainingnav__link">How to use this training</span>'
+              '<span class="ns-trainingnav__time">5m</span></a>'
+              '<a class="ns-trainingnav__link is-locked" href="#!">'
+              '<span class="ns-trainingnav__count"><span>4</span></span>'
+              '<i class="ns-trainingnav__icon ns-sidenav__type--lock ph-fill ph-lock-simple"></i>'
+              '<span class="ns-trainingnav__link">Objects and fields</span>'
+              '<span class="ns-trainingnav__time">18m</span></a>'
               '</div></nav>', wide=True)))
 
 page("Training", "training-section", "Training section",
@@ -2163,7 +2163,7 @@ page("Training", "training-section", "Training section",
           "digit off the left edge — at that size a crop reads as a rendering fault, not as a "
           "decision. <code>aria-hidden</code>, since the section is already named twice above it."),
      head("Breadcrumb, title, meta"),
-     row(spec(".ns-hero + .ns-track-hero",
+     row(spec(".ns-hero + .ns-thero",
               '<div class="ns-hero ns-hero--sm ns-hero--start ns-hero--dots">'
               '<div class="ns-hero__inner">'
               '<nav class="ns-crumbs"><a class="ns-crumbs__link" href="#!">'
@@ -2177,7 +2177,7 @@ page("Training", "training-section", "Training section",
               '<h1 class="ns-hero__title">Build Your First App</h1>'
               '<p class="ns-hero__sub">A custom object, the fields that matter, a layout people can '
               'actually use, and one report that proves it works.</p>'
-              '<div class="ns-track-hero__meta">'
+              '<div class="ns-thero__stats">'
               + "".join('<div class="ns-stat ns-stat--light ns-stat--sm">'
                         '<span class="ns-stat__value">%s</span><span class="ns-stat__label">%s</span></div>'
                         % (v, l) for v, l in (("4", "lessons"), ("1h 20m", "length"), ("45%", "complete")))
@@ -2217,44 +2217,44 @@ page("Training", "training-lesson", "Training lesson",
      "on-this-page rail. The reading column stays capped at the prose measure whatever the window "
      "does — line length decides whether a lesson gets read.",
      head("The shell"),
-     note("<code>.ns-reader--both</code> &rarr; <code>__rail</code> · <code>__main</code> "
+     note("<code>.ns-training--nav-start</code> &rarr; <code>__rail</code> · <code>__main</code> "
           "(<code>__head</code>, <code>__media</code>, <code>__body</code>, <code>__foot</code>) · "
           "<code>__aside</code>. Both rails stick under the header and scroll independently; below "
           "<code>lg</code> they become the bar and a drawer."),
-     row(spec(".ns-reader--both",
-              SUBBAR + '<div class="ns-reader ns-reader--both demo-fill demo-w-full">'
-              '<aside class="ns-reader__rail">' + _sidenav() + '</aside>'
-              '<div class="ns-reader__main">'
-              '<div class="ns-reader__head">'
+     row(spec(".ns-training--nav-start",
+              SUBBAR + '<div class="ns-training ns-training--nav-start demo-fill demo-w-full">'
+              '<aside class="ns-trainingnav">' + _sidenav() + '</aside>'
+              '<div class="ns-training__main">'
+              '<div class="ns-modulehead">'
               '<nav class="ns-crumbs ns-crumbs--sm"><a class="ns-crumbs__link" href="#!">Training</a>'
               '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
               '<a class="ns-crumbs__link" href="#!">Build Your First App</a>'
               '<i class="ns-crumbs__sep ph ph-caret-right"></i>'
               '<span class="ns-crumbs__current"><span>Create a custom object</span></span></nav>'
-              '<h1 class="ns-reader__title">Create a custom object</h1>'
-              '<div class="ns-reader__meta">'
+              '<h1 class="ns-modulehead__title">Create a custom object</h1>'
+              '<div class="ns-modulehead__lede">'
               '<span class="ns-lesson-type ns-lesson-type--video"><i class="ph-fill ph-video"></i>Video</span>'
               '<span class="ns-lesson-chip"><i class="ph ph-clock"></i>12 min</span>'
               '<span class="ns-lesson-chip"><i class="ph ph-flag"></i>Lesson 1 of 4</span>'
               '<span class="ns-badge ns-badge--dot ns-badge--success">Free</span>'
               '</div></div>'
-              '<div class="ns-reader__media"><div class="ns-video demo-media">'
+              '<div class="ns-figure__frame"><div class="ns-video demo-media">'
               '<i class="ph ph-video"></i></div></div>'
-              '<div class="ns-reader__body ns-prose">'
+              '<div class="ns-training__reading ns-prose">'
               '<p>Naming, the record name field, and the settings that are painful to change later.</p>'
               '<h2>Create the object</h2>'
               '<p>Setup &rarr; Object Manager &rarr; Create. The plural label is what shows in the tab, '
               'so get it right the first time.</p>'
               '<pre><code>Label:        Project\nPlural:       Projects\nRecord Name:  Project Name</code></pre>'
               '</div>'
-              '<div class="ns-reader__foot">'
-              '<a class="ns-reader__step" href="#!"><span class="ns-reader__step-label">← Previous</span>'
-              '<span class="ns-reader__step-title">How to use this training</span></a>'
-              '<a class="ns-reader__step ns-reader__step--next" href="#!">'
-              '<span class="ns-reader__step-label">Next →</span>'
-              '<span class="ns-reader__step-title">Fields that earn their place</span></a>'
+              '<div class="ns-tpager">'
+              '<a class="ns-tpager__btn" href="#!"><span class="ns-tpager__dir">← Previous</span>'
+              '<span class="ns-tpager__title">How to use this training</span></a>'
+              '<a class="ns-tpager__btn ns-reader__step--next" href="#!">'
+              '<span class="ns-tpager__dir">Next →</span>'
+              '<span class="ns-tpager__title">Fields that earn their place</span></a>'
               '</div></div>'
-              '<aside class="ns-reader__aside">'
+              '<aside class="ns-training__ads">'
               '<div class="ns-widget ns-widget--toc ns-widget--sunken">'
               '<div class="ns-widget__head"><span class="ns-widget__title">On this page</span></div>'
               '<div class="ns-widget__body">'
@@ -2320,19 +2320,19 @@ page("Training", "training-lesson", "Training lesson",
               '</div>', wide=True)),
      head("Prev / next"),
      row(spec("both — half and half",
-              '<div class="ns-reader__foot has-prev demo-w-full">'
-              '<a class="ns-reader__step" href="#!">'
-              '<span class="ns-reader__step-label">← Previous</span>'
-              '<span class="ns-reader__step-title">What is Salesforce?</span></a>'
-              '<a class="ns-reader__step ns-reader__step--next" href="#!">'
-              '<span class="ns-reader__step-label">Next →</span>'
-              '<span class="ns-reader__step-title">Fields that earn their place</span></a></div>', wide=True)),
+              '<div class="ns-tpager has-prev demo-w-full">'
+              '<a class="ns-tpager__btn" href="#!">'
+              '<span class="ns-tpager__dir">← Previous</span>'
+              '<span class="ns-tpager__title">What is Salesforce?</span></a>'
+              '<a class="ns-tpager__btn ns-reader__step--next" href="#!">'
+              '<span class="ns-tpager__dir">Next →</span>'
+              '<span class="ns-tpager__title">Fields that earn their place</span></a></div>', wide=True)),
      row(spec("next only", 
-              '<div class="ns-reader__foot demo-w-full">'
-              '<span class="ns-reader__step ns-reader__step--empty"></span>'
-              '<a class="ns-reader__step ns-reader__step--next" href="#!">'
-              '<span class="ns-reader__step-label">Next →</span>'
-              '<span class="ns-reader__step-title">Fields that earn their place</span></a></div>', wide=True)),
+              '<div class="ns-tpager demo-w-full">'
+              '<span class="ns-tpager__btn ns-reader__step--empty"></span>'
+              '<a class="ns-tpager__btn ns-reader__step--next" href="#!">'
+              '<span class="ns-tpager__dir">Next →</span>'
+              '<span class="ns-tpager__title">Fields that earn their place</span></a></div>', wide=True)),
      note("Prev and next are pinned to explicit grid columns, so the pair always reads half-and-half "
           "on ONE row and a lone &ldquo;next&rdquo; still sits on the right rather than stretching across. The "
           "spacer is only a no-JS fallback — <code>.has-prev</code> removes it once a previous link "

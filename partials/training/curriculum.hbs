@@ -1,88 +1,52 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  training/curriculum.hbs — the section rail.
+  training/curriculum.hbs — the training rail.
 
-  There is ONE training, so this always lists every section (order comes from
-  training/sections.hbs); a section's lessons are #training-content posts whose
-  PRIMARY tag is that section.
+  NSDS's `.ns-trainingnav` (nsds/components/css/training.css), driven by the
+  system's own `assets/js/nsds/training.js`: it opens the module holding
+  `aria-current="page"`, closes the rest and scrolls it into view. Every module
+  ships OPEN, so a script failure leaves the rail long rather than hidden.
 
-  Renders the .ns-sidenav COMPONENT — 2-components/sidebar-nav.css, documented
-  at /styleguide/training-nav.html.
+  TRAINING IS MODULES → SECTIONS → POSTS. That is the structural difference
+  from a COURSE, which is a flat list of lessons — and it is why the rail is
+  nested <details> here and a flat `.ns-player__list` there.
 
-  No inline <script>: the progress readout and the search behaviour live in
-  assets/js/training-progress.js, bundled into built/casper.js.
+  Below lg the rail is replaced by `.ns-panelbar` + a `.ns-lessonmodal`
+  popover, exactly as the lesson player does it. That deleted the theme's
+  `.ns-train-fab`, its scrim, and the last user of the Alpine `lessonNav`
+  store — the platform gives a popover its top layer, light dismiss and Esc.
 
-  The training NAME and PROGRESS are not here — they moved to .ns-subbar, the
-  bar under the site header. They belong to the page, not to the navigation,
-  and repeating them above every rail was the single biggest source of clutter.
-
-  THE OPEN/CLOSED RULE is native and server-rendered: each section is a
-  <details> sharing one `name`, which is an exclusive accordion, and the
-  current section gets `open` from Handlebars. So the right section is open on
-  first paint (no flash), opening another closes it, and none of that needs
-  JavaScript. The old version opened the section from a script on load and
-  painted a progress rail by measuring element positions on every toggle and
-  resize — all of that is gone.
-
-  Params: cur   — slug of the section being viewed
-          curId — id of the lesson being viewed (absent on a section overview)
-
-  Static rail on lg; below that it is a bottom sheet, opened by the floating
-  button rather than by the site header's hamburger — see training/nav-button.hbs
-  for why that moved.
+  Param: cur — the current section's slug, so the right module opens
+         server-side and there is no flash before training.js runs.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<div x-data="{ q: '' }" class="js-lesson-nav" @keydown.escape.window="$store.lessonNav.close()">
 
-  {{!-- Below lg this is the only way in — see training/nav-button.hbs. --}}
-  {{> "training/nav-button"}}
+<nav class="ns-trainingnav" data-ns-trainingnav aria-label="{{t "Curriculum"}}" data-cur="{{cur}}">
+  <a class="ns-trainingnav__track" href="/training/">{{> icons name="arrow-left"}}{{t "All training"}}</a>
+  {{> "training/sections" view="nav" cur=cur curId=curId}}
+</nav>
 
-  {{!-- The scrim, so an open panel can be dismissed by clicking away. --}}
-  <div x-show="$store.lessonNav.open" x-cloak class="ns-lesson-scrim"
-       @click="$store.lessonNav.close()" aria-hidden="true"></div>
-  <nav id="training-curriculum" class="ns-lesson-panel ns-lesson-panel--sheet" data-cur="{{cur}}"
-         :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Curriculum"}}">
+{{!-- Below lg: where you are, and one control to the whole curriculum. --}}
+<div class="ns-panelbar ns-panelbar--fixed">
+  <span class="ns-panelbar__now">
+    <span class="ns-panelbar__kicker">{{t "Training"}}</span>
+    <span class="ns-panelbar__title">{{title}}</span>
+  </span>
+  <button type="button" class="ns-btn ns-btn--outline ns-btn--sm" popovertarget="training-curriculum">
+    {{> icons name="list"}}{{t "Curriculum"}}
+  </button>
+</div>
 
-    <div class="ns-lesson-panel__bar">
-      <span class="flex items-center gap-2 font-heading font-bold">{{> icons name="books" class="text-brand-500"}}{{t "Training content"}}</span>
-      <button type="button" class="ns-navicon" @click="$store.lessonNav.close()" aria-label="{{t "Close"}}">{{> icons name="x" class="h-5 w-5"}}</button>
-    </div>
-
-    <div class="ns-lesson-panel__body">
-      <div class="ns-sidenav ns-sidenav--sm">
-
-        {{!-- Out of the training, before anything else — a back-path belongs
-             at the top of a rail, not buried under it. --}}
-        <a href="/training/" class="ns-sidenav__back">
-          {{> icons name="arrow-left"}}{{t "Back to training"}}
-        </a>
-
-        {{!-- Search: filters lessons; a section hides when nothing matches. --}}
-        <label class="ns-input-icon mb-4">
-          {{> icons name="search"}}
-          <input x-model="q" type="search" placeholder="{{t "Search this training…"}}"
-                 aria-label="{{t "Search lessons"}}" class="ns-input ns-input--sm">
-        </label>
-
-        {{> "training/sections" view="nav" cur=cur curId=curId}}
-
-        <p x-show="q !== '' && ![...document.querySelectorAll('#training-curriculum a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-           x-cloak class="ns-empty ns-empty--sm text-sm">{{t "No lessons match."}}</p>
-
-        {{!-- Progress sits at the FOOT of the rail and stays there: it is a
-             status readout, so it should be where you glance, not where you
-             navigate. --}}
-        <div class="ns-sidenav__foot ns-sidenav__foot--sticky">
-          <div class="ns-progress ns-progress--xs">
-            <span class="ns-progress__bar js-train-progress"></span>
-          </div>
-          <div class="ns-sidenav__readout">
-            <span class="js-train-done"></span>
-            {{#get "posts" filter="tag:hash-training-content" limit="1"}}
-              <span>{{pagination.total}} {{t "lessons"}}</span>
-            {{/get}}
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </nav>
+<div class="ns-lessonmodal" id="training-curriculum" popover>
+  <div class="ns-lessonmodal__head">
+    <span class="ns-lessonmodal__title">{{t "Training content"}}</span>
+    {{#get "posts" filter="tag:hash-training-content" limit="1"}}
+      <span class="ns-lessonmodal__count">{{pagination.total}} {{t "lessons"}}</span>
+    {{/get}}
+    <button class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm" type="button"
+            popovertarget="training-curriculum" popovertargetaction="hide" aria-label="{{t "Close"}}">{{> icons name="x"}}</button>
+  </div>
+  <div class="ns-lessonmodal__list">
+    <nav class="ns-trainingnav" aria-label="{{t "Curriculum"}}">
+      {{> "training/sections" view="nav" cur=cur curId=curId}}
+    </nav>
+  </div>
 </div>
