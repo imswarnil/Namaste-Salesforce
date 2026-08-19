@@ -1,122 +1,157 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-lesson.hbs — Lesson player (full-width)
-  3 columns: course nav + ad · lesson content + discussion · TOC + sticky ad.
-  Course nav shows a % completion bar and collapses on mobile. Context: a
-  #lesson post.
+  partials/post-lesson.hbs — the lesson player.
+
+  The design system's `.ns-player` (ds/components/css/player.css), in its
+  --article shape. Two columns:
+
+    .ns-player__side   the CURRICULUM — how you leave this page. Always the
+                       LEADING edge, on video and article lessons alike; the
+                       theme used to put it left on one and right on the other,
+                       so the same course rearranged itself between lesson 7
+                       and lesson 8. Rendered by courses/lesson-nav.
+    .ns-player__main   the lesson, with the outline on the TRAILING edge —
+                       how you move WITHIN the page. That split (leave / move
+                       within) is the one every documentation site converged on.
+
+  --article hides the video stage; a video lesson still gets its poster inside
+  the reading column, because on this site a "video lesson" is a Ghost post
+  with an embed in its body rather than a hosted stream with chapters.
+
+  Below lg the system drops the rail entirely and the theme's `.ns-lesson-panel`
+  drawer takes over — same element, same list, different shape.
+
+  Context: a #lesson post.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<section class="w-full px-4 py-8 sm:px-6 lg:px-8">
-  <div class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)_15rem]">
+{{!-- data-rail is "open" and stays open: this theme has no rail-collapse
+     control (the system's lives in assets/js/lms.js, which is not vendored
+     here). It is written out rather than omitted because the system's
+     collapse rules key off the attribute, and an absent attribute and
+     `="open"` are the same picture only by accident. --}}
+<div class="ns-player ns-player--article ns-player--scroll" data-rail="open">
 
-    {{!-- Left: course nav (progress) + related/sponsor ad --}}
-    <aside class="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
-      {{> "courses/lesson-nav"}}
-      <div class="mt-6">{{> "ads/slot" format="square"}}</div>
-    </aside>
+  {{!-- The curriculum rail (and, below lg, the drawer) --}}
+  {{> "courses/lesson-nav"}}
 
-    {{!-- Center: lesson content --}}
-    <main role="main" class="min-w-0">
-      <article class="mx-auto max-w-3xl">
-        {{> "components/breadcrumb"}}
-        <header class="mb-6">
-          {{!-- Type · duration · access --}}
-          <div class="mb-4 flex flex-wrap items-center gap-2">
-            {{#has tag="#lesson-type-video"}}
-              <span class="ns-lesson-type ns-lesson-type--video">{{> icons name="play-circle"}}{{t "Video"}}</span>
-              <span class="ns-lesson-chip">{{> icons name="clock"}}{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}</span>
-            {{else}}
-              <span class="ns-lesson-type ns-lesson-type--article">{{> icons name="article"}}{{t "Article"}}</span>
-              <span class="ns-lesson-chip">{{> icons name="clock"}}{{reading_time}}</span>
-            {{/has}}
-            {{#has tag="#preview"}}<span class="ns-curriculum__badge ns-curriculum__badge--preview">{{> icons name="eye"}}{{t "Free preview"}}</span>
-            {{else has tag="#paid"}}<span class="ns-price-tag ns-price-tag--paid">{{> icons name="crown"}}{{t "Members"}}</span>
-            {{else has tag="#free"}}<span class="ns-price-tag ns-price-tag--free">{{t "Free"}}</span>{{/has}}
-          </div>
-          <h1 class="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">{{title}}</h1>
-          {{#if custom_excerpt}}<p class="mt-3 text-lg text-muted">{{custom_excerpt}}</p>{{else}}<p class="mt-3 text-sm text-muted">{{t "Article lesson"}}</p>{{/if}}
-        </header>
+  <div class="ns-player__main">
 
-        {{!-- Media: video poster for video lessons, else feature image --}}
-        {{#has tag="#lesson-type-video"}}
-          <div class="ns-video-poster ns-video-poster--lesson mb-8">
-            {{#if feature_image}}<img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}">{{else}}<span class="ns-video-poster__fallback" aria-hidden="true"></span>{{/if}}
-            <span class="ns-video-poster__play">{{> icons name="play"}}</span>
-          </div>
-        {{else}}
-          {{#if feature_image}}<img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="mb-8 w-full rounded-card border border-border object-cover">{{/if}}
-        {{/has}}
+    <nav class="ns-breadcrumb" aria-label="Breadcrumb">
+      <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="/courses/">{{t "Courses"}}</a></span>
+      {{#primary_tag}}<span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{url}}">{{name}}</a></span>{{/primary_tag}}
+      <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{url}}" aria-current="page">{{title}}</a></span>
+    </nav>
 
-        {{!-- Members gate (locked, non-preview, signed out) --}}
-        {{#has tag="#paid"}}{{#has tag="#preview"}}{{else}}{{#unless @member}}
-          <div class="ns-note ns-note--warning mb-6">
-            {{> icons name="lock"}}
-            <div>
-              <p class="font-bold">{{t "Members-only lesson"}}</p>
-              <p class="text-sm">{{t "You're reading the preview. Sign in with a membership to unlock the full lesson."}}</p>
+    <header class="ns-player__head">
+      <h1 class="ns-player__title">{{title}}</h1>
+      {{!-- THREE facts, and none of them restates the page. How long, what
+           kind, and whether it is open to you — the things you cannot get by
+           looking at the screen. --}}
+      <p class="ns-player__meta">
+        <span class="ns-ltype {{#has tag="#lesson-type-video"}}ns-ltype--video{{else}}ns-ltype--article{{/has}}">
+          {{#has tag="#lesson-type-video"}}{{> icons name="video"}}{{t "Video"}}{{else}}{{> icons name="article"}}{{t "Article"}}{{/has}}
+        </span>
+        <span>{{> icons name="clock"}}{{#has tag="#lesson-type-video"}}{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-video-duration-"}}{{description}}{{/match}}{{/foreach}}{{else}}{{reading_time}}{{/has}}</span>
+        {{#has tag="#preview"}}<span class="ns-laccess ns-laccess--free">{{> icons name="eye"}}{{t "Free preview"}}</span>
+        {{else has tag="#paid"}}<span class="ns-laccess ns-laccess--pro">{{> icons name="crown"}}{{t "Members"}}</span>
+        {{else has tag="#free"}}<span class="ns-laccess ns-laccess--free">{{> icons name="lock-open"}}{{t "Free"}}</span>{{/has}}
+        <span>{{> icons name="arrows-clockwise"}}{{date updated_at format="MMM YYYY"}}</span>
+      </p>
+    </header>
+
+    {{!-- The reading hairline. 2px, no percentage — a reading-progress widget
+         with a number on it is a distraction from the thing it measures. --}}
+    <div class="ns-lprogress ns-lprogress--article" data-target="#lesson-body" aria-hidden="true"></div>
+
+    {{!-- Prose at the measure, outline beside it, sized together. --}}
+    <div class="ns-player__reading">
+      <div>
+        <article class="ns-player__body" id="lesson-body">
+
+          {{!-- Media: a play poster for a video lesson, else the feature image --}}
+          {{#has tag="#lesson-type-video"}}
+            <div class="ns-video-poster ns-video-poster--lesson">
+              {{#if feature_image}}<img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}">{{else}}<span class="ns-video-poster__fallback" aria-hidden="true"></span>{{/if}}
+              <span class="ns-video-poster__play">{{> icons name="play"}}</span>
             </div>
-            <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Unlock"}}</a>
-          </div>
-        {{/unless}}{{/has}}{{/has}}
+          {{else}}
+            {{#if feature_image}}<img loading="lazy" decoding="async" src="{{img_url feature_image size="xl"}}" alt="{{title}}" class="w-full rounded-card border border-border object-cover">{{/if}}
+          {{/has}}
 
-        {{!-- In-content ad --}}
-        {{> "ads/slot" format="horizontal" slot="lesson-top"}}
+          {{!-- Members gate — locked, not a preview, and signed out --}}
+          {{#has tag="#paid"}}{{#has tag="#preview"}}{{else}}{{#unless @member}}
+            <div class="ns-note ns-note--warning">
+              {{> icons name="lock"}}
+              <div>
+                <p class="font-bold">{{t "Members-only lesson"}}</p>
+                <p class="text-sm">{{t "You're reading the preview. Sign in with a membership to unlock the full lesson."}}</p>
+              </div>
+              <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Unlock"}}</a>
+            </div>
+          {{/unless}}{{/has}}{{/has}}
 
-        <div class="prose max-w-none gh-content">{{content}}</div>
+          {{> "ads/slot" format="horizontal" slot="lesson-top"}}
 
-        {{!-- Support CTA on free lessons --}}
-        {{#has tag="#paid"}}{{else}}<div class="mt-10">{{> "components/lesson-support"}}</div>{{/has}}
+          <div class="ns-prose gh-content">{{content}}</div>
 
-        {{!-- Prev / next (continues to next lesson by order at track end) --}}
-        <nav class="mt-10 grid grid-cols-2 gap-4 border-t border-border pt-6" aria-label="{{t "Lesson navigation"}}">
-          <div>
-            {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
-              <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill border border-border px-4 py-2.5 text-sm font-semibold transition hover:border-brand-500 hover:text-brand-600">
-                {{> icons name="arrow-left"}}<span>{{t "Previous"}}</span>
-              </a>
-            {{/prev_post}}
-          </div>
-          <div>
-            {{#next_post in="primary_tag" filter="tag:hash-lesson"}}
-              <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--sm w-full">
-                <span>{{t "Next"}}</span>{{> icons name="arrow-right"}}
+          {{!-- Support CTA on free lessons --}}
+          {{#has tag="#paid"}}{{else}}{{> "components/lesson-support"}}{{/has}}
+
+          {{> "components/author-box"}}
+
+          {{#if @site.comments_enabled}}
+            <section aria-label="{{t "Discussion"}}">
+              <div class="ns-section-head">
+                <h2 class="ns-section-head__title">{{> icons name="chat"}}{{t "Discussion"}}</h2>
+              </div>
+              {{comments title=""}}
+            </section>
+          {{/if}}
+        </article>
+
+        {{!-- Prev / next BY NAME. An arrow pair with no titles makes the
+             reader click to find out where they are going. --}}
+        <nav class="ns-player__nav ns-lesson-nav" aria-label="{{t "Lesson navigation"}}">
+          {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
+            <a class="ns-lesson-nav__btn" href="{{url}}">
+              {{> icons name="arrow-left" class="ns-lesson-nav__arrow"}}
+              <span class="ns-lesson-nav__dir">{{t "Previous"}}</span>
+              <span class="ns-lesson-nav__name">{{title}}</span>
+            </a>
+          {{else}}
+            <span class="ns-lesson-nav__btn" aria-hidden="true"></span>
+          {{/prev_post}}
+
+          {{#next_post in="primary_tag" filter="tag:hash-lesson"}}
+            <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="{{url}}">
+              <span class="ns-lesson-nav__dir">{{t "Next"}}</span>
+              <span class="ns-lesson-nav__name">{{title}}</span>
+              {{> icons name="arrow-right" class="ns-lesson-nav__arrow"}}
+            </a>
+          {{else}}
+            {{!-- Last lesson of the course → finish, back to the course page --}}
+            {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
+              <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="{{url}}">
+                <span class="ns-lesson-nav__dir">{{t "Finish"}}</span>
+                <span class="ns-lesson-nav__name">{{title}}</span>
+                {{> icons name="check-circle" class="ns-lesson-nav__arrow"}}
               </a>
             {{else}}
-              {{!-- Last lesson of the course → finish (back to the course page) --}}
-              {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}
-                {{#foreach posts}}
-                  <a href="{{url}}" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
-                    <span>{{t "Finish course"}}</span>{{> icons name="check-circle"}}
-                  </a>
-                {{else}}
-                  <a href="/courses/" class="inline-flex w-full items-center justify-center gap-2 rounded-pill bg-success px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90">
-                    <span>{{t "Finish course"}}</span>{{> icons name="check-circle"}}
-                  </a>
-                {{/foreach}}
-              {{/get}}
-            {{/next_post}}
-          </div>
+              <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="/courses/">
+                <span class="ns-lesson-nav__dir">{{t "Finish"}}</span>
+                <span class="ns-lesson-nav__name">{{t "Back to the catalog"}}</span>
+                {{> icons name="check-circle" class="ns-lesson-nav__arrow"}}
+              </a>
+            {{/foreach}}{{/get}}
+          {{/next_post}}
         </nav>
+      </div>
 
-        {{!-- Author box --}}
-        <div class="mt-10">{{> "components/author-box"}}</div>
-
-        {{!-- Discussion (comments) --}}
-        {{#if @site.comments_enabled}}
-          <section class="mt-12 border-t border-border pt-8" aria-label="{{t "Discussion"}}">
-            <h2 class="mb-4 flex items-center gap-2 font-heading text-xl font-extrabold">
-              {{> icons name="chat" class="text-brand-500"}}{{t "Discussion"}}
-            </h2>
-            {{comments title=""}}
-          </section>
-        {{/if}}
-      </article>
-    </main>
-
-    {{!-- Right rail: TOC + sticky sponsor --}}
-    <aside class="hidden lg:block">
-      <div class="sticky top-20 space-y-6">
+      {{!-- Trailing edge: the outline, then the rail ad. Below lg the outline
+           becomes the horizontal strip above the text and the ad follows the
+           article — both handled by the component. --}}
+      <aside class="ns-player__toc">
         {{> "components/toc"}}
         {{> "ads/slot" format="rail"}}
-      </div>
-    </aside>
+      </aside>
+    </div>
   </div>
-</section>
+</div>

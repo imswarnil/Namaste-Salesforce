@@ -1,0 +1,101 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   BRIDGE · icons — teach the system's `i` rules about this theme's <svg>
+   ----------------------------------------------------------------------------
+   READ THIS BEFORE ASSUMING THE FILE IS REDUNDANT.
+
+   The design system was written against an icon FONT: its component rules
+   style the glyph by element, `.ns-buybox__list i { … }`. That is the markup
+   its own templates emit (`<i class="ph ph-clock">`) and the markup the
+   Next.js app emits.
+
+   This theme does not have an icon font in the render path. Every icon is
+   inline SVG from partials/icons.hbs, and the element is `<svg class="ns-icon">`
+   — a deliberate divergence, documented in that partial: no font request
+   before the first icon paints, no empty boxes for glyphs missing from a
+   subset, no Python re-subsetting step to add one. The shared contract is the
+   CLASS (`.ns-icon` — 1em square, baseline-aligned, currentColor, flex:none),
+   which the system does declare and both products honour.
+
+   So every system rule that reaches for `i` misses here, and the symptom is
+   quiet: the icon still draws, at the right size, in the wrong colour —
+   inheriting body ink where the system wanted brand blue, success green or
+   the muted label grey. Nothing looks broken; it just looks flat.
+
+   THIS FILE IS THE ONE PLACE THAT GAP IS CLOSED. Each rule below restates a
+   system rule for `.ns-icon`, and carries the file:line it mirrors so the two
+   can be diffed after a `yarn design:sync`. It declares NOTHING of its own —
+   if a value here disagrees with the system, the system is right and this
+   file is stale.
+
+   ⚠️ AFTER EVERY SYNC, re-check the selector list:
+
+       grep -rnE '\.ns-[a-z-]+[^{]*\bi\b\s*[,{]' assets/css/ds/components/css/
+
+   A rule that appears there and not here is an icon rendering in the wrong
+   colour somewhere on the site.
+
+   THE PROPER FIX IS UPSTREAM — `i, .ns-icon` in the system's own selectors,
+   which costs nothing for the app and deletes this file. NS-Design-System is
+   read-only from here, so until that lands, this bridge is the seam.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── catalog.css — the course marketing surfaces ─────────────────────── */
+  .ns-buybox__list .ns-icon { color: var(--color-brand-500); font-size: var(--size-body); flex: none; }          /* catalog.css:142 */
+  .ns-outcomes .ns-icon { color: var(--color-success-ink); font-size: var(--size-body); margin-block-start: 0.1em; } /* catalog.css:183 */
+  .ns-outcomes--plain .ns-icon { color: var(--color-label); }                                                    /* catalog.css:184 */
+  .ns-outcomes--cards .ns-icon {                                                                                 /* catalog.css:218 */
+    display: grid; place-items: center;
+    inline-size: var(--space-10); block-size: var(--space-10);
+    margin-block-start: 0;
+    border-radius: var(--radius-card);
+    background: color-mix(in srgb, var(--color-brand-500) 10%, transparent);
+    color: var(--color-brand-600); font-size: var(--size-h3);
+  }
+  [data-theme="dark"] .ns-outcomes--cards .ns-icon {                                                             /* catalog.css:226 */
+    background: color-mix(in srgb, var(--color-brand-300) 14%, transparent);
+    color: var(--color-brand-300);
+  }
+  .ns-filters__legend .ns-icon { margin-inline-start: auto; color: var(--color-muted); transition: rotate var(--duration-fast) var(--ease-out); } /* catalog.css:363 */
+  .ns-filters__group[open] .ns-filters__legend .ns-icon { rotate: 180deg; }                                      /* catalog.css:364 */
+
+  /* ── lms.css — what a learner sees ───────────────────────────────────── */
+  .ns-ccard__meta .ns-icon { font-size: var(--size-small); opacity: 0.8; }                                       /* lms.css:76 */
+  .ns-ltype .ns-icon { font-size: var(--size-small); }                                                           /* lms.css:204 */
+  .ns-ltype--icon > .ns-icon { font-size: var(--size-body); }                                                    /* lms.css:225 */
+
+  /* ── blog.css — the editorial callout ────────────────────────────────── */
+  .ns-callout > .ns-icon { color: var(--color-brand-500); font-size: var(--size-body-lg); }                      /* blog.css:230 */
+  .ns-callout--tip > .ns-icon { color: var(--color-success-ink); }                                               /* blog.css:238 */
+  .ns-callout--warn > .ns-icon { color: var(--color-warning-ink); }                                              /* blog.css:240 */
+  .ns-callout--danger > .ns-icon { color: var(--color-error-ink); }                                              /* blog.css:242 */
+
+  /* ── toc.css ─────────────────────────────────────────────────────────── */
+  .ns-toc--collapsible > summary .ns-icon { margin-inline-start: auto; transition: rotate var(--duration-fast) var(--ease-out); } /* toc.css:54 */
+  .ns-toc--collapsible[open] > summary .ns-icon { rotate: 180deg; }                                              /* toc.css:55 */
+
+  /* ── training.css ────────────────────────────────────────────────────── */
+  .ns-tier__list .ns-icon { flex: none; margin-block-start: 0.15em; color: var(--color-success); }               /* training.css:419 */
+  .ns-trainingnav__search .ns-icon {                                                                             /* training.css:688 */
+    position: absolute; inset-inline-start: var(--space-2-5);
+    color: var(--color-label); font-size: var(--size-body); pointer-events: none;
+  }
+
+  /* ── player.css ──────────────────────────────────────────────────────── */
+  .ns-player__meta .ns-icon { font-size: var(--size-small); color: var(--color-label); }                          /* player.css:285 */
+  .ns-player__side-back > .ns-icon { flex: none; color: var(--color-label); font-size: var(--size-body); transition: translate var(--duration-fast) var(--ease-out); } /* player.css:538 */
+  .ns-player__side-back:hover > .ns-icon { color: currentColor; translate: -2px 0; }                             /* player.css:540 */
+
+  /* ── navbar.css ──────────────────────────────────────────────────────── */
+  .ns-navstat .ns-icon { color: var(--color-brand-600); font-size: var(--size-small); }                          /* navbar.css:829 */
+  [data-theme="dark"] .ns-navstat .ns-icon { color: var(--color-brand-300); }                                    /* navbar.css:830 */
+  .ns-navsheet__link .ns-icon { margin-inline-start: auto; color: var(--color-muted); font-size: var(--size-body); } /* navbar.css:915 */
+  .ns-navsheet__group[open] > summary .ns-icon { rotate: 180deg; }                                               /* navbar.css:919 */
+  .ns-navsheet__group > summary .ns-icon { transition: rotate var(--duration-fast) var(--ease-out); }            /* navbar.css:920 */
+
+  /* ── sections.css already says `i, .ns-icon` — nothing to bridge ─────── */
+
+  /* ── monetization.css ────────────────────────────────────────────────── */
+  .ns-sponsor__label > .ns-icon { display: none; }                                                               /* monetization.css:81 */
+}

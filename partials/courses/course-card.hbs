@@ -1,7 +1,17 @@
-{{!-- courses/course-card.hbs — catalog course card (minimal).
-     Context: a #course post. Carries data-* the catalog filter reads
-     (title, price, level, author, duration tag). --}}
-<article class="ns-ccard js-spotlight group{{#if featured}} is-featured{{/if}}"
+{{!-- courses/course-card.hbs — one course in the catalog grid.
+
+     Built on the design system's .ns-card + .ns-ccard (ds/components/css/
+     lms.css). .ns-ccard is a MODIFIER, not a component: the frame, body,
+     title, link and text all come from .ns-card, and .ns-ccard adds only the
+     parts a course has that nothing else does — the media wrapper, the corner
+     level badge, the runtime chip, the promo flag and the mono meta row.
+     That is why the class list is `ns-card ns-ccard` and not `ns-ccard` alone;
+     drop `ns-card` and the card loses its frame entirely.
+
+     Context: a #course post. The data-* attributes are the catalog filter's
+     input — courses.hbs reads them in Alpine, so renaming one here breaks
+     filtering there. --}}
+<article class="ns-card ns-ccard js-spotlight"
          data-title="{{title}}"
          data-price="{{#has tag="#paid"}}paid{{else}}free{{/has}}"
          data-level="{{#has tag="#level-beginner"}}beginner{{else has tag="#level-intermediate"}}intermediate{{else has tag="#level-advanced"}}advanced{{else}}all{{/has}}"
@@ -9,31 +19,34 @@
          data-duration="{{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}{{slug}}{{/match}}{{/foreach}}">
 
   {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
-    <a href="{{url}}" tabindex="-1" aria-hidden="true" class="ns-ccard__media">
-      <img decoding="async" src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" class="ns-zoom">
-      <span class="ns-ccard__media-badges">{{> "components/course-level"}}</span>
-      {{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free">{{t "Free"}}</span>{{/has}}
-    </a>
+    <span class="ns-ccard__mediawrap">
+      <a href="{{url}}" tabindex="-1" aria-hidden="true" class="ns-card__media">
+        <img decoding="async" src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy">
+      </a>
+      {{> "components/course-level" class="ns-ccard__level"}}
+      {{#if featured}}<span class="ns-ccard__badge">{{t "Featured"}}</span>{{/if}}
+      {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<span class="ns-ccard__dur">{{description}}</span>{{/match}}{{/foreach}}
+    </span>
   {{/if}}{{/has}}
 
-  <div class="ns-ccard__body">
-    {{#has tag="#hide-image"}}<div class="mb-2.5 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid ns-ccard__price--static">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free ns-ccard__price--static">{{t "Free"}}</span>{{/has}}</div>
-    {{else}}{{#unless feature_image}}<div class="mb-2.5 flex items-center gap-2">{{> "components/course-level"}}{{#has tag="#paid"}}<span class="ns-ccard__price ns-ccard__price--paid ns-ccard__price--static">{{t "Members"}}</span>{{else}}<span class="ns-ccard__price ns-ccard__price--free ns-ccard__price--static">{{t "Free"}}</span>{{/has}}</div>{{/unless}}{{/has}}
+  <div class="ns-card__body">
+    <span class="ns-card__kicker">// {{t "Course"}}</span>
 
-    <h2 class="font-heading text-[1.05rem] font-bold leading-snug">
-      <a href="{{url}}" class="transition-colors hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
-    </h2>
+    {{!-- With no media there is no corner to park the level badge in, so it
+         rides above the title instead. Same badge, different anchor. --}}
+    {{#has tag="#hide-image"}}
+      <div class="ns-ccard__meta">{{> "components/course-level"}}</div>
+    {{else}}{{#unless feature_image}}
+      <div class="ns-ccard__meta">{{> "components/course-level"}}</div>
+    {{/unless}}{{/has}}
 
-    {{#if custom_excerpt}}<p class="ns-ccard__excerpt mt-1.5 text-sm text-muted">{{custom_excerpt}}</p>{{/if}}
+    <a class="ns-card__link" href="{{url}}"><span class="ns-card__title">{{title}}</span></a>
+    {{#if custom_excerpt}}<p class="ns-card__text">{{custom_excerpt}}</p>{{/if}}
 
-    <div class="ns-ccard__meta mt-2.5">
+    <span class="ns-ccard__meta">
       {{#get "posts" filter="tag:hash-lesson+primary_tag:{{slug}}" limit="100" as |ls|}}<span>{{> icons name="list-checks"}}{{ls.length}} {{t "lessons"}}</span>{{/get}}
-      {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<span>{{> icons name="clock"}}{{description}}</span>{{/match}}{{/foreach}}
-    </div>
-
-    <div class="ns-ccard__foot">
-      {{#primary_author}}<span class="ns-ccard__author">{{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-5 w-5 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-5 w-5">{{> icons name="user"}}</span>{{/if}}<span class="truncate">{{name}}</span></span>{{/primary_author}}
-      <a href="{{url}}" class="ns-btn ns-btn--outline ns-btn--sm shrink-0" aria-label="{{t "Start"}} {{title}}">{{t "Start"}}{{> icons name="arrow-right"}}</a>
-    </div>
+      {{#has tag="#paid"}}<span>{{> icons name="crown"}}{{t "Members"}}</span>{{else}}<span>{{> icons name="gift"}}{{t "Free"}}</span>{{/has}}
+      {{#primary_author}}<span>{{> icons name="user"}}{{name}}</span>{{/primary_author}}
+    </span>
   </div>
 </article>

@@ -1,20 +1,30 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   COMPONENT · table of contents — .toc-link
+   COMPONENT · table of contents — the reveal, and nothing else
    ----------------------------------------------------------------------------
-   Built by toc.js from the headings in .gh-content. The active heading is
-   marked by the LEFT RAIL going brand — a rail, not a highlight, because the
-   TOC is a map of the page's structure.
+   THE OUTLINE ITSELF IS THE DESIGN SYSTEM'S. `.ns-toc` and its six placements
+   (--card --inline --collapsible --numbered --float, plus the default rail)
+   live in ds/components/css/toc.css and are the same component the docs, the
+   lesson player and the Next.js app render. This file used to hold a parallel
+   `.toc-link` implementation — a second rail, a second active state, a second
+   indent scale — which is exactly the drift the vendoring exists to prevent.
+   It is gone; components/toc.hbs and assets/js/toc.js emit `.ns-toc__link`
+   and `aria-current="true"` now.
 
-   DEPTH   .is-h3  (indented, smaller)  ·  .is-h4
-   STATE   .is-active — the section currently in view
+   WHAT IS LEFT is one rule the system cannot own, because it is about a
+   JavaScript lifecycle rather than a look.
+
+   components/toc.hbs renders the TOC EMPTY and toc.js fills it. Between first
+   paint and that script, the rail is a bare "On this page" label attached to
+   nothing — and on a post with fewer than two headings it stays that way
+   forever, because toc.js returns early and never fills it at all.
+
+   So the containers are display:none until toc.js has actually appended links
+   and added `.is-ready`. Note it is NOT Tailwind's `hidden` being toggled:
+   each container also carries a responsive display of its own (`max-lg:hidden`
+   on the rail, `lg:hidden` on the disclosure), and a script adding and
+   removing `hidden` would fight with those at every breakpoint.
    ════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  .toc-link {
-    @apply block border-l-2 border-transparent py-1 pl-3 text-muted transition
-           hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300;
-  }
-  .toc-link.is-active { @apply border-brand-500 font-medium text-brand-600 dark:text-brand-300; }
-  .toc-link.is-h3 { @apply pl-6 text-[0.8rem]; }
-  .toc-link.is-h4 { @apply pl-9 text-[0.78rem]; }
+  .js-toc:not(.is-ready) { display: none; }
 }

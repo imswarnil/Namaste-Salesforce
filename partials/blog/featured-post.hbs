@@ -1,24 +1,25 @@
-{{!-- blog/featured-post.hbs — large 2-column featured article.
-     Context: a post (the first post on the blog listing). Reuses author-byline. --}}
-<article class="js-spotlight group relative mb-10 grid overflow-hidden rounded-card border border-border bg-surface-raised ns-transition hover:border-brand-500 lg:grid-cols-2">
-  <a href="{{url}}" tabindex="-1" aria-hidden="true" class="block aspect-[16/9] overflow-hidden bg-surface-sunken lg:aspect-auto">
-    {{#if feature_image}}
-      <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}"
-           class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
-    {{else}}
-      <span class="flex h-full min-h-64 items-center justify-center bg-brand-900 text-white/40">
-        {{> icons name="image" class="text-5xl"}}
-      </span>
-    {{/if}}
-  </a>
-  <div class="relative flex flex-col justify-center p-6 sm:p-8">
-    {{#if primary_tag}}
-      <a href="{{primary_tag.url}}" class="ns-kicker ns-transition hover:text-brand-600 dark:hover:text-brand-300">{{primary_tag.name}}</a>
-    {{/if}}
-    <h2 class="mt-2 font-heading text-2xl font-extrabold leading-tight sm:text-3xl">
-      <a href="{{url}}" class="transition-colors hover:text-brand-600 dark:hover:text-brand-300">{{title}}</a>
-    </h2>
-    <p class="mt-3 text-muted">{{excerpt words="32"}}&hellip;</p>
-    <div class="mt-5">{{> "components/author-byline"}}</div>
+{{!-- blog/featured-post.hbs — the one promoted piece at the top of the feed.
+
+     The SAME card as every other post, wearing the system's `--wide` shape:
+     two columns, a larger title and three lines of excerpt instead of two.
+     It used to be twenty lines of bespoke grid + utilities that happened to
+     look like a card — which meant the featured post and the cards under it
+     drifted apart every time either was touched.
+
+     Context: a post (the first post on the blog listing). --}}
+<article class="ns-card ns-bcard ns-bcard--wide js-spotlight mb-10">
+  {{#if feature_image}}
+    <a href="{{url}}" tabindex="-1" aria-hidden="true" class="ns-bcard__cover">
+      <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
+      {{#primary_tag}}<span class="ns-tag ns-bcard__cat">{{name}}</span>{{/primary_tag}}
+    </a>
+  {{else}}
+    <span class="ns-bcard__cover ns-bcard__cover--empty">{{> icons name="image"}}</span>
+  {{/if}}
+
+  <div class="ns-card__body">
+    <h2 class="ns-bcard__title"><a class="ns-card__link" href="{{url}}">{{title}}</a></h2>
+    <p class="ns-bcard__excerpt">{{excerpt words="32"}}&hellip;</p>
+    {{> "components/author-byline"}}
   </div>
 </article>

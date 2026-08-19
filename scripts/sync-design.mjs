@@ -20,9 +20,15 @@
  *   assets/css/ds/icons/*.css       phosphor.css + icons-gap.css
  *   assets/css/ds/patterns/*.css    patterns.css
  *   assets/css/ds/components/css/   the .ns-* class layer shared with the app
- *   assets/fonts/switzer-*.woff2    Switzer — the interface AND reading face
- *   assets/fonts/sentient-*.woff2   Sentient — the editorial serif (quotes)
- *   assets/fonts/phosphor*.woff2    the subsetted icon font
+ *   assets/fonts/switzer-*.woff2     Switzer — the interface AND reading face
+ *   assets/fonts/roboto-mono-*.woff2 Roboto Mono — labels, indices, code
+ *   assets/fonts/phosphor*.woff2     the subsetted icon font
+ *
+ * Font binaries are COPIED, never pruned — this script does not delete from
+ * assets/fonts/, because theme-owned assets live there too. When upstream
+ * retires a face (Sentient, in the switch to Roboto Mono), the stale woff2
+ * lingers until someone removes it by hand. Check with:
+ *   comm -23 <(ls assets/fonts) <(ls ../../../../NS-Design-System/fonts)
  *   assets/icons/namaste-icons.svg  the <use href> sprite
  *
  * ⚠️ FONT PATHS. The gulp pipeline (postcss + cssnano) rebases relative url()s

@@ -184,6 +184,138 @@
   .ns-outcomes--plain i { color: var(--color-label); }
   .ns-outcomes--single { grid-template-columns: minmax(0, 1fr); }
 
+  /* --- Cards: the shape for the top of a course page ----------------------
+     The tick list above is right INSIDE a page — under a heading, among
+     prose, where it reads as a list because that is what it is. It is wrong
+     as the first thing a visitor meets: "what will I be able to do" is the
+     question they arrived with, and four lines of body text with identical
+     ticks is the least answerable-looking way to put four answers on a screen.
+
+     So the same content gets boxed, spaced and given the glyph at a size you
+     can actually see. Each promise takes the icon of the THING it produces —
+     a trigger, an error, a query, a deploy — because four distinct glyphs can
+     be scanned and four identical ticks have to be read.
+
+     Still one <ul> of <li>s: the shape changed, the semantics did not. */
+  .ns-outcomes--cards {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--gap-grid, var(--space-4));
+  }
+  .ns-outcomes--cards li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--pad-card);
+    border: 1px solid var(--color-border); border-radius: var(--radius-card);
+    background: var(--color-surface);
+    font-size: var(--size-small); line-height: var(--leading-body);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .ns-outcomes--cards li:hover { border-color: var(--color-brand-300); }
+  /* The glyph gets a plate rather than floating loose in the corner: at this
+     size a bare icon on a white card reads as a stray mark, and the plate is
+     what makes it deliberate. Brand-tinted, not filled — Principle 3 keeps
+     solid blue for the one action, and this is not an action. */
+  .ns-outcomes--cards i {
+    display: grid; place-items: center;
+    inline-size: var(--space-10); block-size: var(--space-10);
+    margin-block-start: 0;
+    border-radius: var(--radius-card);
+    background: color-mix(in srgb, var(--color-brand-500) 10%, transparent);
+    color: var(--color-brand-600); font-size: var(--size-h3);
+  }
+  [data-theme="dark"] .ns-outcomes--cards i {
+    background: color-mix(in srgb, var(--color-brand-300) 14%, transparent);
+    color: var(--color-brand-300);
+  }
+  /* The first line of each card, when a promise has a short name and a longer
+     explanation. Without it the card is one paragraph, which is fine — this
+     is the opt-in, not the requirement. */
+  .ns-outcomes__title {
+    display: block; font-size: var(--size-body); font-weight: var(--weight-semibold);
+    color: var(--color-ink); margin-block-end: var(--space-1);
+  }
+
+  /* --- Prerequisites ------------------------------------------------------
+     The other half of "what you will learn", and the half that gets left out:
+     what you need BEFORE this course. Written as a checklist the reader can
+     answer honestly, each row saying what to do if the answer is no — a
+     prerequisite with no route to meeting it is a wall, not a warning.
+
+     Deliberately NOT the outcomes list in another colour: outcomes are
+     promises (success ticks), prerequisites are conditions (neutral, with an
+     escape link), and rendering them alike is how a learner reads the entry
+     requirements as a feature list. */
+  .ns-prereq { display: flex; flex-direction: column; gap: var(--space-3); }
+  .ns-prereq__item {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-3); align-items: baseline;
+    padding-block-end: var(--space-3);
+    border-block-end: 1px solid var(--color-border);
+  }
+  .ns-prereq__item:last-child { border-block-end: 0; padding-block-end: 0; }
+  .ns-prereq__icon { color: var(--color-label); font-size: var(--size-body); }
+  .ns-prereq__title { font-size: var(--size-small); font-weight: var(--weight-medium); }
+  .ns-prereq__note { font-size: var(--size-label); color: var(--color-muted); line-height: var(--leading-body); }
+  /* The route out. A prerequisite you do not meet should cost one click to
+     start meeting. */
+  .ns-prereq__fix {
+    font-family: var(--font-mono); font-size: var(--size-label);
+    letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--color-brand-600); text-decoration: none; white-space: nowrap;
+  }
+  .ns-prereq__fix:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+  [data-theme="dark"] .ns-prereq__fix { color: var(--color-brand-300); }
+  /* Met / not met, when the product knows — a signed-in learner who has
+     finished the earlier course should not be asked to check. */
+  .ns-prereq__item[data-met="true"] .ns-prereq__icon { color: var(--color-success); }
+  .ns-prereq__item[data-met="false"] .ns-prereq__icon { color: var(--color-warning-ink); }
+
+  /* --- Hero: split ---------------------------------------------------------
+     Copy on one side, the media on the other, both on the page surface. The
+     other heroes put the media BEHIND the copy, which is why they all need
+     on-dark ink; this one does not, so it is the hero to use when the cover
+     art matters as art rather than as a backdrop. */
+  .ns-chero--split .ns-chero__grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: var(--space-10); }
+  .ns-chero--split .ns-chero__media { border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--color-border); }
+  @media (max-width: 63.999rem) {
+    .ns-chero--split .ns-chero__grid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* --- Hero: certification -------------------------------------------------
+     For a course whose end state is an exam. The badge is the argument, so it
+     sits beside the title at display size rather than being mentioned in the
+     meta row. */
+  .ns-chero--cert .ns-chero__grid { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-10); }
+  .ns-chero--cert .ns-certbadge { inline-size: 9rem; }
+  @media (max-width: 47.999rem) {
+    .ns-chero--cert .ns-chero__grid { grid-template-columns: minmax(0, 1fr); }
+    .ns-chero--cert .ns-certbadge { inline-size: 6.5rem; }
+  }
+
+  /* --- Several authors ----------------------------------------------------
+     A course written by two people has two authors, and the answer is NOT a
+     smaller second block — that is an editorial claim the layout should not
+     be making. Three shapes, by how much room there is:
+
+       (rows)     each instructor gets the full .ns-instructor block
+       --pair     two side by side, equal weight
+       --byline   avatar stack + "Rahul, Sana and one more" for a card foot
+                  or a lesson header, where the names are attribution rather
+                  than biography                                            */
+  .ns-instructors--pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: var(--space-8); }
+  .ns-instructors--pair .ns-instructor { align-items: start; }
+
+  /* The byline: the avatar stack the blog already uses, plus names that read
+     as a sentence. Overlapping avatars with a surface ring so faces stay
+     separable at 1.75rem. */
+  .ns-byline { display: inline-flex; align-items: center; gap: var(--space-2); min-inline-size: 0; }
+  .ns-byline__names {
+    min-inline-size: 0; font-size: var(--size-label); color: var(--color-muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .ns-byline__names b { color: var(--color-ink); font-weight: var(--weight-medium); }
+  .ns-byline--stack { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+
   /* ====================================================== Instructor ====
      One author or several. With several, each gets the same block — a course
      with two instructors has two instructors, and shrinking the second one
@@ -308,6 +440,31 @@
   /* The featured one is wider and larger — it is a pull-quote, and it uses
      the pull-quote's own device rather than inventing a second one. */
   .ns-testimonial--featured { grid-column: 1 / -1; }
+
+  /* --- Learner testimonial shapes ----------------------------------------
+     Four, and the difference between them is how much PROOF is attached:
+
+       (default)  quote + who
+       --result   a mono outcome line above the quote — "passed PD1 in 9
+                  weeks". The claim a learner is actually shopping for
+       --compact  one line, for a strip of three under a hero
+       --media    a photo-framed portrait beside the quote, for the one
+                  testimonial a page leads with                              */
+  .ns-testimonial__result {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-family: var(--font-mono); font-size: var(--size-label); font-weight: var(--weight-label);
+    letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--color-success-ink);
+    margin-block-end: var(--space-3);
+  }
+  .ns-testimonial--compact .ns-testimonial__quote { font-size: var(--size-small); font-family: var(--font-sans); }
+  .ns-testimonial--compact { padding: var(--pad-card); }
+  .ns-testimonial--media { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--pad-card-lg); align-items: center; }
+  .ns-testimonial--media .ns-pframe { inline-size: 9rem; flex: none; }
+  @media (max-width: 47.999rem) {
+    .ns-testimonial--media { grid-template-columns: minmax(0, 1fr); }
+    .ns-testimonial--media .ns-pframe { inline-size: 7rem; }
+  }
   .ns-testimonial--featured .ns-testimonial__quote {
     font-family: var(--font-heading); font-size: var(--size-h3);
     font-weight: var(--weight-medium); line-height: var(--leading-heading);
@@ -315,4 +472,52 @@
   }
   .ns-band--dark .ns-testimonial { background: transparent; border-color: var(--color-on-dark-border); }
   .ns-band--dark .ns-testimonial__quote, .ns-band--dark .ns-testimonial__name { color: var(--color-on-dark); }
+
+  /* --- Resource card ------------------------------------------------------
+     A downloadable or external thing: a cheat sheet, a template, a tool. The
+     TYPE is a word (PDF, XLSX, TOOL), not an icon alone — a reader deciding
+     whether to click needs to know what lands on their machine. */
+  .ns-resource {
+    display: flex; align-items: center; gap: var(--space-4);
+    padding: var(--pad-card);
+    border: 1px solid var(--color-border); border-radius: var(--radius-card);
+    background: var(--color-surface-raised);
+    color: inherit; text-decoration: none;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  a.ns-resource:hover { border-color: var(--color-brand-500); }
+  .ns-resource__icon {
+    flex: none; display: flex; align-items: center; justify-content: center;
+    inline-size: 2.75rem; block-size: 2.75rem;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 0 1px var(--color-border);
+    color: var(--color-brand-500); font-size: var(--size-h4);
+  }
+  .ns-resource__body { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; }
+  .ns-resource__title { font-weight: var(--weight-body-strong); color: var(--color-ink); }
+  .ns-resource__type {
+    font-family: var(--font-mono); font-size: var(--size-label);
+    letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--color-label);
+  }
+  .ns-resource__cue { flex: none; color: var(--color-muted); transition: color var(--duration-fast) var(--ease-out); }
+  a.ns-resource:hover .ns-resource__cue { color: var(--color-brand-600); }
+
+  /* --- Ad slot ------------------------------------------------------------
+     A dashed placeholder, deliberately plain. It is the one surface in the
+     system that is allowed to look unfinished, because that is what it is
+     until something fills it — dressing it up makes an empty slot read as a
+     broken component. */
+  .ns-adslot {
+    display: flex; align-items: center; justify-content: center;
+    min-block-size: 7.5rem; padding: var(--pad-card);
+    border: 1px dashed var(--color-border); border-radius: var(--radius-sm);
+    background: var(--color-surface-sunken);
+  }
+  .ns-adslot__label {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-family: var(--font-mono); font-size: var(--size-label);
+    font-weight: var(--weight-label); letter-spacing: var(--tracking-label);
+    text-transform: uppercase; color: var(--color-label);
+  }
+
 }

@@ -1,25 +1,67 @@
-{{!-- components/share.hbs — reveal share menu (X · LinkedIn · Facebook · copy).
-     Context: the current post (uses {{title}} + {{url absolute="true"}}).
-     Alpine-driven; responsive. --}}
-<div class="ns-share" x-data="{ open: false, copied: false }">
-  <button type="button" class="ns-btn ns-btn--outline ns-btn--sm" @click="open = !open" :aria-expanded="open.toString()">
-    {{> icons name="share"}}{{t "Share this course"}}
-  </button>
-  <div class="ns-share__menu" x-show="open" x-cloak @click.outside="open = false"
-       x-transition:enter="transition ease-out duration-150"
-       x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
-    <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" rel="noopener"
-       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="x-logo"}}{{t "Share on X"}}</a>
-    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{url absolute='true'}}" target="_blank" rel="noopener"
-       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="linkedin"}}{{t "Share on LinkedIn"}}</a>
-    <a href="https://www.facebook.com/sharer/sharer.php?u={{url absolute='true'}}" target="_blank" rel="noopener"
-       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="facebook"}}{{t "Share on Facebook"}}</a>
-    <a href="mailto:?subject={{encode title}}&body={{url absolute='true'}}">{{> icons name="mail"}}{{t "Email"}}</a>
-    <button type="button" data-copy="{{url absolute="true"}}"
+{{!-- components/share.hbs — share this page.
+
+     TWO LAYOUTS, because a share control has two honest homes:
+
+       (default)   a reveal menu anchored above its trigger. For a footer or a
+                   toolbar, where one button is all the room there is.
+       layout="rail"  the design system's `.ns-share--rail` — a vertical strip
+                   of icon buttons pinned beside the article (.ns-post__aside).
+                   No disclosure, because a rail that already has the room to
+                   show the four targets should not ask for a click first.
+
+     Params
+       layout  "rail" for the vertical strip; anything else gives the menu.
+       label   the trigger's text. Defaults to "Share".
+
+     Context: the current post (uses {{title}} + {{url absolute="true"}}). --}}
+
+{{#match layout "rail"}}
+
+  <div class="ns-share ns-share--rail" x-data="{ copied: false }">
+    <span class="ns-share__label">{{t "Share"}}</span>
+    <a class="icon-btn" href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" rel="noopener"
+       aria-label="{{t "Share on X"}}"
+       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="x-logo"}}</a>
+    <a class="icon-btn" href="https://www.linkedin.com/sharing/share-offsite/?url={{url absolute='true'}}" target="_blank" rel="noopener"
+       aria-label="{{t "Share on LinkedIn"}}"
+       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="linkedin"}}</a>
+    <a class="icon-btn" href="https://www.facebook.com/sharer/sharer.php?u={{url absolute='true'}}" target="_blank" rel="noopener"
+       aria-label="{{t "Share on Facebook"}}"
+       onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="facebook"}}</a>
+    {{!-- The copy is first among equals in usefulness — every reader can use
+         it, where the network buttons only work for someone already signed
+         into that network in this browser. --}}
+    <button type="button" class="icon-btn" data-copy="{{url absolute="true"}}"
+            :aria-label="copied ? '{{t "Copied!"}}' : '{{t "Copy link"}}'"
             @click="navigator.clipboard && navigator.clipboard.writeText($el.dataset.copy); copied = true; setTimeout(() => copied = false, 1600)">
-      {{> icons name="link"}}
-      <span x-show="!copied">{{t "Copy link"}}</span>
-      <span x-show="copied" x-cloak>{{t "Copied!"}}</span>
+      <span x-show="!copied">{{> icons name="link"}}</span>
+      <span x-show="copied" x-cloak>{{> icons name="check"}}</span>
     </button>
   </div>
-</div>
+
+{{else}}
+
+  <div class="ns-share" x-data="{ open: false, copied: false }">
+    <button type="button" class="ns-btn ns-btn--outline ns-btn--sm" @click="open = !open" :aria-expanded="open.toString()">
+      {{> icons name="share"}}{{#if label}}{{label}}{{else}}{{t "Share"}}{{/if}}
+    </button>
+    <div class="ns-share__menu" x-show="open" x-cloak @click.outside="open = false"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
+      <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute='true'}}" target="_blank" rel="noopener"
+         onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="x-logo"}}{{t "Share on X"}}</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{url absolute='true'}}" target="_blank" rel="noopener"
+         onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="linkedin"}}{{t "Share on LinkedIn"}}</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{url absolute='true'}}" target="_blank" rel="noopener"
+         onclick="window.open(this.href,'share','width=580,height=460');return false;">{{> icons name="facebook"}}{{t "Share on Facebook"}}</a>
+      <a href="mailto:?subject={{encode title}}&body={{url absolute='true'}}">{{> icons name="mail"}}{{t "Email"}}</a>
+      <button type="button" data-copy="{{url absolute="true"}}"
+              @click="navigator.clipboard && navigator.clipboard.writeText($el.dataset.copy); copied = true; setTimeout(() => copied = false, 1600)">
+        {{> icons name="link"}}
+        <span x-show="!copied">{{t "Copy link"}}</span>
+        <span x-show="copied" x-cloak>{{t "Copied!"}}</span>
+      </button>
+    </div>
+  </div>
+
+{{/match}}

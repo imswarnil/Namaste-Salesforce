@@ -1,56 +1,123 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-blog.hbs — Single blog post
-  Two columns: article (breadcrumb, byline, content, share, discussion) +
-  sidebar (TOC, tags, quick links, ads). Context: {{#post}} for a #blog post.
+  partials/post-blog.hbs — the single #blog post.
+
+  Built on the design system's BLOG layer (ds/components/css/blog.css):
+
+    .ns-posthead   the header — five versions, same parts in the same order,
+                   picked by one internal tag (see blog/head-variant.hbs)
+    .ns-post       the reading layout — TOC rail | prose | share rail. Three
+                   columns is a claim that both rails earn their width, so
+                   they are narrow, sticky and the first thing dropped: the
+                   share rail goes below 80rem, the TOC folds into a
+                   disclosure below 64rem, and the article column NEVER
+                   widens to fill the space they leave. The measure is the
+                   point.
+    .ns-toc        the outline, shared with docs and the lesson player
+    .ns-authorbox  the bio that closes the piece
+    .ns-postnav    prev / next BY TITLE, not by arrow
+
+  Context: {{#post}} for a #blog post.
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<section class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
 
-    {{!-- Article --}}
-    <article class="min-w-0">
-      {{> "components/breadcrumb"}}
+{{!-- ── HEADER ───────────────────────────────────────────────────────────── --}}
+<header class="ns-posthead {{> "blog/head-variant"}}">
 
-      <header class="mb-6">
-        {{#primary_tag}}
-          <a href="{{url}}" class="ns-badge">{{name}}</a>
-        {{/primary_tag}}
-        <h1 class="mt-4 font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="mt-4 text-lg text-muted">{{custom_excerpt}}</p>{{/if}}
-        <div class="mt-6 border-y border-border py-4">{{> "components/author-byline"}}</div>
-      </header>
+  {{!-- The background layer belongs to --cover only. The scrim is part of the
+       component: a title over an arbitrary editor-chosen photograph has no
+       contrast guarantee. --}}
+  {{#has tag="#posthead-cover"}}
+    {{#if feature_image}}
+      <div class="ns-posthead__bg" aria-hidden="true">
+        <img loading="eager" decoding="async" src="{{img_url feature_image size="xl"}}" alt="">
+      </div>
+    {{/if}}
+  {{/has}}
 
-      {{#if feature_image}}
-        <figure class="mb-8">
-          <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" class="w-full rounded-card border border-border object-cover">
-          {{#if feature_image_caption}}<figcaption class="mt-2 text-center text-sm text-muted">{{feature_image_caption}}</figcaption>{{/if}}
-        </figure>
-      {{/if}}
+  <div class="ns-posthead__inner">
+    <div class="ns-posthead__grid">
+      <div>
+        {{#primary_tag}}<a href="{{url}}" class="ns-tag ns-posthead__cat">{{name}}</a>{{/primary_tag}}
+        <h1 class="ns-posthead__title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
+        {{> "components/author-byline"}}
+      </div>
 
-      {{> "ads/slot" format="horizontal" slot="blog-top"}}
-
-      <div class="prose prose-lg max-w-none gh-content">{{content}}</div>
-
-      <footer class="mt-10 flex flex-col gap-6 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-        {{> "components/tag-pills"}}
-        {{> social-share}}
-      </footer>
-
-      {{#if @site.comments_enabled}}
-        <section class="mt-12 border-t border-border pt-8" aria-label="{{t "Discussion"}}">
-          <h2 class="mb-4 flex items-center gap-2 font-heading text-xl font-extrabold">
-            {{> icons name="chat" class="text-brand-500"}}{{t "Discussion"}}
-          </h2>
-          {{comments title=""}}
-        </section>
-      {{/if}}
-    </article>
-
-    {{!-- Sidebar: TOC + blog widgets --}}
-    <aside class="space-y-6 lg:sticky lg:top-20 lg:self-start">
-      {{> "components/toc"}}
-      {{> "blog/sidebar"}}
-    </aside>
+      {{!-- The cover sits below the meta by default and beside the title in
+           --wide. --cover already has it in the background layer, and
+           --minimal and --console have none by definition. --}}
+      {{#has tag="#posthead-cover, #posthead-minimal, #posthead-console"}}{{else}}
+        {{#if feature_image}}
+          <div>
+            <img class="ns-posthead__cover" loading="lazy" decoding="async"
+                 src="{{img_url feature_image size="l"}}"
+                 alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
+            {{#if feature_image_caption}}<span class="ns-posthead__credit">{{feature_image_caption}}</span>{{/if}}
+          </div>
+        {{/if}}
+      {{/has}}
+    </div>
   </div>
-</section>
+</header>
+
+{{!-- ── THE ARTICLE ──────────────────────────────────────────────────────── --}}
+<div class="ns-post">
+
+  {{!-- Left rail: the outline, then the blog's own widgets --}}
+  <div class="ns-post__rail">
+    {{> "components/toc"}}
+    <div class="mt-6 space-y-6">{{> "blog/sidebar"}}</div>
+  </div>
+
+  <article class="ns-post__body">
+    {{> "components/breadcrumb"}}
+
+    {{> "ads/slot" format="horizontal" slot="blog-top"}}
+
+    <div class="ns-prose gh-content">{{content}}</div>
+
+    <footer class="mt-10 flex flex-col gap-6 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+      {{> "components/tag-pills"}}
+      {{> social-share}}
+    </footer>
+
+    {{!-- The bio that closes the piece — the SAME author box a lesson ends
+         with. There is no reason for a post and a lesson to introduce the
+         same person two different ways. --}}
+    <div class="mt-10">{{> "components/author-box"}}</div>
+
+    {{!-- Prev / next BY TITLE. An arrow alone asks the reader to click to
+         find out what is behind it; a title lets them decide first. --}}
+    <nav class="ns-postnav" aria-label="{{t "More posts"}}">
+      {{#prev_post}}
+        <a class="ns-postnav__link" href="{{url}}">
+          <span class="ns-postnav__dir">{{t "Previous"}}</span>
+          <span class="ns-postnav__title">{{title}}</span>
+        </a>
+      {{else}}
+        <span class="ns-postnav__link ns-postnav__link--empty"></span>
+      {{/prev_post}}
+      {{#next_post}}
+        <a class="ns-postnav__link ns-postnav__link--next" href="{{url}}">
+          <span class="ns-postnav__dir">{{t "Next"}}</span>
+          <span class="ns-postnav__title">{{title}}</span>
+        </a>
+      {{else}}
+        <span class="ns-postnav__link ns-postnav__link--empty"></span>
+      {{/next_post}}
+    </nav>
+
+    {{#if @site.comments_enabled}}
+      <section class="mt-12 border-t border-border pt-8" aria-label="{{t "Discussion"}}">
+        <div class="ns-section-head">
+          <h2 class="ns-section-head__title">{{> icons name="chat"}}{{t "Discussion"}}</h2>
+        </div>
+        {{comments title=""}}
+      </section>
+    {{/if}}
+  </article>
+
+  {{!-- Right rail: share, vertical. Dropped below 80rem by the component. --}}
+  <div class="ns-post__aside">{{> "components/share" layout="rail"}}</div>
+</div>
 
 {{> related-posts}}

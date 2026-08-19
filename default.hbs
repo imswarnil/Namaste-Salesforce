@@ -29,19 +29,29 @@
       Phosphor fonts (~1,500 glyphs, 279 KB of woff2) — four render-blocking
       stylesheets across two origins.
 
-      Now: one local stylesheet carrying the @font-face rules, and ONE
-      preloaded font. Switzer is the entire interface and reading face
-      (headings and body, separated by weight, not by cut), so it is the only
-      thing on the critical path. Sentient — the editorial serif used for
-      pull-quotes — is fetched on demand, because browsers only download a
-      webfont when rendered text actually matches it, and a pull-quote is
-      never the first thing on screen. Mono is the platform's own console
-      face and downloads nothing at all.
+      Now: one local stylesheet carrying the @font-face rules, and TWO
+      preloaded fonts — the two the design system ships, both on the critical
+      path because both are on screen in the first viewport.
+
+        Switzer      the entire interface AND reading face — headings and body
+                     separated by weight and size, never by two cuts.
+        Roboto Mono  every index, duration, kicker, tag, status and <pre>.
+                     Preloaded, not deferred: the mono voice is in the navbar,
+                     the hero badges and the first curriculum row, so it is
+                     first-viewport text on essentially every route.
+
+      NO SHIPPED SERIF. The editorial register (pull-quotes, drop caps,
+      section quotations) used to run on Sentient. The design system retired
+      it — `--font-serif` now resolves to the platform's own serif — so the
+      quoting voice still reads as a quotation everywhere Georgia exists and
+      costs zero bytes. Do not re-add a serif webfont here; change
+      NS-Design-System and re-sync if that decision is ever revisited.
 
       ICONS ARE INLINE SVG — {{> icons name="…"}}. No icon font, no icon
       request, no flash of blank boxes, and they inherit currentColor.
     ───────────────────────────────────────────────────────────────────── --}}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/switzer-var-latin.woff2"}}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
 
     {{!-- Theme stylesheet (Tailwind build) — carries the @font-face rules --}}
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">

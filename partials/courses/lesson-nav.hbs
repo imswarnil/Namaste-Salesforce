@@ -1,34 +1,57 @@
-{{!-- courses/lesson-nav.hbs — lessons in the current lesson's course.
-     Static sidebar on `lg`; on mobile it becomes a drawer below the navbar,
-     opened by the course-player header's hamburger (Alpine store `lessonNav`)
-     and closed by the ✕ in the drawer bar. Progress lives in the header,
-     computed from these .doc-nav-link items. Context: a #lesson post. --}}
-<div x-data class="js-lesson-nav">
-  <nav id="lesson-list" class="ns-lesson-panel" :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Course lessons"}}">
+{{!-- ════════════════════════════════════════════════════════════════════════
+  courses/lesson-nav.hbs — the curriculum rail beside a lesson.
 
-    {{!-- Mobile drawer bar (hidden on lg) with a close ✕ --}}
+  ONE list, two shapes. The container carries both `.ns-player__side` (the
+  design system's rail — first grid column of `.ns-player`, collapsible via
+  `data-rail`) and `.ns-lesson-panel` (the theme's sheet, which is what the
+  rail becomes below lg and what the header's hamburger opens). Rendering the
+  list twice — once for the rail and once for the drawer — is what the theme
+  used to do, and the two copies disagreed about the active lesson.
+
+  The rows are `.ns-lesson`, the same component the course page's curriculum
+  and the mobile drawer render. That is the point of it: a learner who has
+  read the syllabus already knows how to read this rail.
+
+  Toggled by the Alpine store `lessonNav` (registered in
+  components/course-player-header.hbs); dismissed by the ✕ in its bar, the
+  scrim, or Escape.
+
+  Context: a #lesson post.
+═══════════════════════════════════════════════════════════════════════════ --}}
+<div x-data class="js-lesson-nav">
+  <nav id="lesson-list" class="ns-player__side ns-lesson-panel"
+       :class="$store.lessonNav.open && 'is-open'" aria-label="{{t "Course lessons"}}">
+
+    {{!-- The sheet's bar. Hidden while the rail is static (lg), shown when the
+         same element is acting as a drawer or a quick-jump overlay. --}}
     <div class="ns-lesson-panel__bar">
-      <span class="flex items-center gap-2 font-heading font-bold">{{> icons name="list-checks" class="text-brand-500"}}{{t "Course lessons"}}</span>
-      <button type="button" class="icon-btn" @click="$store.lessonNav.close()" aria-label="{{t "Close"}}">{{> icons name="x" class="h-5 w-5"}}</button>
+      <span class="ns-player__side-head">{{> icons name="list-checks"}}{{t "Course lessons"}}</span>
+      <button type="button" class="icon-btn" @click="$store.lessonNav.close()" aria-label="{{t "Close"}}">{{> icons name="x"}}</button>
     </div>
 
-    <div class="ns-lesson-panel__body">
-      {{!-- Desktop heading (hidden on mobile; the drawer bar covers mobile) --}}
-      <p class="ns-label mb-3 hidden items-center gap-2 lg:flex">
-        {{> icons name="list-checks"}}{{t "Course lessons"}}
-      </p>
-      <ul class="space-y-0.5 border-l border-border">
-        {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" order="published_at asc" limit="100"}}
-          {{#foreach posts}}
-            <li>
-              <a href="{{url}}" @click="$store.lessonNav.close()"
-                 class="doc-nav-link -ml-px flex items-start gap-2 border-l-2 border-transparent py-1.5 pl-4 text-sm text-muted transition hover:border-brand-400 hover:text-brand-600 dark:hover:text-brand-300 {{#match id ../../id}}is-doc-active{{/match}}">
-                <span class="shrink-0 font-light">{{@number}}.</span><span>{{title}}</span>
-              </a>
-            </li>
-          {{/foreach}}
-        {{/get}}
-      </ul>
+    {{!-- The way back out of this lesson and up to the course. It never
+         scrolls away, which is why the breadcrumb in the article can. --}}
+    {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
+      <a class="ns-player__side-back" href="{{url}}">{{> icons name="arrow-left"}}<span>{{title}}</span></a>
+    {{/foreach}}{{/get}}
+
+    <div class="ns-lesson-panel__body ns-player__list">
+      {{#get "posts" filter="tag:hash-lesson+primary_tag:{{primary_tag.slug}}" include="tags" order="published_at asc" limit="100"}}
+        {{#foreach posts}}
+          <a href="{{url}}" @click="$store.lessonNav.close()"
+             class="ns-lesson{{#match id ../../id}} is-current{{/match}}"
+             {{#match id ../../id}}aria-current="page"{{/match}}
+             data-access="{{#has tag="#preview"}}free{{else}}{{#match visibility "public"}}free{{else match visibility "members"}}members{{else match visibility "paid"}}pro{{else}}tiers{{/match}}{{/has}}">
+            <span class="ns-lesson__index" aria-hidden="true">{{@number}}</span>
+            <span class="ns-lesson__body">
+              <span class="ns-lesson__title">{{title}}</span>
+            </span>
+            <span class="ns-ltype ns-ltype--icon {{#has tag="#lesson-type-video"}}ns-ltype--video{{else}}ns-ltype--article{{/has}}">
+              {{#has tag="#lesson-type-video"}}{{> icons name="video"}}<span>{{t "Video"}}</span>{{else}}{{> icons name="article"}}<span>{{t "Article"}}</span>{{/has}}
+            </span>
+          </a>
+        {{/foreach}}
+      {{/get}}
     </div>
   </nav>
 </div>

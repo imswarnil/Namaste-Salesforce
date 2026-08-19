@@ -1,23 +1,24 @@
-{{!-- components/author-byline.hbs
-     Author avatar + name + publish date + reading time.
+{{!-- components/author-byline.hbs — author · date · reading time.
+
+     The design system's `.ns-postmeta` (ds/components/css/blog.css): the same
+     line on a card, in a post header and in a footer, so a reader learns to
+     read it once. Mono and uppercase, because it is data ABOUT the text
+     rather than part of it.
+
+     `--dotted` draws the separators with a ::before rather than as characters
+     in the DOM — middots typed between spans get announced one at a time by
+     a screen reader.
+
      Context: a post (use inside {{#post}} / {{#foreach posts}}). --}}
-<div class="flex flex-wrap items-center gap-3 text-sm text-muted">
+<div class="ns-postmeta ns-postmeta--dotted">
   {{#primary_author}}
-    <a href="{{url}}" class="flex items-center gap-2 font-medium text-ink transition-colors hover:text-brand-600 dark:hover:text-brand-300">
-      {{#if profile_image}}
-        <img loading="lazy" decoding="async" src="{{img_url profile_image size='xs'}}" alt="{{name}}" class="h-8 w-8 rounded-full object-cover">
-      {{else}}
-        <span class="ns-chip h-8 w-8 rounded-full text-sm">
-          {{> icons name="user"}}
-        </span>
-      {{/if}}
+    <a href="{{url}}" class="ns-postmeta__author">
+      {{#if profile_image}}<img class="ns-postmeta__avatar" loading="lazy" decoding="async" src="{{img_url profile_image size='xs'}}" alt="">{{/if}}
       <span>{{name}}</span>
     </a>
   {{/primary_author}}
-  <span aria-hidden="true">·</span>
   <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
   {{#if reading_time}}
-    <span aria-hidden="true">·</span>
     <span>{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
   {{/if}}
 </div>

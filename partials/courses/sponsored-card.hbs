@@ -1,27 +1,31 @@
-{{!-- courses/sponsored-card.hbs — a dummy sponsored course card, styled like a
-     real course card but flagged "Sponsored" and linking out (e.g. Udemy).
-     Marked data-sponsored so the catalog filter always keeps it visible. --}}
-<article class="ns-ccard ns-ccard--sponsored js-spotlight group" data-sponsored="true">
-  <span class="ns-ccard__ribbon ns-ccard__ribbon--sponsored">{{> icons name="megaphone"}}{{t "Sponsored"}}</span>
-  <a href="https://www.udemy.com/courses/development/?q=salesforce" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true" class="ns-ccard__media">
-    <span class="ns-ccard__sponsored-art">{{> icons name="rocket"}}</span>
-    <span class="ns-ccard__media-badges">
-      <span class="ns-level ns-level--intermediate">{{> icons name="gauge"}}{{t "All levels"}}</span>
-      <span class="ns-price-tag ns-price-tag--paid">{{> icons name="tag"}}{{t "Paid"}}</span>
-    </span>
-  </a>
-  <div class="ns-ccard__body">
-    <h2 class="font-heading text-lg font-bold leading-snug">
-      <a href="https://www.udemy.com/courses/development/?q=salesforce" target="_blank" rel="noopener sponsored" class="transition-colors hover:text-brand-600 dark:hover:text-brand-300">{{t "Salesforce Certified — Full Bootcamp"}}</a>
-    </h2>
-    <p class="ns-ccard__excerpt mt-2 text-sm text-muted">{{t "A partner bootcamp on Udemy covering admin, development and certification prep. Sponsored placement."}}</p>
-    <div class="ns-ccard__meta mt-4">
+{{!-- courses/sponsored-card.hbs — a sponsored placement in the course grid.
+
+     Deliberately the SAME component as a real course card (.ns-card .ns-ccard)
+     wearing the system's corner flag, because a sponsored slot that invents
+     its own shape reads as an ad the eye learns to skip — and one that hides
+     the fact it is sponsored is worse. The flag says it, `rel="sponsored"`
+     says it to crawlers, and the card behaves like every other card.
+
+     data-sponsored keeps it visible through every filter state (courses.hbs
+     checks that attribute first and returns early). --}}
+<article class="ns-card ns-ccard js-spotlight" data-sponsored="true">
+  <span class="ns-ccard__mediawrap">
+    <a href="https://www.udemy.com/courses/development/?q=salesforce" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true" class="ns-card__media ns-ccard__sponsored-art">
+      {{> icons name="rocket"}}
+    </a>
+    <span class="ns-level ns-level--intermediate ns-ccard__level">{{> icons name="gauge"}}{{t "All levels"}}</span>
+    <span class="ns-ccard__badge">{{t "Sponsored"}}</span>
+    <span class="ns-ccard__dur">42h</span>
+  </span>
+
+  <div class="ns-card__body">
+    <span class="ns-card__kicker">// {{t "Partner course"}}</span>
+    <a class="ns-card__link" href="https://www.udemy.com/courses/development/?q=salesforce" target="_blank" rel="noopener sponsored"><span class="ns-card__title">{{t "Salesforce Certified — Full Bootcamp"}}</span></a>
+    <p class="ns-card__text">{{t "A partner bootcamp on Udemy covering admin, development and certification prep. Sponsored placement."}}</p>
+    <span class="ns-ccard__meta">
       <span>{{> icons name="list-checks"}}320 {{t "lectures"}}</span>
-      <span>{{> icons name="clock"}}42h</span>
-    </div>
-    <div class="ns-ccard__foot">
-      <span class="ns-ccard__author"><span class="ns-ccard__author-ph">{{> icons name="buildings"}}</span><span class="truncate">{{t "Udemy Partner"}}</span></span>
-      <a href="https://www.udemy.com/courses/development/?q=salesforce" target="_blank" rel="noopener sponsored" class="ns-ccard__cta">{{t "Visit"}}{{> icons name="arrow-up-right"}}</a>
-    </div>
+      <span>{{> icons name="tag"}}{{t "Paid"}}</span>
+      <span>{{> icons name="buildings"}}{{t "Udemy Partner"}}</span>
+    </span>
   </div>
 </article>

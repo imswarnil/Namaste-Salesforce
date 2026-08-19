@@ -43,51 +43,63 @@
   <div class="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
 
     {{!-- ── Filter sidebar ── --}}
+    {{!-- The system's filter rail (ds/components/css/catalog.css). Groups are
+         <details>, so a long facet list collapses and stays collapsed on a
+         phone; the legend is the <summary>. `is-open` is the theme's own
+         mobile disclosure and is the one rule site-catalog.css still owns. --}}
     <aside class="ns-filters" :class="open ? 'is-open' : ''">
       <div class="lg:sticky lg:top-20">
-        <div class="mb-4 flex items-center justify-between">
-          <h2 class="font-heading font-extrabold">{{t "Filters"}}</h2>
-          <button type="button" class="text-sm font-semibold text-brand-600 hover:underline dark:text-brand-300" @click="reset()">{{t "Reset"}}</button>
+        <div class="ns-filters__head">
+          <h2 class="ns-filters__title">{{t "Filters"}}</h2>
+          <button type="button" class="ns-btn ns-btn--ghost ns-btn--sm ns-filters__clear" @click="reset()">{{t "Reset"}}</button>
         </div>
 
-        <label class="relative mb-5 block">
-          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">{{> icons name="search" class="h-4 w-4"}}</span>
-          <input x-model="q" type="search" placeholder="{{t "Search courses…"}}" aria-label="{{t "Search"}}" class="ns-input py-2.5 pl-10 text-sm">
+        <label class="ns-input-wrap" style="margin-block:var(--space-3)">
+          {{> icons name="search" class="ns-input-wrap__icon"}}
+          <input x-model="q" type="search" placeholder="{{t "Search courses…"}}" aria-label="{{t "Search"}}" class="ns-input ns-input--has-icon">
         </label>
 
         {{!-- Price --}}
-        <fieldset class="ns-filter-group">
-          <legend>{{t "Price"}}</legend>
-          <label class="ns-radio"><input type="radio" name="price" value="all" x-model="price"><span>{{t "All"}}</span></label>
-          <label class="ns-radio"><input type="radio" name="price" value="free" x-model="price"><span>{{t "Free"}}</span></label>
-          <label class="ns-radio"><input type="radio" name="price" value="paid" x-model="price"><span>{{t "Members / Paid"}}</span></label>
-        </fieldset>
+        <details class="ns-filters__group" open>
+          <summary class="ns-filters__legend">{{t "Price"}}{{> icons name="caret-down"}}</summary>
+          <div class="ns-filters__list">
+            <label class="ns-choice"><input class="ns-radio" type="radio" name="price" value="all" x-model="price"><span>{{t "All"}}</span></label>
+            <label class="ns-choice"><input class="ns-radio" type="radio" name="price" value="free" x-model="price"><span>{{t "Free"}}</span></label>
+            <label class="ns-choice"><input class="ns-radio" type="radio" name="price" value="paid" x-model="price"><span>{{t "Members / Paid"}}</span></label>
+          </div>
+        </details>
 
         {{!-- Level --}}
-        <fieldset class="ns-filter-group">
-          <legend>{{t "Level"}}</legend>
-          <label class="ns-check"><input type="checkbox" x-model="lv.beginner"><span class="ns-dot ns-dot--beginner"></span>{{t "Beginner"}}</label>
-          <label class="ns-check"><input type="checkbox" x-model="lv.intermediate"><span class="ns-dot ns-dot--intermediate"></span>{{t "Intermediate"}}</label>
-          <label class="ns-check"><input type="checkbox" x-model="lv.advanced"><span class="ns-dot ns-dot--advanced"></span>{{t "Advanced"}}</label>
-        </fieldset>
+        <details class="ns-filters__group" open>
+          <summary class="ns-filters__legend">{{t "Level"}}{{> icons name="caret-down"}}</summary>
+          <div class="ns-filters__list">
+            <label class="ns-choice"><input class="ns-checkbox" type="checkbox" x-model="lv.beginner"><span class="ns-dot ns-dot--beginner"></span><span>{{t "Beginner"}}</span></label>
+            <label class="ns-choice"><input class="ns-checkbox" type="checkbox" x-model="lv.intermediate"><span class="ns-dot ns-dot--intermediate"></span><span>{{t "Intermediate"}}</span></label>
+            <label class="ns-choice"><input class="ns-checkbox" type="checkbox" x-model="lv.advanced"><span class="ns-dot ns-dot--advanced"></span><span>{{t "Advanced"}}</span></label>
+          </div>
+        </details>
 
-        {{!-- Duration slider --}}
-        <fieldset class="ns-filter-group">
-          <legend>{{t "Max duration"}}</legend>
-          <input type="range" min="1" max="13" step="1" x-model.number="maxH" class="ns-slider">
-          <p class="mt-1 text-sm text-muted"><span x-text="maxH"></span>{{t "h or less"}}</p>
-        </fieldset>
+        {{!-- Duration --}}
+        <details class="ns-filters__group" open>
+          <summary class="ns-filters__legend">{{t "Max duration"}}{{> icons name="caret-down"}}</summary>
+          <div class="ns-filters__list">
+            <input type="range" min="1" max="13" step="1" x-model.number="maxH" class="ns-slider">
+            <p class="text-sm text-muted"><span x-text="maxH"></span>{{t "h or less"}}</p>
+          </div>
+        </details>
 
         {{!-- Author --}}
-        <fieldset class="ns-filter-group">
-          <legend>{{t "Instructor"}}</legend>
-          <label class="ns-radio"><input type="radio" name="author" value="" x-model="author"><span>{{t "Anyone"}}</span></label>
-          {{#get "authors" limit="8"}}{{#foreach authors}}
-            <label class="ns-radio ns-radio--author"><input type="radio" name="author" value="{{slug}}" x-model="author">
-              {{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-6 w-6 rounded-full object-cover">{{else}}<span class="ns-ccard__author-ph h-6 w-6">{{> icons name="user"}}</span>{{/if}}
-              <span class="truncate">{{name}}</span></label>
-          {{/foreach}}{{/get}}
-        </fieldset>
+        <details class="ns-filters__group" open>
+          <summary class="ns-filters__legend">{{t "Instructor"}}{{> icons name="caret-down"}}</summary>
+          <div class="ns-filters__list">
+            <label class="ns-choice"><input class="ns-radio" type="radio" name="author" value="" x-model="author"><span>{{t "Anyone"}}</span></label>
+            {{#get "authors" limit="8"}}{{#foreach authors}}
+              <label class="ns-choice"><input class="ns-radio" type="radio" name="author" value="{{slug}}" x-model="author">
+                {{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="" class="ns-avatar ns-avatar--xs">{{/if}}
+                <span class="truncate">{{name}}</span></label>
+            {{/foreach}}{{/get}}
+          </div>
+        </details>
       </div>
     </aside>
 

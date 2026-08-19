@@ -663,9 +663,9 @@ page("Components", "widget", "Widgets",
          spec("--toc",
               '<div class="ns-widget ns-widget--toc demo-w-sm">'
               '<div class="ns-widget__head"><span class="ns-widget__title">On this page</span></div>'
-              '<div class="ns-widget__body"><a class="toc-link is-active" href="#!">The data model</a>'
-              '<a class="toc-link" href="#!">Relationships</a>'
-              '<a class="toc-link is-h3" href="#!">Lookup</a></div></div>', wide=True)),
+              '<div class="ns-widget__body"><a class="ns-toc__link" aria-current="true" href="#!">The data model</a>'
+              '<a class="ns-toc__link" href="#!">Relationships</a>'
+              '<a class="ns-toc__link ns-toc__link--sub" href="#!">Lookup</a></div></div>', wide=True)),
      head("Stats + CTA"),
      row(spec("--stats",
               '<div class="ns-widget ns-widget--stats demo-w-sm">'
@@ -1157,15 +1157,31 @@ page("Components", "menu", "Menu &amp; share",
               '<button type="button"><i class="ph ph-link-simple"></i>Copy link</button></div></div>', wide=True)))
 
 page("Components", "toc", "Table of contents",
-     "Built by <code>toc.js</code> from the headings in the article. The active heading is marked by "
-     "the LEFT RAIL going brand — a rail, not a highlight, because the TOC is a map of the page's "
-     "structure.",
-     row(spec(".toc-link",
-              '<nav class="demo-w-sm"><a class="toc-link is-active" href="#!">Getting started</a>'
-              '<a class="toc-link" href="#!">The data model</a>'
-              '<a class="toc-link is-h3" href="#!">Objects</a>'
-              '<a class="toc-link is-h3" href="#!">Relationships</a>'
-              '<a class="toc-link is-h4" href="#!">Lookup vs master-detail</a></nav>', wide=True)))
+     "The design system's <code>.ns-toc</code>, filled by <code>toc.js</code> from the headings in "
+     "the article. The active heading is marked by the LEFT RAIL going brand — a rail, not a "
+     "highlight, because the TOC is a map of the page's structure — and it is carried by "
+     "<code>aria-current=&quot;true&quot;</code> rather than a class, so the highlighted item and "
+     "the announced item cannot drift apart. Two levels only.",
+     row(spec(".ns-toc",
+              '<nav class="ns-toc demo-w-sm"><span class="ns-toc__title">On this page</span>'
+              '<a class="ns-toc__link" href="#!" aria-current="true">Getting started</a>'
+              '<a class="ns-toc__link" href="#!">The data model</a>'
+              '<a class="ns-toc__link ns-toc__link--sub" href="#!">Objects</a>'
+              '<a class="ns-toc__link ns-toc__link--sub" href="#!">Relationships</a></nav>', wide=True),
+         spec("--card",
+              '<nav class="ns-toc ns-toc--card demo-w-sm"><span class="ns-toc__title">On this page</span>'
+              '<a class="ns-toc__link" href="#!" aria-current="true">Getting started</a>'
+              '<a class="ns-toc__link" href="#!">The data model</a></nav>', wide=True)),
+     row(spec("--numbered",
+              '<nav class="ns-toc ns-toc--numbered demo-w-sm">'
+              '<a class="ns-toc__link" href="#!">Create the org</a>'
+              '<a class="ns-toc__link" href="#!">Install the package</a>'
+              '<a class="ns-toc__link" href="#!">Verify the deploy</a></nav>', wide=True),
+         spec("--inline",
+              '<nav class="ns-toc ns-toc--inline demo-w-xl">'
+              '<a class="ns-toc__link" href="#!" aria-current="true">Getting started</a>'
+              '<a class="ns-toc__link" href="#!">The data model</a>'
+              '<a class="ns-toc__link" href="#!">Users</a></nav>', wide=True)))
 
 page("Components", "sidebar", "Docs sidebar",
      "Three different &ldquo;active&rdquo; treatments, because they answer three different questions: which "
@@ -1200,18 +1216,22 @@ page("Components", "site", "Site modules",
          spec(".ns-badge-featured", '<span class="ns-badge-featured"><i class="ph-fill ph-star"></i>Featured</span>')),
      head("Curriculum"),
      row(spec(".ns-curriculum",
-              '<div class="ns-curriculum demo-w-xl">'
-              + "".join(f'<a class="ns-curriculum__item" href="#!"><span class="ns-curriculum__num">{n:02d}</span>'
-                        f'<i class="ns-curriculum__icon ph-fill ph-{ic}"></i>'
-                        f'<span class="ns-curriculum__body"><span class="ns-curriculum__title">{t}</span></span>'
-                        f'<span class="ns-curriculum__meta"><span class="ns-curriculum__dur">{d}</span>{b}</span></a>'
-                        for n, ic, t, d, b in (
-                            (1, "play-circle", "What Salesforce actually is", "6m",
-                             '<span class="ns-curriculum__badge ns-curriculum__badge--free">Free</span>'),
-                            (2, "play-circle", "Objects and fields", "12m",
-                             '<span class="ns-curriculum__badge ns-curriculum__badge--preview">Preview</span>'),
-                            (3, "article", "Users and permissions", "18m",
-                             '<span class="ns-curriculum__badge ns-curriculum__badge--members">Members</span>')))
+              '<div class="ns-curriculum ns-curriculum--flat demo-w-xl">'
+              '<div class="ns-curriculum__bar"><span class="ns-curriculum__totals">3 lessons</span></div>'
+              + "".join(f'<a class="ns-lesson" href="#!" data-access="{acc}">'
+                        f'<span class="ns-lesson__index">{n:02d}</span>'
+                        f'<span class="ns-lesson__body"><span class="ns-lesson__title">{t}</span>'
+                        f'<span class="ns-lesson__sub">{b}</span></span>'
+                        f'<span class="ns-ltype ns-ltype--icon ns-ltype--{kind}">'
+                        f'<i class="ph ph-{ic}"></i><span>{kind.title()}</span></span>'
+                        f'<span class="ns-lesson__time">{d}</span></a>'
+                        for n, ic, kind, t, d, acc, b in (
+                            (1, "video", "video", "What Salesforce actually is", "6m", "free",
+                             '<span class="ns-laccess ns-laccess--free">Free</span>'),
+                            (2, "video", "video", "Objects and fields", "12m", "free",
+                             '<span class="ns-laccess ns-laccess--free">Preview</span>'),
+                            (3, "article", "article", "Users and permissions", "18m", "members",
+                             '<span class="ns-laccess ns-laccess--members">Members</span>')))
               + '</div>', wide=True)),
      head("Lesson"),
      row(spec(".ns-lesson-type", '<span class="ns-lesson-type ns-lesson-type--video"><i class="ph-fill ph-video"></i>Video</span>'
@@ -1252,16 +1272,15 @@ def pcard(mod="", title="Why I reach for Flow before Apex", cover=True, badge=No
                   "problem is."):
     media = ""
     if cover:
-        media = ('<div class="ns-pcard__media">'
-                 '<span class="ns-pcard__fallback"><i class="ph ph-image"></i></span>'
-                 + (f'<span class="ns-pcard__badge ns-badge ns-badge--solid">{badge}</span>' if badge else "")
-                 + '</div>')
-    return (f'<article class="ns-pcard {mod}">{media}'
-            f'<div class="ns-pcard__body">'
-            f'<span class="ns-kicker ns-kicker--sm">Blog</span>'
-            f'<h3 class="ns-pcard__title"><a href="#!">{title}</a></h3>'
-            f'<p class="ns-pcard__excerpt">{excerpt}</p>'
-            f'<div class="ns-pcard__meta"><span class="ns-pcard__author">'
+        media = ('<span class="ns-bcard__cover ns-bcard__cover--empty">'
+                 '<i class="ph ph-image"></i></span>')
+    return (f'<article class="ns-card ns-bcard {mod}">{media}'
+            f'<div class="ns-card__body">'
+            + (f'<span class="ns-badge ns-badge--solid">{badge}</span>' if badge else "")
+            + f'<h3 class="ns-bcard__title"><a class="ns-card__link" href="#!">{title}</a></h3>'
+            f'<p class="ns-bcard__excerpt">{excerpt}</p>'
+            f'<div class="ns-postmeta ns-postmeta--dotted">'
+            f'<span class="ns-postmeta__author">'
             f'<span class="ns-avatar ns-avatar--xs demo-avatar-fill"></span>Swarnil</span>'
             f'<span>6 min</span><span>Mar 2026</span></div>'
             f'</div></article>')
@@ -1358,10 +1377,10 @@ page("Home", "home", "Home page",
               '<h2 class="ns-collection__title">Field notes</h2></div>'
               '<a class="ns-btn ns-btn--outline ns-btn--sm ns-collection__action" href="#!">All posts</a></div>'
               '<div class="ns-collection__items">'
-              + pcard("ns-pcard--overlay", badge="New")
-              + pcard("ns-pcard--row", title="A mental model for governor limits", cover=True,
+              + pcard("ns-bcard--overlay", badge="New")
+              + pcard("ns-bcard--row", title="A mental model for governor limits", cover=True,
                       excerpt="Stop memorising the numbers.")
-              + pcard("ns-pcard--row", title="Your first 90 days as an admin", cover=True,
+              + pcard("ns-bcard--row", title="Your first 90 days as an admin", cover=True,
                       excerpt="What to do when you inherit an org you did not build.")
               + '</div></div></div>', wide=True)),
      head("6 · Metrics"),
@@ -1438,17 +1457,17 @@ page("Home", "home-post-card", "Post card",
      "box; this is what goes IN it when the thing being shown is content — so every collection on "
      "the site presents the same shape.",
      head("Default"),
-     row(spec(".ns-pcard", f'<div class="demo-w-md">{pcard()}</div>', wide=True),
-         spec("--sm", f'<div class="demo-w-sm">{pcard("ns-pcard--sm")}</div>', wide=True)),
+     row(spec(".ns-card .ns-bcard", f'<div class="demo-w-md">{pcard()}</div>', wide=True),
+         spec("--sm", f'<div class="demo-w-sm">{pcard("ns-bcard--sm")}</div>', wide=True)),
      head("Row"),
-     row(spec("--row", f'<div class="demo-w-xl">{pcard("ns-pcard--row")}</div>', wide=True)),
+     row(spec("--row", f'<div class="demo-w-xl">{pcard("ns-bcard--row")}</div>', wide=True)),
      head("Wide — the featured item"),
-     row(spec("--wide", f'<div class="demo-w-full">{pcard("ns-pcard--wide")}</div>', wide=True)),
+     row(spec("--wide", f'<div class="demo-w-full">{pcard("ns-bcard--wide")}</div>', wide=True)),
      head("Overlay"),
-     row(spec("--overlay", f'<div class="demo-w-md">{pcard("ns-pcard--overlay", badge="Featured")}</div>', wide=True)),
+     row(spec("--overlay", f'<div class="demo-w-md">{pcard("ns-bcard--overlay", badge="Featured")}</div>', wide=True)),
      head("Compact + minimal"),
-     row(spec("--compact", f'<div class="demo-w-sm">{pcard("ns-pcard--compact", cover=False)}</div>', wide=True),
-         spec("--minimal", f'<div class="demo-w-md">{pcard("ns-pcard--minimal", cover=False)}</div>', wide=True)),
+     row(spec("--compact", f'<div class="demo-w-sm">{pcard("ns-bcard--minimal", cover=False)}</div>', wide=True),
+         spec("--minimal", f'<div class="demo-w-md">{pcard("ns-bcard--minimal", cover=False)}</div>', wide=True)),
      note("The whole card is clickable through a stretched link on the title, so the title stays the "
           "real anchor — screen readers announce it and middle-click still works."))
 
@@ -1472,9 +1491,9 @@ page("Home", "home-collection", "Collection",
               '<div class="ns-collection__head"><div><span class="ns-kicker">Docs</span>'
               '<h2 class="ns-collection__title">Recently updated</h2></div></div>'
               '<div class="ns-collection__items">'
-              + pcard("ns-pcard--minimal", cover=False, title="Create your account")
-              + pcard("ns-pcard--minimal", cover=False, title="How a course is structured")
-              + pcard("ns-pcard--minimal", cover=False, title="Cancel or change your plan")
+              + pcard("ns-bcard--minimal", cover=False, title="Create your account")
+              + pcard("ns-bcard--minimal", cover=False, title="How a course is structured")
+              + pcard("ns-bcard--minimal", cover=False, title="Cancel or change your plan")
               + '</div></div></div>', wide=True)),
      head("Feature — one big, the rest beside"),
      row(spec("--feature",
@@ -1483,9 +1502,9 @@ page("Home", "home-collection", "Collection",
               '<div class="ns-collection__head"><div><span class="ns-kicker">Blog</span>'
               '<h2 class="ns-collection__title">Field notes</h2></div></div>'
               '<div class="ns-collection__items">'
-              + pcard("ns-pcard--overlay")
-              + pcard("ns-pcard--row", title="A mental model for governor limits")
-              + pcard("ns-pcard--row", title="Your first 90 days as an admin")
+              + pcard("ns-bcard--overlay")
+              + pcard("ns-bcard--row", title="A mental model for governor limits")
+              + pcard("ns-bcard--row", title="Your first 90 days as an admin")
               + '</div></div></div>', wide=True)),
      head("Split — standing copy, items beside"),
      row(spec("--split",
@@ -1495,7 +1514,7 @@ page("Home", "home-collection", "Collection",
               '<p class="ns-collection__sub">Nine sections, in order, from zero.</p>'
               '<a class="ns-btn ns-btn--primary ns-btn--sm" href="#!">Start</a></div></div>'
               '<div class="ns-collection__items">'
-              + pcard("ns-pcard--row", title="Start here") + pcard("ns-pcard--row", title="Build your first app")
+              + pcard("ns-bcard--row", title="Start here") + pcard("ns-bcard--row", title="Build your first app")
               + '</div></div></div>', wide=True)),
      note("<code>--rail</code> makes the items swipeable on a phone and a grid from <code>lg</code> — "
           "the right answer when a collection has more items than a phone can show."))
@@ -1508,7 +1527,7 @@ page("Home", "home-collection", "Collection",
 def _toc_rail():
     items = ("Who we are", "What we collect", "How we use it", "Your rights", "Contact us")
     links = "".join(
-        '<a class="toc-link%s" href="#!">%s</a>' % (" is-active" if i == 0 else "", t)
+        '<a class="ns-toc__link"%s href="#!">%s</a>' % (' aria-current="true"' if i == 0 else '', t)
         for i, t in enumerate(items))
     return ('<div class="ns-widget ns-widget--toc ns-widget--sunken">'
             '<div class="ns-widget__head"><span class="ns-widget__title">On this page</span></div>'
@@ -2232,9 +2251,9 @@ page("Training", "training-lesson", "Training lesson",
               '<div class="ns-widget ns-widget--toc ns-widget--sunken">'
               '<div class="ns-widget__head"><span class="ns-widget__title">On this page</span></div>'
               '<div class="ns-widget__body">'
-              '<a class="toc-link is-active" href="#!">Create the object</a>'
-              '<a class="toc-link" href="#!">Name it properly</a>'
-              '<a class="toc-link is-h3" href="#!">Record name</a></div></div>'
+              '<a class="ns-toc__link" aria-current="true" href="#!">Create the object</a>'
+              '<a class="ns-toc__link" href="#!">Name it properly</a>'
+              '<a class="ns-toc__link ns-toc__link--sub" href="#!">Record name</a></div></div>'
               '<div class="ns-widget ns-widget--cta ns-widget--brand">'
               '<div class="ns-widget__head"><span class="ns-widget__title">Stuck?</span></div>'
               '<div class="ns-widget__body"><p>Comments are open under every lesson.</p>'

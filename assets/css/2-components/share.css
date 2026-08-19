@@ -4,11 +4,30 @@
    A reveal menu anchored above its trigger. Rows are plain until hovered,
    where they take the same faint brand tint as every other menu row.
 
-   PARTS __menu
+   PARTS   __menu
+   LAYOUT  --rail — the vertical strip beside an article
+
+   ⚠️ SHARED CLASS NAME, DIFFERENT COMPONENT. The design system also declares
+   `.ns-share` (ds/components/css/blog.css) and means something else by it: a
+   flat flex ROW of icon buttons, with `--rail` turning it vertical. This
+   theme's `.ns-share` is a positioned dropdown, and the base rule below —
+   `position: relative; display: inline-block` — is what anchors the menu.
+   Deleting it in favour of the system's does not simplify anything; it
+   detaches every share menu on the site from its trigger.
+
+   The two coexist because the theme's wins by layer order and the rail
+   variant opts back out of it explicitly, below. components/share.hbs picks
+   which markup to emit with `layout="rail"`.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Share menu ─────────────────────────────────────────────────────────── */
 .ns-share { position: relative; display: inline-block; }
+
+/* ── Rail — the system's vertical strip, re-asserted over the base above.
+      Without `position: static` the rail inherits the dropdown's positioning
+      context and the sticky column it lives in stops sticking. ──────────── */
+.ns-share--rail { position: static; display: flex; flex-direction: column;
+  align-items: center; gap: var(--space-1); }
 .ns-share__menu { position: absolute; left: 0; bottom: calc(100% + 0.5rem); z-index: var(--z-dropdown);
   min-width: 12rem; padding: 0.4rem; border: 1px solid var(--color-border); border-radius: var(--radius-card);
   background: var(--color-surface-raised); box-shadow: var(--shadow-raised); }

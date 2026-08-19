@@ -1,25 +1,47 @@
-{{!-- components/toc.hbs — Custom Table of Contents
-     ---------------------------------------------------------------------------
-     Rendered empty; toc.js scans the post's `.gh-content` headings (h2/h3),
-     injects anchor links into [data-toc], and adds scroll-spy highlighting.
-     - Desktop: meant to sit in a sticky sidebar column (the parent positions it).
-     - Mobile: collapses behind a toggle (Alpine `open` state).
-     The whole nav hides itself (via toc.js) when a post has no headings. --}}
-<nav aria-label="{{t "Table of contents"}}"
-     class="js-toc hidden text-sm"
-     x-data="{ open: false }">
+{{!-- ════════════════════════════════════════════════════════════════════════
+  components/toc.hbs — the table of contents.
 
-  <div class="flex items-center justify-between gap-2 lg:block">
-    <p class="ns-label">{{t "On this page"}}</p>
-    <button type="button" class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-btn border border-border text-muted"
-            @click="open = !open" :aria-expanded="open.toString()" aria-label="{{t "Toggle contents"}}">
-      {{!-- Two icons swapped by state, rather than one element whose class is
-            rewritten — inline SVG carries its artwork, not a font codepoint. --}}
-      <span x-show="!open">{{> icons name="list"}}</span>
-      <span x-show="open" x-cloak>{{> icons name="x"}}</span>
-    </button>
-  </div>
+  Rendered EMPTY. assets/js/toc.js scans the post's `.gh-content` for h2/h3,
+  gives each one an id, and appends an `<a class="ns-toc__link">` per heading
+  into every `[data-toc]` on the page. A post with fewer than two headings
+  gets no TOC at all — the elements stay `hidden` and nothing appears.
 
-  {{!-- toc.js fills this <ul>. lg:!block keeps it open on desktop regardless of state. --}}
-  <ul data-toc class="mt-3 space-y-0.5 lg:!block" :class="open ? 'block' : 'hidden'"></ul>
+  This is the design system's `.ns-toc` (ds/components/css/toc.css), the same
+  outline the docs, the lesson player and the Next.js app render. Two things
+  about the contract matter:
+
+    · The links are DIRECT CHILDREN of `.ns-toc`. It is a flex column, not a
+      list — putting a <ul> in between breaks the rail's leading border and
+      the active item's brand bar. That is why toc.js appends to [data-toc]
+      itself rather than to an inner list.
+    · The active item is `aria-current="true"`, NOT a class. The CSS keys off
+      the same attribute the screen reader announces, so the highlighted item
+      and the announced item cannot drift apart.
+
+  TWO INSTANCES, because a sticky rail and a phone need different objects:
+  the <nav> is the rail (lg and up), the <details> is the disclosure that
+  replaces it below lg. toc.js fills both.
+
+  Params
+    variant   extra .ns-toc--* on the desktop rail — `ns-toc--card` for a
+              sidebar that already holds other blocks, `ns-toc--numbered` for
+              a procedure where the order is the content.
+    title     the rail's label. Defaults to "On this page".
+═══════════════════════════════════════════════════════════════════════════ --}}
+
+{{!-- Both start hidden and are revealed by toc.js adding `.is-ready` (see
+     2-components/toc.css) — NOT by toggling Tailwind's `hidden`, because each
+     one also carries a responsive display of its own that `hidden` would
+     fight with. --}}
+
+{{!-- The sticky rail — lg and up --}}
+<nav data-toc aria-label="{{t "Table of contents"}}"
+     class="js-toc ns-toc {{variant}} max-lg:hidden">
+  <span class="ns-toc__title">{{#if title}}{{title}}{{else}}{{t "On this page"}}{{/if}}</span>
+  <span class="ns-toc__progress" aria-hidden="true"></span>
 </nav>
+
+{{!-- The disclosure — below lg, where a sticky rail has nowhere to stick --}}
+<details data-toc class="js-toc ns-toc ns-toc--collapsible lg:hidden">
+  <summary>{{> icons name="list"}}{{#if title}}{{title}}{{else}}{{t "On this page"}}{{/if}}{{> icons name="caret-down"}}</summary>
+</details>

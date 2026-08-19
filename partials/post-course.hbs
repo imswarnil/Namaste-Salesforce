@@ -1,181 +1,219 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-course.hbs — single #course page.
-  Hero (variant via #hero-1..5) → left content (description → curriculum → FAQ)
-  + sticky enrolment sidebar + reusable 728×90 ad + mobile sticky CTA.
-  Lessons are pulled with {{#get}} (Handlebars, not JS). Level / duration /
-  price / hero / access come from internal tags (#level-*, #duration-*,
-  #free/#paid, #hero-*, #preview). Ghost content toggle cards render as FAQ
-  accordions and product cards as testimonials (styled in theme/course.css).
+  partials/post-course.hbs — the single #course page.
+
+  Built on the design system's CATALOG layer (assets/css/ds/components/css/
+  catalog.css) — the half of a course page a BUYER sees. The learner-facing
+  half (curriculum rows, lesson chrome) is the LMS layer and is rendered by
+  courses/curriculum-list.
+
+  The page in order, and the order is the argument:
+    1. Breadcrumb   where this sits in the catalog        .ns-breadcrumb
+    2. Hero         what it is, and whether it is good    .ns-chero
+    3. Stat band    the numbers, before prose asks trust  .ns-statband
+    4. Body         description → curriculum → share
+    5. Buy box      the enrol card, sticky rail + phone bar   .ns-buybox
+
+  ART DIRECTION is one internal tag — see courses/hero-variant.hbs for the
+  full contract and the numeric aliases kept for already-published courses.
+  Everything else comes from internal tags too: #level-*, #duration-*,
+  #free/#paid, #preview, #hide-image.
+
+  ⚠️ NEVER call a Ghost helper across `../` in here (`{{../url}}`) — Ghost
+  throws and 500s the page. Use dotted access (`{{primary_tag.url}}`).
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
+{{!-- ── BREADCRUMB ───────────────────────────────────────────────────────── --}}
+<nav class="ns-container" aria-label="Breadcrumb">
+  <ol class="ns-breadcrumb" style="padding-block-start:var(--space-4)">
+    <li class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{@site.url}}">{{t "Home"}}</a></li>
+    <li class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="/courses/">{{t "Courses"}}</a></li>
+    <li class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{url}}" aria-current="page">{{title}}</a></li>
+  </ol>
+</nav>
+
 {{!-- ── HERO ─────────────────────────────────────────────────────────────── --}}
-<section class="ns-course-hero ns-aurora relative overflow-hidden bg-brand-900 text-white"
-         data-hero="{{#has tag="#hero-2"}}2{{else has tag="#hero-3"}}3{{else has tag="#hero-4"}}4{{else has tag="#hero-5"}}5{{else}}1{{/has}}">
-  <div aria-hidden="true" class="bg-grid pointer-events-none absolute inset-0 text-white/40"></div>
+<section class="ns-chero {{> "courses/hero-variant"}}">
 
-  <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:py-20">
-    <div class="ns-course-hero__grid grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+  {{!-- The background layer belongs to --cover and --video only. The scrim is
+       part of the component, not a choice: type over an arbitrary editor-
+       chosen photograph has no contrast guarantee. --}}
+  {{#has tag="#hero-cover, #hero-video, #hero-3, #hero-5"}}
+    {{#if feature_image}}
+      <div class="ns-chero__bg" aria-hidden="true">
+        <img loading="eager" decoding="async" src="{{img_url feature_image size="xl"}}" alt="">
+      </div>
+    {{/if}}
+  {{/has}}
 
-      <div class="ns-course-hero__body min-w-0 max-w-2xl">
-        {{!-- Breadcrumb (dotted access only — no ../ helper calls) --}}
-        <nav class="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/70" aria-label="Breadcrumb">
-          <a href="/" class="hover:text-white">{{t "Home"}}</a><span aria-hidden="true">/</span>
-          <a href="/courses/" class="hover:text-white">{{t "Courses"}}</a>
-        </nav>
+  <div class="ns-chero__inner">
+    <div class="ns-chero__grid">
+      <div class="ns-chero__body">
 
-        {{!-- Badges: level · featured · price --}}
-        <div class="mb-4 flex flex-wrap items-center gap-2">
-          {{> "components/course-level"}}
-          {{#if featured}}<span class="ns-badge-featured">{{> icons name="star"}}{{t "Featured"}}</span>{{/if}}
-          {{#has tag="#free"}}<span class="ns-price-tag ns-price-tag--free">{{> icons name="gift"}}{{t "Free"}}</span>{{else has tag="#paid"}}<span class="ns-price-tag ns-price-tag--paid">{{> icons name="crown"}}{{t "Members"}}</span>{{/has}}
-        </div>
+        {{#if featured}}
+          <div class="ns-chero__badges">
+            <span class="ns-tag ns-tag--pill">{{> icons name="star"}}{{t "Featured"}}</span>
+          </div>
+        {{/if}}
 
-        <h1 class="ns-display--sm font-heading font-extrabold leading-tight tracking-tight">{{title}}</h1>
-        <p class="mt-4 max-w-xl text-lg text-white/85">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="30"}}{{/if}}</p>
+        <span class="ns-chero__kicker">// {{t "Course"}}{{#primary_tag}} · {{name}}{{/primary_tag}}</span>
+        <h1 class="ns-chero__title">{{title}}</h1>
+        <p class="ns-chero__lede">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="30"}}{{/if}}</p>
 
-        {{!-- Animated stats --}}
-        <div class="ns-course-stats mt-7">
+        {{!-- The meta strip: mono, tabular, wrapping rather than truncating —
+             every item in it is a reason to enrol. --}}
+        <div class="ns-chero__meta">
           {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" limit="100" as |lessons|}}
-            <div class="ns-course-stat">{{> icons name="list-checks"}}<b class="js-count" data-to="{{lessons.length}}">0</b><span>{{t "Lessons"}}</span></div>
+            <span>{{> icons name="list-checks"}}{{lessons.length}} {{t "lessons"}}</span>
           {{/get}}
-          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<div class="ns-course-stat">{{> icons name="clock"}}<b>{{description}}</b><span>{{t "Duration"}}</span></div>{{/match}}{{/foreach}}
-          <div class="ns-course-stat">{{> icons name="seal-check"}}<b>{{t "Self-paced"}}</b><span>{{t "Access"}}</span></div>
+          {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<span>{{> icons name="clock"}}{{description}}</span>{{/match}}{{/foreach}}
+          <span>{{> icons name="gauge"}}{{#has tag="#level-beginner"}}{{t "Beginner"}}{{else has tag="#level-intermediate"}}{{t "Intermediate"}}{{else has tag="#level-advanced"}}{{t "Advanced"}}{{else}}{{t "All levels"}}{{/has}}</span>
+          <span>{{> icons name="seal-check"}}{{t "Self-paced"}}</span>
+          {{#has tag="#free"}}<span>{{> icons name="gift"}}{{t "Free"}}</span>{{else has tag="#paid"}}<span>{{> icons name="crown"}}{{t "Members"}}</span>{{/has}}
+          <span>{{> icons name="calendar"}}{{t "Updated"}} {{date updated_at format="MMM YYYY"}}</span>
         </div>
 
-        {{!-- Instructor(s) --}}
-        <div class="mt-7 flex flex-wrap items-center gap-4">
-          {{#primary_author}}
-            <div class="flex items-center gap-3">
-              <span class="ns-ring">{{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="h-11 w-11 object-cover">{{else}}<span class="flex h-11 w-11 items-center justify-center rounded-full bg-white/15">{{> icons name="user" class="text-xl"}}</span>{{/if}}</span>
-              <div><p class="ns-label text-white/60">{{t "Instructor"}}</p><p class="font-bold">{{name}}</p></div>
-            </div>
-          {{/primary_author}}
-          {{#if authors.[1]}}
-            <div class="flex -space-x-2" title="{{t "Co-instructors"}}">
-              {{#foreach authors}}{{#unless @first}}{{#if profile_image}}<img loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="{{name}}" class="h-8 w-8 rounded-full object-cover ring-2 ring-brand-800">{{/if}}{{/unless}}{{/foreach}}
-            </div>
-          {{/if}}
-        </div>
-
-        {{!-- CTA --}}
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="ns-chero__actions">
           {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
-            <a href="{{url}}" class="ns-btn ns-btn--white">{{> icons name="play"}}{{t "Start course"}}</a>
+            <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--lg">{{> icons name="play"}}{{t "Start course"}}</a>
           {{else}}
-            <a href="#curriculum" class="ns-btn ns-btn--white">{{t "View curriculum"}}</a>
+            <a href="#curriculum" class="ns-btn ns-btn--primary ns-btn--lg">{{t "View curriculum"}}</a>
           {{/foreach}}{{/get}}
-          <a href="#curriculum" class="ns-btn ns-btn--glass">{{t "See curriculum"}}</a>
+          <a href="#curriculum" class="ns-btn ns-btn--soft ns-btn--lg">{{t "See curriculum"}}</a>
+        </div>
+
+        {{!-- Instructors — the system's .ns-authors, one shape for one or many --}}
+        <div class="ns-authors" style="margin-block-start:var(--space-5)">
+          <span class="ns-authors__stack" aria-hidden="true">
+            {{#foreach authors limit="3"}}{{#if profile_image}}<img class="ns-authors__avatar" loading="lazy" decoding="async" src="{{img_url profile_image size="xxs"}}" alt="">{{/if}}{{/foreach}}
+          </span>
+          <span class="ns-authors__names">{{t "Taught by"}} {{#foreach authors}}<b>{{name}}</b>{{#unless @last}}, {{/unless}}{{/foreach}}</span>
         </div>
       </div>
 
-      {{!-- Media: image, or a video-play poster for #hero-5 --}}
-      {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
-        <div class="ns-course-hero__media hidden w-96 shrink-0 lg:block">
-          {{#has tag="#hero-5"}}
+      {{!-- The media card belongs to the variants that HAVE one. --cover and
+           --video put their art in the background layer above; --minimal has
+           none by definition. --}}
+      {{#has tag="#hero-cover, #hero-video, #hero-3, #hero-5, #hero-minimal, #hero-2, #hero-4, #hide-image"}}{{else}}
+        {{#if feature_image}}
+          <div class="ns-chero__media">
             {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson+tag:hash-lesson-type-video" order="published_at asc" limit="1" as |vids|}}
               {{#if vids.[0]}}
-                <a href="{{vids.[0].url}}" class="ns-video-poster group" aria-label="{{t "Play intro"}}">
-                  <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
-                  <span class="ns-video-poster__play">{{> icons name="play"}}</span>
-                </a>
+                <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
+                <a href="{{vids.[0].url}}" class="ns-chero__play" aria-label="{{t "Play the course preview"}}">{{> icons name="play"}}</a>
+                <span class="ns-chero__caption">{{t "Preview"}}</span>
               {{else}}
-                <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}" class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-white/10">
+                <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}">
               {{/if}}
             {{/get}}
-          {{else}}
-            <img loading="lazy" decoding="async" src="{{img_url feature_image size="l"}}" alt="{{title}}" class="aspect-[4/3] w-full rounded-card object-cover ring-1 ring-white/10">
-          {{/has}}
-        </div>
-      {{/if}}{{/has}}
+          </div>
+        {{/if}}
+      {{/has}}
     </div>
   </div>
 </section>
 
-{{!-- ── MAIN ─────────────────────────────────────────────────────────────── --}}
-<section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+{{!-- ── STAT BAND — concrete numbers, before any prose asks for trust ────── --}}
+<section class="ns-band ns-band--tight ns-band--sunken">
+  <div class="ns-band__inner">
+    <dl class="ns-statband">
+      {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" limit="100" as |lessons|}}
+        <div class="ns-statband__cell"><dd class="ns-statband__value">{{lessons.length}}</dd><dt class="ns-statband__label">{{t "Lessons"}}</dt></div>
+      {{/get}}
+      {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson+tag:hash-lesson-type-video" limit="100" as |vids|}}
+        <div class="ns-statband__cell"><dd class="ns-statband__value">{{vids.length}}</dd><dt class="ns-statband__label">{{t "Video lessons"}}</dt></div>
+      {{/get}}
+      {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<div class="ns-statband__cell"><dd class="ns-statband__value">{{description}}</dd><dt class="ns-statband__label">{{t "Duration"}}</dt></div>{{/match}}{{/foreach}}
+      <div class="ns-statband__cell"><dd class="ns-statband__value">∞</dd><dt class="ns-statband__label">{{t "Lifetime access"}}</dt></div>
+    </dl>
+  </div>
+</section>
 
-    {{!-- Left: description → curriculum → FAQ --}}
-    <div class="min-w-0">
+{{!-- ── BODY + BUY BOX ───────────────────────────────────────────────────── --}}
+<section class="ns-container ns-section">
+  <div class="ns-course-detail">
+
+    <div class="ns-course-detail__main">
 
       {{#if html}}
-        <h2 class="font-heading text-2xl font-extrabold">{{t "About this course"}}</h2>
+        <div class="ns-section-head"><h2 class="ns-section-head__title">{{t "About this course"}}</h2></div>
         {{!-- Ghost content = the description. Toggle cards render as FAQ
-             accordions, product cards as testimonials (theme/course.css). --}}
-        <div class="ns-course-content prose mt-4 max-w-none gh-content">{{content}}</div>
+             accordions, product cards as testimonials (site-course.css). --}}
+        <div class="ns-course-content ns-prose gh-content">{{content}}</div>
       {{/if}}
 
       {{> "ads/leaderboard"}}
 
-      {{!-- Curriculum (pulled via {{#get}} in curriculum-list) --}}
-      <div class="mt-12 flex items-center justify-between gap-3">
-        <h2 id="curriculum" class="font-heading text-2xl font-extrabold">{{t "Course curriculum"}}</h2>
-        {{#has tag="#paid"}}<span class="ns-badge">{{> icons name="crown"}}{{t "Members course"}}</span>{{/has}}
+      <div class="ns-course-detail__curriculum" id="curriculum">
+        <div class="ns-section-head">
+          <h2 class="ns-section-head__title">{{t "Course curriculum"}}</h2>
+          {{#has tag="#paid"}}<span class="ns-badge">{{> icons name="crown"}}{{t "Members course"}}</span>{{/has}}
+        </div>
+
+        {{!-- Lock notice for paid / members-only courses --}}
+        {{#has tag="#paid"}}
+          <div class="ns-note ns-note--warning">
+            {{> icons name="lock"}}
+            <div>
+              <p class="font-bold">{{t "This is a members course"}}</p>
+              <p class="text-sm">{{t "Preview lessons are open to everyone. Sign in with a membership to unlock the full curriculum."}}</p>
+            </div>
+            <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Unlock"}}</a>
+          </div>
+        {{/has}}
+
+        {{> "courses/curriculum-list"}}
       </div>
 
-      {{!-- Lock notice for paid / members-only courses --}}
-      {{#has tag="#paid"}}
-        <div class="ns-note ns-note--warning mt-4">
-          {{> icons name="lock"}}
-          <div>
-            <p class="font-bold">{{t "This is a members course"}}</p>
-            <p class="text-sm">{{t "Preview lessons are open to everyone. Sign in with a membership to unlock the full curriculum."}}</p>
-          </div>
-          <a href="#/portal/signup" data-portal="signup" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Unlock"}}</a>
-        </div>
-      {{/has}}
-
-      <div class="mt-4">{{> "courses/curriculum-list"}}</div>
-
-      {{!-- Share --}}
       <div class="mt-10">{{> "components/share"}}</div>
     </div>
 
-    {{!-- Right: sticky enrolment sidebar --}}
-    <aside>
-      <div class="lg:sticky lg:top-20">
-        <div class="js-spotlight relative overflow-hidden rounded-card border border-border bg-surface-raised">
-          {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
-            <img loading="lazy" decoding="async" src="{{img_url feature_image size="m"}}" alt="{{title}}" class="aspect-[16/9] w-full object-cover lg:hidden">
-          {{/if}}{{/has}}
-          <div class="p-5">
-            <div class="flex items-baseline gap-2">
-              {{#has tag="#free"}}<span class="font-heading text-3xl font-extrabold">{{t "Free"}}</span><span class="ns-price-tag ns-price-tag--free">{{t "Open"}}</span>{{else has tag="#paid"}}<span class="font-heading text-3xl font-extrabold">{{t "Members"}}</span><span class="ns-price-tag ns-price-tag--paid">{{t "Paid"}}</span>{{else}}<span class="font-heading text-3xl font-extrabold">{{t "Free"}}</span>{{/has}}
-            </div>
+    {{!-- The enrol card. Sticky beside the content on desktop; the same
+         component becomes a fixed bottom bar on a phone, below. --}}
+    <aside class="ns-course-detail__rail">
+      <div class="ns-buybox js-spotlight">
+        {{#has tag="#hide-image"}}{{else}}{{#if feature_image}}
+          <img class="ns-buybox__media" loading="lazy" decoding="async" src="{{img_url feature_image size="m"}}" alt="{{title}}">
+        {{/if}}{{/has}}
+        <div class="ns-buybox__body">
+          <span class="ns-price{{#has tag="#free"}} ns-price--free{{/has}}">
+            {{#has tag="#free"}}<span class="ns-price__now">{{t "Free"}}</span>{{else has tag="#paid"}}<span class="ns-price__now">{{t "Members"}}</span>{{else}}<span class="ns-price__now">{{t "Free"}}</span>{{/has}}
+          </span>
 
+          <div class="ns-buybox__actions">
             {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
-              <a href="{{url}}" class="ns-btn ns-btn--primary mt-4 w-full">{{> icons name="play"}}{{t "Start course"}}</a>
+              <a href="{{url}}" class="ns-btn ns-btn--primary">{{> icons name="play"}}{{t "Start course"}}</a>
             {{else}}
-              <a href="#curriculum" class="ns-btn ns-btn--primary mt-4 w-full">{{t "View curriculum"}}</a>
+              <a href="#curriculum" class="ns-btn ns-btn--primary">{{t "View curriculum"}}</a>
             {{/foreach}}{{/get}}
-            <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm mt-2 w-full">{{t "Back to catalog"}}</a>
-
-            <h3 class="mt-6 font-heading font-bold">{{t "This course includes"}}</h3>
-            <ul class="mt-3 space-y-2.5 text-sm">
-              {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" limit="100" as |ls|}}
-                <li class="flex items-center gap-3">{{> icons name="list-checks" class="text-lg text-brand-500"}}{{ls.length}} {{t "lessons"}}</li>
-              {{/get}}
-              {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<li class="flex items-center gap-3">{{> icons name="clock" class="text-lg text-brand-500"}}{{description}} {{t "of content"}}</li>{{/match}}{{/foreach}}
-              <li class="flex items-center gap-3">{{> icons name="gauge" class="text-lg text-brand-500"}}{{#has tag="#level-beginner"}}{{t "Beginner"}}{{else has tag="#level-intermediate"}}{{t "Intermediate"}}{{else has tag="#level-advanced"}}{{t "Advanced"}}{{else}}{{t "All levels"}}{{/has}}</li>
-              <li class="flex items-center gap-3">{{> icons name="infinity" class="text-lg text-brand-500"}}{{t "Lifetime access"}}</li>
-              <li class="flex items-center gap-3">{{> icons name="calendar" class="text-lg text-brand-500"}}{{t "Updated"}} {{date updated_at format="MMM YYYY"}}</li>
-            </ul>
+            <a href="/courses/" class="ns-btn ns-btn--outline ns-btn--sm">{{t "Back to catalog"}}</a>
           </div>
+
+          <ul class="ns-buybox__list">
+            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" limit="100" as |ls|}}
+              <li>{{> icons name="list-checks"}}{{ls.length}} {{t "lessons"}}</li>
+            {{/get}}
+            {{#foreach tags visibility="internal"}}{{#match slug "~^" "hash-duration-"}}<li>{{> icons name="clock"}}{{description}} {{t "of content"}}</li>{{/match}}{{/foreach}}
+            <li>{{> icons name="gauge"}}{{#has tag="#level-beginner"}}{{t "Beginner"}}{{else has tag="#level-intermediate"}}{{t "Intermediate"}}{{else has tag="#level-advanced"}}{{t "Advanced"}}{{else}}{{t "All levels"}}{{/has}}</li>
+            <li>{{> icons name="infinity"}}{{t "Lifetime access"}}</li>
+          </ul>
         </div>
-        <div class="mt-6">{{> "ads/slot" format="square"}}</div>
+        <div class="ns-buybox__foot">{{t "Updated"}} {{date updated_at format="MMM YYYY"}}</div>
       </div>
+
+      <div class="mt-6">{{> "ads/slot" format="square"}}</div>
     </aside>
   </div>
 </section>
 
-{{!-- ── Mobile sticky CTA ── --}}
-<div class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 px-4 py-2.5 backdrop-blur lg:hidden">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3">
-    <span class="truncate font-semibold">{{title}}</span>
-    {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
-      <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Start"}}{{> icons name="arrow-right"}}</a>
-    {{else}}
-      <a href="#curriculum" class="ns-btn ns-btn--primary ns-btn--sm shrink-0">{{t "Start"}}{{> icons name="arrow-right"}}</a>
-    {{/foreach}}{{/get}}
-  </div>
+{{!-- ── The same buy box as a phone bar — the one action the page exists for
+     must never be scrolled past. Hidden ≥64rem by the component itself. ─── --}}
+<div class="ns-buybox ns-buybox--bar">
+  <span class="ns-price ns-price--sm{{#has tag="#free"}} ns-price--free{{/has}}">
+    <span class="ns-price__now">{{#has tag="#paid"}}{{t "Members"}}{{else}}{{t "Free"}}{{/has}}</span>
+  </span>
+  {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-lesson" order="published_at asc" limit="1"}}{{#foreach posts}}
+    <a href="{{url}}" class="ns-btn ns-btn--primary ns-btn--sm">{{t "Start"}}{{> icons name="arrow-right"}}</a>
+  {{else}}
+    <a href="#curriculum" class="ns-btn ns-btn--primary ns-btn--sm">{{t "Start"}}{{> icons name="arrow-right"}}</a>
+  {{/foreach}}{{/get}}
 </div>

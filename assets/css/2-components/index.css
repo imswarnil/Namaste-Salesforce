@@ -13,11 +13,28 @@
    build needs to know about it.
 
    `site-*.css` at the foot are the SHARED feature files: styling that more
-   than one part of the site uses (the navbar's scroll behaviours, the
-   curriculum list that courses and training both render). They come last
-   because they may lean on anything above them; nothing above may lean on
-   them. Styling that belongs to exactly ONE feature is not here at all — it
-   lives in 3-modules/, and the training moved out wholesale.
+   than one part of the site uses (the navbar's scroll behaviours). They come
+   last because they may lean on anything above them; nothing above may lean
+   on them. Styling that belongs to exactly ONE feature is not here at all —
+   it lives in 3-modules/, and the training moved out wholesale.
+
+   WHAT LEFT THIS FOLDER IN THE MIGRATION ONTO THE DESIGN SYSTEM, so nobody
+   goes looking for it:
+
+     post-card.css       `.ns-pcard`, the post card. The system's `.ns-bcard`
+                         is the same object with four shapes instead of three
+                         and Ghost's access states kept in the markup rather
+                         than in a bespoke `__badge` part. partials/post-card.hbs.
+     site-curriculum.css `.ns-curriculum__item` and friends. The system's
+                         `.ns-curriculum` of `.ns-lesson` rows replaced it —
+                         and the point of `.ns-lesson` is that the syllabus
+                         row, the player rail row and the drawer row became
+                         ONE component. The theme had three.
+     the course hero     `.ns-course-hero` + its `data-hero="1..5"` override
+                         table, out of site-course.css → the system's
+                         `.ns-chero`, whose five versions have names.
+     the TOC             `.toc-link`, out of toc.css → `.ns-toc`. What is left
+                         in that file is one reveal rule about a JS lifecycle.
 
    Import order = specificity insurance: primitives, then the things built out
    of them, then layout, then chrome, then decoration, then features.
@@ -30,6 +47,7 @@
 @import "./tag.css";          /* .ns-tagchip  the one true pill */
 @import "./kicker.css";       /* .ns-kicker   the // section eyebrow */
 @import "./avatar.css";       /* .ns-avatar · .ns-ring · .ns-avatar-stack */
+@import "./icon-bridge.css";  /* system `i` rules restated for this theme's <svg class="ns-icon"> */
 
 /* ── Layout ────────────────────────────────────────────────────────────── */
 @import "./layout.css";       /* .ns-container · .ns-section   the page measure */
@@ -37,7 +55,6 @@
 
 /* ── Containers ────────────────────────────────────────────────────────── */
 @import "./card.css";         /* .ns-card     sizes · surfaces · edges · media · footer */
-@import "./post-card.css";    /* .ns-pcard    one entry in a collection */
 @import "./feature.css";      /* .ns-feature  icon + title + body */
 @import "./testimonial.css";  /* .ns-testimonial  (was .ns-quote) */
 @import "./widget.css";       /* .ns-widget   sidebar boxes + presets */
@@ -80,7 +97,7 @@
 @import "./icon-button.css";  /* .icon-btn */
 @import "./menu.css";         /* .ns-menu */
 @import "./tooltip.css";      /* .nav-tip */
-@import "./toc.css";          /* .toc-link */
+@import "./toc.css";          /* the .ns-toc reveal — the outline itself is the system's */
 @import "./sidebar.css";      /* .doc-nav-link · .doc-spy · .doc-toc-link */
 @import "./subnav.css";       /* .subnav-bar · .subnav-panel */
 @import "./lesson-panel.css"; /* .ns-lesson-panel  the player navigation sheet */
@@ -138,7 +155,6 @@
 
 /* ── Features — site-specific, always last ─────────────────────────────── */
 @import "./site-navbar.css";      /* header scroll behaviours */
-@import "./site-curriculum.css";  /* .ns-curriculum, shared by course + training */
 @import "./site-course.css";      /* single course page */
 @import "./site-catalog.css";     /* /courses/ index */
 @import "./site-lesson.css";      /* single lesson page */

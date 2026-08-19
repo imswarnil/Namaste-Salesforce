@@ -1,0 +1,39 @@
+{{~!-- ═══════════════════════════════════════════════════════════════════════
+  blog/head-variant.hbs — resolves a post's head tag to ONE system class.
+
+  Emits a bare class name and nothing else, so it drops into an attribute:
+
+      <header class="ns-posthead {{> "blog/head-variant"}}">
+
+  The blog's counterpart to courses/hero-variant.hbs, and it exists for the
+  same reason: the chain is needed three times on a post page (the header
+  itself, whether to draw a background layer, whether to draw a cover below
+  the meta), and copied three times it would disagree with itself.
+
+  THE TAG CONTRACT — set ONE of these as an internal tag on the post (Ghost
+  Admin → the post → Tags → type `#posthead-…`). Internal tags never appear on
+  the site, which is why art direction lives in them.
+
+    #posthead-center    centred, cover below the meta line.
+                        THE DEFAULT — an untagged post renders this.
+    #posthead-wide      left-aligned at the wide measure, cover beside the
+                        title. For a piece whose art is worth half the screen.
+    #posthead-cover     the feature image full-bleed behind the title,
+                        scrimmed. For a photo-led piece.
+    #posthead-console   brand navy + the hairline grid. Needs no art at all,
+                        and is the house look for an announcement.
+    #posthead-minimal   type only, hairline under. For a post with no image —
+                        and a blank grey box is worse than no box.
+
+  NO NUMERIC ALIASES HERE, unlike the course hero. The blog never had head
+  variants before this — every published post falls to the default, which is
+  the centred header it already had. There is nothing to be backwards
+  compatible with.
+═══════════════════════════════════════════════════════════════════════ --~}}
+{{~#has tag="#posthead-center"}}ns-posthead--center
+{{~else has tag="#posthead-wide"}}ns-posthead--wide
+{{~else has tag="#posthead-cover"}}ns-posthead--cover
+{{~else has tag="#posthead-console"}}ns-posthead--console
+{{~else has tag="#posthead-minimal"}}ns-posthead--minimal
+{{~else}}ns-posthead--center
+{{~/has~}}

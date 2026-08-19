@@ -1,24 +1,32 @@
 {{!-- ════════════════════════════════════════════════════════════════════════
-  partials/post-card.hbs — one post in a collection
-  ----------------------------------------------------------------------------
-  Context: a single post inside {{#foreach posts}} (index / tag / author / home
-  / blog). Renders the .ns-pcard COMPONENT — see 2-components/post-card.css and
-  /styleguide/home-post-card.html.
+  partials/post-card.hbs — one post in a collection.
 
-  Param: variant — any .ns-pcard modifier, e.g.
-      {{> post-card variant="ns-pcard--row"}}
-      {{> post-card variant="ns-pcard--overlay"}}
-      {{> post-card variant="ns-pcard--compact"}}
+  Context: a single post inside {{#foreach posts}} — index / tag / author /
+  home / blog / related.
 
-  The TITLE carries the stretched link, so the whole card is clickable while
-  the title stays the real anchor — screen readers announce it and middle-click
-  still works. That is why the cover is not itself a link.
+  THIS IS THE DESIGN SYSTEM'S `.ns-bcard` (ds/components/css/blog.css), which
+  is a MODIFIER on `.ns-card`: the frame, body, title link and text come from
+  the card, and .ns-bcard adds only what a post has that nothing else does —
+  the cover, the category riding it, the clamped excerpt and the four shapes.
+  That is why the class list is `ns-card ns-bcard`; drop `ns-card` and the
+  card has no frame.
+
+  It replaced the theme's own `.ns-pcard`, which was the same object built
+  twice. The one thing .ns-pcard had that the system does not is Ghost's
+  ACCESS STATE — members-only, paid-only, tier-exclusive — and that is kept
+  below, drawn with the system's own `.ns-badge` rather than a bespoke part.
+
+  Param: variant — any .ns-bcard modifier
+      {{> post-card variant="ns-bcard--row"}}      horizontal, small cover
+      {{> post-card variant="ns-bcard--wide"}}     the featured piece
+      {{> post-card variant="ns-bcard--minimal"}}  no cover, hairline rule
+      {{> post-card variant="ns-bcard--overlay"}}  title on the cover itself
 ═══════════════════════════════════════════════════════════════════════════ --}}
-<article class="ns-pcard js-spotlight group {{variant}}">
+<article class="ns-card ns-bcard js-spotlight {{variant}}">
 
   {{!-- ── Cover ── --}}
-  <div class="ns-pcard__media">
-    {{#if feature_image}}
+  {{#if feature_image}}
+    <a href="{{url}}" tabindex="-1" aria-hidden="true" class="ns-bcard__cover">
       <img decoding="async" loading="lazy"
         srcset="{{img_url feature_image size="s"}} 300w,
                 {{img_url feature_image size="m"}} 600w,
@@ -26,60 +34,42 @@
         sizes="(max-width: 1000px) 400px, 800px"
         src="{{img_url feature_image size="m"}}"
         alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
-    {{else}}
-      <span class="ns-pcard__fallback">{{> icons name="image"}}</span>
-    {{/if}}
+      {{#primary_tag}}<span class="ns-tag ns-bcard__cat">{{name}}</span>{{/primary_tag}}
+    </a>
+  {{else}}
+    {{!-- No art? The system's own glyph, rather than a grey rectangle
+         pretending an image failed to load. --}}
+    <span class="ns-bcard__cover ns-bcard__cover--empty">{{> icons name="image"}}</span>
+  {{/if}}
 
-    {{!-- Access state — a badge, not a wash, unless the cover must be obscured --}}
+  {{!-- ── Body ── --}}
+  <div class="ns-card__body">
+    {{!-- Access state — a badge, never a tinted wash over the card --}}
     {{#unless access}}
       {{^has visibility="public"}}
-        <span class="ns-pcard__badge ns-badge ns-badge--glass">
+        <span class="ns-badge">
           {{#match visibility "members"}}{{> icons name="user-circle"}}{{t "Members only"}}
           {{else match visibility "paid"}}{{> icons name="crown"}}{{t "Paid-members only"}}
           {{else}}{{> icons name="star"}}{{t "Tier exclusive"}}{{/match}}
         </span>
       {{/has}}
     {{/unless}}
+    {{#if featured}}<span class="ns-badge ns-badge--solid">{{> icons name="star"}}{{t "Featured"}}</span>{{/if}}
 
-    {{#if featured}}
-      <span class="ns-pcard__badge ns-badge ns-badge--solid">{{> icons name="star"}}{{t "Featured"}}</span>
-    {{/if}}
-
-    {{#has tag="#video"}}
-      {{#if access}}
-        <span class="ns-video-poster__play"><span>{{> icons name="play"}}</span></span>
-      {{/if}}
-    {{/has}}
-  </div>
-
-  {{!-- ── Body ── --}}
-  <div class="ns-pcard__body">
-    {{#primary_tag}}<span class="ns-kicker ns-kicker--sm">{{name}}</span>{{/primary_tag}}
-
-    <h2 class="ns-pcard__title">
-      <a href="{{url}}">
-        {{#unless access}}{{^has visibility="public"}}{{#unless feature_image}}
-          {{> icons name="lock" class="align-middle text-sm text-muted"}}
-        {{/unless}}{{/has}}{{/unless}}
-        {{title}}
-      </a>
+    <h2 class="ns-bcard__title">
+      <a class="ns-card__link" href="{{url}}">{{title}}</a>
     </h2>
 
-    {{#if excerpt}}
-      <p class="ns-pcard__excerpt">{{excerpt words="22"}}&hellip;</p>
-    {{/if}}
+    {{#if excerpt}}<p class="ns-bcard__excerpt">{{excerpt words="22"}}&hellip;</p>{{/if}}
 
-    {{!-- Courses get a CTA instead of meta; everything else gets the readout --}}
+    {{!-- Courses get a CTA instead of a readout; everything else gets the
+         same author · date · reading-time line it has everywhere else. --}}
     {{#has tag="#course"}}
       <span class="ns-btn ns-btn--primary ns-btn--sm mt-3 w-full">
-        {{#unless access}}
-          {{> icons name="lock"}}{{t "Enroll to Access"}}
-        {{else}}
-          {{> icons name="play"}}{{t "Start Course"}}
-        {{/unless}}
+        {{#unless access}}{{> icons name="lock"}}{{t "Enroll to Access"}}{{else}}{{> icons name="play"}}{{t "Start Course"}}{{/unless}}
       </span>
     {{else}}
-      <div class="ns-pcard__meta">
+      <div class="ns-postmeta ns-postmeta--dotted">
         <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
         {{#if reading_time}}<span>{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>{{/if}}
         {{#if @site.comments_enabled}}<span>{{comment_count}} {{t "comments"}}</span>{{/if}}

@@ -1,4 +1,4 @@
-/* NS Design System — progress, and the table primitive.
+/* NS Design System — progress.
    =========================================================================
    Progress is the LMS's single most important piece of feedback: "how far
    through this course am I" is the question the product exists to answer.
@@ -126,55 +126,8 @@
   .ns-meter:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--color-warning); }
   .ns-meter:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--color-error); }
 
-  /* --- Table --------------------------------------------------------------
-     Hairlines only, no zebra striping: striping is a second structuring
-     device competing with the border, and with mono numerals the rows already
-     read as rows. Numeric columns are tabular-nums and end-aligned so digits
-     line up in columns the eye can scan.
-
-     A table must always be wrapped in .ns-table-wrap — the wrapper is what
-     makes a wide table scroll inside itself instead of pushing the whole page
-     sideways on mobile. tabindex="0" on the wrapper makes that scroll region
-     reachable by keyboard, which is required once it scrolls. */
-  .ns-table-wrap { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-card); }
-  .ns-table-wrap:focus-visible { outline: var(--focus-ring-width) solid var(--color-brand-500); outline-offset: var(--focus-ring-offset); }
-
-  .ns-table { inline-size: 100%; border-collapse: collapse; font-size: var(--size-small); }
-  .ns-table th {
-    text-align: start; padding: var(--space-3) var(--space-4);
-    font-family: var(--font-mono); font-size: var(--size-label);
-    font-weight: var(--weight-label); letter-spacing: var(--tracking-label);
-    text-transform: uppercase; color: var(--color-label);
-    border-block-end: 1px solid var(--color-border);
-    background: var(--color-surface);
-    white-space: nowrap;
-  }
-  .ns-table td { padding: var(--space-3) var(--space-4); border-block-end: 1px solid var(--color-border); }
-  .ns-table tbody tr:last-child td { border-block-end: 0; }
-  .ns-table tbody tr:hover { background: var(--color-surface-sunken); }
-  .ns-table__num { text-align: end; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-
-  /* Sticky header for long tables. Needs the wrapper to be the scroll
-     container, which .ns-table-wrap already is. */
-  .ns-table--sticky th { position: sticky; inset-block-start: 0; z-index: var(--z-raised); }
-
-  /* A sortable header is a real <button> inside the <th>, so it is keyboard
-     reachable; the <th> carries aria-sort, which is what gets announced. */
-  .ns-table__sort {
-    display: inline-flex; align-items: center; gap: var(--space-1);
-    border: 0; background: none; padding: 0; cursor: pointer;
-    font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
-  }
-  .ns-table__sort:hover { color: var(--color-brand-600); }
-  .ns-table__sort::after { content: "\e136"; font-family: var(--font-icon); opacity: 0.3; }
-  [aria-sort="ascending"] .ns-table__sort::after { opacity: 1; rotate: 180deg; }
-  [aria-sort="descending"] .ns-table__sort::after { opacity: 1; }
-
-  .ns-table caption {
-    caption-side: top; text-align: start;
-    padding: var(--space-3) var(--space-4);
-    color: var(--color-muted); font-size: var(--size-small);
-  }
+  /* The Table primitive and every variant of it live in table.css — the
+     table grew large enough to be its own module. */
 
   /* --- Timeline -----------------------------------------------------------
      A vertical feed of things that happened: course activity, a changelog, a
@@ -286,4 +239,73 @@
     letter-spacing: var(--tracking-label); color: var(--color-label); text-align: center;
   }
 
+
+  /* --- Progress: motion and states ----------------------------------------
+     A determinate bar animates its width because the number changed — that is
+     feedback, so it stays inside the interaction budget. The indeterminate one
+     is a different claim ("something is happening, duration unknown") and is
+     the only place here that loops. */
+  .ns-progress--indeterminate::-webkit-progress-value { animation: ns-progress-slide 1.2s var(--ease-out) infinite; } /* lint-ok: an indeterminate loop is a duration-unknown signal, not a UI response */
+  .ns-progress--indeterminate::-moz-progress-bar { animation: ns-progress-slide 1.2s var(--ease-out) infinite; } /* lint-ok: see above */
+
+  /* --- Stepper: vertical --------------------------------------------------
+     The same flow turned on its side, for a narrow rail or a checkout summary
+     where the labels are too long to sit side by side. */
+  .ns-stepper--vertical { flex-direction: column; align-items: stretch; inline-size: auto; }
+  .ns-stepper--vertical .ns-stepper__step {
+    flex-direction: row; align-items: flex-start; gap: var(--space-3);
+    min-inline-size: 0; text-align: start;
+  }
+  .ns-stepper--vertical .ns-stepper__label { text-align: start; padding-block: var(--space-1); }
+  .ns-stepper--vertical .ns-stepper__line {
+    inline-size: 2px; block-size: auto; min-block-size: var(--space-4);
+    margin-block-start: 0; margin-inline-start: calc((var(--_node) / 2) - 1px);
+    flex: none;
+  }
+
+  /* --- Timeline: variations ----------------------------------------------- */
+  /* An icon in place of the dot, when the KIND of event matters as much as the
+     fact of it — deployed, reverted, commented. The icon sits on the surface
+     so the rail appears to pass behind it. */
+  .ns-timeline__icon {
+    position: absolute; inset-inline-start: 0; inset-block-start: var(--space-1);
+    inline-size: 1.25rem; block-size: 1.25rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface); color: var(--color-label);
+    box-shadow: inset 0 0 0 1px var(--color-border);
+    font-size: var(--size-label);
+  }
+  .ns-timeline--icons .ns-timeline__item { padding-inline-start: var(--space-8); }
+  .ns-timeline--icons .ns-timeline__item::before { inset-inline-start: calc(0.625rem - 1px); inset-block-start: var(--space-6); }
+  .ns-timeline__item[data-state="current"] .ns-timeline__icon { background: var(--color-brand-500); color: var(--color-on-brand); box-shadow: none; }
+  .ns-timeline__item[data-state="done"] .ns-timeline__icon { background: var(--color-success); color: var(--color-on-brand); box-shadow: none; }
+  /* A thumbnail per entry, for a release log or a design changelog. */
+  .ns-timeline__media {
+    display: block; inline-size: 100%; margin-block-start: var(--space-2);
+    border: 1px solid var(--color-border); border-radius: var(--radius-card);
+    aspect-ratio: 16 / 9; object-fit: cover; background: var(--color-surface-sunken);
+  }
+  /* Horizontal: a run of milestones on one rail. Scrolls rather than wraps —
+     a wrapped timeline stops being a timeline. Deliberately capped in scope:
+     it takes a time and a title, and nothing longer. */
+  .ns-timeline--horizontal {
+    display: flex; overflow-x: auto; gap: var(--space-6);
+    padding-block-start: var(--space-4); scrollbar-width: thin;
+  }
+  .ns-timeline--horizontal .ns-timeline__item {
+    flex: none; inline-size: 11rem; padding-inline-start: 0; padding-block-end: 0;
+  }
+  .ns-timeline--horizontal .ns-timeline__item::before {
+    inset-inline: 0.5rem auto; inset-block-start: 3px; inset-block-end: auto;
+    inline-size: calc(100% + var(--space-6)); block-size: 1px;
+  }
+  .ns-timeline--horizontal .ns-timeline__dot { inset-block-start: 0; }
+  .ns-timeline--horizontal .ns-timeline__time { margin-block-start: var(--space-3); }
+
+}
+
+@keyframes ns-progress-slide {
+  from { margin-inline-start: -40%; inline-size: 40%; }
+  to { margin-inline-start: 100%; inline-size: 40%; }
 }

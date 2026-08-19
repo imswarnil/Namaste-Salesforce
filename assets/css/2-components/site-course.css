@@ -1,11 +1,24 @@
 /* ════════════════════════════════════════════════════════════════════════════
    MODULE · course — the single course page
    ----------------------------------------------------------------------------
-   Level / featured / price tags, hero stats, the members lock note, the Ghost
-   editor cards restyled inside course content (toggle → FAQ, product →
-   testimonial), and the five hero layout variants.
+   Two things the design system does not own, and nothing else:
 
-   Status is a dot plus mono text; every number is a mono readout.
+     1. The LEVEL / featured / price tags. Status as a dot plus mono text, the
+        house vocabulary. The system's nearest equivalent (.ns-laccess) answers
+        "may I open this", which is a different question from "how hard is it".
+     2. The Ghost EDITOR CARDS, restyled inside course content — a toggle card
+        becomes an FAQ accordion, a product card becomes a testimonial. Those
+        selectors are `.kg-*`, Ghost's own output, which no design system can
+        know about because it is not markup this repo writes.
+
+   WHAT LEFT, AND WHERE IT WENT. This file used to carry the whole course hero:
+   `.ns-course-hero`, its `__grid` / `__body` / `__media` parts, `.ns-course-stats`,
+   `.ns-lock-note`, and a `data-hero="1..5"` table of layout overrides. All of
+   it is now the system's `.ns-chero` (ds/components/css/catalog.css), which
+   ships the same five situations as real variants with names — and the stat
+   row is `.ns-statband`. See courses/hero-variant.hbs for how a post picks one
+   and for the numeric aliases kept so already-published courses do not fall
+   back to the default.
    ════════════════════════════════════════════════════════════════════════ */
 
 /* ── Level badge — mono status tag with a color dot ─────────────────────── */
@@ -43,23 +56,6 @@
 .ns-price-tag--paid { color: var(--color-level-intermediate-ink); }
 [data-theme="dark"] .ns-price-tag--paid { color: var(--color-warning); }
 
-/* ── Hero stats ─────────────────────────────────────────────────────────── */
-.ns-course-stats { display: flex; flex-wrap: wrap; gap: 1.25rem 2rem; }
-.ns-course-stat { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto;
-  column-gap: 0.5rem; align-items: center; }
-.ns-course-stat > i { grid-row: 1 / 3; font-size: 1.5rem; color: var(--color-brand-200); }
-.ns-course-stat > b { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700;
-  font-variant-numeric: tabular-nums; line-height: 1; }
-.ns-course-stat > span { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.04em;
-  text-transform: uppercase; color: rgb(255 255 255 / 0.65); }
-
-/* ── Lock note — the one allowed tint is 1 step above transparent ───────── */
-.ns-lock-note { display: flex; align-items: center; gap: 0.9rem; padding: 0.9rem 1.1rem;
-  border: 1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);
-  background: color-mix(in srgb, var(--color-warning) 6%, transparent);
-  border-radius: var(--radius-card); }
-.ns-lock-note > i { font-size: 1.4rem; color: var(--color-warning); flex-shrink: 0; }
-
 /* ════════════════════════════════════════════════════════════════════════
    Ghost editor cards, restyled inside a course's content:
    • Toggle card  → FAQ accordion
@@ -81,28 +77,3 @@
   font-family: Georgia, serif; font-size: 3rem; line-height: 1; color: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
 }
 .ns-course-content .kg-product-card-title { font-family: var(--font-heading); }
-
-/* ── Course hero VARIANTS (data-hero 1..5) ──────────────────────────────── */
-/* 2 — centered over the pattern, no side media */
-.ns-course-hero[data-hero="2"] .ns-course-hero__grid { grid-template-columns: 1fr; text-align: center; }
-.ns-course-hero[data-hero="2"] .ns-course-hero__media { display: none; }
-.ns-course-hero[data-hero="2"] .ns-course-hero__body { max-width: 46rem; margin-inline: auto; }
-.ns-course-hero[data-hero="2"] .ns-course-stats,
-.ns-course-hero[data-hero="2"] .ns-course-hero__body > .mt-7,
-.ns-course-hero[data-hero="2"] .ns-course-hero__body > div:last-child { justify-content: center; }
-.ns-course-hero[data-hero="2"] .mb-4 { justify-content: center; }
-
-/* 3 — image-forward: media larger and first on desktop */
-@media (min-width: 1024px) {
-  .ns-course-hero[data-hero="3"] .ns-course-hero__grid { grid-template-columns: 22rem 1fr; }
-  .ns-course-hero[data-hero="3"] .ns-course-hero__media { order: -1; width: 100%; }
-}
-
-/* 4 — compact bar (shorter, tighter) */
-.ns-course-hero[data-hero="4"] { padding-block: 0; }
-.ns-course-hero[data-hero="4"] .ns-course-hero__media { display: none; }
-@media (min-width: 1024px) {
-  .ns-course-hero[data-hero="4"] > div { padding-block: 2.5rem; }
-}
-
-/* 5 — video hero already renders the play poster in markup */

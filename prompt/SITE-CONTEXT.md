@@ -167,27 +167,35 @@ their theme when crossing between the two domains.
 
 ### 3.2 Type
 
-Two self-hosted variable cuts, both latin-subset — and one face deliberately
-not shipped:
+Two self-hosted variable cuts, both latin-subset — and no serif at all:
 
 - **Switzer** — headings AND body (Fontshare / Indian Type Foundry). One
   grotesque across the whole range, separated by WEIGHT and SIZE rather than by
   face. Reading copy sets at **14px / weight 400**; Switzer's Regular is
   properly fitted and does not render grey the way the previous cut did, so
   there is no "Book" 450 step. Inline `<strong>` is 600, not 700.
-- **Sentient** — the editorial serif (same foundry). Pull-quotes, drop caps and
-  section quotations only: the register that *quotes* rather than argues. It is
-  the one place a second face earns its download, and it is never on the
-  critical path.
-- **Mono is the platform's own** — `ui-monospace` / SF Mono / Consolas. Every
-  index, label, duration and status still runs through it, but always in short
-  tracked uppercase runs where the system face is more familiar than anything
-  we could ship. Consequence: mono column widths are **not** identical across
-  platforms, so never rely on a mono run being an exact width.
+- **Roboto Mono** — the label material. Every index, timestamp, duration,
+  kicker, tag, status and `<pre>` runs through it. It IS shipped, and it has to
+  be: that voice is on screen far more often than a code block is, and
+  borrowing it from the OS meant the most-repeated register in the interface
+  was SF Mono on a Mac, Consolas on Windows and a lottery on Linux — three
+  different products, none of them chosen. Both faces are preloaded, because
+  both are first-viewport text on essentially every route.
+- **No serif ships.** The editorial register — pull-quotes, drop caps, section
+  quotations — resolves to the platform's own serif (Georgia where it exists,
+  Iowan/Times otherwise). It still reads as a quotation everywhere and costs
+  zero bytes.
 
-Both shipped faces are under the Fontshare Free Font EULA (free for personal
-and commercial use, self-hosting explicitly permitted); the EULA travels with
-them in `NS-Design-System/fonts/`.
+⚠️ TWO EARLIER STATES ARE STALE. If you find **Sentient** described as the
+editorial serif, or a claim that **mono is the platform's own / not shipped**
+and that mono column widths therefore differ per platform — that was true and
+is not now. (Roboto Mono plus `font-variant-numeric: tabular-nums` means digit
+columns DO align.) Older still: any mention of `N&M`, `nmtext`, `nmdisplay` or
+weight 450 is the pre-Switzer era.
+
+Switzer is under the Fontshare Free Font EULA (free for personal and commercial
+use, self-hosting explicitly permitted); Roboto Mono is under the SIL Open Font
+Licence 1.1. Both licences travel with the faces in `NS-Design-System/fonts/`.
 
 ### 3.3 Colour, exactly
 
