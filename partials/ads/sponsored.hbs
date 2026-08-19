@@ -1,33 +1,30 @@
-{{!-- ads/sponsored.hbs — Sponsored / house promo card
-     ---------------------------------------------------------------------------
-     A self-hosted sponsor slot (no third-party script). Configure the text,
-     link and image in Ghost Admin → Design → (Sponsor). Renders only when a
-     sponsor URL is set, so it's safe to drop into any sidebar or post footer. --}}
+{{!-- ads/sponsored.hbs — a configured sponsor, as the design system's
+     `.ns-sponsor` (ds/components/css/monetization.css).
+
+     The theme used to draw its own sponsor box. The system's says the same
+     things in the same order — label, mark, name, tagline, one line of copy,
+     the action — and says them the same way in the app, which matters because
+     a sponsor sees both.
+
+     Shapes: --article sits INSIDE a reading column (wide, horizontal);
+             --skyscraper is the rail (narrow, stacked).
+
+     Everything here is a Ghost custom setting (Admin → Design), so a sponsor
+     is changed without touching the theme. With no sponsor_url set this
+     renders nothing at all — an empty sponsor slot is worse than none.
+
+     Params: shape — "article" (default) or "skyscraper" --}}
 {{#if @custom.sponsor_url}}
-<aside class="not-prose my-8 overflow-hidden rounded-card border border-border bg-surface-raised">
-  <a href="{{@custom.sponsor_url}}" target="_blank" rel="noopener sponsored" class="group block">
-    {{#if @custom.sponsor_image}}
-      {{!-- A sponsor logo is meaningful content, not decoration: empty alt hid
-           who the sponsor was from screen readers. --}}
-      <img decoding="async" src="{{img_url @custom.sponsor_image size="m"}}" loading="lazy"
-           alt="{{#if @custom.sponsor_headline}}{{@custom.sponsor_headline}}{{else}}{{t "Sponsor"}}{{/if}}"
-           class="h-32 w-full object-cover">
-    {{/if}}
-    <div class="p-4">
-      <span class="ns-label">
-        {{#if @custom.sponsor_label}}{{@custom.sponsor_label}}{{else}}{{t "Sponsored"}}{{/if}}
-      </span>
-      {{#if @custom.sponsor_headline}}
-        <p class="mt-1 font-heading font-bold leading-snug transition-colors group-hover:text-brand-600">{{@custom.sponsor_headline}}</p>
-      {{/if}}
-      {{#if @custom.sponsor_body}}
-        <p class="mt-1 text-sm text-muted">{{@custom.sponsor_body}}</p>
-      {{/if}}
-      <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-600">
-        {{#if @custom.sponsor_cta}}{{@custom.sponsor_cta}}{{else}}{{t "Learn more"}}{{/if}}
-        {{> icons name="arrow-right" class="transition-transform group-hover:translate-x-0.5"}}
-      </span>
-    </div>
-  </a>
-</aside>
+<a class="ns-sponsor {{#match shape "skyscraper"}}ns-sponsor--skyscraper{{else}}ns-sponsor--article{{/match}}"
+   href="{{@custom.sponsor_url}}" target="_blank" rel="noopener sponsored">
+  <span class="ns-sponsor__label">{{#if @custom.sponsor_label}}{{@custom.sponsor_label}}{{else}}{{t "Sponsored"}}{{/if}}</span>
+  {{#if @custom.sponsor_image}}
+    <img class="ns-sponsor__logo" src="{{img_url @custom.sponsor_image size="xs"}}" alt="" loading="lazy" decoding="async">
+  {{/if}}
+  <span class="ns-sponsor__body">
+    {{#if @custom.sponsor_headline}}<span class="ns-sponsor__name">{{@custom.sponsor_headline}}</span>{{/if}}
+    {{#if @custom.sponsor_body}}<span class="ns-sponsor__text">{{@custom.sponsor_body}}</span>{{/if}}
+  </span>
+  <span class="ns-sponsor__cta">{{#if @custom.sponsor_cta}}{{@custom.sponsor_cta}}{{else}}{{t "Learn more"}}{{/if}}{{> icons name="arrow-right"}}</span>
+</a>
 {{/if}}

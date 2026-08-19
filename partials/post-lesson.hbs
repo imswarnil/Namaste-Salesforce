@@ -96,7 +96,7 @@
 
           {{> "ads/slot" format="horizontal" slot="lesson-top"}}
 
-          <div class="ns-prose gh-content">{{content}}</div>
+          <div class="ns-prose gh-content" data-lead>{{content}}</div>
 
           {{!-- Support CTA on free lessons --}}
           {{#has tag="#paid"}}{{else}}{{> "components/lesson-support"}}{{/has}}
@@ -115,10 +115,13 @@
 
         {{!-- Prev / next BY NAME. An arrow pair with no titles makes the
              reader click to find out where they are going. --}}
-        <nav class="ns-player__nav ns-lesson-nav" aria-label="{{t "Lesson navigation"}}">
+        <nav class="ns-player__nav ns-lesson-nav ns-lesson-nav--thumbs" aria-label="{{t "Lesson navigation"}}">
           {{#prev_post in="primary_tag" filter="tag:hash-lesson"}}
             <a class="ns-lesson-nav__btn" href="{{url}}">
               {{> icons name="arrow-left" class="ns-lesson-nav__arrow"}}
+              <span class="ns-lesson-nav__thumb" aria-hidden="true">
+                {{#has tag="#lesson-type-video"}}{{> icons name="video"}}{{else has tag="#lesson-type-lab"}}{{> icons name="flask"}}{{else}}{{> icons name="article"}}{{/has}}
+              </span>
               <span class="ns-lesson-nav__dir">{{t "Previous"}}</span>
               <span class="ns-lesson-nav__name">{{title}}</span>
             </a>
@@ -130,10 +133,12 @@
             <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="{{url}}">
               <span class="ns-lesson-nav__dir">{{t "Next"}}</span>
               <span class="ns-lesson-nav__name">{{title}}</span>
+              <span class="ns-lesson-nav__thumb" aria-hidden="true">
+                {{#has tag="#lesson-type-video"}}{{> icons name="video"}}{{else has tag="#lesson-type-lab"}}{{> icons name="flask"}}{{else}}{{> icons name="article"}}{{/has}}
+              </span>
               {{> icons name="arrow-right" class="ns-lesson-nav__arrow"}}
             </a>
           {{else}}
-            {{!-- Last lesson of the course → finish, back to the course page --}}
             {{#get "posts" filter="tag:hash-course+primary_tag:{{primary_tag.slug}}" limit="1"}}{{#foreach posts}}
               <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="{{url}}">
                 <span class="ns-lesson-nav__dir">{{t "Finish"}}</span>

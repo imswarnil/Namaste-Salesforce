@@ -22,6 +22,21 @@
 
 <a href="#main" class="ns-skiplink">{{t "Skip to content"}}</a>
 
+{{!-- The announcement bar. Renders nothing unless there is something to say —
+     an empty strip above every page is a permanent tax on the fold. Text and
+     link are Ghost custom settings (Admin → Design), so it is changed without
+     touching the theme, and nav.js handles the dismiss. --}}
+{{#if @custom.announcement_text}}
+  <div class="ns-announce">
+    {{#if @custom.announcement_kicker}}<span class="ns-announce__kicker">{{@custom.announcement_kicker}}</span>{{/if}}
+    <span class="ns-announce__text">{{@custom.announcement_text}}</span>
+    {{#if @custom.announcement_url}}
+      <a class="ns-announce__link" href="{{@custom.announcement_url}}">{{#if @custom.announcement_cta}}{{@custom.announcement_cta}}{{else}}{{t "Read more"}}{{/if}}</a>
+    {{/if}}
+    <button type="button" class="ns-announce__close" aria-label="{{t "Dismiss announcement"}}">{{> icons name="x"}}</button>
+  </div>
+{{/if}}
+
 {{!-- @custom.navbar_behavior (Ghost Admin → Design) maps onto the system's own
      bar variants rather than onto theme JS. `data-ns-scrolled` opts the bar
      into nav.js's one scroll listener, which sets data-scrolled="true" past
@@ -42,7 +57,73 @@
       <span class="ns-topnav__brand-name">{{@site.title}}</span>
     </a>
 
-    <ul class="ns-topnav__links">{{navigation}}</ul>
+    <ul class="ns-topnav__links">
+      {{navigation}}
+
+      {{!-- The one mega panel, and it is built from CONTENT rather than from
+           a hand-kept list: Ghost's navigation is a flat set of label+url
+           pairs with no notion of children, so a menu authored there could
+           only ever be flat. These columns come from the courses, the
+           training tracks and the docs sections that actually exist, which
+           means the panel cannot go stale.
+
+           nav.js opens it: the trigger flips aria-expanded and the CSS does
+           the rest. --navitem--mega makes the <li> `static` so the panel
+           spans the whole bar rather than the link. --}}
+      <li class="ns-navitem ns-navitem--mega">
+        <button type="button" class="ns-topnav__trigger" data-ns-menu aria-expanded="false" aria-controls="nav-learn">
+          {{> icons name="graduation-cap"}}{{t "Learn"}}
+        </button>
+        <div class="ns-megamenu" id="nav-learn">
+          <div class="ns-megamenu__inner">
+
+            <div class="ns-megamenu__col">
+              <p class="ns-megamenu__label">{{t "Courses"}}</p>
+              {{#get "posts" filter="tag:hash-course" limit="4" order="published_at desc"}}{{#foreach posts}}
+                <a class="ns-navmenu__item" href="{{url}}">
+                  <span class="ns-navmenu__icon">{{> icons name="graduation-cap"}}</span>
+                  <span><span class="ns-navmenu__title">{{title}}</span>
+                  {{#if custom_excerpt}}<span class="ns-navmenu__desc">{{custom_excerpt}}</span>{{/if}}</span>
+                </a>
+              {{/foreach}}{{/get}}
+            </div>
+
+            <div class="ns-megamenu__col">
+              <p class="ns-megamenu__label">{{t "Training"}}</p>
+              {{#get "posts" filter="tag:hash-training-section" limit="4" order="published_at asc"}}{{#foreach posts}}
+                <a class="ns-navmenu__item" href="{{url}}">
+                  <span class="ns-navmenu__icon">{{> icons name="flow-arrow"}}</span>
+                  <span><span class="ns-navmenu__title">{{title}}</span>
+                  {{#if custom_excerpt}}<span class="ns-navmenu__desc">{{custom_excerpt}}</span>{{/if}}</span>
+                </a>
+              {{/foreach}}{{/get}}
+            </div>
+
+            <div class="ns-megamenu__col">
+              <p class="ns-megamenu__label">{{t "Free to read"}}</p>
+              <a class="ns-navmenu__item" href="/docs/">
+                <span class="ns-navmenu__icon">{{> icons name="books"}}</span>
+                <span><span class="ns-navmenu__title">{{t "Documentation"}}</span><span class="ns-navmenu__desc">{{t "Guides, references and how-tos"}}</span></span>
+              </a>
+              <a class="ns-navmenu__item" href="/blog/">
+                <span class="ns-navmenu__icon">{{> icons name="newspaper"}}</span>
+                <span><span class="ns-navmenu__title">{{t "Blog"}}</span><span class="ns-navmenu__desc">{{t "Notes and deep dives"}}</span></span>
+              </a>
+              <a class="ns-navmenu__item" href="/training/">
+                <span class="ns-navmenu__icon">{{> icons name="map-trifold"}}</span>
+                <span><span class="ns-navmenu__title">{{t "The roadmap"}}</span><span class="ns-navmenu__desc">{{t "What to learn, in order"}}</span></span>
+              </a>
+            </div>
+          </div>
+
+          <div class="ns-megamenu__foot">
+            <a href="/courses/">{{> icons name="squares-four"}}{{t "All courses"}}</a>
+            <a href="/docs/">{{> icons name="question"}}{{t "Help centre"}}</a>
+            <a href="https://github.com/imswarnil/Namaste-Salesforce" target="_blank" rel="noopener">{{> icons name="github"}}{{t "GitHub"}}</a>
+          </div>
+        </div>
+      </li>
+    </ul>
 
     <div class="ns-topnav__actions">
 
