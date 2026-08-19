@@ -30,42 +30,35 @@
     <a class="ns-sidebar__link" href="/docs/{{slug}}/">{{t "View section"}}{{> icons name="arrow-right"}}</a>
   </details>
 {{else match view "card"}}
-  <article data-cat data-section="{{slug}}"
-           x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))"
-           {{!-- min-w-0: the article is a grid item, so without it the track is
-                 sized to the LONGEST article title in the list — those titles
-                 are `truncate` (nowrap), which has no break opportunity to
-                 give, and one long one widened every card past the phone. --}}
-           class="group/card flex min-w-0 flex-col rounded-card border border-border bg-surface-raised p-6 ns-transition hover:border-brand-500">
-    <div class="flex items-start gap-3.5">
-      <span class="ns-chip shrink-0">
-        {{> icons name=icon}}
-      </span>
-      <div class="min-w-0">
-        <h2 class="font-heading text-lg font-bold tracking-tight">
-          <a href="/docs/{{slug}}/" class="transition group-hover/card:text-brand-600 dark:group-hover/card:text-brand-300">{{name}}</a>
-        </h2>
-        <p class="mt-0.5 text-sm text-muted">{{desc}}</p>
-      </div>
+  {{!-- The hub card. `.ns-card` + `--hover` is the system's frame; the peek
+       list under it is `.ns-lesson` rows, the same object the curriculum and
+       the player rail use — a doc article and a lesson are both "a thing you
+       open from a list", so they read the same.
+
+       min-inline-size:0 comes from .ns-card itself; the theme needed `min-w-0`
+       here because its own grid item did not have it, and one long truncated
+       title widened every card past the phone. --}}
+  <article class="ns-card ns-card--hover" data-cat data-section="{{slug}}"
+           x-show="q === '' || [...$el.querySelectorAll('a[data-title]')].some(a => a.dataset.title.toLowerCase().includes(q.toLowerCase()))">
+    <div class="ns-card__body">
+      <span class="ns-card__kicker">{{> icons name=icon}}{{t "Section"}}</span>
+      <a class="ns-card__link" href="/docs/{{slug}}/"><span class="ns-card__title">{{name}}</span></a>
+      <p class="ns-card__text">{{desc}}</p>
     </div>
+
     {{#get "posts" filter="tag:documentation+primary_tag:[{{slug}},{{legacy}}]" limit="4" order="published_at asc"}}
-      <ul class="mt-4 space-y-0.5 border-t border-border pt-3">
+      <div class="ns-curriculum ns-curriculum--flat">
         {{#foreach posts}}
-          <li>
-            <a href="{{url}}" data-title="{{title}}"
-               x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())"
-               class="group/l flex items-center gap-2 rounded-btn px-2 py-1.5 text-sm text-ink ns-transition hover:bg-surface-sunken">
-              {{> icons name="file-text" class="shrink-0 text-brand-500 opacity-70"}}
-              <span class="truncate group-hover/l:text-brand-600 dark:group-hover/l:text-brand-300">{{title}}</span>
-            </a>
-          </li>
-        {{else}}
-          <li class="px-2 py-1.5 text-sm italic text-muted">{{t "Coming soon."}}</li>
+          <a class="ns-lesson" href="{{url}}" data-title="{{title}}"
+             x-show="q === '' || $el.dataset.title.toLowerCase().includes(q.toLowerCase())">
+            <span class="ns-lesson__index" aria-hidden="true">{{@number}}</span>
+            <span class="ns-lesson__title">{{title}}</span>
+            <span class="ns-ltype ns-ltype--icon ns-ltype--article">{{> icons name="file-text"}}<span>{{t "Article"}}</span></span>
+          </a>
         {{/foreach}}
-      </ul>
-      <a href="/docs/{{slug}}/" class="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-brand-600 transition hover:gap-2.5 dark:text-brand-300">
-        {{t "Browse all"}} {{pagination.total}} {{t "articles"}} {{> icons name="arrow-right"}}
-      </a>
+      </div>
     {{/get}}
+
+    <a class="ns-card__foot" href="/docs/{{slug}}/">{{t "View section"}}{{> icons name="arrow-right" class="ns-btn__arrow"}}</a>
   </article>
 {{/match}}
