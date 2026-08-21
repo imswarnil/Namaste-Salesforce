@@ -4,7 +4,10 @@ Ghost's `collections` in `routes.yaml` are the most under-used feature in the
 platform, and on a learning site they are the difference between "a blog with
 categories" and "a curriculum".
 
-Read `abstract/01` first — this builds on the URL model.
+Read `01` first — this builds on the URL model — and
+[`18-tag-registry.md`](18-tag-registry.md) for the tag *names*, which are
+canonical there. This file is about how collections work, not what things are
+called.
 
 ---
 
@@ -64,12 +67,15 @@ backing post, prefer a collection — then adding one is Ghost-Admin-only work.
 > **If adding a new one should be possible without touching this repo, it must
 > be a collection.**
 
-Training sections are a collection, so adding one is: make the tag, write the
-post, publish. Docs sections are hand-routed, so adding one needs a
-`routes.yaml` edit AND a partial edit — which is why there are exactly ten and
-why nobody has added an eleventh.
+Training modules are a collection, so adding one is: make the tag, write the
+post, publish. Docs sections *were* hand-routed — a `routes.yaml` edit AND a
+partial edit each — which is why there were exactly ten and nobody ever added
+an eleventh.
 
-That asymmetry is a design decision. Make it deliberately.
+**That asymmetry was the bug, and this rule is what caught it.** Docs now use
+the same shape as training ([`18`](18-tag-registry.md),
+[`decisions/0004`](decisions/0004-tag-vocabulary.md)). Apply the rule to every
+new content type before building it, not after.
 
 ## The learning graph — what to build on top
 
@@ -118,5 +124,6 @@ not a taxonomy.
 | --- | --- | --- |
 | `/certifications/{cert}/` | `tag:hash-cert-*` | assembles a path from existing lessons; strong SEO |
 | `/series/{series}/` | a series tag | converts readers into students |
+| `/toolkit/{slug}/` | `tag:hash-product` | the catalogue — but read `20` first, Ghost takes no one-time payment |
 | `/authors/{author}/` | exists as a taxonomy | make it a real page, not an archive |
 | `/updated/` | `updated_at` desc | "what changed" — the platform ships 3× a year |

@@ -9,6 +9,10 @@ Build it the other way and you burn out in a month.
 
 ---
 
+> `19-teaching-method.md` is the companion to this file: this one decides what
+> gets made and in what order, `19` decides what a lesson is made **of**. Read
+> `19` before writing one.
+
 ## The unit is a CONCEPT, not a post
 
 One concept = one thing a reader can now do that they could not before.

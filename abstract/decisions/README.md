@@ -60,3 +60,4 @@ trigger can be reopened by evidence instead of by argument.
 | [0001](0001-reset-to-a-starter.md) | Reset the theme to a stack-free starter | Accepted |
 | [0002](0002-css-strategy.md) | How the theme gets its CSS | **Open** |
 | [0003](0003-routes-yaml-minimal.md) | `routes.yaml` names only servable templates | Accepted |
+| [0004](0004-tag-vocabulary.md) | The tag vocabulary | **Proposed** |

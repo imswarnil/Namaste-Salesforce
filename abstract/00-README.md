@@ -14,6 +14,7 @@ banner saying so.
 | # | File | Status | If you get this wrong |
 | --- | --- | --- | --- |
 | 01 | `01-content-model.md` | **current** | Every URL on the site 404s or 301s to the wrong page |
+| 18 | `18-tag-registry.md` | **current** | Renaming a tag later means re-tagging every post and 301-ing every URL under it |
 | 02 | `02-post-dispatcher.md` | **current** | Every post renders as the wrong kind of page |
 | 03 | `03-design-system.md` | principle current, mechanism open | The theme reimplements NSDS and the two products drift |
 | 04 | `04-build-pipeline.md` | *history* | Nothing compiles, or compiles wrong and silently |
@@ -33,6 +34,9 @@ banner saying so.
 | 13 | `13-collections.md` | Ghost collections, the learning graph, taxonomy hygiene |
 | 14 | `14-seed-content.md` | How to rebuild the importable fixture you need before anything renders |
 | 17 | `17-consuming-the-design-system.md` | What NSDS actually is, measured — and whether you need Tailwind to use it (**you do not**) |
+| 18 | `18-tag-registry.md` | **The canonical tag vocabulary** — every tag, the naming rules, and why Ghost cannot do three levels |
+| 19 | `19-teaching-method.md` | What a lesson is made of: the skeleton, the steps format, the style rules |
+| 20 | `20-subscriptions-and-growth.md` | Tier names, pricing, the free/paid line, and how content becomes subscribers |
 
 ### And two about the work itself
 
@@ -53,6 +57,7 @@ at a time, which is why `10` had to be written.
 | [0001](decisions/0001-reset-to-a-starter.md) | Reset the theme to a stack-free starter | Accepted |
 | [0002](decisions/0002-css-strategy.md) | How the theme gets its CSS | **Open — gates all styling work** |
 | [0003](decisions/0003-routes-yaml-minimal.md) | `routes.yaml` names only servable templates | Accepted |
+| [0004](decisions/0004-tag-vocabulary.md) | The tag vocabulary | **Proposed — settle before the first post** |
 
 ---
 
