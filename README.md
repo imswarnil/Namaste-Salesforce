@@ -106,6 +106,8 @@ site if you get it wrong** rather than by what is interesting.
 | [11 roadmap](abstract/11-theme-roadmap.md) | what to build next, ranked |
 | [12 content system](abstract/12-content-system.md) | one concept → lesson, video, blog, slides, social |
 | [13 collections](abstract/13-collections.md) | Ghost collections and the learning graph |
+| [17 design system](abstract/17-consuming-the-design-system.md) | what NSDS is, measured — and why Tailwind is optional |
+| [decisions/](abstract/decisions/) | the decision record, with reasoning and downsides |
 | [14 seed content](abstract/14-seed-content.md) | how to rebuild the fixture you need before anything renders |
 | [15 starting from zero](abstract/15-starting-from-zero.md) | what was removed, and the decisions still open |
 | [16 how to Claude](abstract/16-how-to-claude.md) | working effectively with Claude Code |

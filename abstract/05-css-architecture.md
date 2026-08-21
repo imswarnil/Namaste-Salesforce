@@ -1,5 +1,13 @@
 # 05 · CSS architecture
 
+> ### ⚠️ Status: half history, half permanent contract
+>
+> The file layout below is gone with the build. **The layer contract is not
+> gone** — `@layer theme, base, ns-components, components, utilities`, declared
+> before any `@import`, nothing outside a layer — and it applies to every
+> option in [`decisions/0002`](decisions/0002-css-strategy.md), including the
+> no-build ones. That section is the part to actually read.
+
 `assets/css/screen.css` is the final stylesheet and stays tiny: Tailwind,
 `@source` globs, `@custom-variant dark`, and the imports.
 

@@ -75,6 +75,13 @@ a stack choice — it is what Ghost itself runs on upload.
 
 ## The decisions to make, in the order they constrain each other
 
+> ⚠️ **Decision 2 below is partly answered already.** It was framed as
+> "Tailwind or hand-written CSS", and measuring NSDS shows that is the wrong
+> axis: NSDS is *already* a CSS-variables system with zero Tailwind in its
+> component layer, and it already ships a framework-neutral bundle. See
+> [`17`](17-consuming-the-design-system.md) for the measurement and
+> [`decisions/0002`](decisions/0002-css-strategy.md) for the live decision.
+
 ### 1 · Does the theme use NSDS at all?
 This is the biggest fork in the road and everything else follows from it.
 
@@ -129,8 +136,9 @@ which is exactly why it should not come first.
 
 ## Record decisions here as they are made
 
-> **Decision log** — append, never rewrite. A decision with its reasoning is
-> worth ten times one without.
+> **Decisions now live in [`decisions/`](decisions/)**, one file each, with the
+> reasoning, the downside and the trigger that reopens them. This list is the
+> summary; the folder is the record.
 >
 > - **Reset to a stack-free starter.** The stack had been chosen implicitly,
 >   one commit at a time; `abstract/10` is the result. Re-deciding costs a

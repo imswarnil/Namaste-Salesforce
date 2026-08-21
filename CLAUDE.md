@@ -26,6 +26,15 @@ If you read three files, read:
   and why branch order is load-bearing.
 - **`abstract/10-how-this-went-wrong.md`** — the mistakes already made here.
 
+Before any styling work, read **`abstract/17-consuming-the-design-system.md`**
+(what NSDS actually is — it is already CSS-variables-based, no Tailwind in its
+component layer) and **`abstract/decisions/0002-css-strategy.md`**, which is
+**open** and gates that work.
+
+**`abstract/decisions/`** is the decision record. If a choice would take more
+than a day to reverse, it gets a file there — with its downside and the trigger
+that reopens it. Decisions made by drift are what `abstract/10` is about.
+
 ## Commands
 
 ```bash

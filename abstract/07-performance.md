@@ -1,5 +1,11 @@
 # 07 · Performance and Ghost's fast-loading features
 
+> ### ⚠️ Status: describes the removed implementation
+>
+> The fonts, preloads and inline theme script below shipped with the previous
+> theme and are gone. The *reasoning* is still correct and is what to rebuild
+> toward; the file paths and build hooks are not current.
+
 ## Fonts — two, both self-hosted, both preloaded
 
 **Switzer** (interface AND reading layer, separated by weight not by cut) and

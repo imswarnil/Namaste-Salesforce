@@ -1,5 +1,15 @@
 # 04 · The build pipeline
 
+> ### ⚠️ Status: describes a pipeline that no longer exists
+>
+> There is **no build step**. gulp, PostCSS, Tailwind and `assets/built/` were
+> all removed — see [`decisions/0001`](decisions/0001-reset-to-a-starter.md).
+> Every command below will fail today.
+>
+> Kept because it is an accurate record of a working pipeline, and because
+> option B in [`decisions/0002`](decisions/0002-css-strategy.md) is exactly
+> this. **Read it as a proposal, not as instructions.**
+
 ```bash
 yarn install       # Yarn; package-lock.json is gitignored
 yarn dev           # gulp default: build + livereload watch

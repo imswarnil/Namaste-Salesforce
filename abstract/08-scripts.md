@@ -1,5 +1,13 @@
 # 08 · The scripts
 
+> ### ⚠️ Status: the scripts described here were deleted
+>
+> `scripts/` no longer exists. This is kept as the specification for rebuilding
+> them if the vendoring approach returns — see
+> [`decisions/0002`](decisions/0002-css-strategy.md), which may make the
+> vendoring script unnecessary: NSDS now ships a prebuilt framework-neutral
+> bundle that can simply be copied ([`17`](17-consuming-the-design-system.md)).
+
 Everything in `scripts/`. All are run from `package.json`; none is a one-off.
 
 ---

@@ -3,9 +3,17 @@
 **NSDS owns how everything looks. The theme must not have a second opinion.**
 
 It lives OUTSIDE the theme, beside the Ghost install, at
-`../../../../NS-Design-System`, and is **vendored** in by `yarn design:sync`.
-The same system is vendored into the Next.js LMS at app.namastesalesforce.com,
-which is the entire point: one system, two products, no drift.
+`../../../../NS-Design-System`. The same system is consumed by the Next.js LMS
+at app.namastesalesforce.com, which is the entire point: one system, two
+products, no drift.
+
+> **This file is about the principle, and the principle is unchanged.** The
+> *mechanism* is now an open question: the vendoring script (`yarn design:sync`)
+> was removed with the build, and NSDS meanwhile ships a prebuilt
+> framework-neutral bundle that needs no vendoring at all. What NSDS actually
+> is, measured rather than assumed, is
+> [`17-consuming-the-design-system.md`](17-consuming-the-design-system.md); the
+> choice is [`decisions/0002`](decisions/0002-css-strategy.md).
 
 | Path | Contents | Rule |
 | --- | --- | --- |
