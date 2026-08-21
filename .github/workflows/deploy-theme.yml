@@ -10,14 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Strip dev-only files so only the theme itself is zipped & uploaded.
-      # (dummy-content = importable seed data, docs, and build source maps —
-      # none of it belongs in the deployed theme, and it can trip Ghost's
-      # upload validation.)
+      # Strip repo furniture so only the theme itself is uploaded. Docs and
+      # fixtures do not belong in a deployed theme and can trip Ghost's upload
+      # validation. `-rf`/`-f` are used throughout so this stays correct as
+      # paths come and go; a missing path must not fail the deploy.
+      #
+      # routes.yaml is pruned deliberately: it is versioned here, but Ghost
+      # reads it from Admin → Labs → Routes, NOT from the theme folder.
       - name: Prune non-theme files
         run: |
-          rm -rf dummy-content .claude abstract prompt scripts styleguide
-          rm -f TODO.md CLAUDE.md CONTRIBUTING.md ARCHITECTURE.md CHANGELOG.md
+          rm -rf .claude abstract prompt scripts dummy-content styleguide
+          rm -f ./*.md routes.yaml
           rm -f assets/built/*.map
 
       - name: Deploy Ghost Theme

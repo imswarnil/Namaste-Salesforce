@@ -97,3 +97,184 @@ discover. Adding one means a `routes.yaml` entry AND an entry in
 `/`, `/training/`, `/about/`, `/become-author/`, `/sponsor/` render a template
 standalone. Each also works if a Ghost PAGE with the matching slug exists —
 the templates fork on `{{#page}}` to pick up a title and excerpt from Admin.
+
+
+---
+
+## The full `routes.yaml`, as a target
+
+The shipped `routes.yaml` is deliberately minimal — a route pointing at a
+template that does not exist is a **400**, not a fallback, so it only ever
+carries routes the theme can serve.
+
+This is the model to grow back into. **Move one entry at a time, in the same
+commit that adds its template.**
+
+```yaml
+# routes.yaml — Namaste Salesforce
+# Upload in Ghost Admin → Settings → Labs → Routes (this file is NOT read from
+# the theme folder; it lives here so it's versioned alongside the theme).
+#
+# URL model (nested course → lesson):
+#   /courses/                      list of courses (courses template)
+#   /courses/{course-tag}/         a single course  (post #course, primary tag = course tag)
+#   /courses/{course-tag}/{slug}/  a lesson of that course (post #lesson, primary tag = course tag)
+# Because a lesson's primary tag == its course's tag, the {primary_tag} segment
+# nests every lesson under its course automatically.
+#
+# Content model (matches the templates' tag conventions + dummy-content/*.json):
+#   Course       = post tagged #course,  primary tag = course tag (e.g. apex)
+#   Lesson       = post tagged #lesson,  primary tag = its course's tag
+#   Training     = /training/ itself. There is ONE training, so it has no post
+#                  of its own — the landing lists its sections.
+#   Section      = POST tagged #training-section, PRIMARY tag = the section tag,
+#                  and post slug == that tag's slug (e.g. slug "start", primary
+#                  tag "start"). The post BODY is the section overview.
+#                  → /training/start/
+#   Lesson       = post tagged #training-content, PRIMARY tag = its section tag.
+#                  → /training/start/{lesson-slug}/
+#   Section ORDER = published_at asc. Backdate a section post to move it earlier.
+#
+#   Adding a section is therefore Ghost-Admin-only: make the tag, write the
+#   section post with a matching slug, publish. No routes.yaml edit, no theme
+#   edit. (This replaced a hardcoded route-per-section list plus an ordered
+#   partial that both had to be kept in sync by hand.)
+#   Doc          = post tagged `documentation`, primary tag = docs-NN-* section tag
+#   Resource     = post tagged #resource
+#   Blog post    = post tagged #blog
+#   Pages: /about/, /products/, /contact/ use page-{slug}.hbs automatically.
+#
+# TAG pages redirect in tag.hbs rather than serving a duplicate archive:
+#   /tag/{course-tag}/   -> the course
+#   /tag/{section-tag}/  -> /training/{section}/  (detected by the #training-section
+#                           POST whose primary tag it is — the section's backing post)
+
+routes:
+  /: home
+  # Content-less routes → these templates render standalone (also work if a
+  # Ghost page with the matching slug exists).
+  /become-author/:
+    template: page-become-author
+  /about/:
+    template: page-about
+  /sponsor/:
+    template: page-sponsor
+
+  # ── Training ──────────────────────────────────────────────────────────
+  # /training/ is the single training's landing (no #training post backs it;
+  # a Ghost PAGE with slug `training` will supply the title/excerpt if one
+  # exists — training.hbs forks on {{#page}}).
+  /training/:
+    template: training
+
+  # NOTE: sections are NO LONGER routed one-by-one here. A section is a POST
+  # (tagged #training-section) and is served by the /training-sections/
+  # collection below, so adding a section is pure Ghost Admin work — no route
+  # edit, no theme edit. See the collection for the slug rule.
+
+  # Docs section pages — /docs/{section}/ (clean slugs, no numbering).
+  # Each renders docs-section.hbs with its tag as {{tag}}. Section tag slugs
+  # in Ghost Admin must match (rename docs-01-getting-started → getting-started
+  # etc.). Keep this list in sync with partials/docs/sections.hbs.
+  /docs/getting-started/:
+    data: tag.getting-started
+    template: docs-section
+  /docs/account-profile/:
+    data: tag.account-profile
+    template: docs-section
+  /docs/courses-lessons/:
+    data: tag.courses-lessons
+    template: docs-section
+  /docs/roadmaps/:
+    data: tag.roadmaps
+    template: docs-section
+  /docs/membership-billing/:
+    data: tag.membership-billing
+    template: docs-section
+  /docs/certificates-progress/:
+    data: tag.certificates-progress
+    template: docs-section
+  /docs/become-an-author/:
+    data: tag.become-an-author
+    template: docs-section
+  /docs/community-support/:
+    data: tag.community-support
+    template: docs-section
+  /docs/troubleshooting/:
+    data: tag.troubleshooting
+    template: docs-section
+  /docs/design-system/:
+    data: tag.design-system
+    template: docs-section
+
+collections:
+  # Courses list + single course at /courses/{course-slug}/.
+  # IMPORTANT: give each course POST a slug equal to its course TAG (e.g. course
+  # "Apex Masterclass" → slug "apex", primary tag "apex"). The course URL uses
+  # {slug} (unique) — using {primary_tag} is ambiguous because the course and
+  # all its lessons share that tag, which makes Ghost 301 to the wrong course.
+  # Because course-slug == course-tag, lessons still nest under /courses/{tag}/.
+  /courses/:
+    permalink: /courses/{slug}/
+    template: courses
+    filter: tag:hash-course
+
+  # Lessons nest under their course: /courses/{course-tag}/{lesson-slug}/
+  # (the /lessons/ path is just this collection's archive index.)
+  /lessons/:
+    permalink: /courses/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-lesson
+
+  # ── Training SECTIONS — /training/{section}/ ─────────────────────────────
+  # A section is a POST tagged #training-section whose PRIMARY tag is the
+  # section tag. Its body is the section overview.
+  #
+  # THE ONE RULE: the section post's SLUG must equal its primary TAG's slug.
+  # The permalink uses {slug} (unique per post) rather than {primary_tag},
+  # because the section post and every one of its lessons share that tag —
+  # {primary_tag} would be ambiguous and Ghost would 301 to the wrong place.
+  # Keeping slug == tag slug is what makes /training/start/ (the section) and
+  # /training/start/{lesson}/ (its lessons) line up. Same trick as /courses/.
+  #
+  # This replaces the old hand-maintained route-per-section list: sections are
+  # now discovered from content, and their ORDER is published_at asc.
+  /training-sections/:
+    permalink: /training/{slug}/
+    template: training-section
+    filter: tag:hash-training-section
+
+  # Training LESSONS nest under their section: /training/{section}/{lesson}/
+  # A lesson's primary tag IS its section tag, so {primary_tag} nests it
+  # automatically. Different path depth from the section above, so no clash.
+  /training-lessons/:
+    permalink: /training/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-training-content
+
+  # Docs hub + section-nested articles: /docs/{section-tag}/{doc-slug}/
+  # (doc primary tag = its docs-NN-* section tag).
+  /docs/:
+    permalink: /docs/{primary_tag}/{slug}/
+    template: documentation
+    filter: tag:documentation
+
+  /resources/:
+    permalink: /resources/{slug}/
+    template: resources
+    filter: tag:hash-resource
+
+  /blog/:
+    permalink: /blog/{slug}/
+    template: blog
+    filter: tag:hash-blog
+
+  # Catch-all so untagged posts still get a URL.
+  /archive/:
+    permalink: /archive/{slug}/
+    template: index
+
+taxonomies:
+  tag: /tag/{slug}/
+  author: /author/{slug}/
+```

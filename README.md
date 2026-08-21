@@ -4,9 +4,10 @@
 
 **An open-source [Ghost](https://ghost.org) theme for Salesforce learning communities.**
 
-Courses with nested lessons · structured training paths · documentation · a blog —
-built on a shared design system, with dark mode, self-hosted fonts and no third-party
-requests in the render path.
+Courses with nested lessons · structured training paths · documentation · a blog.
+
+**Currently a stack-free starter** — five templates, two partials, ~30 lines of CSS,
+no build step. The architecture and the decisions still open are in [`abstract/`](abstract/).
 
 [![CI](https://github.com/imswarnil/Namaste-Salesforce/actions/workflows/ci.yml/badge.svg)](https://github.com/imswarnil/Namaste-Salesforce/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -14,9 +15,10 @@ requests in the render path.
 
 </div>
 
-> **Status: `0.1.0`, rebuilding.** The theme is being rewritten from scratch on
-> the Namaste Salesforce Design System. Pre-1.0 means the structure is still
-> moving — see [CHANGELOG.md](CHANGELOG.md) and [`abstract/`](abstract/).
+> **Status: `0.1.0` — a starter, being rebuilt.** The previous implementation was
+> deliberately reset; no build tool, CSS framework or component library has been
+> chosen yet. See [`abstract/15`](abstract/15-starting-from-zero.md) for what was
+> removed and the decisions still open, and [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
@@ -33,11 +35,11 @@ at** — being fast, indexable and editable by a writer.
   a reading rail and prev/next that crosses section boundaries.
 - **One dispatcher, seven page types.** Ghost gives a theme one `post.hbs`;
   this one reads tags and dispatches to a real page per kind of content.
-- **A design system, not a stylesheet.** Every visual decision comes from
-  [NS-Design-System](https://github.com/imswarnil/NS-Design-System), vendored
-  in and shared with the Next.js LMS, so the two products cannot drift.
 - **Adding a training section is Ghost-Admin-only.** Make the tag, write the
   post, publish. No route edit, no theme edit, no deploy.
+
+These are the conventions the theme is being rebuilt to serve; the starter
+implements the URL model and the dispatcher shape, not yet the pages.
 
 ## Install
 
@@ -48,12 +50,15 @@ at** — being fast, indexable and editable by a writer.
    [`routes.yaml`](routes.yaml).
 
 > ⚠️ **Step 3 is not optional.** `routes.yaml` defines every collection and URL
-> on the site. Without it, courses, training, docs and the blog have no URLs
-> and the theme will look broken through no fault of its own.
+> on the site. Without it the collections do not exist and posts import with no
+> URLs. Note that the shipped file is deliberately minimal — a route pointing at
+> a template that does not exist is a **400**, not a fallback — so entries are
+> added back as their templates land. The full model is in
+> [`abstract/01`](abstract/01-content-model.md).
 
-To see it with content before writing your own: Ghost Admin → **Settings → Labs
-→ Import** [`dummy-content/import.json`](dummy-content/import.json), which
-seeds every collection and every tag the templates branch on.
+To see it with content, you need a seed fixture —
+[`abstract/14`](abstract/14-seed-content.md) is how to build one, and why the
+`sort_order: 0` rule in it is what makes the whole URL model work.
 
 ## The content model in one table
 
@@ -77,16 +82,12 @@ part of this theme that is expensive to get wrong.
 ## Develop
 
 ```bash
-yarn install
-yarn dev          # build + watch, livereload
-yarn build        # one-off build into assets/built/ (committed)
-yarn test         # gscan — Ghost's own theme validator
-yarn design:sync  # re-vendor the design system
-yarn zip          # package for upload
+npm install
+npm test          # gscan — Ghost's own theme validator
+npm run zip       # package for upload
 ```
 
-`assets/built/` is committed because Ghost serves it directly. Run `yarn build`
-and commit the result; CI fails if it is stale.
+There is no build step. `assets/css/screen.css` is served directly.
 
 ## Documentation
 
@@ -98,13 +99,16 @@ site if you get it wrong** rather than by what is interesting.
 | [01 content model](abstract/01-content-model.md) | `routes.yaml`, tags, the URL rules |
 | [02 post dispatcher](abstract/02-post-dispatcher.md) | one `post.hbs`, seven page types |
 | [03 design system](abstract/03-design-system.md) | NSDS, vendoring, what the theme may not own |
-| [04](abstract/04-build-pipeline.md) · [05](abstract/05-css-architecture.md) | build pipeline · CSS architecture |
+| [04](abstract/04-build-pipeline.md) · [05](abstract/05-css-architecture.md) | build pipeline · CSS architecture (**both describe the removed stack — reference, not current**) |
 | [06 Ghost glue](abstract/06-ghost-glue.md) | members, Koenig, JSON-LD, helper traps |
 | [07 performance](abstract/07-performance.md) | fonts, images, the pre-paint script |
 | [10 postmortem](abstract/10-how-this-went-wrong.md) | the mistakes already made here |
 | [11 roadmap](abstract/11-theme-roadmap.md) | what to build next, ranked |
 | [12 content system](abstract/12-content-system.md) | one concept → lesson, video, blog, slides, social |
 | [13 collections](abstract/13-collections.md) | Ghost collections and the learning graph |
+| [14 seed content](abstract/14-seed-content.md) | how to rebuild the fixture you need before anything renders |
+| [15 starting from zero](abstract/15-starting-from-zero.md) | what was removed, and the decisions still open |
+| [16 how to Claude](abstract/16-how-to-claude.md) | working effectively with Claude Code |
 
 ## Contributing
 

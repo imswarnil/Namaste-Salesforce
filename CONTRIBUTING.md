@@ -3,10 +3,17 @@
 Thanks for wanting to help. Typo fixes, accessibility improvements, new
 sections, docs — all welcome, at any size.
 
-**Read this first if you are changing anything visual:** the theme does not own
-how things look. A design system does. See [Where does my change go?](#where-does-my-change-go)
-below — it is the question that decides whether a PR is a five-line change or
-the wrong repo entirely.
+> ### ⚠️ Read this before opening a styling PR
+>
+> The theme is currently a **stack-free starter**. There is no build step, no
+> CSS framework and no component library, because those decisions have not been
+> made yet — see [`abstract/15`](abstract/15-starting-from-zero.md), which lists
+> the four open ones and the order they constrain each other in.
+>
+> That makes styling PRs **premature right now**: the first decision is whether
+> the theme owns its CSS at all, and until it is settled, anything written
+> against one answer is thrown away by the other. Structure, templates,
+> accessibility, docs and the URL model are all fair game today.
 
 ---
 
@@ -15,8 +22,8 @@ the wrong repo entirely.
 ```bash
 git clone https://github.com/imswarnil/Namaste-Salesforce.git
 cd Namaste-Salesforce
-yarn install
-yarn dev          # build + watch with livereload
+npm install       # gscan only — there is no build step
+npm test          # gscan, Ghost's own theme validator
 ```
 
 You need a [local Ghost install](https://ghost.org/docs/install/local/) to see
@@ -24,18 +31,22 @@ the theme against real content. **Do this before you write anything** — it is
 the single check that catches what the build cannot:
 
 1. Point Ghost at the theme (symlink it into `content/themes/`).
-2. Ghost Admin → Settings → Labs → **Import** `dummy-content/import.json`.
-   That seeds 2–3 posts for every collection and every tag the templates
-   branch on, so every page type actually renders.
-3. Ghost Admin → Settings → Labs → **Routes** → upload `routes.yaml`.
+2. Ghost Admin → Settings → Labs → **Routes** → upload `routes.yaml`.
+3. Add a few posts, or build a seed fixture — [`abstract/14`](abstract/14-seed-content.md)
+   describes how the old one was generated and which rules it had to encode.
 
-Without step 3 the URL model is wrong and half the pages will look broken for
-reasons that have nothing to do with your change.
+> `routes.yaml` here is deliberately **minimal**. A route pointing at a template
+> that does not exist is a **400**, not a fallback — Ghost answers
+> `Missing template x.hbs` and the page is dead. So add a route back in the same
+> commit that adds its template, never before. The full target model is at the
+> bottom of [`abstract/01`](abstract/01-content-model.md).
 
 ## Where does my change go?
 
 This project is three repositories with a strict division. Putting a change in
-the wrong one is the most common way a PR gets sent back.
+the wrong one is the most common way a PR gets sent back. (The design-system
+row is how the previous implementation worked and the direction being resumed —
+but see the note at the top: it is a decision to re-make, not a settled one.)
 
 | If you are changing… | It belongs in |
 | --- | --- |
@@ -48,17 +59,14 @@ the wrong one is the most common way a PR gets sent back.
 > **The theme's job is only what neither Ghost nor NSDS can know about.**
 
 Before writing a rule or a component, check whether Ghost already supplies it,
-then whether NSDS already supplies it. NSDS's variant sets are larger than they
+then whether the design system does. NSDS's variant sets are larger than they
 look — `.ns-btn` has 19, `.ns-table` has 17. Skipping this check is how the
 theme previously grew ~100 classes that were NSDS components under different
-names.
+names: **disjoint by name, identical in substance.** Compare what things *are*.
 
 ## The rules that CI enforces
 
-- **`assets/built/` is committed.** Ghost serves it directly, so run
-  `yarn build` and commit the result. CI fails if it is stale — otherwise the
-  PR ships something the source does not describe.
-- **`yarn test` must pass** (gscan, Ghost's own validator).
+- **`npm test` must pass** (gscan, Ghost's own validator).
 - **No `style="…"` and no `<style>` in any `.hbs`.** An inline style cannot be
   themed, cannot flip in dark mode, cannot be overridden by a later layer and
   cannot be found by grep.
@@ -70,7 +78,8 @@ names.
   is green, gscan is green, and the feature is simply dead. This has happened
   here more than once.
 - **Look at it in a browser, light and dark.** Everything static can pass while
-  every page is wrong.
+  every page is wrong. This is not a hypothetical here — it is the single
+  failure that cost this project the most time.
 - **State is an attribute, not a class** — `aria-current`, `data-state`,
   `[open]` — so the CSS and the screen reader read one source.
 - **Do not invent data.** NSDS has a star rating and a "was" price; Ghost has

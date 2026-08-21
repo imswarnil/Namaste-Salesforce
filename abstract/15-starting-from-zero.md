@@ -22,8 +22,23 @@ partials/
   navigation.hbs     reserved name, rendered by {{navigation}}
   post-card.hbs      one post in a listing
 assets/css/screen.css  hand-written, ~30 lines, no build
-routes.yaml          the URL model — unchanged, and the most valuable file here
+routes.yaml          the URL model — TRIMMED to what the theme can serve
 ```
+
+> ⚠️ **`routes.yaml` had to be trimmed, and this is worth understanding.**
+> It survived the reset intact, still naming eleven templates. Ten of them had
+> just been deleted. A route pointing at a missing template is a **400** —
+> Ghost answers `Missing template courses.hbs for route /courses/` and the page
+> is dead; there is no fallback to `index`. So the file that survived because it
+> was the most valuable thing here would have broken every URL on the site the
+> moment it was uploaded.
+>
+> It now carries only `/` → `home` and one catch-all collection. **The full
+> model is preserved verbatim at the bottom of `abstract/01`** — restore one
+> entry per commit, in the commit that adds its template.
+>
+> The general lesson: *a file is only "unchanged" relative to what it points
+> at.* `routes.yaml` did not change; everything it referenced did.
 
 No build step. No dependencies except `gscan`, which is a validator rather than
 a stack choice — it is what Ghost itself runs on upload.
@@ -90,6 +105,16 @@ That is worth repeating deliberately rather than by accident.
 `abstract/01` lists seven. You do not need all seven to ship. A blog and a
 course is a coherent v0.2.0; training and docs can follow.
 
+## Before tagging a release
+
+- **Screenshots.** `assets/screenshot-desktop.jpg` and `-mobile.jpg` were
+  deleted with the old theme (they showed a design that no longer exists) and
+  the `screenshots` key was removed from `package.json` with them — a manifest
+  pointing at a missing file is worse than no manifest. Retake both and restore
+  the key before publishing anywhere a human browses themes.
+- **`routes.yaml`** must still only name templates that exist. Check it, every
+  release: `grep -oE 'template: [a-z-]+' routes.yaml`.
+
 ## The order to build in
 
 1. **`routes.yaml` into a local Ghost, and seed content in** (`abstract/14`).
@@ -107,4 +132,12 @@ which is exactly why it should not come first.
 > **Decision log** — append, never rewrite. A decision with its reasoning is
 > worth ten times one without.
 >
-> - *(none yet)*
+> - **Reset to a stack-free starter.** The stack had been chosen implicitly,
+>   one commit at a time; `abstract/10` is the result. Re-deciding costs a
+>   rebuild, which is cheap now and expensive at 10k lines.
+> - **`routes.yaml` trimmed to servable routes**, full model kept in
+>   `abstract/01`. A dangling route is a 400, not a degraded page, so the file
+>   must never describe more than the theme can render.
+> - **No build step yet, deliberately.** `screen.css` is hand-written and
+>   near-empty. It gets replaced wholesale when decision 2 is made, so anything
+>   clever written there now is thrown away.

@@ -26,6 +26,9 @@ editor's Admin settings, it is a MAJOR.** Everything else is not.
 ## [Unreleased]
 
 ### Changed
+- **Reset to a stack-free starter.** The NSDS-based implementation was removed
+  wholesale so the stack decisions could be made explicitly rather than one
+  commit at a time — see `abstract/15`. Everything is recoverable from git.
 - **Rebuilt from scratch on NSDS.** The theme no longer carries its own
   component library; every visual decision comes from the vendored
   [NS-Design-System](https://github.com/imswarnil/NS-Design-System), which the

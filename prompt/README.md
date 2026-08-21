@@ -101,7 +101,7 @@ resources need no theme edit and no `routes.yaml` edit.
 
 ## Where these came from
 
-The tag vocabulary is the one in `dummy-content/import.json`; the page anatomy
+The tag vocabulary is the one in `abstract/01-content-model.md`; the page anatomy
 is read from `partials/post-*.hbs`; the content-body behaviours (code windows,
 video adoption, timestamp seeking, table-of-contents) are read from
 `assets/js/`. The design language is the **NS Design System**, which lives in
