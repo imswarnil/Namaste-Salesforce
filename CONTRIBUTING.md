@@ -1,69 +1,123 @@
-# Contributing to Namaste Salesforce
+# Contributing
 
-Thanks for your interest in improving the theme! 🎉 This project is open source and
-contributions of every size — typo fixes, new components, docs, accessibility
-improvements, whole new sections — are welcome.
+Thanks for wanting to help. Typo fixes, accessibility improvements, new
+sections, docs — all welcome, at any size.
+
+**Read this first if you are changing anything visual:** the theme does not own
+how things look. A design system does. See [Where does my change go?](#where-does-my-change-go)
+below — it is the question that decides whether a PR is a five-line change or
+the wrong repo entirely.
+
+---
 
 ## Getting set up
 
-1. **Fork** the repository and clone your fork.
-2. Install dependencies and start the dev server:
-   ```bash
-   yarn install
-   yarn dev
-   ```
-   This builds the assets and watches `assets/scss`, `assets/js` and `*.hbs` with
-   livereload. You'll need a local [Ghost](https://ghost.org/docs/install/local/)
-   install to preview the theme against real content.
-3. Make your changes (see conventions below).
-4. **Rebuild and commit the build output:**
-   ```bash
-   yarn build
-   ```
-   `assets/built/` is committed because Ghost serves it directly. PRs that change
-   SCSS/JS but not the built files will look "broken" to reviewers.
-5. **Validate** the theme:
-   ```bash
-   yarn test        # runs gscan, Ghost's theme validator
-   ```
-6. Open a pull request with a clear description of *what* and *why*.
+```bash
+git clone https://github.com/imswarnil/Namaste-Salesforce.git
+cd Namaste-Salesforce
+yarn install
+yarn dev          # build + watch with livereload
+```
 
-## Coding conventions
+You need a [local Ghost install](https://ghost.org/docs/install/local/) to see
+the theme against real content. **Do this before you write anything** — it is
+the single check that catches what the build cannot:
 
-### SCSS
+1. Point Ghost at the theme (symlink it into `content/themes/`).
+2. Ghost Admin → Settings → Labs → **Import** `dummy-content/import.json`.
+   That seeds 2–3 posts for every collection and every tag the templates
+   branch on, so every page type actually renders.
+3. Ghost Admin → Settings → Labs → **Routes** → upload `routes.yaml`.
 
-- **Use the design tokens.** Pull colours, spacing, radii, shadows and breakpoints from
-  `assets/scss/variables.scss` (`@use "variables" as sf;`) rather than hard-coding values.
-- **Theme both modes.** Anything with a colour needs a dark-mode counterpart via
-  `[data-theme="dark"] & { … }` using the `$sf-dark-*` tokens.
-- **Two layers of CSS:**
-  - `framework/` — generic, reusable classes (grid, buttons, utilities). Keep these
-    framework-like and unopinionated.
-  - `components.scss` — bespoke, branded components. Prefix them with `ns-`.
-- **Comment new components** with a short usage example, matching the existing style.
-- Respect `prefers-reduced-motion` for any animation.
+Without step 3 the URL model is wrong and half the pages will look broken for
+reasons that have nothing to do with your change.
 
-### Handlebars templates
+## Where does my change go?
 
-- Start page templates with `{{!< default}}` to inherit the shared shell.
-- Reuse partials (`{{> name}}`) instead of duplicating markup.
-- Keep markup accessible: real headings, `alt` text, `aria-label`s on icon-only buttons,
-  and `aria-hidden="true"` on decorative icons.
-- Add a brief comment block at the top of new templates/partials explaining their purpose.
+This project is three repositories with a strict division. Putting a change in
+the wrong one is the most common way a PR gets sent back.
 
-### General
+| If you are changing… | It belongs in |
+| --- | --- |
+| a colour, spacing, a component's shape or its variants | **[NS-Design-System](https://github.com/imswarnil/NS-Design-System)** |
+| how a component *behaves* (menus, tabs, the outline) | **NS-Design-System** |
+| which Ghost data appears, and where | **this repo** |
+| URL shapes, tags, collections | **this repo** (`routes.yaml`) |
+| quizzes, grading, certificates, anything with real user state | the Next.js app |
 
-- Match the surrounding code's style, naming, and comment density.
-- Prefer small, focused PRs.
-- If you change behaviour, update the README/docs where relevant.
+> **The theme's job is only what neither Ghost nor NSDS can know about.**
 
-## Reporting bugs & ideas
+Before writing a rule or a component, check whether Ghost already supplies it,
+then whether NSDS already supplies it. NSDS's variant sets are larger than they
+look — `.ns-btn` has 19, `.ns-table` has 17. Skipping this check is how the
+theme previously grew ~100 classes that were NSDS components under different
+names.
 
-Open an [issue](https://github.com/imswarnil/Namaste-Salesforce/issues) describing the
-problem (with steps to reproduce / screenshots) or your feature idea. For visual bugs,
-note your browser and whether it happens in light or dark mode.
+## The rules that CI enforces
+
+- **`assets/built/` is committed.** Ghost serves it directly, so run
+  `yarn build` and commit the result. CI fails if it is stale — otherwise the
+  PR ships something the source does not describe.
+- **`yarn test` must pass** (gscan, Ghost's own validator).
+- **No `style="…"` and no `<style>` in any `.hbs`.** An inline style cannot be
+  themed, cannot flip in dark mode, cannot be overridden by a later layer and
+  cannot be found by grep.
+
+## The rules CI cannot enforce, and which matter more
+
+- **When markup moves onto a new class, grep the JS for the old one in the same
+  change.** A script whose selectors no longer match fails silently: the build
+  is green, gscan is green, and the feature is simply dead. This has happened
+  here more than once.
+- **Look at it in a browser, light and dark.** Everything static can pass while
+  every page is wrong.
+- **State is an attribute, not a class** — `aria-current`, `data-state`,
+  `[open]` — so the CSS and the screen reader read one source.
+- **Do not invent data.** NSDS has a star rating and a "was" price; Ghost has
+  neither a review model nor a discount. Omitting them is correct. Rendering
+  five hard-coded stars is decoration pretending to be data.
+
+## Ghost traps that will cost you an afternoon
+
+- Never call a Ghost **helper** across `../` (`{{../url}}`) — Ghost throws and
+  500s the page. Dotted **property** access (`{{primary_tag.slug}}`) is fine.
+- `limit="all"` is not supported in `{{#get}}`. Use `limit="100"`.
+- Internal tags are `hash-lesson` inside a filter string, `#lesson` in `{{#has}}`.
+- `{{#get}}` swaps the context — values from outside need a `../` path, which
+  is why several partials take the current id as a parameter instead.
+- Nested quotes break attributes:
+  `data-x="{{^has visibility="public"}}…"` closes at `"public"`.
+
+## Commits and branches
+
+Work on a branch off `main`. Write commit messages that say **why**, not just
+what — the reasoning is the part nobody can reconstruct later.
+
+## Releasing (maintainers)
+
+Semver, with a theme-specific reading of what "breaking" means — see
+[CHANGELOG.md](CHANGELOG.md). In short: **if upgrading could change a live
+site's URLs or lose an editor's Admin settings, it is a MAJOR.**
+
+```bash
+# 1. update CHANGELOG.md, move Unreleased → the new version
+# 2. bump package.json (the release workflow fails if the tag disagrees)
+git tag -a v0.2.0 -m "0.2.0 — …"
+git push origin v0.2.0
+```
+
+That builds the zip, runs gscan and publishes a GitHub release with the zip
+attached, which is what a site owner uploads in Ghost Admin.
+
+## Understanding the codebase
+
+`abstract/` is the documentation, ordered by what breaks the site if you get it
+wrong. `abstract/00-README.md` is the map. If you read two files, read
+`01-content-model.md` (the URL model — the only part that is expensive to
+change later) and `10-how-this-went-wrong.md` (the mistakes already made here,
+so you do not repeat them).
 
 ## Code of conduct
 
-Be kind and constructive. We want this to be a welcoming place for learners and
-contributors of all experience levels.
+Be decent. Assume good faith, review the change and not the person, and
+remember that most contributors are doing this on their own time.

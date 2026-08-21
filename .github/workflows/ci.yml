@@ -1,0 +1,54 @@
+name: CI
+
+# Every push and every pull request. A theme that does not build is not a
+# theme, and gscan is what Ghost itself runs on upload — failing here is
+# strictly better than failing in someone's Admin.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build and validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      # assets/built/ is COMMITTED because Ghost serves it directly. So the
+      # build must be reproducible: if rebuilding changes the output, the
+      # committed files are stale and the PR would ship something the source
+      # does not describe.
+      - name: Build
+        run: yarn build
+
+      - name: Fail if the committed build output is stale
+        run: |
+          if ! git diff --quiet -- assets/built; then
+            echo "::error::assets/built/ is out of date. Run 'yarn build' and commit the result."
+            git diff --stat -- assets/built
+            exit 1
+          fi
+
+      - name: Validate with gscan
+        run: yarn test:ci
+
+      # The vendored design system must match its source, or the two products
+      # have already drifted. See abstract/03.
+      - name: Design system in sync
+        run: yarn design:check
+        continue-on-error: true   # NS-Design-System is not checked out in CI
+
+      - name: No inline styles in templates
+        run: |
+          if grep -rn 'style="' --include='*.hbs' . --exclude-dir=node_modules; then
+            echo "::error::Inline styles are not allowed. See abstract/05."
+            exit 1
+          fi

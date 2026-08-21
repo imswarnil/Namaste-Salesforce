@@ -1,124 +1,120 @@
-# Namaste Salesforce — Ghost Theme
+<div align="center">
 
-An open-source [Ghost](https://ghost.org/) theme for **Salesforce learning communities**:
-courses, lessons, documentation, roadmaps, and a developer blog — all in one clean,
-fast, accessible package.
+# Namaste Salesforce
 
-- 🎨 **SLDS-inspired design** — a Salesforce-blue palette with a polished, modern feel
-- 🌗 **Built-in dark mode** — instant, flash-free theme toggle (saved per visitor)
-- 📱 **Fully responsive** — mobile-first layouts, collapsible navigation and sidebars
-- 🧩 **Reusable components** — cards, heroes, stats, tracks, timelines, ads and more
-- ⚡ **Tailwind CSS v4** — utility-first styling with a small SLDS token layer
-- ✨ **Light interactivity** — [Alpine.js](https://alpinejs.dev/) (self-hosted) for menus & toggles
-- ♿ **Accessible & SEO-ready** — semantic markup, focus rings, reduced-motion, JSON-LD
+**An open-source [Ghost](https://ghost.org) theme for Salesforce learning communities.**
 
-&nbsp;
+Courses with nested lessons · structured training paths · documentation · a blog —
+built on a shared design system, with dark mode, self-hosted fonts and no third-party
+requests in the render path.
 
-## Quick start
+[![CI](https://github.com/imswarnil/Namaste-Salesforce/actions/workflows/ci.yml/badge.svg)](https://github.com/imswarnil/Namaste-Salesforce/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Ghost](https://img.shields.io/badge/Ghost-%3E%3D5.0-738a94)](https://ghost.org)
 
-You'll need [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/).
+</div>
+
+> **Status: `0.1.0`, rebuilding.** The theme is being rewritten from scratch on
+> the Namaste Salesforce Design System. Pre-1.0 means the structure is still
+> moving — see [CHANGELOG.md](CHANGELOG.md) and [`abstract/`](abstract/).
+
+---
+
+## What makes it different from a blog theme
+
+Ghost is a publishing platform, not an LMS. This theme is the set of
+conventions that make it behave like one **without giving up what Ghost is good
+at** — being fast, indexable and editable by a writer.
+
+- **Courses with nested lessons.** `/courses/apex/` and
+  `/courses/apex/triggers/` — a lesson nests under its course automatically,
+  because its primary tag *is* the course's tag.
+- **Structured training.** A sequence of sections, each with its own lessons,
+  a reading rail and prev/next that crosses section boundaries.
+- **One dispatcher, seven page types.** Ghost gives a theme one `post.hbs`;
+  this one reads tags and dispatches to a real page per kind of content.
+- **A design system, not a stylesheet.** Every visual decision comes from
+  [NS-Design-System](https://github.com/imswarnil/NS-Design-System), vendored
+  in and shared with the Next.js LMS, so the two products cannot drift.
+- **Adding a training section is Ghost-Admin-only.** Make the tag, write the
+  post, publish. No route edit, no theme edit, no deploy.
+
+## Install
+
+1. Download `namaste-salesforce.zip` from the
+   [latest release](https://github.com/imswarnil/Namaste-Salesforce/releases).
+2. Ghost Admin → **Design → Change theme → Upload a theme**.
+3. Ghost Admin → **Settings → Labs → Routes** → upload
+   [`routes.yaml`](routes.yaml).
+
+> ⚠️ **Step 3 is not optional.** `routes.yaml` defines every collection and URL
+> on the site. Without it, courses, training, docs and the blog have no URLs
+> and the theme will look broken through no fault of its own.
+
+To see it with content before writing your own: Ghost Admin → **Settings → Labs
+→ Import** [`dummy-content/import.json`](dummy-content/import.json), which
+seeds every collection and every tag the templates branch on.
+
+## The content model in one table
+
+Everything is a Ghost post. What it *is* comes from its tags.
+
+| Kind | Tag | Primary tag | URL |
+| --- | --- | --- | --- |
+| Course | `#course` | its own course tag | `/courses/{slug}/` |
+| Course lesson | `#lesson` | its **course's** tag | `/courses/{course}/{slug}/` |
+| Training section | `#training-section` | its own section tag | `/training/{slug}/` |
+| Training lesson | `#training-content` | its **section's** tag | `/training/{section}/{slug}/` |
+| Doc | `documentation` | its docs section tag | `/docs/{section}/{slug}/` |
+| Resource | `#resource` | — | `/resources/{slug}/` |
+| Blog post | `#blog` | — | `/blog/{slug}/` |
+
+**The one rule:** a course post's slug must equal its course tag's slug (and
+the same for sections). Full reasoning in
+[`abstract/01-content-model.md`](abstract/01-content-model.md) — it is the only
+part of this theme that is expensive to get wrong.
+
+## Develop
 
 ```bash
-yarn install     # install dependencies
-yarn dev         # build + livereload watch server (for local development)
-yarn build       # one-off build into assets/built/
-yarn zip         # package into dist/namaste-salesforce.zip for upload to Ghost
-yarn test        # validate the theme with gscan (Ghost's theme checker)
+yarn install
+yarn dev          # build + watch, livereload
+yarn build        # one-off build into assets/built/ (committed)
+yarn test         # gscan — Ghost's own theme validator
+yarn design:sync  # re-vendor the design system
+yarn zip          # package for upload
 ```
 
-Upload the generated `dist/namaste-salesforce.zip` in **Ghost Admin → Settings → Design → Change theme → Upload theme**.
+`assets/built/` is committed because Ghost serves it directly. Run `yarn build`
+and commit the result; CI fails if it is stale.
 
-> **Note:** `assets/built/` is committed to git because Ghost serves it directly.
-> Always rebuild (`yarn build`) and commit the output after changing CSS or JS.
+## Documentation
 
-&nbsp;
+[`abstract/`](abstract/) is the documentation, ordered by **what breaks the
+site if you get it wrong** rather than by what is interesting.
 
-## Project structure
-
-```
-.
-├── default.hbs            # HTML shell: <head>, header, body, footer, theme script
-├── index.hbs              # Post list / fallback home
-├── home.hbs               # Custom landing page
-├── page-about.hbs         # Custom About page (auto-used for /about/)
-├── courses.hbs            # Courses listing (search, stats, CTAs)
-├── documentation.hbs      # Docs hub (hero search + sidebar)
-├── blog.hbs               # Blog listing (+ sidebar)
-├── training.hbs           # Roadmaps as an animated numbered timeline
-├── post.hbs · page.hbs    # Single post (router) / page
-├── tag.hbs · author.hbs   # Archive pages
-├── error.hbs              # 404 / error page
-│
-├── partials/
-│   ├── header.hbs · footer.hbs · navigation.hbs   # site chrome
-│   ├── post-*.hbs                                  # single-post layouts (router targets)
-│   ├── post-card.hbs · pagination.hbs · related-posts.hbs · social-share.hbs
-│   ├── icons/        # inline-SVG icon set (currentColor + `class` param)
-│   ├── components/   # theme-toggle, nav-icon, page-header, hero-bg, breadcrumb,
-│   │                 #   toc, cta, author-byline, tag-pills, social-icons
-│   ├── home/         # landing-page cards (track, feature, collection, step,
-│   │                 #   timeline-item, testimonial, skills)
-│   ├── about/        # founder card
-│   ├── courses/      # course-card, lesson-nav, faq-item
-│   ├── blog/         # featured-post, sidebar
-│   ├── docs/         # sidebar
-│   ├── training/     # curriculum, track-node
-│   └── ads/          # slot (resolver), adsense, sponsored, placeholder
-│
-└── assets/
-    ├── css/screen.css     # ⭐ Tailwind entry (tokens, base, components, patterns)
-    ├── js/
-    │   ├── theme-toggle.js · toc.js · effects.js · reveal.js   # → built/casper.js
-    │   └── vendor/alpine.js                                    # self-hosted Alpine
-    └── built/             # compiled, committed output (screen.css, casper.js)
-```
-
-&nbsp;
-
-## Styling architecture (Tailwind v4)
-
-Styling is **Tailwind CSS v4**, compiled through the existing gulp + PostCSS pipeline
-(`@tailwindcss/postcss`) into `assets/built/screen.css`. There is no separate Tailwind
-config file — everything lives in **`assets/css/screen.css`**:
-
-- **Design tokens** in `@theme` — the SLDS brand-blue scale, status colours, fonts,
-  radii, shadows and motion. Semantic role tokens (`surface`, `ink`, `muted`, `border`,
-  …) are backed by CSS variables that **flip automatically in dark mode**, so
-  `bg-surface` / `text-ink` adapt without `dark:` on every element.
-- **Dark mode** is driven by `data-theme="light|dark"` on `<html>` (set before paint to
-  avoid a flash); the Tailwind `dark:` variant is wired to that attribute.
-- **`@layer components`** holds the small set of reusable classes that are awkward as
-  pure utilities: `.nav-link`, `.icon-btn` + `.nav-tip`, `.subnav-bar` / `.subnav-panel`
-  (mobile sub-nav), `.toc-link`, `.js-spotlight` (pointer spotlight), `.ns-timeline` /
-  `.ns-steps` (timelines), `.bg-grid` / `.bg-dots` (faded background patterns), and the
-  `.prose` overrides for post content.
-- **`@source`** globs tell Tailwind to scan `*.hbs` and `partials/**/*.hbs` for classes.
-
-JavaScript is intentionally tiny: `theme-toggle`, custom `toc` (scroll-spy), `effects`
-(card spotlight) and `reveal` (scroll reveal) are concatenated into `built/casper.js`;
-Alpine.js is self-hosted and loaded separately.
-
-&nbsp;
-
-## Custom templates, routing & settings
-
-- `page-{slug}.hbs` → custom template for that page (e.g. `page-about.hbs` for `/about/`).
-- `home.hbs`, `courses.hbs`, `documentation.hbs`, `blog.hbs`, `training.hbs` are selectable
-  per page in the Ghost editor, or routed via `routes.yaml` (Ghost Admin → Settings).
-- Post "sections" are driven by internal tags (`#course`, `#lesson`, `#blog`,
-  `#training`, `#training-content`, `documentation`) which pick the single-post layout.
-- **Theme settings** (Ghost Admin → Design) configure ads: `enable_ads`,
-  `adsense_publisher_id`, and a self-hosted `sponsor_*` set. Ad slots show a dummy
-  "Advertise with us" placeholder until configured.
-
-&nbsp;
+| | |
+| --- | --- |
+| [01 content model](abstract/01-content-model.md) | `routes.yaml`, tags, the URL rules |
+| [02 post dispatcher](abstract/02-post-dispatcher.md) | one `post.hbs`, seven page types |
+| [03 design system](abstract/03-design-system.md) | NSDS, vendoring, what the theme may not own |
+| [04](abstract/04-build-pipeline.md) · [05](abstract/05-css-architecture.md) | build pipeline · CSS architecture |
+| [06 Ghost glue](abstract/06-ghost-glue.md) | members, Koenig, JSON-LD, helper traps |
+| [07 performance](abstract/07-performance.md) | fonts, images, the pre-paint script |
+| [10 postmortem](abstract/10-how-this-went-wrong.md) | the mistakes already made here |
+| [11 roadmap](abstract/11-theme-roadmap.md) | what to build next, ranked |
+| [12 content system](abstract/12-content-system.md) | one concept → lesson, video, blog, slides, social |
+| [13 collections](abstract/13-collections.md) | Ghost collections and the learning graph |
 
 ## Contributing
 
-Contributions are very welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup,
-coding conventions, and how to propose changes.
+Contributions welcome at any size — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+The first question is always **which repo**: how a component *looks* belongs to
+[NS-Design-System](https://github.com/imswarnil/NS-Design-System); which Ghost
+data appears and where belongs here.
 
-Released under the [MIT license](LICENSE).
-This theme began as a fork of Ghost's [Casper](https://github.com/TryGhost/Casper) theme.
+## Licence
+
+[MIT](LICENSE). Originally forked from [Casper](https://github.com/TryGhost/Casper),
+Ghost's default theme, whose copyright is retained alongside this project's.
