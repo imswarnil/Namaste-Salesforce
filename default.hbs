@@ -3,176 +3,25 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="HandheldFriendly" content="True">
     <title>{{meta_title}}</title>
 
-    {{!-- ── Pre-paint theme ───────────────────────────────────────────────
-      The DESIGN SYSTEM's own bootstrap, generated into a partial by
-      `yarn design:sync` so it cannot drift from the copy the Next.js app
-      runs. It must stay the FIRST thing in <head>, before any stylesheet:
-      it sets data-theme on <html> before first paint, and anything above it
-      that blocks would paint the wrong colours first.
-    ─────────────────────────────────────────────────────────────────────── --}}
+    {{!-- MUST be first: sets data-theme before first paint. See abstract/07. --}}
     {{> "nsds/theme-init"}}
 
-    {{!-- ── Fonts & icons: ALL self-hosted, ZERO third-party ──────────────
-      Type used to come from Google Fonts and icons from unpkg's two full
-      Phosphor fonts (~1,500 glyphs, 279 KB of woff2) — four render-blocking
-      stylesheets across two origins.
-
-      Now: one local stylesheet carrying the @font-face rules, and TWO
-      preloaded fonts — the two the design system ships, both on the critical
-      path because both are on screen in the first viewport.
-
-        Switzer      the entire interface AND reading face — headings and body
-                     separated by weight and size, never by two cuts.
-        Roboto Mono  every index, duration, kicker, tag, status and <pre>.
-                     Preloaded, not deferred: the mono voice is in the navbar,
-                     the hero badges and the first curriculum row, so it is
-                     first-viewport text on essentially every route.
-
-      NO SHIPPED SERIF. The editorial register (pull-quotes, drop caps,
-      section quotations) used to run on Sentient. The design system retired
-      it — `--font-serif` now resolves to the platform's own serif — so the
-      quoting voice still reads as a quotation everywhere Georgia exists and
-      costs zero bytes. Do not re-add a serif webfont here; change
-      NS-Design-System and re-sync if that decision is ever revisited.
-
-      ICONS ARE INLINE SVG — {{> icons name="…"}}. No icon font, no icon
-      request, no flash of blank boxes, and they inherit currentColor.
-    ───────────────────────────────────────────────────────────────────── --}}
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/switzer-var-latin.woff2"}}">
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
-
-    {{!-- Theme stylesheet (Tailwind build) — carries the @font-face rules --}}
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
 
-    {{!-- ── Connection warm-up ────────────────────────────────────────────
-      Only for origins this page will ACTUALLY hit, and only when they are
-      switched on. A speculative preconnect to a domain the page never calls
-      costs a DNS lookup, a TCP handshake and a TLS negotiation for nothing —
-      and browsers cap how many they will honour, so a wasted one evicts a
-      real one. Fonts and icons are same-origin, so they need none.
-    ───────────────────────────────────────────────────────────────────── --}}
-    {{#if @custom.enable_ads}}{{#if @custom.adsense_publisher_id}}
-      <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
-    {{/if}}{{/if}}
-
-    {{!-- Google AdSense loader — only when ads are enabled + a publisher ID is set
-         (Ghost Admin → Design). Individual slots are placed via the ads/adsense partial. --}}
-    {{#if @custom.enable_ads}}{{#if @custom.adsense_publisher_id}}
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{@custom.adsense_publisher_id}}" crossorigin="anonymous"></script>
-    {{/if}}{{/if}}
-
-    {{!-- PWA: icons, manifest, theme colour (icon kit in assets/logo/) --}}
-    <link rel="icon" type="image/svg+xml" href="{{asset "logo/favicon.svg"}}">
-    <link rel="icon" href="{{asset "logo/favicon.ico"}}" sizes="48x48">
-    <link rel="apple-touch-icon" href="{{asset "logo/apple-touch-icon.png"}}">
-    <link rel="manifest" href="{{asset "logo/manifest.webmanifest"}}">
-    <meta name="theme-color" content="#0176d3">
-
-    {{!-- Ghost-injected SEO tags, structured data, code injection, search, etc. --}}
     {{ghost_head}}
   </head>
 
-  <body class="{{body_class}} flex min-h-screen flex-col bg-surface text-ink">
-    {{!-- Site header. Course/lesson/training posts get the distraction-free
-         "course player" header (logo · progress · ✕ back-to-course); everything
-         else gets the standard navigation bar. --}}
-    {{#is "post"}}{{#post}}{{#has tag="#lesson, #training, #training-content, #training-section"}}{{> "components/course-player-header"}}{{else}}{{> header}}{{/has}}{{/post}}{{else}}{{> header}}{{/is}}
+  <body class="{{body_class}}">
+    {{!-- Chrome goes here. See abstract/02 — default.hbs dispatches on the same
+         tags post.hbs does, so a reading post gets a reading bar. --}}
 
-    {{!-- Custom @graph JSON-LD (navbar + site nodes). Placed after the header
-         (before the footer's secondary-nav render) so {{#foreach navigation}}
-         resolves to the PRIMARY menu. Valid for crawlers anywhere in the doc;
-         additive to Ghost's own structured data. --}}
-    {{> "jsonld/graph"}}
+    <main id="main">{{{body}}}</main>
 
-    {{!-- Page body — each template's content renders here --}}
-    <main id="main" class="flex-1">
-      {{{body}}}
-    </main>
-
-    {{!-- Site footer. Lesson/module posts get a minimal, distraction-free
-         footer; every other page gets the full footer. --}}
-    {{#is "post"}}{{#post}}{{#has tag="#lesson, #training-content, #training-section"}}{{> "footer-lesson"}}{{else}}{{> footer}}{{/has}}{{/post}}{{else}}{{> footer}}{{/is}}
-
-    {{!-- PWA install prompt (shown by pwa.js when installable) --}}
-    {{> "components/pwa-install"}}
-
-    {{!-- Ghost-injected scripts: Portal (members), search, comments, etc. --}}
     {{ghost_foot}}
-
-    {{!-- Expose current Ghost member data for PostHog user identification.
-         UUID is a non-PII identifier; email/name are set as person properties
-         (not event properties) inside posthog-init.js. --}}
-    <script>
-      window.__phMember = {{#if @member}}{
-        id: '{{@member.uuid}}',
-        email: '{{@member.email}}',
-        name: '{{@member.name}}',
-        subscribed: {{@member.paid}}
-      }{{else}}null{{/if}};
-    </script>
-
-    {{!-- ── The design system's runtime ──────────────────────────────────
-      Vendored by `yarn design:sync` into assets/js/nsds/ — behaviour comes from
-      the system for the same reason the CSS does. Each is an independent
-      module on its own `defer` tag rather than concatenated into casper.js,
-      so a page only pays for what it uses and load order stays explicit.
-
-        nav    the top bar: menus, the mobile sheet, the theme switch, the
-               scrolled state. Every page has a bar, so every page loads it.
-        toc    the outline + scroll-spy — only where there is prose to outline.
-        lms    the lesson rail, curriculum and reading progress.
-
-      `defer` (not `async`) is deliberate: these run after parse, in order,
-      and none of them block the first paint.
-    ───────────────────────────────────────────────────────────────────── --}}
     <script defer src="{{asset "js/nsds/nav.js"}}"></script>
-    {{#is "post, page"}}<script defer src="{{asset "js/nsds/toc.js"}}"></script>{{/is}}
-    {{!-- code.js wires [data-code="copy"] on the .ns-code figures that the
-         theme's own assets/js/code.js builds out of Ghost's bare <pre>. --}}
-    {{#is "post, page"}}<script defer src="{{asset "js/nsds/code.js"}}"></script>{{/is}}
-    {{!-- rail.js opens the docs sidebar group holding aria-current="page" and
-         closes the rest. The markup ships every group open, so without it the
-         nav is long rather than broken. --}}
-    <script defer src="{{asset "js/nsds/rail.js"}}"></script>
-    {{#is "post"}}{{#post}}{{#has tag="#lesson, #course, #training-content"}}<script defer src="{{asset "js/nsds/lms.js"}}"></script>{{/has}}{{/post}}{{/is}}
-    {{!-- tabs.js implements the ARIA contract the CSS documents: roving
-         tabindex, arrow keys, aria-selected + [hidden] on the panels. Without
-         it the course page's tabs LOOK selectable and are not — and every
-         panel stays visible, which is a longer page but never hidden content.
-         That is why the panels are not hidden in the markup. --}}
-    {{#is "post"}}{{#post}}{{#has tag="#course"}}<script defer src="{{asset "js/nsds/tabs.js"}}"></script>{{/has}}{{/post}}{{/is}}
-    {{!-- training.js opens the curriculum module holding aria-current="page",
-         closes the rest and scrolls it into view inside the rail. --}}
-    {{#is "post"}}{{#post}}{{#has tag="#training-content, #training-section"}}<script defer src="{{asset "js/nsds/training.js"}}"></script>{{/has}}{{/post}}{{/is}}
-
-    {{!-- Alpine — still the tool for the catalog filters and the small
-         disclosure state the system does not model.
-
-         The `lessonNav` store is registered HERE, not in a partial, because
-         four separate partials read it (courses/lesson-nav, training/
-         curriculum, training/nav-button, training/section-item) and none of
-         them is guaranteed to render first. It used to live in the course
-         player's header, which meant the store existed only on the routes
-         that happened to use that header. Registered on `alpine:init`, which
-         still fires because this inline script is parsed before the deferred
-         bundle runs. --}}
-    <script>
-      document.addEventListener('alpine:init', function () {
-        window.Alpine && Alpine.store('lessonNav', {
-          open: false,
-          toggle() { this.open = !this.open; },
-          close() { this.open = false; }
-        });
-      });
-    </script>
-    <script defer src="{{asset "js/vendor/alpine.js"}}"></script>
-
-    {{!-- The theme's own remaining helpers (scroll reveal, pointer spotlight,
-         count-ups) — concatenated and minified by gulp. --}}
-    <script defer src="{{asset "built/casper.js"}}"></script>
-
   </body>
 </html>

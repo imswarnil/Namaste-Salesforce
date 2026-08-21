@@ -1,34 +1,14 @@
 {{!< default}}
-{{!-- ════════════════════════════════════════════════════════════════════════
-  page.hbs — a generic Ghost page.
-
-  The system's `.ns-page` shell: a centred column at the reading measure, with
-  the title and cover shown only when the editor asked for them (Ghost's
-  per-page "show title and feature image" switch).
-
-  Content renders into `.ns-prose gh-content` — .ns-prose is the system's whole
-  typographic contract for a written page, and .gh-content is what Ghost's own
-  Koenig card styles hook onto. Both are needed; neither is decoration.
-═══════════════════════════════════════════════════════════════════════════ --}}
 {{#page}}
 <article class="ns-page ns-page--narrow">
   <div class="ns-page__inner">
-
+    {{!-- Ghost's per-page switch. gscan requires this to be honoured. --}}
     {{#if @page.show_title_and_feature_image}}
-      <header class="ns-page__head">
-        <h1 class="ns-page__title">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="ns-page__lede">{{custom_excerpt}}</p>{{/if}}
-      </header>
-
+      <h1 class="ns-page__title">{{title}}</h1>
       {{#if feature_image}}
-        {{!-- The one above-the-fold image on this route, so it is the LCP
-             element and must not be lazy. --}}
-        {{> "components/img" src=feature_image alt=feature_image_alt eager=true
-            class="ns-figure__frame mb-10 w-full object-cover"
-            sizes="(min-width: 48rem) 44rem, 100vw"}}
+        <img src="{{img_url feature_image size="l"}}" alt="{{feature_image_alt}}" loading="lazy" decoding="async">
       {{/if}}
     {{/if}}
-
     <div class="ns-prose gh-content">{{content}}</div>
   </div>
 </article>

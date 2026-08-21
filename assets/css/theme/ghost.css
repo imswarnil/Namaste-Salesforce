@@ -1,0 +1,31 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   GHOST GLUE — the minimum Ghost itself requires
+   ----------------------------------------------------------------------------
+   Ghost's editor (Koenig) emits markup this repo does not write, and gscan
+   FAILS the theme if the width classes are not styled. That makes this the one
+   stylesheet a blank theme cannot do without.
+
+   Everything here is about Ghost's output, never about how things look — the
+   look is NSDS's. See abstract/06.
+   ════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* The reading measure. Koenig lets an editor break OUT of it per card, and
+     these two classes are how: wide is a step past the text, full is edge to
+     edge. Ghost requires both to be styled. */
+  .gh-content > * {
+    max-inline-size: var(--container-prose, 44rem);
+    margin-inline: auto;
+  }
+  .gh-content > .kg-width-wide { max-inline-size: var(--container-page, 68rem); }
+  .gh-content > .kg-width-full { max-inline-size: none; }
+
+  /* Ghost's font picker (Admin → Design) sets these; honouring them is the
+     "custom fonts" support gscan warns about. They fall back to NSDS's faces. */
+  .gh-content, .ns-prose {
+    font-family: var(--gh-font-body, var(--font-sans));
+  }
+  .gh-content :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--gh-font-heading, var(--font-heading));
+  }
+}

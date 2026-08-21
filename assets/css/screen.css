@@ -1,99 +1,26 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   screen.css — the final stylesheet: Tailwind + the four layers, in order
+   screen.css — compiled by gulp into assets/built/screen.css
    ----------------------------------------------------------------------------
-   Compiled by gulp (@tailwindcss/postcss) → assets/built/screen.css, which is
-   what default.hbs loads via {{asset "built/screen.css"}}.
-
-   THE SYSTEM — the "Developer Console" design system. It is no longer defined
-   here: it lives in NS-Design-System, beside the Ghost install, and is
-   VENDORED into assets/css/nsds/ by `yarn design:sync`. The same system is
-   vendored into the Next.js LMS at app.namastesalesforce.com, which is what
-   keeps the two products from drifting. Everything under assets/css/nsds/ is
-   generated — never hand-edit it; change NS-Design-System and re-sync.
-
-   On top of the system, the theme keeps its own numbered layers. Each has an
-   index.css listing its files, so THIS file never changes when you add an
-   element or a component:
-
-     ds/            THE DESIGN SYSTEM — tokens, base elements, the .ns-* layer
-     0-foundation/  what the system does not own: the bridge, grid, mixins
-     1-elements/    bare HTML — one file per element family
-     2-components/  the UI library — one file per component, with variants.
-                    The site-*.css files at the end are shared feature styling.
-     LAYER 3 IS GONE. It held one module — the training reader — and every
-     class in it turned out to be an NSDS component under a different name:
-     .ns-reader was .ns-training, .ns-sidenav was .ns-trainingnav, .ns-track-card
-     was .ns-trackcard, .ns-lock was .ns-gate. The templates render the system's
-     names now and the folder was deleted. If a feature ever needs styling that
-     NSDS genuinely lacks, check that list first — the answer was "it already
-     exists" every single time.
-
-   The order is the dependency order: a later layer spends what the earlier
-   ones declare, never the other way round. For what's inside a layer and why
-   it's in that position, read that layer's index.css.
-
-   Live docs: /docs/design-system/ — a docs section whose posts (shipped in
-   dummy-content/import.json) document every token and component.
-   Identity (0-foundation/README.md): one working blue, hairline borders as
-   structure, mono as the label material, sharp 6px/4px geometry, instant
-   motion, navy dark mode. No gradients, glass, or glow.
+   ⚠️ THE @layer STATEMENT BELOW MUST COME FIRST, BEFORE @import "tailwindcss".
+   Cascade-layer order is fixed by the first statement naming each layer, and a
+   later statement can only APPEND. Tailwind emits its own order first, so
+   without this NSDS's `ns-components` is appended to the END and every NSDS
+   rule beats the theme AND Tailwind utilities — silently. See abstract/05.
    ════════════════════════════════════════════════════════════════════════ */
-
-/* ⚠️ THIS STATEMENT MUST COME FIRST — BEFORE @import "tailwindcss".
-   ----------------------------------------------------------------------------
-   Cascade-layer order is fixed by the FIRST statement that names each layer,
-   and a later statement can only APPEND names it introduces. Two statements
-   reach the compiled file:
-
-     Tailwind's        @layer theme, base, components, utilities;
-     the system's      @layer theme, base, ns-components, components, utilities;
-
-   Tailwind's is emitted first, so by the time the design system asks for
-   `ns-components` to sit between `base` and `components`, the other four are
-   already ordered and the new name is appended to the END:
-
-     theme · base · components · utilities · ns-components     ← WRONG
-
-   Layer order beats specificity, so in that arrangement EVERY design-system
-   component rule wins over the theme's layer 2 and over Tailwind utilities —
-   the exact opposite of the contract in ds/styles.css and in this theme's
-   2-components/index.css. Symptom: `.ns-subscribe--dark .ns-field__label`
-   (two classes, theme layer) silently lost to `.ns-field__label` (one class,
-   system layer), and `hidden` / `p-4` / `bg-brand-500` could not override a
-   system default without !important.
-
-   Naming the full order here, before anything else, fixes it: this statement
-   establishes all five layers in the intended sequence, and both statements
-   below become no-ops that introduce nothing new.
-
-     theme · base · ns-components · components · utilities     ← RIGHT
-
-   A bare @layer statement is one of only two things CSS allows to precede an
-   @import, which is why this can sit above the Tailwind import at all. */
 @layer theme, base, ns-components, components, utilities;
 
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";   /* `.prose` styling for post/page content */
+@plugin "@tailwindcss/typography";
 
-/* Tell Tailwind where class names live (paths relative to THIS file).
-   ../../ resolves to the theme root. */
 @source "../../*.hbs";
 @source "../../partials/**/*.hbs";
-@source "../../demo.html";     /* editor-pasteable specimen sheet — keep its utilities compiled */
-@source "../../styleguide/*.html";  /* the style-guide site (`yarn styleguide`) */
 
-/* ── The design system, then the theme's layers, in dependency order ──────────
-   The system comes first so the theme's layers can spend its tokens and
-   override its components; the Tailwind bridge comes with it, because
-   `@theme` has to be declared before a utility can resolve against it. */
-@import "./nsds/styles.css";          /* tokens + base elements + the .ns-* layer */
-@import "./nsds/tokens/tailwind.css"; /* @theme bridge: bg-brand-500, p-card, text-label … */
+/* NSDS — generated by `yarn design:sync`, never hand-edited. See abstract/03. */
+@import "./nsds/styles.css";
+@import "./nsds/tokens/tailwind.css";
 
-@import "./0-foundation/index.css";
-@import "./1-elements/index.css";
-@import "./2-components/index.css";
+/* The theme's own layers go here as they are built. Check Ghost first, then
+   NSDS, then write — see abstract/00. */
+@import "./theme/ghost.css";
 
-/* Dark mode is driven by data-theme="dark" on <html> (set before paint by the
-   inline script in default.hbs). This re-points the `dark:` variant at that
-   attribute instead of the OS media query. */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

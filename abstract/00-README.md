@@ -17,6 +17,14 @@ is a preference.
 | 09 | `09-content-prompts.md` | Content stops matching the templates that render it |
 | 10 | `10-how-this-went-wrong.md` | You repeat the mistakes this rebuild was needed for |
 
+### Then — what to build, rather than how not to break it
+
+| # | File | Answers |
+| --- | --- | --- |
+| 11 | `11-theme-roadmap.md` | What actually makes this a better Ghost theme, ranked by return per hour |
+| 12 | `12-content-system.md` | One concept → lesson, video, blog, slides, LinkedIn — and the weekly rhythm |
+| 13 | `13-collections.md` | Ghost collections, the learning graph, taxonomy hygiene |
+
 ---
 
 ## The one-paragraph version

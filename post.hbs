@@ -1,24 +1,14 @@
-  {{!< default}}
-
-  {{#post}}
-    {{#has tag="documentation"}}
-      {{> "post-documentation"}}
-    {{else has tag="#training-section"}}
-      {{!-- A section overview at /training/{slug}/. Must be tested BEFORE
-           #training-content: a section post is not a lesson, and matching the
-           lesson branch would render it in the lesson player. --}}
-      {{> "post-training-section"}}
-    {{else has tag="#training-content"}}
-      {{> "post-training"}}
-    {{else has tag="#course"}}
-      {{> "post-course"}}
-    {{else has tag="#lesson"}}
-      {{> "post-lesson"}}
-    {{else has tag="#resource"}}
-      {{> "post-resource"}}
-    {{else has tag="#blog"}}
-      {{> "post-blog"}}
-    {{else}}
-      {{> "post-default"}}
-    {{/has}}
-  {{/post}}
+{{!< default}}
+{{!-- ════════════════════════════════════════════════════════════════════════
+  THE DISPATCHER. Ghost gives one post.hbs for every kind of post on the site,
+  and they are different PAGES. Read abstract/02 before adding a branch —
+  BRANCH ORDER IS LOAD-BEARING (#training-section before #training-content).
+═══════════════════════════════════════════════════════════════════════════ --}}
+{{#post}}
+  <article class="ns-post">
+    <div class="ns-post__body">
+      <h1 class="ns-posthead__title">{{title}}</h1>
+      <div class="ns-prose gh-content">{{content}}</div>
+    </div>
+  </article>
+{{/post}}
