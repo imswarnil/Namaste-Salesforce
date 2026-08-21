@@ -22,9 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: npm install
 
       - name: Check the tag matches package.json
         run: |
@@ -35,10 +34,10 @@ jobs:
             exit 1
           fi
 
-      - run: yarn test:ci
+      - run: npm run test:ci
 
       - name: Package the theme
-        run: yarn zip
+        run: npm run zip
 
       - name: Publish the release
         uses: softprops/action-gh-release@v2

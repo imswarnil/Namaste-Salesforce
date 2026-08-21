@@ -24,6 +24,14 @@ is a preference.
 | 11 | `11-theme-roadmap.md` | What actually makes this a better Ghost theme, ranked by return per hour |
 | 12 | `12-content-system.md` | One concept → lesson, video, blog, slides, LinkedIn — and the weekly rhythm |
 | 13 | `13-collections.md` | Ghost collections, the learning graph, taxonomy hygiene |
+| 14 | `14-seed-content.md` | How to rebuild the importable fixture you need before anything renders |
+
+### And two about the work itself
+
+| # | File | Answers |
+| --- | --- | --- |
+| 15 | `15-starting-from-zero.md` | What the theme is now, what was removed, and the decisions still open |
+| 16 | `16-how-to-claude.md` | Working effectively with Claude Code — grounded in what happened here |
 
 ---
 

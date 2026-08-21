@@ -1,11 +1,11 @@
 {{!< default}}
-{{!-- The default collection listing. See abstract/01 for which collections
-     route here, and abstract/03 before writing any markup. --}}
-<div class="ns-container ns-section">
-  {{#foreach posts}}<article class="ns-card ns-bcard">
-    <div class="ns-card__body">
-      <a class="ns-card__link" href="{{url}}"><span class="ns-card__title">{{title}}</span></a>
-    </div>
-  </article>{{/foreach}}
-  {{pagination}}
-</div>
+{{!-- The default collection listing. routes.yaml points several collections
+     here (see abstract/01); each gets pagination and an RSS feed for free. --}}
+
+{{#if posts}}
+  {{#foreach posts}}{{> post-card}}{{/foreach}}
+{{else}}
+  <p>{{t "No posts yet."}}</p>
+{{/if}}
+
+{{pagination}}

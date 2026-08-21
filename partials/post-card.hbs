@@ -1,0 +1,17 @@
+{{!-- One post in a collection. Used by home, index, tag and author so every
+     listing on the site presents a post the same way.
+
+     Context: a post inside {{#foreach posts}}. --}}
+<article class="post-card">
+  {{#if feature_image}}
+    {{!-- aria-hidden + tabindex="-1": the title below is the real link, so the
+         image must not be a second tab stop announcing the same destination. --}}
+    <a href="{{url}}" tabindex="-1" aria-hidden="true">
+      <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" decoding="async">
+    </a>
+  {{/if}}
+
+  <h2><a href="{{url}}">{{title}}</a></h2>
+  {{#if excerpt}}<p>{{excerpt words="24"}}</p>{{/if}}
+  <p><time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time></p>
+</article>

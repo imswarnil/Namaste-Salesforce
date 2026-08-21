@@ -1,107 +1,58 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code working in this repository.
 
 ## What this is
 
-A custom **Ghost** publishing-platform theme ("Namaste Salesforce"), originally forked from Casper but rebuilt for a Salesforce learning site. Templates are Handlebars (`.hbs`); styling is **Tailwind CSS v4** (no Bulma, no SCSS framework). Light interactivity uses **Alpine.js** (self-hosted). The design language is the **"Developer Console" design system**, which is **not defined in this repo**: it lives in **`NS-Design-System`**, a sibling repository beside the Ghost install (`../../../../NS-Design-System`), and is **vendored** into `assets/css/nsds/` by `yarn design:sync`. The same system is vendored into the Next.js LMS at **app.namastesalesforce.com**, which is what keeps the two products from drifting. `NS-Design-System` is **read-only from here** — never edit `assets/css/nsds/` (it is regenerated and your change vanishes); change the system in its own repo and re-sync. On top of it the theme keeps numbered layers: `assets/css/0-foundation/` (only what the system does *not* own — see `ds-bridge.css`), `assets/css/1-elements/` (bare HTML, one file per element family), `assets/css/2-components/` (the UI library, one file per component with its full variant set; the `site-*.css` files at the end are styling shared by more than one feature), `assets/css/3-modules/` (the features — one numbered folder each, currently `1-training/`). Each layer has an `index.css` listing its files; `screen.css` imports the design system, its Tailwind bridge, then the four indexes and nothing else. **Layer 3 is one-way**: nothing in 0–2 may depend on a module and no module may import another; a piece a second feature wants gets PROMOTED into `2-components/` with a proper variant set (that is how `.ns-plist` and `.ns-lesson-panel` left the training module). **Living docs at `/docs/design-system/`** — a regular docs section registered in `partials/docs/sections.hbs` + `next-section-for.hbs` + a `/docs/design-system/` route; its posts ship in `dummy-content/import.json`. To extend the docs, add posts in Ghost Admin — no theme changes needed. Five rules (see `NS-Design-System/readme.md`): hairline borders are the structure (not shadows); **Roboto Mono** renders every index/label/kicker/status; one signal color (brand blue `#0176D3`); sharp geometry (6px cards, 4px buttons, pills only for true tags); instant 120–180ms motion (no spring/lift). Dark mode is brand navy, not slate. **TWO faces ship, and only two.** **Switzer** (Fontshare) is the entire interface AND the reading layer — headings and body separated by weight and size, never by two different cuts. **Roboto Mono** (SIL OFL) is the label material: every index, duration, kicker, tag, status and `<pre>`. Both are preloaded in `default.hbs`, because both are first-viewport text on essentially every route. **There is no shipped serif** — `--font-serif` resolves to the platform's own (Georgia where it exists), so a pull-quote still reads as a quotation everywhere and costs nothing. Reading copy is **14px**, not 16px, and body weight is 400. Two earlier states are stale and are gone: if you find `N&M`, `nmtext`, `nmdisplay` or `weight 450`, that is the pre-Switzer era; if you find **Sentient**, or a claim that mono is *not* shipped and borrows `ui-monospace` from the OS, that is the pre-Roboto-Mono era. Both were true; neither is now. **`ARCHITECTURE.md` is the five things the theme owns that NSDS cannot** — the `post.hbs` dispatcher, the `@graph` JSON-LD assembly, the responsive-image partial, the Ghost members form state machine and the inline-SVG icon set. Read it before deleting theme code: none of those five is styling, and none has an NSDS equivalent. `prompt/SITE-CONTEXT.md` is the single briefing to hand any AI working on this site.
+An open-source **Ghost theme** for a Salesforce learning site, currently a
+**stack-free starter**: five templates, two partials, ~30 lines of CSS, no
+build step, no dependencies except `gscan`.
+
+It was previously a large implementation and was deliberately reset. Do not
+reintroduce a build, a CSS framework or a component library without an explicit
+decision — see `abstract/15`, which lists what was removed and the questions
+still open.
+
+## Read this before doing anything
+
+**`abstract/` is the documentation**, ordered by what breaks the site if you
+get it wrong. `abstract/00-README.md` is the map.
+
+If you read three files, read:
+
+- **`abstract/01-content-model.md`** — `routes.yaml`, tags and the URL rules.
+  The only part of this project that is expensive to change later.
+- **`abstract/02-post-dispatcher.md`** — one `post.hbs`, several page types,
+  and why branch order is load-bearing.
+- **`abstract/10-how-this-went-wrong.md`** — the mistakes already made here.
 
 ## Commands
 
 ```bash
-yarn install     # install dependencies (Yarn; package-lock.json is gitignored)
-yarn dev         # gulp default: build + livereload watch
-yarn build       # one-off build into assets/built/
-yarn design:sync  # re-vendor NS-Design-System into assets/css/ds + assets/fonts
-yarn design:check # fail if the vendored copy has drifted from NS-Design-System
-yarn zip         # build + package into dist/namaste-salesforce.zip
-yarn preview     # build + generate the style guide, serve it, open it (no Ghost needed)
-yarn styleguide  # regenerate styleguide/ only
-yarn test        # gscan . — validate against Ghost's theme rules
-yarn test:ci     # gscan --fatal --verbose .
+npm install
+npm test        # gscan — Ghost's own theme validator
+npm run zip     # package for upload
 ```
 
-**The style guide:** `styleguide/` is a small static SITE documenting the design system — grouped **Foundation** (including a page rendering the whole icon set), **Components**, **Home**, **Training** (the three training routes) and **Pages** (about / contact / legal / 404) — a home page (the five rules, the layers, the naming contract) plus **one page per foundation topic, element family, component and module**, with a shared sidebar, prev/next paging and a dark-mode toggle. 60 pages, rendered against the real `assets/built/screen.css`, so it can't drift from what ships. `yarn preview` builds everything and serves it at `127.0.0.1:4321/styleguide/`; `yarn styleguide` regenerates just the HTML.
+There is no build. `assets/css/screen.css` is served directly.
 
-It is GENERATED by `scripts/build-styleguide.py` — edit that, never the HTML. Adding a component means adding one `page(...)` call. The generator refuses to emit an icon name that isn't in `partials/icons.hbs`, and fails if any `ph-*` class survives into the output; the token tables read their values from the live CSS at runtime, so they never go stale. `demo.html` is the different thing: a fragment to paste into a Ghost HTML card.
+## The rules
 
-"Testing" means **gscan** validation — run `yarn test` after template changes. `pretest` runs `gulp build` first, so the committed `assets/built/` output is what gets validated.
+- **No inline styles.** No `style="…"`, no `<style>` in any `.hbs`. CI fails on
+  it. Reasoning in `abstract/05`.
+- **Check Ghost first, then the design system, then write.** The theme's job is
+  only what neither can know about.
+- **Never call a Ghost helper across `../`** (`{{../url}}`) — Ghost throws and
+  500s the page. Dotted property access is fine.
+- **`limit="all"` is not supported** in `{{#get}}`. Use `limit="100"`.
+- **When markup moves onto a new class, grep the JS for the old one in the same
+  change.** A script whose selectors no longer match fails silently — build
+  green, validator green, feature dead. This has happened here.
+- **State is an attribute** (`aria-current`, `data-state`, `[open]`), not a
+  class, so the CSS and the screen reader read one source.
 
-## Build pipeline (gulpfile.js)
+## Verifying
 
-`gulp build` runs three steps, all output to `assets/built/` (committed — Ghost serves these directly):
-
-- **css**: `assets/css/screen.css` → PostCSS with **`@tailwindcss/postcss`** (Tailwind v4) → cssnano → `built/screen.css`. There is **no `tailwind.config.js`**; tokens and `@source` globs live in `screen.css`. Tailwind v4 emits its own vendor prefixes, so autoprefixer is not used.
-  **`url()` gotcha:** the pipeline rebases relative urls and consumes exactly one `../`, so a font referenced as `../../fonts/x.woff2` in source emits `../fonts/x.woff2` in `built/screen.css` (which is what resolves). Check `grep -o 'url([^)]*)' assets/built/screen.css` after touching font paths.
-- **js**: `assets/js/*.js` concatenated → uglify → `built/casper.js`. (`assets/js/vendor/*` — Alpine — is **not** bundled; it's loaded separately.)
-- **locales**: merges `locales-local/` into `locales/`.
-
-Because `assets/built/` is committed, **rebuild and commit the built output** after changing CSS or JS. Editing a `.hbs` requires a rebuild too (Tailwind scans templates for class names).
-
-## Architecture
-
-**Templates (Ghost conventions):**
-- `default.hbs` — shared shell: `<head>`, `{{> header}}`, `{{{body}}}`, `{{> footer}}`, the pre-paint theme script, Alpine + `casper.js` includes, `{{ghost_head}}`/`{{ghost_foot}}`. Page templates start with `{{!< default}}`.
-- Reserved names: `index`, `post`, `page`, `tag`, `author`, `error`.
-- Custom templates: `home`, `courses`, `documentation`, `blog`, `training`, `page-about`, `page-welcome` (routed/selected in Ghost Admin). **`page-welcome.hbs`** is where Ghost sends a member straight after signup — set it as the Welcome page on the free tier in Admin → Settings → Tiers.
-- `post.hbs` is a **router** — `{{#has tag="…"}}` picks a `post-*` partial: `post-course`, `post-lesson`, `post-training`, `post-documentation`, `post-blog`, `post-default`.
-
-**Partials (`partials/`, organised in folders):**
-- `components/` — chrome & shared bits: `theme-toggle`, `nav-icon`, `page-header`, `hero-bg`, `breadcrumb`, `toc`, `cta`, `author-byline`, `tag-pills`, `social-icons`.
-- `members/` — everything Ghost-members: `subscribe` (THE newsletter form — see below), `subscribe-form` (its inner markup, never included directly), `tiers` (membership plans pulled live from Ghost), `app-link` (the seam to app.namastesalesforce.com).
-
-**Icons — inline SVG, one partial, ZERO third parties:** every icon on the site comes from **`partials/icons.hbs`**, a single file holding ~125 hand-drawn 24×24 icons dispatched by name:
-
-```hbs
-{{> icons name="arrow-right"}}                    {{!-- 1em, inherits colour --}}
-{{> icons name="graduation-cap" class="h-4 w-4"}} {{!-- any size --}}
-{{> icons name="rss" title="RSS feed"}}           {{!-- labelled, not aria-hidden --}}
-```
-
-Every svg carries `.ns-icon` — the design system's icon primitive (1em square, baseline-aligned, `flex:none`, `currentColor`), which is the same contract the Next.js app's sprite icons use, so an icon here and an icon there behave identically. **Adding one is adding a `{{#match name="…"}}` line to that partial**: 24×24 viewBox, `stroke-width:1.7`, round caps and joins, artwork inside a ~3px margin, `currentColor`. The brand marks at the foot of the file (GitHub, LinkedIn, X, Facebook, YouTube) are the one exception — drawn solid, overriding fill/stroke on the path.
-
-This replaced a subsetted **Phosphor webfont**. Nothing in the theme or in `dummy-content/import.json` references a `ph-*` class any more, and `scripts/subset-icons.py` was deleted with it. The font itself is still *vendored* (`assets/fonts/phosphor*.woff2` + `assets/css/nsds/icons/phosphor.css`) because it belongs to `NS-Design-System`, which is read-only from here and still ships it for the app — but the theme never triggers a download, since a webfont is only fetched when text actually renders in it. **If the app stops needing it, deleting Phosphor upstream is a ~279 KB win in the theme zip.**
-
-The styleguide generator documents the set on its own page and *enforces* it: specimens are written as `<i class="ph ph-name"></i>` because that is terser to type, and `render_icons()` rewrites every one into the same inline SVG read out of `partials/icons.hbs`. An unknown name fails the build, and any `ph-*` class left in the output fails it too.
-
-- `home/`, `about/`, `courses/`, `blog/`, `docs/`, `training/` — section-specific partials.
-- `ads/` — `slot` resolves to AdSense → sponsor → dummy placeholder.
-
-**⚠️ Cascade layers — the one line in `screen.css` that must stay first.** `screen.css` opens with a bare `@layer theme, base, ns-components, components, utilities;` **before** `@import "tailwindcss"`, and it has to. Layer order is fixed by the first statement naming each layer, and a later statement can only *append* names it introduces. Tailwind emits `@layer theme, base, components, utilities;` first, so when the vendored `ds/styles.css` then asks for `ns-components` to sit between `base` and `components`, that name is appended to the END instead:
-
-    theme · base · components · utilities · ns-components     ← WRONG
-
-Layer order beats specificity, so in that arrangement **every design-system component rule wins over the theme's layer 2 and over Tailwind utilities** — the exact inverse of the contract both files document. It is silent: `.ns-subscribe--dark .ns-field__label` (two classes) loses to `.ns-field__label` (one class), and `hidden` / `p-4` / `bg-brand-500` cannot override a system default without `!important`. Declaring the full order up front makes both later statements no-ops. **Delete that line and a large amount of theme styling quietly stops applying.** Verify with `grep -o '@layer[^;{]*;' assets/built/screen.css | head -3` — the first non-`properties` statement must be the five-name one.
-
-**Membership & newsletter (Ghost members):** `@site.members_enabled` gates everything; Portal links are `#/portal/…` + `data-portal`.
-- **One signup form, not five.** `{{> "members/subscribe"}}` is the only newsletter markup in the theme (home hero, footer, blog sidebar, training index, training post, the CTA band). Params: `layout` (`inline` pill / `stacked` labelled), `tone="dark"`, `cta`, `icon`, `note`, `ok`, `err`, `ask=true`. It is **member-aware** — a signed-in reader gets "you're subscribed as …" instead of a field asking for the address Ghost already has; `ask=true` forces the form anyway (the home hero does, because the form *is* the shape of the hero).
-- **`2-components/subscribe.css` is the state machine, and it exists because Ghost does not provide one.** Ghost's members script does exactly one thing to a `data-members-form`: it puts `loading`, then `success` or `error`, on the FORM element. It does not reveal a message, spin a spinner or disable a button. Before this file, five hand-rolled copies each carried a spinner and success/error paragraphs marked `hidden` that **nothing ever un-hid** — subscribing appeared to do nothing at all. The two message elements must stay **siblings** of the form (they are revealed with `~`); nesting them inside it hides them permanently.
-- **`{{> "members/tiers"}}` pulls plans from Ghost** via `{{#get "tiers" include="monthly_price,yearly_price,benefits"}}` and Ghost's `{{price}}` helper. No price, tier name or benefit string is written in the theme — a hard-coded price is a price that will one day disagree with the one that charges the card. Paid tiers carry the emphasis (derived from Ghost's own `type`, not a param, because comparing a param across `{{#get}}` + `{{#foreach}}` needs a `../../` path — the fragile thing warned about below).
-- **The app seam:** `{{> "members/app-link"}}` is the only link to **app.namastesalesforce.com**, behind `@custom.app_url` / `@custom.app_label` / `@custom.navbar_show_app` (Ghost Admin → Design). With no `app_url` it renders nothing, and the home page's whole app band disappears with it.
-
-**Styling (Tailwind v4, CSS-first):** `assets/css/screen.css` is the final stylesheet and stays tiny — Tailwind + `@source` globs + `@custom-variant dark` + four `@import`s. Each layer owns an `index.css` that lists its own files, so adding a token/element/component means adding a file and ONE line in that layer's index; `screen.css` never changes. Full contract in `assets/css/0-foundation/README.md` ("Adding to the system").
-- **`ds/` — the vendored design system (generated, never hand-edit).** Owns colors (brand/accent scales, status, semantic roles `surface`/`ink`/`muted`/`border`/`label`/`grid` → `--ns-*` vars that flip under `[data-theme="dark"]` to a brand-navy console — avoid hard-coding `dark:` for those), the type scales (`--size-label`, `--tracking-label`, the compact 12/13/14/15/17/20/24/32 ramp), spacing (`--space-*` and the semantic `--pad-*`/`--gap-*`/`--stack-*`), geometry (radii 6px/4px + `--border-hairline`), near-flat shadows, the six-rung `--z-*` ladder, motion (`--duration-fast/base`, `--ease-out`, keyframes incl. `ns-spin`), the `@font-face` rules, the Phosphor subset, and the shared `.ns-*` component layer. Its `tokens/tailwind.css` is the `@theme` bridge that makes `bg-brand-500`, `p-card` and `text-label` resolve identically in both products.
-- **`0-foundation/` — layer 0, only what the system does not own.** `ds-bridge.css` (the 30 tokens the system does not declare — theme-local names for system values, the 12-column grid, the lesson reading column, Ghost's `--gh-font-*` picker, the pointer spotlight; **read its header before adding to it**), `mixins.css` (`@utility` recipes: `ns-label`, `ns-index`, `ns-hairline`, `ns-dot-marker`, `ns-transition` — usable in markup AND via `@apply`), `helpers.css`, `backgrounds.css`. The pre-migration token files (`colors.css`, `typography.css`, `fonts.css`, `icons.css`, `spacing.css`, `layout.css`, `borders.css`, `elevation.css`, `motion.css`) were **deleted** — the design system declares the same properties under the same names. Do not recreate them; a second set of token declarations is the drift the vendoring exists to prevent.
-- **`1-elements/` — layer 1, one file per element family:** `base` (html/body/scrollbar/selection/focus) · `typography` · `links` · `lists` · `quotes` · `tables` · `code` · `media` · `forms` · `interactive` (details/dialog/progress) · `separators` · `prose` (the `.prose` token bridge + required Koenig classes). **Two scoping rules:** reading-context styling uses `:where(.gh-content, .ns-prose)` (zero specificity, so utilities always win) and global rules guard with `:not([class])` so utility-styled markup is never touched.
-- **`2-components/` — layer 2, the UI library, one file per component:** `button` · `badge` · `chip` · `tag` · `kicker` · `avatar` · `card` · `input` · `code-window` · `video-poster` · `steps` · `timeline` · `nav-link` · `icon-button` · `tooltip` · `toc` (only the JS-lifecycle reveal — the outline itself is the system's `.ns-toc`) · `icon-bridge` (the system's `i`-element rules restated for this theme's inline `<svg class="ns-icon">` — read its header before assuming it is redundant) · `sidebar` · `subnav` · `share` · `ad` · `marquee` · `effects` · `subscribe` (the Ghost members-form state machine) · `plan` (membership tiers). Naming contract: `.ns-thing` base, `.ns-thing--variant` (one axis at a time — SIZE / SHAPE / TONE / STATE), `.ns-thing__part`, `.is-state` for script-toggled runtime state. Variants compose, so reach for `.ns-card .ns-card--lg .ns-card--interactive .ns-card--grid` before writing a new class.
-- **Overlap with the design system (important).** 81 class names in `2-components/` also exist in `assets/css/nsds/components/css/`, and the theme's win by import order. **A shared class name is not a shared component** — `.ns-progress` is a `<div>` + `__bar` here and a native `<progress>` element there; `.ns-avatar` is the `<img>` here and a `<span>` wrapper there. Deleting the theme's copy in those cases silently breaks the component. Sometimes the theme's is simply better and should keep winning (`.ns-grid` is token-driven with variants the system lacks). `.ns-btn` HAS been handed over fully — same markup contract, and the theme's version re-derived the system's design from raw literals. Read the checklist at the bottom of `2-components/index.css` before removing anything else.
-- **`3-modules/` — layer 3, features:** currently one folder, `1-training/`, whose namespace (`.ns-track-*`, `.ns-reader`, `.ns-sidenav`, `.ns-road`, `.ns-lock`, `.ns-train-fab`) is fully disjoint from the design system's own training layer — checked, not assumed. The shared feature files that are NOT one feature's alone live in `2-components/site-*.css`: `site-navbar` (header scroll behaviours) · `site-course` (level/price tags + the Ghost editor cards restyled inside course content) · `site-catalog` (the grid, the card hover, the become-an-author band) · `site-lesson`. Nothing in layers 0–2 may depend on this layer; when a module piece proves reusable, promote it into `2-components/` with a proper variant set.
-- House styling rules: status = dot + mono text, never a tinted wash; hover = border brightens to brand + an accent line (top on cards via `::after`, left on rows via inset box-shadow), never a translateY lift; indices/durations/labels always `--font-mono` with `--color-label`.
-
-**Dark mode:** `data-theme="light|dark"` on `<html>`. A pre-paint inline script in `default.hbs` applies the saved theme (`localStorage` key `ns-theme`) before first paint; `theme-toggle.js` flips it on `.ns-theme-toggle` clicks. The sun/moon glyph swap is pure CSS (`dark:` variant).
-
-**JS (`assets/js/`):** `theme-toggle`, `toc` (builds TOC + scroll-spy from `.gh-content`), `effects` (pointer spotlight), `reveal` (scroll reveal) → `casper.js`. Alpine (`vendor/alpine.js`) powers menus, the mobile sub-nav panels, and client-side search filters.
-
-**Translations:** author overrides in `locales-local/`; `gulp locales` merges into `locales/` (don't hand-edit merged files).
-
-## Conventions & gotchas
-
-- Prefer Tailwind utilities in markup; promote to `@layer components` only when a pattern repeats or is awkward as utilities.
-- Use the **role tokens** (`surface`/`ink`/`muted`/`border`) and `brand-*` scale; `#0176D3` is `brand-500`.
-- **Never call a Ghost helper across `../`** inside a partial (e.g. `{{../url absolute="true"}}`) — Ghost throws and 500s the page. Use dotted property access (`{{primary_tag.url}}`) instead.
-- Ad slots and per-section sidebars/TOC are shown by default; ads only become "real" once `@custom.enable_ads` + `adsense_publisher_id` (or `sponsor_*`) are set in Ghost Admin → Design.
-- **Demo content is ONE file: `dummy-content/import.json`** — a single Ghost-importable bundle (Settings → Labs → Import) with 2–3 posts for every collection and section: 3 courses × 3 lessons, 3 training sections × 3 lessons, 10 docs sections × 2 articles, 3 blog posts, 3 resources, and the `about` / `training` pages, plus every tag the templates branch on. It encodes the model rules from `routes.yaml` — a course post's slug equals its course tag, a section post's slug equals its section tag, and a lesson's PRIMARY tag is its parent course/section tag. Regenerate or extend it by editing the bundle directly; there are no other content files.
-- **ART DIRECTION IS AN INTERNAL TAG, and it is resolved in exactly one place per surface.** A course hero and a blog post header each have five/six versions from the design system, and which one a post gets is decided by a `#hero-*` / `#posthead-*` internal tag. The `{{#has}}` chain that maps tag → class lives in ONE partial per surface, because each is needed in three places on its page (the element, the background layer, the media slot) and copied three times it drifts:
-  - **`partials/courses/hero-variant.hbs`** → `.ns-chero--console` (default) `--split` `--cover` `--video` `--minimal` `--cert`. It ALSO maps the legacy numeric tags `#hero-1`..`#hero-5` onto the variant each used to draw, because courses already published in Ghost carry them and Ghost content is not in this repo — a hard cutover would silently drop every one of those posts back to the default. Semantic tags are checked first, so retagging takes effect immediately. Delete the alias block only once no published course carries a numeric tag.
-  - **`partials/blog/head-variant.hbs`** → `.ns-posthead--center` (default) `--wide` `--cover` `--console` `--minimal`. No aliases: the blog never had head variants, so there is nothing to be compatible with.
-- `routes.yaml` (collections / permalinks) lives in Ghost Admin, **not** in this repo.
+`gscan` and a green build are necessary and **not sufficient** — both were
+green while the site was visually broken. Get Ghost running locally, upload
+`routes.yaml`, import a fixture (`abstract/14`), and look at the page.

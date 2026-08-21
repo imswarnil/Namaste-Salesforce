@@ -1,27 +1,41 @@
 <!DOCTYPE html>
-<html lang="{{@site.locale}}" data-theme="light">
+<html lang="{{@site.locale}}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{meta_title}}</title>
+    <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}">
 
-    {{!-- MUST be first: sets data-theme before first paint. See abstract/07. --}}
-    {{> "nsds/theme-init"}}
-
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/switzer-var-latin.woff2"}}">
-    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
-    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
-
+    {{!-- Ghost injects SEO tags, structured data, code injection and Portal.
+         It must stay in <head>. --}}
     {{ghost_head}}
   </head>
 
   <body class="{{body_class}}">
-    {{!-- Chrome goes here. See abstract/02 — default.hbs dispatches on the same
-         tags post.hbs does, so a reading post gets a reading bar. --}}
+    <a href="#main" class="skip-link">{{t "Skip to content"}}</a>
+
+    <header>
+      <a href="{{@site.url}}">{{@site.title}}</a>
+
+      {{!-- Nav items come from Ghost Admin → Settings → Navigation, through the
+           reserved {{navigation}} helper. Add or reorder them there, not
+           here. --}}
+      <nav aria-label="Main"><ul>{{navigation}}</ul></nav>
+    </header>
+
+    {{!-- ── WHERE THE CHROME DISPATCH GOES ───────────────────────────────
+      Once there is more than one kind of page, default.hbs forks here on the
+      same tags post.hbs does, so a reading surface does not get a marketing
+      bar. Nothing to fork on yet. See abstract/02.
+    ───────────────────────────────────────────────────────────────────── --}}
 
     <main id="main">{{{body}}}</main>
 
+    <footer>
+      <p>&copy; {{date format="YYYY"}} {{@site.title}}</p>
+    </footer>
+
+    {{!-- Ghost injects members, search and comments scripts. Keep it last. --}}
     {{ghost_foot}}
-    <script defer src="{{asset "js/nsds/nav.js"}}"></script>
   </body>
 </html>

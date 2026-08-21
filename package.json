@@ -12,16 +12,9 @@
     "mobile": "assets/screenshot-mobile.jpg"
   },
   "scripts": {
-    "dev": "gulp",
-    "preview": "gulp build && python3 scripts/build-styleguide.py && (sleep 1 && open http://127.0.0.1:4321/styleguide/ &) && python3 -m http.server 4321 --bind 127.0.0.1",
-    "build": "gulp build",
-    "zip": "gulp zip",
     "test": "gscan .",
     "test:ci": "gscan --fatal --verbose .",
-    "pretest": "gulp build",
-    "design:sync": "node scripts/sync-design.mjs",
-    "design:check": "node scripts/sync-design.mjs --check",
-    "styleguide": "python3 scripts/build-styleguide.py"
+    "zip": "npm run test && mkdir -p dist && zip -r dist/namaste-salesforce.zip . -x '*.git*' -x 'node_modules/*' -x 'dist/*' -x 'abstract/*' -x 'prompt/*' -x '*.md' -x '.github/*'"
   },
   "author": {
     "name": "Swarnil Singhai",
@@ -56,27 +49,8 @@
   },
   "contributors": "https://github.com/imswarnil/Namaste-Salesforce/graphs/contributors",
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.1",
-    "@tailwindcss/typography": "^0.5.20",
-    "@tryghost/theme-translations": "~0.0.14",
-    "alpinejs": "^3.15.12",
-    "beeper": "2.1.0",
-    "cssnano": "7.1.2",
-    "dotenv": "^17.4.2",
-    "gscan": "^6.0.0",
-    "gulp": "5.0.1",
-    "gulp-concat": "2.6.1",
-    "gulp-livereload": "4.0.2",
-    "gulp-postcss": "10.0.0",
-    "gulp-uglify": "3.0.2",
-    "gulp-zip": "6.1.0",
-    "postcss": "^8.5.10",
-    "pump": "3.0.3",
-    "tailwindcss": "^4.3.1"
+    "gscan": "^4.43.0"
   },
-  "browserslist": [
-    "defaults"
-  ],
   "config": {
     "posts_per_page": 25,
     "image_sizes": {

@@ -1,0 +1,12 @@
+{{!-- RESERVED NAME: Ghost renders this from the {{navigation}} helper, never
+     from {{> navigation}}.
+
+     It emits only the <li> items so the parent <ul> decides the shape — that
+     is what lets one partial serve the header, the footer and a mobile sheet.
+
+     `aria-current="page"` rather than a class: the CSS keys off the same
+     attribute a screen reader announces, so the highlighted item and the
+     announced item cannot drift apart. See abstract/02. --}}
+{{#foreach navigation}}
+  <li><a href="{{url absolute="true"}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>
+{{/foreach}}
