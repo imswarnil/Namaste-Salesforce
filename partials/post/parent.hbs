@@ -1,21 +1,22 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     post/parent — a course, a training module or a docs section.
+     post/parent — a course, a training section or a docs section.
      ------------------------------------------------------------------------
-     ONE PARTIAL FOR ALL THREE, because they are one shape: an overview page
-     whose body explains the thing and whose main content is THE LIST OF ITS
-     CHILDREN. Only the words differ, and words are a parameter.
+     One partial, because all three are the same SHAPE: an overview whose main
+     content is the list of its children. What differs is how a child is
+     drawn, and that is a parameter:
+
+       childKind="lesson"  → .ns-lesson rows in a .ns-curriculum   (courses)
+       childKind="unit"    → .ns-unit rows in .ns-units            (training, docs)
+
+     That is not decoration. A course lesson row carries an index and an
+     access state because a course is something you buy into partway; a
+     training unit carries a type and a time because training is free and
+     sequential. NSDS ships both components for that reason.
 
      PARAMETERS
-       kind       kicker above the title — "Course", "Module", "Section"
-       childWord  singular noun for the count — "lesson", "page"
-
-     ── The hero is NSDS's .ns-chero, exactly ──────────────────────────────
-         .ns-chero > __inner > __grid > (__body, __media)
-     __media belongs INSIDE __grid. Put it beside __inner and it loses the
-     grid column and the 16/9 aspect-ratio that come with it, rendering as a
-     full-bleed block several screens tall — a nesting bug that looks like a
-     styling bug. `--split` only when there is an image, or the text sits at
-     55% width beside an empty column.
+       kind       the kicker — "Course", "Section"
+       childWord / childWordPlural   for the count
+       childKind  "lesson" or "unit"
 
      ── The slug==tag rule is what makes this work ─────────────────────────
      A parent's slug equals its own tag's slug, and every child carries that
@@ -24,20 +25,13 @@
      both jobs. `+id:-{{id}}` is not optional: the parent carries its own tag
      too, so without it every course lists itself as its first lesson.
 
-     ── ⚠ ONE {{#get}}, AND IT IS DELIBERATE ──────────────────────────────
-     The child count would read better in the hero, and it is in the Contents
-     head instead. A SECOND {{#get}} in the hero returned nothing however it
-     was written — with `as |kids|`, bare with {{pagination.total}}, and
-     hoisted to wrap the whole partial. The same filter returns rows through
-     the Content API and through the query below, so the filter is not the
-     problem; a second async {{#get}} in that position is.
-
-     Two further rules learned the hard way and worth keeping:
+     ⚠ TWO {{#get}} RULES, both learned the hard way:
        · ALWAYS `as |…|`. Without it the helper takes over the block context
          and the surrounding markup stops seeing the post — output vanishes
          rather than erroring.
-       · NEVER as a partial's outermost block. There it resolves to its
-         inverse even when the query has rows.
+       · Inside the block, the partial's own parameters need `../`, because
+         the context IS switched even with `as`. Property access across `../`
+         is fine; calling a HELPER across it is not, and does nothing.
      ══════════════════════════════════════════════════════════════════════ --}}
 <article class="{{post_class}}">
 
@@ -52,7 +46,7 @@
 
                     <div class="ns-chero__meta">
                         <span class="ns-tag sp-optional">{{~> "internal/level"~}}</span>
-                        <span class="sp-optional">{{~> "internal/duration"~}}</span>
+                        <span class="sp-duration sp-optional">{{~> "internal/duration"~}}</span>
                     </div>
 
                     {{#if @site.members_enabled}}
@@ -72,45 +66,21 @@
         </div>
     </section>
 
-    {{> "post/body"}}
+    {{!-- The overview's own body. Wide, because a course page's prose is a
+          pitch rather than an article and does not want the reading rail. --}}
+    <div class="ns-post ns-post--wide">
+        <article class="ns-post__body">
+            <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+        </article>
+    </div>
 
-    {{!-- The children, in publication order. Backdate a post to reorder it —
-          that is the whole ordering mechanism, and it is why the fixture gives
-          everything spaced-out dates rather than identical ones.
-
-          ⚠ limit="all" IS NOT SUPPORTED by {{#get}}: Ghost returns 15 and says
-          nothing. 100 is more children than any sane parent has. --}}
+    {{!-- ⚠ limit="all" IS NOT SUPPORTED — Ghost returns 15 and says nothing. --}}
     {{#get "posts" filter="tags:{{slug}}+id:-{{id}}" limit="100" order="published_at asc" include="tags" as |children|}}
         <section class="ns-band ns-band--sunken">
             <div class="ns-band__inner">
 
                 <div class="ns-band__head ns-band__head--between">
-                    <h2 class="ns-band__title">{{t "Contents"}}</h2>
-                    {{!-- ⚠ NOT {{plural}}. The obvious
-                              {{plural children.length empty=(concat …) …}}
-                          silently rendered NOTHING — and it took the entire
-                          {{#get}} block with it, so the whole curriculum
-                          disappeared rather than just the count. The nested
-                          (concat (t …) childWord …) subexpressions are what
-                          it chokes on; {{children.length}} on its own is 3.
-
-                          A failure that deletes its own container is worth
-                          avoiding even at the cost of a clumsier expression,
-                          so the words are passed in already pluralised and
-                          {{#match}} picks one. It is also more translatable:
-                          not every language pluralises by adding an s.
-
-                          ⚠ AND NOTE THE `../`. {{#get}} SWITCHES THE CONTEXT
-                          even when `as |children|` is used — the block param
-                          is added, but `this` becomes the result set, so the
-                          partial's own parameters (childWord, kind) are not
-                          visible inside the block without stepping out. That
-                          is also why {{plural}} failed here: childWord was
-                          undefined, not malformed. Property access across
-                          `../` is fine; calling a HELPER across it is not. --}}
-                    {{!-- Suppressed at zero: the empty state below already
-                          says there is nothing here, and "0 lessons" beside
-                          it is the same news twice. --}}
+                    <h2 class="ns-band__title">{{t "Curriculum"}}</h2>
                     {{#match children.length ">" 0}}
                         <p class="ns-band__lede">
                             {{children.length}}
@@ -120,9 +90,15 @@
                 </div>
 
                 {{#if children}}
-                    <div class="ns-units">
-                        {{#foreach children}}{{> "cards/unit" currentSlug=""}}{{/foreach}}
-                    </div>
+                    {{#match ../childKind "lesson"}}
+                        <div class="ns-curriculum">
+                            {{#foreach children}}{{> "cards/lesson-row" index=@number}}{{/foreach}}
+                        </div>
+                    {{else}}
+                        <div class="ns-units">
+                            {{#foreach children}}{{> "cards/unit" currentSlug=""}}{{/foreach}}
+                        </div>
+                    {{/match}}
                 {{else}}
                     {{!-- A parent with nothing under it yet. A page that is
                           simply blank below the fold reads as broken; saying

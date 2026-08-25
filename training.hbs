@@ -1,18 +1,57 @@
 {{!< default}}
-{{!-- Training modules. Same shape as courses — a module is a parent tag with
-     lessons under it — so it renders the same card. --}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     training.hbs — the index of training SECTIONS.
+     ------------------------------------------------------------------------
+     NS-Design-System's training-index archetype. Sections are rendered as
+     `.ns-trackcard` — the numbered form — because training is an ORDER: you
+     go through it. Courses use `.ns-path__card`, the glyph-led form, because
+     a course is a destination you pick. That is the whole difference between
+     the two catalogues and it is deliberate.
+
+     ── Three levels of navigation across two levels of URL ────────────────
+         /training/                  this page — every section
+         /training/{section}/        the section, listing its posts
+         /training/{section}/{post}/ a post
+
+     `abstract/18` is explicit that Ghost gives a permalink exactly one
+     `{primary_tag}` placeholder, so there is no third URL level available.
+     This page is the third level of NAVIGATION without being a third level of
+     URL — which is why it is a collection root rather than a tag.
+
+     `posts` here is the collection: the section overview posts, filtered by
+     `tag:hash-training-module` in routes.yaml and ordered by published_at.
+     Backdate a section post to move it earlier; that is the whole ordering
+     mechanism, and it is what makes the numerals on these cards mean
+     something.
+     ══════════════════════════════════════════════════════════════════════ --}}
+
 <section class="ns-band ns-band--tight">
-    <div class="ns-band__inner">
-        <div class="ns-band__head">
-            <p class="ns-kicker">{{t "Training"}}</p>
-            {{#page}}
-                <h1 class="ns-band__title">{{title}}</h1>
-                {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
-            {{else}}
-                <h1 class="ns-band__title">{{t "Training"}}</h1>
-                <p class="ns-band__lede">{{t "A guided path, one module at a time."}}</p>
-            {{/page}}
-        </div>
+  <div class="ns-band__inner">
+    <div class="ns-band__head">
+      <p class="ns-kicker">{{t "Training"}}</p>
+      {{#page}}
+        <h1 class="ns-band__title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
+      {{else}}
+        <h1 class="ns-band__title">{{t "Training"}}</h1>
+        <p class="ns-band__lede">{{t "A guided path, in order. Each section builds on the one before it."}}</p>
+      {{/page}}
     </div>
+  </div>
 </section>
-{{> "collection" card="course"}}
+
+<section class="ns-band">
+  <div class="ns-band__inner">
+    {{#if posts}}
+      <div class="ns-grid">
+        {{#foreach posts}}{{> "home/track-card" index=@number}}{{/foreach}}
+      </div>
+    {{else}}
+      {{!-- A site with no training yet. Say what is missing rather than
+            rendering an empty grid. --}}
+      <p class="ns-empty">{{t "No training sections yet."}}</p>
+    {{/if}}
+
+    {{pagination}}
+  </div>
+</section>

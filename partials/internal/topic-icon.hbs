@@ -1,0 +1,41 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     topic-icon — a glyph for a tag, inferred from its slug.
+     ------------------------------------------------------------------------
+     Ghost gives a tag a name, a slug, a description and an image — and no
+     icon. So a card that wants a glyph has to infer one, and this is the one
+     place that inference lives: it is needed by the path card, the track
+     card and the course card, and copied three times it would drift the
+     first time a topic was added.
+
+     `{{#match slug "~^" "…"}}` is a STARTS-WITH match, so `apex` catches
+     `apex`, `apex-masterclass` and `apex-basics` from one branch.
+
+     ⚠ ORDER MATTERS — the more specific prefix goes first, same rule as the
+     post dispatcher. And unlike the navigation icons, this one ALWAYS emits
+     something: .ns-trackcard__icon is a bordered box, and an empty box reads
+     as a broken image rather than as a card without an icon.
+
+     ⚠ EVERY GLYPH HERE MUST BE IN THE SUBSET. assets/css/namaste-ui.css
+     carries a Phosphor subset generated from the glyphs the design system
+     itself uses — a `ph-` class outside it renders as EMPTY SPACE, with no
+     error and no fallback box. ph-user-gear, ph-plugs-connected and
+     ph-sliders-horizontal were all written here first and all three were
+     blank; they are ph-user, ph-plugs and ph-gear now. Check before adding:
+
+         grep 'ph-your-icon' assets/css/namaste-ui.css
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{~#match slug "~^" "admin"~}}<i class="ph ph-user" aria-hidden="true"></i>
+{{~else match slug "~^" "apex"~}}<i class="ph ph-code" aria-hidden="true"></i>
+{{~else match slug "~^" "lwc"~}}<i class="ph ph-brackets-curly" aria-hidden="true"></i>
+{{~else match slug "~^" "flow"~}}<i class="ph ph-flow-arrow" aria-hidden="true"></i>
+{{~else match slug "~^" "integration"~}}<i class="ph ph-plugs" aria-hidden="true"></i>
+{{~else match slug "~^" "security"~}}<i class="ph ph-shield-check" aria-hidden="true"></i>
+{{~else match slug "~^" "data"~}}<i class="ph ph-database" aria-hidden="true"></i>
+{{~else match slug "~^" "start"~}}<i class="ph ph-flag" aria-hidden="true"></i>
+{{~else match slug "~^" "build"~}}<i class="ph ph-cube" aria-hidden="true"></i>
+{{~else match slug "~^" "automate"~}}<i class="ph ph-lightning" aria-hidden="true"></i>
+{{~else match slug "~^" "getting-started"~}}<i class="ph ph-flag" aria-hidden="true"></i>
+{{~else match slug "~^" "config"~}}<i class="ph ph-gear" aria-hidden="true"></i>
+{{~else match slug "~^" "trouble"~}}<i class="ph ph-lifebuoy" aria-hidden="true"></i>
+{{~else~}}<i class="ph ph-book-open" aria-hidden="true"></i>
+{{~/match~}}
