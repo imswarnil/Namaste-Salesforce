@@ -5,13 +5,29 @@
 # that depend on it.
 #
 # ⚠️ A ROUTE POINTING AT A MISSING TEMPLATE IS A 400, not a fallback. Ghost
-# answers "Missing template {name}.hbs for route /x/" and the page is dead. So
-# this file only ever contains routes the theme can actually serve.
+# answers "Missing template {name}.hbs for route /x/" and the page is dead.
+# So every `template:` below names a file that exists TODAY. See
+# abstract/decisions/0003.
 #
-# THIS IS THE STARTER SET. The full URL model — courses with nested lessons,
-# training sections, docs, resources — is in abstract/01-content-model.md,
-# with the literal YAML at the bottom of it. Move an entry back here in the
-# same commit that adds its template, never before.
+# THE URL MODEL IS COMPLETE HERE; the TEMPLATES are not yet. Every collection
+# that will eventually have its own template (courses, training, docs,
+# resources, toolkit, blog) is currently served by `index`, which renders a
+# real listing. That is deliberate and it is the cheap half:
+#
+#   · URLs are the expensive thing to change — every one of them is now
+#     final, and content can be created against them today.
+#   · Templates are the cheap thing to change — swapping `template: index`
+#     for `template: courses` later is a one-line edit per collection, and it
+#     changes no URL and breaks no link.
+#
+# Do it the other way round and you re-tag every post and 301 every URL.
+#
+# THE ONE RULE (abstract/01): a PARENT post's slug must equal its own tag's
+# slug. Courses, training modules and docs sections are all parents. The
+# permalink uses {slug} rather than {primary_tag} because a parent shares its
+# tag with all of its children — {primary_tag} would be ambiguous and Ghost
+# would 301 to the wrong parent. And because slug == tag, the children's
+# {primary_tag} still nests them under it. The two rules are one mechanism.
 
 routes:
   # `/` needs home.hbs. index.hbs does NOT cover it: `/` is a routed template,
@@ -19,11 +35,69 @@ routes:
   /: home
 
 collections:
-  # One collection for everything, until there is a reason for more. It gives
-  # the index page, pagination, an RSS feed and {{#prev_post}}/{{#next_post}}
-  # for free — see abstract/13.
-  /:
-    permalink: /{slug}/
+  # ── Courses ────────────────────────────────────────────────────────────
+  # A course is a POST tagged #course whose primary tag is its own course tag,
+  # and whose slug equals that tag's slug.
+  /courses/:
+    permalink: /courses/{slug}/
+    template: index
+    filter: tag:hash-course
+
+  # Lessons nest under their course automatically, because a lesson's PRIMARY
+  # tag is its course's tag. The /lessons/ path is only this collection's
+  # archive index; the lesson URLs live under /courses/.
+  /lessons/:
+    permalink: /courses/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-lesson
+
+  # ── Training ───────────────────────────────────────────────────────────
+  # Same two-level shape as courses. Modules are discovered from content, so
+  # adding one is Ghost Admin work — a tag, and a post whose slug matches it.
+  # Module ORDER is published_at asc; backdate to reorder.
+  /training-modules/:
+    permalink: /training/{slug}/
+    template: index
+    filter: tag:hash-training-module
+
+  /training-lessons/:
+    permalink: /training/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-training-lesson
+
+  # ── Docs — the same two-level shape again, and that is the point ────────
+  /docs-sections/:
+    permalink: /docs/{slug}/
+    template: index
+    filter: tag:hash-docs-section
+
+  /docs-pages/:
+    permalink: /docs/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-docs-page
+
+  # ── Flat collections ───────────────────────────────────────────────────
+  /blog/:
+    permalink: /blog/{slug}/
+    template: index
+    filter: tag:hash-blog
+
+  /resources/:
+    permalink: /resources/{slug}/
+    template: index
+    filter: tag:hash-resource
+
+  /toolkit/:
+    permalink: /toolkit/{slug}/
+    template: index
+    filter: tag:hash-product
+
+  # Catch-all, and it must stay LAST. A post carrying none of the tags above
+  # still needs a URL; without this it has none and 404s. Ghost matches
+  # collections in order, so an unfiltered collection placed earlier would
+  # swallow everything below it.
+  /archive/:
+    permalink: /archive/{slug}/
     template: index
 
 taxonomies:

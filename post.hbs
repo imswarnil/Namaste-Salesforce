@@ -7,25 +7,31 @@
   is a reading player, a course is a sales page, a doc is a reference — so
   this file renders nothing itself. It reads tags and dispatches.
 
-  ⚠️ BRANCH ORDER IS LOAD-BEARING. #training-section is tested BEFORE
-  #training-content, because a section overview is not a lesson and matching
-  the lesson branch would render it inside the lesson player. A new branch
-  goes where its SPECIFICITY demands, not at the end: ask whether any post
-  carries both this tag and one already in the list, and if so put the more
-  specific one first. Read abstract/02 before adding one.
+  ⚠️ BRANCH ORDER IS LOAD-BEARING. The PARENT of each pair is tested before
+  its child — #docs-section before #docs-page, #training-module before
+  #training-lesson — because an overview is not a lesson, and matching the
+  lesson branch would render a section overview inside the lesson player. A
+  new branch goes where its SPECIFICITY demands, not at the end: ask whether
+  any post carries both this tag and one already in the list, and if so put
+  the more specific one first. Read abstract/02 before adding one.
+
+  The NAMES are abstract/18's, which owns the vocabulary and supersedes the
+  list abstract/02 was written against.
 
   Only the fallback surface is built so far, so every branch that has no
   partial yet is commented rather than pointing at a file that does not exist
   — a missing partial is a 500, not a fallback. Uncomment a line in the same
   commit that adds its partial.
 
-      {{#has tag="documentation"}}          {{> "post-documentation"}}
-      {{else has tag="#training-section"}}  {{> "post-training-section"}}
-      {{else has tag="#training-content"}}  {{> "post-training"}}
-      {{else has tag="#course"}}            {{> "post-course"}}
-      {{else has tag="#lesson"}}            {{> "post-lesson"}}
-      {{else has tag="#resource"}}          {{> "post-resource"}}
-      {{else has tag="#blog"}}              {{> "post-blog"}}
+      {{#has tag="#docs-section"}}       {{> "post-docs-section"}}
+      {{else has tag="#docs-page"}}      {{> "post-docs-page"}}
+      {{else has tag="#training-module"}}{{> "post-training-module"}}
+      {{else has tag="#training-lesson"}}{{> "post-training-lesson"}}
+      {{else has tag="#course"}}         {{> "post-course"}}
+      {{else has tag="#lesson"}}         {{> "post-lesson"}}
+      {{else has tag="#resource"}}       {{> "post-resource"}}
+      {{else has tag="#product"}}        {{> "post-product"}}
+      {{else has tag="#blog"}}           {{> "post-blog"}}
 
   Note that default.hbs forks on the SAME tags to swap the chrome, so a
   reading surface does not get a marketing bar. The two lists must stay in

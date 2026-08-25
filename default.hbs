@@ -44,8 +44,16 @@
 
     {{!-- ── THE CHROME DISPATCH ───────────────────────────────────────────
       default.hbs forks on the SAME tags post.hbs does, so a reading surface
-      does not get a marketing bar. abstract/02 is the reference; the reading
-      tags are #lesson, #training, #training-content and #training-section.
+      does not get a marketing bar. abstract/02 is the reference — but the
+      NAMES come from abstract/18, which owns the vocabulary and supersedes
+      the list abstract/02 was written against (#training-content and
+      #training-section were renamed to #training-lesson and
+      #training-module; docs gained #docs-page / #docs-section).
+
+      Reading surfaces are therefore: a course lesson, a training lesson, a
+      training module overview, a docs page and a docs section overview.
+      Everything else — blog, resources, products, untagged — is marketing
+      chrome.
 
       ⚠ BRANCH ORDER IS LOAD-BEARING HERE TOO. `has` takes a comma-separated
       list and matches ANY of them, so this particular fork happens to be
@@ -59,7 +67,7 @@
     ─────────────────────────────────────────────────────────────────────── --}}
     {{#is "post"}}
       {{#post}}
-        {{#has tag="#lesson, #training, #training-content, #training-section"}}
+        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}
           {{> "chrome/coursenav"}}
         {{else}}
           {{> "chrome/topnav"}}
@@ -78,7 +86,7 @@
 
     {{#is "post"}}
       {{#post}}
-        {{#has tag="#lesson, #training, #training-content, #training-section"}}
+        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}
           {{> "footer-lesson"}}
         {{else}}
           {{> "footer"}}
