@@ -25,6 +25,18 @@
 
 @layer components {
 
+  /* ── One NSDS layout assumption this site does not share ────────────────
+     `.ns-tpost-body` is `grid-template-columns: var(--ns-tsky-w) 1fr` — a
+     sticky advertisement rail, then the article. This site carries no ads, so
+     the first column is always empty and the ARTICLE lands in it: the prose
+     collapses to the ad width and the page reads as a broken stylesheet.
+
+     One column, stated once. This is the kind of rule that belongs in the
+     theme layer — it is not a new opinion about how anything looks, it is
+     this site declining a slot the design system offers. */
+  .ns-tpost-body { grid-template-columns: minmax(0, 1fr); }
+
+
   /* ── Ghost Admin's font picker ──────────────────────────────────────────
      Ghost 5 lets an editor choose heading and body fonts in Admin → Design
      and injects them as --gh-font-heading / --gh-font-body. gscan warns about

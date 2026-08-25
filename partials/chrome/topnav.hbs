@@ -25,7 +25,10 @@
      PARAMETERS
        tagline   passed through to chrome/brand
      ══════════════════════════════════════════════════════════════════════ --}}
-<nav class="ns-topnav" aria-label="{{t "Main"}}" data-ns-scrolled>
+{{!-- The layout and sticky settings map onto NSDS's own .ns-topnav
+     modifiers, so two publisher controls cost this theme no CSS. --}}
+<nav class="ns-topnav{{#match @custom.navigation_layout "Logo in the centre"}} ns-topnav--center{{else match @custom.navigation_layout "Stacked"}} ns-topnav--stacked{{/match}}{{#unless @custom.sticky_header}} ns-topnav--static{{/unless}}"
+     aria-label="{{t "Main"}}" data-ns-scrolled>
     {{!-- __inner width-caps the bar's contents so the brand sits exactly
           above a page's first column. NSDS's default bar is fluid; this site
           is width-capped, so the contained variant is the right one. --}}

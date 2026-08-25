@@ -1,34 +1,39 @@
-name: Deploy Theme
+name: Deploy theme
+
 on:
   push:
-    branches:
-      - master
-      - main
+    branches: [main]
+
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Strip repo furniture so only the theme itself is uploaded. Docs and
-      # fixtures do not belong in a deployed theme and can trip Ghost's upload
-      # validation. `-rf`/`-f` are used throughout so this stays correct as
-      # paths come and go; a missing path must not fail the deploy.
-      #
-      # routes.yaml is pruned deliberately: it is versioned here, but Ghost
-      # reads it from Admin → Labs → Routes, NOT from the theme folder.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci || npm install
+
+      # Build BEFORE deploying. The deploy action uploads the working tree as
+      # it stands, so without this it would ship whatever assets/built/
+      # happened to be committed — which CI verifies is current, but this
+      # makes the deployed bytes independent of that.
+      - name: Build
+        run: NODE_ENV=production npx gulp build
+
       - name: Prune non-theme files
         run: |
-          rm -rf .claude abstract prompt scripts dummy-content styleguide
-          rm -f ./*.md routes.yaml
-          rm -f assets/built/*.map
+          rm -rf .claude abstract prompt scripts dummy-content node_modules
+          rm -f  gulpfile.mjs package-lock.json routes.yaml
+          find . -name '*.md' -not -path './node_modules/*' -delete
+          # The CSS SOURCE is not part of the theme — only the compiled output
+          # is served. Shipping both invites someone to edit the wrong one.
+          rm -rf assets/css
 
-      - name: Deploy Ghost Theme
-        uses: TryGhost/action-deploy-theme@v1
-        # The v1 action targets Node 20; GitHub runners now default to Node 24.
-        # Allow it to run on its bundled Node until a Node-24 build ships.
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+      - uses: TryGhost/action-deploy-theme@v1
         with:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
           api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}

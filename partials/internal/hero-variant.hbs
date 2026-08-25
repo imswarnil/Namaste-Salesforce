@@ -1,0 +1,26 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     hero-variant — the post header's art direction, tag → class.
+     ------------------------------------------------------------------------
+     Emits ONLY the modifier class. It is a partial rather than an inline
+     chain because the answer is needed in more than one place on the page —
+     the header element and, for the full-bleed variants, the media slot — and
+     a chain copied twice drifts the first time a sixth variant is added.
+
+     `#hero-1` … `#hero-5` map onto NSDS's own `.ns-posthead` modifiers, so
+     five header treatments cost this theme no CSS:
+
+       1  (default)   left-aligned, cover below the standfirst
+       2  --center    centred measure
+       3  --wide      cover breaks out to the page container
+       4  --split     text and cover side by side
+       5  --bleed     full-bleed cover with the title over it
+
+     Unrecognised or absent → the default. A post that predates the tag
+     renders correctly rather than unstyled, which is the whole reason the
+     `{{else}}` is empty rather than an error.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{~#has tag="#hero-2"~}} ns-posthead--center
+{{~else has tag="#hero-3"~}} ns-posthead--wide
+{{~else has tag="#hero-4"~}} ns-posthead--split
+{{~else has tag="#hero-5"~}} ns-posthead--bleed
+{{~/has~}}

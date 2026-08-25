@@ -9,18 +9,10 @@
 # So every `template:` below names a file that exists TODAY. See
 # abstract/decisions/0003.
 #
-# THE URL MODEL IS COMPLETE HERE; the TEMPLATES are not yet. Every collection
-# that will eventually have its own template (courses, training, docs,
-# resources, toolkit, blog) is currently served by `index`, which renders a
-# real listing. That is deliberate and it is the cheap half:
-#
-#   · URLs are the expensive thing to change — every one of them is now
-#     final, and content can be created against them today.
-#   · Templates are the cheap thing to change — swapping `template: index`
-#     for `template: courses` later is a one-line edit per collection, and it
-#     changes no URL and breaks no link.
-#
-# Do it the other way round and you re-tag every post and 301 every URL.
+# THE TEMPLATES NOW EXIST, so each collection names its own. That was the plan
+# recorded here when they did not: URLs are the expensive thing to change and
+# were settled first, templates are the cheap thing and swapping one in is a
+# one-line edit that changes no URL and breaks no link. This is that edit.
 #
 # THE ONE RULE (abstract/01): a PARENT post's slug must equal its own tag's
 # slug. Courses, training modules and docs sections are all parents. The
@@ -40,7 +32,7 @@ collections:
   # and whose slug equals that tag's slug.
   /courses/:
     permalink: /courses/{slug}/
-    template: index
+    template: courses
     filter: tag:hash-course
 
   # Lessons nest under their course automatically, because a lesson's PRIMARY
@@ -55,9 +47,13 @@ collections:
   # Same two-level shape as courses. Modules are discovered from content, so
   # adding one is Ghost Admin work — a tag, and a post whose slug matches it.
   # Module ORDER is published_at asc; backdate to reorder.
-  /training-modules/:
+  # The collection ROOT is /training/, which is also the parent of every
+  # module's URL. Ghost is fine with that — /courses/ does the same thing —
+  # and it means the listing lives at the path a reader would guess, with no
+  # second route to keep in step.
+  /training/:
     permalink: /training/{slug}/
-    template: index
+    template: training
     filter: tag:hash-training-module
 
   /training-lessons/:
@@ -66,9 +62,9 @@ collections:
     filter: tag:hash-training-lesson
 
   # ── Docs — the same two-level shape again, and that is the point ────────
-  /docs-sections/:
+  /docs/:
     permalink: /docs/{slug}/
-    template: index
+    template: docs
     filter: tag:hash-docs-section
 
   /docs-pages/:
@@ -79,12 +75,12 @@ collections:
   # ── Flat collections ───────────────────────────────────────────────────
   /blog/:
     permalink: /blog/{slug}/
-    template: index
+    template: blog
     filter: tag:hash-blog
 
   /resources/:
     permalink: /resources/{slug}/
-    template: index
+    template: resources
     filter: tag:hash-resource
 
   /toolkit/:

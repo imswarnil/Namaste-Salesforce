@@ -1,32 +1,24 @@
 {{!< default}}
-{{!-- A tag archive. routes.yaml gives several collections their own URLs, but
-     every tag still has an archive at /tag/<slug>/ and it has to be a real
-     page — abstract/13 is about taxonomy hygiene, and an archive that looks
-     unfinished is how a tag stops being used.
+{{!-- A tag archive, on NSDS's .ns-taghead.
 
-     The subject is a BLOCK context here, which is the whole reason this is a
-     separate template rather than a branch inside index.hbs. --}}
+     Its own template because Ghost exposes the tag as a BLOCK context only
+     here — `{{tag.name}}` parses fine and renders nothing, which is why gscan
+     rejects it rather than leaving it to be found on a live archive. --}}
+{{#tag}}
+    <header class="ns-taghead">
+        {{!-- The # is drawn in CSS, not written in the DOM: a literal hash is
+              read aloud as "number sign" before every tag name on the page. --}}
+        <h1 class="ns-taghead__title">
+            {{name}}
+            <span class="ns-taghead__count">{{plural ../pagination.total empty=(t "No posts") singular=(t "% post") plural=(t "% posts")}}</span>
+        </h1>
+        {{#if description}}<p class="ns-taghead__desc">{{description}}</p>{{/if}}
+        <div class="ns-taghead__actions">
+            <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/rss/">
+                {{> "icons/site/rss"}} {{t "Subscribe"}}
+            </a>
+        </div>
+    </header>
+{{/tag}}
 
-<section class="ns-band">
-  <div class="ns-band__inner">
-
-    {{#tag}}
-      <div class="ns-band__head">
-        <p class="ns-kicker">{{t "Tag"}}</p>
-        <h1 class="ns-band__title">{{name}}</h1>
-        {{#if description}}<p class="ns-band__lede">{{description}}</p>{{/if}}
-      </div>
-    {{/tag}}
-
-    {{#if posts}}
-      <div class="ns-grid">
-        {{#foreach posts}}{{> "post-card"}}{{/foreach}}
-      </div>
-    {{else}}
-      <p class="ns-empty">{{t "No posts yet."}}</p>
-    {{/if}}
-
-    {{pagination}}
-
-  </div>
-</section>
+{{> "collection" card="blog" rail=true}}

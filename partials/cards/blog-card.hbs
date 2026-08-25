@@ -1,0 +1,57 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     blog-card — NS-Design-System's .ns-bcard, exactly.
+     ------------------------------------------------------------------------
+     PARAMETERS
+       wide      the lead card in a listing — `--wide` is a two-column grid
+                 with the cover spanning both rows
+       minimal   a "read next" row — no cover, title and meta only
+
+     THREE COVER STATES, and the third is the one themes usually forget:
+
+       image           <span class="ns-bcard__cover"> with the media inside
+       no image        `--empty`, which draws a centred glyph on the sunken
+                       surface at 16/9 — so a post without a picture still
+                       has a card the same height as its neighbours
+       minimal         no cover element at all
+
+     Without the empty state a feed with one image-less post gets a card that
+     is shorter than the rest and the grid goes ragged. NSDS ships the state;
+     the theme only has to use it.
+
+     The cover link is out of the tab order and hidden from the accessibility
+     tree because the title link goes to the same place. Announcing the
+     destination twice is noise.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<article class="ns-card ns-bcard{{#if wide}} ns-bcard--wide{{/if}}{{#if minimal}} ns-bcard--minimal{{/if}} {{post_class}}">
+
+    {{#unless minimal}}
+        {{#if feature_image}}
+            <a class="ns-bcard__cover" href="{{url}}" tabindex="-1" aria-hidden="true">
+                {{> "media" src=feature_image alt="" decorative=true class="ns-card__media"
+                            sizes="(min-width: 64rem) 22rem, (min-width: 48rem) 45vw, 100vw"}}
+                {{#primary_tag}}<span class="ns-tag ns-bcard__cat">{{name}}</span>{{/primary_tag}}
+            </a>
+        {{else}}
+            <span class="ns-bcard__cover ns-bcard__cover--empty" aria-hidden="true">
+                {{> "icons/navbar/blog"}}
+            </span>
+        {{/if}}
+    {{/unless}}
+
+    <div class="ns-card__body">
+        <a class="ns-card__link" href="{{url}}">
+            {{#if wide}}
+                <h2 class="ns-bcard__title">{{title}}</h2>
+            {{else}}
+                <h3 class="ns-bcard__title">{{title}}</h3>
+            {{/if}}
+        </a>
+
+        {{#unless minimal}}
+            {{#if excerpt}}<p class="ns-bcard__excerpt">{{excerpt}}</p>{{/if}}
+        {{/unless}}
+
+        {{> "post/meta" compact=true}}
+    </div>
+
+</article>

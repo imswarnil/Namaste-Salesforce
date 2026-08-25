@@ -8,9 +8,11 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "gscan .",
-    "test:ci": "gscan --fatal --verbose .",
-    "zip": "npm test && mkdir -p dist && zip -r dist/namaste-salesforce.zip . -x '*.git*' -x 'node_modules/*' -x 'dist/*' -x 'abstract/*' -x 'prompt/*' -x '.github/*' -x '*.md' -x 'package-lock.json' -x 'routes.yaml' -x '.DS_Store'"
+    "dev": "gulp",
+    "build": "NODE_ENV=production gulp build",
+    "test": "npm run build && gscan .",
+    "test:ci": "npm run build && gscan --fatal --verbose .",
+    "zip": "npm run test:ci && mkdir -p dist && rm -f dist/namaste-salesforce.zip && zip -r dist/namaste-salesforce.zip . -x '*.git*' -x 'node_modules/*' -x 'dist/*' -x 'abstract/*' -x 'prompt/*' -x 'scripts/*' -x 'dummy-content/*' -x 'assets/css/*' -x '*.DS_Store' -x '*.md' -x 'gulpfile.mjs' -x 'package-lock.json'"
   },
   "author": {
     "name": "Swarnil Singhai",
@@ -43,7 +45,15 @@
   },
   "contributors": "https://github.com/imswarnil/Namaste-Salesforce/graphs/contributors",
   "devDependencies": {
-    "gscan": "^4.43.0"
+    "@tailwindcss/postcss": "^4.3.3",
+    "cssnano": "^7.1.2",
+    "del": "^8.0.0",
+    "gscan": "^4.43.0",
+    "gulp": "^5.0.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-postcss": "^10.0.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^4.3.3"
   },
   "config": {
     "posts_per_page": 25,
@@ -68,7 +78,59 @@
       }
     },
     "card_assets": true,
-    "custom": {}
+    "custom": {
+      "show_search": {
+        "type": "boolean",
+        "default": true
+      },
+      "show_theme_toggle": {
+        "type": "boolean",
+        "default": true
+      },
+      "sticky_header": {
+        "type": "boolean",
+        "default": true
+      },
+      "navigation_layout": {
+        "type": "select",
+        "options": [
+          "Logo on the left",
+          "Logo in the centre",
+          "Stacked"
+        ],
+        "default": "Logo on the left"
+      },
+      "feed_layout": {
+        "type": "select",
+        "options": [
+          "Grid",
+          "List",
+          "Magazine"
+        ],
+        "default": "Grid",
+        "group": "homepage"
+      },
+      "show_post_meta": {
+        "type": "boolean",
+        "default": true,
+        "group": "post"
+      },
+      "show_author_card": {
+        "type": "boolean",
+        "default": true,
+        "group": "post"
+      },
+      "show_related": {
+        "type": "boolean",
+        "default": true,
+        "group": "post"
+      },
+      "show_toc": {
+        "type": "boolean",
+        "default": true,
+        "group": "post"
+      }
+    }
   },
   "homepage": "https://github.com/imswarnil/Namaste-Salesforce#readme"
 }

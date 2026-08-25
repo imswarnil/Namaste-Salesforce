@@ -1,0 +1,13 @@
+{{!-- duration — the post's reading/watching time, from an internal tag.
+
+     Prints the tag's DESCRIPTION, never its slug. `#duration-1h-5m` carries
+     description "1h 5m", so the author writes the display text in Ghost Admin
+     and the theme never parses the slug. Parsing would mean the theme owns
+     the format, and then `#duration-90m` needs a code change.
+
+     Falls back to Ghost's own {{reading_time}}, which is computed from the
+     word count — right for an article, useless for a video, which is exactly
+     why the tag exists. --}}
+{{~#foreach tags visibility="internal"~}}
+    {{~#match slug "~^" "hash-duration-"~}}{{description}}{{~/match~}}
+{{~/foreach~}}

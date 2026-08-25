@@ -1,27 +1,95 @@
 name: CI
 
-# There is no build step yet — no stack has been chosen (see abstract/15).
-# What CI can still do is what Ghost itself does on upload: validate the theme.
 on:
   push:
     branches: [main]
   pull_request:
 
 jobs:
-  validate:
-    name: gscan
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm run test:ci
+          cache: npm
 
-      - name: No inline styles in templates
+      - run: npm ci || npm install
+
+      - name: Build
+        run: NODE_ENV=production npx gulp build
+
+      # ── The guard that makes committing assets/built/ safe ───────────────
+      # Ghost serves the theme exactly as uploaded; there is no build step on
+      # the server, so the compiled CSS and JS have to be in the repo. The
+      # risk that creates is a STALE build — output that no longer describes
+      # the source, which is a whole class of "I fixed that already" bug.
+      #
+      # Rebuilding and diffing is what removes it. If this step fails, run
+      # `npm run build` and commit the result.
+      - name: assets/built is not stale
         run: |
-          if grep -rn 'style="' --include='*.hbs' . --exclude-dir=node_modules; then
-            echo "::error::Inline styles are not allowed. See abstract/05."
+          if ! git diff --quiet -- assets/built; then
+            echo "::error::assets/built is stale. Run 'npm run build' and commit the result."
+            git diff --stat -- assets/built
             exit 1
           fi
+          echo "assets/built matches the source."
+
+      # ── The cascade contract, re-proved on the OUTPUT ────────────────────
+      # The bare @layer statement is minified away once the blocks are in
+      # order, so the only record of the contract in the shipped file is the
+      # order those blocks appear in. Built without the statement this came
+      # out with ns-components LAST — beating the theme's own layer and every
+      # utility, silently. See abstract/05 and decisions/0002.
+      - name: Cascade contract
+        run: node scripts/check-layers.mjs
+
+      # Ghost's own validator, in fatal mode: warnings fail too.
+      - name: gscan
+        run: npx gscan --fatal --verbose .
+
+      # A style attribute cannot be overridden by a stylesheet, so it breaks
+      # dark mode and the publisher's accent colour silently. That is the
+      # whole reason this theme has a utility layer at all.
+      - name: No inline styles in templates
+        run: |
+          if grep -rn 'style="' --include='*.hbs' . ; then
+            echo "::error::Inline style attributes are not allowed. Use a utility or a component class. See abstract/05."
+            exit 1
+          fi
+          if grep -rn '<style' --include='*.hbs' . ; then
+            echo "::error::<style> blocks are not allowed in templates."
+            exit 1
+          fi
+
+      # A Handlebars comment ends at the FIRST comment-close sequence. Write
+      # one inside a comment and every remaining line is emitted into the page
+      # as visible text — and gscan passes, because a leaked comment is valid
+      # HTML. This has already happened in this project.
+      - name: Handlebars comments close cleanly
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys
+          bad = []
+          for p in sorted(pathlib.Path('.').rglob('*.hbs')):
+              if 'node_modules' in p.parts: continue
+              for i, line in enumerate(p.read_text().splitlines(), 1):
+                  idx = line.find('--' + '}}')
+                  if idx >= 0 and line[idx + 4:].strip():
+                      bad.append(f'{p}:{i}: {line.strip()[:100]}')
+          for b in bad:
+              print(f'::error::Comment close is not at end of line — {b}')
+          sys.exit(1 if bad else 0)
+          PY
+
+      - name: Package
+        run: npm run zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: namaste-salesforce-theme
+          path: dist/namaste-salesforce.zip
+          retention-days: 14

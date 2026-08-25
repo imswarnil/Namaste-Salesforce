@@ -25,6 +25,11 @@ jobs:
 
       - run: npm install
 
+      # Build before packaging, so a release can never ship a stale
+      # assets/built/ — the zip is what a buyer installs.
+      - name: Build
+        run: NODE_ENV=production npx gulp build
+
       - name: Check the tag matches package.json
         run: |
           TAG="${GITHUB_REF_NAME#v}"

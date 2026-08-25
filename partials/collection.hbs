@@ -1,0 +1,54 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     collection — NS-Design-System's blog-listing, exactly.
+     ------------------------------------------------------------------------
+         .ns-blog-listing            grid: main | 16rem rail
+             .ns-bcard--wide             the lead post, full width
+             .ns-blog-grid               the rest, auto-fill
+             .ns-pagination--compact
+             .ns-blog-listing__rail      categories + recent, sticky
+
+     PARAMETERS
+       card    "course" → the course card; anything else → the blog card
+       rail    falsy → no rail; the listing takes the full width
+
+     THE LEAD POST IS `--wide`. `{{#foreach}}` exposes `@first`, which is the
+     only thing needed to make the first card the feature — no second query
+     and no `limit=1` + `skip=1` pair.
+
+     WHY A BRANCH RATHER THAN A DYNAMIC PARTIAL: Ghost does not register
+     Handlebars' `lookup` helper, so `{{> (lookup . "card") }}` is invalid
+     here and gscan rejects the whole theme for it.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-page sp-listing">
+    <div class="ns-blog-listing{{#unless rail}} sp-listing--full{{/unless}}">
+
+        <div>
+            {{#if posts}}
+                {{#match card "course"}}
+                    <div class="ns-blog-grid{{#match @custom.feed_layout "List"}} ns-blog-grid--rows{{else match @custom.feed_layout "Magazine"}} ns-blog-grid--feature{{/match}}">
+                        {{#foreach posts}}{{> "cards/course-card"}}{{/foreach}}
+                    </div>
+                {{else}}
+                    {{#foreach posts}}
+                        {{#if @first}}{{> "cards/blog-card" wide=true}}{{/if}}
+                    {{/foreach}}
+                    <div class="ns-blog-grid{{#match @custom.feed_layout "List"}} ns-blog-grid--rows{{else match @custom.feed_layout "Magazine"}} ns-blog-grid--feature{{/match}}">
+                        {{#foreach posts}}
+                            {{#unless @first}}{{> "cards/blog-card"}}{{/unless}}
+                        {{/foreach}}
+                    </div>
+                {{/match}}
+            {{else}}
+                {{!-- A brand-new site has no posts, and this is the first
+                      thing a buyer sees after installing. A blank band reads
+                      as a broken theme. --}}
+                <p class="ns-empty">{{t "No posts yet."}}</p>
+            {{/if}}
+
+            {{pagination}}
+        </div>
+
+        {{#if rail}}{{> "collection-rail"}}{{/if}}
+
+    </div>
+</div>

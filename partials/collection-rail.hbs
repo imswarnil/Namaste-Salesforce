@@ -1,0 +1,54 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     collection-rail — NSDS's .ns-blog-listing__rail: categories, then recent.
+     ------------------------------------------------------------------------
+     Both lists come from Ghost, so a publisher never edits this file.
+
+     `filter="visibility:public"` on the tags query is the whole difference
+     between a tidy category list and a page advertising your private tag
+     vocabulary — every `#hero-2`, `#duration-45m` and `#level-beginner`
+     would otherwise appear as a category.
+
+     `count.posts:>0` drops tags that exist but have nothing under them, which
+     otherwise show as categories leading to an empty archive.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<aside class="ns-blog-listing__rail">
+
+    {{!-- ⚠ `count.posts:>0` IS NOT A VALID TAG FILTER. Ghost's tags
+              endpoint rejects it with a 400, and {{#get}} swallows the error
+              and renders its inverse — so the whole block silently
+              disappears rather than erroring. Filter on visibility only, and
+              drop the empty tags in the template with {{#match}}. --}}
+    {{#get "tags" limit="20" filter="visibility:public" include="count.posts" order="name asc" as |cats|}}
+        {{#if cats}}
+            <div>
+                <p class="ns-toc__title">{{t "Categories"}}</p>
+                <div class="ns-tagrow">
+                    {{#foreach cats}}
+                        {{#match count.posts ">" 0}}
+                            <a class="ns-tag ns-tag--pill" href="{{url}}">
+                                {{name}} <span class="ns-tag__count">{{count.posts}}</span>
+                            </a>
+                        {{/match}}
+                    {{/foreach}}
+                </div>
+            </div>
+        {{/if}}
+    {{/get}}
+
+    {{#get "posts" limit="5" order="published_at desc" as |recent|}}
+        {{#if recent}}
+            <div>
+                <p class="ns-toc__title">{{t "Recent"}}</p>
+                <div class="ns-blog-archive">
+                    {{#foreach recent}}
+                        <a class="ns-blog-archive__row" href="{{url}}">
+                            <span class="ns-blog-archive__date">{{date format="DD MMM"}}</span>
+                            <span class="ns-blog-archive__title">{{title}}</span>
+                        </a>
+                    {{/foreach}}
+                </div>
+            </div>
+        {{/if}}
+    {{/get}}
+
+</aside>

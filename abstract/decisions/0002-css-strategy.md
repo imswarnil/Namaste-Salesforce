@@ -1,6 +1,6 @@
 # 0002 · How the theme gets its CSS
 
-**Status:** **Accepted** — option A
+**Status:** **Superseded by option B** — see the reversal at the foot of this file
 **Date raised:** 2026-08-21
 **Date decided:** 2026-08-25
 
@@ -89,3 +89,108 @@ silent-missing-style bug, and you will blame the wrong thing.
 - NSDS changes its distribution model — e.g. drops the neutral bundle, or moves
   the component layer to `@apply`. Re-check with the commands at the end of
   `../17`.
+
+
+---
+
+# ⚠ REVERSED — option B, 2026-08-25
+
+**Status:** **Accepted — option B.** Tailwind v4 + NSDS, with a gulp build.
+
+## What changed
+
+Option A was chosen because it was the only choice that was **reversible for
+free**, and the reasoning explicitly said "A → B is an afternoon of adding a
+build; by then you will know from real templates whether the utilities are
+actually missed."
+
+The templates now exist, and the answer is yes.
+
+The requirement is that the site look **exactly** like NS-Design-System — not
+in the same spirit, the same. And NSDS's `templates/*.html`, which are the
+canonical markup for every page archetype, express layout that is not in the
+`.ns-*` class layer at all:
+
+```html
+<div class="ns-blog-listing" style="max-inline-size:var(--container-page);…">
+<article class="ns-card ns-bcard ns-bcard--wide" style="margin-block-end:var(--space-8)">
+<nav class="ns-pagination" style="margin-block-start:var(--space-10)">
+```
+
+Under option A a theme has three ways to reproduce those, and all three are
+bad:
+
+1. **Inline styles** — banned here, and rightly: a `style` attribute cannot be
+   overridden by a stylesheet, so it breaks dark mode and the publisher's
+   accent colour silently (`abstract/05`).
+2. **Named theme classes** — one per instance. That is the ~40-class trigger
+   this decision already named as the signal to move to B, and it is the exact
+   mechanism behind the ~100 duplicated classes in `abstract/10`.
+3. **Approximating** — which is what happened, and it is why this is being
+   revisited rather than debated.
+
+Utilities are the fourth way, and it is the one NSDS itself assumes: the
+design system ships `tokens/tailwind.css` precisely so `p-card` is
+`var(--space-5)` and `bg-brand-500` is the brand blue in both products.
+`docs/INTEGRATION.md` documents the Ghost setup as a supported path.
+
+## The trigger fired
+
+This decision's own **Revisit if** listed:
+
+> The theme's own class layer passes ~40 classes — utilities are being
+> hand-rolled and B or C is now cheaper than A.
+
+It was heading there. Reversing now is the outcome the decision was written to
+produce, not a failure of it.
+
+## What is different this time
+
+`abstract/10` is a record of Tailwind + NSDS going wrong here once. The two
+things that actually went wrong are both now checked by machine:
+
+**1 · The layer order.** The original break was importing Tailwind before
+declaring the layers. That is not a matter of discipline any more:
+`assets/css/screen.css` opens with the bare `@layer` statement, and
+`scripts/check-layers.mjs` re-proves the order **on the compiled output** on
+every build and in CI.
+
+That check earned itself immediately. Built without the statement, the order
+came out
+
+```
+theme → base → components → utilities → ns-components
+```
+
+— the design system last, beating both the theme's own layer and every
+utility. Nothing errored. Overrides simply stopped working.
+
+**2 · A stale `assets/built/`.** It is committed, because Ghost serves the
+theme as uploaded and there is no build step on the server. CI rebuilds and
+fails if the output differs from what is checked in, so the committed bytes
+always describe the source.
+
+## Consequences
+
+**Every `.hbs` edit needs a rebuild**, because Tailwind emits utilities from
+the class names it finds in the templates. `gulp` watches both.
+
+**The temptation moves rather than disappears.** Under A it was to write a
+theme class; under B it is to build a component out of twelve utilities that
+NSDS already ships as one class. The rule is unchanged and is the one in
+`abstract/00`: check Ghost, then check NSDS, then write. A utility is for
+composing a LAYOUT that only this theme has — not for rebuilding a card.
+
+**Weight.** The compiled sheet is ~467 KB unminified-comments-stripped, and
+Tailwind does not shrink the `@layer ns-components` half — purging only ever
+removes generated utilities. Cherry-picking `components/css/` remains the
+real lever and remains deferred until a measurement on a real page asks for
+it.
+
+## Revisit if
+
+- The theme's own `@layer components` block grows past ~15 rules that are not
+  Ghost-vocabulary translation. That is the signal it has started being a
+  design system again.
+- A build failure ever ships. The whole justification for committing
+  `assets/built/` is that CI proves it is current.

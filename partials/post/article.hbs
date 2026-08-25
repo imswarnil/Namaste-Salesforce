@@ -1,0 +1,29 @@
+{{!-- post/article — everything inside .ns-post__body.
+
+     Extracted so the layout branch in post/default can include it from four
+     places without duplicating the markup four times.
+
+     `id="post-body"` is load-bearing twice over: the reading-progress line
+     measures it, and the table of contents is built from the headings inside
+     it. Pointing the TOC at the whole article instead would put "Read next"
+     and three card titles in the outline. --}}
+
+<div class="gh-content ns-prose" id="post-body">
+    {{content}}
+</div>
+
+<div class="sp-post-foot">
+
+    {{#if tags}}
+        <ul class="ns-taglist">
+            {{#foreach tags}}<li><a class="ns-tag ns-tag--pill" href="{{url}}">{{name}}</a></li>{{/foreach}}
+        </ul>
+    {{/if}}
+
+    {{#if @custom.show_author_card}}{{> "post/authorbox"}}{{/if}}
+
+    {{> "post/nav"}}
+
+    {{#if @custom.show_related}}{{> "post/related"}}{{/if}}
+
+</div>

@@ -1,0 +1,77 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     media — one responsive image, lazy-loaded, revealed on scroll.
+     ------------------------------------------------------------------------
+     EVERY image on the site goes through this partial. That is the point: it
+     is the only place `loading`, `decoding`, `srcset`, `sizes` and the reveal
+     wrapper are decided, so they cannot be right in five templates and wrong
+     in the sixth.
+
+     PARAMETERS
+       src     the image URL (required)
+       alt     alternative text. Pass "" deliberately for a decorative image
+               whose link is already labelled — see `decorative` below.
+       sizes   the `sizes` attribute. Defaults to full-viewport, which is
+               correct for a hero and wrong for a card, so cards pass their
+               own.
+       ratio   an aspect-ratio class hook, e.g. "16x9"
+       eager   truthy → load immediately and do NOT reveal. Use for the ONE
+               image above the fold; see below.
+       decorative  truthy → aria-hidden, empty alt
+
+     ── Lazy, but not the first image ──────────────────────────────────────
+     `loading="lazy"` on an image that is already in the viewport DELAYS it:
+     the browser must lay the page out before it knows the image is visible,
+     so the request starts later than an eager one would. On a post hero that
+     is a direct hit to Largest Contentful Paint — the single metric a theme
+     is judged on. Hence `eager`, and hence heroes passing it.
+
+     ── The reveal ─────────────────────────────────────────────────────────
+     `.ns-reveal` is NSDS's own clip-reveal: the wrapper hides overflow and
+     the inner element rises into it. `assets/js/type-fx.js` observes
+     `.ns-reveal` and sets `[data-fx-in]` when it scrolls into view, so this
+     needs no theme JavaScript at all.
+
+     Three things make it safe rather than decorative-at-the-cost-of-content:
+
+       · The hidden start state lives inside `@media (scripting: enabled)`,
+         so with JS off the image is simply THERE rather than translated off
+         its own box waiting for an observer that will never run.
+       · The animation's FINAL state is the correct one, so
+         prefers-reduced-motion — which flattens every animation globally —
+         leaves a visible image rather than an invisible one.
+       · It draws once. A thing that animates every time it scrolls past is
+         an advertisement.
+
+     An eager image skips the wrapper entirely: revealing the hero means
+     hiding the largest thing on the page until a script runs, which is the
+     opposite of what `eager` is for.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#if src}}
+    {{#if eager}}
+        <img class="sp-media{{#if ratio}} sp-media--{{ratio}}{{/if}}"
+             srcset="{{img_url src size="s"}} 300w,
+                     {{img_url src size="m"}} 600w,
+                     {{img_url src size="l"}} 1000w,
+                     {{img_url src size="xl"}} 2000w"
+             sizes="{{#if sizes}}{{sizes}}{{else}}100vw{{/if}}"
+             src="{{img_url src size="l"}}"
+             alt="{{alt}}"
+             fetchpriority="high" decoding="async"
+             {{#if decorative}}aria-hidden="true"{{/if}}>
+    {{else}}
+        <span class="ns-reveal sp-media-wrap">
+            <span>
+                <img class="sp-media{{#if ratio}} sp-media--{{ratio}}{{/if}}"
+                     srcset="{{img_url src size="s"}} 300w,
+                             {{img_url src size="m"}} 600w,
+                             {{img_url src size="l"}} 1000w,
+                             {{img_url src size="xl"}} 2000w"
+                     sizes="{{#if sizes}}{{sizes}}{{else}}100vw{{/if}}"
+                     src="{{img_url src size="m"}}"
+                     alt="{{alt}}"
+                     loading="lazy" decoding="async"
+                     {{#if decorative}}aria-hidden="true"{{/if}}>
+            </span>
+        </span>
+    {{/if}}
+{{/if}}

@@ -1,0 +1,31 @@
+{{!-- share — NSDS's .ns-share--rail, the third column of .ns-post.
+
+     Real links, not scripted buttons: a share intent URL works with
+     JavaScript off, opens in the reader's own signed-in session, and cannot
+     leak anything the page does not already show. The copy-link control is
+     the one exception and it degrades to a link to the post itself.
+
+     .ns-post is a three-column grid — rail · body · aside — so this element
+     is what fills the third column. Omit it and the grid still works; the
+     body simply gains the space. --}}
+<aside class="ns-post__aside ns-share ns-share--rail">
+    <span class="ns-share__label">{{t "Share"}}</span>
+
+    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm"
+       href="https://www.linkedin.com/sharing/share-offsite/?url={{encode url absolute="true"}}"
+       target="_blank" rel="noopener" aria-label="{{t "Share on LinkedIn"}}">
+        {{> "icons/social/linkedin"}}
+    </a>
+
+    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm"
+       href="https://x.com/intent/post?url={{encode url absolute="true"}}&text={{encode title}}"
+       target="_blank" rel="noopener" aria-label="{{t "Share on X"}}">
+        {{> "icons/social/x"}}
+    </a>
+
+    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm"
+       href="{{url absolute="true"}}" data-sp-copy="{{url absolute="true"}}"
+       aria-label="{{t "Copy link"}}">
+        {{> "icons/post/link"}}
+    </a>
+</aside>

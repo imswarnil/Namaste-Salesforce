@@ -1,0 +1,143 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/lesson — a lesson inside a course, module or docs section.
+     ------------------------------------------------------------------------
+     NS-Design-System's training-post archetype: the curriculum as a PERSISTENT
+     RAIL rather than a list buried under the article.
+
+         .ns-training[data-ns-training][data-rail]
+             .ns-training__scrim        closes the rail on a phone
+             .ns-trainingnav            the curriculum — docked on desktop,
+                                        full sheet below the breakpoint
+             .ns-tbar                   breadcrumb · prev/next
+             .ns-training__reading
+                 .ns-modulehead         title, lede, .ns-tmeta
+                 .ns-tpost-body > .ns-tstage
+                     .ns-toc            the outline
+                     .ns-prose#post-body
+
+     The `data-ns-training*` hooks are what assets/js/training.js binds to —
+     that is the hamburger behaviour: one curriculum, docked or sheeted, with
+     one implementation. NSDS owns all of it.
+
+     ⚠ THE {{#get}} WRAPS ONLY THE RAIL, AND THAT IS NOT COSMETIC.
+
+     {{#get}} takes over the block context even with `as |…|`. Wrapping the
+     whole template meant the article body had to be written `{{../content}}`
+     — and `content` is a HELPER, not a property. Calling a Ghost helper
+     across `../` is forbidden outright (CLAUDE.md): it does not warn, it
+     renders nothing. The page came out with a title, a lede, three empty
+     meta pills and no article at all.
+
+     The meta pills were the same bug: `{{> "internal/duration"}}` reads the
+     post's tags, and inside the get block there were no tags to read.
+
+     So the query encloses the one element that needs the sibling list, and
+     everything else stays in the post's own context where the helpers work.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-training ns-training--doc {{post_class}}" data-ns-training data-rail="closed">
+
+    <div class="ns-training__scrim" data-ns-training-close></div>
+
+    {{!-- ⚠ limit="all" IS NOT SUPPORTED — Ghost returns 15 and says nothing. --}}
+    {{#get "posts" filter="tags:{{primary_tag.slug}}" limit="100" order="published_at asc" include="tags" as |siblings|}}
+        <nav class="ns-trainingnav" data-ns-trainingnav aria-label="{{t "Curriculum"}}">
+
+            <div class="ns-trainingnav__spine">
+                <span class="ns-trainingnav__spine-label">{{t "Curriculum"}}</span>
+            </div>
+
+            <div class="ns-trainingnav__head">
+                <a class="ns-trainingnav__brand" href="{{../primary_tag.url}}">
+                    {{> "icons/navbar/course"}} {{../primary_tag.name}}
+                </a>
+            </div>
+
+            <div class="ns-trainingnav__scroll">
+                <ul class="ns-trainingnav__list">
+                    {{#foreach siblings}}
+                        <li>
+                            {{!-- .ns-trainingnav__link, not a bare <a>. NSDS
+                                 styles the CLASS — the current-row accent,
+                                 the left border, the done state all hang off
+                                 it — so a plain anchor renders as an
+                                 unstyled blue link and looks like the
+                                 stylesheet failed to load. --}}
+                            <a class="ns-trainingnav__link" href="{{url}}"{{#match slug ../../slug}} aria-current="page"{{/match}}>
+                                <span>{{title}}</span>
+                                <span class="ns-trainingnav__time sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+                            </a>
+                        </li>
+                    {{/foreach}}
+                </ul>
+            </div>
+
+        </nav>
+    {{/get}}
+
+    {{!-- ⚠ .ns-training__main IS THE GRID CELL, and it is easy to leave out.
+         .ns-training--doc is `grid-template-columns: 1fr var(--ns-trail-w)`
+         and places `> .ns-training__main` in column 1 and `> .ns-trainingnav`
+         in column 2. Without this wrapper the bar and the reading column are
+         auto-placed as separate grid items, the rail ends up in the wrong
+         column, and the prose collapses to whatever width is left — which
+         reads as a broken stylesheet rather than as missing markup.
+
+         It is a <div> and not a <main> because default.hbs already owns the
+         page's one <main> landmark; two would be a document with two mains. --}}
+    <div class="ns-training__main">
+
+        <div class="ns-tbar">
+            <p class="ns-tbar__crumb">
+                <a href="{{@site.url}}">{{> "icons/navbar/home"}} {{t "Home"}}</a>
+                {{#primary_tag}}<a href="{{url}}">{{> "icons/navbar/course"}} {{name}}</a>{{/primary_tag}}
+            </p>
+            <span class="ns-tbar__steps">
+                {{#prev_post}}
+                    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm" href="{{url}}"
+                       aria-label="{{t "Previous"}}: {{title}}">{{> "icons/post/prev"}}</a>
+                {{/prev_post}}
+                {{#next_post}}
+                    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm" href="{{url}}"
+                       aria-label="{{t "Next"}}: {{title}}">{{> "icons/post/next"}}</a>
+                {{/next_post}}
+            </span>
+        </div>
+
+
+        <div class="ns-training__reading">
+
+            <header class="ns-modulehead">
+                <h1 class="ns-modulehead__title">{{title}}</h1>
+                {{#if custom_excerpt}}<p class="ns-modulehead__lede">{{custom_excerpt}}</p>{{/if}}
+
+                {{!-- Each pill hides itself when its tag is absent — see the
+                      .sp-optional:empty rule. Without it a lesson with no
+                      level tag renders an empty pill with padding. --}}
+                <div class="ns-tmeta">
+                    <span class="ns-tmeta__item sp-optional">{{~> "internal/duration"~}}</span>
+                    <span class="ns-tmeta__item sp-optional">{{~> "internal/level"~}}</span>
+                    <span class="ns-tmeta__item sp-optional">{{~> "internal/format"~}}</span>
+                </div>
+            </header>
+
+            <div class="ns-tpost-body">
+                <div class="ns-tstage">
+
+                    <nav class="ns-toc" data-toc-from="#post-body" aria-label="{{t "On this page"}}">
+                        <p class="ns-toc__title">{{t "On this page"}}</p>
+                    </nav>
+
+                    <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+
+                    {{#if @custom.show_author_card}}{{> "post/authorbox"}}{{/if}}
+
+                    {{> "post/nav"}}
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

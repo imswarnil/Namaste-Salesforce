@@ -28,7 +28,7 @@
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
 
-    <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}">
+    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
 
     {{!-- Ghost injects SEO tags, structured data, code injection and Portal.
          It must stay in <head>, and last. --}}
@@ -95,12 +95,16 @@
     {{else}}
       {{> "footer"}}
     {{/is}}
+    {{!-- One bundle, built by gulp from assets/js/*.js in a fixed order. All
+         of it is NS-Design-System's own script layer, all of it is
+         progressive enhancement, and every surface it touches works without
+         it: the sheet, the theme controls, the curriculum rail, the table of
+         contents, the reading line and the code copy button.
 
-    {{!-- Deferred: nothing in it is needed for the page to render or be
-         usable. Vendored from NS-Design-System unchanged — it drives the
-         sheet, the theme controls and the bar's scrolled state by writing the
-         aria-* and data-* attributes the CSS already reads. --}}
-    <script src="{{asset "js/nav.js"}}" defer></script>
+         theme-init is deliberately NOT in here — it must be inlined in
+         <head> or it paints too late, which is the white-flash-on-every-
+         navigation bug it exists to prevent. --}}
+    <script src="{{asset "built/main.js"}}" defer></script>
 
     {{!-- Ghost injects members, search and comments scripts. Keep it last. --}}
     {{ghost_foot}}

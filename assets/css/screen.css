@@ -1,56 +1,89 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   screen.css — the theme's stylesheet entry.
+   screen.css — SOURCE. The browser never loads this file.
    ----------------------------------------------------------------------------
-   THIS FILE USED TO BE ~30 LINES AND DELIBERATELY ALMOST EMPTY, because no
-   stack had been chosen. One has now: `abstract/decisions/0002-css-strategy.md`
-   is settled on **option A — the framework-neutral NSDS bundle, no build step**.
-   Read that decision before changing anything here.
+   `gulp` compiles it to `assets/built/screen.css`, which is what default.hbs
+   links. Edit this; never edit the output.
 
-   ── What loads, and in what order ─────────────────────────────────────────
-   1. The \@layer statement. It is the whole override contract and it MUST stay
-      the first thing in this file, before any \@import. (A bare \@layer
-      statement is one of only two things allowed to precede \@import.)
+   ── The three imports are the supported integration path ──────────────────
+   NS-Design-System's own docs/INTEGRATION.md specifies exactly this order for
+   a Ghost theme, and each line is load-bearing:
 
-        theme          Reserved. NSDS uses it for Tailwind's \@theme block;
-                       this theme has no Tailwind, so it stays empty. Declared
-                       anyway, so the contract is identical to upstream's and
-                       a copy-pasted NSDS rule lands where it expects to.
-        base           The reset, then NSDS's own bare-element defaults.
-        ns-components  The design system.
-        components     THIS THEME. After ns-components, so theme rules beat
-                       NSDS by LAYER rather than by out-specifying it.
-        utilities      Last.
+     1. `tailwindcss`        Tailwind's own @theme defaults and preflight.
+     2. `namaste-ui.css`     The design system — tokens, base, and the whole
+                             `@layer ns-components`. This is the FLAT dist
+                             bundle rather than the source import graph,
+                             which is the fallback INTEGRATION.md sanctions
+                             when a pipeline cannot resolve imports across
+                             package boundaries. It also makes the build
+                             hermetic: CI does not need NS-Design-System
+                             checked out beside this repo.
+     3. `ns-tailwind.css`    NSDS's @theme bridge, AFTER Tailwind's so ours
+                             wins. This is what makes `p-card`, `bg-brand-500`
+                             and `text-label` resolve to the design system's
+                             own token values.
 
-      NOTHING OUTSIDE A LAYER. An unlayered rule beats every layered rule at
-      any specificity, so one stray rule silently inverts all of the above.
-      There is exactly one sanctioned exception and it is fenced and explained
-      where it lives — the tail of theme/ghost.css, which has to override
-      Ghost's own unlayered cards.min.css.
+   ⚠ DO NOT import `dist/namaste-ui.tailwind.css` here. That bundle is
+   Tailwind *plus* the design system, built for NSDS's own styleguide; in a
+   product that already runs Tailwind it adds a second preflight and a second
+   copy of every utility.
 
-   2. `namaste-ui.css` — NS-Design-System's framework-neutral build, vendored
-      from `../../../../NS-Design-System/dist/` at **f0dd883 (2026-08-24)**. It is
-      generated; do not edit it. Its url()s resolve to `assets/fonts/` and
-      `assets/icons/` from here, which is why it must live in this directory.
+   ── Why the vendored files sit in THIS directory ──────────────────────────
+   The bundle's font and icon urls are `../fonts/…` and `../icons/…`. From
+   `assets/css/` that resolves to `assets/fonts/` and `assets/icons/`; from
+   the compiled `assets/built/` it resolves to the same two places. So the
+   paths are correct whether or not postcss rebases them during the inline —
+   which is the sort of thing that otherwise only surfaces as a 404 on a font
+   nobody notices until the page reflows.
 
-   3. `theme/*.css` — this theme's own layer. It is small on purpose. Before
-      adding a rule: check whether **Ghost** already supplies it, then whether
-      **NSDS** already supplies it. What is left is the theme's job, and it is
-      mostly the translation between Ghost's `.kg-*` vocabulary and NSDS's
-      `.ns-*` one. `abstract/10` is the record of what happens when this layer
-      grows a third opinion.
+   ── The layer contract, inherited and non-negotiable ──────────────────────
+       theme · base · ns-components · components · utilities
+   declared by the bundle before anything else. A utility always wins, and
+   NOTHING may sit outside a layer — an unlayered rule beats every layered one
+   at any specificity and silently revokes the whole thing.
 
-   ── Re-syncing NSDS ──────────────────────────────────────────────────────
-       cp ../../../../NS-Design-System/dist/namaste-ui.css assets/css/
-       cp ../../../../NS-Design-System/icons/*.woff2       assets/icons/
-       cp ../../../../NS-Design-System/fonts/*.woff2       assets/fonts/
-
-   Then update the revision above, run `npm test`, and **look at a page**.
-   gscan cannot see a visual regression and has been green through every one
-   this project has had — that is what `abstract/10` is about.
+   Theme CSS goes in `@layer components`: after the design system, so it can
+   override; before utilities, so a utility still wins. That is almost always
+   what you want.
    ═══════════════════════════════════════════════════════════════════════ */
 
+/* ⚠ THIS STATEMENT MUST BE THE FIRST THING IN THE FILE, BEFORE ANY @import.
+   A bare @layer statement is one of only two things allowed to precede
+   @import, and it is what fixes the precedence order.
+
+   WITHOUT IT THE CONTRACT INVERTS SILENTLY. The order then falls out of the
+   order the layer BLOCKS happen to appear in the compiled output — and
+   measured, that came out
+
+       theme → base → components → utilities → ns-components
+
+   with the design system LAST, beating both this theme's own layer and every
+   Tailwind utility. Nothing errors. The page just stops responding to
+   overrides, and `abstract/05` records that this project already shipped
+   that bug once, for exactly this reason.
+
+   `gulp check:layers` re-proves the order on every build; CI fails on it. */
 @layer theme, base, ns-components, components, utilities;
 
-@import url("namaste-ui.css");
-@import url("theme/reset.css");
-@import url("theme/ghost.css");
+@import "tailwindcss" source(none);
+@import "./namaste-ui.css";
+@import "./ns-tailwind.css";
+
+/* ── The content scan ──────────────────────────────────────────────────────
+   `source(none)` above turns OFF Tailwind's automatic filesystem scan and the
+   sources are listed explicitly instead. The automatic scan is git-aware, so
+   it finds a different set of classes on a fresh clone than in a dirty
+   working tree — which makes the build non-reproducible in exactly the way
+   that produces "it works on my machine" CSS.
+
+   Every place a class name can appear in this theme: --------------------- */
+@source "../../*.hbs";
+@source "../../partials/**/*.hbs";
+
+/* ── This theme's own layer ────────────────────────────────────────────────
+   Keep it SMALL. Before adding a rule: check whether Ghost already supplies
+   it, then whether NSDS does. What is left is the theme's job, and it is
+   almost entirely the translation between Ghost's `.kg-*` vocabulary and
+   NSDS's `.ns-*` one. `abstract/10` is the record of what happens when this
+   layer grows a third opinion. --------------------------------------------*/
+@import "./theme/reset.css";
+@import "./theme/ghost.css";

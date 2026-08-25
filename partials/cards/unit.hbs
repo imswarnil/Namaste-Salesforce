@@ -1,0 +1,24 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     unit — one row in a curriculum list, on NSDS's .ns-unit.
+     ------------------------------------------------------------------------
+     PARAMETERS
+       currentSlug   slug of the page being viewed, so the row can mark
+                     itself. Passed in rather than reached for: inside a
+                     {{#get}} → {{#foreach}} the path back to the post is a
+                     stack of `../` that changes the moment the nesting does.
+
+     `data-state` is an attribute, not a class — this system's rule, and here
+     it also means the CSS and the screen reader read one fact.
+
+     ONLY TWO STATES ARE HONEST. Ghost has no per-member progress, so it
+     cannot know whether a reader has COMPLETED a lesson. "You are here" and
+     "not yet" are the two it can know; drawing a tick against the others
+     would be telling the reader something the site does not know.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<a class="ns-unit" href="{{url}}"
+   data-state="{{#match slug currentSlug}}current{{else}}todo{{/match}}"
+   {{#match slug currentSlug}}aria-current="page"{{/match}}>
+    <span class="ns-unit__title">{{title}}</span>
+    <span class="ns-unit__type sp-optional">{{~> "internal/format"~}}</span>
+    <span class="ns-unit__time sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+</a>
