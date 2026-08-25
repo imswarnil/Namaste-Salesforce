@@ -1,11 +1,33 @@
 {{!< default}}
 {{!-- The default collection listing. routes.yaml points several collections
-     here (see abstract/01); each gets pagination and an RSS feed for free. --}}
+     here (see abstract/01); each gets pagination and an RSS feed for free.
 
-{{#if posts}}
-  {{#foreach posts}}{{> post-card}}{{/foreach}}
-{{else}}
-  <p>{{t "No posts yet."}}</p>
-{{/if}}
+     The heading comes from the collection or tag or author being listed, so
+     one template can serve /blog/, /resources/ and a tag archive without
+     knowing which it is. --}}
 
-{{pagination}}
+<section class="ns-band">
+  <div class="ns-band__inner">
+
+    {{!-- Tag and author archives have their own templates (tag.hbs,
+          author.hbs) because Ghost only exposes the archive's subject as a
+          block context there. Trying to branch on it here produces markup
+          that parses fine and renders nothing — which is why gscan rejects it
+          outright rather than leaving it to be found on a live archive. --}}
+    <div class="ns-band__head">
+      <h1 class="ns-band__title">{{@site.title}}</h1>
+      {{#if @site.description}}<p class="ns-band__lede">{{@site.description}}</p>{{/if}}
+    </div>
+
+    {{#if posts}}
+      <div class="ns-grid">
+        {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+      </div>
+    {{else}}
+      <p class="ns-empty">{{t "No posts yet."}}</p>
+    {{/if}}
+
+    {{pagination}}
+
+  </div>
+</section>

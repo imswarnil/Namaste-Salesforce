@@ -1,0 +1,205 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   theme/ghost.css — the theme's entire job, in one file.
+   ----------------------------------------------------------------------------
+   `abstract/00` states the rule this file exists to obey: Ghost owns the
+   content model, NSDS owns how everything looks, and the theme is the wiring
+   between them and should be as thin as possible.
+
+   So this file contains ONLY things neither of them can know about:
+
+     · Ghost Admin's font picker, which NSDS has no concept of.
+     · The Koenig editor's `.kg-*` class names, which NSDS has never heard of.
+
+   NSDS does ship a Ghost file — `components/css/ghost.css` — but it styles
+   `.ns-bookmark`, `.ns-file`, `.ns-gate` and so on, which assumes a rendering
+   layer that can map card → class. A Ghost theme has no such layer: Koenig's
+   HTML comes out of the editor with `.kg-bookmark-card` baked in and cannot be
+   renamed. The mapping therefore has to happen here, in CSS.
+
+   ⚠ BEFORE ADDING ANYTHING: check Ghost, then check NSDS. A rule that belongs
+   in NSDS should be added to NSDS, not here — `abstract/10` is a record of
+   ~100 classes that reimplemented the design system under different names
+   because that check was skipped. Treat every new rule in this file as a
+   defect until proven otherwise.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── Ghost Admin's font picker ──────────────────────────────────────────
+     Ghost 5 lets an editor choose heading and body fonts in Admin → Design
+     and injects them as --gh-font-heading / --gh-font-body. gscan warns about
+     a theme that ignores them.
+
+     NOTE THE ORDER: the Ghost variable FIRST, NSDS's own stack as the
+     fallback. Written the other way round the editor's choice would be the
+     thing that never applies — the easy mistake, because both orderings look
+     reasonable and only one is caught by actually changing the setting.
+
+     These override --font-sans / --font-heading, the PUBLIC token names every
+     NSDS component reads, so one pair of declarations reaches every heading,
+     button and card. The private --ns-font-* layer underneath is untouched
+     and remains the fallback.
+
+     --font-mono is deliberately NOT wired up. Ghost's picker offers no mono,
+     and mono is structural here — every index, kicker, duration and tag runs
+     through it, so it is not a thing to leave to a setting. */
+  :root {
+    --font-sans:    var(--gh-font-body, var(--ns-font-sans));
+    --font-heading: var(--gh-font-heading, var(--ns-font-heading));
+  }
+
+  /* ── The reading column, and the two ways out of it ─────────────────────
+     `.ns-prose` caps its own width, which is right for an app and wrong for a
+     CMS: Koenig lets a writer break a single image or embed out of the
+     column, and a cap on the CONTAINER makes that impossible. So the cap
+     moves onto each CHILD — which is what lets a wide card declare a larger
+     max-width and re-centre itself with no wrapper and no negative margins.
+
+     gscan checks for .kg-width-wide and .kg-width-full by name and fails a
+     theme without them. */
+  .gh-content.ns-prose { max-inline-size: none; }
+
+  .gh-content > * {
+    max-inline-size: var(--container-prose);
+    margin-inline: auto;
+  }
+
+  .gh-content > .kg-width-wide { max-inline-size: var(--container-page); }
+  .gh-content > .kg-width-full { max-inline-size: none; }
+
+  /* ── Figures ────────────────────────────────────────────────────────────*/
+  .gh-content :is(img, video) {
+    inline-size: 100%;
+    border-radius: var(--radius-card);
+  }
+
+  /* A full-bleed image has no page edge to be inset from, so it drops the
+     radius — a rounded corner against the viewport edge reads as a mistake. */
+  .gh-content > .kg-width-full :is(img, video) { border-radius: 0; }
+
+  .gh-content figcaption {
+    margin-block-start: var(--space-3);
+    margin-inline: auto;
+    max-inline-size: var(--measure-narrow);
+    font-family: var(--font-mono);
+    font-size: var(--size-label);
+    letter-spacing: var(--tracking-label);
+    line-height: var(--leading-snug);
+    color: var(--color-label);
+    text-align: center;
+  }
+
+  .gh-content figcaption a { color: inherit; }
+
+  .gh-content .kg-card + .kg-card { margin-block-start: var(--stack-md); }
+
+  /* Embeds arrive as an iframe of unknown aspect ratio. */
+  .gh-content .kg-embed-card { display: flex; flex-direction: column; align-items: center; }
+  .gh-content .kg-embed-card iframe { inline-size: 100%; }
+  .gh-content .kg-embed-card > iframe[src*="youtube"],
+  .gh-content .kg-embed-card > iframe[src*="vimeo"] {
+    aspect-ratio: 16 / 9;
+    block-size: auto;
+    border-radius: var(--radius-card);
+  }
+
+  /* A wide table scrolls ITSELF, not the document. */
+  .gh-content .kg-table-card > * { overflow-x: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   UNLAYERED, AND THIS IS THE ONE SANCTIONED EXCEPTION IN THE THEME.
+   ----------------------------------------------------------------------------
+   `package.json` sets `"card_assets": true`, so Ghost injects its own
+   cards.min.css through {{ghost_head}} — UNLAYERED. An unlayered rule beats
+   every layered rule at any specificity, so a rule in @layer components
+   cannot override it however specific you make the selector. These have to be
+   unlayered too, and that is the entire justification.
+
+   They all do one job: Ghost's card CSS was written against a white page and
+   hard-codes light-mode colours and 16px radii, so on the navy console
+   surface a bookmark card stays white with white text, and in either mode the
+   geometry belongs to a different design system. Each block restates the
+   value in NSDS's vocabulary.
+
+   If a rule you are about to add works from @layer components, it belongs
+   there. Test it there first.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Bookmark card — cards.min.css hard-codes #fff, #15171a and an rgba border.
+   The target is NSDS's .ns-bookmark: hairline, no shadow, mono metadata. */
+.gh-content .kg-bookmark-card a.kg-bookmark-container,
+.gh-content .kg-bookmark-card a.kg-bookmark-container:hover {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: none;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.gh-content .kg-bookmark-title {
+  color: var(--color-ink);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+}
+
+.gh-content .kg-bookmark-description { color: var(--color-muted); }
+
+.gh-content .kg-bookmark-metadata {
+  color: var(--color-label);
+  font-family: var(--font-mono);
+  font-size: var(--size-label);
+  letter-spacing: var(--tracking-label);
+}
+
+.gh-content .kg-bookmark-author::after { color: var(--color-border); }
+
+/* Callout cards — eight fixed pastel backgrounds and a fixed dark text colour
+   upstream, all of which go dark-on-dark on the navy surface. Principle 3
+   says status never gets a background wash, so these become hairline blocks
+   on the sunken surface instead. */
+.gh-content .kg-callout-card {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-sunken);
+  color: var(--color-ink);
+}
+
+.gh-content .kg-callout-card-accent {
+  background: var(--color-brand-500);
+  border-color: transparent;
+  color: var(--color-on-brand);
+}
+
+.gh-content .kg-callout-card-accent a { color: inherit; }
+
+/* Button cards — upstream sets its own accent fill and a pill radius.
+   --radius-btn is 4px here. */
+.gh-content .kg-btn-accent {
+  background: var(--color-brand-500);
+  color: var(--color-on-brand);
+  border-radius: var(--radius-btn);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+  min-block-size: var(--target-comfy);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.gh-content .kg-btn-accent:hover { background: var(--color-brand-600); }
+
+/* Toggle cards. */
+.gh-content .kg-toggle-card {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.gh-content .kg-toggle-heading-text {
+  color: var(--color-ink);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-semibold);
+}
+
+.gh-content .kg-toggle-card-icon { color: var(--color-muted); }
+.gh-content .kg-toggle-content    { color: var(--color-ink); }

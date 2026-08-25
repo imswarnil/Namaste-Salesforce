@@ -3,35 +3,35 @@
   post.hbs — THE DISPATCHER.
 
   Ghost gives a theme exactly one post.hbs for every post on the site. This
-  site has several kinds of post that are genuinely different PAGES, so this
-  file will read tags and dispatch to a partial per kind:
+  site has several kinds of post that are genuinely different PAGES — a lesson
+  is a reading player, a course is a sales page, a doc is a reference — so
+  this file renders nothing itself. It reads tags and dispatches.
 
-      {{#has tag="#course"}}  {{> "post-course"}}
-      {{else has tag="#lesson"}} {{> "post-lesson"}}
-      …
-      {{else}}                {{> "post-default"}}
+  ⚠️ BRANCH ORDER IS LOAD-BEARING. #training-section is tested BEFORE
+  #training-content, because a section overview is not a lesson and matching
+  the lesson branch would render it inside the lesson player. A new branch
+  goes where its SPECIFICITY demands, not at the end: ask whether any post
+  carries both this tag and one already in the list, and if so put the more
+  specific one first. Read abstract/02 before adding one.
 
-  ⚠️ BRANCH ORDER IS LOAD-BEARING — #training-section must be tested BEFORE
-  #training-content, or a section overview renders inside the lesson player.
-  Read abstract/02 before adding a branch.
+  Only the fallback surface is built so far, so every branch that has no
+  partial yet is commented rather than pointing at a file that does not exist
+  — a missing partial is a 500, not a fallback. Uncomment a line in the same
+  commit that adds its partial.
 
-  There is only one kind of page so far, so there is nothing to dispatch on.
+      {{#has tag="documentation"}}          {{> "post-documentation"}}
+      {{else has tag="#training-section"}}  {{> "post-training-section"}}
+      {{else has tag="#training-content"}}  {{> "post-training"}}
+      {{else has tag="#course"}}            {{> "post-course"}}
+      {{else has tag="#lesson"}}            {{> "post-lesson"}}
+      {{else has tag="#resource"}}          {{> "post-resource"}}
+      {{else has tag="#blog"}}              {{> "post-blog"}}
+
+  Note that default.hbs forks on the SAME tags to swap the chrome, so a
+  reading surface does not get a marketing bar. The two lists must stay in
+  agreement — if a kind of post moves from marketing chrome to reading chrome,
+  it changes in both files or the page gets a bar that contradicts its body.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 {{#post}}
-  <article>
-    <h1>{{title}}</h1>
-    {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
-
-    <p>
-      {{#primary_author}}<a href="{{url}}">{{name}}</a>{{/primary_author}}
-      <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time>
-      {{#if reading_time}}{{reading_time}}{{/if}}
-    </p>
-
-    {{#if feature_image}}
-      <img src="{{img_url feature_image size="l"}}" alt="{{feature_image_alt}}">
-    {{/if}}
-
-    <div class="gh-content">{{content}}</div>
-  </article>
+  {{> "post-default"}}
 {{/post}}

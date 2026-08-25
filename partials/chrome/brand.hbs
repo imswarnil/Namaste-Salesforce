@@ -1,0 +1,26 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     brand — the site lockup.
+     ------------------------------------------------------------------------
+     Used by the top bar, the mobile sheet and the course bar, which is the
+     whole reason it is a partial. Three copies of this would drift the moment
+     the logo changed shape.
+
+     PARAMETERS
+       tagline   optional mono suffix after a hairline divider — "Learn",
+                 "Docs". It is a real element rather than a slash in the text
+                 because it has to be able to disappear below lg, which a
+                 string cannot do.
+
+     The mark is capped in height by .ns-topnav__brand img in NSDS, so the
+     bar's optical height never depends on the logo file — a publisher can
+     upload a 400px-tall PNG and the bar stays 3rem.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<a class="ns-topnav__brand" href="{{@site.url}}">
+    {{#if @site.icon}}
+        <img src="{{img_url @site.icon size="xs"}}" alt="" width="24" height="24">
+    {{/if}}
+    <span class="ns-topnav__brand-name">{{@site.title}}</span>
+    {{#if tagline}}
+        <span class="ns-topnav__brand-tag">{{tagline}}</span>
+    {{/if}}
+</a>

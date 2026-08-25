@@ -1,0 +1,37 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     members — sign in / subscribe / account.
+     ------------------------------------------------------------------------
+     Three states, and all three have to be handled or a signed-in reader is
+     invited to sign in again:
+
+       signed in                    → Account
+       signed out, open signup      → Sign in + Subscribe
+       signed out, invite-only site → Sign in only
+
+     `data-portal` is Ghost's hook — Portal intercepts the click and opens the
+     modal rather than navigating. The href is a real fragment so the control
+     still works if Portal fails to load.
+
+     PARAMETERS
+       size    "sm" → NSDS's small button, which is what a 3rem bar takes.
+               Omit for the full-size buttons the sheet's pinned footer uses.
+       block   truthy → full-width buttons, for the sheet.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#if @site.members_enabled}}
+    {{#if @member}}
+        <a class="ns-btn ns-btn--outline{{#match size "sm"}} ns-btn--sm{{/match}}{{#if block}} ns-btn--block{{/if}}"
+           href="#/portal/account" data-portal="account">
+            <i class="ph ph-user-circle" aria-hidden="true"></i> {{t "Account"}}
+        </a>
+    {{else}}
+        {{#unless @site.members_invite_only}}
+            <a class="ns-btn ns-btn--quiet{{#match size "sm"}} ns-btn--sm{{/match}}{{#if block}} ns-btn--block{{/if}}"
+               href="#/portal/signin" data-portal="signin">{{t "Sign in"}}</a>
+            <a class="ns-btn ns-btn--primary{{#match size "sm"}} ns-btn--sm{{/match}}{{#if block}} ns-btn--block{{/if}}"
+               href="#/portal/signup" data-portal="signup">{{t "Subscribe"}}</a>
+        {{else}}
+            <a class="ns-btn ns-btn--primary{{#match size "sm"}} ns-btn--sm{{/match}}{{#if block}} ns-btn--block{{/if}}"
+               href="#/portal/signin" data-portal="signin">{{t "Sign in"}}</a>
+        {{/unless}}
+    {{/if}}
+{{/if}}

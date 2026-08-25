@@ -1,0 +1,72 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   theme/reset.css — the reset NS-Design-System does not ship.
+   ----------------------------------------------------------------------------
+   ⚠ THIS FILE IS LOAD-BEARING. It is not tidying.
+
+   NSDS's component layer is authored assuming `box-sizing: border-box`, but
+   the rule itself is not in NSDS — it comes from Tailwind's Preflight, which
+   only exists in the Tailwind bundle. This theme takes the framework-neutral
+   bundle (decision 0002, option A), so the reset is simply absent.
+
+   The consequence is specific, everywhere, and silent: **89 rules across the
+   design system declare a width alongside padding or a border in the same
+   block.** Under the browser default of `content-box` every one of those adds
+   the padding ON TOP of the declared width, so a 100%-wide element overflows
+   its parent by exactly its own padding. That is the "why is there a
+   horizontal scrollbar" bug, on every page, with nothing reporting it — the
+   exact failure mode `abstract/10` is about.
+
+   There is corroboration inside NSDS that this has been hit once already:
+   `.ns-input, .ns-select, .ns-textarea` carry a lone `box-sizing: border-box`,
+   the one place it broke visibly enough to be patched by hand without the fix
+   ever being generalised.
+
+   `abstract/17` §3 documents all of this and says the fix must land in the
+   same commit that first imports NSDS. It did.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  /* Replaced elements are inline by default, which leaves a few pixels of
+     line-box descender under every one — the unexplained gap under a logo. */
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  img, video { block-size: auto; }
+
+  /* Form controls do not inherit type in any browser. */
+  input, button, textarea, select {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  /* Long unbroken strings — a URL in a comment, a token in a code sample —
+     otherwise scroll the whole document sideways. */
+  p, li, dd, blockquote, figcaption, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+  }
+
+  /* NOT `ul, ol { list-style: none }`. Preflight strips list markers globally
+     and Tailwind users put them back per-component; here that would flatten
+     the editor's output, which is the one place default markers do useful
+     work. NSDS removes them per-component already. */
+}

@@ -1,12 +1,57 @@
-{{!-- RESERVED NAME: Ghost renders this from the {{navigation}} helper, never
-     from {{> navigation}}.
+{{!-- ══════════════════════════════════════════════════════════════════════
+     RESERVED NAME: Ghost renders this from the {{navigation}} helper, never
+     from {{> navigation}}. It is therefore the only place the site's
+     navigation markup exists.
+     ------------------------------------------------------------------------
+     ONE PARTIAL, THREE SURFACES. Ghost's navigation helper forwards any
+     attribute passed to it onto the context, so `{{navigation variant="sheet"}}`
+     arrives here as {{variant}}. That is what lets the bar, the mobile sheet
+     and the footer share one source of navigation markup instead of three
+     copies that quietly disagree about which link is current — the drift
+     `abstract/10` is a record of.
 
-     It emits only the <li> items so the parent <ul> decides the shape — that
-     is what lets one partial serve the header, the footer and a mobile sheet.
+     This file used to emit only <li> items so the caller could pick the <ul>.
+     That was the right instinct with the wrong mechanism: the three surfaces
+     need different ELEMENTS, not just a different wrapper — the sheet's rows
+     are <a> with a mono index and a chevron, not list items at all.
 
      `aria-current="page"` rather than a class: the CSS keys off the same
      attribute a screen reader announces, so the highlighted item and the
-     announced item cannot drift apart. See abstract/02. --}}
-{{#foreach navigation}}
-  <li><a href="{{url absolute="true"}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>
-{{/foreach}}
+     announced item cannot drift apart. Ghost computes `current` server-side,
+     which is why the underline in the bar is correct with JavaScript off.
+     ══════════════════════════════════════════════════════════════════════ --}}
+
+{{#match variant "sheet"}}
+
+    {{#foreach navigation}}
+        <a class="ns-navsheet__link" href="{{url absolute="true"}}"{{#if current}} aria-current="page"{{/if}}>
+            {{!-- Mono index — the same numbering device NSDS uses in lists and
+                  curricula, which makes the site map read as a table of
+                  contents. Padded to two digits so the column stays straight;
+                  `match` takes a comparison operator, which is the only way to
+                  do arithmetic in a Ghost template. --}}
+            <span class="ns-navsheet__index">{{#match @number "<" 10}}0{{/match}}{{@number}}</span>
+            {{label}}
+            <i class="ph ph-caret-right" aria-hidden="true"></i>
+        </a>
+    {{/foreach}}
+
+{{else match variant "footer"}}
+
+    {{!-- sections.css styles `.ns-footer__col ul`, so the footer variant needs
+          no class of its own — it only has to be a <ul> inside the column. --}}
+    <ul>
+        {{#foreach navigation}}
+            <li><a href="{{url absolute="true"}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>
+        {{/foreach}}
+    </ul>
+
+{{else}}
+
+    <ul class="ns-topnav__links">
+        {{#foreach navigation}}
+            <li><a href="{{url absolute="true"}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>
+        {{/foreach}}
+    </ul>
+
+{{/match}}

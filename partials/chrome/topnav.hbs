@@ -1,0 +1,50 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     topnav — the site bar. Marketing, blog, docs, listings, pages.
+     ------------------------------------------------------------------------
+     Composed entirely from chrome/ primitives and NSDS classes; this file
+     contributes no markup of its own beyond the arrangement. That is the
+     intent — when the training header arrives it is this file plus
+     `.ns-pathpick` in the brand slot, not a fork of it.
+
+     Read `assets/css/namaste-ui.css` § navbar for the three decisions the
+     shape below follows. In short: state is aria-expanded / aria-current and
+     never a class; the bar is solid and never blurred; the current page gets
+     a 2px underline and never a filled pill.
+
+     RESPONSIVE — one breakpoint, at lg (64rem / 1024px). Above it the link
+     row; below it the hamburger. NSDS's navbar.css does all of it: it hides
+     .ns-topnav__links and .ns-topnav__auth, shows .ns-burger, drops the brand
+     tagline, and lifts every control in the bar to the 44px thumb floor in
+     one line by raising --_control-h. The theme sets no media queries.
+
+     WITH JAVASCRIPT OFF the links, brand and member buttons are all real
+     elements, and the current page is still underlined — Ghost computes
+     aria-current server-side. Only the sheet and the theme switch go quiet,
+     and the footer repeats the navigation so nothing becomes unreachable.
+
+     PARAMETERS
+       tagline   passed through to chrome/brand
+     ══════════════════════════════════════════════════════════════════════ --}}
+<nav class="ns-topnav" aria-label="{{t "Main"}}" data-ns-scrolled>
+    {{!-- __inner width-caps the bar's contents so the brand sits exactly
+          above a page's first column. NSDS's default bar is fluid; this site
+          is width-capped, so the contained variant is the right one. --}}
+    <div class="ns-topnav__inner">
+
+        {{> "chrome/brand" tagline=tagline}}
+
+        {{navigation}}
+
+        <div class="ns-topnav__actions">
+            {{> "chrome/search"}}
+            {{> "chrome/theme-switch"}}
+
+            <div class="ns-topnav__auth">
+                {{> "chrome/members" size="sm"}}
+            </div>
+
+            {{> "chrome/burger" sheet="site-nav"}}
+        </div>
+
+    </div>
+</nav>

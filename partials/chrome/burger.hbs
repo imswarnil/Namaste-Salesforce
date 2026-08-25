@@ -1,0 +1,22 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     burger — the hamburger, parameterised by which dialog it opens.
+     ------------------------------------------------------------------------
+     PARAMETERS
+       sheet   id of the <dialog> to toggle. Defaults to the site sheet.
+
+     The parameter is the point. The site bar opens the site map; the course
+     bar will open the LESSON RAIL, which is a different dialog with different
+     contents. One button, two destinations, no second implementation — and
+     assets/js/nav.js already reads `data-ns-sheet` as an id rather than
+     assuming there is only ever one sheet on the page.
+
+     aria-expanded is the single fact the CSS (which animates the bars into an
+     X via :has()) and the screen reader both read. Nothing here sets a class.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<button type="button" class="ns-burger"
+        data-ns-sheet="{{#if sheet}}{{sheet}}{{else}}site-nav{{/if}}"
+        aria-controls="{{#if sheet}}{{sheet}}{{else}}site-nav{{/if}}"
+        aria-expanded="false" aria-haspopup="dialog"
+        aria-label="{{#if label}}{{label}}{{else}}{{t "Menu"}}{{/if}}">
+    <span class="ns-burger__bar"></span><span class="ns-burger__bar"></span><span class="ns-burger__bar"></span>
+</button>

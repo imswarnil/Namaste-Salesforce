@@ -1,33 +1,56 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   screen.css — the only stylesheet. Hand-written, no build step.
+   screen.css — the theme's stylesheet entry.
    ----------------------------------------------------------------------------
-   THIS IS DELIBERATELY ALMOST EMPTY. No stack has been chosen yet — see
-   abstract/15. What is here is only what GHOST ITSELF requires of a theme, so
-   that `yarn test` (gscan) passes and the theme is installable.
+   THIS FILE USED TO BE ~30 LINES AND DELIBERATELY ALMOST EMPTY, because no
+   stack had been chosen. One has now: `abstract/decisions/0002-css-strategy.md`
+   is settled on **option A — the framework-neutral NSDS bundle, no build step**.
+   Read that decision before changing anything here.
 
-   Do not grow this file into a design system. When a stack is chosen this gets
-   replaced wholesale, so anything clever written here now is work thrown away.
-   See abstract/03 for why the theme must not own how things look.
-   ════════════════════════════════════════════════════════════════════════ */
+   ── What loads, and in what order ─────────────────────────────────────────
+   1. The \@layer statement. It is the whole override contract and it MUST stay
+      the first thing in this file, before any \@import. (A bare \@layer
+      statement is one of only two things allowed to precede \@import.)
 
-/* ── What Ghost requires ──────────────────────────────────────────────────
-   Ghost's editor (Koenig) lets a writer break OUT of the reading measure on a
-   per-card basis, and gscan FAILS the theme if these two classes are not
-   styled. That makes them the only rules a blank theme cannot do without. */
-.gh-content > *               { max-width: 40rem; margin-inline: auto; }
-.gh-content > .kg-width-wide  { max-width: 68rem; }
-.gh-content > .kg-width-full  { max-width: none; }
+        theme          Reserved. NSDS uses it for Tailwind's \@theme block;
+                       this theme has no Tailwind, so it stays empty. Declared
+                       anyway, so the contract is identical to upstream's and
+                       a copy-pasted NSDS rule lands where it expects to.
+        base           The reset, then NSDS's own bare-element defaults.
+        ns-components  The design system.
+        components     THIS THEME. After ns-components, so theme rules beat
+                       NSDS by LAYER rather than by out-specifying it.
+        utilities      Last.
 
-/* Ghost Admin → Design lets an editor choose fonts. Honouring these variables
-   is the "custom fonts" support gscan warns about when it is absent. */
-body                  { font-family: var(--gh-font-body, system-ui, sans-serif); }
-h1, h2, h3, h4, h5, h6 { font-family: var(--gh-font-heading, inherit); }
+      NOTHING OUTSIDE A LAYER. An unlayered rule beats every layered rule at
+      any specificity, so one stray rule silently inverts all of the above.
+      There is exactly one sanctioned exception and it is fenced and explained
+      where it lives — the tail of theme/ghost.css, which has to override
+      Ghost's own unlayered cards.min.css.
 
-/* ── Enough that an unstyled theme is readable rather than unusable ──────── */
-body { margin: 0; line-height: 1.6; }
-img  { max-width: 100%; height: auto; }
+   2. `namaste-ui.css` — NS-Design-System's framework-neutral build, vendored
+      from `../../../../NS-Design-System/dist/` at **f0dd883 (2026-08-24)**. It is
+      generated; do not edit it. Its url()s resolve to `assets/fonts/` and
+      `assets/icons/` from here, which is why it must live in this directory.
 
-/* The skip link is the first focusable thing in the document and invisible
-   until focused — keyboard users get past the nav, nobody else sees it. */
-.skip-link { position: absolute; left: -9999px; }
-.skip-link:focus { left: 1rem; top: 1rem; }
+   3. `theme/*.css` — this theme's own layer. It is small on purpose. Before
+      adding a rule: check whether **Ghost** already supplies it, then whether
+      **NSDS** already supplies it. What is left is the theme's job, and it is
+      mostly the translation between Ghost's `.kg-*` vocabulary and NSDS's
+      `.ns-*` one. `abstract/10` is the record of what happens when this layer
+      grows a third opinion.
+
+   ── Re-syncing NSDS ──────────────────────────────────────────────────────
+       cp ../../../../NS-Design-System/dist/namaste-ui.css assets/css/
+       cp ../../../../NS-Design-System/icons/*.woff2       assets/icons/
+       cp ../../../../NS-Design-System/fonts/*.woff2       assets/fonts/
+
+   Then update the revision above, run `npm test`, and **look at a page**.
+   gscan cannot see a visual regression and has been green through every one
+   this project has had — that is what `abstract/10` is about.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer theme, base, ns-components, components, utilities;
+
+@import url("namaste-ui.css");
+@import url("theme/reset.css");
+@import url("theme/ghost.css");

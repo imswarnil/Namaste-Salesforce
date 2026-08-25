@@ -1,0 +1,32 @@
+{{!< default}}
+{{!-- A tag archive. routes.yaml gives several collections their own URLs, but
+     every tag still has an archive at /tag/<slug>/ and it has to be a real
+     page — abstract/13 is about taxonomy hygiene, and an archive that looks
+     unfinished is how a tag stops being used.
+
+     The subject is a BLOCK context here, which is the whole reason this is a
+     separate template rather than a branch inside index.hbs. --}}
+
+<section class="ns-band">
+  <div class="ns-band__inner">
+
+    {{#tag}}
+      <div class="ns-band__head">
+        <p class="ns-kicker">{{t "Tag"}}</p>
+        <h1 class="ns-band__title">{{name}}</h1>
+        {{#if description}}<p class="ns-band__lede">{{description}}</p>{{/if}}
+      </div>
+    {{/tag}}
+
+    {{#if posts}}
+      <div class="ns-grid">
+        {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+      </div>
+    {{else}}
+      <p class="ns-empty">{{t "No posts yet."}}</p>
+    {{/if}}
+
+    {{pagination}}
+
+  </div>
+</section>

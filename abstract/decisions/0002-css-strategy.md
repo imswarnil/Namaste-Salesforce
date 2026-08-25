@@ -1,13 +1,14 @@
 # 0002 · How the theme gets its CSS
 
-**Status:** **Open** — this is the decision that gates all styling work
+**Status:** **Accepted** — option A
 **Date raised:** 2026-08-21
+**Date decided:** 2026-08-25
 
 ## Context
 
-The theme is a stack-free starter ([0001](0001-reset-to-a-starter.md)).
-`assets/css/screen.css` is ~30 lines of what Ghost itself requires and is
-explicitly disposable.
+The theme was a stack-free starter ([0001](0001-reset-to-a-starter.md)) with
+~30 lines of CSS and no opinion about how anything looked. Building the site
+chrome forced the question, because a navbar cannot be written without one.
 
 The question is usually framed as *"Tailwind, or CSS variables?"* — and
 measuring NSDS shows that framing is wrong. The full measurement is in
@@ -16,86 +17,68 @@ the load-bearing facts:
 
 - **NSDS is already a CSS-variables system.** 407 custom properties, 663 `.ns-*`
   classes, 300 component blocks — and across all 33 component stylesheets there
-  is **no `@apply`, no `theme()`, no `tw-` prefix**. The component layer is
-  plain CSS whose only dependency is `var(--…)`.
+  is **no `@apply`, no `theme()`, no `tw-` prefix**.
 - **Tailwind is a projection, not a foundation.** `tokens/tailwind.css` is
   *generated* from the same token files and only re-declares each token inside
-  `@theme` so a utility name exists. Removing it costs zero declarations.
-- **The framework-neutral build already ships**: `dist/namaste-ui.css`,
-  420 KB minified, described by NSDS's own build script as droppable into a page
-  "with no build step at all."
-- **Tailwind would not shrink it.** Purging only removes generated utilities;
-  `@layer ns-components` is hand-written and included verbatim either way.
-  Cherry-picking `components/css/*.css` is the actual lever (~200 KB of LMS-only
-  surfaces a Ghost site never renders).
+  `@theme`. Removing it costs zero declarations.
+- **The framework-neutral build already ships** and is described by NSDS's own
+  build script as droppable into a page "with no build step at all."
+- **Tailwind would not shrink it.** Purging only removes generated utilities.
 - **The neutral bundle has no reset.** It depends on Tailwind's Preflight for
-  `box-sizing: border-box`, `img` sizing, list and table normalisation — none of
-  which are in the neutral build. 89 rules declare a width alongside padding,
-  so under `content-box` they overflow by their own padding. Fixable in three
-  lines, but it must not be discovered in production.
-
-So this is not a question about what NSDS is made of. It is a question about
-**whether the theme wants utilities for composing its own markup.**
-
-## Options
-
-### A · Framework-neutral CSS, no build step
-Import `dist/namaste-ui.css` (or a cherry-picked entry), add the missing reset,
-write theme-specific rules as named classes in `@layer components`.
-
-- **Cost to adopt:** one file copied into `assets/css/`. The bundle's only real
-  `url()`s are `../fonts/` and `../icons/`, which resolve correctly from
-  `assets/css/` with no rewriting.
-- **Gains:** no build, no `assets/built/` to keep in sync, no stale-output
-  class of bug, a contributor needs nothing but a text editor.
-- **Costs:** every one-off tweak is a named class. Full weight until trimmed.
-
-### B · Tailwind v4 + NSDS
-What the previous implementation did.
-
-- **Gains:** A, plus `p-card` / `bg-brand-500` composition, and NSDS's own
-  styleguide is authored this way so its examples paste in directly.
-- **Costs:** a build step and a committed `assets/built/`; the layer-order trap
-  in `../05-css-architecture.md` becomes live again; every `.hbs` edit needs a
-  rebuild because the content scan reads class names out of templates. **This
-  is the configuration that produced `abstract/10`** — which is an argument for
-  care, not an argument against it.
-
-### C · Neutral CSS + ~15 hand-written utilities
-Stack, cluster, visually-hidden, measure — the handful a Ghost theme genuinely
-repeats, written once against the tokens.
-
-- **Gains:** keeps the no-build property, avoids one-class-per-tweak sprawl.
-- **Costs:** you maintain it, and it is the seed of the "third opinion" that
-  `abstract/00` identifies as the root cause of most rework here. Viable only
-  with a hard cap written into the file itself.
+  `box-sizing: border-box` and friends. 89 rules declare a width alongside
+  padding, so under `content-box` they overflow by their own padding.
 
 ## Decision
 
-**Not yet made.** Recorded so it is made deliberately rather than by the first
-commit that needs a margin.
+**Option A. The framework-neutral bundle, no build step.**
 
-**Recommendation: start at A.** Not because utilities are wrong, but because A
-is the only option that is reversible for free. A → B is an afternoon of adding
-a build; by then you will know from real templates whether the utilities are
-actually missed, instead of guessing now. Nothing in A forecloses B, and B's
-failure mode is already documented in this repo.
+`assets/css/namaste-ui.css` is NSDS's `dist/namaste-ui.css` vendored at
+**f0dd883 (2026-08-24)**. `assets/css/screen.css` declares the layer contract, imports
+it, and then imports this theme's own small layer.
+
+**The reset landed in the same commit**, as this decision required — see
+`assets/css/theme/reset.css`, which explains what it fixes and why the absence
+is not obvious.
+
+### Why A rather than B or C
+
+Not because utilities are wrong, but because **A is the only option that is
+reversible for free.** A → B is an afternoon of adding a build; by then the
+templates will say whether the utilities are actually missed, rather than the
+decision resting on a guess made before any of them existed. Nothing in A
+forecloses B, and B's failure mode is already documented in `abstract/10`.
+
+The chrome built on top of it (`partials/chrome/`) has needed **zero** theme
+CSS so far — every class in the navbar, the sheet and the footer is NSDS's.
+That is the strongest evidence available that A is sufficient.
 
 ## Consequences
 
-**If A:** the theme owns a small named-class layer, and there will be a
-recurring temptation to grow it into a system. That temptation is the exact
-mechanism behind the ~100 duplicated classes in `abstract/10`. Guard it with the
+**The theme owns a small named-class layer, and there will be a recurring
+temptation to grow it into a system.** That temptation is the exact mechanism
+behind the ~100 duplicated classes in `abstract/10`. Guard it with the
 `abstract/00` rule — *check Ghost, then NSDS, then write* — and treat any new
 theme class as a defect until proven otherwise.
 
-**Whichever wins:** the layer contract is inherited and non-negotiable —
-`@layer theme, base, ns-components, components, utilities`, declared before any
-`@import`, nothing outside a layer. One unlayered rule beats every layered rule
-at any specificity.
+Right now the theme layer is two files and both are translations rather than
+design: `theme/reset.css` (what NSDS assumes but does not ship) and
+`theme/ghost.css` (Koenig's `.kg-*` vocabulary, which NSDS has never heard of).
 
-**And regardless:** the missing reset from §3 of `../17` must be added in the
-same commit that first imports NSDS. Not afterwards.
+**The layer contract is inherited and non-negotiable** —
+`@layer theme, base, ns-components, components, utilities`, declared before any
+`@import`, nothing outside a layer. There is **one sanctioned exception**, at
+the tail of `theme/ghost.css`: Ghost injects its own `cards.min.css` unlayered
+via `{{ghost_head}}`, and an unlayered rule beats every layered rule at any
+specificity, so the rules that override it cannot be layered either. That block
+is fenced and explains itself. Do not add to it anything that works from inside
+the layer.
+
+**Weight is currently untrimmed.** The whole bundle ships, including LMS
+surfaces (player, deck, admin, ai, helpdesk) that a Ghost page never renders —
+roughly 200 KB of source. `abstract/17` §4 is explicit that cherry-picking
+`components/css/` comes **after** the theme renders correctly, never before:
+trimming while you are still discovering which components you need produces the
+silent-missing-style bug, and you will blame the wrong thing.
 
 ## Revisit if
 

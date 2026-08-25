@@ -1,0 +1,58 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post-default — the reading surface an untyped post gets.
+     ------------------------------------------------------------------------
+     `abstract/02`: the fallback is not optional, and it is deliberately the
+     SAME surface a blog post gets. An untyped post is still a post, and
+     giving it a lesser layout is how a page ends up looking broken rather
+     than plain.
+
+     `.gh-content` also carries `.ns-prose`, which is what makes every bare
+     element inside the post — headings, lists, quotes, tables, code — styled
+     by NSDS with no theme CSS at all. `assets/css/theme/ghost.css` adds only
+     what NSDS cannot know about: Koenig's own `.kg-*` classes.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<article class="{{post_class}}">
+
+  <header class="ns-band ns-band--tight">
+    <div class="ns-band__inner ns-page--prose">
+      {{#primary_tag}}<a class="ns-kicker" href="{{url}}">{{name}}</a>{{/primary_tag}}
+
+      <h1 class="ns-band__title">{{title}}</h1>
+
+      {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
+
+      <p class="ns-meta">
+        {{#primary_author}}<a href="{{url}}">{{name}}</a> · {{/primary_author}}
+        <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time>
+        {{#if reading_time}} · {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}{{/if}}
+      </p>
+    </div>
+  </header>
+
+  {{#if feature_image}}
+    <figure class="ns-page ns-page--wide">
+      <img srcset="{{img_url feature_image size="m"}} 600w,
+                   {{img_url feature_image size="l"}} 1000w,
+                   {{img_url feature_image size="xl"}} 2000w"
+           sizes="(min-width: 88rem) 1408px, 100vw"
+           src="{{img_url feature_image size="l"}}"
+           alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}">
+      {{#if feature_image_caption}}<figcaption>{{feature_image_caption}}</figcaption>{{/if}}
+    </figure>
+  {{/if}}
+
+  <div class="gh-content ns-prose ns-page">
+    {{content}}
+  </div>
+
+  {{#if tags}}
+    <div class="ns-page ns-page--prose">
+      <ul class="ns-taglist">
+        {{#foreach tags}}
+          <li><a class="ns-tag" href="{{url}}">{{name}}</a></li>
+        {{/foreach}}
+      </ul>
+    </div>
+  {{/if}}
+
+</article>

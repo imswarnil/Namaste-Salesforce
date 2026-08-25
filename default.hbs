@@ -4,36 +4,95 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{meta_title}}</title>
+
+    {{!-- FIRST, and inline: sets data-theme before the first paint so a
+         dark-mode reader never sees a white flash. See the partial. --}}
+    {{> "theme-init"}}
+
+    {{!-- The faces are declared inside namaste-ui.css, which the browser only
+         discovers after fetching and parsing screen.css — one round trip later
+         than it could start. Preloading closes that gap and is what stops the
+         fallback swap being visible on a cold load.
+
+         Only the two files that draw ABOVE THE FOLD are preloaded: the sans
+         and the mono. `preload` is a priority instruction, and marking
+         everything urgent marks nothing urgent — the icon font is deliberately
+         left to be discovered normally, because an icon arriving 100ms late is
+         invisible where a reflowing paragraph is not.
+
+         `crossorigin` is required even though these are same-origin: fonts are
+         always fetched in CORS mode, and a preload without it produces a
+         second, unused download rather than a warm cache hit. --}}
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="{{asset "fonts/switzer-var-latin.woff2"}}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
+
     <link rel="stylesheet" type="text/css" href="{{asset "css/screen.css"}}">
 
     {{!-- Ghost injects SEO tags, structured data, code injection and Portal.
-         It must stay in <head>. --}}
+         It must stay in <head>, and last. --}}
     {{ghost_head}}
   </head>
 
   <body class="{{body_class}}">
-    <a href="#main" class="skip-link">{{t "Skip to content"}}</a>
+    {{!-- First focusable element on the page; .ns-skip-link is invisible until
+         it takes focus. The target carries tabindex="-1" because without it,
+         following the link moves the viewport but not focus in Safari and
+         Chrome — so the next Tab lands back at the top of the document. --}}
+    <a href="#main" class="ns-skip-link">{{t "Skip to content"}}</a>
 
-    <header>
-      <a href="{{@site.url}}">{{@site.title}}</a>
+    {{!-- ── THE CHROME DISPATCH ───────────────────────────────────────────
+      default.hbs forks on the SAME tags post.hbs does, so a reading surface
+      does not get a marketing bar. abstract/02 is the reference; the reading
+      tags are #lesson, #training, #training-content and #training-section.
 
-      {{!-- Nav items come from Ghost Admin → Settings → Navigation, through the
-           reserved {{navigation}} helper. Add or reorder them there, not
-           here. --}}
-      <nav aria-label="Main"><ul>{{navigation}}</ul></nav>
-    </header>
+      ⚠ BRANCH ORDER IS LOAD-BEARING HERE TOO. `has` takes a comma-separated
+      list and matches ANY of them, so this particular fork happens to be
+      order-free — but the moment a branch is split out (a section overview
+      wanting different chrome from a lesson) the more specific tag must be
+      tested FIRST. Same rule, same failure mode, as post.hbs.
 
-    {{!-- ── WHERE THE CHROME DISPATCH GOES ───────────────────────────────
-      Once there is more than one kind of page, default.hbs forks here on the
-      same tags post.hbs does, so a reading surface does not get a marketing
-      bar. Nothing to fork on yet. See abstract/02.
-    ───────────────────────────────────────────────────────────────────── --}}
+      The {{#is "post"}} guard matters: {{#has}} reads tags from the current
+      context, and on a listing or a page there are none — so without it every
+      non-post route would fall through the wrong side of the fork.
+    ─────────────────────────────────────────────────────────────────────── --}}
+    {{#is "post"}}
+      {{#post}}
+        {{#has tag="#lesson, #training, #training-content, #training-section"}}
+          {{> "chrome/coursenav"}}
+        {{else}}
+          {{> "chrome/topnav"}}
+        {{/has}}
+      {{/post}}
+    {{else}}
+      {{> "chrome/topnav"}}
+    {{/is}}
 
-    <main id="main">{{{body}}}</main>
+    {{!-- One sheet serves both bars for now. It sits outside the bar because a
+         modal dialog inside a position:sticky ancestor inherits that stacking
+         context in some engines and renders under the page it should cover. --}}
+    {{> "chrome/nav-sheet"}}
 
-    <footer>
-      <p>&copy; {{date format="YYYY"}} {{@site.title}}</p>
-    </footer>
+    <main id="main" tabindex="-1">{{{body}}}</main>
+
+    {{#is "post"}}
+      {{#post}}
+        {{#has tag="#lesson, #training, #training-content, #training-section"}}
+          {{> "footer-lesson"}}
+        {{else}}
+          {{> "footer"}}
+        {{/has}}
+      {{/post}}
+    {{else}}
+      {{> "footer"}}
+    {{/is}}
+
+    {{!-- Deferred: nothing in it is needed for the page to render or be
+         usable. Vendored from NS-Design-System unchanged — it drives the
+         sheet, the theme controls and the bar's scrolled state by writing the
+         aria-* and data-* attributes the CSS already reads. --}}
+    <script src="{{asset "js/nav.js"}}" defer></script>
 
     {{!-- Ghost injects members, search and comments scripts. Keep it last. --}}
     {{ghost_foot}}

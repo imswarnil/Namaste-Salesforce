@@ -1,0 +1,58 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     nav-sheet — the mobile navigation, as a real <dialog>.
+     ------------------------------------------------------------------------
+     Opened with showModal(), which is what grants the focus trap,
+     Esc-to-close, an inert background and top-layer stacking. Those four
+     things are genuinely hard to implement correctly by hand, and a
+     div-with-a-class implements none of them.
+
+     It covers the whole viewport rather than sliding in as a drawer: on a
+     phone a 20rem drawer leaves a strip of unusable page beside it, and the
+     links get to be large enough to actually hit.
+
+     IT LIVES OUTSIDE THE BAR ON PURPOSE. A modal dialog nested inside a
+     position:sticky ancestor inherits that stacking context in some engines
+     and renders underneath the page it is supposed to cover.
+
+     ONE SHEET SERVES BOTH BARS for now. When the lesson rail arrives it gets
+     its own dialog with its own id, and chrome/burger already takes that id
+     as a parameter — so the course bar will point at it without either
+     button or this file changing.
+
+     The three-state theme control is here rather than in the bar because
+     there is room for it; see chrome/theme-toggle.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<dialog class="ns-navsheet" id="site-nav" aria-label="{{t "Site menu"}}">
+
+    <div class="ns-navsheet__head">
+        {{> "chrome/brand"}}
+        <button type="button" class="ns-btn ns-btn--quiet ns-btn--icon ns-navsheet__close"
+                data-ns-sheet-close aria-label="{{t "Close menu"}}">
+            <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <div class="ns-navsheet__body">
+
+        {{navigation variant="sheet"}}
+
+        {{#if @site.secondary_navigation}}
+            <p class="ns-navsheet__label">{{t "More"}}</p>
+            {{navigation type="secondary" variant="sheet"}}
+        {{/if}}
+
+        <p class="ns-navsheet__label">{{t "Theme"}}</p>
+        {{> "chrome/theme-toggle"}}
+
+    </div>
+
+    {{#if @site.members_enabled}}
+        {{!-- Pinned, not scrolled to: subscribing is why the sheet exists on a
+              publication, and it must not depend on reaching the end of a long
+              site map. --}}
+        <div class="ns-navsheet__foot">
+            {{> "chrome/members" block=true}}
+        </div>
+    {{/if}}
+
+</dialog>

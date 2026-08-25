@@ -1,0 +1,71 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     coursenav — the bar a READING SURFACE gets: a lesson, a training page, a
+     training-section overview.
+     ------------------------------------------------------------------------
+     `abstract/02` is explicit that this is a separate bar, not a variant: a
+     reading surface must not get a marketing bar. The difference is what the
+     bar is FOR. The site bar says *where you can go*; this one says *where
+     you are, and how far in* — so it carries a way out, the lesson's name and
+     a progress meter, and it does not carry the site's navigation at all.
+
+     ── Leaving is ONE control, and it says where it goes ──────────────────
+     `.ns-coursenav__back` names the parent course rather than saying "Back",
+     because a reader who arrived from search has no back to go to.
+
+     THE CURRICULUM TOGGLE IS DELIBERATELY NOT HERE. Above lg it belongs in
+     the lesson rail's own head, where a control for a panel belongs. Below
+     lg, where there is no rail, the hamburger at the end of this bar opens
+     the lesson list — which is why chrome/burger takes the dialog id as a
+     parameter: same button, different sheet, one implementation.
+
+     ── What is still stubbed ──────────────────────────────────────────────
+     The progress meter renders at 0 and is marked aria-hidden until there is
+     somewhere real to read progress from. Ghost has no per-member lesson
+     completion; it has to come from the LMS. Showing an invented number would
+     be worse than showing none, and announcing a fake 0% to a screen reader
+     worse still.
+
+     The parent-course link falls back to the training index when a lesson has
+     no `#course-*` tag yet, so this bar is correct on a page that predates the
+     tag rather than rendering a dead link. See `abstract/18` for the
+     vocabulary.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<nav class="ns-coursenav" aria-label="{{t "Lesson"}}" data-ns-scrolled>
+
+    <a class="ns-coursenav__back" href="{{#if primary_tag}}{{primary_tag.url}}{{else}}{{@site.url}}/training/{{/if}}">
+        <i class="ph ph-arrow-left" aria-hidden="true"></i>
+        <span>{{#if primary_tag}}{{primary_tag.name}}{{else}}{{t "Training"}}{{/if}}</span>
+    </a>
+
+    <span class="ns-topnav__divider" aria-hidden="true"></span>
+
+    <span class="ns-coursenav__id">
+        <span class="ns-coursenav__title">{{title}}</span>
+    </span>
+
+    {{!-- Rendered, so the bar's proportions are the real ones and the layout
+          is not re-tuned when the number arrives; aria-hidden, so nothing is
+          announced until it means something. --}}
+    <div class="ns-coursenav__progress" aria-hidden="true">
+        {{!-- NO INLINE STYLE ATTRIBUTE. NSDS's meter is driven by a --p
+              custom property, and the obvious way to set that server-side is
+              an inline style attribute — which this repo forbids and which CI
+              greps for (see abstract/05). Note that CI's grep is a plain
+              string match and cannot tell markup from a comment, so do not
+              spell the attribute out here either; that alone fails the build.
+              When progress becomes real it arrives as
+              data-progress here and assets/js/nav.js copies it onto --p with
+              setProperty, exactly as it already does for the reading-progress
+              line. Unset, --p falls back to 0 and the meter reads empty. --}}
+        <div class="ns-coursenav__bar" data-progress="0"><span></span></div>
+    </div>
+
+    <div class="ns-coursenav__actions">
+        {{> "chrome/search" compact=true}}
+        {{> "chrome/theme-switch"}}
+        {{> "chrome/members" size="sm"}}
+        {{!-- Below lg this is the only route to the lesson list. --}}
+        {{> "chrome/burger" sheet="site-nav" label=(t "Lessons")}}
+    </div>
+
+</nav>
