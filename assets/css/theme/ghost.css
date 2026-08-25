@@ -79,6 +79,26 @@
   .gh-content > .kg-width-wide { max-inline-size: var(--container-page); }
   .gh-content > .kg-width-full { max-inline-size: none; }
 
+  /* ── The reading-measure cap does NOT apply inside a training column ────
+     `.gh-content > *` caps every child at the prose measure and centres it,
+     which is right on a standalone post: the article sits in the middle of a
+     wide page and a wide image can break out of it.
+
+     Inside `.ns-training__main` it is wrong twice over. That column is
+     ALREADY the reading width — the rail took the rest — so capping again
+     insets the prose from the heading above it by the difference, and the
+     page looks like two columns that failed to line up. And `margin-inline:
+     auto` centres it inside that inset, which doubles the effect.
+
+     So the cap is switched off where the layout already provides it. The
+     Koenig width classes still work; they just have the column's width to
+     play with instead of the measure's. */
+  .ns-training__main .gh-content > *,
+  .ns-training__reading .gh-content > * {
+    max-inline-size: none;
+    margin-inline: 0;
+  }
+
   /* ── Figures ────────────────────────────────────────────────────────────*/
   .gh-content :is(img, video) {
     inline-size: 100%;

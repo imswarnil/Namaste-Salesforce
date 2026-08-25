@@ -1,0 +1,104 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/training-section — a training SECTION, on NSDS's training-module
+     archetype.
+     ------------------------------------------------------------------------
+     THE RAIL IS THE POINT, and it is what this page was missing. NSDS's
+     training-module is not a hero with a list under it — it is a two-column
+     layout whose left column carries THE WHOLE TRAINING CURRICULUM as
+     collapsible sections, with the one you are reading expanded:
+
+         .ns-training
+             .ns-trainingnav
+                 .ns-trainingnav__track            ← back to the training index
+                 details.ns-trainingnav__section   ← one per SECTION
+                     summary + __twist + __count
+                     .ns-trainingnav__bar > progress
+                     ul.ns-trainingnav__list > li > a.ns-trainingnav__link
+             .ns-training__main
+                 .ns-modulehead (+ __crumb, __title, __lede)
+                 .ns-prose                          ← the section's own body
+                 ul.ns-units > li > a.ns-unit       ← this section's posts
+
+     A course detail page is a different shape entirely — a hero, a pitch and
+     a curriculum — because a course is something you decide to buy. A
+     training section is something you are already inside, so the page's job
+     is to show you where you are in the whole thing. Hence the rail.
+
+     ── The nested query, and why it is acceptable here ────────────────────
+     The rail needs every section AND every section's posts, which is one
+     query for the sections plus one per section. With a handful of sections
+     that is fine, and it is the only way to build the accordion: Handlebars
+     cannot group a flat list without lookahead.
+
+     Both queries use `as |…|` — without it {{#get}} takes over the block
+     context and the surrounding markup stops seeing the post, so output
+     vanishes rather than erroring. Neither filter contains `../`: Ghost
+     raises `unsupported path segment ""` on that, and both are written so
+     the values they need are reachable directly.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-training {{post_class}}" data-ns-training data-rail="closed">
+
+    <div class="ns-training__scrim" data-ns-training-close></div>
+
+    {{#get "posts" filter="tag:hash-training-module" limit="50" order="published_at asc" include="tags" as |sections|}}
+        <nav class="ns-trainingnav" data-ns-trainingnav aria-label="{{t "Curriculum"}}">
+
+            <a class="ns-trainingnav__track" href="{{@site.url}}/training/">
+                {{> "icons/navbar/course"}} {{t "Training"}}
+            </a>
+
+            {{#foreach sections}}
+                {{!-- The section being read is the one left open. `open` is an
+                      attribute, not a class — same rule as everywhere else,
+                      and it means the browser's own disclosure does the work
+                      with no script. --}}
+                <details class="ns-trainingnav__section"{{#match slug ../../slug}} open{{/match}}>
+                    <summary>
+                        <i class="ph ph-caret-right ns-trainingnav__twist" aria-hidden="true"></i>
+                        {{title}}
+                    </summary>
+
+                    {{#get "posts" filter="tags:{{primary_tag.slug}}+id:-{{id}}" limit="100" order="published_at asc" include="tags" as |items|}}
+                        <ul class="ns-trainingnav__list">
+                            {{#foreach items}}
+                                <li>
+                                    <a class="ns-trainingnav__link" href="{{url}}">
+                                        {{> "internal/format-icon"}}
+                                        <span>{{title}}</span>
+                                        <span class="ns-trainingnav__time sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ul>
+                    {{/get}}
+                </details>
+            {{/foreach}}
+
+        </nav>
+    {{/get}}
+
+    <div class="ns-training__main">
+
+        <header class="ns-modulehead">
+            <span class="ns-modulehead__crumb">{{t "Training"}}</span>
+            <h1 class="ns-modulehead__title">{{title}}</h1>
+            {{#if custom_excerpt}}<p class="ns-modulehead__lede">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+
+        {{!-- This section's own posts, as .ns-units. The rail says where you
+              are in the whole training; this says what is in front of you. --}}
+        {{#get "posts" filter="tags:{{slug}}+id:-{{id}}" limit="100" order="published_at asc" include="tags" as |children|}}
+            {{#if children}}
+                <ul class="ns-units">
+                    {{#foreach children}}{{> "cards/unit" currentSlug=""}}{{/foreach}}
+                </ul>
+            {{else}}
+                <p class="ns-empty">{{t "Nothing published in this section yet."}}</p>
+            {{/if}}
+        {{/get}}
+
+    </div>
+
+</div>
