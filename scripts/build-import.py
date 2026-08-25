@@ -32,8 +32,13 @@ theme.
    to pass before the file is written.
 """
 
-import json, hashlib, pathlib
+import json, hashlib, pathlib, sys
 from datetime import datetime, timedelta, timezone
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import lexical as L
+import bodies
+import styleguide
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "dummy-content" / "import.json"
@@ -50,27 +55,12 @@ def when(days):
     prev/next behave differently on every import (abstract/14 § Ordering)."""
     return (BASE + timedelta(days=days, hours=(days % 7))).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-def lexical(paras):
-    """Minimal but valid Lexical. Hand-written lexical is easy to get subtly
-    wrong and Ghost fails the import without saying which post — so this builds
-    it structurally, and every post goes through the same code path.
-
-    Two h2s are deliberate: they give .ns-prose real headings to style and the
-    table of contents something to build from."""
-    def text(t):
-        return {"detail": 0, "format": 0, "mode": "normal", "style": "",
-                "text": t, "type": "extended-text", "version": 1}
-    def node(t, kind, **extra):
-        return dict({"children": [text(t)], "direction": "ltr", "format": "",
-                     "indent": 0, "type": kind, "version": 1}, **extra)
-    kids = [node(paras[0], "paragraph"),
-            node("What you will learn", "heading", tag="h2"),
-            node(paras[1], "paragraph"),
-            node("Before you start", "heading", tag="h2"),
-            node(paras[2], "paragraph")]
-    return json.dumps({"root": {"children": kids, "direction": "ltr",
-                                "format": "", "indent": 0, "type": "root",
-                                "version": 1}})
+# Bodies come from scripts/bodies.py — one per post where the content matters,
+# a short stub otherwise. The first fixture gave every post the SAME three
+# paragraphs, and that hid every bug worth finding: a table of contents built
+# from two identical headings looks fine, and no card ever tested a long title
+# against a short one. A fixture whose rows are all alike only proves the
+# template renders once.
 
 TAGS, POSTS, JOINS = [], [], []
 
@@ -91,11 +81,7 @@ def post(slug, title, excerpt, tags_in_order, *, day, image=None, type_="post",
     pid = oid("post", slug)
     POSTS.append({
         "id": pid, "title": title, "slug": slug,
-        "lexical": lexical(body or [
-            excerpt,
-            "Three or four practical steps, each small enough to finish in one sitting.",
-            "Nothing here assumes you have read the previous page, but it will go faster if you have.",
-        ]),
+        "lexical": body or bodies.get(slug, excerpt),
         "status": "published", "type": type_, "visibility": visibility,
         "featured": featured,
         "feature_image": f"{MEDIA}/{image}.png" if image else None,
@@ -303,6 +289,15 @@ for slug, title, exc in [
 ]:
     post(slug, title, exc, [], day=nxt(), type_="page",
          image="course-admin-foundations" if slug == "home" else None)
+
+# ── The styleguide ─────────────────────────────────────────────────────────
+# Every Koenig card and every prose element, once. A theme is judged on what
+# happens when a writer uses a card its author never tried, and Ghost's editor
+# emits two dozen of them. Open this page after any CSS change.
+post("styleguide", "Styleguide: every card, every element",
+     "Everything Ghost's editor can produce, on one page. If a card here looks wrong, it is wrong on a real post too.",
+     [TOPIC["apex"], S["blog"], DUR["10m"], HERO[1]],
+     day=nxt(), image="blog-01", body=styleguide.build())
 
 # ══ ASSERTIONS — these run before anything is written ═══════════════════════
 by_id = {t["id"]: t for t in TAGS}

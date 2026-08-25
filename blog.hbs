@@ -1,19 +1,27 @@
 {{!< default}}
 {{!-- The blog collection. A Ghost PAGE with the slug `blog` supplies the
      heading and lede when one exists; otherwise the template's own words do.
-     That fork is the pattern every content-less route uses, and it is what
-     lets a publisher retitle the section without touching the theme. --}}
+     That fork is the pattern every content-less route uses, and it lets a
+     publisher retitle the section without touching the theme. --}}
 <section class="ns-band ns-band--tight">
     <div class="ns-band__inner">
-        <div class="ns-band__head">
-            <p class="ns-kicker">{{t "Writing"}}</p>
-            {{#page}}
-                <h1 class="ns-band__title">{{title}}</h1>
-                {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
-            {{else}}
-                <h1 class="ns-band__title">{{t "Blog"}}</h1>
-            {{/page}}
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <p class="ns-kicker">{{t "Writing"}}</p>
+                {{#page}}
+                    <h1 class="ns-band__title">{{title}}</h1>
+                    {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
+                {{else}}
+                    <h1 class="ns-band__title">{{t "Blog"}}</h1>
+                    <p class="ns-band__lede">{{t "What breaks in production, why it broke, and the pattern that stops it happening twice."}}</p>
+                {{/page}}
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/rss/">
+                    <i class="ph ph-rss-simple" aria-hidden="true"></i> {{t "RSS"}}
+                </a>
+            </div>
         </div>
     </div>
 </section>
-{{> "collection" card="blog" rail=true}}
+{{> "listing" rail=true}}

@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="{{@site.locale}}">
-  <head>
+<head>
+
+    {{!-- Basic meta. Everything advanced — Open Graph, structured data,
+         canonical URLs, the accent colour, members and search — comes from
+         {{ghost_head}} at the foot of this block. --}}
+    <title>{{meta_title}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{meta_title}}</title>
 
-    {{!-- FIRST, and inline: sets data-theme before the first paint so a
-         dark-mode reader never sees a white flash. See the partial. --}}
+    {{!-- FIRST, and inline: sets data-theme before the first paint. --}}
     {{> "theme-init"}}
 
-    {{!-- The faces are declared inside namaste-ui.css, which the browser only
-         discovers after fetching and parsing screen.css — one round trip later
-         than it could start. Preloading closes that gap and is what stops the
-         fallback swap being visible on a cold load.
+    {{!-- The faces are declared inside the compiled stylesheet, which the
+         browser only discovers after fetching and parsing it — one round trip
+         later than it could start. Preloading closes that gap, which is what
+         keeps the fallback swap from being visible on a cold load.
 
-         Only the two files that draw ABOVE THE FOLD are preloaded: the sans
-         and the mono. `preload` is a priority instruction, and marking
-         everything urgent marks nothing urgent — the icon font is deliberately
-         left to be discovered normally, because an icon arriving 100ms late is
-         invisible where a reflowing paragraph is not.
+         Only the two that draw ABOVE THE FOLD: the sans and the mono. The
+         icon font is left to be discovered normally, because an icon arriving
+         100ms late is invisible where a reflowing paragraph is not.
 
-         `crossorigin` is required even though these are same-origin: fonts are
-         always fetched in CORS mode, and a preload without it produces a
+         `crossorigin` is required even though these are same-origin — fonts
+         are always fetched in CORS mode, and a preload without it produces a
          second, unused download rather than a warm cache hit. --}}
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="{{asset "fonts/switzer-var-latin.woff2"}}">
@@ -30,46 +31,28 @@
 
     <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
 
-    {{!-- Ghost injects SEO tags, structured data, code injection and Portal.
-         It must stay in <head>, and last. --}}
     {{ghost_head}}
-  </head>
 
-  <body class="{{body_class}}">
-    {{!-- First focusable element on the page; .ns-skip-link is invisible until
-         it takes focus. The target carries tabindex="-1" because without it,
-         following the link moves the viewport but not focus in Safari and
-         Chrome — so the next Tab lands back at the top of the document. --}}
-    <a href="#main" class="ns-skip-link">{{t "Skip to content"}}</a>
+</head>
+<body class="{{body_class}}">
 
-    {{!-- ── THE CHROME DISPATCH ───────────────────────────────────────────
-      default.hbs forks on the SAME tags post.hbs does, so a reading surface
-      does not get a marketing bar. abstract/02 is the reference — but the
-      NAMES come from abstract/18, which owns the vocabulary and supersedes
-      the list abstract/02 was written against (#training-content and
-      #training-section were renamed to #training-lesson and
-      #training-module; docs gained #docs-page / #docs-section).
+    {{!-- FIRST element inside <body>, per NSDS's skip-link template. The
+         target needs id="main" AND tabindex="-1" — without the tabindex,
+         Safari and Chrome move the viewport but leave focus behind, and the
+         link accomplishes nothing. --}}
+    <a class="ns-skip-link ns-visually-hidden" href="#main">{{t "Skip to content"}}</a>
 
-      Reading surfaces are therefore: a course lesson, a training lesson, a
-      training module overview, a docs page and a docs section overview.
-      Everything else — blog, resources, products, untagged — is marketing
-      chrome.
+    {{!-- ── CHROME DISPATCH ──────────────────────────────────────────────
+      A reading surface must not get a marketing bar. The reading kinds carry
+      their own chrome inside their own partial — the training rail, the
+      course player — so this only decides whether the SITE bar appears.
 
-      ⚠ BRANCH ORDER IS LOAD-BEARING HERE TOO. `has` takes a comma-separated
-      list and matches ANY of them, so this particular fork happens to be
-      order-free — but the moment a branch is split out (a section overview
-      wanting different chrome from a lesson) the more specific tag must be
-      tested FIRST. Same rule, same failure mode, as post.hbs.
-
-      The {{#is "post"}} guard matters: {{#has}} reads tags from the current
-      context, and on a listing or a page there are none — so without it every
-      non-post route would fall through the wrong side of the fork.
-    ─────────────────────────────────────────────────────────────────────── --}}
+      abstract/02 is the reference; abstract/18 owns the NAMES, and it
+      supersedes the older list abstract/02 was written against.
+    ────────────────────────────────────────────────────────────────────── --}}
     {{#is "post"}}
       {{#post}}
-        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}
-          {{> "chrome/coursenav"}}
-        {{else}}
+        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}{{else}}
           {{> "chrome/topnav"}}
         {{/has}}
       {{/post}}
@@ -77,36 +60,27 @@
       {{> "chrome/topnav"}}
     {{/is}}
 
-    {{!-- One sheet serves both bars for now. It sits outside the bar because a
-         modal dialog inside a position:sticky ancestor inherits that stacking
-         context in some engines and renders under the page it should cover. --}}
     {{> "chrome/nav-sheet"}}
 
     <main id="main" tabindex="-1">{{{body}}}</main>
 
     {{#is "post"}}
       {{#post}}
-        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}
-          {{> "footer-lesson"}}
-        {{else}}
-          {{> "footer"}}
+        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}{{else}}
+          {{> "chrome/footer"}}
         {{/has}}
       {{/post}}
     {{else}}
-      {{> "footer"}}
+      {{> "chrome/footer"}}
     {{/is}}
-    {{!-- One bundle, built by gulp from assets/js/*.js in a fixed order. All
-         of it is NS-Design-System's own script layer, all of it is
-         progressive enhancement, and every surface it touches works without
-         it: the sheet, the theme controls, the curriculum rail, the table of
-         contents, the reading line and the code copy button.
 
-         theme-init is deliberately NOT in here — it must be inlined in
-         <head> or it paints too late, which is the white-flash-on-every-
-         navigation bug it exists to prevent. --}}
+    {{!-- One bundle, built by gulp. All of it is NSDS's own script layer and
+         all of it is progressive enhancement — the sheet, the theme controls,
+         the curriculum rail, the outline, the reading line and the code copy
+         button all degrade to something that works. --}}
     <script src="{{asset "built/main.js"}}" defer></script>
 
-    {{!-- Ghost injects members, search and comments scripts. Keep it last. --}}
     {{ghost_foot}}
-  </body>
+
+</body>
 </html>

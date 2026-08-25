@@ -1,0 +1,100 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/course — NSDS's course-detail.html, bound to Ghost.
+     ------------------------------------------------------------------------
+         .ns-chero--split        hero: kicker, title, lede, meta, actions
+             __inner > __grid > (__body, __media)
+         .ns-post--wide          the overview's own prose
+         .ns-curriculum          .ns-lesson rows
+
+     ⚠ __media BELONGS INSIDE __grid. Put it beside __inner and it loses the
+     grid column and the 16/9 ratio that come with it, and renders as a
+     full-bleed block several screens tall — a nesting bug that looks like a
+     styling bug. `--split` only when there is an image, or the text sits at
+     55% width beside an empty column.
+
+     WHAT IS NOT PORTED: the .ns-tabs wrapper. NSDS puts overview, curriculum,
+     instructor, reviews and FAQ behind five tabs; Ghost supplies data for two
+     of them, and tabs over two panels is a control that hides half its own
+     content. The curriculum is inline instead, which is what the tab
+     component degrades to with JS off anyway.
+
+     THE SLUG==TAG RULE is what makes the curriculum query work: a course's
+     slug equals its own tag's slug, and every lesson carries that tag as its
+     PRIMARY tag — so the course finds its lessons by filtering on its own
+     slug, and the lessons nest under it in the URL. One fact, both jobs.
+     `+id:-{{id}}` is not optional: the course carries its own tag too, so
+     without it every course lists itself as its first lesson.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<article class="{{post_class}}">
+
+    <section class="ns-chero{{#if feature_image}} ns-chero--split{{/if}}">
+        <div class="ns-chero__inner">
+            <div class="ns-chero__grid">
+
+                <div class="ns-chero__body">
+                    <p class="ns-chero__kicker">{{t "Course"}}</p>
+                    <h1 class="ns-chero__title">{{title}}</h1>
+                    {{#if custom_excerpt}}<p class="ns-chero__lede">{{custom_excerpt}}</p>{{/if}}
+
+                    <div class="ns-chero__meta">
+                        <span class="ns-tag sp-optional">{{~> "internal/level"~}}</span>
+                        <span class="sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+                    </div>
+
+                    {{#if @site.members_enabled}}
+                        <div class="ns-chero__actions">{{> "chrome/members"}}</div>
+                    {{/if}}
+                </div>
+
+                {{#if feature_image}}
+                    <div class="ns-chero__media">
+                        {{> "media" src=feature_image eager=true
+                                    sizes="(min-width: 64rem) 34rem, 100vw"
+                                    alt=(concat "" feature_image_alt)}}
+                    </div>
+                {{/if}}
+
+            </div>
+        </div>
+    </section>
+
+    <div class="ns-post ns-post--wide">
+        <article class="ns-post__body">
+            <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+        </article>
+    </div>
+
+    {{!-- ⚠ limit="all" IS NOT SUPPORTED — Ghost returns 15 and says nothing.
+         And ALWAYS `as |…|`: without it {{#get}} takes over the block context
+         and the surrounding markup stops seeing the post, so output vanishes
+         rather than erroring. --}}
+    {{#get "posts" filter="tags:{{slug}}+id:-{{id}}" limit="100" order="published_at asc" include="tags" as |lessons|}}
+        <section class="ns-band ns-band--sunken">
+            <div class="ns-band__inner">
+
+                <div class="ns-band__head ns-band__head--between">
+                    <h2 class="ns-band__title">{{t "Curriculum"}}</h2>
+                    {{#match lessons.length ">" 0}}
+                        <p class="ns-band__lede">
+                            {{lessons.length}}
+                            {{#match lessons.length "=" 1}}{{t "lesson"}}{{else}}{{t "lessons"}}{{/match}}
+                        </p>
+                    {{/match}}
+                </div>
+
+                {{#if lessons}}
+                    <div class="ns-curriculum">
+                        {{#foreach lessons}}{{> "cards/lesson-row" index=@number}}{{/foreach}}
+                    </div>
+                {{else}}
+                    {{!-- A course with no lessons yet. A page simply blank
+                         below the fold reads as broken; saying so reads as
+                         new. --}}
+                    <p class="ns-empty">{{t "No lessons published yet."}}</p>
+                {{/if}}
+
+            </div>
+        </section>
+    {{/get}}
+
+</article>

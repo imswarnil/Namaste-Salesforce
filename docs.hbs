@@ -1,29 +1,40 @@
 {{!< default}}
-{{!-- Documentation sections.
+{{!-- The index of training SECTIONS, on NSDS's training-index.html (same shape).
 
-     Search is prominent here and absent from the other listings, because
-     nobody arrives at documentation to browse — they arrive knowing roughly
-     what they want, and the page's job is to get them out of it quickly. --}}
+     ── Three levels of navigation across two levels of URL ────────────────
+         /training/                  this page — every section
+         /training/{section}/        the section, listing its posts
+         /training/{section}/{post}/ a post
+
+     abstract/18 is explicit that a Ghost permalink gets exactly one
+     {primary_tag} placeholder, so there is no third URL level. This page is
+     the third level of NAVIGATION without being one of URL — which is why it
+     is a collection root rather than a tag.
+
+     Section ORDER is published_at asc; backdate a section post to move it
+     earlier. That is what makes the numerals on these cards mean something. --}}
 <section class="ns-band ns-band--tight">
     <div class="ns-band__inner">
         <div class="ns-band__head">
-            <p class="ns-kicker">{{t "Reference"}}</p>
+            <p class="ns-kicker">{{t "Documentation"}}</p>
             {{#page}}
                 <h1 class="ns-band__title">{{title}}</h1>
                 {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
             {{else}}
                 <h1 class="ns-band__title">{{t "Documentation"}}</h1>
+                <p class="ns-band__lede">{{t "Reference, by section."}}</p>
             {{/page}}
         </div>
-
-        {{#if @custom.show_search}}
-            <button type="button" class="ns-navsearch ns-navsearch--block" data-ghost-search
-                    aria-label="{{t "Search this site"}}">
-                {{> "icons/navbar/search"}}
-                <span class="ns-navsearch__text">{{t "Search the docs"}}</span>
-                <kbd class="ns-navsearch__kbd">⌘K</kbd>
-            </button>
-        {{/if}}
     </div>
 </section>
-{{> "collection" card="course"}}
+
+<section class="ns-band">
+    <div class="ns-band__inner">
+        {{#if posts}}
+            <div class="ns-grid">{{#foreach posts}}{{> "cards/track-card" index=@number}}{{/foreach}}</div>
+        {{else}}
+            <p class="ns-empty">{{t "No training sections yet."}}</p>
+        {{/if}}
+        {{pagination}}
+    </div>
+</section>

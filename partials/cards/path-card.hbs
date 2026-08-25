@@ -1,0 +1,19 @@
+{{!-- path-card — NSDS's .ns-path__card: one COURSE, as a destination.
+
+     TAKES THE COURSE'S OVERVIEW POST, not its tag. A tag query has no way to
+     say "tags that have a #course post under them", so courses and training
+     sections come back in the same list and both catalogues render
+     identically. `filter="tag:hash-course"` returns exactly the overviews,
+     each carrying its own title, url, excerpt and primary tag.
+
+     The glyph is inferred from the primary tag's slug — see
+     internal/topic-icon for why that inference lives in one place. --}}
+<a class="ns-path__card" href="{{url}}">
+    <span class="ns-tthumb ns-tthumb--glyph">{{#primary_tag}}{{> "internal/topic-icon"}}{{/primary_tag}}</span>
+    <span class="ns-path__title">{{title}}</span>
+    {{#if excerpt}}<span class="ns-path__text">{{excerpt}}</span>{{/if}}
+    <span class="ns-path__meta">
+        <span class="sp-optional">{{~> "internal/level"~}}</span>
+        <span class="sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+    </span>
+</a>

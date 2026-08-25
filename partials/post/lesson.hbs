@@ -1,143 +1,115 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     post/lesson — a lesson inside a course, module or docs section.
+     post/lesson — a COURSE lesson, on NSDS's course-player-article.html.
      ------------------------------------------------------------------------
-     NS-Design-System's training-post archetype: the curriculum as a PERSISTENT
-     RAIL rather than a list buried under the article.
+     DELIBERATELY NOT THE TRAINING LAYOUT. A training post is a document with
+     a curriculum beside it; a course lesson is a PLAYER — you are working
+     through a thing you enrolled in, so the page leads with where you are in
+     it and ends with the way onward.
 
-         .ns-training[data-ns-training][data-rail]
-             .ns-training__scrim        closes the rail on a phone
-             .ns-trainingnav            the curriculum — docked on desktop,
-                                        full sheet below the breakpoint
-             .ns-tbar                   breadcrumb · prev/next
-             .ns-training__reading
-                 .ns-modulehead         title, lede, .ns-tmeta
-                 .ns-tpost-body > .ns-tstage
-                     .ns-toc            the outline
-                     .ns-prose#post-body
+         .ns-player--article[data-rail]
+             .ns-player__main
+                 .ns-player__railopen         shows the rail on small screens
+                 .ns-breadcrumb
+                 .ns-player__head             __title, __meta
+                 .ns-lprogress--article       the reading line
+                 .ns-player__reading
+                     .ns-toc--inline          the outline, above the article
+                     .ns-player__body > .ns-prose
+                 .ns-player__nav.ns-lesson-nav  previous / next lesson
+             .ns-player__side                 the lesson list
 
-     The `data-ns-training*` hooks are what assets/js/training.js binds to —
-     that is the hamburger behaviour: one curriculum, docked or sheeted, with
-     one implementation. NSDS owns all of it.
+     THE PARENT IS THE PRIMARY TAG. A lesson's sort_order-0 tag is its
+     course's tag — the same fact that nests the URL — so the rail is that
+     tag's other posts, and no second field is needed.
 
-     ⚠ THE {{#get}} WRAPS ONLY THE RAIL, AND THAT IS NOT COSMETIC.
-
-     {{#get}} takes over the block context even with `as |…|`. Wrapping the
-     whole template meant the article body had to be written `{{../content}}`
-     — and `content` is a HELPER, not a property. Calling a Ghost helper
-     across `../` is forbidden outright (CLAUDE.md): it does not warn, it
-     renders nothing. The page came out with a title, a lede, three empty
-     meta pills and no article at all.
-
-     The meta pills were the same bug: `{{> "internal/duration"}}` reads the
-     post's tags, and inside the get block there were no tags to read.
-
-     So the query encloses the one element that needs the sibling list, and
-     everything else stays in the post's own context where the helpers work.
+     ⚠ THE {{#get}} WRAPS ONLY THE RAIL. It takes over the block context even
+     with `as |…|`, so wrapping the whole template forces `{{../content}}` —
+     and `content` is a HELPER. Calling a Ghost helper across `../` is
+     forbidden and renders nothing at all.
      ══════════════════════════════════════════════════════════════════════ --}}
-<div class="ns-training ns-training--doc {{post_class}}" data-ns-training data-rail="closed">
+<div class="ns-player ns-player--article {{post_class}}" data-rail="open">
 
-    <div class="ns-training__scrim" data-ns-training-close></div>
+    <div class="ns-player__main">
 
-    {{!-- ⚠ limit="all" IS NOT SUPPORTED — Ghost returns 15 and says nothing. --}}
-    {{#get "posts" filter="tags:{{primary_tag.slug}}" limit="100" order="published_at asc" include="tags" as |siblings|}}
-        <nav class="ns-trainingnav" data-ns-trainingnav aria-label="{{t "Curriculum"}}">
+        <button type="button" class="ns-navicon ns-player__railopen"
+                aria-label="{{t "Show curriculum"}}" aria-expanded="false" aria-controls="lesson-rail">
+            <i class="ph ph-list" aria-hidden="true"></i>
+        </button>
 
-            <div class="ns-trainingnav__spine">
-                <span class="ns-trainingnav__spine-label">{{t "Curriculum"}}</span>
-            </div>
-
-            <div class="ns-trainingnav__head">
-                <a class="ns-trainingnav__brand" href="{{../primary_tag.url}}">
-                    {{> "icons/navbar/course"}} {{../primary_tag.name}}
-                </a>
-            </div>
-
-            <div class="ns-trainingnav__scroll">
-                <ul class="ns-trainingnav__list">
-                    {{#foreach siblings}}
-                        <li>
-                            {{!-- .ns-trainingnav__link, not a bare <a>. NSDS
-                                 styles the CLASS — the current-row accent,
-                                 the left border, the done state all hang off
-                                 it — so a plain anchor renders as an
-                                 unstyled blue link and looks like the
-                                 stylesheet failed to load. --}}
-                            <a class="ns-trainingnav__link" href="{{url}}"{{#match slug ../../slug}} aria-current="page"{{/match}}>
-                                <span>{{title}}</span>
-                                <span class="ns-trainingnav__time sp-duration sp-optional">{{~> "internal/duration"~}}</span>
-                            </a>
-                        </li>
-                    {{/foreach}}
-                </ul>
-            </div>
-
+        <nav class="ns-breadcrumb" aria-label="{{t "Breadcrumb"}}">
+            <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{@site.url}}">{{t "Home"}}</a></span>
+            <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{@site.url}}/courses/">{{t "Courses"}}</a></span>
+            {{#primary_tag}}
+                <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{url}}">{{name}}</a></span>
+            {{/primary_tag}}
         </nav>
-    {{/get}}
 
-    {{!-- ⚠ .ns-training__main IS THE GRID CELL, and it is easy to leave out.
-         .ns-training--doc is `grid-template-columns: 1fr var(--ns-trail-w)`
-         and places `> .ns-training__main` in column 1 and `> .ns-trainingnav`
-         in column 2. Without this wrapper the bar and the reading column are
-         auto-placed as separate grid items, the rail ends up in the wrong
-         column, and the prose collapses to whatever width is left — which
-         reads as a broken stylesheet rather than as missing markup.
-
-         It is a <div> and not a <main> because default.hbs already owns the
-         page's one <main> landmark; two would be a document with two mains. --}}
-    <div class="ns-training__main">
-
-        <div class="ns-tbar">
-            <p class="ns-tbar__crumb">
-                <a href="{{@site.url}}">{{> "icons/navbar/home"}} {{t "Home"}}</a>
-                {{#primary_tag}}<a href="{{url}}">{{> "icons/navbar/course"}} {{name}}</a>{{/primary_tag}}
+        <header class="ns-player__head">
+            <h1 class="ns-player__title">{{title}}</h1>
+            <p class="ns-player__meta">
+                <span class="sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+                <span class="sp-optional">{{~> "internal/level"~}}</span>
+                <span class="sp-optional">{{~> "internal/format"~}}</span>
             </p>
-            <span class="ns-tbar__steps">
-                {{#prev_post}}
-                    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm" href="{{url}}"
-                       aria-label="{{t "Previous"}}: {{title}}">{{> "icons/post/prev"}}</a>
-                {{/prev_post}}
-                {{#next_post}}
-                    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm" href="{{url}}"
-                       aria-label="{{t "Next"}}: {{title}}">{{> "icons/post/next"}}</a>
-                {{/next_post}}
-            </span>
+        </header>
+
+        {{!-- lms.js drives this from the element named in data-target.
+             Decoration: with JS off the bar stays at zero width. --}}
+        <div class="ns-lprogress ns-lprogress--article" data-target="#post-body"
+             role="progressbar" aria-label="{{t "Reading progress"}}"
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+        <div class="ns-player__reading">
+            {{!-- The outline sits ABOVE the article here rather than in a
+                 rail, because the rail is already spoken for by the
+                 curriculum. --}}
+            <nav class="ns-toc ns-toc--inline ns-player__toc--inline"
+                 data-toc-from="#post-body" aria-label="{{t "On this page"}}">
+                <span class="ns-toc__title">{{t "On this page"}}</span>
+            </nav>
+
+            <article class="ns-player__body">
+                <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+            </article>
         </div>
 
-
-        <div class="ns-training__reading">
-
-            <header class="ns-modulehead">
-                <h1 class="ns-modulehead__title">{{title}}</h1>
-                {{#if custom_excerpt}}<p class="ns-modulehead__lede">{{custom_excerpt}}</p>{{/if}}
-
-                {{!-- Each pill hides itself when its tag is absent — see the
-                      .sp-optional:empty rule. Without it a lesson with no
-                      level tag renders an empty pill with padding. --}}
-                <div class="ns-tmeta">
-                    <span class="ns-tmeta__item sp-optional">{{~> "internal/duration"~}}</span>
-                    <span class="ns-tmeta__item sp-optional">{{~> "internal/level"~}}</span>
-                    <span class="ns-tmeta__item sp-optional">{{~> "internal/format"~}}</span>
-                </div>
-            </header>
-
-            <div class="ns-tpost-body">
-                <div class="ns-tstage">
-
-                    <nav class="ns-toc" data-toc-from="#post-body" aria-label="{{t "On this page"}}">
-                        <p class="ns-toc__title">{{t "On this page"}}</p>
-                    </nav>
-
-                    <div class="gh-content ns-prose" id="post-body">{{content}}</div>
-
-                    {{#if @custom.show_author_card}}{{> "post/authorbox"}}{{/if}}
-
-                    {{> "post/nav"}}
-
-                </div>
-            </div>
-
-        </div>
+        {{!-- Ghost scopes prev/next to the post's own COLLECTION, which is
+             what makes this the next LESSON rather than the next thing
+             published on the site. --}}
+        <nav class="ns-player__nav ns-lesson-nav" aria-label="{{t "Lesson navigation"}}">
+            {{#prev_post}}
+                <a class="ns-lesson-nav__btn" href="{{url}}">
+                    <i class="ph ph-arrow-left ns-lesson-nav__arrow" aria-hidden="true"></i>
+                    <span class="ns-lesson-nav__dir">{{t "Previous"}}</span>
+                    <span class="ns-lesson-nav__name">{{title}}</span>
+                </a>
+            {{/prev_post}}
+            {{#next_post}}
+                <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="{{url}}">
+                    <span class="ns-lesson-nav__dir">{{t "Next"}}</span>
+                    <span class="ns-lesson-nav__name">{{title}}</span>
+                    <i class="ph ph-arrow-right ns-lesson-nav__arrow" aria-hidden="true"></i>
+                </a>
+            {{/next_post}}
+        </nav>
 
     </div>
+
+    {{!-- `tag:-hash-course` excludes the course's own OVERVIEW post. It
+         carries the course tag too — that is the slug==tag rule doing its
+         job — so without the exclusion every course lists itself as lesson
+         one, and prev/next walks into it. --}}
+    {{#get "posts" filter="tags:{{primary_tag.slug}}+tag:-hash-course" limit="100" order="published_at asc" include="tags" as |siblings|}}
+        <nav class="ns-player__side" id="lesson-rail" aria-label="{{t "Curriculum"}}">
+            <div class="ns-player__list">
+                {{#foreach siblings}}
+                    {{> "cards/lesson-row" index=@number}}
+                {{/foreach}}
+            </div>
+            <a class="ns-player__side-brand" href="{{../primary_tag.url}}">
+                <i class="ph ph-graduation-cap" aria-hidden="true"></i> {{../primary_tag.name}}
+            </a>
+        </nav>
+    {{/get}}
 
 </div>

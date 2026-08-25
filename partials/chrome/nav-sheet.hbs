@@ -1,31 +1,30 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     nav-sheet — the mobile navigation, as a real <dialog>.
+     chrome/nav-sheet — the mobile navigation, from NSDS's navbar.html.
      ------------------------------------------------------------------------
-     Opened with showModal(), which is what grants the focus trap,
-     Esc-to-close, an inert background and top-layer stacking. Those four
-     things are genuinely hard to implement correctly by hand, and a
-     div-with-a-class implements none of them.
+     A real <dialog>, opened with showModal(). That is what grants the focus
+     trap, Esc-to-close, an inert background and top-layer stacking — four
+     things that are hard to get right by hand and that a div-with-a-class
+     gets right none of.
 
      It covers the whole viewport rather than sliding in as a drawer: on a
-     phone a 20rem drawer leaves a strip of unusable page beside it, and the
-     links get to be large enough to actually hit.
+     phone a 20rem drawer leaves a strip of unusable page, and the links get
+     to be large enough to hit.
 
-     IT LIVES OUTSIDE THE BAR ON PURPOSE. A modal dialog nested inside a
-     position:sticky ancestor inherits that stacking context in some engines
-     and renders underneath the page it is supposed to cover.
+     IT SITS OUTSIDE THE BAR. A modal dialog nested inside a position:sticky
+     ancestor inherits that stacking context in some engines and renders
+     underneath the page it is meant to cover.
 
-     ONE SHEET SERVES BOTH BARS for now. When the lesson rail arrives it gets
-     its own dialog with its own id, and chrome/burger already takes that id
-     as a parameter — so the course bar will point at it without either
-     button or this file changing.
-
-     The three-state theme control is here rather than in the bar because
-     there is room for it; see chrome/theme-toggle.
+     The three-state theme control lives here rather than in the bar because
+     there is room: "Auto" is a real choice, and a two-state toggle silently
+     converts every visitor into someone with an explicit preference.
      ══════════════════════════════════════════════════════════════════════ --}}
 <dialog class="ns-navsheet" id="site-nav" aria-label="{{t "Site menu"}}">
 
     <div class="ns-navsheet__head">
-        {{> "chrome/brand"}}
+        <a class="ns-topnav__brand" href="{{@site.url}}">
+            {{#if @site.icon}}<img src="{{img_url @site.icon size="xs"}}" alt="" width="24" height="24">{{/if}}
+            <span class="ns-topnav__brand-name">{{@site.title}}</span>
+        </a>
         <button type="button" class="ns-btn ns-btn--quiet ns-btn--icon ns-navsheet__close"
                 data-ns-sheet-close aria-label="{{t "Close menu"}}">
             <i class="ph ph-x" aria-hidden="true"></i>
@@ -33,7 +32,6 @@
     </div>
 
     <div class="ns-navsheet__body">
-
         {{navigation variant="sheet"}}
 
         {{#if @site.secondary_navigation}}
@@ -42,17 +40,21 @@
         {{/if}}
 
         <p class="ns-navsheet__label">{{t "Theme"}}</p>
-        {{> "chrome/theme-toggle"}}
-
+        <div class="ns-themetoggle" role="radiogroup" aria-label="{{t "Colour theme"}}" data-ns-theme>
+            <button type="button" class="ns-themetoggle__opt" role="radio" aria-checked="false"
+                    aria-label="{{t "Light"}}" data-ns-theme-value="light">{{t "Light"}}</button>
+            <button type="button" class="ns-themetoggle__opt" role="radio" aria-checked="true"
+                    aria-label="{{t "Match the system setting"}}" data-ns-theme-value="system">{{t "Auto"}}</button>
+            <button type="button" class="ns-themetoggle__opt" role="radio" aria-checked="false"
+                    aria-label="{{t "Dark"}}" data-ns-theme-value="dark">{{t "Dark"}}</button>
+        </div>
     </div>
 
     {{#if @site.members_enabled}}
-        {{!-- Pinned, not scrolled to: subscribing is why the sheet exists on a
-              publication, and it must not depend on reaching the end of a long
-              site map. --}}
-        <div class="ns-navsheet__foot">
-            {{> "chrome/members" block=true}}
-        </div>
+        {{!-- Pinned, not scrolled to: subscribing is why the sheet exists on
+             a publication, and it must not depend on reaching the end of a
+             long site map. --}}
+        <div class="ns-navsheet__foot">{{> "chrome/members" block=true}}</div>
     {{/if}}
 
 </dialog>

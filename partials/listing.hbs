@@ -1,0 +1,43 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     listing — NSDS's blog-listing.html, bound to Ghost.
+     ------------------------------------------------------------------------
+         .ns-page                        the width cap and gutter
+             .ns-blog-listing            grid: main | 16rem rail
+                 .ns-bcard--wide             the lead post
+                 .ns-blog-grid               the rest
+                 .ns-pagination--compact
+                 .ns-blog-listing__rail      categories + recent, sticky
+
+     NSDS set the width cap with an inline style. This theme cannot — a style
+     attribute is unoverridable, so it breaks dark mode and the publisher's
+     accent silently — so `.ns-page`, the design system's own container, does
+     the same job.
+
+     THE LEAD POST IS `--wide`, from `@first`. No second query and no
+     limit/skip pair.
+
+     PARAMETERS
+       rail   falsy → no rail, the listing takes the full width
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-page">
+    <div class="ns-blog-listing{{#unless rail}} sp-listing--full{{/unless}}">
+
+        <div>
+            {{#if posts}}
+                {{#foreach posts}}{{#if @first}}{{> "cards/bcard" wide=true}}{{/if}}{{/foreach}}
+                <div class="ns-blog-grid">
+                    {{#foreach posts}}{{#unless @first}}{{> "cards/bcard"}}{{/unless}}{{/foreach}}
+                </div>
+            {{else}}
+                {{!-- A brand-new site has no posts, and this is the first
+                     thing anyone sees. A blank band reads as a broken theme. --}}
+                <p class="ns-empty">{{t "No posts yet."}}</p>
+            {{/if}}
+
+            {{pagination}}
+        </div>
+
+        {{#if rail}}{{> "listing-rail"}}{{/if}}
+
+    </div>
+</div>

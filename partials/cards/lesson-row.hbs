@@ -1,19 +1,16 @@
-{{!-- ══════════════════════════════════════════════════════════════════════
-     lesson-row — NSDS's .ns-lesson: one lesson inside a course curriculum.
-     ------------------------------------------------------------------------
-     Different component from .ns-unit, which is the training equivalent, and
-     the difference is real: a lesson row carries an INDEX and an ACCESS state
-     because a course is something you buy into partway; a training unit
-     carries a type and a time because training is free and sequential.
+{{!-- lesson-row — NSDS's .ns-lesson, from course-detail.html's curriculum.
+
+     Different component from .ns-unit, and the difference is real: a lesson
+     row carries an INDEX and an ACCESS state because a course is something
+     you buy into partway; a training unit carries a type and a time because
+     training is free and sequential. NSDS ships both for that reason.
 
      PARAMETERS
        index   the mono numeral — pass {{@number}}
 
-     `data-access` is what NSDS styles the free/locked treatment off, and
-     `{{#unless access}}` is the honest test: it is true when THIS READER
-     cannot open the post, not when the post is paid. A paying member must
-     not be shown a padlock on something they can read.
-     ══════════════════════════════════════════════════════════════════════ --}}
+     `{{#unless access}}` is the honest test: true when THIS READER cannot
+     open the post, not when the post is paid. A paying member must not be
+     shown a padlock on something they can read. --}}
 <a class="ns-lesson" href="{{url}}" data-access="{{#unless access}}locked{{else}}free{{/unless}}">
     <span class="ns-lesson__index" aria-hidden="true">{{#match index "<" 10}}0{{/match}}{{index}}</span>
     <span class="ns-lesson__body">
@@ -21,11 +18,13 @@
         <span class="ns-lesson__sub">
             {{#unless access}}
                 <span class="ns-laccess">
-                    {{> "icons/post/lock"}}
+                    <i class="ph ph-lock-simple" aria-hidden="true"></i>
                     {{#has visibility="paid"}}{{t "Paid"}}{{else}}{{t "Members"}}{{/has}}
                 </span>
             {{else}}
-                <span class="ns-laccess ns-laccess--free">{{t "Free"}}</span>
+                <span class="ns-laccess ns-laccess--free">
+                    <i class="ph ph-lock-simple-open" aria-hidden="true"></i>{{t "Free"}}
+                </span>
             {{/unless}}
             {{#has tag="#preview"}}<span class="ns-lesson__badge">{{t "Preview"}}</span>{{/has}}
             <span class="sp-optional">{{~> "internal/format"~}}</span>

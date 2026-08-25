@@ -1,16 +1,14 @@
 {{!-- post/article — everything inside .ns-post__body.
 
-     Extracted so the layout branch in post/default can include it from four
-     places without duplicating the markup four times.
+     Extracted so the layout branch in post/blog can include it from both arms
+     without duplicating the markup.
 
-     `id="post-body"` is load-bearing twice over: the reading-progress line
-     measures it, and the table of contents is built from the headings inside
-     it. Pointing the TOC at the whole article instead would put "Read next"
-     and three card titles in the outline. --}}
+     `id="post-body"` is load-bearing twice: the reading-progress line measures
+     it, and the outline is built from the headings inside it. Pointing the TOC
+     at the whole article instead would put "Read next" and three card titles
+     in the outline. --}}
 
-<div class="gh-content ns-prose" id="post-body">
-    {{content}}
-</div>
+<div class="gh-content ns-prose" id="post-body">{{content}}</div>
 
 <div class="sp-post-foot">
 
@@ -20,10 +18,27 @@
         </ul>
     {{/if}}
 
-    {{#if @custom.show_author_card}}{{> "post/authorbox"}}{{/if}}
-
+    {{> "post/authorbox"}}
     {{> "post/nav"}}
 
-    {{#if @custom.show_related}}{{> "post/related"}}{{/if}}
+    {{!-- Related by the post's own primary tag, excluding itself.
+
+         ⚠ THE FILTER CANNOT CONTAIN `../`. Ghost raises
+         `IncorrectUsageError: unsupported path segment ""` — filter strings
+         go through Ghost's own path resolver, which does dotted access but
+         not parent traversal. So the {{#get}} stays at the POST's context,
+         where {{id}} is the post and the tag is `{{primary_tag.slug}}`. --}}
+    {{#if primary_tag}}
+        {{#get "posts" filter="tags:{{primary_tag.slug}}+id:-{{id}}" limit="3" include="tags,authors" as |related|}}
+            {{#if related}}
+                <section class="ns-band ns-band--tight">
+                    <div class="ns-band__head"><h2 class="ns-band__title">{{t "Read next"}}</h2></div>
+                    <div class="ns-blog-grid">
+                        {{#foreach related}}{{> "cards/bcard" minimal=true}}{{/foreach}}
+                    </div>
+                </section>
+            {{/if}}
+        {{/get}}
+    {{/if}}
 
 </div>

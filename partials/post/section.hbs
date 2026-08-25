@@ -1,0 +1,99 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/section — a training section or a docs section, on NSDS's
+     training-module.html.
+     ------------------------------------------------------------------------
+     THE RAIL IS THE POINT. training-module is not a hero with a list under
+     it: it is a two-column layout whose left column carries THE WHOLE
+     CURRICULUM as collapsible sections, with the one you are reading
+     expanded. A course detail page is a different shape — a hero, a pitch, a
+     curriculum — because a course is something you decide to buy. A section
+     is something you are already inside, so the page's job is to show you
+     where you are in the whole thing.
+
+         .ns-training
+             .ns-trainingnav
+                 .ns-trainingnav__track            back to the index
+                 details.ns-trainingnav__section   one per section, current open
+                     summary + __twist
+                     ul.ns-trainingnav__list > li > a.ns-trainingnav__link
+             .ns-training__main
+                 .ns-modulehead (__crumb, __title, __lede)
+                 .ns-prose
+                 ul.ns-units > li > a.ns-unit
+
+     ⚠ .ns-training__main IS THE GRID CELL. Leave the wrapper out and the bar
+     and the reading column are auto-placed as separate items, the rail lands
+     in the wrong column and the prose collapses to whatever is left — which
+     reads as a broken stylesheet rather than as missing markup. It is a
+     <div>, not a <main>: default.hbs already owns the page's one landmark.
+
+     ── The nested query ───────────────────────────────────────────────────
+     The rail needs every section AND every section's posts — one query plus
+     one per section. That is the only way to build the accordion, because
+     Handlebars cannot group a flat list without lookahead. Both use `as |…|`
+     and neither filter contains `../`; those are the two things that break a
+     nested {{#get}}.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-training {{post_class}}" data-ns-training data-rail="closed">
+
+    <div class="ns-training__scrim" data-ns-training-close></div>
+
+    {{#get "posts" filter="tag:hash-training-module" limit="50" order="published_at asc" include="tags" as |sections|}}
+        <nav class="ns-trainingnav" data-ns-trainingnav aria-label="{{t "Curriculum"}}">
+
+            <a class="ns-trainingnav__track" href="{{@site.url}}/training/">
+                <i class="ph ph-graduation-cap" aria-hidden="true"></i> {{t "Training"}}
+            </a>
+
+            {{#foreach sections}}
+                {{!-- `open` is an attribute matched against the current post's
+                     slug, so the browser's own disclosure does the expansion
+                     with no script. --}}
+                <details class="ns-trainingnav__section"{{#match slug ../../slug}} open{{/match}}>
+                    <summary>
+                        <i class="ph ph-caret-right ns-trainingnav__twist" aria-hidden="true"></i>
+                        {{title}}
+                    </summary>
+
+                    {{#get "posts" filter="tags:{{primary_tag.slug}}+id:-{{id}}" limit="100" order="published_at asc" include="tags" as |items|}}
+                        <ul class="ns-trainingnav__list">
+                            {{#foreach items}}
+                                <li>
+                                    <a class="ns-trainingnav__link" href="{{url}}">
+                                        {{> "internal/format-icon"}}
+                                        <span>{{title}}</span>
+                                        <span class="ns-trainingnav__time sp-duration sp-optional">{{~> "internal/duration"~}}</span>
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ul>
+                    {{/get}}
+                </details>
+            {{/foreach}}
+
+        </nav>
+    {{/get}}
+
+    <div class="ns-training__main">
+
+        <header class="ns-modulehead">
+            <span class="ns-modulehead__crumb">{{t "Training"}}</span>
+            <h1 class="ns-modulehead__title">{{title}}</h1>
+            {{#if custom_excerpt}}<p class="ns-modulehead__lede">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+
+        {{#get "posts" filter="tags:{{slug}}+id:-{{id}}" limit="100" order="published_at asc" include="tags" as |children|}}
+            {{#if children}}
+                <ul class="ns-units">
+                    {{#foreach children}}{{> "cards/unit" currentSlug=""}}{{/foreach}}
+                </ul>
+            {{else}}
+                <p class="ns-empty">{{t "Nothing published in this section yet."}}</p>
+            {{/if}}
+        {{/get}}
+
+    </div>
+
+</div>

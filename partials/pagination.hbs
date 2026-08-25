@@ -1,40 +1,40 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     pagination — RESERVED NAME. Ghost renders this from the {{pagination}}
-     helper, never from {{> pagination}}.
+     pagination — RESERVED NAME, rendered by Ghost's {{pagination}} helper.
      ------------------------------------------------------------------------
-     NSDS ships TWO pagination forms and this uses the one Ghost can actually
-     express. The numbered form (`.ns-pagination__link` 1 · 2 · 3 … 9) needs a
-     list of page numbers, and Ghost hands over `pagination.page` and
-     `.pages` but no such list — Handlebars cannot count from 1 to N, and a
-     hard-coded five links breaks on page six.
+     NSDS ships TWO forms and this uses the one Ghost can express. The
+     numbered form (1 · 2 · 3 … 9) needs a list of page numbers; Ghost gives
+     `pagination.page` and `.pages` but no such list, Handlebars cannot count,
+     and five hard-coded links break on page six.
 
      `--compact` is NSDS's own answer to exactly that: `__step` either side,
-     `__status` in the middle, `aria-disabled` at the ends. Same component,
-     same file, the variant built for prev/next. Nothing invented here.
+     `__status` between, `aria-disabled` at the ends. Same component, same
+     file, the variant built for prev/next. Nothing invented here.
 
      Renders nothing on a single-page listing, so callers include it
      unconditionally.
      ══════════════════════════════════════════════════════════════════════ --}}
 {{#match pagination.pages ">" 1}}
     <nav class="ns-pagination ns-pagination--compact" aria-label="{{t "Pagination"}}">
-
         {{#if prev}}
             <a class="ns-pagination__step" href="{{page_url prev}}" rel="prev">
-                {{> "icons/post/prev"}} {{t "Newer"}}
+                <i class="ph ph-caret-left" aria-hidden="true"></i> {{t "Newer"}}
             </a>
         {{else}}
-            <span class="ns-pagination__step" aria-disabled="true">{{> "icons/post/prev"}} {{t "Newer"}}</span>
+            <span class="ns-pagination__step" aria-disabled="true">
+                <i class="ph ph-caret-left" aria-hidden="true"></i> {{t "Newer"}}
+            </span>
         {{/if}}
 
         <span class="ns-pagination__status">{{t "Page"}} {{pagination.page}} / {{pagination.pages}}</span>
 
         {{#if next}}
             <a class="ns-pagination__step" href="{{page_url next}}" rel="next">
-                {{t "Older"}} {{> "icons/post/next"}}
+                {{t "Older"}} <i class="ph ph-caret-right" aria-hidden="true"></i>
             </a>
         {{else}}
-            <span class="ns-pagination__step" aria-disabled="true">{{t "Older"}} {{> "icons/post/next"}}</span>
+            <span class="ns-pagination__step" aria-disabled="true">
+                {{t "Older"}} <i class="ph ph-caret-right" aria-hidden="true"></i>
+            </span>
         {{/if}}
-
     </nav>
 {{/match}}

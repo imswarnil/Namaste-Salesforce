@@ -1,13 +1,11 @@
-{{!-- post/head — NSDS's .ns-posthead, exactly.
+{{!-- post/head — NSDS's .ns-posthead, from templates/blog-post.html.
 
-     Art direction comes from an internal tag and is resolved by
-     internal/hero-variant — one place, because the answer is needed by the
-     header element and by the cover slot.
+     Art direction comes from an internal tag, resolved by
+     internal/hero-variant — one place, because the answer is needed by both
+     the header element and the cover slot.
 
      The cover passes `eager`: it is the largest thing above the fold, and
-     `loading="lazy"` on an already-visible image DELAYS it — the browser has
-     to lay the page out before it knows the image is in view. That is a
-     direct hit to Largest Contentful Paint. --}}
+     `loading="lazy"` on an already-visible image DELAYS it. See media.hbs. --}}
 <header class="ns-posthead {{> "internal/hero-variant"}}">
     <div class="ns-posthead__inner">
 
@@ -15,11 +13,9 @@
 
         <h1 class="ns-posthead__title">{{title}}</h1>
 
-        {{#if custom_excerpt}}
-            <p class="ns-posthead__standfirst">{{custom_excerpt}}</p>
-        {{/if}}
+        {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
 
-        {{#if @custom.show_post_meta}}{{> "post/meta"}}{{/if}}
+        {{> "post/meta"}}
 
         {{#if feature_image}}
             <span class="ns-posthead__cover">

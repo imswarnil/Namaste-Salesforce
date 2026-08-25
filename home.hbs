@@ -1,31 +1,28 @@
 {{!< default}}
 {{!-- ════════════════════════════════════════════════════════════════════════
-  home.hbs — the front page, on NS-Design-System's homepage archetype.
+  home.hbs — the front page, on NS-Design-System's homepage.html.
 
   WHY THIS FILE EXISTS: routes.yaml maps `/` to it, and Ghost returns a 400
   "Missing template home.hbs" if it is absent. index.hbs does NOT cover it —
   `/` is a routed template, not the collection index. See decisions/0003.
 
   ── The page, in order, and the order is the argument ─────────────────────
-    1. Hero          who this is for, and the one action
-    2. Paths         the COURSES, as destinations
-    3. Tracks        the TRAINING sections, as an ordered sequence
-    4. Latest        the writing
+    1. Hero      who this is for, and the one action
+    2. Paths     the COURSES, as destinations
+    3. Tracks    the TRAINING sections, as an ordered sequence
+    4. Latest    the writing
 
-  Paths and tracks are the same data in two shapes on purpose. A course is a
-  destination — you pick one. A training section is a step — they have an
-  order and you go through them. `.ns-path__card` leads with a glyph;
-  `.ns-trackcard` leads with a number. That difference IS the information.
+  Paths and tracks are the same data in two shapes on purpose — see the two
+  card partials for why.
 
-  ── The copy comes from Ghost, not from here ─────────────────────────────
+  ── The copy comes from Ghost ────────────────────────────────────────────
   A page with the slug `home` supplies the headline and lede when one exists;
   otherwise the site title and description do. That fork is what lets the
-  front page be edited in Admin rather than in a template, and it is why this
-  file hard-codes no marketing words.
+  front page be edited in Admin rather than here, and it is why this file
+  hard-codes no marketing words.
 ═══════════════════════════════════════════════════════════════════════════ --}}
 
-{{!-- ── 1 · Hero ─────────────────────────────────────────────────────────
-     --band--dark + --band--grid is NSDS's own hero ground: the navy console
+{{!-- --band--dark + --band--grid is NSDS's hero ground: the navy console
      surface with the hairline grid over it. --}}
 <section class="ns-band ns-band--dark ns-band--grid ns-hero">
   <div class="ns-band__inner">
@@ -42,21 +39,17 @@
 
     <div class="ns-hero__actions">
       <a class="ns-btn ns-btn--white ns-btn--lg" href="{{@site.url}}/training/">
-        {{> "icons/navbar/course"}} {{t "Start training"}}
+        <i class="ph ph-graduation-cap" aria-hidden="true"></i> {{t "Start training"}}
       </a>
-      <a class="ns-btn ns-btn--ghost ns-btn--lg" href="{{@site.url}}/courses/">
-        {{t "Browse courses"}}
-      </a>
+      <a class="ns-btn ns-btn--ghost ns-btn--lg" href="{{@site.url}}/courses/">{{t "Browse courses"}}</a>
     </div>
   </div>
 </section>
 
-{{!-- ── 2 · Courses, as paths ────────────────────────────────────────────
-     Queries the course OVERVIEW POSTS, not tags. A tag query cannot say
+{{!-- Queries the course OVERVIEW POSTS, not tags. A tag query cannot say
      "tags that have a #course post under them", so courses and training
      sections would come back in one list and both bands would render the
-     same thing. `filter="tag:hash-course"` returns exactly the overviews,
-     each carrying its own title, url, excerpt and primary tag. --}}
+     same thing. --}}
 {{#get "posts" filter="tag:hash-course" limit="12" include="tags" order="published_at asc" as |courses|}}
   {{#if courses}}
     <section class="ns-band ns-band--sunken">
@@ -68,25 +61,16 @@
           </div>
           <div class="ns-band__actions">
             <a class="ns-btn ns-btn--quiet ns-btn--sm" href="{{@site.url}}/courses/">
-              {{t "All courses"}} {{> "icons/post/next"}}
+              {{t "All courses"}} <i class="ph ph-arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </div>
-
-        <div class="ns-path">
-          {{#foreach courses}}
-            {{> "home/path-card"}}
-          {{/foreach}}
-        </div>
+        <div class="ns-path">{{#foreach courses}}{{> "cards/path-card"}}{{/foreach}}</div>
       </div>
     </section>
   {{/if}}
 {{/get}}
 
-{{!-- ── 3 · Training sections, as an ordered track ───────────────────────
-     Ordered by published_at, which IS the section order — backdate a section
-     post to move it earlier. That is the whole ordering mechanism, and it is
-     why the numerals on these cards mean something. --}}
 {{#get "posts" filter="tag:hash-training-module" limit="12" include="tags" order="published_at asc" as |tracks|}}
   {{#if tracks}}
     <section class="ns-band">
@@ -98,23 +82,17 @@
           </div>
           <div class="ns-band__actions">
             <a class="ns-btn ns-btn--quiet ns-btn--sm" href="{{@site.url}}/training/">
-              {{t "All sections"}} {{> "icons/post/next"}}
+              {{t "All sections"}} <i class="ph ph-arrow-right" aria-hidden="true"></i>
             </a>
           </div>
         </div>
-
-        <div class="ns-grid">
-          {{#foreach tracks}}
-            {{> "home/track-card" index=@number}}
-          {{/foreach}}
-        </div>
+        <div class="ns-grid">{{#foreach tracks}}{{> "cards/track-card" index=@number}}{{/foreach}}</div>
       </div>
     </section>
   {{/if}}
 {{/get}}
 
-{{!-- ── 4 · Latest ───────────────────────────────────────────────────────
-     ⚠ limit="all" IS NOT SUPPORTED by {{#get}} — Ghost returns 15 silently. --}}
+{{!-- ⚠ limit="all" IS NOT SUPPORTED by {{#get}} — Ghost returns 15 silently. --}}
 {{#get "posts" limit="6" include="authors,tags" as |latest|}}
   <section class="ns-band ns-band--sunken">
     <div class="ns-band__inner">
@@ -125,18 +103,13 @@
         </div>
         <div class="ns-band__actions">
           <a class="ns-btn ns-btn--quiet ns-btn--sm" href="{{@site.url}}/blog/">
-            {{t "All posts"}} {{> "icons/post/next"}}
+            {{t "All posts"}} <i class="ph ph-arrow-right" aria-hidden="true"></i>
           </a>
         </div>
       </div>
-
       {{#if latest}}
-        <div class="ns-blog-grid">
-          {{#foreach latest}}{{> "cards/blog-card"}}{{/foreach}}
-        </div>
+        <div class="ns-blog-grid">{{#foreach latest}}{{> "cards/bcard"}}{{/foreach}}</div>
       {{else}}
-        {{!-- A brand-new site has no posts, and this is the first thing
-              anyone sees. A blank band reads as a broken theme. --}}
         <p class="ns-empty">{{t "No posts yet."}}</p>
       {{/if}}
     </div>

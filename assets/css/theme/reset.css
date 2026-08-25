@@ -1,63 +1,25 @@
 /* ════════════════════════════════════════════════════════════════════════════
    theme/reset.css — the reset NS-Design-System does not ship.
    ----------------------------------------------------------------------------
-   ⚠ THIS FILE IS LOAD-BEARING. It is not tidying.
+   ⚠ NOT TIDYING. NSDS's component layer is authored assuming
+   `box-sizing: border-box`, but the rule itself comes from Tailwind's
+   Preflight — and `@import "tailwindcss"` in screen.css does bring Preflight,
+   so most of this is belt to that braces.
 
-   NSDS's component layer is authored assuming `box-sizing: border-box`, but
-   the rule itself is not in NSDS — it comes from Tailwind's Preflight, which
-   only exists in the Tailwind bundle. This theme takes the framework-neutral
-   bundle (decision 0002, option A), so the reset is simply absent.
-
-   The consequence is specific, everywhere, and silent: **89 rules across the
-   design system declare a width alongside padding or a border in the same
-   block.** Under the browser default of `content-box` every one of those adds
-   the padding ON TOP of the declared width, so a 100%-wide element overflows
-   its parent by exactly its own padding. That is the "why is there a
-   horizontal scrollbar" bug, on every page, with nothing reporting it — the
-   exact failure mode `abstract/10` is about.
-
-   There is corroboration inside NSDS that this has been hit once already:
-   `.ns-input, .ns-select, .ns-textarea` carry a lone `box-sizing: border-box`,
-   the one place it broke visibly enough to be patched by hand without the fix
-   ever being generalised.
-
-   `abstract/17` §3 documents all of this and says the fix must land in the
-   same commit that first imports NSDS. It did.
+   The one that is NOT redundant is `overflow-x: clip` on <html>. abstract/17
+   §3 documents the wider problem: 89 rules across the design system declare a
+   width alongside padding, so under `content-box` each overflows by its own
+   padding. Preflight covers that here; this file exists so the theme still
+   works if the Tailwind import is ever swapped for the plain bundle.
    ═══════════════════════════════════════════════════════════════════════ */
 
 @layer base {
 
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-
-  /* Replaced elements are inline by default, which leaves a few pixels of
-     line-box descender under every one — the unexplained gap under a logo. */
-  img, svg, video, canvas, audio, iframe, embed, object {
-    display: block;
-    max-inline-size: 100%;
-  }
-
-  img, video { block-size: auto; }
-
-  /* Form controls do not inherit type in any browser. */
-  input, button, textarea, select {
-    font: inherit;
-    color: inherit;
-    letter-spacing: inherit;
-  }
-
-  button {
-    background: none;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-  }
-
-  table {
-    border-collapse: collapse;
-    border-spacing: 0;
-  }
+  /* `clip`, never `hidden`. On <html>, overflow-x:hidden silently kills
+     position:sticky for every descendant — which would break the navbar, the
+     training rail and the table of contents at once. It is the single most
+     common cause of "why did my sticky header stop working". */
+  html { overflow-x: clip; }
 
   /* Long unbroken strings — a URL in a comment, a token in a code sample —
      otherwise scroll the whole document sideways. */
@@ -65,8 +27,10 @@
     overflow-wrap: break-word;
   }
 
-  /* NOT `ul, ol { list-style: none }`. Preflight strips list markers globally
-     and Tailwind users put them back per-component; here that would flatten
-     the editor's output, which is the one place default markers do useful
-     work. NSDS removes them per-component already. */
+  /* Preflight strips list markers globally and expects them to be put back
+     per-component. That is right for an app and wrong for a CMS: the editor's
+     output needs bullets to work by default. NSDS removes them per-component
+     already, so they are restored here for prose only. */
+  .gh-content ul { list-style: disc; }
+  .gh-content ol { list-style: decimal; }
 }

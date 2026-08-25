@@ -1,44 +1,24 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     theme-init — MUST stay inline, blocking, and near the top of <head>.
+     theme-init — INLINE and BLOCKING, before the stylesheet.
      ------------------------------------------------------------------------
-     Adapted from NS-Design-System's assets/js/theme-init.js, which says at the
-     top of the file that it has to be inlined rather than linked.
+     Vendored verbatim from NS-Design-System's assets/js/theme-init.js, which
+     says at the top of the file that it must be inlined rather than linked.
+     INTEGRATION.md §4 repeats it.
 
      THE PROBLEM. The page paints once, before any deferred script runs. Apply
      the theme after that and a dark-mode reader gets a white flash on every
-     single navigation. It has exactly one fix: set the attribute
-     synchronously, in the head, before first paint. A <script src> is fetched
-     separately and lands too late — no amount of defer/async tuning helps.
+     navigation. It has one fix: set the attribute synchronously, in the head,
+     before first paint. A <script src> is fetched separately and lands too
+     late; no amount of defer/async tuning helps.
 
-     WHY THE REASONING IS OUT HERE. Everything below ships to every reader on
-     every page view, so the explanation lives in this Handlebars comment,
-     which is stripped at render. Spelling the comment-close sequence out
-     inside a comment would end the comment early and dump the rest into the
-     page as visible text — a leaked comment is valid HTML, so nothing catches
-     it. That has already happened once while writing this theme.
+     THE STORAGE KEY IS SHARED. `ns-theme`, the same key the Next.js LMS uses,
+     so a reader moving between the marketing site and the app keeps their
+     theme. INTEGRATION.md lists that as one of the three things that must not
+     drift between the two products.
 
-     WHAT IT DOES NOT DO: decide what dark mode looks like. That is entirely
-     NSDS's tokens, which flip on [data-theme="dark"]. This script only records
-     an explicit CHOICE, which CSS has no way to store.
-
-     THE PARTS THAT ARE NOT OBVIOUS:
-
-     · localStorage is read inside try/catch because Safari in private mode and
-       some embedded webviews THROW on access rather than returning null. A
-       theme script must never be the thing that breaks the page.
-
-     · "System" is stored as the ABSENCE of a value, not the string "system".
-       That is what lets a reader who has never chosen keep following their OS,
-       and what makes useSystem() a removeItem call.
-
-     · root.style.colorScheme is set alongside the attribute so form controls,
-       scrollbars and the canvas render dark in the first frame too. Without it
-       a dark page still gets a white scrollbar on load.
-
-     · window.nsTheme is the NSDS name and the storage key is NSDS's, both kept
-       deliberately: assets/js/nav.js is vendored from NSDS unchanged and calls
-       it, and a shared key means a reader moving between this site and the LMS
-       does not get a different theme on each.
+     "System" is stored as the ABSENCE of a value, which is what lets a reader
+     who has never chosen keep following their OS — and what makes
+     useSystem() a removeItem call rather than a third stored state.
      ══════════════════════════════════════════════════════════════════════ --}}
 <script>
 (function(){"use strict";
@@ -49,17 +29,13 @@ function apply(t){root.setAttribute("data-theme",t);root.style.colorScheme=t;}
 apply(read()||os());
 if(window.matchMedia){
   var mq=window.matchMedia("(prefers-color-scheme: dark)"),on=function(e){
-    if(read())return;
-    apply(e.matches?"dark":"light");
-  };
+    if(read())return;apply(e.matches?"dark":"light");};
   if(mq.addEventListener)mq.addEventListener("change",on);else if(mq.addListener)mq.addListener(on);
 }
-window.nsTheme={
-  key:KEY,
+window.nsTheme={key:KEY,
   get:function(){return root.getAttribute("data-theme");},
   set:function(v){apply(v);try{localStorage.setItem(KEY,v);}catch(e){}},
   toggle:function(){this.set(root.getAttribute("data-theme")==="dark"?"light":"dark");},
-  useSystem:function(){try{localStorage.removeItem(KEY);}catch(e){}apply(os());}
-};
+  useSystem:function(){try{localStorage.removeItem(KEY);}catch(e){}apply(os());}};
 })();
 </script>

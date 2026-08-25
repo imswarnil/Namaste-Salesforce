@@ -1,13 +1,22 @@
 {{!< default}}
-{{!-- The generic listing, and the fallback for any route without its own
-     template — including `/` when the publisher has not uploaded a routes.yaml
-     mapping it to home.hbs. It therefore has to be a real page. --}}
+{{!-- The collection listing, and the fallback for any route without its own
+     template — including `/` when no routes.yaml maps it to home.hbs. So it
+     has to be a real page, not a stub. --}}
 <section class="ns-band ns-band--tight">
     <div class="ns-band__inner">
-        <div class="ns-band__head">
-            <h1 class="ns-band__title">{{@site.title}}</h1>
-            {{#if @site.description}}<p class="ns-band__lede">{{@site.description}}</p>{{/if}}
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <p class="ns-kicker">{{t "Writing"}}</p>
+                <h1 class="ns-band__title">{{@site.title}}</h1>
+                {{#if @site.description}}<p class="ns-band__lede">{{@site.description}}</p>{{/if}}
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/rss/">
+                    <i class="ph ph-rss-simple" aria-hidden="true"></i> {{t "RSS"}}
+                </a>
+            </div>
         </div>
     </div>
 </section>
-{{> "collection" card="blog" rail=true}}
+
+{{> "listing" rail=true}}

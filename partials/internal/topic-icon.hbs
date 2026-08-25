@@ -1,29 +1,18 @@
-{{!-- ══════════════════════════════════════════════════════════════════════
-     topic-icon — a glyph for a tag, inferred from its slug.
-     ------------------------------------------------------------------------
-     Ghost gives a tag a name, a slug, a description and an image — and no
-     icon. So a card that wants a glyph has to infer one, and this is the one
-     place that inference lives: it is needed by the path card, the track
-     card and the course card, and copied three times it would drift the
-     first time a topic was added.
+{{!-- topic-icon — a glyph for a tag, inferred from its slug.
 
-     `{{#match slug "~^" "…"}}` is a STARTS-WITH match, so `apex` catches
-     `apex`, `apex-masterclass` and `apex-basics` from one branch.
+     Ghost gives a tag no icon field, so a card that wants one must infer it,
+     and this is the single place that inference lives — the path card, the
+     track card and the course card all need the same answer.
 
-     ⚠ ORDER MATTERS — the more specific prefix goes first, same rule as the
-     post dispatcher. And unlike the navigation icons, this one ALWAYS emits
-     something: .ns-trackcard__icon is a bordered box, and an empty box reads
-     as a broken image rather than as a card without an icon.
+     `{{#match slug "~^" "…"}}` is STARTS-WITH, so `apex` catches `apex` and
+     `apex-masterclass` from one branch. More specific prefixes go first.
 
-     ⚠ EVERY GLYPH HERE MUST BE IN THE SUBSET. assets/css/namaste-ui.css
-     carries a Phosphor subset generated from the glyphs the design system
-     itself uses — a `ph-` class outside it renders as EMPTY SPACE, with no
-     error and no fallback box. ph-user-gear, ph-plugs-connected and
-     ph-sliders-horizontal were all written here first and all three were
-     blank; they are ph-user, ph-plugs and ph-gear now. Check before adding:
+     Unlike the navigation icons this ALWAYS emits something: the containers
+     are bordered boxes, and an empty box reads as a broken image.
 
-         grep 'ph-your-icon' assets/css/namaste-ui.css
-     ══════════════════════════════════════════════════════════════════════ --}}
+     ⚠ Every glyph must be in the Phosphor subset — see internal/README.
+     ph-user-gear, ph-plugs-connected and ph-sliders-horizontal are NOT, and
+     all three rendered blank before being replaced. --}}
 {{~#match slug "~^" "admin"~}}<i class="ph ph-user" aria-hidden="true"></i>
 {{~else match slug "~^" "apex"~}}<i class="ph ph-code" aria-hidden="true"></i>
 {{~else match slug "~^" "lwc"~}}<i class="ph ph-brackets-curly" aria-hidden="true"></i>

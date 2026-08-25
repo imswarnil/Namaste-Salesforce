@@ -1,56 +1,50 @@
 # routes.yaml — Namaste Salesforce
 #
 # Upload in Ghost Admin → Settings → Labs → Routes. This file is NOT read from
-# the theme folder; it lives here so it is versioned alongside the templates
-# that depend on it.
+# the theme folder; it lives here so it is versioned with the templates that
+# depend on it.
 #
-# ⚠️ A ROUTE POINTING AT A MISSING TEMPLATE IS A 400, not a fallback. Ghost
-# answers "Missing template {name}.hbs for route /x/" and the page is dead.
-# So every `template:` below names a file that exists TODAY. See
+# ⚠ A ROUTE POINTING AT A MISSING TEMPLATE IS A 400, not a fallback — Ghost
+# answers "Missing template {name}.hbs" and the page is dead. Every
+# `template:` below names a file that ships with this theme. See
 # abstract/decisions/0003.
 #
-# THE TEMPLATES NOW EXIST, so each collection names its own. That was the plan
-# recorded here when they did not: URLs are the expensive thing to change and
-# were settled first, templates are the cheap thing and swapping one in is a
-# one-line edit that changes no URL and breaks no link. This is that edit.
+# ── How the two-level URLs work ─────────────────────────────────────────────
+# A COURSE is a tag, and its lessons are the posts carrying that tag as their
+# PRIMARY tag. The course's own overview post has a slug equal to its tag's
+# slug. From those two facts:
 #
-# THE ONE RULE (abstract/01): a PARENT post's slug must equal its own tag's
-# slug. Courses, training modules and docs sections are all parents. The
-# permalink uses {slug} rather than {primary_tag} because a parent shares its
-# tag with all of its children — {primary_tag} would be ambiguous and Ghost
-# would 301 to the wrong parent. And because slug == tag, the children's
-# {primary_tag} still nests them under it. The two rules are one mechanism.
+#     /courses/{slug}/                  the overview   (slug == tag)
+#     /courses/{primary_tag}/{slug}/    its lessons, nested automatically
+#
+# The parent permalink uses {slug} rather than {primary_tag} because the
+# parent SHARES its tag with every child — {primary_tag} would be ambiguous
+# and Ghost would 301 to the wrong parent. Training sections and docs sections
+# are the same shape. abstract/01 owns this model; it is the single most
+# expensive thing here to change later.
 
 routes:
-  # `/` needs home.hbs. index.hbs does NOT cover it: `/` is a routed template,
-  # not the collection index.
   /: home
 
 collections:
-  # ── Courses ────────────────────────────────────────────────────────────
-  # A course is a POST tagged #course whose primary tag is its own course tag,
-  # and whose slug equals that tag's slug.
+  # ── Courses ──────────────────────────────────────────────────────────────
   /courses/:
     permalink: /courses/{slug}/
     template: courses
     filter: tag:hash-course
 
-  # Lessons nest under their course automatically, because a lesson's PRIMARY
-  # tag is its course's tag. The /lessons/ path is only this collection's
-  # archive index; the lesson URLs live under /courses/.
+  # The /lessons/ path is only this collection's archive index; the lesson
+  # URLs themselves live under /courses/.
   /lessons/:
     permalink: /courses/{primary_tag}/{slug}/
     template: index
     filter: tag:hash-lesson
 
-  # ── Training ───────────────────────────────────────────────────────────
-  # Same two-level shape as courses. Modules are discovered from content, so
-  # adding one is Ghost Admin work — a tag, and a post whose slug matches it.
-  # Module ORDER is published_at asc; backdate to reorder.
+  # ── Training ─────────────────────────────────────────────────────────────
   # The collection ROOT is /training/, which is also the parent of every
-  # module's URL. Ghost is fine with that — /courses/ does the same thing —
-  # and it means the listing lives at the path a reader would guess, with no
-  # second route to keep in step.
+  # section's URL. Ghost is fine with that — /courses/ does the same — and it
+  # puts the listing at the path a reader would guess, with no second route to
+  # keep in step.
   /training/:
     permalink: /training/{slug}/
     template: training
@@ -61,7 +55,7 @@ collections:
     template: index
     filter: tag:hash-training-lesson
 
-  # ── Docs — the same two-level shape again, and that is the point ────────
+  # ── Documentation ────────────────────────────────────────────────────────
   /docs/:
     permalink: /docs/{slug}/
     template: docs
@@ -72,7 +66,7 @@ collections:
     template: index
     filter: tag:hash-docs-page
 
-  # ── Flat collections ───────────────────────────────────────────────────
+  # ── Flat collections ─────────────────────────────────────────────────────
   /blog/:
     permalink: /blog/{slug}/
     template: blog
@@ -83,17 +77,12 @@ collections:
     template: resources
     filter: tag:hash-resource
 
-  /toolkit/:
-    permalink: /toolkit/{slug}/
-    template: index
-    filter: tag:hash-product
-
-  # Catch-all, and it must stay LAST. A post carrying none of the tags above
+  # Catch-all, and it MUST stay last. A post carrying none of the tags above
   # still needs a URL; without this it has none and 404s. Ghost matches
   # collections in order, so an unfiltered collection placed earlier would
   # swallow everything below it.
   /archive/:
-    permalink: /archive/{slug}/
+    permalink: /{slug}/
     template: index
 
 taxonomies:
