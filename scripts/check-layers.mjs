@@ -17,7 +17,7 @@
 
    with the design system LAST — beating this theme's own layer and every
    Tailwind utility. No error, no warning; overrides just stop working, and
-   abstract/05 records that the project shipped exactly that bug before.
+   abstract/04 records that the project shipped exactly that bug before.
 
    So the check runs on the OUTPUT. Checking the source would only prove the
    statement was written, which was never the failing part.
@@ -34,6 +34,28 @@ try {
 } catch {
     console.error(`✗ ${FILE} not found — run \`npm run build\` first.`);
     process.exit(1);
+}
+
+/* ── Declared order beats emitted order ───────────────────────────────────
+   A bare `@layer a, b, c;` statement fixes the precedence outright: where the
+   BLOCKS then appear is irrelevant, and the browser honours the statement.
+
+   In a development build the statement survives, and the blocks legitimately
+   come out in a different order — Tailwind emits its utilities early, so the
+   raw file reads theme → base → utilities → ns-components → components while
+   behaving as theme → base → ns-components → components → utilities.
+
+   cssnano DROPS the statement in production, once the blocks have been
+   reordered to match it. That is the build where block order becomes the only
+   surviving evidence, and it is the build this check exists for.
+
+   Checking block order unconditionally fails every dev build — and a check
+   that cries wolf in the edit loop is a check someone deletes. So: look for
+   the statement first, and only fall through to the blocks when it is gone. */
+const statement = new RegExp('@layer\\s+' + WANT.join('\\s*,\\s*') + '\\s*;');
+if (statement.test(css)) {
+    console.log(`✓ cascade contract holds — declared: ${WANT.join(' → ')}`);
+    process.exit(0);
 }
 
 const seen = [];
@@ -56,7 +78,7 @@ if (!ordered) {
     console.error('  expected order: ' + WANT.join(' → '));
     console.error('  actual         : ' + (actual.join(' → ') || '(no layers found)'));
     console.error('  Check that screen.css still opens with the bare @layer');
-    console.error('  statement BEFORE any @import. See abstract/05.');
+    console.error('  statement BEFORE any @import. See abstract/04.');
     process.exit(1);
 }
 

@@ -1,0 +1,31 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   theme/navbar.css — Ghost's flat navigation, in NSDS's nested chrome.
+   ----------------------------------------------------------------------------
+   Three rules, and all three are TRANSLATION rather than design: Ghost's
+   navigation setting is a flat list, NSDS's bar and sheet are nested, and
+   these are the seams. Nothing here decides how anything looks.
+
+   The markup is partials/navbar/links.hbs and sheet-links.hbs; read the
+   comment at the top of partials/navigation.hbs first.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── A top-level item with no children has no dropdown ───────────────────
+     Ghost's navigation is flat, so navbar/links.hbs cannot know whether an
+     item has children until it has already emitted the trigger for it. It
+     emits one for every parent, and the empty case is removed here.
+
+     THIS is why the whitespace control in that partial is load-bearing: one
+     newline inside the div and :empty stops matching, and every item in the
+     bar grows a caret that opens nothing. */
+  .ns-navitem:has(> .ns-navmenu:empty) > .ns-topnav__trigger { display: none; }
+  .ns-navsheet__sub:empty { display: none; }
+
+  /* ── Secondary-nav children, indented ────────────────────────────────────
+     The footer shows the whole tree flat — see partials/footer/links.hbs — so
+     a child needs the one thing that says it is a child. .ns-navsheet__sub
+     uses --space-6 for the same job in the sheet; --space-4 here because a
+     footer column is narrower than a full-width sheet. */
+  .ns-footer__sub { padding-inline-start: var(--space-4); }
+}

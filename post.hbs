@@ -1,35 +1,27 @@
 {{!< default}}
 {{!-- ══════════════════════════════════════════════════════════════════════
-     post.hbs — THE DISPATCHER.
+     post.hbs — THE DISPATCHER, not a page.
      ------------------------------------------------------------------------
-     Ghost gives a theme exactly one post.hbs for every post on the site, and
-     this site has kinds of post that are genuinely different PAGES. So this
-     renders nothing itself: it reads tags and hands off.
+     Ghost renders every post through this one template, so the kind of page
+     a post becomes is decided here, by its internal tag. Getting this wrong
+     renders every post as the wrong kind of page — which is why it is second
+     in abstract/ after the content model itself.
 
-     ⚠ BRANCH ORDER IS LOAD-BEARING. The PARENT of each pair is tested before
-     its child — #course before #lesson, #training-module before
-     #training-lesson — because an overview is not a lesson, and matching the
-     lesson branch would render a course overview inside a lesson layout. A
-     new branch goes where its SPECIFICITY demands, not at the end.
+     THE RULE: one branch per collection, each delegating to exactly one
+     partial in partials/post/, and NO markup in this file. The moment a
+     branch grows its own layout, the two collections that share it start
+     drifting.
 
-     THE NAMES ARE abstract/18's, which owns the vocabulary and supersedes the
-     older list abstract/02 was written against.
-
-     default.hbs forks on the SAME tags to decide whether the site bar
-     appears, because a reading surface must not get a marketing bar. THE TWO
-     LISTS MUST STAY IN AGREEMENT.
+     ⚠ SKELETON. `article` is the only kind that exists. Each further branch
+     arrives with its collection's spec in abstract/collections/, which names
+     the tag. Do not invent a tag here.
      ══════════════════════════════════════════════════════════════════════ --}}
-
 {{#post}}
-    {{#has tag="#course"}}
-        {{> "post/course"}}
-    {{else has tag="#training-module, #docs-section"}}
-        {{> "post/section"}}
-    {{else has tag="#lesson"}}
+    {{#has tag="#lesson"}}
         {{> "post/lesson"}}
-    {{else has tag="#training-lesson, #docs-page"}}
-        {{> "post/training-post"}}
+    {{else has tag="#docs-page"}}
+        {{> "post/docs"}}
     {{else}}
-        {{> "post/blog"}}
+        {{> "post/article"}}
     {{/has}}
 {{/post}}

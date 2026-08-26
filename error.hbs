@@ -1,16 +1,18 @@
 {{!< default}}
-{{!-- NSDS's error-page.html. It extends default.hbs on purpose, so a reader
-     who hits an error still has the site's navigation and can leave without
-     the back button — which is the entire job of an error page. --}}
-<section class="ns-band">
-    <div class="ns-band__inner ns-page--prose">
-        <p class="ns-kicker">{{statusCode}}</p>
-        <h1 class="ns-band__title">{{message}}</h1>
-        <div class="ns-band__actions">
-            <a class="ns-btn ns-btn--primary" href="{{@site.url}}">{{t "Go to the front page"}}</a>
-            <button type="button" class="ns-btn ns-btn--outline" data-ghost-search>
-                <i class="ph ph-magnifying-glass" aria-hidden="true"></i> {{t "Search"}}
-            </button>
+{{!-- Every non-404 error.
+
+     {{error.statusCode}}, not {{error.statusCode}} — the bare forms are the legacy
+     ones and gscan fails the theme on them. In production Ghost hides the
+     stack, which is why there is nothing here to print one.
+
+     role="alert" is NSDS's own on this component. --}}
+<div class="ns-page ns-page--narrow">
+    <div class="ns-empty ns-error-state" role="alert">
+        <p class="ns-empty__code">{{error.statusCode}}</p>
+        <p class="ns-empty__title">{{error.message}}</p>
+        <p class="ns-empty__text">{{t "Something went wrong on our side."}}</p>
+        <div class="ns-empty__action">
+            <a class="ns-btn ns-btn--primary" href="{{@site.url}}">{{> "icons/home"}} {{t "Homepage"}}</a>
         </div>
     </div>
-</section>
+</div>

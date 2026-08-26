@@ -26,7 +26,7 @@ Everything is a Ghost POST. What it *is* comes from its tags.
 | Blog post | `#blog` | — | `/blog/{slug}/` |
 | anything else | — | — | `/archive/{slug}/` |
 
-> **[`18-tag-registry.md`](18-tag-registry.md) is canonical for these names**,
+> **the root abstract's [`05-content/tag-registry.md`](../../../../../abstract/05-content/tag-registry.md) is canonical for these names**,
 > and explains why a three-level hierarchy is impossible in Ghost. This table is
 > a summary of it — if the two ever disagree, 18 wins and this gets fixed.
 
@@ -102,7 +102,7 @@ eleventh.
 **Docs now use the same two-level shape as training**: a section is a POST
 tagged `#docs-section`, so adding one is Ghost-Admin-only work and the section
 gets a real overview page. The reasoning is in
-[`18`](18-tag-registry.md#docs-become-a-collection-and-this-is-the-biggest-win-here);
+the root abstract's `05-content/tag-registry.md`;
 `13`'s rule is what forced it — *if adding a new one should be possible without
 touching this repo, it must be a collection.*
 
@@ -241,7 +241,7 @@ collections:
   # needing a routes.yaml edit AND a partial edit to add one. Nobody ever added
   # an eleventh. Giving each section a backing POST tagged #docs-section makes
   # it Ghost-Admin-only work, and gives the section a real overview page that
-  # `data: tag.x` could never have. See abstract/18.
+  # `data: tag.x` could never have. See the root abstract's 05-content/tag-registry.md.
   /docs-sections/:
     permalink: /docs/{slug}/
     template: docs-section
@@ -257,7 +257,7 @@ collections:
     template: resources
     filter: tag:hash-resource
 
-  # Things for sale. Ghost takes no one-time payment — see abstract/18 and 20.
+  # Things for sale. Ghost takes no one-time payment — see the root abstract's 05-content/tag-registry.md and 06-growth/subscriptions-and-growth.md.
   /toolkit/:
     permalink: /toolkit/{slug}/
     template: toolkit

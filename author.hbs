@@ -1,22 +1,19 @@
 {{!< default}}
-{{!-- An author archive. Separate from index.hbs for the same reason tag.hbs
-     is: Ghost exposes the author as a block context only here. --}}
-{{#author}}
-    <header class="ns-taghead">
-        <div class="ns-page">
-            <h1 class="ns-taghead__title">
-                {{name}}
-                <span class="ns-taghead__count">{{plural ../pagination.total empty=(t "No posts") singular=(t "% post") plural=(t "% posts")}}</span>
-            </h1>
-            {{#if bio}}<p class="ns-taghead__desc">{{bio}}</p>{{/if}}
-            {{#if website}}
-                <div class="ns-taghead__actions">
-                    <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{website}}" target="_blank" rel="noopener">
-                        <i class="ph ph-link-simple" aria-hidden="true"></i> {{t "Website"}}
-                    </a>
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        {{#author}}
+            <div class="ns-band__head">
+                <div>
+                    <span class="ns-kicker">{{t "Author"}}</span>
+                    <h1 class="ns-band__title">{{name}}</h1>
+                    {{#if bio}}<p class="ns-band__lede">{{bio}}</p>{{/if}}
                 </div>
-            {{/if}}
+            </div>
+        {{/author}}
+
+        <div class="ns-blog-grid">
+            {{#foreach posts}}{{> "post-card"}}{{/foreach}}
         </div>
-    </header>
-{{/author}}
-{{> "listing" rail=true}}
+        {{> "pagination"}}
+    </div>
+</section>

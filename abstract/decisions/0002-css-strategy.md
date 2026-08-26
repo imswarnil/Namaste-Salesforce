@@ -12,7 +12,7 @@ chrome forced the question, because a navbar cannot be written without one.
 
 The question is usually framed as *"Tailwind, or CSS variables?"* — and
 measuring NSDS shows that framing is wrong. The full measurement is in
-[`../17-consuming-the-design-system.md`](../17-consuming-the-design-system.md);
+[`../03-design-system.md`](../03-design-system.md);
 the load-bearing facts:
 
 - **NSDS is already a CSS-variables system.** 407 custom properties, 663 `.ns-*`
@@ -75,7 +75,7 @@ the layer.
 
 **Weight is currently untrimmed.** The whole bundle ships, including LMS
 surfaces (player, deck, admin, ai, helpdesk) that a Ghost page never renders —
-roughly 200 KB of source. `abstract/17` §4 is explicit that cherry-picking
+roughly 200 KB of source. `abstract/03` §"Weight" is explicit that cherry-picking
 `components/css/` comes **after** the theme renders correctly, never before:
 trimming while you are still discovering which components you need produces the
 silent-missing-style bug, and you will blame the wrong thing.
@@ -122,7 +122,7 @@ bad:
 
 1. **Inline styles** — banned here, and rightly: a `style` attribute cannot be
    overridden by a stylesheet, so it breaks dark mode and the publisher's
-   accent colour silently (`abstract/05`).
+   accent colour silently (`abstract/04`).
 2. **Named theme classes** — one per instance. That is the ~40-class trigger
    this decision already named as the signal to move to B, and it is the exact
    mechanism behind the ~100 duplicated classes in `abstract/10`.

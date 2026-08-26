@@ -1,28 +1,14 @@
 {{!< default}}
-{{!-- 404 specifically, because it is the one error a reader reaches by
-     following a stale link rather than by the site breaking — so it offers a
-     way onward rather than an apology. --}}
-<section class="ns-band">
-    <div class="ns-band__inner ns-page--prose">
-        <p class="ns-kicker">404</p>
-        <h1 class="ns-band__title">{{t "That page has moved or never existed"}}</h1>
-        <p class="ns-band__lede">{{t "The rest of the site is still here."}}</p>
-        <div class="ns-band__actions">
-            <a class="ns-btn ns-btn--primary" href="{{@site.url}}">{{t "Go to the front page"}}</a>
-            <button type="button" class="ns-btn ns-btn--outline" data-ghost-search>
-                <i class="ph ph-magnifying-glass" aria-hidden="true"></i> {{t "Search"}}
-            </button>
+{{!-- A 404 is a navigation problem, so it offers navigation rather than an
+     apology. --}}
+<div class="ns-page ns-page--narrow">
+    <div class="ns-empty ns-error-state" role="alert">
+        <p class="ns-empty__code">404</p>
+        <p class="ns-empty__title">{{t "This page does not exist"}}</p>
+        <p class="ns-empty__text">{{t "The link may be old, or the page may have moved."}}</p>
+        <div class="ns-empty__action">
+            <a class="ns-btn ns-btn--primary" href="{{@site.url}}">{{> "icons/home"}} {{t "Homepage"}}</a>
+            <a class="ns-btn ns-btn--outline" href="{{@site.url}}/archive/rss/">{{> "icons/rss"}} RSS</a>
         </div>
     </div>
-</section>
-
-{{#get "posts" limit="3" include="tags,authors" as |recent|}}
-    {{#if recent}}
-        <section class="ns-band ns-band--sunken">
-            <div class="ns-band__inner">
-                <div class="ns-band__head"><h2 class="ns-band__title">{{t "Recent posts"}}</h2></div>
-                <div class="ns-blog-grid">{{#foreach recent}}{{> "cards/bcard"}}{{/foreach}}</div>
-            </div>
-        </section>
-    {{/if}}
-{{/get}}
+</div>

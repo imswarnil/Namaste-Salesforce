@@ -2,28 +2,29 @@
 <html lang="{{@site.locale}}">
 <head>
 
-    {{!-- Basic meta. Everything advanced — Open Graph, structured data,
-         canonical URLs, the accent colour, members and search — comes from
-         {{ghost_head}} at the foot of this block. --}}
+    {{!-- Basic meta only. Open Graph, structured data, canonicals, the
+         publisher's accent colour, Members and search all come from
+         {{ghost_head}} at the foot of this block — writing any of them by
+         hand here means maintaining a copy of something Ghost already
+         derives from the content. --}}
     <title>{{meta_title}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    {{!-- FIRST, and inline: sets data-theme before the first paint. --}}
+    {{!-- FIRST, and inline: sets data-theme before the first paint. A
+         <script src> lands after the page has already painted, which is the
+         white-flash-on-every-navigation bug. See the partial. --}}
     {{> "theme-init"}}
 
-    {{!-- The faces are declared inside the compiled stylesheet, which the
-         browser only discovers after fetching and parsing it — one round trip
-         later than it could start. Preloading closes that gap, which is what
-         keeps the fallback swap from being visible on a cold load.
+    {{!-- The @font-face rules live inside the compiled stylesheet, so the
+         browser only discovers them one round trip late. Preloading closes
+         that gap, which is what keeps the fallback swap invisible on a cold
+         load.
 
-         Only the two that draw ABOVE THE FOLD: the sans and the mono. The
-         icon font is left to be discovered normally, because an icon arriving
-         100ms late is invisible where a reflowing paragraph is not.
-
-         `crossorigin` is required even though these are same-origin — fonts
-         are always fetched in CORS mode, and a preload without it produces a
-         second, unused download rather than a warm cache hit. --}}
+         Only the two faces that draw ABOVE THE FOLD. `crossorigin` is
+         required even though these are same-origin — fonts are always
+         fetched in CORS mode, and a preload without it produces a second,
+         unused download instead of a warm cache hit. --}}
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="{{asset "fonts/switzer-var-latin.woff2"}}">
     <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -36,48 +37,47 @@
 </head>
 <body class="{{body_class}}">
 
-    {{!-- FIRST element inside <body>, per NSDS's skip-link template. The
-         target needs id="main" AND tabindex="-1" — without the tabindex,
-         Safari and Chrome move the viewport but leave focus behind, and the
-         link accomplishes nothing. --}}
+    {{!-- FIRST element inside <body>, per NSDS's skip-link archetype. The
+         target below needs id="main" AND tabindex="-1" — without the
+         tabindex, Safari and Chrome move the viewport but leave focus
+         behind, and the link accomplishes nothing. --}}
     <a class="ns-skip-link ns-visually-hidden" href="#main">{{t "Skip to content"}}</a>
 
-    {{!-- ── CHROME DISPATCH ──────────────────────────────────────────────
-      A reading surface must not get a marketing bar. The reading kinds carry
+    {{!-- ── CHROME DISPATCH ───────────────────────────────────────────────
+      A reading surface must not get the marketing bar. Reading kinds carry
       their own chrome inside their own partial — the training rail, the
       course player — so this only decides whether the SITE bar appears.
 
-      abstract/02 is the reference; abstract/18 owns the NAMES, and it
-      supersedes the older list abstract/02 was written against.
-    ────────────────────────────────────────────────────────────────────── --}}
+      ⚠ SKELETON. The tag list below is a placeholder until the collections
+      are specified. Each collection gets one file in abstract/collections/,
+      and the tag that identifies it is decided there, not here. Adding a
+      name to this list before that file exists is how the last content model
+      grew by accretion — see abstract/10-how-this-went-wrong.md.
+    ─────────────────────────────────────────────────────────────────────── --}}
     {{#is "post"}}
       {{#post}}
-        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}{{else}}
-          {{> "chrome/topnav"}}
-        {{/has}}
+        {{#has tag="#lesson, #docs-page"}}{{else}}{{> "navbar/navbar"}}{{/has}}
       {{/post}}
     {{else}}
-      {{> "chrome/topnav"}}
+      {{> "navbar/navbar"}}
     {{/is}}
 
-    {{> "chrome/nav-sheet"}}
+    {{> "navbar/sheet"}}
 
     <main id="main" tabindex="-1">{{{body}}}</main>
 
     {{#is "post"}}
       {{#post}}
-        {{#has tag="#lesson, #training-lesson, #training-module, #docs-page, #docs-section"}}{{else}}
-          {{> "chrome/footer"}}
-        {{/has}}
+        {{#has tag="#lesson, #docs-page"}}{{else}}{{> "footer/footer"}}{{/has}}
       {{/post}}
     {{else}}
-      {{> "chrome/footer"}}
+      {{> "footer/footer"}}
     {{/is}}
 
-    {{!-- One bundle, built by gulp. All of it is NSDS's own script layer and
-         all of it is progressive enhancement — the sheet, the theme controls,
-         the curriculum rail, the outline, the reading line and the code copy
-         button all degrade to something that works. --}}
+    {{!-- One bundle, built by gulp from NSDS's own script layer. All of it is
+         progressive enhancement: the sheet, the theme controls, the outline,
+         the reading line and the code copy button each degrade to something
+         that still works. theme-init is deliberately NOT in it. --}}
     <script src="{{asset "built/main.js"}}" defer></script>
 
     {{ghost_foot}}

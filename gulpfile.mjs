@@ -69,6 +69,17 @@ export function js() {
     return src(SCRIPTS).pipe(concat('main.js')).pipe(dest('assets/built'));
 }
 
+/* ── The generated icon bridge ─────────────────────────────────────────────
+   NSDS styles 85 icon rules by ELEMENT (`.ns-code__btn i`) because it was
+   written against an icon font; this theme draws inline SVG, so each of
+   those rules misses and the icon renders unstyled rather than not at all.
+   Regenerated from the vendored bundle, so it cannot drift from upstream.
+   partials/icons/README.md carries the whole argument. */
+export function iconBridge(cb) {
+    execFileSync('node', ['scripts/build-icon-bridge.mjs'], { stdio: 'inherit' });
+    cb();
+}
+
 /* Runs on the OUTPUT — see scripts/check-layers.mjs for why the source would
    prove nothing. */
 export function checkLayers(cb) {
@@ -76,7 +87,16 @@ export function checkLayers(cb) {
     cb();
 }
 
-export const build = series(clean, parallel(css, js), checkLayers);
+/* The two silent-failure checks. Both catch things that render — an
+   undefined class renders as bare markup, a missing icon partial renders as
+   nothing — which is why neither gscan nor a green build sees them. */
+export function checkMarkup(cb) {
+    execFileSync('node', ['scripts/check-classes.mjs'], { stdio: 'inherit' });
+    execFileSync('node', ['scripts/check-icons.mjs'], { stdio: 'inherit' });
+    cb();
+}
+
+export const build = series(clean, iconBridge, parallel(css, js), checkLayers, checkMarkup);
 
 export function dev() {
     /* The .hbs glob matters as much as the .css one: Tailwind emits utilities
@@ -85,6 +105,9 @@ export function dev() {
        next full build. */
     watch(['assets/css/**/*.css', '**/*.hbs', '!node_modules/**'], css);
     watch(SCRIPTS, js);
+    /* Not the icon bridge: it only changes when the vendored bundle does,
+       and that only happens on a deliberate ./scripts/sync-nsds.sh. */
+    watch(['**/*.hbs', '!node_modules/**'], checkMarkup);
 }
 
 export default series(build, dev);

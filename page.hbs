@@ -1,36 +1,31 @@
 {{!< default}}
-{{!-- A static page. Same reading surface as a post, without the dateline: a
-     page is not news, and "published 3 years ago" under an About page only
-     makes it look neglected.
-
-     `@page.show_title_and_feature_image` is the editor's per-page switch and
-     Ghost requires a theme to honour it — a landing page built out of Koenig
-     cards usually supplies its own headline, and repeating the title above it
-     prints the same words twice. --}}
-{{#page}}
-<article class="{{post_class}}">
-
+{{!-- Pages are standalone: no author box, no next/previous, no tags. A page
+     that wants a post's furniture is a post. --}}
+{{#post}}
+<div class="ns-page ns-page--narrow">
+    {{!-- @page.show_title_and_feature_image is a per-page toggle in Ghost's
+         editor, for a page that opens with its own designed hero and must
+         not get a second title above it. gscan fails a page template that
+         ignores it, and rightly: the switch is in the UI either way, so
+         ignoring it makes the editor lie. --}}
     {{#if @page.show_title_and_feature_image}}
         <header class="ns-posthead">
             <div class="ns-posthead__inner">
                 <h1 class="ns-posthead__title">{{title}}</h1>
                 {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
                 {{#if feature_image}}
-                    <span class="ns-posthead__cover">
-                        {{> "media" src=feature_image eager=true
-                                    sizes="(min-width: 88rem) 1408px, 100vw"
-                                    alt=(concat "" feature_image_alt)}}
-                    </span>
+                    <img class="ns-posthead__cover" src="{{img_url feature_image size="xl"}}"
+                         srcset="{{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+                         sizes="(min-width: 1200px) 1200px, 100vw"
+                         alt="{{#if feature_image_alt}}{{feature_image_alt}}{{/if}}">
                 {{/if}}
             </div>
         </header>
     {{/if}}
 
-    <div class="ns-post ns-post--wide">
-        <article class="ns-post__body">
-            <div class="gh-content ns-prose" id="post-body">{{content}}</div>
-        </article>
-    </div>
-
-</article>
-{{/page}}
+    {{!-- .ns-prose is the READING surface — 17px, 68ch, 1.7 leading — not the
+         14px UI scale. Ghost's Koenig output carries no classes of its own,
+         so this one wrapper styles all of it. --}}
+    <div class="ns-prose">{{content}}</div>
+</div>
+{{/post}}

@@ -1,59 +1,68 @@
 # Namaste Salesforce — Ghost theme
 
-Built on [NS-Design-System](https://nsds.imswarnil.com/). Every page is a port
-of an archetype in `NS-Design-System/templates/`, with the marked slots swapped
-for Ghost helpers — the procedure that system's own `docs/INTEGRATION.md` §5
-specifies. The theme adds no design opinions of its own.
+A Ghost theme for a Salesforce learning site, built as a **port of
+[NS Design System](../../../../NS-Design-System)** — not a likeness of it.
 
-## Develop
+Ghost owns the content model through `routes.yaml` and tags. NSDS owns how
+everything looks. The theme is the wiring between them, and stays thin.
+
+## Status: skeleton
+
+The foundation is built and green — build, checks, CI/CD, chrome, reading
+surface, icons, fonts. **The collections are not built, deliberately:** each
+page family gets a spec in [`abstract/collections/`](abstract/collections/)
+before any template is written for it. All eight are currently unanswered.
+
+## Quick start
 
 ```bash
 npm install
-npm run dev      # watch and rebuild
-npm run build    # one production build
+npm run dev      # gulp: build, then watch and rebuild
+npm run build    # NODE_ENV=production — one production build
 npm test         # build, then gscan
 ```
 
-`assets/css/screen.css` is the source; `assets/built/` is what Ghost serves.
-It is committed, because Ghost serves the theme as uploaded and there is no
-build step on the server — and CI rebuilds and diffs it, which is what makes
-committing generated files safe.
+Then point a local Ghost at `content/themes/`, and upload `routes.yaml` in
+**Admin → Settings → Labs → Routes** — Ghost does not read it from the theme.
 
-## Set up a local Ghost
+## Layout
 
-```bash
-# 1. Admin → Settings → Labs → Routes  → upload routes.yaml      ← FIRST
-# 2. Admin → Settings → Labs → Import  → dummy-content/import.json
 ```
-
-Step 1 before step 2. Without `routes.yaml` the collections do not exist, the
-posts import with no URLs, and every page looks broken for reasons that have
-nothing to do with the theme.
-
-Regenerate the fixture with `python3 scripts/build-import.py`.
-
-## The pages
-
-| URL | Template | NSDS archetype |
-|---|---|---|
-| `/` | `home.hbs` | `homepage` |
-| `/blog/` | `blog.hbs` | `blog-listing` |
-| `/blog/{post}/` | `post/blog` | `blog-post` |
-| `/courses/` | `courses.hbs` | `course-listing` |
-| `/courses/{course}/` | `post/course` | `course-detail` |
-| `/courses/{course}/{lesson}/` | `post/lesson` | `course-player-article` |
-| `/training/` | `training.hbs` | `training-index` |
-| `/training/{section}/` | `post/section` | `training-module` |
-| `/training/{section}/{post}/` | `post/training-post` | `training-post` |
-| `/docs/…` | as training | — |
-| `/tag/{slug}/` | `tag.hbs` | `tag-page` |
-
-A course is a **destination** — its card leads with a glyph and its lessons
-carry an index and an access state. A training section is a **step** — its
-card leads with a numeral and its posts carry a type and a time. NSDS ships
-both pairs; the difference is the information, not decoration.
+assets/
+  built/     COMPILED and committed — Ghost has no build step on the server
+  css/       screen.css (source) + the vendored NSDS bundle + theme/
+  fonts/     Switzer + Roboto Mono, self-hosted, licensed
+  icons/     NSDS's icon font and sprite, vendored
+  js/        NSDS's behaviour layer, vendored
+partials/
+  icons/     THIS theme's icons — one inline-SVG partial each, no comments
+  navbar/    the bar, the mobile sheet, and the pieces they share
+  footer/    link columns, the social row, the newsletter form
+  post/      one partial per kind of reading surface
+  navigation.hbs   what Ghost's {{navigation}} helper renders — read it first
+scripts/     the build and the checks — plain node, each runs standalone
+abstract/    the documentation. Start at abstract/00-README.md.
+```
 
 ## Documentation
 
-`abstract/` — start at `abstract/00-README.md`. `CLAUDE.md` has the rules that
-are easy to break silently.
+**[`abstract/`](abstract/)** is the documentation, ordered by what breaks the
+site if you get it wrong. **[`CLAUDE.md`](CLAUDE.md)** is the same material
+compressed for Claude Code, including the full NSDS reference.
+
+Content strategy, the tag vocabulary, the teaching method and pricing are
+**not** here — they live in the root knowledge base at
+`Namaste Salesforce/abstract/`, because they are shared with the Next.js LMS.
+
+## The rule
+
+> Before writing a rule, a component or a script: check whether **Ghost**
+> already supplies it, then whether **NSDS** already supplies it. The theme's
+> job is only what neither can know about.
+
+[`abstract/10-how-this-went-wrong.md`](abstract/10-how-this-went-wrong.md) is
+what happens when that check is skipped.
+
+## Licence
+
+MIT.
