@@ -1,22 +1,32 @@
 {{!< default}}
-{{!-- The collection listing, and the fallback for any route without its own
-     template — including `/` when no routes.yaml maps it to home.hbs. So it
-     has to be a real page, not a stub. --}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     index.hbs — the fallback listing, ported from NSDS blog-listing.html.
+     ------------------------------------------------------------------------
+     Ghost falls back to this for anything routes.yaml does not name, so it
+     stays generic. A collection that wants a different listing gets its own
+     template AND its own file in abstract/collections/ — never a branch
+     inside this one.
+     ══════════════════════════════════════════════════════════════════════ --}}
 <section class="ns-band ns-band--tight">
     <div class="ns-band__inner">
         <div class="ns-band__head ns-band__head--between">
             <div>
-                <p class="ns-kicker">{{t "Writing"}}</p>
-                <h1 class="ns-band__title">{{@site.title}}</h1>
+                <span class="ns-kicker">{{@site.title}}</span>
+                <h1 class="ns-band__title">{{t "Latest"}}</h1>
                 {{#if @site.description}}<p class="ns-band__lede">{{@site.description}}</p>{{/if}}
             </div>
             <div class="ns-band__actions">
-                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/rss/">
-                    <i class="ph ph-rss-simple" aria-hidden="true"></i> {{t "RSS"}}
-                </a>
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/archive/rss/">{{> "icons/rss"}} RSS</a>
             </div>
         </div>
+
+        {{#if posts}}
+            <div class="ns-blog-grid">
+                {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+            </div>
+            {{> "pagination"}}
+        {{else}}
+            {{> "empty" title=(t "Nothing published yet")}}
+        {{/if}}
     </div>
 </section>
-
-{{> "listing" rail=true}}

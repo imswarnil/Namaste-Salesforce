@@ -1,115 +1,18 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     post/lesson — a COURSE lesson, on NSDS's course-player-article.html.
+     post/lesson — STUB.
      ------------------------------------------------------------------------
-     DELIBERATELY NOT THE TRAINING LAYOUT. A training post is a document with
-     a curriculum beside it; a course lesson is a PLAYER — you are working
-     through a thing you enrolled in, so the page leads with where you are in
-     it and ends with the way onward.
+     A lesson is a reading surface with a curriculum rail, so it does not get
+     the site bar (see the chrome dispatch in default.hbs) and it is NOT a
+     variant of post/article — the rail changes the page's whole column
+     structure.
 
-         .ns-player--article[data-rail]
-             .ns-player__main
-                 .ns-player__railopen         shows the rail on small screens
-                 .ns-breadcrumb
-                 .ns-player__head             __title, __meta
-                 .ns-lprogress--article       the reading line
-                 .ns-player__reading
-                     .ns-toc--inline          the outline, above the article
-                     .ns-player__body > .ns-prose
-                 .ns-player__nav.ns-lesson-nav  previous / next lesson
-             .ns-player__side                 the lesson list
+     The archetype to port is NS-Design-System/templates/course-player-article.html,
+     and its behaviour is assets/js/lms.js. Do not start until
+     abstract/collections/ has the lesson spec: the rail needs to know what a
+     course IS in this content model, and guessing that is how the last
+     version ended up with three copies of a lesson row.
 
-     THE PARENT IS THE PRIMARY TAG. A lesson's sort_order-0 tag is its
-     course's tag — the same fact that nests the URL — so the rail is that
-     tag's other posts, and no second field is needed.
-
-     ⚠ THE {{#get}} WRAPS ONLY THE RAIL. It takes over the block context even
-     with `as |…|`, so wrapping the whole template forces `{{../content}}` —
-     and `content` is a HELPER. Calling a Ghost helper across `../` is
-     forbidden and renders nothing at all.
+     Rendering as an article until then is the honest placeholder — the words
+     are there, the furniture is not.
      ══════════════════════════════════════════════════════════════════════ --}}
-<div class="ns-player ns-player--article {{post_class}}" data-rail="open">
-
-    <div class="ns-player__main">
-
-        <button type="button" class="ns-navicon ns-player__railopen"
-                aria-label="{{t "Show curriculum"}}" aria-expanded="false" aria-controls="lesson-rail">
-            <i class="ph ph-list" aria-hidden="true"></i>
-        </button>
-
-        <nav class="ns-breadcrumb" aria-label="{{t "Breadcrumb"}}">
-            <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{@site.url}}">{{t "Home"}}</a></span>
-            <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{@site.url}}/courses/">{{t "Courses"}}</a></span>
-            {{#primary_tag}}
-                <span class="ns-breadcrumb__item"><a class="ns-breadcrumb__link" href="{{url}}">{{name}}</a></span>
-            {{/primary_tag}}
-        </nav>
-
-        <header class="ns-player__head">
-            <h1 class="ns-player__title">{{title}}</h1>
-            <p class="ns-player__meta">
-                <span class="sp-duration sp-optional">{{~> "internal/duration"~}}</span>
-                <span class="sp-optional">{{~> "internal/level"~}}</span>
-                <span class="sp-optional">{{~> "internal/format"~}}</span>
-            </p>
-        </header>
-
-        {{!-- lms.js drives this from the element named in data-target.
-             Decoration: with JS off the bar stays at zero width. --}}
-        <div class="ns-lprogress ns-lprogress--article" data-target="#post-body"
-             role="progressbar" aria-label="{{t "Reading progress"}}"
-             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-
-        <div class="ns-player__reading">
-            {{!-- The outline sits ABOVE the article here rather than in a
-                 rail, because the rail is already spoken for by the
-                 curriculum. --}}
-            <nav class="ns-toc ns-toc--inline ns-player__toc--inline"
-                 data-toc-from="#post-body" aria-label="{{t "On this page"}}">
-                <span class="ns-toc__title">{{t "On this page"}}</span>
-            </nav>
-
-            <article class="ns-player__body">
-                <div class="gh-content ns-prose" id="post-body">{{content}}</div>
-            </article>
-        </div>
-
-        {{!-- Ghost scopes prev/next to the post's own COLLECTION, which is
-             what makes this the next LESSON rather than the next thing
-             published on the site. --}}
-        <nav class="ns-player__nav ns-lesson-nav" aria-label="{{t "Lesson navigation"}}">
-            {{#prev_post}}
-                <a class="ns-lesson-nav__btn" href="{{url}}">
-                    <i class="ph ph-arrow-left ns-lesson-nav__arrow" aria-hidden="true"></i>
-                    <span class="ns-lesson-nav__dir">{{t "Previous"}}</span>
-                    <span class="ns-lesson-nav__name">{{title}}</span>
-                </a>
-            {{/prev_post}}
-            {{#next_post}}
-                <a class="ns-lesson-nav__btn ns-lesson-nav__btn--next" href="{{url}}">
-                    <span class="ns-lesson-nav__dir">{{t "Next"}}</span>
-                    <span class="ns-lesson-nav__name">{{title}}</span>
-                    <i class="ph ph-arrow-right ns-lesson-nav__arrow" aria-hidden="true"></i>
-                </a>
-            {{/next_post}}
-        </nav>
-
-    </div>
-
-    {{!-- `tag:-hash-course` excludes the course's own OVERVIEW post. It
-         carries the course tag too — that is the slug==tag rule doing its
-         job — so without the exclusion every course lists itself as lesson
-         one, and prev/next walks into it. --}}
-    {{#get "posts" filter="tags:{{primary_tag.slug}}+tag:-hash-course" limit="100" order="published_at asc" include="tags" as |siblings|}}
-        <nav class="ns-player__side" id="lesson-rail" aria-label="{{t "Curriculum"}}">
-            <div class="ns-player__list">
-                {{#foreach siblings}}
-                    {{> "cards/lesson-row" index=@number}}
-                {{/foreach}}
-            </div>
-            <a class="ns-player__side-brand" href="{{../primary_tag.url}}">
-                <i class="ph ph-graduation-cap" aria-hidden="true"></i> {{../primary_tag.name}}
-            </a>
-        </nav>
-    {{/get}}
-
-</div>
+{{> "post/article"}}

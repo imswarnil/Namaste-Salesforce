@@ -1,25 +1,19 @@
 {{!< default}}
-{{!-- A tag archive, on NSDS's tag-page.html.
-
-     Its own template because Ghost exposes the tag as a BLOCK context only
-     here — `{{tag.name}}` parses fine and renders nothing, which is why gscan
-     rejects it rather than leaving it to be found on a live archive. --}}
-{{#tag}}
-    <header class="ns-taghead">
-        <div class="ns-page">
-            {{!-- The # is drawn in CSS, not written in the DOM: a literal hash
-                 is read aloud as "number sign" before every tag name. --}}
-            <h1 class="ns-taghead__title">
-                {{name}}
-                <span class="ns-taghead__count">{{plural ../pagination.total empty=(t "No posts") singular=(t "% post") plural=(t "% posts")}}</span>
-            </h1>
-            {{#if description}}<p class="ns-taghead__desc">{{description}}</p>{{/if}}
-            <div class="ns-taghead__actions">
-                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/rss/">
-                    <i class="ph ph-rss-simple" aria-hidden="true"></i> {{t "Subscribe"}}
-                </a>
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        {{#tag}}
+            <div class="ns-band__head">
+                <div>
+                    <span class="ns-kicker">{{t "Tag"}}</span>
+                    <h1 class="ns-band__title">{{name}}</h1>
+                    {{#if description}}<p class="ns-band__lede">{{description}}</p>{{/if}}
+                </div>
             </div>
+        {{/tag}}
+
+        <div class="ns-blog-grid">
+            {{#foreach posts}}{{> "post-card"}}{{/foreach}}
         </div>
-    </header>
-{{/tag}}
-{{> "listing" rail=true}}
+        {{> "pagination"}}
+    </div>
+</section>

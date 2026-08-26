@@ -38,14 +38,38 @@ jobs:
           fi
           echo "assets/built matches the source."
 
+      # ── The generated icon bridge is not stale ───────────────────────────
+      # NSDS styles 85 icon rules by ELEMENT (`.ns-code__btn i`) because it
+      # was written against an icon font. This theme draws inline SVG, so
+      # each of those rules misses — and the icon renders UNSTYLED rather
+      # than not at all, which is much harder to notice than a missing one.
+      # icon-bridge.css restates them for .ns-icon, generated from the
+      # vendored bundle so it cannot drift. partials/icons/README.md.
+      - name: Icon bridge is current
+        run: node scripts/build-icon-bridge.mjs --check
+
       # ── The cascade contract, re-proved on the OUTPUT ────────────────────
       # The bare @layer statement is minified away once the blocks are in
       # order, so the only record of the contract in the shipped file is the
       # order those blocks appear in. Built without the statement this came
       # out with ns-components LAST — beating the theme's own layer and every
-      # utility, silently. See abstract/05 and decisions/0002.
+      # utility, silently. See abstract/04 and decisions/0002.
       - name: Cascade contract
         run: node scripts/check-layers.mjs
+
+      # ── The two silent-failure checks ────────────────────────────────────
+      # Both catch things that RENDER, which is why neither gscan nor a green
+      # build sees them:
+      #   · an undefined .ns-* class renders as bare markup. That is how the
+      #     last theme accumulated ~100 near-miss names for classes NSDS
+      #     already had — .ns-trackcard for .ns-track-card, and so on.
+      #   · a missing icon partial renders as nothing at all: an invisible
+      #     control that ships.
+      - name: Every .ns-* class is defined
+        run: node scripts/check-classes.mjs
+
+      - name: Every icon partial exists
+        run: node scripts/check-icons.mjs
 
       # Ghost's own validator, in fatal mode: warnings fail too.
       - name: gscan
@@ -57,7 +81,7 @@ jobs:
       - name: No inline styles in templates
         run: |
           if grep -rn 'style="' --include='*.hbs' . ; then
-            echo "::error::Inline style attributes are not allowed. Use a utility or a component class. See abstract/05."
+            echo "::error::Inline style attributes are not allowed. Use a utility or a component class. See abstract/04."
             exit 1
           fi
           if grep -rn '<style' --include='*.hbs' . ; then

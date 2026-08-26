@@ -1,86 +1,50 @@
-# routes.yaml — Namaste Salesforce
+# ════════════════════════════════════════════════════════════════════════════
+# routes.yaml — the URL model. The most expensive file in the theme to change.
+# ----------------------------------------------------------------------------
+# This is NOT part of the theme zip. Ghost stores it separately, and it is
+# uploaded in Admin → Settings → Labs → Routes. It is committed here because
+# the templates below cannot be reasoned about without it.
 #
-# Upload in Ghost Admin → Settings → Labs → Routes. This file is NOT read from
-# the theme folder; it lives here so it is versioned with the templates that
-# depend on it.
+#   ⚠ Every URL on the site comes from this file. Changing a permalink after
+#   publishing means 301-ing every page under it and losing whatever ranking
+#   the old one had. Decide it in abstract/collections/ BEFORE the first post.
 #
-# ⚠ A ROUTE POINTING AT A MISSING TEMPLATE IS A 400, not a fallback — Ghost
-# answers "Missing template {name}.hbs" and the page is dead. Every
-# `template:` below names a file that ships with this theme. See
-# abstract/decisions/0003.
-#
-# ── How the two-level URLs work ─────────────────────────────────────────────
-# A COURSE is a tag, and its lessons are the posts carrying that tag as their
-# PRIMARY tag. The course's own overview post has a slug equal to its tag's
-# slug. From those two facts:
-#
-#     /courses/{slug}/                  the overview   (slug == tag)
-#     /courses/{primary_tag}/{slug}/    its lessons, nested automatically
-#
-# The parent permalink uses {slug} rather than {primary_tag} because the
-# parent SHARES its tag with every child — {primary_tag} would be ambiguous
-# and Ghost would 301 to the wrong parent. Training sections and docs sections
-# are the same shape. abstract/01 owns this model; it is the single most
-# expensive thing here to change later.
+# THE RULE (abstract/decisions/0003): this file names ONLY templates that
+# exist and are servable. Ghost does not validate a `template:` key — it
+# silently falls back to index.hbs, so a typo here is a page that renders but
+# renders wrong.
+# ════════════════════════════════════════════════════════════════════════════
 
 routes:
-  /: home
+
+  # The homepage is a STATIC ROUTE, not a collection index. It is a designed
+  # page — hero, what shipped, latest, subscribe — and a collection index is a
+  # paginated list. Mounting the catch-all here instead would make /page/2/
+  # render the hero a second time, which is duplicate content with a different
+  # URL, and the worst kind because it looks deliberate.
+  /:
+    template: home
 
 collections:
-  # ── Courses ──────────────────────────────────────────────────────────────
-  /courses/:
-    permalink: /courses/{slug}/
-    template: courses
-    filter: tag:hash-course
 
-  # The /lessons/ path is only this collection's archive index; the lesson
-  # URLs themselves live under /courses/.
-  /lessons/:
-    permalink: /courses/{primary_tag}/{slug}/
-    template: index
-    filter: tag:hash-lesson
-
-  # ── Training ─────────────────────────────────────────────────────────────
-  # The collection ROOT is /training/, which is also the parent of every
-  # section's URL. Ghost is fine with that — /courses/ does the same — and it
-  # puts the listing at the path a reader would guess, with no second route to
-  # keep in step.
-  /training/:
-    permalink: /training/{slug}/
-    template: training
-    filter: tag:hash-training-module
-
-  /training-lessons/:
-    permalink: /training/{primary_tag}/{slug}/
-    template: index
-    filter: tag:hash-training-lesson
-
-  # ── Documentation ────────────────────────────────────────────────────────
-  /docs/:
-    permalink: /docs/{slug}/
-    template: docs
-    filter: tag:hash-docs-section
-
-  /docs-pages/:
-    permalink: /docs/{primary_tag}/{slug}/
-    template: index
-    filter: tag:hash-docs-page
-
-  # ── Flat collections ─────────────────────────────────────────────────────
-  /blog/:
-    permalink: /blog/{slug}/
-    template: blog
-    filter: tag:hash-blog
-
-  /resources/:
-    permalink: /resources/{slug}/
-    template: resources
-    filter: tag:hash-resource
-
-  # Catch-all, and it MUST stay last. A post carrying none of the tags above
-  # still needs a URL; without this it has none and 404s. Ghost matches
-  # collections in order, so an unfiltered collection placed earlier would
-  # swallow everything below it.
+  # The catch-all, mounted at /archive/ so the homepage can own /.
+  #
+  # ⚠ THE PERMALINK IS STILL FLAT — /{slug}/, not /archive/{slug}/. The mount
+  # decides where the INDEX lives; the permalink decides where the POSTS live,
+  # and keeping posts at the root means none of these URLs has to move when
+  # the real collections are specified. Do not "tidy" this into
+  # /archive/{slug}/ — that is a decision, and it belongs in
+  # abstract/collections/08-archive.md.
+  #
+  # ⚠ FEED URL. Ghost serves a feed per collection, at <mount>rss/ — so this
+  # site's feed is /archive/rss/, not /rss/. The templates link to it by that
+  # path; if this mount changes, grep the theme for `archive/rss` and change
+  # them with it. When the blog collection is specified it will almost
+  # certainly take that feed over, and this note goes away.
+  #
+  # Unfiltered and LAST: every post lands here until a narrower collection
+  # claims it. A filter here would make any post matching nothing unroutable —
+  # a 404 on a published post, invisible until someone reports it.
   /archive/:
     permalink: /{slug}/
     template: index

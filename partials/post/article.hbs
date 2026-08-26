@@ -1,44 +1,55 @@
-{{!-- post/article — everything inside .ns-post__body.
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/article — the default reading surface.
+     Ported from NS-Design-System/templates/blog-post.html.
+     ------------------------------------------------------------------------
+     Three things here are load-bearing and easy to remove by accident:
 
-     Extracted so the layout branch in post/blog can include it from both arms
-     without duplicating the markup.
+     · #post-body is on the PROSE div, not on <article>. It is what the
+       reading-progress bar measures and what toc.js reads headings from.
+       Move it up a level and both silently stop working.
+     · data-toc-from lets toc.js build the outline from the article's own
+       h2/h3 and add ids to any heading missing one. With JS off the rail is
+       an empty labelled nav, which is why it carries a title.
+     · .ns-prose is the 17px reading scale. Ghost's Koenig output has no
+       classes of its own, so this one wrapper is what styles all of it.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<span class="ns-lprogress ns-lprogress--article" data-target="#post-body"
+      role="progressbar" aria-label="{{t "Reading progress"}}"
+      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></span>
 
-     `id="post-body"` is load-bearing twice: the reading-progress line measures
-     it, and the outline is built from the headings inside it. Pointing the TOC
-     at the whole article instead would put "Read next" and three card titles
-     in the outline. --}}
+<header class="ns-posthead ns-posthead--center">
+    <div class="ns-posthead__inner">
+        {{#primary_tag}}<a class="ns-tag ns-posthead__cat" href="{{url}}">{{name}}</a>{{/primary_tag}}
+        <h1 class="ns-posthead__title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="ns-posthead__standfirst">{{custom_excerpt}}</p>{{/if}}
 
-<div class="gh-content ns-prose" id="post-body">{{content}}</div>
+        <div class="ns-postmeta">
+            {{#primary_author}}
+                <span>
+                    {{#if profile_image}}<img class="ns-postmeta__avatar" src="{{img_url profile_image size="xs"}}" alt="">{{/if}}
+                    <a class="ns-postmeta__author" href="{{url}}">{{name}}</a>
+                </span>
+            {{/primary_author}}
+            <span><time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMMM YYYY"}}</time></span>
+            <span>{{reading_time}}</span>
+        </div>
 
-<div class="sp-post-foot">
+        {{#if feature_image}}
+            <img class="ns-posthead__cover" src="{{img_url feature_image size="xl"}}"
+                 srcset="{{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+                 sizes="(min-width: 1200px) 1200px, 100vw"
+                 alt="{{#if feature_image_alt}}{{feature_image_alt}}{{/if}}">
+            {{#if feature_image_caption}}<span class="ns-posthead__credit">{{feature_image_caption}}</span>{{/if}}
+        {{/if}}
+    </div>
+</header>
 
-    {{#if tags}}
-        <ul class="ns-taglist">
-            {{#foreach tags}}<li><a class="ns-tag ns-tag--pill" href="{{url}}">{{name}}</a></li>{{/foreach}}
-        </ul>
-    {{/if}}
+<div class="ns-post">
+    <nav class="ns-post__rail ns-toc" aria-label="{{t "On this page"}}" data-toc-from="#post-body">
+        <p class="ns-toc__title">{{t "On this page"}}</p>
+    </nav>
 
-    {{> "post/authorbox"}}
-    {{> "post/nav"}}
-
-    {{!-- Related by the post's own primary tag, excluding itself.
-
-         ⚠ THE FILTER CANNOT CONTAIN `../`. Ghost raises
-         `IncorrectUsageError: unsupported path segment ""` — filter strings
-         go through Ghost's own path resolver, which does dotted access but
-         not parent traversal. So the {{#get}} stays at the POST's context,
-         where {{id}} is the post and the tag is `{{primary_tag.slug}}`. --}}
-    {{#if primary_tag}}
-        {{#get "posts" filter="tags:{{primary_tag.slug}}+id:-{{id}}" limit="3" include="tags,authors" as |related|}}
-            {{#if related}}
-                <section class="ns-band ns-band--tight">
-                    <div class="ns-band__head"><h2 class="ns-band__title">{{t "Read next"}}</h2></div>
-                    <div class="ns-blog-grid">
-                        {{#foreach related}}{{> "cards/bcard" minimal=true}}{{/foreach}}
-                    </div>
-                </section>
-            {{/if}}
-        {{/get}}
-    {{/if}}
-
+    <article class="ns-post__body">
+        <div class="ns-prose" id="post-body">{{content}}</div>
+    </article>
 </div>

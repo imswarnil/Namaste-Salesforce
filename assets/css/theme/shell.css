@@ -1,0 +1,26 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   theme/shell.css — the page shell.
+   ----------------------------------------------------------------------------
+   Document-level layout that Ghost's <body> needs and NSDS has no opinion
+   about, because NSDS styles components rather than pages.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── The footer sits at the bottom, always ───────────────────────────────
+     On a short page — a 404, an empty tag archive, a two-line about page — a
+     normal-flow footer stops halfway down the viewport with blank space
+     beneath it, which reads as a page that failed to finish loading.
+
+     A flex column with <main> allowed to grow fixes it in three declarations,
+     and unlike position:fixed the footer still scrolls away on a long page.
+
+     100dvh rather than 100vh: on iOS Safari vh is the height WITHOUT the
+     collapsing browser chrome, so 100vh forces a scrollbar onto every page. */
+  body {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100dvh;
+  }
+  body > main { flex: 1 0 auto; }
+}

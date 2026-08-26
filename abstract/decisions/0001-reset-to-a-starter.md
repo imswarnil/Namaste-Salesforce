@@ -43,7 +43,7 @@ have preserved the pages but preserved the ambiguity too — the duplication was
 ## Consequences
 
 - **The site does not render its real page types.** That is the accepted price,
-  and it is why `../15-starting-from-zero.md` exists.
+  and it is why `../00-README.md` states what exists now rather than what once did.
 - **Everything is recoverable from git.** The last full implementation is at
   `f8ec6d8` and its parents. One exception: `partials/icons.hbs`, 125 icons
   drawn to a single contract, has **no cheap regeneration path**. Recover it
