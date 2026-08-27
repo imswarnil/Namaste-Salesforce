@@ -1,16 +1,8 @@
 # 01 · Home
 
-> **STATUS: unspecified.** Nothing is built for this yet, and nothing should
-> be until this file says what it is. Write in the blanks; delete the prompts
-> as you answer them. `README.md` in this folder explains why the file comes
-> first.
-
----
-
 ## 1 · What it is, in one paragraph
 
-*What is this surface for, and who arrives at it? If you cannot say it without
-naming another collection, the two may be one thing.*
+I want homepage to be homepage layout hbs in theme where how it uses default and have partials like in partials create folder name it home and in root home.hbs use those partials to build homepage, create home hero section 
 
 **→**
 
