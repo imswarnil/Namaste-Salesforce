@@ -1,0 +1,79 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   theme/navbar.css — Ghost's flat navigation, in NSDS's nested chrome.
+   ----------------------------------------------------------------------------
+   Four seams. Three are TRANSLATION — Ghost's navigation setting is a flat
+   list and NSDS's bar and sheet are nested — and one, the burger, is a
+   deliberate DEVIATION from NSDS with its reasoning written out below. That
+   is the deal abstract/03 asks for: where the theme differs, say why in the
+   file rather than leaving the next reader to guess it was an accident.
+
+   The markup is partials/navbar/links.hbs and sheet-links.hbs; read the
+   comment at the top of partials/navigation.hbs first.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── A top-level item with no children has no dropdown ───────────────────
+     Ghost's navigation is flat, so navbar/links.hbs cannot know whether an
+     item has children until it has already emitted the trigger for it. It
+     emits one for every parent, and the empty case is removed here.
+
+     THIS is why the whitespace control in that partial is load-bearing: one
+     newline inside the div and :empty stops matching, and every item in the
+     bar grows a caret that opens nothing. */
+  .ns-navitem:has(> .ns-navmenu:empty) > .ns-topnav__trigger { display: none; }
+  .ns-navsheet__sub:empty { display: none; }
+
+  /* ── DO NOT SET --_control-h HERE. ──────────────────────────────────────
+     There was a rule here doing exactly that, and it was wrong.
+
+     --_control-h is declared once on .ns-topnav and is the shared height for
+     every control in the bar — search, path picker, star, theme switch,
+     account trigger AND the auth buttons. NSDS puts it there, in its own
+     words, "so the responsive block can raise the whole cluster to the thumb
+     floor in a single line":
+
+         .ns-topnav                      { --_control-h: var(--space-7); }      28px
+         @media (max-width: 63.999rem)
+           .ns-topnav                    { --_control-h: var(--target-comfy); } 40px
+
+     The compact desktop bar is deliberate and the 40px touch floor is already
+     restored where a thumb is actually involved. Setting the variable on
+     .ns-topnav__actions overrode the desktop half of that and flattened every
+     control to 40px — which is why the bar's "Subscribe" rendered at 40px
+     with no vertical padding instead of NSDS's 28px, and why the cluster
+     stopped looking like the design system.
+
+     If a control in here looks the wrong height, the answer is upstream in
+     NSDS, not a local override. */
+
+  /* ── The burger loses its box ────────────────────────────────────────────
+     NSDS draws it as a bordered 40px control. On a phone that reads as a
+     button parked next to the brand rather than a menu affordance, and it is
+     the only bordered thing left in the bar once sign-in became an icon.
+
+     ⚠ THE BORDER GOES TRANSPARENT, NOT AWAY, AND THE SIZE DOES NOT CHANGE.
+     Two reasons, and both are the kind that get "tidied" out later:
+
+       · `border: none` would collapse the box by 2px, and every .ns-burger__bar
+         is positioned against that box with `inset-block-start: calc(50% ± …)`.
+         The bars would shift off-centre by a pixel and the animated cross
+         would stop meeting in the middle.
+       · The 40px stays because it is --target-comfy, the touch-target floor,
+         and this control exists ONLY on touch widths. Shrinking the box is
+         the one change here that would cost something real. Removing the
+         border already makes it read small — the visible mark is the 20px
+         bars either way.
+
+     Hover restores the border, which is exactly what .ns-navicon does, so the
+     burger and the icon controls beside it now behave as one family. */
+  .ns-burger { border-color: transparent; }
+  .ns-burger:hover { border-color: var(--color-border); }
+
+  /* ── Secondary-nav children, indented ────────────────────────────────────
+     The footer shows the whole tree flat — see partials/footer/links.hbs — so
+     a child needs the one thing that says it is a child. .ns-navsheet__sub
+     uses --space-6 for the same job in the sheet; --space-4 here because a
+     footer column is narrower than a full-width sheet. */
+  .ns-footer__sub { padding-inline-start: var(--space-4); }
+}

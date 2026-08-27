@@ -1,0 +1,37 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     home/latest — the post grid.
+     ------------------------------------------------------------------------
+     The id is what the hero's fallback button targets, and it stays on the
+     section even when there are no posts, so the link never scrolls to
+     nothing.
+
+     The empty state points at the newsletter rather than apologising: on a
+     site this new, "nothing yet" is the reason to subscribe, not a failure.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band ns-band--tight ns-band--sunken" id="latest">
+    <div class="ns-band__inner">
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <span class="ns-kicker">{{t "Writing"}}</span>
+                <h2 class="ns-band__title">{{t "Latest"}}</h2>
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/archive/rss/">
+                    {{> "icons/rss"}} RSS
+                </a>
+            </div>
+        </div>
+
+        {{#get "posts" limit="6" include="authors,tags" as |posts|}}
+            {{#if posts}}
+                <div class="ns-blog-grid">
+                    {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+                </div>
+            {{else}}
+                {{> "empty"
+                    title=(t "Nothing published yet")
+                    text=(t "The first lessons are being written. Subscribe and they will reach you the day they go up.")}}
+            {{/if}}
+        {{/get}}
+    </div>
+</section>

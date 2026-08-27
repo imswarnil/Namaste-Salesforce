@@ -1,0 +1,70 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     services/ga4 — Google Analytics 4, loaded late and only when allowed.
+     ------------------------------------------------------------------------
+     Renders nothing unless @custom.ga4_id is set. Google's copy-paste
+     snippet is a synchronous <script src> pair in <head>; this is the same
+     bootstrap re-expressed as one inline function so that nothing about it
+     is implicit: gtag.js is injected async, from the end of <body>, and by
+     a script that may decide not to inject it at all.
+
+     WHY IT CANNOT BLOCK LCP. Nothing here is render-blocking by
+     construction: the partial itself is a tiny inline script after the
+     page's content, and the element it creates carries async, which the
+     preload scanner and the parser both ignore for layout. gtag.js is
+     ~417 KB of JavaScript (~149 KB over the wire) — measured, not folklore
+     — so WHERE it loads from matters more than any config flag on it. The
+     dataLayer stub is created before the script, exactly as in Google's
+     snippet, so the initial "js"/"config" commands queue and nothing is
+     lost by loading late; the only cost is a slightly later first-hit
+     timestamp, which a content site can afford far better than a slow LCP.
+
+     WHY DNT AND GPC ARE HONOURED. Do Not Track is dead as a standard but
+     alive as a statement, and Global Privacy Control is its successor with
+     legal force (CCPA and the Colorado/Connecticut acts treat it as a
+     binding opt-out). The reader who set either has already answered the
+     consent banner's question, in the negative, browser-wide; showing them
+     a tracker anyway because the signal is "deprecated" is a lawyer's
+     argument, not a publisher's. One line honours both. The check lives in
+     this file rather than the consent gate because the gate is optional
+     and this promise should not be.
+
+     THE CONSENT CONTRACT (services/consent.hbs defines it): no gate on the
+     page means no gate was configured and GA4 loads normally; "granted"
+     loads now; null waits for a later grant; "denied" loads nothing. GA4's
+     own Consent Mode was considered and rejected — its "denied" state still
+     loads gtag.js and sends cookieless pings, which is 417 KB of script and
+     a Google connection for a reader who said no. Not loading is smaller,
+     simpler, and stricter.
+
+     {{@custom.ga4_id}} lands inside JS strings HTML-escaped, which is a
+     no-op for a real measurement ID (G- plus alphanumerics) and defangs a
+     malicious one — a paste error here can break analytics but not the
+     page.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#if @custom.ga4_id}}
+<script>
+(function () {
+    "use strict";
+    if (navigator.globalPrivacyControl === true ||
+        navigator.doNotTrack === "1" || window.doNotTrack === "1") { return; }
+
+    function boot() {
+        if (window.__nsGa4) { return; }
+        window.__nsGa4 = true;
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag("js", new Date());
+        window.gtag("config", "{{@custom.ga4_id}}");
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id={{@custom.ga4_id}}";
+        document.head.appendChild(s);
+    }
+
+    var gate = window.NSConsent;
+    if (!gate) { boot(); }
+    else if (gate.state === "granted") { boot(); }
+    else if (gate.state === null) { gate.whenGranted(boot); }
+})();
+</script>
+{{/if}}

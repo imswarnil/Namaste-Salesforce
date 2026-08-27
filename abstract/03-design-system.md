@@ -12,7 +12,7 @@ The requirement is not "in the spirit of NSDS." It is that the site look
 `NS-Design-System/templates/` — the same `.ns-*` markup with the marked slots
 swapped for Ghost helpers, which is the procedure NSDS's own
 `docs/INTEGRATION.md` §5 specifies. Approximating an archetype from memory is
-the failure recorded in [`10`](10-how-this-went-wrong.md), twice.
+the failure recorded in [`10`](09-lessons.md), twice.
 
 ---
 
@@ -45,9 +45,10 @@ Two entry points, and the difference is the whole consumption question:
 
 ## What this theme takes, and why
 
-**Option B: Tailwind v4 + NSDS, with a gulp build.** Decided, reversed and
-re-decided in [`decisions/0002`](decisions/0002-css-strategy.md), which is the
-file to read before touching the CSS setup.
+**Tailwind v4 + NSDS, with a gulp build.** Decided as the plain bundle with no
+build step, then reversed the same day when the first real templates showed
+what was missing. [`04`](04-css.md) is the file to read before touching the
+CSS setup.
 
 The short version: NSDS's archetypes express layout that is not in the `.ns-*`
 class layer at all —
@@ -124,7 +125,7 @@ diffs.
 
 | script | drives |
 |---|---|
-| `theme-init.js` | **inlined, blocking, in `<head>`** — see [`09`](09-performance.md) |
+| `theme-init.js` | **inlined, blocking, in `<head>`** — see [`08`](08-ghost.md) |
 | `nav.js` | topnav menus, mobile sheet, theme switch, scrolled state |
 | `toc.js` | builds the outline from headings, scroll-spy |
 | `tabs.js` | the ARIA tab contract — roving tabindex, arrow keys |

@@ -196,4 +196,4 @@ thing that otherwise shows up only as a 404 on a font nobody notices.
 `assets/css/` is **not** in the theme zip — only `assets/built/` is served.
 Shipping both invites someone to edit the wrong one. The prune list lives in
 `package.json`'s `zip` script and in `.github/workflows/deploy-theme.yml`, and
-the two must agree; see [`06`](06-build-and-ci.md).
+the two must agree; see [`07`](07-build-and-ci.md).

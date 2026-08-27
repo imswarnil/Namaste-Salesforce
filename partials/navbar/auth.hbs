@@ -1,0 +1,34 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     navbar/auth — Ghost Members, in the bar.
+     ------------------------------------------------------------------------
+     data-portal is Ghost's own hook: its Portal script binds these and opens
+     the right screen. No JavaScript of ours, and the href is a real fragment
+     so it still routes with Portal blocked.
+
+     ── SIGN IN IS AN ICON, SUBSCRIBE IS THE BUTTON ──────────────────────────
+     .ns-navicon is NSDS's borderless bar control — the same thing the theme
+     switch sits in — and it carries a TRANSPARENT 1px border rather than
+     none, so the box does not resize when the border appears on hover.
+
+     Subscribe stays a filled button, and that is design principle 3 rather
+     than an oversight: brand blue is the only colour that means "interactive",
+     so a bar with two bordered buttons in it has two obvious next actions and
+     therefore none. On this site the newsletter IS the action.
+
+     An icon-only control needs a real accessible name, so aria-label carries
+     what the removed text used to say.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#if @site.members_enabled}}
+    <div class="ns-topnav__auth">
+        {{#unless @member}}
+            <a class="ns-navicon" href="#/portal/signin" data-portal="signin"
+               aria-label="{{t "Sign in"}}">{{> "icons/user-circle"}}</a>
+            <a class="ns-btn ns-btn--primary ns-btn--sm" href="#/portal/signup" data-portal="signup">
+                {{> "icons/envelope"}} {{t "Subscribe"}}
+            </a>
+        {{else}}
+            <a class="ns-navicon" href="#/portal/account" data-portal="account"
+               aria-label="{{t "Your account"}}">{{> "icons/user-circle"}}</a>
+        {{/unless}}
+    </div>
+{{/if}}

@@ -25,7 +25,7 @@
 
 import { readFileSync } from 'node:fs';
 
-const FILE = 'assets/built/screen.css';
+const FILE = 'assets/built/screen.min.css';
 const WANT = ['theme', 'base', 'ns-components', 'components', 'utilities'];
 
 let css;

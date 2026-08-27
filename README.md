@@ -10,8 +10,8 @@ everything looks. The theme is the wiring between them, and stays thin.
 
 The foundation is built and green — build, checks, CI/CD, chrome, reading
 surface, icons, fonts. **The collections are not built, deliberately:** each
-page family gets a spec in [`abstract/collections/`](abstract/collections/)
-before any template is written for it. All eight are currently unanswered.
+page family gets a spec in [`abstract/collections.md`](abstract/collections.md)
+before any template is written for it. None is answered yet.
 
 ## Quick start
 
@@ -29,26 +29,30 @@ Then point a local Ghost at `content/themes/`, and upload `routes.yaml` in
 
 ```
 assets/
-  built/     COMPILED and committed — Ghost has no build step on the server
-  css/       screen.css (source) + the vendored NSDS bundle + theme/
+  built/     screen.min.css + main.min.js. Committed — no build on the server
+  css/       screen.css → nsds/ (vendored) + theme/0-foundation…9-generated
   fonts/     Switzer + Roboto Mono, self-hosted, licensed
   icons/     NSDS's icon font and sprite, vendored
-  js/        NSDS's behaviour layer, vendored
+  js/        0-vendor/ (NSDS) + 1-theme/ + theme-init.js (inlined)
 partials/
   icons/     THIS theme's icons — one inline-SVG partial each, no comments
-  navbar/    the bar, the mobile sheet, and the pieces they share
+  navbar/    brand, links, search, github-star, theme-toggle, auth, burger,
+             the mobile sheet, and the navigation JSON-LD
   footer/    link columns, the social row, the newsletter form
+  home/      one partial per band of the homepage
   post/      one partial per kind of reading surface
   navigation.hbs   what Ghost's {{navigation}} helper renders — read it first
 scripts/     the build and the checks — plain node, each runs standalone
-abstract/    the documentation. Start at abstract/00-README.md.
+abstract/    the documentation. Start at abstract/README.md.
 ```
 
 ## Documentation
 
 **[`abstract/`](abstract/)** is the documentation, ordered by what breaks the
-site if you get it wrong. **[`CLAUDE.md`](CLAUDE.md)** is the same material
-compressed for Claude Code, including the full NSDS reference.
+site if you get it wrong — and its README carries the **add-a-page-family
+playbook** plus the surface checklist for a complete NSDS theme.
+**[`CLAUDE.md`](CLAUDE.md)** is the same material compressed for Claude Code,
+including the full NSDS reference.
 
 Content strategy, the tag vocabulary, the teaching method and pricing are
 **not** here — they live in the root knowledge base at
@@ -60,7 +64,7 @@ Content strategy, the tag vocabulary, the teaching method and pricing are
 > already supplies it, then whether **NSDS** already supplies it. The theme's
 > job is only what neither can know about.
 
-[`abstract/10-how-this-went-wrong.md`](abstract/10-how-this-went-wrong.md) is
+[`abstract/09-lessons.md`](abstract/09-lessons.md) is
 what happens when that check is skipped.
 
 ## Licence

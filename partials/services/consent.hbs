@@ -1,0 +1,114 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     services/consent — a minimal consent gate, honest about its limits.
+     ------------------------------------------------------------------------
+     Ghost has no consent API. Nothing platform-side records a choice,
+     nothing blocks a script, and {{ghost_head}} will keep emitting whatever
+     Ghost itself needs regardless of what a reader clicks here. So this is
+     not a consent-management platform: no per-vendor toggles, no consent
+     receipts, no geo-targeting, no scanning for scripts it does not know
+     about. What it CAN do — and does — is guarantee that the two analytics
+     scripts THIS THEME adds do not load, request, or store anything until
+     the reader says yes, and that "no" is remembered.
+
+     THE CONTRACT. This file defines window.NSConsent before ga4.hbs and
+     posthog.hbs run (analytics.hbs owns that ordering). The gate has three
+     states: "granted", "denied", or null (never asked / not yet answered).
+     A service partial asks the gate rather than the banner:
+
+         no NSConsent on the page  →  no gate configured; load normally
+         state "granted"           →  load now
+         state null                →  register via whenGranted(), which
+                                      fires if the reader later accepts
+         state "denied"            →  do nothing, ask nothing, load nothing
+
+     Null must NOT mean "load and apologise later" — a tracker that runs
+     before the answer makes the question a decoration, which is the failure
+     mode of most consent banners on the web.
+
+     STORAGE is localStorage under "ns-consent" — the same naming as the
+     shared "ns-theme" key, but NOT shared with the LMS: consent given to
+     this site's scripts says nothing about another product's. Withdrawal is
+     the honest gap: there is no settings surface to reopen this banner, so
+     a /privacy page should say that clearing site data resets the choice.
+     A real CMP fixes that the day one is warranted; do not grow one here.
+
+     THE CHASSIS is .ns-toast-region + .ns-alert, and the pairing is argued
+     rather than accidental. By NSDS's own taxonomy this message has BANNER
+     lifetime — true for the whole session until something changes — but
+     .ns-banner is in-flow chrome at the top of the page, and a partial
+     rendered at the end of <body> cannot claim that slot without landing
+     below the footer. The toast REGION supplies what is actually needed:
+     fixed bottom-corner placement, --z-toast, and the full-width phone
+     fallback. Inside it, .ns-alert supplies the anatomy a toast lacks —
+     title, text, actions — because this is a question, not a "saved"
+     confirmation, and NSDS's warning about toasts (transient, gone before
+     the keyboard reaches them) does not apply: this one persists until
+     answered and is dismissed by answering. pointer-events-auto is
+     required: the region disables pointer events so stacked toasts do not
+     block the page, and .ns-toast is what normally restores them; the alert
+     must restore them itself or its buttons are unclickable.
+
+     The region ships hidden. The script reveals it only when no decision is
+     stored — and with JavaScript off it stays hidden, which is correct,
+     because without JavaScript no tracker can run and there is nothing to
+     ask about.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#if @custom.require_analytics_consent}}
+<div class="ns-toast-region" id="ns-consent" hidden>
+    <div class="ns-alert ns-alert--info pointer-events-auto" role="region"
+         aria-label="{{t "Privacy choices"}}">
+        <div class="ns-alert__body">
+            <p class="ns-alert__title">{{t "Analytics on this site"}}</p>
+            <p class="ns-alert__text">
+                {{t "Allow anonymous usage analytics? Nothing loads until you choose, and declining is remembered."}}
+            </p>
+            <div class="ns-alert__actions">
+                <button class="ns-btn ns-btn--sm ns-btn--primary" type="button"
+                        data-consent="granted">{{t "Allow"}}</button>
+                <button class="ns-btn ns-btn--sm ns-btn--ghost" type="button"
+                        data-consent="denied">{{t "Decline"}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    "use strict";
+    var KEY = "ns-consent";
+    var stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) { }
+    if (stored !== "granted" && stored !== "denied") { stored = null; }
+
+    var region = document.getElementById("ns-consent");
+    var waiting = [];
+
+    window.NSConsent = {
+        state: stored,
+        whenGranted: function (fn) {
+            if (this.state === "granted") { fn(); }
+            else if (this.state === null) { waiting.push(fn); }
+        }
+    };
+
+    function decide(value) {
+        window.NSConsent.state = value;
+        try { localStorage.setItem(KEY, value); } catch (e) { }
+        region.hidden = true;
+        if (value === "granted") {
+            for (var i = 0; i < waiting.length; i += 1) { waiting[i](); }
+        }
+        waiting.length = 0;
+    }
+
+    if (stored === null) {
+        region.hidden = false;
+        var buttons = region.querySelectorAll("[data-consent]");
+        for (var i = 0; i < buttons.length; i += 1) {
+            buttons[i].addEventListener("click", function (ev) {
+                decide(ev.currentTarget.getAttribute("data-consent"));
+            });
+        }
+    }
+})();
+</script>
+{{/if}}

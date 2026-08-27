@@ -10,8 +10,11 @@
      · data-toc-from lets toc.js build the outline from the article's own
        h2/h3 and add ids to any heading missing one. With JS off the rail is
        an empty labelled nav, which is why it carries a title.
-     · .ns-prose is the 17px reading scale. Ghost's Koenig output has no
-       classes of its own, so this one wrapper is what styles all of it.
+     · .ns-prose is the 17px reading scale, and .gh-content is Ghost's — the
+       theme has 34 rules scoped to it that restate Ghost's own cards.min.css
+       in NSDS's vocabulary. Drop the class and those rules stop matching,
+       Ghost's white bordered card CSS wins on the navy surface, and prose
+       loses its list markers. Both classes, always.
      ══════════════════════════════════════════════════════════════════════ --}}
 <span class="ns-lprogress ns-lprogress--article" data-target="#post-body"
       role="progressbar" aria-label="{{t "Reading progress"}}"
@@ -50,6 +53,6 @@
     </nav>
 
     <article class="ns-post__body">
-        <div class="ns-prose" id="post-body">{{content}}</div>
+        <div class="gh-content ns-prose" id="post-body">{{content}}</div>
     </article>
 </div>

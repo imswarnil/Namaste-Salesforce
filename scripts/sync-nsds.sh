@@ -21,16 +21,33 @@ set -euo pipefail
 DS="${1:-../../../../NS-Design-System}"
 [ -d "$DS" ] || { echo "NS-Design-System not found at: $DS" >&2; exit 1; }
 
-cp "$DS/dist/namaste-ui.css"  assets/css/namaste-ui.css
-cp "$DS/tokens/tailwind.css"  assets/css/ns-tailwind.css
+cp "$DS/dist/namaste-ui.css"  assets/css/nsds/nsds.css
+
+# ── REBASE THE ASSET URLS. Do not remove. ───────────────────────────────────
+# The bundle ships `url("../fonts/…")`, which is correct when it sits directly
+# in assets/css/. It lives one level deeper, in assets/css/nsds/, so the same
+# string points at assets/css/fonts/ — which does not exist.
+#
+# It matters because POSTCSS REBASES these during the @import inline: it
+# resolves the url against the file it came from, then rewrites it relative to
+# the entry point. Feed it a path that is already wrong and it faithfully
+# emits a wrong path into assets/built/screen.css — with a green build, a
+# green gscan, and a 404 on every font that only shows up in a browser.
+# scripts/check-assets.mjs is the guard; this sed is the fix.
+sed -i '' 's|url("\.\./fonts/|url("../../fonts/|g; s|url("\.\./icons/|url("../../icons/|g' \
+    assets/css/nsds/nsds.css
+cp "$DS/tokens/tailwind.css"  assets/css/nsds/tailwind.css
 cp "$DS/fonts/"*.woff2        assets/fonts/
 cp "$DS/fonts/FONTSHARE-EULA.txt" assets/fonts/
 cp "$DS/fonts/licences/"*     assets/fonts/licences/
 cp "$DS/icons/"*.woff2        assets/icons/
 cp "$DS/icons/namaste-icons.svg" assets/icons/
-for f in nav toc type-fx lms training rail tabs code theme-init; do
-    cp "$DS/assets/js/$f.js" "assets/js/$f.js"
+# theme-init stays at the top level: it is INLINED into <head> rather than
+# bundled, so it is not part of the vendored script layer.
+for f in nav toc type-fx lms training rail tabs code; do
+    cp "$DS/assets/js/$f.js" "assets/js/0-vendor/$f.js"
 done
+cp "$DS/assets/js/theme-init.js" assets/js/theme-init.js
 
 REV=$(cd "$DS" && git rev-parse --short HEAD)
 DATE=$(cd "$DS" && git log -1 --format=%cs)

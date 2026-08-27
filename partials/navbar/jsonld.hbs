@@ -1,0 +1,61 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     navbar/jsonld — SiteNavigationElement for the main menu.
+     ------------------------------------------------------------------------
+     Rendered through partials/navigation.hbs, from the same {{navigation}}
+     helper the visible bar uses. That is the point: the structured data and
+     the markup cannot describe different menus, because there is one source
+     and one loop.
+
+     ── {{json}} DOES THE ESCAPING, AND IT HAS TO ────────────────────────────
+     Handlebars' own {{ }} escapes for HTML — an apostrophe becomes &#x27; —
+     which is exactly wrong inside a <script>: JSON-LD is parsed as JSON, not
+     as HTML, so an HTML entity lands in the string literally. Ghost's {{json}}
+     helper serialises properly AND escapes <, > and & to \\u003C-style
+     sequences, which is what stops a label containing "</script>" from ending
+     the block early. Never hand-quote a value in here.
+
+     ── TOP-LEVEL ITEMS ONLY ─────────────────────────────────────────────────
+     Children are skipped on purpose. SiteNavigationElement describes a site's
+     main sections, and the leading "-" is a PRESENTATION convention for
+     Ghost's flat menu — it must not leak into structured data, and stripping
+     it would mean rebuilding the label as a JSON string by hand, which is the
+     one thing the paragraph above says not to do.
+
+     ⚠ It is emitted in <head>, so it must not be inside the <nav>. Google
+     accepts it anywhere in the document, but a <script> in the body is a
+     parse pause the head does not have.
+
+     ── WHY THE URL IS NOT {{json url}} ──────────────────────────────────────
+     The raw `url` property is whatever was typed in Admin — usually relative
+     ("/about/"), and structured data needs absolute. The {{url}} HELPER
+     resolves that, but it returns a Handlebars SafeString, and {{json}} would
+     serialise the OBJECT ({"string":"…"}) rather than its text. So the URL is
+     quoted by hand, in a TRIPLE stash: a double stash would HTML-escape an
+     "&" in a query string to "&amp;", which lands in the JSON literally and
+     ships a wrong URL. A quote character cannot appear unencoded in a URL, so
+     the JSON stays valid. This reasoning does NOT extend to `name` — arbitrary
+     label text is exactly what {{json}} is for.
+
+     ⚠ KEEP THE CLOSING BRACE ON ITS OWN LINE. Written inline, the object's
+     `}` lands directly after `{{json url}}` — and `}}}` is a triple-stash to
+     Handlebars, not a mustache followed by a brace. The template then fails
+     to COMPILE, which takes the whole site to a 500; it is not a rendering
+     glitch confined to this block. The line breaks are load-bearing.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{~#if navigation~}}
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@graph": [
+{{~#foreach navigation~}}
+  {{~#match label "~^" "-"}}{{else}}
+    {{~#unless @first}},{{/unless}}
+    {
+      "@type": "SiteNavigationElement",
+      "position": {{@number}},
+      "name": {{json label}},
+      "url": "{{{url absolute="true"}}}"
+    }
+  {{~/match~}}
+{{~/foreach~}}
+]}
+</script>
+{{~/if~}}

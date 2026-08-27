@@ -2,37 +2,94 @@
 <html lang="{{@site.locale}}">
 <head>
 
-    {{!-- Basic meta only. Open Graph, structured data, canonicals, the
-         publisher's accent colour, Members and search all come from
-         {{ghost_head}} at the foot of this block — writing any of them by
-         hand here means maintaining a copy of something Ghost already
-         derives from the content. --}}
-    <title>{{meta_title}}</title>
+    {{!-- ══════════════════════════════════════════════════════════════════
+         HEAD ORDER IS A PERFORMANCE DECISION, NOT A STYLE ONE.
+
+         The browser parses this top to bottom and cannot start a request it
+         has not read yet, so the order below is roughly "cheapest and most
+         blocking first". Moving a line up or down here changes LCP.
+
+           1  charset    must land inside the first 1024 bytes or the parser
+                         restarts having guessed wrong
+           2  viewport   layout depends on it; it is ~50 bytes
+           3  title      what a share preview and a tab need first
+           4  preconnect open the sockets we KNOW will be used, while the
+                         parser is still reading
+           5  preload    the two fonts that draw above the fold
+           6  theme-init INLINE and blocking, before the stylesheet
+           7  stylesheet the render-blocking one
+           8  ghost_head everything Ghost derives from the content
+           9  JSON-LD    ours, after Ghost's
+          10  services   analytics, and last on purpose
+         ══════════════════════════════════════════════════════════════════ --}}
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{meta_title}}</title>
 
-    {{!-- FIRST, and inline: sets data-theme before the first paint. A
-         <script src> lands after the page has already painted, which is the
-         white-flash-on-every-navigation bug. See the partial. --}}
-    {{> "theme-init"}}
+    {{!-- ── 4 · Sockets we actually use ──────────────────────────────────
+         ⚠ ONLY ORIGINS THIS PAGE GENUINELY FETCHES FROM. jsdelivr serves
+         Ghost's Portal and search bundles, which are injected by
+         {{ghost_head}} further down — the preconnect buys back the DNS +
+         TLS round trip that would otherwise start only once the parser
+         reached that script.
 
-    {{!-- The @font-face rules live inside the compiled stylesheet, so the
-         browser only discovers them one round trip late. Preloading closes
-         that gap, which is what keeps the fallback swap invisible on a cold
-         load.
+         Everything else the page links to — GitHub, X, the social row — is
+         an ANCHOR, not a resource. Preconnecting to those opens sockets that
+         are never used, which costs the very round trips this is meant to
+         save. A preconnect list is a claim about what loads; keep it true.
 
-         Only the two faces that draw ABOVE THE FOLD. `crossorigin` is
-         required even though these are same-origin — fonts are always
-         fetched in CORS mode, and a preload without it produces a second,
-         unused download instead of a warm cache hit. --}}
+         Analytics origins are NOT here: each service partial declares its own
+         only when its key is set, so a site with no analytics opens no
+         sockets for it. --}}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+    {{!-- ── 5 · The two faces that draw above the fold ────────────────────
+         The @font-face rules live inside the compiled stylesheet, so the
+         browser only discovers them after fetching and parsing it — one
+         round trip later than it could start. Preloading closes that gap,
+         which is what keeps the fallback swap invisible on a cold load.
+
+         Only these two. A preload for something not used immediately is a
+         console warning and bandwidth taken from something that was.
+
+         `crossorigin` is REQUIRED even though these are same-origin — fonts
+         are always fetched in CORS mode, and a preload without it produces a
+         second, unused download instead of a warm cache hit. It is the most
+         commonly broken line in any theme's head. --}}
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="{{asset "fonts/switzer-var-latin.woff2"}}">
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
 
-    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.css"}}">
+    {{!-- ── 6 · Theme, before the first paint ─────────────────────────────
+         Inline and blocking, and it must stay both. A <script src> is
+         fetched separately and lands after the page has already painted,
+         which is the white-flash-on-every-navigation bug this exists to
+         prevent. It sets data-theme on <html>, which the stylesheet below
+         then reads — so it has to run first. --}}
+    {{> "theme-init"}}
 
+    {{!-- ── 7 · The stylesheet ────────────────────────────────────────────
+         One file, always named .min.css. See gulpfile.mjs for why the name
+         is constant while the contents differ between dev and production. --}}
+    <link rel="stylesheet" type="text/css" href="{{asset "built/screen.min.css"}}">
+
+    {{!-- ── 8 · Ghost's own head ──────────────────────────────────────────
+         Open Graph, Twitter cards, canonical URLs, the publisher's accent
+         colour, Article/WebSite JSON-LD, Members, search, and the RSS
+         alternate. NEVER hand-write any of it: a theme that emits its own
+         og:title ends up with two, and Ghost's is the one that follows what
+         the editor set. --}}
     {{ghost_head}}
+
+    {{!-- ── 9 · What Ghost cannot know ────────────────────────────────────
+         The main menu as SiteNavigationElement, from the same {{navigation}}
+         helper the visible bar uses — one source, so the markup and the
+         structured data cannot describe different menus. A second block is
+         valid and is how a theme ADDS to what the platform describes rather
+         than replacing it. abstract/06-discoverability.md. --}}
+    {{navigation variant="jsonld"}}
 
 </head>
 <body class="{{body_class}}">
@@ -49,10 +106,10 @@
       course player — so this only decides whether the SITE bar appears.
 
       ⚠ SKELETON. The tag list below is a placeholder until the collections
-      are specified. Each collection gets one file in abstract/collections/,
+      are specified. Each collection gets one file in abstract/collections.md,
       and the tag that identifies it is decided there, not here. Adding a
       name to this list before that file exists is how the last content model
-      grew by accretion — see abstract/10-how-this-went-wrong.md.
+      grew by accretion — see abstract/09-lessons.md.
     ─────────────────────────────────────────────────────────────────────── --}}
     {{#is "post"}}
       {{#post}}
@@ -78,7 +135,22 @@
          progressive enhancement: the sheet, the theme controls, the outline,
          the reading line and the code copy button each degrade to something
          that still works. theme-init is deliberately NOT in it. --}}
-    <script src="{{asset "built/main.js"}}" defer></script>
+    <script src="{{asset "built/main.min.js"}}" defer></script>
+
+    {{!-- ── 10 · Analytics, last on purpose ───────────────────────────────
+         Every service here is opt-in: nothing loads, and no socket opens,
+         until its key is set in Admin → Design → Site-wide. A site with no
+         keys ships no analytics code at all.
+
+         END OF BODY, not the head. gtag is ~417 KB decompressed and PostHog
+         ~267 KB; in the head they compete with the stylesheet and the fonts
+         for the connection that decides LCP. Head placement buys only the
+         counting of sub-second bounces, which is a rounding error next to a
+         slower page for everyone.
+
+         BEFORE {{ghost_foot}} so the consent gate is defined before any
+         code-injection script an admin pastes there can look for it. --}}
+    {{> "services/analytics"}}
 
     {{ghost_foot}}
 

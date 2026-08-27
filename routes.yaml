@@ -7,7 +7,7 @@
 #
 #   ⚠ Every URL on the site comes from this file. Changing a permalink after
 #   publishing means 301-ing every page under it and losing whatever ranking
-#   the old one had. Decide it in abstract/collections/ BEFORE the first post.
+#   the old one had. Decide it in abstract/collections.md BEFORE the first post.
 #
 # THE RULE (abstract/decisions/0003): this file names ONLY templates that
 # exist and are servable. Ghost does not validate a `template:` key — it
@@ -25,6 +25,22 @@ routes:
   /:
     template: home
 
+  # ads.txt — authorised digital sellers, from the ads_txt theme setting.
+  #
+  # ⚠ ONLY REACHABLE AT /ads.txt/ — with the trailing slash. A bare GET
+  # /ads.txt has a file extension, so Ghost's static-theme middleware hands it
+  # to express.static with fallthrough:false and 404s it BEFORE this router
+  # ever runs. Verified against the running site: both forms 404 without this
+  # route, and only the trailing-slash form works with it.
+  #
+  # IAB crawlers request the bare path, so production needs a proxy REWRITE
+  # (not a redirect — whether verifiers follow one is unverified):
+  #   nginx:      location = /ads.txt { proxy_pass http://ghost/ads.txt/; }
+  #   Cloudflare: rewrite /ads.txt -> /ads.txt/
+  /ads.txt/:
+    template: ads
+    content_type: text/plain
+
 collections:
 
   # The catch-all, mounted at /archive/ so the homepage can own /.
@@ -34,7 +50,7 @@ collections:
   # and keeping posts at the root means none of these URLs has to move when
   # the real collections are specified. Do not "tidy" this into
   # /archive/{slug}/ — that is a decision, and it belongs in
-  # abstract/collections/08-archive.md.
+  # abstract/collections.md.
   #
   # ⚠ FEED URL. Ghost serves a feed per collection, at <mount>rss/ — so this
   # site's feed is /archive/rss/, not /rss/. The templates link to it by that
