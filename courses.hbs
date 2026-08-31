@@ -1,0 +1,55 @@
+{{!< default}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     courses.hbs — the /courses/ index. Ported from NSDS course-listing.html.
+     ------------------------------------------------------------------------
+     ⚠ THIS TEMPLATE ALREADY HAD PUBLISHED URLs BEFORE IT EXISTED.
+     The live routes.yaml has mounted /courses/ with `template: courses`
+     since the previous port. Ghost does not validate a `template:` key — it
+     falls back to index.hbs in silence — so every course page has been
+     rendering as the BLOG listing, .ns-bcard grid and all. That is not a
+     styling drift; it is the exact failure routes.yaml warns about in its
+     own header, and it is why this file is being written now rather than
+     after abstract/collections.md §03 is answered.
+
+     What is NOT decided here: the content model. The tag (#course), the
+     permalink (/courses/{slug}/) and the lesson nesting
+     (/courses/{primary_tag}/{slug}/) are all ALREADY LIVE and published.
+     This template is a port to match what is running — it does not invent a
+     surface, and it does not authorise one. §03 still needs answering for
+     the questions this does not settle: sort order, member gating, price.
+
+     ── WHY NOT THE ARCHETYPE'S FILTER RAIL ─────────────────────────────────
+     course-listing.html ships a .ns-filters sidebar with topic checkboxes, a
+     price range and a sort select. It is deliberately NOT ported yet:
+     - the filters are driven by tracks the tag registry has not defined,
+     - the price range needs Ghost tiers, which §03 has not decided,
+     - and a rail wired to nothing renders as a broken control rather than a
+       missing one.
+     A filter that lies is worse than a grid that is honest. When §03 names
+     the tracks this grows the rail, and `data-filters` + assets/js/lms.js
+     are already vendored for it.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <span class="ns-kicker">{{t "// Catalog"}}</span>
+                <h1 class="ns-band__title">{{t "Every course, one roadmap"}}</h1>
+                <p class="ns-band__lede">{{t "Each course states its level, its length and what you can do once you finish it."}}</p>
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/training/">{{> "icons/graduation-cap"}} {{t "Training"}}</a>
+            </div>
+        </div>
+
+        {{#if posts}}
+            <div class="ns-course-grid">
+                {{#foreach posts}}{{> "course-card"}}{{/foreach}}
+            </div>
+            {{> "pagination"}}
+        {{else}}
+            {{> "empty" title=(t "No courses published yet")
+                        text=(t "The curriculum is being written. The training track is live in the meantime.")}}
+        {{/if}}
+    </div>
+</section>

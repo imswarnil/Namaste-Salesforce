@@ -25,35 +25,53 @@ Almost every mistake made here came from the theme growing a *third opinion* —
 its own components, its own tokens, its own drawer — duplicating one of the
 other two.
 
-## Current state — a skeleton, and what that means
+## Current state — a skeleton over a LIVE, PUBLISHED site
 
-The foundation is built and green. The **collections are not**, deliberately.
+The foundation is built and green. The collections were described here as
+"not built, deliberately" — which was true of this repo and false of the
+site. **www.namastesalesforce.com has published posts under `/blog/`,
+`/courses/`, `/training/`, `/docs/` and `/archive/`**, routed by the
+`routes.yaml` uploaded in Ghost Admin. That file is stored by Ghost, not
+shipped in the theme zip, so it never had to agree with the one in this repo
+— and it did not.
+
+⚠ **Read `routes.yaml`'s header before touching the URL model.** The repo's
+copy previously declared a model the live site does not have, on the stated
+premise that "nothing is published yet".
 
 | | |
 |---|---|
 | **Build** | gulp + Tailwind v4 + cssnano → `assets/built/`, committed |
-| **Checks** | layers, classes, icons, icon bridge, inline styles, Handlebars comments, gscan |
+| **Checks** | layers, classes, icons, icon bridge, **routed templates**, inline styles, Handlebars comments, gscan |
 | **CI/CD** | CI on every PR; deploy on `main`; release on a `v*` tag |
 | **NSDS** | vendored at `9526e20` (v3.0.0) — 2,059 selectors available |
 | **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 95-rule bridge |
 | **Fonts** | Figtree, self-hosted — one face, four cuts, one preloaded |
-| **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404` |
+| **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404`, `blog`, `training`, `training-module`, `ads`, **`courses`**, **`docs`**, **`resources`** |
 | **Navbar** | `partials/navbar/` — one partial per element (brand, links, search, star, theme, auth, burger), `-Label` dropdowns, `SiteNavigationElement` JSON-LD. **Contained**, not fluid: `.ns-topnav__inner` caps it at the bands' own 72rem |
 | **Footer** | `partials/footer/` — link columns, social row, newsletter, pinned to the bottom |
 | **Homepage** | `home.hbs` is composition only — twelve bands in `partials/home/`, each data-driven one hiding itself when its data is absent |
 | **Hero** | `--tall` (68svh) + `--split`, on a brand-blue gradient with a drifting hairline grid; the mark sits in a navy square panel — see `theme/3-components/hero.css` |
 | **Brand mark** | `partials/logo-sting.hbs` — geometry lifted from `logo-sting/intro.html`, looped in CSS |
 | **Reading surface** | `partials/post/article.hbs`, ported from `blog-post.html` |
-| **Collections** | **none.** Eight surfaces awaiting specs in `abstract/collections.md` |
+| **Collections** | **five are live and published** — blog, courses, training, docs, resources — routed by the `routes.yaml` in Ghost Admin, which is a different file from this repo's. Their URL rows are settled; the six questions in `abstract/collections.md` are still open |
 
 `npm run build` is green, `gscan` reports no issues, and the cascade contract
 holds in both the development and production builds.
 
 **Do not build a collection before its section in `abstract/collections.md`
-is answered.** None is, and the previous version of
-this theme was assembled the other way round — one reasonable commit at a time,
-with the content model emerging afterwards. That is what `abstract/09` is a
-record of.
+is answered.** The previous version of this theme was assembled the other way
+round — one reasonable commit at a time, with the content model emerging
+afterwards. That is what `abstract/09` is a record of.
+
+The one lawful exception, and its limit: where the LIVE `routes.yaml` already
+names a template, Ghost is already serving that URL — silently falling back
+to `index.hbs`, because Ghost does not validate a `template:` key. `/courses/`
+and `/docs/` were served as the blog grid this way. Porting a template to
+match a URL that is already published is *recording* a content model, not
+inventing one, and `scripts/check-routes.mjs` now fails the build rather than
+letting it happen again. Inventing a surface nothing routes to is still the
+mistake `abstract/09` describes, and is still off the table.
 
 `post.hbs` and `default.hbs` both carry placeholder tag lists marked ⚠ SKELETON
 for exactly this reason: they are wired, not decided.
