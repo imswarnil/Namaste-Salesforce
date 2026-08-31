@@ -1,0 +1,59 @@
+{{!< default}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     custom-account.hbs — ported from NSDS templates/account.html.
+     ------------------------------------------------------------------------
+     ⚠ READ-ONLY BY DESIGN, and the archetype's own comment says why the
+     signed-out branch matters: "should be the empty state with a real
+     sign-in action, never a bare 'please sign in'".
+
+     WHAT THIS PAGE DOES NOT DO: change anything. NSDS's archetype draws a
+     newsletter switch, and it is not ported. Newsletter preferences, plan
+     changes, email changes and cancellation all live behind Ghost's Portal
+     account screen, which owns the member session and the tier logic. A
+     switch here would need its own write path to the members API — a second
+     implementation of account state, and the one place where getting it
+     wrong bills someone.
+
+     So: this page STATES, and every verb hands off to Portal. That is the
+     same division as partials/navbar/auth.hbs.
+
+     {{@member}} is Ghost's own global — no {{#get}}, no key, nothing to
+     configure. It is null when signed out, which is the whole branch.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-page ns-page--narrow ns-stack">
+    {{#if @member}}
+        <h1 class="ns-posthead__title">{{t "Your account"}}</h1>
+
+        <dl class="ns-field">
+            <dt class="ns-field__label">{{t "Email"}}</dt>
+            <dd class="ns-bare">{{@member.email}}</dd>
+        </dl>
+
+        <dl class="ns-field">
+            <dt class="ns-field__label">{{t "Membership"}}</dt>
+            <dd class="ns-bare">
+                {{!-- 'free' and 'paid' are the two values Ghost sets. The
+                     status colour is the only thing decided here. --}}
+                {{#match @member.status "free"}}
+                    <span class="ns-status ns-status--success">{{t "Free"}}</span>
+                {{else}}
+                    <span class="ns-status ns-status--success">{{t "Paid"}}</span>
+                {{/match}}
+            </dd>
+        </dl>
+
+        {{!-- Every verb is Portal's. data-portal is Ghost's own hook. --}}
+        <div class="ns-stack">
+            <a class="ns-btn ns-btn--primary" href="#/portal/account" data-portal="account">{{t "Manage membership"}}</a>
+            <a class="ns-btn ns-btn--outline" href="{{@site.url}}/signout/">{{t "Sign out"}}</a>
+        </div>
+    {{else}}
+        {{!-- The empty state the archetype asks for: a real action, not a
+             sentence. --}}
+        <div class="ns-empty">
+            <p class="ns-empty__title">{{t "You are not signed in"}}</p>
+            <p class="ns-empty__text">{{t "Sign in to see your membership and your progress."}}</p>
+            <a class="ns-btn ns-btn--primary" href="{{@site.url}}/signin/">{{t "Sign in"}}</a>
+        </div>
+    {{/if}}
+</div>

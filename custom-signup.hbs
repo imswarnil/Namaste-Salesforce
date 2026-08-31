@@ -1,0 +1,40 @@
+{{!< default}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     custom-signup.hbs — ported from NSDS templates/signup-form.html.
+     ------------------------------------------------------------------------
+     The sibling of custom-signin.hbs; the long note there covers why these
+     pages exist alongside Portal and why data-members-* is Ghost's contract
+     rather than a style hook. Read that one first.
+
+     ⚠ THE ONLY REAL DIFFERENCE IS data-members-form="signup". Ghost branches
+     on that value: "signin" refuses an unknown address, "signup" creates the
+     member. Copying this file from the signin one and forgetting to change
+     it produces a signup page that rejects exactly the people it is for, and
+     nothing about the page looks wrong while it does.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-auth">
+    <div class="ns-auth__card">
+        <p class="ns-auth__kicker">{{t "create account"}}</p>
+        <h1 class="ns-auth__title">{{#if title}}{{title}}{{else}}{{t "Start learning Salesforce"}}{{/if}}</h1>
+        <p class="ns-auth__sub">{{t "Free courses, a training roadmap, and progress that follows you. No password — we email you a sign-in link."}}</p>
+
+        <form class="ns-auth__form" data-members-form="signup">
+            <div class="ns-field">
+                <label class="ns-field__label" for="ns-signup-email">{{t "Email address"}}</label>
+                <input id="ns-signup-email" class="ns-input" type="email" name="email"
+                       autocomplete="email" required data-members-email>
+            </div>
+            <button class="ns-btn ns-btn--primary ns-btn--block" type="submit">{{t "Create account"}}</button>
+
+            <div class="ns-auth__sent" data-members-success role="status" hidden>
+                <p class="ns-auth__sent-title">{{> "icons/check-circle"}} {{t "Check your inbox"}}</p>
+                <p>{{t "Click the confirmation link we just sent and you are in."}}</p>
+            </div>
+            <p class="ns-field__error" data-members-error role="alert" hidden>
+                {{t "That did not work. Check the address and try again."}}
+            </p>
+        </form>
+
+        <p class="ns-auth__alt">{{t "Already have an account?"}} <a href="{{@site.url}}/signin/">{{t "Sign in"}}</a></p>
+    </div>
+</div>

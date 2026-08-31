@@ -30,7 +30,7 @@
             </div>
         </header>
 
-        {{#get "posts" filter="tag:hash-training-module" order="published_at asc" limit="50" include="tags" as |modules|}}
+        {{#get "posts" filter="tag:[hash-training-module,hash-training-section]" order="published_at asc" limit="50" include="tags" as |modules|}}
             {{#if modules}}
                 <ol class="ns-modules">
                     {{#foreach modules}}
@@ -48,7 +48,7 @@
                                  which is safe here. Calling a Ghost HELPER across
                                  `../` inside a nested get is what 500s the page —
                                  see abstract/01-content-model.md. --}}
-                            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-training-lesson" order="published_at asc" limit="100" as |lessons|}}
+                            {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:[hash-training-lesson,hash-training-content]" order="published_at asc" limit="100" as |lessons|}}
                                 {{#if lessons}}
                                     <ul class="ns-units">
                                         {{#foreach lessons}}

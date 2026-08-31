@@ -1,0 +1,43 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     comments — Ghost's comments, in an NSDS band.
+     ------------------------------------------------------------------------
+     ⚠ THIS DELIBERATELY DOES NOT USE NSDS'S .ns-comment MARKUP, and that is
+     the whole decision worth recording here.
+
+     NSDS draws a full comment thread — .ns-comment, __avatar, __head,
+     __actions, __replies, .ns-commentform. Porting it would mean owning
+     comment state: fetching threads, posting, editing, replying, moderating,
+     rate-limiting, and member identity for every one of those. Ghost already
+     ships all of it behind {{comments}}, rendered by its own bundle in an
+     iframe.
+
+     CLAUDE.md's rule decides it: check whether GHOST already supplies it
+     before writing anything. It does. A hand-rolled thread would be the
+     theme growing a third opinion — the exact failure abstract/09 records —
+     and it would be the most expensive possible version, because it would be
+     a third opinion about *user-generated content* rather than about styling.
+
+     So the theme contributes the only two things Ghost cannot know: the band
+     it sits in, and the fact that this site has a dark mode.
+
+     ── color_scheme IS LOAD-BEARING ────────────────────────────────────────
+     The comments bundle renders in an IFRAME, so the theme's stylesheet and
+     [data-theme] cannot reach it. Left alone it renders light-on-white
+     inside a dark page. "auto" makes it follow prefers-color-scheme, which
+     is right for the two ends but NOT for a reader who has overridden the
+     system with the theme toggle — theme-init.js writes that choice to
+     [data-theme] on <html>, which the iframe cannot see.
+     assets/js/1-theme/ owns re-syncing it; there is no server-side answer.
+
+     GATING is Ghost's, not the theme's: @site.comments_enabled is 'all',
+     'paid' or 'off', set in Admin → Settings → Comments. Rendering the band
+     when it is 'off' would leave an empty heading on every post.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#unless (match @site.comments_enabled "off")}}
+    <section class="ns-comments" id="comments">
+        <div class="ns-comments__head">
+            <h2 class="ns-comments__count">{{t "Responses"}}</h2>
+        </div>
+        {{comments color_scheme="auto"}}
+    </section>
+{{/unless}}

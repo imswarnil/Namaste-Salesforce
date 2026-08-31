@@ -88,20 +88,45 @@ collections:
     filter: tag:hash-lesson
 
   # ── TRAINING — /training/{module}/{lesson}/ ───────────────────────────────
-  # PUBLISHED AND LIVE. The curriculum, free, ordered published_at asc.
-  /training/:
+  # PUBLISHED AND LIVE: 3 sections and 14 lessons, verified through the
+  # Content API against www.namastesalesforce.com.
+  #
+  # ⚠⚠ THE TAGS ARE NOT THE ONES THE REGISTRY NAMES ⚠⚠
+  # The published posts carry #training-section and #training-content. The
+  # canonical vocabulary in abstract/05-content/tag-registry.md, adopted in
+  # decision 0004, is #training-module and #training-lesson. 0004 renamed
+  # them on the stated premise that "the theme has no content yet" — false
+  # then and false now — so the rename was recorded and never carried out.
+  #
+  # The filters below therefore match BOTH, using NQL's tag:[a,b] OR form,
+  # and so does the dispatch in post.hbs. That is what makes the site correct
+  # now without a content migration and still correct after one. Until the
+  # retag happens the LIVE routes.yaml almost certainly filters on the old
+  # names alone — which is another reason to diff before uploading.
+  #
+  # ⚠ The mount is /training-sections/, NOT /training/. /training/ is a
+  # PAGE (Ghost page, slug `training`) that acts as the landing surface, per
+  # tag-registry.md: "a landing page needs a route, not a tag".
+  /training-sections/:
     permalink: /training/{slug}/
     template: training
-    filter: tag:hash-training-module
+    filter: tag:[hash-training-section,hash-training-module]
 
   /training-lessons/:
     permalink: /training/{primary_tag}/{slug}/
     template: index
-    filter: tag:hash-training-lesson
+    filter: tag:[hash-training-content,hash-training-lesson]
 
   # ── DOCS — /docs/{section}/{page}/ ────────────────────────────────────────
   # PUBLISHED AND LIVE. template: docs is new (docs.hbs); this index was
   # being served as a blog grid too.
+  # ⚠ UNVERIFIED — the only published docs post is
+  # /docs/documentation/say-namaste-to-salesforce/, which carries NO internal
+  # tag at all (public tag `documentation`). So the live docs collection is
+  # NOT filtering on #docs-section/#docs-page: zero posts carry either.
+  # Whatever it filters on could not be determined from outside Ghost Admin.
+  # These two entries are the CANONICAL model, kept so docs.hbs has something
+  # coherent to be checked against — they are not a claim about production.
   /docs/:
     permalink: /docs/{slug}/
     template: docs

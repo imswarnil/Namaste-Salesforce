@@ -1,0 +1,72 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/training-module — one module's page: /training/{module}/.
+     Ported from NS-Design-System/templates/training-module.html.
+     ------------------------------------------------------------------------
+     ⚠ EXTRACTED FROM training-module.hbs, WHICH COULD NEVER RENDER A POST.
+     It was a top-level TEMPLATE named by a routes.yaml collection — and a
+     collection's `template:` names the template for its INDEX, never for the
+     posts inside it. A single post is dispatched by post.hbs. So the module
+     page existed, was correct, and was unreachable: every module URL fell
+     through post.hbs's {{else}} and rendered as a blog article.
+
+     Called from post.hbs, which is already inside {{#post}} — so this partial
+     must NOT open its own.
+     Served by the /training-modules/ collection: a POST tagged
+     #training-module whose PRIMARY tag is the module tag and whose SLUG
+     equals that tag's slug. The post's BODY is the module overview.
+
+     ⚠ THE SLUG RULE IS LOAD-BEARING. If the post's slug and its primary
+     tag's slug disagree, this page still renders — at a URL its own lessons
+     do not sit under. Nothing errors; the nesting just quietly stops. The
+     rule and the reasoning are in routes.yaml and abstract/01-content-model.md.
+
+     ── ns-training--doc PUTS THE RAIL ON THE RIGHT ──────────────────────────
+     ⚠ NOT plain .ns-training, which is rail-left. --doc sets
+     `grid-template-columns: minmax(0,1fr) var(--ns-trail-w)` and pins main to
+     column 1, so the reading column is left and the rail is right — and the
+     rail must therefore come AFTER main in the source. See the longer note in
+     partials/post/training-lesson.hbs.
+
+     ── THE RAIL IS THE WHOLE CURRICULUM, NOT JUST THIS MODULE ───────────────
+     A reader on a module page is deciding what to read next as much as
+     reading this one, so the rail lists every module with this one open.
+     Upstream ships every <details> open and collapses with JS on load; here
+     the open state is decided server-side by comparing ids, so there is no
+     flash and no JS dependency.
+     ══════════════════════════════════════════════════════════════════════ --}}
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-training ns-training--doc">
+
+    <main class="ns-training__main">
+        <header class="ns-modulehead">
+            <span class="ns-modulehead__crumb"><a href="{{@site.url}}/training/">{{t "Training"}}</a></span>
+            <h1 class="ns-modulehead__title">{{title}}</h1>
+            {{#if custom_excerpt}}<p class="ns-modulehead__lede">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        {{!-- The module overview IS the post body. Both classes, always —
+             .ns-prose is the 17px reading scale and .gh-content is what the
+             theme's Koenig rules are scoped to. --}}
+        <div class="gh-content ns-prose">{{content}}</div>
+
+        {{!-- Its lessons. primary_tag here is the module's own tag, and a
+             lesson's primary tag IS its module's tag — that is the nesting. --}}
+        {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:[hash-training-lesson,hash-training-content]" order="published_at asc" limit="100" as |lessons|}}
+            {{#if lessons}}
+                <ul class="ns-units">
+                    {{#foreach lessons}}
+                        <li><a class="ns-unit" href="{{url}}">
+                            <span class="ns-unit__check" aria-hidden="true">{{> "icons/circle"}}</span>
+                            <span class="ns-unit__title">{{title}}</span>
+                            <span class="ns-unit__time">{{reading_time}}</span>
+                        </a></li>
+                    {{/foreach}}
+                </ul>
+            {{else}}
+                {{> "empty" title=(t "No lessons in this module yet")}}
+            {{/if}}
+        {{/get}}
+    </main>
+
+    {{> "training/nav"}}
+</div>
