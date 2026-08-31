@@ -1,0 +1,55 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     docs/index — the documentation index.
+     ------------------------------------------------------------------------
+     Shared by docs.hbs and documentation.hbs. TWO NAMES, ONE LAYOUT: the
+     repo's routes.yaml names `docs`, the routes.yaml running in Ghost Admin
+     names `documentation`, and until those agree both have to resolve or one
+     of them silently serves index.hbs — the blog grid — instead. Copying the
+     layout to satisfy the second name is how a theme ends up with two
+     documentation indexes that drift; see abstract/09.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <span class="ns-kicker">{{t "// Reference"}}</span>
+                <h1 class="ns-band__title">{{t "Documentation"}}</h1>
+                <p class="ns-band__lede">{{t "How the platform, the courses and your account work — the answers that do not change week to week."}}</p>
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/training/">{{> "icons/graduation-cap"}} {{t "Training"}}</a>
+            </div>
+        </div>
+
+        {{#if posts}}
+            <div class="ns-blog-grid">
+                {{#foreach posts}}
+                    <article class="ns-card">
+                        <div class="ns-card__body">
+                            <span class="ns-card__kicker">{{t "// Section"}}</span>
+                            <a class="ns-card__link" href="{{url}}"><h2 class="ns-card__title">{{title}}</h2></a>
+                            {{#if excerpt}}<p class="ns-card__text">{{excerpt words="20"}}</p>{{/if}}
+
+                            {{!-- The section's own pages, so a lookup lands in one
+                                 click rather than two. `../` climbs out of the
+                                 {{#get}} frame back to the section post. --}}
+                            {{#get "posts" filter="primary_tag:{{slug}}+tag:hash-docs-page" order="published_at asc" limit="50" as |pages|}}
+                                {{#if pages}}
+                                    <ul class="ns-tree">
+                                        {{#foreach pages}}
+                                            <li><a class="ns-tree__node" href="{{url}}"><span class="ns-tree__label">{{title}}</span></a></li>
+                                        {{/foreach}}
+                                    </ul>
+                                {{/if}}
+                            {{/get}}
+                        </div>
+                    </article>
+                {{/foreach}}
+            </div>
+            {{> "pagination"}}
+        {{else}}
+            {{> "empty" title=(t "No documentation yet")
+                        text=(t "Reference material is being written.")}}
+        {{/if}}
+    </div>
+</section>

@@ -1,0 +1,42 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     page/statement — a page that opens with a statement rather than a heading.
+     Shape from NSDS templates/personal-site.html.
+     ------------------------------------------------------------------------
+     The single body behind custom-about.hbs and the three page-*.hbs route
+     answers. One layout, four names — the names exist because Ghost's
+     template resolution and a stale routes.yaml both address templates BY
+     NAME, and a name is not a reason to copy a layout. See partials/post-card.hbs
+     for the same argument about cards.
+
+     Everything is data-driven: no headline, no strapline, no image is a valid
+     page and each simply does not draw.
+
+     show_title_and_feature_image controls the WHOLE hero here, because on
+     this shape the title IS the hero — an author who turns it off has written
+     their own opening into the body and must not get a second one above it.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#post}}
+{{#if @page.show_title_and_feature_image}}
+    <section class="ns-band ns-hero ns-band--dark ns-band--grid">
+        <div class="ns-band__inner">
+            <div class="ns-band__head">
+                <h1 class="ns-band__title">{{title}}</h1>
+                {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
+            </div>
+            {{#if feature_image}}
+                <img class="ns-card__media" src="{{img_url feature_image size="xl"}}"
+                     srcset="{{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+                     sizes="(min-width: 1200px) 1200px, 100vw"
+                     alt="{{#if feature_image_alt}}{{feature_image_alt}}{{/if}}">
+            {{/if}}
+        </div>
+    </section>
+{{/if}}
+
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        {{!-- gh-content AND ns-prose, both — see page.hbs for why. --}}
+        <div class="gh-content ns-prose">{{content}}</div>
+    </div>
+</section>
+{{/post}}
