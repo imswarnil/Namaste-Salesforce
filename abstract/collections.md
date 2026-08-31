@@ -129,6 +129,32 @@ the list; nothing here is optional.
 
 # Part 3 · The eight surfaces
 
+> ## ⚠ FOUR OF THESE ARE ALREADY PUBLISHED
+>
+> This file opens by saying none is specified and none gets built before its
+> section is answered. That was written as if the site were empty. **It is
+> not.** Blog, Courses, Training and Docs have published posts on live URLs,
+> and Resources has a live mount — every one of them routed by the
+> `routes.yaml` uploaded in Ghost Admin, which is a *different file* from the
+> one in this repo and always was.
+>
+> So the **URL rows below are no longer open questions.** They are a record of
+> what is serving traffic, and the `decided` column has been filled in from
+> production rather than from a preference. Changing one now is a migration
+> with 301s, not an edit.
+>
+> **The six questions are still open**, and they are still the reason not to
+> invent anything: they decide sort order, empty states, gating and what a
+> reader does next — none of which production has settled, and none of which
+> a template should settle on its own.
+>
+> `courses.hbs`, `docs.hbs` and `resources.hbs` were written before this
+> section was answered, deliberately and under protest: the templates were
+> *already named* by the live `routes.yaml`, so Ghost was silently serving
+> `index.hbs` — the blog grid — in their place. Porting them to match a
+> published URL is not the mistake `09-lessons.md` records. Inventing a
+> surface that nothing routes to is, and that is still off the table.
+
 ## 01 · Home
 
 Archetype: `homepage.html` + `sections-home.html` · Template: `home.hbs`
@@ -154,10 +180,10 @@ Archetype: `blog-listing.html` → `blog-post.html` · Template: `blog.hbs`
 
 | | proposed | decided |
 |---|---|---|
-| mount | `/blog/` | → |
-| permalink | `/blog/{slug}/` | → |
-| internal tag | `#blog` | → |
-| filter | `tag:hash-blog` | → |
+| mount | `/blog/` | **`/blog/`** — live |
+| permalink | `/blog/{slug}/` | **`/blog/{slug}/`** — live |
+| internal tag | `#blog` | **`#blog`** — live |
+| filter | `tag:hash-blog` | **`tag:hash-blog`** — live |
 
 1. **Not:** →
 2. **Who / next action:** →
@@ -173,12 +199,12 @@ Template: `courses.hbs`
 
 | | proposed | decided |
 |---|---|---|
-| mount | `/courses/` | → |
-| permalink | `/courses/{slug}/` | → |
-| internal tag | `#course` | → |
-| filter | `tag:hash-course` | → |
-| child permalink | `/courses/{primary_tag}/{slug}/` | → |
-| child tag | `#lesson` | → |
+| mount | `/courses/` | **`/courses/`** — live |
+| permalink | `/courses/{slug}/` | **`/courses/{slug}/`** — live |
+| internal tag | `#course` | **`#course`** — live |
+| filter | `tag:hash-course` | **`tag:hash-course`** — live |
+| child permalink | `/courses/{primary_tag}/{slug}/` | **`/courses/{primary_tag}/{slug}/`** — live |
+| child tag | `#lesson` | **`#lesson`** — live |
 
 1. **Not:** *(start here — this is the one most likely to be the same thing as training)* →
 2. **Who / next action:** →
@@ -194,12 +220,12 @@ Template: `training.hbs`
 
 | | proposed | decided |
 |---|---|---|
-| mount | `/training/` | → |
-| permalink | `/training/{slug}/` | → |
-| internal tag | `#training-module` | → |
-| filter | `tag:hash-training-module` | → |
-| child permalink | `/training/{primary_tag}/{slug}/` | → |
-| child tag | `#training-lesson` | → |
+| mount | `/training/` | **`/training/`** — live |
+| permalink | `/training/{slug}/` | **`/training/{slug}/`** — live |
+| internal tag | `#training-module` | **`#training-module`** — live |
+| filter | `tag:hash-training-module` | **`tag:hash-training-module`** — live |
+| child permalink | `/training/{primary_tag}/{slug}/` | **`/training/{primary_tag}/{slug}/`** — live |
+| child tag | `#training-lesson` | **`#training-lesson`** — live |
 
 1. **Not:** *(and specifically: how is this not Courses?)* →
 2. **Who / next action:** →
@@ -215,12 +241,12 @@ Template: `docs.hbs` · Behaviour: `rail.js`, `toc.js`, `code.js`
 
 | | proposed | decided |
 |---|---|---|
-| mount | `/docs/` | → |
-| permalink | `/docs/{slug}/` | → |
-| internal tag | `#docs-section` | → |
-| filter | `tag:hash-docs-section` | → |
-| child permalink | `/docs/{primary_tag}/{slug}/` | → |
-| child tag | `#docs-page` | → |
+| mount | `/docs/` | **`/docs/`** — live |
+| permalink | `/docs/{slug}/` | **`/docs/{slug}/`** — live |
+| internal tag | `#docs-section` | **`#docs-section`** — live |
+| filter | `tag:hash-docs-section` | **`tag:hash-docs-section`** — live |
+| child permalink | `/docs/{primary_tag}/{slug}/` | **`/docs/{primary_tag}/{slug}/`** — live |
+| child tag | `#docs-page` | **`#docs-page`** — live |
 
 1. **Not:** →
 2. **Who / next action:** →
@@ -235,10 +261,10 @@ Archetype: none — compose; `.ns-card` grid or `.ns-table` · Template: `resour
 
 | | proposed | decided |
 |---|---|---|
-| mount | `/resources/` | → |
-| permalink | `/resources/{slug}/` | → |
-| internal tag | `#resource` | → |
-| filter | `tag:hash-resource` | → |
+| mount | `/resources/` | **`/resources/`** — live |
+| permalink | `/resources/{slug}/` | **`/resources/{slug}/`** — live |
+| internal tag | `#resource` | **`#resource`** — live |
+| filter | `tag:hash-resource` | **`tag:hash-resource`** — live |
 
 1. **Not:** →
 2. **Who / next action:** →

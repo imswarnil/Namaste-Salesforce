@@ -5,14 +5,41 @@
 # uploaded in Admin → Settings → Labs → Routes. It is committed here because
 # the templates below cannot be reasoned about without it.
 #
+# ⚠⚠ RECONSTRUCTED, NOT DOWNLOADED — DIFF BEFORE YOU UPLOAD ⚠⚠
+# This file was rebuilt to match the URLs the LIVE site is actually serving,
+# reconstructed from two sources: the previous port's routes.yaml at git
+# 206a211, and www.namastesalesforce.com/sitemap-*.xml. It has NOT been
+# diffed against the file running in Ghost Admin, because that file can only
+# be downloaded from Admin → Settings → Labs → Routes.
+#
+#   Download it and diff it against this BEFORE uploading anything. If they
+#   disagree, the downloaded file is right and this one is wrong.
+#
+# ── WHY THIS FILE WAS REWRITTEN ─────────────────────────────────────────────
+# The version replaced here (git 4b83f66) declared a URL model that the live
+# site does not have, on a premise its own comments stated and that was false:
+# "nothing is published yet". At the time of writing the site has published
+# posts under /blog/, /courses/, /training/ and /archive/.
+#
+# Uploading that version would have:
+#   · moved EVERY blog post from /blog/{slug}/ to /{slug}/, and
+#   · deleted the /courses/, /lessons/, /docs/, /docs-pages/, /resources/ and
+#     /archive/ collections outright, unrouting every post in them.
+#
+# That is a full migration with 301s and lost ranking, presented as a tidy-up.
+# The rule in the header below is not decoration — it is the thing that was
+# broken.
+#
 #   ⚠ Every URL on the site comes from this file. Changing a permalink after
 #   publishing means 301-ing every page under it and losing whatever ranking
-#   the old one had. Decide it in abstract/collections.md BEFORE the first post.
+#   the old one had. Decide it in abstract/collections.md BEFORE the first
+#   post — and where a post already exists, this file follows the post.
 #
 # THE RULE (abstract/decisions/0003): this file names ONLY templates that
 # exist and are servable. Ghost does not validate a `template:` key — it
 # silently falls back to index.hbs, so a typo here is a page that renders but
-# renders wrong.
+# renders wrong. Three of the templates named below did not exist until now,
+# which is exactly how /courses/ and /docs/ came to be served as the blog.
 # ════════════════════════════════════════════════════════════════════════════
 
 routes:
@@ -24,15 +51,6 @@ routes:
   # URL, and the worst kind because it looks deliberate.
   /:
     template: home
-
-  # /training/ — the curriculum's landing page.
-  #
-  # CONTENT-LESS ROUTE. There is ONE training, so nothing backs it: the page
-  # lists the module POSTS discovered by the /training-modules/ collection
-  # below. A Ghost PAGE with slug `training` supplies the title and excerpt if
-  # one exists — training.hbs forks on {{#page}}.
-  /training/:
-    template: training
 
   # ads.txt — authorised digital sellers, from the ads_txt theme setting.
   #
@@ -52,55 +70,76 @@ routes:
 
 collections:
 
-  # THE BLOG, mounted at /blog/ — and it is still the catch-all.
-  #
-  # ⚠ THE MOUNT MOVED, /archive/ → /blog/. THE PERMALINK DID NOT.
-  # Posts stay at /{slug}/, so not one post URL changes and there is nothing
-  # to 301. What moved is where the INDEX lives, and that was safe to move
-  # only because nothing is published yet — this is exactly the "decide it
-  # before the first post" window the header of this file describes. After
-  # the first post it would have been a migration.
-  #
-  # ⚠ AND SO DID THE FEED: /archive/rss/ → /blog/rss/. Ghost serves one feed
-  # per collection at <mount>rss/, so moving the mount moves the feed with
-  # it. Every link in the theme was grepped and updated in the same change —
-  # if this mount moves again, `grep -rn "blog/rss" .` is the list.
-  #
-  # Unfiltered and LAST: every post lands here until a narrower collection
-  # claims it. A filter here would make any post matching nothing unroutable —
-  # a 404 on a published post, invisible until someone reports it.
-  # ── Training MODULES — /training/{module}/ ───────────────────────────────
-  # A module is a POST tagged #training-module whose PRIMARY tag is the module
-  # tag; its body is the module overview. Implemented from the spec already
-  # written in abstract/01-content-model.md — read that before changing this.
-  #
-  # THE ONE RULE: the module post's SLUG must equal its primary TAG's slug.
-  # The permalink uses {slug} (unique per post) rather than {primary_tag},
-  # because the module post and every one of its lessons SHARE that tag —
-  # {primary_tag} would be ambiguous and Ghost would 301 to the wrong place.
-  # slug == tag slug is what makes /training/start/ (the module) and
-  # /training/start/{lesson}/ (its lessons) line up.
-  #
-  # Adding a module is therefore Ghost-Admin-only: make the tag, write the
-  # post with a matching slug, publish. No routes.yaml edit, no theme edit.
-  # ORDER is published_at asc — backdate a module post to move it earlier.
-  /training-modules/:
+  # ── COURSES — /courses/{slug}/, lessons nested beneath ────────────────────
+  # PUBLISHED AND LIVE. template: courses is new (courses.hbs); until it was
+  # written this index was served by index.hbs as a blog grid.
+  /courses/:
+    permalink: /courses/{slug}/
+    template: courses
+    filter: tag:hash-course
+
+  # A lesson's PRIMARY tag IS its course's tag, so {primary_tag} does the
+  # nesting on its own. Different path depth from the course above, so the two
+  # cannot clash. THE ONE RULE applies: a course post's slug must equal its
+  # own tag's slug, or these two do not line up.
+  /lessons/:
+    permalink: /courses/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-lesson
+
+  # ── TRAINING — /training/{module}/{lesson}/ ───────────────────────────────
+  # PUBLISHED AND LIVE. The curriculum, free, ordered published_at asc.
+  /training/:
     permalink: /training/{slug}/
-    template: training-module
+    template: training
     filter: tag:hash-training-module
 
-  # Training LESSONS nest under their module: /training/{module}/{lesson}/
-  # A lesson's PRIMARY tag IS its module's tag, so {primary_tag} does the
-  # nesting on its own. Different path depth from the module above, so the two
-  # cannot clash.
   /training-lessons/:
     permalink: /training/{primary_tag}/{slug}/
     template: index
     filter: tag:hash-training-lesson
 
+  # ── DOCS — /docs/{section}/{page}/ ────────────────────────────────────────
+  # PUBLISHED AND LIVE. template: docs is new (docs.hbs); this index was
+  # being served as a blog grid too.
+  /docs/:
+    permalink: /docs/{slug}/
+    template: docs
+    filter: tag:hash-docs-section
+
+  /docs-pages/:
+    permalink: /docs/{primary_tag}/{slug}/
+    template: index
+    filter: tag:hash-docs-page
+
+  # ── BLOG — /blog/{slug}/ ──────────────────────────────────────────────────
+  # ⚠ THE PERMALINK IS /blog/{slug}/ AND MUST STAY THAT WAY. Posts are
+  # published at it. The replaced version of this file used /{slug}/, which
+  # would have moved every one of them.
+  # The feed is at /blog/rss/ — Ghost serves one per collection at <mount>rss/,
+  # and the theme links it in blog.hbs, resources.hbs and the footer. If this
+  # mount ever moves, `grep -rn "blog/rss" .` is the list of what moves with it.
   /blog/:
-    permalink: /{slug}/
+    permalink: /blog/{slug}/
     template: blog
+    filter: tag:hash-blog
+
+  # ── RESOURCES — /resources/{slug}/ ────────────────────────────────────────
+  # PUBLISHED AND LIVE. template: resources is new (resources.hbs).
+  /resources/:
+    permalink: /resources/{slug}/
+    template: resources
+    filter: tag:hash-resource
+
+  # ── THE CATCH-ALL, mounted at /archive/ ───────────────────────────────────
+  # Unfiltered and LAST: every post lands here until a narrower collection
+  # claims it. A filter here would make any post matching nothing unroutable —
+  # a 404 on a published post, invisible until someone reports it.
+  # Posts land at /{slug}/, which is why /archive/{post}/ does not appear in
+  # any URL: the mount is the index, the permalink is the root.
+  /archive/:
+    permalink: /{slug}/
+    template: index
 
 taxonomies:
   tag: /tag/{slug}/

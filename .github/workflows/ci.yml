@@ -71,6 +71,17 @@ jobs:
       - name: Every icon partial exists
         run: node scripts/check-icons.mjs
 
+      # ── The template a route names must exist ────────────────────────────
+      # Ghost does not validate a `template:` key. Name one the theme does
+      # not have and Ghost falls back to index.hbs in silence — so /courses/
+      # and /docs/ were served as the BLOG grid, live, for as long as
+      # courses.hbs and docs.hbs were missing. No error, no log, no 404, and
+      # a green build the whole time. Same silent-failure shape as the two
+      # checks above: the page renders, so only a check that knows what it
+      # should have been can tell.
+      - name: Every routed template exists
+        run: node scripts/check-routes.mjs
+
       # Fonts and icons are referenced by url() in the compiled sheet, and
       # postcss REBASES those paths while inlining @import — so how deep the
       # vendored bundle sits decides whether they resolve. Reorganising

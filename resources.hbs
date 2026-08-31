@@ -1,0 +1,50 @@
+{{!< default}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     resources.hbs — the /resources/ index. Composed: abstract/collections.md
+     §06 records "no archetype — compose; .ns-card grid or .ns-table".
+     ------------------------------------------------------------------------
+     ⚠ THE THIRD SILENT FALLBACK. Live routes.yaml mounts /resources/ with
+     `template: resources`; the file did not exist, so Ghost served
+     index.hbs. That one at least rendered its empty state rather than a
+     wrong grid, which is why it looked less broken than /courses/ and
+     /docs/ without being any more correct.
+
+     ── GRID, NOT TABLE ─────────────────────────────────────────────────────
+     §06 offers both. A table is right when every row shares the same handful
+     of comparable columns — version, size, format. Nothing in the tag
+     registry supplies those yet, so a table would be one real column
+     (the name) and several empty ones, which reads as missing data rather
+     than as a deliberately short row. The card grid degrades honestly:
+     a resource with only a title is still a complete card.
+     Revisit when §06 names the columns.
+
+     ⚠ REUSES post-card. A resource is "is this worth opening" — the same
+     question .ns-bcard already answers, so it gets the same card rather than
+     a fourth near-copy of it. See the note in partials/post-card.hbs: a
+     surface that needs a different card needs a different NSDS COMPONENT,
+     not a copy. That is the whole of abstract/09 in one sentence.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <span class="ns-kicker">{{t "// Toolkit"}}</span>
+                <h1 class="ns-band__title">{{t "Resources"}}</h1>
+                <p class="ns-band__lede">{{t "Cheat sheets, templates and the files worth keeping open in a second tab."}}</p>
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/blog/rss/">{{> "icons/rss"}} RSS</a>
+            </div>
+        </div>
+
+        {{#if posts}}
+            <div class="ns-blog-grid">
+                {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+            </div>
+            {{> "pagination"}}
+        {{else}}
+            {{> "empty" title=(t "No resources yet")
+                        text=(t "Downloads and cheat sheets will collect here.")}}
+        {{/if}}
+    </div>
+</section>
