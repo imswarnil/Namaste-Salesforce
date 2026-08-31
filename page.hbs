@@ -2,7 +2,7 @@
 {{!-- Pages are standalone: no author box, no next/previous, no tags. A page
      that wants a post's furniture is a post. --}}
 {{#post}}
-<div class="ns-page ns-page--narrow">
+<div class="ns-page ns-page--prose">
     {{!-- @page.show_title_and_feature_image is a per-page toggle in Ghost's
          editor, for a page that opens with its own designed hero and must
          not get a second title above it. gscan fails a page template that
@@ -23,9 +23,21 @@
         </header>
     {{/if}}
 
-    {{!-- .ns-prose is the READING surface — 17px, 68ch, 1.7 leading — not the
-         14px UI scale. Ghost's Koenig output carries no classes of its own,
-         so this one wrapper styles all of it. --}}
-    <div class="ns-prose">{{content}}</div>
+{{!-- gh-content AND ns-prose, and both are load-bearing.
+
+         .ns-prose is NSDS's reading surface — 17px, 68ch, 1.7 leading.
+
+         .gh-content is GHOST'S vocabulary, and without it 34 rules in
+         assets/css/theme/ are dead. Ghost injects its own cards.min.css
+         through {{ghost_head}} (card_assets: true) and that stylesheet was
+         written against a white page: it hard-codes light-mode colours, a
+         16px radius and a 1px border on every bookmark, callout and toggle
+         card. theme/ghost.css restates each of those in NSDS's vocabulary —
+         but every one of its selectors starts `.gh-content`, so with the
+         class missing they never match and Ghost's own card CSS wins. That
+         is the stray white bordered box inside an article on the navy
+         surface. theme/reset.css also restores list markers under
+         .gh-content, so bullets disappear without it too. --}}
+    <div class="gh-content ns-prose">{{content}}</div>
 </div>
 {{/post}}

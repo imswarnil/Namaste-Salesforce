@@ -1,194 +1,55 @@
 {{!< default}}
 {{!-- ══════════════════════════════════════════════════════════════════════
-     home.hbs — the homepage. Bands ported from
-     NS-Design-System/templates/sections-home.html.
+     home.hbs — COMPOSITION ONLY.
      ------------------------------------------------------------------------
-     THIS SITE IS NEW, and the homepage is written for that rather than
-     pretending otherwise. A new site has almost no archive, so a homepage
-     built around "browse our 200 lessons" renders as a set of empty shelves.
-     The one thing it does have is a direction, so the page asks for the only
-     commitment worth asking a first-time visitor for: an email address.
+     Every band is a partial in partials/home/. This file says what the page
+     is made of and in what order; nothing about how any of it looks, and no
+     copy of its own.
 
-     Every band degrades to nothing when its data is absent — {{#get}} blocks
-     carry an {{else}}, so a site with zero published posts still renders a
-     complete page rather than a run of empty headings.
+     THE ORDER IS AN ARGUMENT, read top to bottom:
+       hero          what this is, and the ask
+       training-cta  the one thing to do next — into /training/
+       latest        the writing itself
+       cta           the ask again, once, at the end
 
-     THE HEADLINE COPY IS A GHOST SETTING, not a string in this file. Admin →
-     Design → Site-wide. The defaults below are placeholders and are meant to
-     be replaced; a headline hard-coded in a template is one the site owner
-     cannot fix without a deploy.
+     ── IT USED TO BE TWELVE BANDS, AND THAT WAS THE PROBLEM ─────────────────
+     mission, path, courses, pace, shipped, topics, stats, marquee and follow
+     were all here. Every one of them was defensible on its own and together
+     they made a page that said the same thing nine ways before the reader
+     reached anything they could actually read. A homepage with nine arguments
+     has none.
 
-     ⚠ One CTA band per page, at the end — NSDS's rule, and the reason the
-     subscribe form appears twice here rather than three times.
+     What is left is the shape of the site: here is what this is, here is the
+     training, here is the writing, here is the ask. The curriculum argues for
+     itself on /training/ — which now has the Sections map and the real
+     modules — and the writing argues for itself on /blog/.
+
+     ⚠ THE REMOVED PARTIALS STILL EXIST in partials/home/ and are not
+     deprecated. They are bands this page no longer runs, not dead code: a
+     campaign page or a future /about/ can compose them without rebuilding
+     anything. Deleting them is a separate decision from not rendering them.
+
+     The marquee sits near the FOOT deliberately. It is a personal aside on a
+     site that is otherwise about the reader, and two bands in it interrupted
+     the value proposition before the value proposition had been made.
+
+     BACKGROUNDS ALTERNATE — default, sunken, default. Two sunken bands next
+     to each other read as one long section with a seam in it, and a run of
+     five default ones reads as an undifferentiated scroll. Because every
+     data-driven band hides itself when empty, the alternation is written for
+     the CURRENT state (no posts): hero, mission, path, courses, pace,
+     marquee, follow, cta. Re-check it when the first posts land.
+
+     There is no testimonial band. A site with no learners has no testimonial
+     to borrow, and an invented one is the fastest way to lose the trust the
+     rest of the page is building — mission takes that slot instead.
+
+     Every DATA-driven band hides itself when its data is absent, so a site
+     with nothing published still renders a complete page. The two marked
+     DUMMY do not, because they have no data to be absent — which is exactly
+     how you will find them again when it is time to replace them.
      ══════════════════════════════════════════════════════════════════════ --}}
-
-{{!-- ── HERO ───────────────────────────────────────────────────────────
-     .ns-hero--split makes .ns-band__inner a two-column grid: the words, then
-     the mark. Below 64rem it collapses to one column with the WORDS FIRST —
-     NSDS's own rule, and the reason the media slot is second in the source.
-
-     The subscribe form is here rather than a button, because on a site with
-     almost no archive the email address IS the conversion. A button to a
-     portal costs a click and a modal before anyone can act.
-──────────────────────────────────────────────────────────────────────── --}}
-<section class="ns-band ns-hero ns-hero--split ns-band--dark ns-band--grid">
-    <div class="ns-band__inner">
-
-        <div>
-            <span class="ns-kicker">{{#if @custom.hero_kicker}}{{@custom.hero_kicker}}{{else}}{{t "Learn Salesforce, properly"}}{{/if}}</span>
-
-            <h1 class="ns-hero__title">
-                {{#if @custom.hero_title}}{{@custom.hero_title}}{{else}}{{@site.title}}{{/if}}
-            </h1>
-
-            <p class="ns-hero__lede">
-                {{#if @custom.hero_lede}}{{@custom.hero_lede}}{{else if @site.description}}{{@site.description}}{{/if}}
-            </p>
-
-            {{#if @site.members_enabled}}
-                {{!-- data-members-form="subscribe" is Ghost's own hook: its
-                     members script intercepts the submit, posts the address
-                     and flips the elements marked data-members-success /
-                     data-members-error. No JavaScript of ours, no action URL
-                     to keep correct.
-
-                     BOTH RESPONSE MESSAGES EXIST UP FRONT, hidden. A live
-                     region created at the same moment as its message
-                     announces nothing — the region has to be in the DOM
-                     before the text lands in it.
-
-                     .ns-cta-card__form carries `display:flex` and the
-                     `flex: 1` on .ns-input, so the field and the button lay
-                     out with no utility and no inline style. mt-6 is the one
-                     thing NSDS has no class for here: .ns-hero__actions would
-                     bring its own flex and fight the form's. --}}
-                <form class="ns-cta-card__form mt-6" data-members-form="subscribe">
-                    <label class="ns-visually-hidden" for="hero-email">{{t "Email address"}}</label>
-                    <input id="hero-email" class="ns-input" type="email" name="email"
-                           autocomplete="email" required
-                           placeholder="{{t "you@example.com"}}" data-members-email>
-                    <button class="ns-btn ns-btn--white ns-btn--lg" type="submit">
-                        {{> "icons/paper-plane-tilt"}} {{t "Subscribe"}}
-                    </button>
-                </form>
-
-                <p class="ns-field__help" data-members-success role="status" hidden>
-                    {{t "Check your inbox — the confirmation link is on its way."}}
-                </p>
-                <p class="ns-field__error" data-members-error role="alert" hidden>
-                    {{t "That did not work. Check the address and try again."}}
-                </p>
-            {{else}}
-                <div class="ns-hero__actions">
-                    <a class="ns-btn ns-btn--white ns-btn--lg" href="#latest">
-                        {{> "icons/arrow-right"}} {{t "See what's here so far"}}
-                    </a>
-                </div>
-            {{/if}}
-
-            <span class="ns-hero__proof">
-                {{#if @custom.hero_proof}}{{@custom.hero_proof}}{{else}}{{t "Free · no spam · unsubscribe any time"}}{{/if}}
-            </span>
-        </div>
-
-        {{!-- The mark, on a loop. Second in the source so it lands UNDER the
-             words when the grid collapses. See assets/css/theme/logo-sting.css
-             for where the geometry comes from and why the theme draws this one
-             thing itself. --}}
-        <div class="ns-hero__media">
-            {{> "logo-sting"}}
-        </div>
-    </div>
-</section>
-
-{{!-- ── WHAT HAPPENS NEXT ───────────────────────────────────────────────
-     .ns-shipped is NSDS's "is this thing still alive" band — dated and
-     time-ordered. On an established site it is a changelog; on this one it is
-     the honest answer to "has anything been published yet", and it is real
-     data rather than a promise. --}}
-{{#get "posts" limit="5" include="tags" as |recent|}}
-    {{#if recent}}
-        <section class="ns-band ns-band--tight">
-            <div class="ns-band__inner">
-                <div class="ns-band__head">
-                    <span class="ns-kicker">{{t "Still being written"}}</span>
-                    <h2 class="ns-band__title">{{t "Published recently"}}</h2>
-                    <p class="ns-band__lede">{{t "The curriculum is being built in public. This is what has landed most recently."}}</p>
-                </div>
-
-                <div class="ns-shipped">
-                    {{#foreach recent}}
-                        <a class="ns-shipped__row" href="{{url}}">
-                            <span class="ns-shipped__date"><time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM"}}</time></span>
-                            <span class="ns-shipped__kind">{{> "icons/plus-circle"}} {{#primary_tag}}{{name}}{{else}}{{t "New"}}{{/primary_tag}}</span>
-                            <span class="ns-shipped__title">{{title}}</span>
-                        </a>
-                    {{/foreach}}
-                </div>
-            </div>
-        </section>
-    {{/if}}
-{{/get}}
-
-{{!-- ── LATEST ──────────────────────────────────────────────────────────
-     The id is what the hero's second button targets. It stays on the section
-     even when there are no posts, so the button never scrolls to nothing. --}}
-<section class="ns-band ns-band--tight" id="latest">
-    <div class="ns-band__inner">
-        <div class="ns-band__head ns-band__head--between">
-            <div>
-                <span class="ns-kicker">{{t "Writing"}}</span>
-                <h2 class="ns-band__title">{{t "Latest"}}</h2>
-            </div>
-            <div class="ns-band__actions">
-                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/archive/rss/">{{> "icons/rss"}} RSS</a>
-            </div>
-        </div>
-
-        {{#get "posts" limit="6" include="authors,tags" as |posts|}}
-            {{#if posts}}
-                <div class="ns-blog-grid">
-                    {{#foreach posts}}{{> "post-card"}}{{/foreach}}
-                </div>
-            {{else}}
-                {{> "empty"
-                    title=(t "Nothing published yet")
-                    text=(t "The first lessons are being written. Subscribe below and they will reach you the day they go up.")}}
-            {{/if}}
-        {{/get}}
-    </div>
-</section>
-
-{{!-- ── FOLLOW ALONG ────────────────────────────────────────────────────
-     Renders only when the owner has actually filled in a handle — an empty
-     row of placeholder icons is worse than no band at all. --}}
-<section class="ns-band ns-band--tight ns-band--sunken">
-    <div class="ns-band__inner">
-        <div class="ns-band__head ns-band__head--center">
-            <span class="ns-kicker">{{t "Elsewhere"}}</span>
-            <h2 class="ns-band__title">{{t "Follow along while it is built"}}</h2>
-            <p class="ns-band__lede">{{t "Work in progress gets posted as it happens — drafts, teardowns, and the parts that did not work."}}</p>
-        </div>
-        {{> "footer/social"}}
-    </div>
-</section>
-
-{{!-- ── THE CLOSER ──────────────────────────────────────────────────────
-     Exactly one CTA band, at the end. NSDS's rule, and the reason the page
-     does not open with a subscribe form as well. --}}
-{{#if @site.members_enabled}}
-    <section class="ns-band ns-band--dark ns-band--grid">
-        <div class="ns-band__inner">
-            <div class="ns-cta">
-                <h2 class="ns-band__title">{{t "Know what happens next"}}</h2>
-                <p class="ns-band__lede">{{t "This site is at the beginning. Subscribe and you get every new lesson, roadmap and teardown as it ships — and a say in what gets written next."}}</p>
-                <div class="ns-cta__actions">
-                    <a class="ns-btn ns-btn--white ns-btn--lg" href="#/portal/signup" data-portal="signup">
-                        {{> "icons/envelope"}} {{t "Subscribe"}}
-                    </a>
-                </div>
-                <span class="ns-cta__fine">{{t "Free · no spam · unsubscribe any time"}}</span>
-            </div>
-        </div>
-    </section>
-{{/if}}
+{{> "home/hero"}}
+{{> "home/training-cta"}}
+{{> "home/latest"}}
+{{> "home/cta"}}

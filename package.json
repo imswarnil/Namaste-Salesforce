@@ -24,16 +24,18 @@
     "build": "NODE_ENV=production gulp build",
     "test": "npm run build && gscan .",
     "test:ci": "npm run build && gscan --fatal --verbose .",
-    "zip": "npm run test:ci && mkdir -p dist && rm -f dist/namaste-salesforce.zip && zip -r dist/namaste-salesforce.zip . -x '*.git*' -x 'node_modules/*' -x 'dist/*' -x 'abstract/*' -x 'scripts/*' -x 'dummy-content/*' -x 'assets/css/*' -x '*.DS_Store' -x '*.md' -x 'gulpfile.mjs' -x 'package-lock.json'"
+    "zip": "npm run test:ci && mkdir -p dist && rm -f dist/namaste-salesforce.zip && zip -r dist/namaste-salesforce.zip . -x '*.git*' -x 'node_modules/*' -x 'dist/*' -x 'abstract/*' -x 'scripts/*' -x 'dummy-content/*' -x 'assets/css/*' -x 'assets/js/*' -x '*.DS_Store' -x '*.md' -x 'gulpfile.mjs' -x 'package-lock.json'"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
+    "browser-sync": "^3.0.4",
     "cssnano": "^7.1.2",
     "del": "^8.0.0",
     "gscan": "^6.4.2",
     "gulp": "^5.0.1",
     "gulp-concat": "^2.6.1",
     "gulp-postcss": "^10.0.0",
+    "gulp-terser": "^2.1.0",
     "postcss": "^8.5.10",
     "tailwindcss": "^4.3.3"
   },
@@ -61,30 +63,31 @@
     },
     "card_assets": true,
     "custom": {
-      "hero_title": {
+      "ga4_id": {
         "type": "text",
-        "default": "",
-        "description": "Homepage headline. Defaults to the site title."
+        "description": "Google Analytics 4 measurement ID (G-XXXXXXXXXX). Leave empty to disable GA4 entirely."
       },
-      "hero_lede": {
+      "posthog_key": {
         "type": "text",
-        "default": "",
-        "description": "One sentence under the headline. Defaults to the site description."
+        "description": "PostHog project API key (phc_...). Leave empty to disable PostHog entirely."
       },
-      "hero_kicker": {
+      "posthog_host": {
         "type": "text",
-        "default": "",
-        "description": "Small mono label above the headline. The // is added by the design system."
+        "default": "https://eu.i.posthog.com",
+        "description": "PostHog API host. EU cloud by default; changing it later loses history."
       },
-      "hero_proof": {
+      "onesignal_app_id": {
         "type": "text",
-        "default": "",
-        "description": "Quiet line under the buttons \u2014 what is true right now."
+        "description": "OneSignal app ID for web push. Leave empty to disable. Needs the worker file, see partial."
       },
-      "github_url": {
+      "require_analytics_consent": {
+        "type": "boolean",
+        "default": true,
+        "description": "Ask before loading GA4/PostHog. Nothing loads until the reader agrees."
+      },
+      "ads_txt": {
         "type": "text",
-        "default": "https://github.com/imswarnil",
-        "description": "GitHub profile or org. Every other handle is in Settings \u2192 Social accounts."
+        "description": "ads.txt records (IAB authorised sellers), one per line. Leave empty if no ads are sold."
       }
     }
   }

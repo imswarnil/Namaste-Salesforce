@@ -1,0 +1,28 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     home/follow — the handles.
+     ------------------------------------------------------------------------
+     Renders only when at least one handle is set: an empty row of icons is
+     worse than no band. {{#social_accounts}} yields nothing when Admin →
+     Settings → Social accounts is empty, but footer/social always appends RSS,
+     so the emptiness test has to be the handles themselves.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#social_accounts @site}}
+    {{#if @first}}
+        <section class="ns-band ns-band--tight">
+            <div class="ns-band__inner">
+                <div class="ns-band__head ns-band__head--center">
+                    <span class="ns-kicker">{{t "Elsewhere"}}</span>
+                    <h2 class="ns-band__title">{{t "Follow along while it is built"}}</h2>
+                    <p class="ns-band__lede">{{t "Work in progress gets posted as it happens — drafts, teardowns, and the parts that did not work."}}</p>
+                </div>
+                {{!-- The row's `display: flex` comes from `.ns-footer__col ul`
+                     in NSDS, not from `.ns-footer__social` itself — that class
+                     only sets flex-DIRECTION. Outside a footer column there is
+                     no flex context to give a direction to, so the icons stack
+                     vertically. Three utilities supply the context here rather
+                     than wrapping a band in a footer class it is not part of. --}}
+                {{> "footer/social" class="ns-footer__social flex flex-wrap justify-center gap-2"}}
+            </div>
+        </section>
+    {{/if}}
+{{/social_accounts}}

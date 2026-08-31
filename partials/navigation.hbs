@@ -24,14 +24,16 @@
      The helper merges its own hash into the context, which is what makes a
      single partial serve three different renderings:
 
-         {{navigation variant="bar"}}                    → the top bar
-         {{navigation variant="sheet"}}                  → the mobile sheet
+         {{navigation variant="bar"}}                     → the top bar
+         {{navigation variant="sheet"}}                   → the mobile sheet
+         {{navigation variant="jsonld"}}                  → SiteNavigationElement
          {{navigation type="secondary" variant="footer"}} → the footer
 
      `type="secondary"` is the helper's own switch between the primary and
      secondary menus; `variant` is ours.
      ══════════════════════════════════════════════════════════════════════ --}}
 {{~#match variant "sheet"}}{{> "navbar/sheet-links"}}
+{{~else match variant "jsonld"}}{{> "navbar/jsonld"}}
 {{~else match variant "footer"}}{{> "footer/links"}}
 {{~else}}{{> "navbar/links"}}
 {{~/match~}}

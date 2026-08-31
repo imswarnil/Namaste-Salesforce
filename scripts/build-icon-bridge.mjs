@@ -17,7 +17,7 @@
        node scripts/build-icon-bridge.mjs           regenerate
        node scripts/build-icon-bridge.mjs --check   fail if stale (CI)
 
-   ⚠ Generated. Do not edit assets/css/theme/icon-bridge.css — a re-run
+   ⚠ Generated. Do not edit assets/css/theme/9-generated/icon-bridge.css — a re-run
    silently reverts you. Fix it upstream in NS-Design-System instead, which
    is the actual repair: `i` → `:is(i, .ns-icon)` there deletes this file.
    ═══════════════════════════════════════════════════════════════════════ */
@@ -25,8 +25,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import postcss from 'postcss';
 
-const SRC = 'assets/css/namaste-ui.css';
-const OUT = 'assets/css/theme/icon-bridge.css';
+const SRC = 'assets/css/nsds/nsds.css';
+const OUT = 'assets/css/theme/9-generated/icon-bridge.css';
 
 /* The bare element, not a class or an attribute: ` i`, `>i`, `,i` — never
    `.ns-icon`, never `[data-i]`. A word boundary alone would match both. */

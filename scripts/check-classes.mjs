@@ -6,7 +6,7 @@
    The failure it catches is the quietest one in the project: a class name
    invented while porting an archetype — `.ns-trackcard` for `.ns-track-card`,
    `.ns-trainingnav` for `.ns-sidenav` — renders as unstyled markup. No error,
-   no warning, and gscan passes because it is valid HTML. abstract/10 is the
+   no warning, and gscan passes because it is valid HTML. abstract/09 is the
    record of ~100 classes that got in this way.
 
    The vendored bundle is the authority: if a name is not in it, the theme
@@ -24,9 +24,15 @@ import { join } from 'node:path';
    rather than listed — a hardcoded list means a new theme/*.css file is
    invisible to this check until somebody remembers to add it here, and the
    symptom is a false failure on a class that is in fact defined. */
-const CSS = ['assets/css/namaste-ui.css',
-    ...readdirSync('assets/css/theme').filter(f => f.endsWith('.css'))
-        .map(f => join('assets/css/theme', f))];
+function cssIn(dir, out = []) {
+    for (const name of readdirSync(dir)) {
+        const p = join(dir, name);
+        if (statSync(p).isDirectory()) cssIn(p, out);
+        else if (p.endsWith('.css')) out.push(p);
+    }
+    return out;
+}
+const CSS = ['assets/css/nsds/nsds.css', ...cssIn('assets/css/theme')];
 
 function walk(dir, out = []) {
     for (const name of readdirSync(dir)) {
@@ -67,7 +73,7 @@ if (missing.size) {
         for (const f of files) console.error(`      ${f}`);
     }
     console.error('\n  Either it is a typo for an NSDS class — grep assets/css/namaste-ui.css —');
-    console.error('  or the theme is inventing a name NSDS already has. See abstract/10.');
+    console.error('  or the theme is inventing a name NSDS already has. See abstract/09.');
     process.exit(1);
 }
 

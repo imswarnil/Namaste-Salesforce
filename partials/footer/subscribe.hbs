@@ -1,39 +1,53 @@
 {{!-- ══════════════════════════════════════════════════════════════════════
-     subscribe — the newsletter form. Ported from NSDS's subscribe-form.html
-     and .ns-cta-card (components/css/ghost.css, which NSDS wrote FOR Ghost).
+     footer/subscribe — the newsletter, in the footer's register.
      ------------------------------------------------------------------------
-     data-members-form="subscribe" is Ghost's own hook: Ghost's members script
-     intercepts the submit, posts the address and flips the elements marked
-     data-members-success / data-members-error. There is no JavaScript of ours
-     here, and no action URL to keep correct.
+     NSDS's own footer is three link columns over a mono bar and carries no
+     form at all, so there is no archetype to port — this composes one out of
+     the parts the footer already uses.
 
-     BOTH RESPONSE MESSAGES EXIST UP FRONT, hidden. A live region created at
-     the same moment as its message announces nothing — the region has to be
-     in the DOM before the text lands in it.
+     ⚠ IT IS DELIBERATELY NOT .ns-cta-card. That component is an IN-ARTICLE
+     callout: sunken fill and a 3px brand border down its left edge, built to
+     interrupt a paragraph. Dropped into a footer column it shouts over the
+     link lists beside it and reads as a second CTA — and the page already
+     has exactly one, at the foot of home.hbs. A footer newsletter is a
+     utility, not a pitch.
 
-     .ns-cta-card__form .ns-input carries `flex: 1`, so the field and the
-     button lay out with no utility and no inline style.
+     So it borrows only .ns-cta-card__form, which is layout and nothing else
+     (display:flex, and `flex: 1` on the input), and takes its label from
+     .ns-footer__head — the same mono kicker as "Learn" and "Project" above
+     it, which is what makes it read as a fourth column rather than a box
+     that landed in the footer.
 
-     Takes optional label / text / fine parameters; the defaults are written
-     for a site that has just launched.
+     ⚠ THE FIELD AND THE BUTTON SHARE A ROW, SO THEY SHARE A HEIGHT. Neither
+     takes a size modifier. The button was --sm here and it was wrong: 32px
+     against the field's 40px, and a paired control that is 8px shorter than
+     the thing it submits reads as a mistake no matter how small the row is.
+
+     NSDS ships no .ns-input--sm either, and that is a decision rather than a
+     gap: --target-comfy is the accessibility floor, and a "small" field is
+     not a size variant, it is a smaller tap target. .ns-cta-card__form pairs
+     a default .ns-input with a default .ns-btn upstream, which is what this
+     now does.
+
+     Both response messages exist up front, hidden: a live region created at
+     the same moment as its message announces nothing.
      ══════════════════════════════════════════════════════════════════════ --}}
-<form class="ns-cta-card" data-members-form="subscribe">
-    <span class="ns-cta-card__label">{{> "icons/envelope"}} {{#if label}}{{label}}{{else}}{{t "Newsletter"}}{{/if}}</span>
+<div class="ns-footer__col">
+    <p class="ns-footer__head">{{t "Newsletter"}}</p>
 
-    <p class="ns-cta-card__text">
-        {{#if text}}{{text}}{{else}}{{t "This site is brand new and the curriculum is being written in the open. Subscribe and every new lesson, roadmap and teardown lands in your inbox as it ships."}}{{/if}}
+    <p class="ns-footer__blurb">
+        {{t "New lessons, roadmaps and teardowns as they ship. Nothing else."}}
     </p>
 
-    <div class="ns-cta-card__form">
-        <label class="ns-visually-hidden" for="subscribe-email">{{t "Email address"}}</label>
-        <input id="subscribe-email" class="ns-input" type="email" name="email"
-               autocomplete="email" required placeholder="{{t "you@example.com"}}" data-members-email>
+    <form class="ns-cta-card__form" data-members-form="subscribe">
+        <label class="ns-visually-hidden" for="footer-email">{{t "Email address"}}</label>
+        <input id="footer-email" class="ns-input" type="email" name="email"
+               autocomplete="email" required
+               placeholder="{{t "you@example.com"}}" data-members-email>
         <button class="ns-btn ns-btn--primary" type="submit">
             {{> "icons/paper-plane-tilt"}} {{t "Subscribe"}}
         </button>
-    </div>
-
-    <span class="ns-cta-card__fine">{{#if fine}}{{fine}}{{else}}{{t "Free · no spam · unsubscribe any time"}}{{/if}}</span>
+    </form>
 
     <p class="ns-field__help" data-members-success role="status" hidden>
         {{t "Check your inbox — the confirmation link is on its way."}}
@@ -41,4 +55,4 @@
     <p class="ns-field__error" data-members-error role="alert" hidden>
         {{t "That did not work. Check the address and try again."}}
     </p>
-</form>
+</div>

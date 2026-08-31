@@ -12,7 +12,7 @@ The requirement is not "in the spirit of NSDS." It is that the site look
 swapped for Ghost helpers, which is the procedure NSDS's own
 `docs/INTEGRATION.md` §5 specifies. Approximating an archetype from memory is
 the failure this project has already paid for twice; see
-`abstract/10-how-this-went-wrong.md`.
+`abstract/09-lessons.md`.
 
 > **Ghost owns the content model. NSDS owns how everything looks. The theme is
 > the wiring between them, and should be as thin as possible.**
@@ -34,24 +34,25 @@ The foundation is built and green. The **collections are not**, deliberately.
 | **Build** | gulp + Tailwind v4 + cssnano → `assets/built/`, committed |
 | **Checks** | layers, classes, icons, icon bridge, inline styles, Handlebars comments, gscan |
 | **CI/CD** | CI on every PR; deploy on `main`; release on a `v*` tag |
-| **NSDS** | vendored at `f0dd883` — 1,779 selectors, 278 tokens available |
-| **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 85-rule bridge |
-| **Fonts** | Switzer + Roboto Mono, self-hosted, preloaded |
+| **NSDS** | vendored at `9526e20` (v3.0.0) — 2,059 selectors available |
+| **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 95-rule bridge |
+| **Fonts** | Figtree, self-hosted — one face, four cuts, one preloaded |
 | **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404` |
-| **Navbar** | `partials/navbar/` — bar, sheet, per-item icons, `-Label` dropdowns |
+| **Navbar** | `partials/navbar/` — one partial per element (brand, links, search, star, theme, auth, burger), `-Label` dropdowns, `SiteNavigationElement` JSON-LD. **Contained**, not fluid: `.ns-topnav__inner` caps it at the bands' own 72rem |
 | **Footer** | `partials/footer/` — link columns, social row, newsletter, pinned to the bottom |
-| **Homepage** | `home.hbs` — split hero with inline subscribe form + the looping brand mark, what shipped, latest, follow, subscribe |
+| **Homepage** | `home.hbs` is composition only — twelve bands in `partials/home/`, each data-driven one hiding itself when its data is absent |
+| **Hero** | `--tall` (68svh) + `--split`, on a brand-blue gradient with a drifting hairline grid; the mark sits in a navy square panel — see `theme/3-components/hero.css` |
 | **Brand mark** | `partials/logo-sting.hbs` — geometry lifted from `logo-sting/intro.html`, looped in CSS |
 | **Reading surface** | `partials/post/article.hbs`, ported from `blog-post.html` |
-| **Collections** | **none.** Eight specs waiting in `abstract/collections/` |
+| **Collections** | **none.** Eight surfaces awaiting specs in `abstract/collections.md` |
 
 `npm run build` is green, `gscan` reports no issues, and the cascade contract
 holds in both the development and production builds.
 
-**Do not build a collection before its file in `abstract/collections/` is
-answered.** All eight are currently unanswered, and the previous version of
+**Do not build a collection before its section in `abstract/collections.md`
+is answered.** None is, and the previous version of
 this theme was assembled the other way round — one reasonable commit at a time,
-with the content model emerging afterwards. That is what `abstract/10` is a
+with the content model emerging afterwards. That is what `abstract/09` is a
 record of.
 
 `post.hbs` and `default.hbs` both carry placeholder tag lists marked ⚠ SKELETON
@@ -118,11 +119,15 @@ component against all five before it ships.
    are a single `1px` border (`--color-border`). `--shadow-card` is nearly
    flat. Elevation comes from a border brightening to brand blue on hover —
    never a floating lift.
-2. **Monospace is a structural material, not a code-block accessory.** Roboto
-   Mono renders every index, duration, timestamp, status tag and section
-   kicker; Switzer is reserved for prose, headings and quotations. This is what
-   makes a list of lessons read as *data* and a paragraph read as *writing*,
-   without touching color.
+2. **The label voice is a structural material, not a code-block accessory.**
+   Every index, duration, timestamp, status tag and section kicker is set
+   apart from prose, which is what makes a list of lessons read as *data* and
+   a paragraph read as *writing*, without touching color. Since NSDS 3.0 the
+   separator is a RECIPE, not a family: uppercase + `--tracking-label` +
+   weight 600–700 + `--size-label`/`--size-mono` + `tabular-nums`.
+   `--font-mono` still exists as a name but resolves to Figtree, so setting
+   it alone says nothing — apply the whole recipe. Code blocks are the
+   exception: `--font-code`, the platform's own mono, not shipped.
 3. **One signal color.** Brand blue `#0176D3` is the only color meaning
    "interactive" or "active." Status shows as a small dot + mono text, never a
    background wash — so a screen has exactly one obvious next action.
@@ -146,8 +151,10 @@ glassmorphism, no glow, no neon, no photography, no emoji in UI copy.
 
 The UI base is **14px**, not 16, because this is a product with an app inside
 it. But 14 is the wrong base for an *article*, so `.ns-prose` and everything
-built on it take a separate reading scale at **17px / 68ch (`--measure-prose`)
-/ 1.7**.
+built on it take a separate reading scale at **17px / 62ch (`--measure-prose`)
+/ 1.7**. `--container-prose` (42rem) is the layout twin — at 17px in Figtree
+the two resolve to the same line, so they may not drift apart: change one and
+recompute the other.
 
 | scale | token | size | for |
 |---|---|---|---|
@@ -166,11 +173,12 @@ on a wrapping sentence.
 
 The axis is **scanned versus read**. Do not set an article at `--size-body` or
 a table row at `--size-prose`. Weights are `400 / 500 / 600 / 700` — only
-weights Switzer's designer actually drew.
+weights Figtree's designer actually drew (the variable axis runs 300–900).
+Inline `<strong>` against Figtree 400 takes 600, not 700.
 
 `text-label` is the kicker (11px, 700, `0.09em`) arriving whole so it cannot be
 half-applied; `text-data` is the same 11px **without** weight and tracking, for
-mono data, which is quiet by definition and reads wrong bold.
+data runs, which are quiet by definition and read wrong bold.
 
 ## Color, dark mode, spacing
 
@@ -241,10 +249,9 @@ either. Do not add anything to that block that works from inside the layer.
 
 ## How this theme consumes NSDS — decision 0002, option B
 
-`abstract/decisions/0002-css-strategy.md` was decided as A (neutral bundle, no
-build) on 2026-08-25 and **reversed to B the same day**: **Tailwind v4 + NSDS,
-with a gulp build.** Read that file before touching the CSS setup; the reversal
-is at the foot of it.
+The CSS strategy was decided as the plain bundle with no build, then reversed
+the same day to **Tailwind v4 + NSDS with a gulp build**. The reasoning is in
+`abstract/04-css.md`; the decision record it used to live in has been removed.
 
 Why B: NSDS's `templates/*.html` — the canonical markup for every archetype —
 express layout that is not in the `.ns-*` class layer at all.
@@ -381,7 +388,7 @@ SVG misses every one of those rules).
 
 ```bash
 npm install
-npm run dev      # gulp: build, then watch and rebuild
+npm run dev      # build, watch, serve with live reload on :4000
 npm run build    # NODE_ENV=production — one production build
 npm test         # build, then gscan
 npm run test:ci  # build, then gscan --fatal (warnings fail too)
@@ -403,8 +410,8 @@ node scripts/check-icons.mjs                 # every {{> "icons/…"}} exists
 findings with no `FAIL` prefix, so `npm run build | grep -i error` reports
 success on a failing build.
 
-There **is** a build. `assets/css/screen.css` is the source; `assets/built/` is
-what Ghost serves and is committed. Every `.hbs` edit needs a rebuild, because
+There **is** a build. `assets/css/screen.css` is the source; `assets/built/screen.min.css`
+and `main.min.js` are what Ghost serves, and both are committed. Every `.hbs` edit needs a rebuild, because
 Tailwind emits utilities from the class names it finds in the templates. Gulp
 watches both.
 
@@ -415,6 +422,11 @@ watches both.
   mode and the publisher's accent colour silently.
 - **State is an attribute** — `aria-current`, `aria-expanded`, `data-state`,
   `open` — not a class, so the CSS and the screen reader read one source.
+- **The content wrapper is `class="gh-content ns-prose"`, both.** `ns-prose`
+  is the reading surface; `gh-content` is what 34 rules in `assets/css/theme/`
+  are scoped to. Drop it and Ghost's own `cards.min.css` — white, bordered,
+  16px radius, injected by `{{ghost_head}}` — wins on the navy surface, and
+  prose loses its list markers. The theme shipped exactly that.
 - **`{{#foreach navigation}}` only works inside `partials/navigation.hbs`.**
   `navigation` is created by the `{{navigation}}` helper and exists nowhere
   else; iterating it in any other file emits an empty string, with no error
@@ -448,10 +460,10 @@ cd "../../../../NS-Design-System" && npm run dev   # styleguide at :4322/preview
 
 # Read before doing anything
 
-**`abstract/` is the documentation**, ordered by what breaks the site if you
-get it wrong. `abstract/00-README.md` is the map, and its status column matters
-— some files describe an implementation that no longer exists and carry a
-banner saying so.
+**`abstract/` is the documentation** — nine files plus the surface specs,
+ordered by what breaks the site if you get it wrong. `abstract/README.md` is
+the map, and it carries the **add-a-page-family playbook**, which is the loop
+this site grows through.
 
 If you read four:
 
@@ -459,22 +471,21 @@ If you read four:
   part of this project that is expensive to change later.
 - **`abstract/03-design-system.md`** — what NSDS is, measured, and the rules
   for consuming it without growing a second opinion.
-- **`abstract/04-css-architecture.md`** — the cascade contract, and how to
+- **`abstract/04-css.md`** — the cascade contract, and how to
   write a rule or add a component here.
-- **`abstract/10-how-this-went-wrong.md`** — the mistakes already made here.
+- **`abstract/06-discoverability.md`** — structured data, feeds, and what
+  makes a page readable by a search crawler or a language model. `Article` is
+  Ghost's default and is rarely the right type for a learning site.
+- **`abstract/09-lessons.md`** — the mistakes already made here.
 
-And before building any page family: **`abstract/collections/`** — one spec
-per surface, all eight currently unanswered. No collection gets built before
-its file is.
+And before building any page family: **`abstract/collections.md`** — eight
+surfaces, six questions each, none answered. No collection gets built before
+its section is.
 
 Tag names are **not** decided in this repo. They are canonical in the root
 knowledge base at `Namaste Salesforce/abstract/05-content/tag-registry.md`,
 because the vocabulary is shared with the LMS and the content pipeline.
 
-`abstract/decisions/` is one file per choice expensive to reverse, with its
-reasoning, its downside and the trigger that should reopen it. That folder
-exists because the last stack was never actually decided — it accumulated one
-reasonable commit at a time, which is why `10` had to be written.
 
 ## Facts to re-check if NSDS moves
 

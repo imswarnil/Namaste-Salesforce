@@ -1,0 +1,99 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   theme/3-components/hero.css — the homepage hero.
+   ----------------------------------------------------------------------------
+   Everything upstream already ships is a class on the section in
+   partials/home/hero.hbs and is NOT repeated here:
+
+     .ns-hero--tall   68svh, and it widens the split's media column 26→34rem
+     .ns-band--grid   the hairline grid motif, radially masked — STATIC
+     .ns-band--dark   the navy console ground, on-dark text, `overflow: clip`
+
+   ⚠ .ns-band--grid-live IS DELIBERATELY NOT USED. Upstream drifts the grid
+   one cell per 20 seconds and argues it is slow enough not to be noticed. On
+   this hero it is: the mark beside it is static now, so the only thing moving
+   on the first screen is the background, and a background that moves on its
+   own is the thing the eye goes to. The grid stays still.
+
+   What is left is the two things upstream has no variant for: the wider
+   content cap and the reversed mark's knockout colour.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+  /* ── A wider hero than the bands below it ────────────────────────────────
+     .ns-band__inner caps every band at --container-page (72rem). The hero
+     takes --container-wide (88rem) instead, and it is the ONLY band that
+     does — which is the point: the first screen is allowed to be the widest
+     thing on the page, and everything under it steps in to the reading
+     width.
+
+     This pairs with the bar being FLUID rather than contained (see
+     partials/navbar/navbar.hbs). Both are edge-ward, so the chrome and the
+     first screen agree; the argument bands below them are narrower because
+     they are read rather than scanned.
+
+     The gutter is inherited from .ns-band__inner and must stay — without it
+     the headline would touch the viewport edge between 72rem and 88rem. */
+  .sp-hero--wide > .ns-band__inner { max-inline-size: var(--container-wide); }
+
+  /* ── The reversed mark ───────────────────────────────────────────────────
+     Two fills and one of them is a knockout. See the long note in
+     partials/components/logo-mark.hbs for what "reversed" means here and why
+     the hands are painted rather than left transparent.
+
+     --sp-mark-knockout IS DECLARED ON THE BAND, not on the SVG, and that is
+     deliberate: it names the GROUND the mark is sitting on, which is a fact
+     about the band rather than about the mark. Move the mark to another
+     surface and that surface sets the variable; the mark itself never has to
+     know where it is. --color-brand-900 is what .ns-band--dark paints. */
+  .sp-hero--wide { --sp-mark-knockout: var(--color-brand-900); }
+
+  .sp-logo-mark { inline-size: 100%; block-size: auto; display: block; }
+  .sp-logo-mark__cloud { fill: currentColor; }
+  .sp-logo-mark__hands { fill: var(--sp-mark-knockout, var(--color-brand-900)); }
+
+  /* ── ⚠ UPSTREAM BUG: --tall CANCELS --split's MOBILE COLLAPSE ───────────
+     This is a patch for NSDS, not a design decision, and it should be
+     deleted the moment the fix lands upstream.
+
+     content/sections.css declares, in this order:
+
+       line 419  .ns-hero--tall.ns-hero--split .ns-band__inner    (0,3,0)
+                   { grid-template-columns: minmax(0,1fr) minmax(0,34rem); }
+       line 435  @media (max-width: 63.999rem) {
+                   .ns-hero--split .ns-band__inner                (0,2,0)
+                     { grid-template-columns: minmax(0,1fr); } }
+
+     A media query adds NO specificity, so the collapse rule loses to the
+     --tall rule at every width. The split therefore never collapses on a
+     phone, and the failure is far worse than a layout that stays wide: the
+     media column holds its 34rem while the words column is minmax(0, 1fr),
+     so the words get whatever is left — which at 430px is nothing. Measured
+     on a 430px viewport before this rule existed:
+
+       grid-template-columns   0px 366px
+       hero height             5478px          ← one word per line, 5.5k tall
+
+     Both hero classes are individually fine; it is the COMBINATION that
+     breaks, which is why nothing caught it. gscan does not read CSS, the
+     cascade check proves layer order rather than specificity, and at desktop
+     width — where this was first looked at — it renders perfectly.
+
+     THE UPSTREAM FIX is to move line 419 inside a `@media (min-width: 64rem)`
+     or repeat it in the existing max-width block; either makes the collapse
+     unconditional again. Here it can only be re-asserted at equal
+     specificity inside the same breakpoint.
+
+     The second line restores the OTHER half of that media block, which has
+     the same problem in a quieter form: upstream also writes
+     `.ns-hero--tall .ns-band__inner { min-block-size: 0 }` there, but the
+     height was moved onto the BAND (its own comment says so), so the reset
+     now targets an element that never had the property. It is inert today —
+     hero content on a phone always exceeds 68svh — so this is a latent bug
+     rather than an observed one, fixed here because it is one line in the
+     block already being written and upstream's intent is unambiguous. */
+  @media (max-width: 63.999rem) {
+    .ns-hero--tall.ns-hero--split .ns-band__inner { grid-template-columns: minmax(0, 1fr); }
+    .ns-hero--tall { min-block-size: 0; }
+  }
+}

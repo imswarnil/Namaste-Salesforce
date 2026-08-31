@@ -15,21 +15,67 @@
 # COMPILED assets/built/ it resolves to the same two places. So the paths are
 # right whether or not postcss rebases them during the inline — the sort of
 # thing that otherwise only shows up as a 404 on a font nobody notices.
+#
+# ── THE FONT AND ICON DIRECTORIES ARE WIPED, NOT MERGED. ───────────────────
+# A plain `cp` only ever ADDS. When NSDS 3.0 replaced Switzer + Roboto Mono
+# with a single Figtree, a merging sync would have left both old woff2s and
+# the Fontshare EULA sitting in assets/fonts/ — unreferenced by any
+# @font-face, invisible to every check in the build (check-assets.mjs proves
+# that referenced files EXIST, not that existing files are REFERENCED), and
+# shipped in the zip forever. Upstream owns what faces the system has; this
+# directory is a mirror of that, so it is replaced wholesale each sync.
 # ============================================================================
 set -euo pipefail
 
 DS="${1:-../../../../NS-Design-System}"
 [ -d "$DS" ] || { echo "NS-Design-System not found at: $DS" >&2; exit 1; }
 
-cp "$DS/dist/namaste-ui.css"  assets/css/namaste-ui.css
-cp "$DS/tokens/tailwind.css"  assets/css/ns-tailwind.css
+# ── CSS ─────────────────────────────────────────────────────────────────────
+# dist/nsds.css is the flat bundle (imports already inlined); src/tokens/
+# tailwind.css is the @theme bridge that maps the tokens onto Tailwind's
+# names. NOT dist/nsds.tailwind.css — that is Tailwind PLUS the system, built
+# for NSDS's own styleguide, and this theme already runs Tailwind itself.
+# See docs/INTEGRATION.md in the design system.
+cp "$DS/dist/nsds.css"           assets/css/nsds/nsds.css
+cp "$DS/src/tokens/tailwind.css" assets/css/nsds/tailwind.css
+
+# ── REBASE THE ASSET URLS. Do not remove. ───────────────────────────────────
+# The bundle ships `url("../fonts/…")`, which is correct when it sits directly
+# in assets/css/. It lives one level deeper, in assets/css/nsds/, so the same
+# string points at assets/css/fonts/ — which does not exist.
+#
+# It matters because POSTCSS REBASES these during the @import inline: it
+# resolves the url against the file it came from, then rewrites it relative to
+# the entry point. Feed it a path that is already wrong and it faithfully
+# emits a wrong path into assets/built/screen.min.css — with a green build, a
+# green gscan, and a 404 on every font that only shows up in a browser.
+# scripts/check-assets.mjs is the guard; this sed is the fix.
+sed -i '' 's|url("\.\./fonts/|url("../../fonts/|g; s|url("\.\./icons/|url("../../icons/|g' \
+    assets/css/nsds/nsds.css
+
+# ── Fonts and icons — mirrored, see the header note ─────────────────────────
+rm -rf assets/fonts assets/icons
+mkdir -p assets/fonts/licences assets/icons
 cp "$DS/fonts/"*.woff2        assets/fonts/
-cp "$DS/fonts/FONTSHARE-EULA.txt" assets/fonts/
 cp "$DS/fonts/licences/"*     assets/fonts/licences/
 cp "$DS/icons/"*.woff2        assets/icons/
 cp "$DS/icons/namaste-icons.svg" assets/icons/
-for f in nav toc type-fx lms training rail tabs code theme-init; do
-    cp "$DS/assets/js/$f.js" "assets/js/$f.js"
+
+# ── Scripts ─────────────────────────────────────────────────────────────────
+# theme-init stays at the top level: it is INLINED into <head> rather than
+# bundled, so it is not part of the vendored script layer.
+for f in nav toc type-fx lms training rail tabs code; do
+    cp "$DS/assets/js/$f.js" "assets/js/0-vendor/$f.js"
+done
+cp "$DS/assets/js/theme-init.js" assets/js/theme-init.js
+
+# ── The preload check ───────────────────────────────────────────────────────
+# default.hbs names the above-the-fold font by filename, and a preload for a
+# file that no longer exists is a silent console warning plus a wasted
+# request. The build's check-assets.mjs cannot see it: it parses url() in the
+# stylesheet, and a preload is markup.
+for f in $(grep -o 'fonts/[a-z0-9.-]*\.woff2' default.hbs | sort -u); do
+    [ -f "assets/$f" ] || echo "⚠ default.hbs preloads assets/$f, which upstream no longer ships" >&2
 done
 
 REV=$(cd "$DS" && git rev-parse --short HEAD)

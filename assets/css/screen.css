@@ -26,8 +26,8 @@
    ── The three imports are NSDS's own supported path ───────────────────────
    docs/INTEGRATION.md specifies exactly this for a Ghost theme:
      1. tailwindcss      Tailwind's @theme defaults and preflight
-     2. namaste-ui.css   the design system — tokens, base, @layer ns-components
-     3. ns-tailwind.css  NSDS's @theme bridge, AFTER Tailwind's so ours wins.
+     2. nsds/nsds.css    the design system — tokens, base, @layer ns-components
+     3. nsds/tailwind.css NSDS's @theme bridge, AFTER Tailwind's so ours wins.
                          This is what makes p-card resolve to --space-5 and
                          bg-brand-500 to the brand blue.
 
@@ -39,8 +39,8 @@
 @layer theme, base, ns-components, components, utilities;
 
 @import "tailwindcss" source(none);
-@import "./namaste-ui.css";
-@import "./ns-tailwind.css";
+@import "./nsds/nsds.css";
+@import "./nsds/tailwind.css";
 
 /* ── The content scan ──────────────────────────────────────────────────────
    `source(none)` disables Tailwind's automatic filesystem scan, which is
@@ -50,20 +50,17 @@
 @source "../../*.hbs";
 @source "../../partials/**/*.hbs";
 
-/* ── This theme's own layer ────────────────────────────────────────────────
-   Keep it SMALL. Check whether Ghost supplies it, then whether NSDS does, and
-   only then write it. What is left is almost entirely the translation between
-   Ghost's `.kg-*` vocabulary and NSDS's `.ns-*` one. abstract/10 is the
-   record of what happens when this layer grows a third opinion. */
-@import "./theme/reset.css";
-@import "./theme/ghost.css";
-@import "./theme/shell.css";
-@import "./theme/navbar.css";
-@import "./theme/logo-sting.css";
-
-/* GENERATED — scripts/build-icon-bridge.mjs. NSDS styles 85 icon rules by
-   element (`.ns-buybox__list i`) because it was written against an icon font;
-   this theme draws inline SVG, so each of those rules misses and the icon
-   renders unstyled rather than not at all. Regenerate after sync-nsds; CI
-   diffs it. partials/icons/README.md has the whole argument. */
-@import "./theme/icon-bridge.css";
+/* ── This theme's own layer, in numeric order ──────────────────────────────
+   The digits ARE the cascade inside @layer components: 5 beats 3 beats 1.
+   assets/css/theme/README.md is the map, and 0-foundation/README.md is why
+   that folder holds no design tokens. */
+@import "./theme/1-base/reset.css";
+@import "./theme/1-base/shell.css";
+@import "./theme/3-components/navbar.css";
+@import "./theme/3-components/hero.css";
+@import "./theme/3-components/logo-sting.css";
+@import "./theme/3-components/pace.css";
+@import "./theme/3-components/typography.css";
+@import "./theme/3-components/post-side.css";
+@import "./theme/4-ghost/koenig.css";
+@import "./theme/9-generated/icon-bridge.css";

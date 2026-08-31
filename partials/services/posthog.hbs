@@ -1,0 +1,77 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     services/posthog — product analytics, EU-hosted by default.
+     ------------------------------------------------------------------------
+     Renders nothing unless @custom.posthog_key is set. The host comes from
+     @custom.posthog_host and defaults to https://eu.i.posthog.com — the EU
+     cloud, deliberately. PostHog stores raw, per-person event data (that is
+     the product), and WHERE it is stored is the GDPR question: the EU
+     cluster keeps a European reader's data inside the EEA, which is the
+     posture a site with EU readers should default to. Choosing the US
+     cluster afterwards means a new project and losing history, so the
+     default has to be right on day one; the US host is one settings edit
+     for a publisher who genuinely wants it.
+
+     WHAT CHANGED FROM POSTHOG'S OFFICIAL SNIPPET, AND WHY. The official
+     snippet is a minified stub that shims ~60 method names onto a fake
+     window.posthog so calls made before the real bundle arrives are queued
+     and replayed. This theme makes no such calls — init happens in the
+     loader's own onload and nothing else here touches posthog — so the stub
+     is dead weight and, worse, unreviewable: a hand-transcribed blob of
+     minified code in a template is exactly the kind of thing nobody can
+     diff against upstream. What is KEPT from the official snippet is every
+     behaviour that matters: the same /static/array.js bundle, fetched from
+     the same assets host (the ".i.posthog.com" → "-assets.i.posthog.com"
+     rewrite is lifted verbatim, and passes a self-hosted URL through
+     untouched), async and crossorigin="anonymous" as upstream sets it, and
+     the same init options. `defaults: "2025-05-24"` is PostHog's own
+     current recommended defaults set (verified against the shipped bundle)
+     — history-API pageviews and identified-only person profiles — and
+     pinning the date is the point: PostHog changes behaviour by defaults
+     version, not under your feet.
+
+     THE WEIGHT is the reason this file should stay unset until the site
+     has product questions to answer: array.js is ~267 KB of JavaScript
+     (~85 KB over the wire), measured. abstract/10-user-tracking.md is the
+     argument for when that price becomes worth paying.
+
+     CONSENT AND SIGNALS, same contract as ga4.hbs: GPC/DNT wins outright;
+     then no gate on the page means load normally, "granted" loads now,
+     null waits, "denied" loads nothing. PostHog has its own opt-out and
+     cookieless modes, but the strictest and simplest form is the one a
+     partial can enforce: no consent, no script, no request.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#if @custom.posthog_key}}
+<script>
+(function () {
+    "use strict";
+    if (navigator.globalPrivacyControl === true ||
+        navigator.doNotTrack === "1" || window.doNotTrack === "1") { return; }
+
+    function boot() {
+        if (window.__nsPosthog) { return; }
+        window.__nsPosthog = true;
+        var host = "{{@custom.posthog_host}}".replace(/\/+$/, "") ||
+            "https://eu.i.posthog.com";
+        var s = document.createElement("script");
+        s.async = true;
+        s.crossOrigin = "anonymous";
+        s.src = host.replace(".i.posthog.com", "-assets.i.posthog.com") +
+            "/static/array.js";
+        s.onload = function () {
+            if (window.posthog && window.posthog.init) {
+                window.posthog.init("{{@custom.posthog_key}}", {
+                    api_host: host,
+                    defaults: "2025-05-24"
+                });
+            }
+        };
+        document.head.appendChild(s);
+    }
+
+    var gate = window.NSConsent;
+    if (!gate) { boot(); }
+    else if (gate.state === "granted") { boot(); }
+    else if (gate.state === null) { gate.whenGranted(boot); }
+})();
+</script>
+{{/if}}

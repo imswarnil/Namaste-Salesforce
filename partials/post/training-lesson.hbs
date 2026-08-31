@@ -1,0 +1,247 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/training-lesson — the course player. One training lesson, in full.
+     Ported from NS-Design-System/preview/demo-training-post.html.
+     ------------------------------------------------------------------------
+     A LESSON IS NOT AN ARTICLE, which is why it does not fall through to
+     post/article. An article's furniture is a TOC and a meta sidebar; a
+     lesson's furniture is the curriculum around it. A reader inside a lesson
+     asks "where am I and what is next" — post/article answers neither.
+
+     ── ns-training--doc, AND IT IS THE WHOLE LAYOUT ─────────────────────────
+     ⚠ NOT plain .ns-training. They are two layouts, not a variant pair:
+
+       .ns-training        rail first                       → rail LEFT
+       .ns-training--doc   minmax(0,1fr) var(--ns-trail-w),
+                           main pinned to grid-column 1     → rail RIGHT
+
+     The rail belongs right on a reading page: it is reference you consult
+     between lessons, not navigation you traverse on the way in, and on the
+     left it pushes the prose off the optical centre for the whole read. The
+     rail must therefore come AFTER main in the source.
+
+     ── WHAT IS REAL AND WHAT IS FIXED MARKUP ────────────────────────────────
+     Everything drawn from Ghost is live: title, lede, body, author, dates,
+     reading time, prev/next, the rail. Four widgets have no Ghost data behind
+     them and are written out so the page is COMPLETE rather than half-built:
+
+       ns-tbar__meter    position in the section. Ghost has no per-member read
+                         state and no index-within-tag, so the meter is drawn
+                         at zero against a real max. See the note on it.
+       ns-tmeta level    a #level-* internal tag drives it; with none set the
+                         chip is not drawn at all rather than guessed.
+       ns-takeaway       "In short" — falls back to the excerpt, which is the
+                         nearest true thing the post already carries.
+       ns-refs           only rendered when the post actually has a
+                         #references tag, because inventing citations is the
+                         one thing on a training page that would be dishonest
+                         rather than merely placeholder.
+
+     .ns-prose AND .gh-content, both, always: .ns-prose is the 17px reading
+     scale, .gh-content is what this theme's 34 Koenig rules are scoped to.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<div class="ns-training ns-training--doc">
+
+    <main class="ns-training__main">
+
+        {{!-- ── The topbar. Sticky to the scrolling column, one row, label
+             voice. It carries only what a reader glances UP for: where they
+             are, how far through, the step either side, and the way back to
+             the curriculum when the rail is collapsed. It sits OUTSIDE
+             .ns-training__reading so it spans the full column instead of
+             inheriting the reading inset. --}}
+        <div class="ns-tbar">
+            <p class="ns-tbar__crumb">
+                <a href="{{@site.url}}/training/">{{> "icons/graduation-cap"}} {{t "Training"}}</a>
+                <span class="ns-tbar__sep" aria-hidden="true">{{> "icons/caret-right"}}</span>
+                {{#primary_tag}}<a href="{{@site.url}}/training/{{slug}}/">{{name}}</a>{{/primary_tag}}
+            </p>
+
+            {{!-- The meter. `max` is the real lesson count for this module,
+                 straight from Ghost. `value` renders 0 and is then filled by
+                 assets/js/1-theme/lesson-progress.js from the reader's own
+                 localStorage — Ghost has no per-member read state, so the
+                 count comes from the browser rather than the API. A lesson
+                 counts as read when its LAST paragraph comes into view, not
+                 when the page opens; see that file for why.
+
+                 Server-rendered at zero on purpose: with scripting off the
+                 meter is empty but the max is still true, which is the honest
+                 degradation rather than a broken widget. --}}
+            {{#primary_tag}}
+                {{#get "posts" filter="primary_tag:{{slug}}+tag:hash-training-lesson" limit="1"}}
+                    <span class="ns-tbar__meter">
+                        <progress class="ns-progress" value="0" max="{{pagination.total}}"
+                                  aria-label="{{pagination.total}} {{t "lessons in this section"}}"></progress>
+                        <span class="ns-tbar__count">{{pagination.total}} {{t "lessons"}}</span>
+                    </span>
+                {{/get}}
+            {{/primary_tag}}
+
+            {{!-- prev_post / next_post walk publish order INSIDE the post's
+                 primary tag when told to — and the primary tag is the module,
+                 so this is prev/next within the module, not across the site. --}}
+            <span class="ns-tbar__steps">
+                {{#prev_post in="primary_tag"}}
+                    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm ns-tooltip-host" href="{{url}}"
+                       aria-label="{{t "Previous"}}: {{title}}">{{> "icons/arrow-left"}}<span class="ns-tooltip">{{title}}</span></a>
+                {{/prev_post}}
+                {{#next_post in="primary_tag"}}
+                    <a class="ns-btn ns-btn--quiet ns-btn--icon ns-btn--sm ns-tooltip-host" href="{{url}}"
+                       aria-label="{{t "Next"}}: {{title}}">{{> "icons/arrow-right"}}<span class="ns-tooltip">{{title}}</span></a>
+                {{/next_post}}
+            </span>
+
+            {{!-- Brings the rail back when it is collapsed or off-canvas.
+                 Read by assets/js/0-vendor/training.js. --}}
+            <button class="ns-btn ns-btn--sm ns-training__handle" type="button" data-ns-training-open>
+                {{> "icons/list"}} {{t "Curriculum"}}
+            </button>
+        </div>
+
+        <div class="ns-training__reading">
+
+            <header class="ns-modulehead">
+                {{!-- The kind mark: the same glyph the rail uses for this row,
+                     so the thing you clicked and the page you landed on are
+                     visibly one object. --}}
+                <p class="ns-modulehead__mark">{{> "icons/article"}}<span>{{t "Written lesson"}}</span></p>
+
+                <h1 class="ns-modulehead__title">{{title}}</h1>
+                {{#if custom_excerpt}}<p class="ns-modulehead__lede">{{custom_excerpt}}</p>{{/if}}
+
+                {{!-- THREE CHIPS, NOT EIGHT — upstream's own correction. The
+                     row had grown to carry kind, duration, position,
+                     difficulty, read state, author and date, which is a second
+                     lede made of metadata. Level is drawn only when a #level-*
+                     tag says so. --}}
+                <div class="ns-tmeta">
+                    <span class="ns-tmeta__item">{{> "icons/clock"}}{{reading_time}}</span>
+                    <span class="ns-tmeta__item">{{> "icons/calendar"}}<time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time></span>
+                    {{#has tag="#level-beginner"}}<span class="ns-tmeta__item">{{> "icons/compass"}}{{t "Beginner"}}</span>{{/has}}
+                    {{#has tag="#level-intermediate"}}<span class="ns-tmeta__item">{{> "icons/compass"}}{{t "Intermediate"}}</span>{{/has}}
+                    {{#has tag="#level-advanced"}}<span class="ns-tmeta__item">{{> "icons/compass"}}{{t "Advanced"}}</span>{{/has}}
+                </div>
+            </header>
+
+            <div class="ns-tpost-body">
+
+                {{!-- The narrow rail beside the prose. Upstream fills it with a
+                     160x600 ad; this site sells none, so it carries the one
+                     thing worth having beside a lesson — the way to keep
+                     getting them. It is sticky, so it stays as the reader
+                     scrolls. --}}
+                <aside class="ns-tsky" aria-label="{{t "About this lesson"}}">
+                    {{#if @site.members_enabled}}
+                        <div class="sp-side__cta">
+                            <p class="sp-side__label">{{t "Keep going"}}</p>
+                            <p class="sp-side__ctatext">{{t "New lessons as they ship. Nothing else."}}</p>
+                            <a class="ns-btn ns-btn--primary ns-btn--sm" href="#/portal/signup" data-portal="signup">
+                                {{> "icons/envelope"}} {{t "Subscribe"}}
+                            </a>
+                        </div>
+                    {{/if}}
+                    <div class="sp-side__art">{{> "components/reel"}}</div>
+                </aside>
+
+                <div>
+                    {{!-- ── THE STAGE — the lesson's thumbnail ──────────────────
+                         Upstream's .ns-tstage holds a video with a play control
+                         and a duration. This site's lessons are written, so the
+                         slot holds the post's FEATURE IMAGE at the same 16:9 —
+                         the same position, the same weight, one kind of media
+                         swapped for another.
+
+                         ⚠ IT IS NOT DRAWN WITHOUT AN IMAGE. An empty stage is a
+                         16:9 grey box between the header and the first
+                         paragraph, which reads as an image that failed to load
+                         rather than a lesson that has none. A lesson with no
+                         feature image simply starts at its prose.
+
+                         The <img> is NOT lazy: it is the first thing under the
+                         fold-line on this page, and loading:lazy on an
+                         above-the-fold image delays the largest paint rather
+                         than deferring it. --}}
+                    {{#if feature_image}}
+                        <figure class="ns-tstage">
+                            <img src="{{img_url feature_image size="l"}}"
+                                 srcset="{{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+                                 sizes="(min-width: 80rem) 700px, 100vw"
+                                 alt="{{#if feature_image_alt}}{{feature_image_alt}}{{/if}}">
+                            {{#if feature_image_caption}}
+                                <figcaption>{{feature_image_caption}}</figcaption>
+                            {{/if}}
+                        </figure>
+                    {{/if}}
+
+                    {{!-- Collapsible, not the always-open rail an article gets:
+                         the curriculum rail is already carrying navigation and
+                         two open outlines on one screen compete. --}}
+                    <details class="ns-toc--collapsible ns-tpost-toc">
+                        <summary>{{> "icons/list"}} {{t "On this page"}}</summary>
+                        <nav class="ns-toc" aria-label="{{t "On this page"}}" data-toc-from="#post-body"></nav>
+                    </details>
+
+                    <article class="gh-content ns-prose" id="post-body">
+                        {{content}}
+
+                        {{!-- "In short" — the excerpt, which is the nearest true
+                             one-line summary the post already carries. Drawn
+                             only when there is one; an empty callout is worse
+                             than no callout. --}}
+                        {{#if custom_excerpt}}
+                            <div class="ns-takeaway">
+                                <span class="ns-takeaway__label">{{t "In short"}}</span>
+                                <p class="ns-takeaway__text">{{custom_excerpt}}</p>
+                            </div>
+                        {{/if}}
+                    </article>
+
+                    {{!-- The author. Real Ghost data — no invented byline. --}}
+                    {{#primary_author}}
+                        <div class="ns-authorbox ns-tpost-author">
+                            {{#if profile_image}}<img class="ns-authorbox__avatar" src="{{img_url profile_image size="xs"}}" alt="">{{/if}}
+                            <div>
+                                <p class="ns-authorbox__name"><a href="{{url}}">{{name}}</a></p>
+                                {{#if bio}}<p class="ns-authorbox__bio">{{bio}}</p>{{/if}}
+                                <p class="ns-tpost-author__stamp">
+                                    <span>{{> "icons/calendar"}} {{t "Published"}} {{!-- ⚠ {{date ../published_at ...}}, never {{../published_at format=...}}.
+                                     published_at is a FIELD; using it in helper position parses
+                                     fine and fails gscan with "Missing helper", which is the only
+                                     place it ever shows up. --}}
+                                    <time datetime="{{date ../published_at format="YYYY-MM-DD"}}">{{date ../published_at format="D MMM YYYY"}}</time></span>
+                                </p>
+                            </div>
+                        </div>
+                    {{/primary_author}}
+
+                    {{!-- The pager. Same module, publish order. A lesson with
+                         no neighbour on one side gets nothing there rather
+                         than a disabled control — there is nothing to explain,
+                         so there is nothing to draw. --}}
+                    <nav class="ns-tpager" aria-label="{{t "Lesson navigation"}}">
+                        {{#prev_post in="primary_tag"}}
+                            <a class="ns-tpager__btn" href="{{url}}">
+                                <span class="ns-tpager__line">
+                                    <span class="ns-tpager__dir">{{> "icons/arrow-left"}}{{t "Previous"}}</span>
+                                    <span class="ns-tpager__where">{{primary_tag.name}}</span>
+                                </span>
+                                <span class="ns-tpager__title">{{title}}</span>
+                            </a>
+                        {{/prev_post}}
+                        {{#next_post in="primary_tag"}}
+                            <a class="ns-tpager__btn ns-tpager__btn--next" href="{{url}}">
+                                <span class="ns-tpager__line">
+                                    <span class="ns-tpager__where">{{primary_tag.name}}</span>
+                                    <span class="ns-tpager__dir">{{t "Next"}}{{> "icons/arrow-right"}}</span>
+                                </span>
+                                <span class="ns-tpager__title">{{title}}</span>
+                            </a>
+                        {{/next_post}}
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {{> "training/nav"}}
+</div>

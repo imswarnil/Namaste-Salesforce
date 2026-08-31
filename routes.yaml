@@ -7,7 +7,7 @@
 #
 #   ⚠ Every URL on the site comes from this file. Changing a permalink after
 #   publishing means 301-ing every page under it and losing whatever ranking
-#   the old one had. Decide it in abstract/collections/ BEFORE the first post.
+#   the old one had. Decide it in abstract/collections.md BEFORE the first post.
 #
 # THE RULE (abstract/decisions/0003): this file names ONLY templates that
 # exist and are servable. Ghost does not validate a `template:` key — it
@@ -25,29 +25,82 @@ routes:
   /:
     template: home
 
+  # /training/ — the curriculum's landing page.
+  #
+  # CONTENT-LESS ROUTE. There is ONE training, so nothing backs it: the page
+  # lists the module POSTS discovered by the /training-modules/ collection
+  # below. A Ghost PAGE with slug `training` supplies the title and excerpt if
+  # one exists — training.hbs forks on {{#page}}.
+  /training/:
+    template: training
+
+  # ads.txt — authorised digital sellers, from the ads_txt theme setting.
+  #
+  # ⚠ ONLY REACHABLE AT /ads.txt/ — with the trailing slash. A bare GET
+  # /ads.txt has a file extension, so Ghost's static-theme middleware hands it
+  # to express.static with fallthrough:false and 404s it BEFORE this router
+  # ever runs. Verified against the running site: both forms 404 without this
+  # route, and only the trailing-slash form works with it.
+  #
+  # IAB crawlers request the bare path, so production needs a proxy REWRITE
+  # (not a redirect — whether verifiers follow one is unverified):
+  #   nginx:      location = /ads.txt { proxy_pass http://ghost/ads.txt/; }
+  #   Cloudflare: rewrite /ads.txt -> /ads.txt/
+  /ads.txt/:
+    template: ads
+    content_type: text/plain
+
 collections:
 
-  # The catch-all, mounted at /archive/ so the homepage can own /.
+  # THE BLOG, mounted at /blog/ — and it is still the catch-all.
   #
-  # ⚠ THE PERMALINK IS STILL FLAT — /{slug}/, not /archive/{slug}/. The mount
-  # decides where the INDEX lives; the permalink decides where the POSTS live,
-  # and keeping posts at the root means none of these URLs has to move when
-  # the real collections are specified. Do not "tidy" this into
-  # /archive/{slug}/ — that is a decision, and it belongs in
-  # abstract/collections/08-archive.md.
+  # ⚠ THE MOUNT MOVED, /archive/ → /blog/. THE PERMALINK DID NOT.
+  # Posts stay at /{slug}/, so not one post URL changes and there is nothing
+  # to 301. What moved is where the INDEX lives, and that was safe to move
+  # only because nothing is published yet — this is exactly the "decide it
+  # before the first post" window the header of this file describes. After
+  # the first post it would have been a migration.
   #
-  # ⚠ FEED URL. Ghost serves a feed per collection, at <mount>rss/ — so this
-  # site's feed is /archive/rss/, not /rss/. The templates link to it by that
-  # path; if this mount changes, grep the theme for `archive/rss` and change
-  # them with it. When the blog collection is specified it will almost
-  # certainly take that feed over, and this note goes away.
+  # ⚠ AND SO DID THE FEED: /archive/rss/ → /blog/rss/. Ghost serves one feed
+  # per collection at <mount>rss/, so moving the mount moves the feed with
+  # it. Every link in the theme was grepped and updated in the same change —
+  # if this mount moves again, `grep -rn "blog/rss" .` is the list.
   #
   # Unfiltered and LAST: every post lands here until a narrower collection
   # claims it. A filter here would make any post matching nothing unroutable —
   # a 404 on a published post, invisible until someone reports it.
-  /archive/:
-    permalink: /{slug}/
+  # ── Training MODULES — /training/{module}/ ───────────────────────────────
+  # A module is a POST tagged #training-module whose PRIMARY tag is the module
+  # tag; its body is the module overview. Implemented from the spec already
+  # written in abstract/01-content-model.md — read that before changing this.
+  #
+  # THE ONE RULE: the module post's SLUG must equal its primary TAG's slug.
+  # The permalink uses {slug} (unique per post) rather than {primary_tag},
+  # because the module post and every one of its lessons SHARE that tag —
+  # {primary_tag} would be ambiguous and Ghost would 301 to the wrong place.
+  # slug == tag slug is what makes /training/start/ (the module) and
+  # /training/start/{lesson}/ (its lessons) line up.
+  #
+  # Adding a module is therefore Ghost-Admin-only: make the tag, write the
+  # post with a matching slug, publish. No routes.yaml edit, no theme edit.
+  # ORDER is published_at asc — backdate a module post to move it earlier.
+  /training-modules/:
+    permalink: /training/{slug}/
+    template: training-module
+    filter: tag:hash-training-module
+
+  # Training LESSONS nest under their module: /training/{module}/{lesson}/
+  # A lesson's PRIMARY tag IS its module's tag, so {primary_tag} does the
+  # nesting on its own. Different path depth from the module above, so the two
+  # cannot clash.
+  /training-lessons/:
+    permalink: /training/{primary_tag}/{slug}/
     template: index
+    filter: tag:hash-training-lesson
+
+  /blog/:
+    permalink: /{slug}/
+    template: blog
 
 taxonomies:
   tag: /tag/{slug}/

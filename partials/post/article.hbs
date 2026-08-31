@@ -10,8 +10,11 @@
      · data-toc-from lets toc.js build the outline from the article's own
        h2/h3 and add ids to any heading missing one. With JS off the rail is
        an empty labelled nav, which is why it carries a title.
-     · .ns-prose is the 17px reading scale. Ghost's Koenig output has no
-       classes of its own, so this one wrapper is what styles all of it.
+     · .ns-prose is the 17px reading scale, and .gh-content is Ghost's — the
+       theme has 34 rules scoped to it that restate Ghost's own cards.min.css
+       in NSDS's vocabulary. Drop the class and those rules stop matching,
+       Ghost's white bordered card CSS wins on the navy surface, and prose
+       loses its list markers. Both classes, always.
      ══════════════════════════════════════════════════════════════════════ --}}
 <span class="ns-lprogress ns-lprogress--article" data-target="#post-body"
       role="progressbar" aria-label="{{t "Reading progress"}}"
@@ -44,12 +47,54 @@
     </div>
 </header>
 
-<div class="ns-post">
-    <nav class="ns-post__rail ns-toc" aria-label="{{t "On this page"}}" data-toc-from="#post-body">
-        <p class="ns-toc__title">{{t "On this page"}}</p>
-    </nav>
+{{!-- ── THE SIDEBAR, AND THE ONE TAG THAT TURNS IT OFF ──────────────────────
+     #hide-sidebar is a Ghost INTERNAL tag: invisible in the public tag list,
+     absent from /tag/ routes, and therefore free to be used as a switch. Add
+     it to a post in Admin and that post renders full width; remove it and the
+     sidebar comes back. No theme setting, no custom template to pick, nothing
+     to remember per post except a tag you can see in the editor.
 
-    <article class="ns-post__body">
-        <div class="ns-prose" id="post-body">{{content}}</div>
-    </article>
-</div>
+     WHY A TAG AND NOT A THEME SETTING. A setting is site-wide, and this is a
+     per-post decision — a wide photo essay and a reference article want
+     different layouts on the same day. Ghost's own per-post lever is the
+     internal tag, so that is the lever.
+
+     THE GRID CLASS IS UPSTREAM'S. NSDS already ships both shapes:
+
+       .ns-post--sidebar   prose + an 18rem column   (the default here)
+       .ns-post--wide      prose alone               (#hide-sidebar)
+
+     so neither branch invents a layout, and the two cannot drift. Note the
+     bare `.ns-post` — three columns, with a share rail — is deliberately NOT
+     used: this theme has no share rail, and the empty 3.5rem gutter it
+     reserves pushed the prose measurably off-centre.
+
+     ── ONE SIDE COLUMN, ON THE RIGHT, AND THE TOC IS IN IT ──────────────────
+     This used to be THREE columns: a TOC rail on the left, prose, then the
+     meta column on the right. Two rails around one 62ch article is a reading
+     page with more furniture than text — the prose was pinched between them,
+     and the two rails competed for the same glance because both are "things
+     about this page".
+
+     Now everything that is ABOUT the article lives in one right-hand column,
+     outline first: partials/post/sidebar.hbs opens with the TOC and continues
+     into the meta, topics and the ask. One column, one place to look, and the
+     prose gets the whole of the rest.
+
+     #hide-sidebar therefore removes the outline too, which is correct — it is
+     one column now, and "hide the sidebar" means hide it. --}}
+{{#has tag="#hide-sidebar"}}
+    <div class="ns-post ns-post--wide">
+        <article class="ns-post__body">
+            <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+        </article>
+    </div>
+{{else}}
+    <div class="ns-post ns-post--sidebar">
+        <article class="ns-post__body">
+            <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+        </article>
+
+        {{> "post/sidebar"}}
+    </div>
+{{/has}}

@@ -1,0 +1,73 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     home/pace — pick a pace, get a date.
+     Ported from NS-Design-System/templates/homepage.html §08.
+     ------------------------------------------------------------------------
+     ⚠ DUMMY CONTENT, AND ONE PIECE OF IT GOES STALE ON ITS OWN.
+
+     "Finish by 30 November 2026" is a fixed string. On 1 December 2026 this
+     section starts offering a finish date in the past, and nothing in the
+     build can notice — it is valid markup either way. Before this ships for
+     real the date has to be COMPUTED from today, which needs either a script
+     or a build step, and the numbers have to come from the course collection
+     rather than from here.
+
+     The arithmetic is also not yet self-consistent: 100 days × 30 min is 50
+     hours, and the meta line says 42. Both are placeholders; reconcile them
+     against real course data, not against each other.
+
+     ── HOW THE CONTROL WORKS WITHOUT JAVASCRIPT ─────────────────────────────
+     All three outcomes are in the HTML at once, and the checked radio decides
+     which pair is shown, via :has() in theme/components/pace.css. NSDS ships
+     .ns-pace as markup only — in the LMS a script recomputes the date from
+     real progress — so a Ghost theme either writes that script, leaves a dead
+     control, or does this. It keeps working with JavaScript blocked, which
+     for a control whose whole job is answering "how long will this take me"
+     is the difference between a feature and a decoration.
+
+     The <legend> is visually hidden rather than absent: the three options are
+     meaningless to a screen reader without the question they answer.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band">
+    <div class="ns-band__inner">
+        <header class="ns-band__head">
+            <span class="ns-kicker">{{t "How long?"}}</span>
+            <h2 class="ns-band__title">{{t "Pick a pace, get a date"}}</h2>
+            <p class="ns-band__lede">{{t "Forty-two hours is not a number anyone can say yes to. A finish date is."}}</p>
+        </header>
+
+        <div class="ns-pace ns-pace--inline">
+            <div>
+                <span class="ns-pace__label">{{t "Finish by"}}</span>
+
+                <time class="ns-pace__date" data-pace="15" datetime="2027-05-19">19 May 2027</time>
+                <time class="ns-pace__date" data-pace="30" datetime="2026-11-30">30 November 2026</time>
+                <time class="ns-pace__date" data-pace="60" datetime="2026-08-15">15 August 2026</time>
+
+                <span class="ns-pace__meta" data-pace="15">
+                    <b>{{t "200 days at 15 min a day"}}</b><span>{{t "42 hours · 8 modules"}}</span>
+                </span>
+                <span class="ns-pace__meta" data-pace="30">
+                    <b>{{t "100 days at 30 min a day"}}</b><span>{{t "42 hours · 8 modules"}}</span>
+                </span>
+                <span class="ns-pace__meta" data-pace="60">
+                    <b>{{t "50 days at 1 hr a day"}}</b><span>{{t "42 hours · 8 modules"}}</span>
+                </span>
+            </div>
+
+            <fieldset class="ns-pace__control">
+                <legend class="ns-visually-hidden">{{t "How much time per day"}}</legend>
+                <div class="ns-segmented">
+                    <label class="ns-segmented__option">
+                        <input type="radio" name="home-pace" value="15"><span>{{t "15 min"}}</span>
+                    </label>
+                    <label class="ns-segmented__option">
+                        <input type="radio" name="home-pace" value="30" checked><span>{{t "30 min"}}</span>
+                    </label>
+                    <label class="ns-segmented__option">
+                        <input type="radio" name="home-pace" value="60"><span>{{t "1 hr"}}</span>
+                    </label>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</section>

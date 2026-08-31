@@ -53,7 +53,7 @@ jobs:
       # order, so the only record of the contract in the shipped file is the
       # order those blocks appear in. Built without the statement this came
       # out with ns-components LAST — beating the theme's own layer and every
-      # utility, silently. See abstract/04 and decisions/0002.
+      # utility, silently. See abstract/04.
       - name: Cascade contract
         run: node scripts/check-layers.mjs
 
@@ -70,6 +70,13 @@ jobs:
 
       - name: Every icon partial exists
         run: node scripts/check-icons.mjs
+
+      # Fonts and icons are referenced by url() in the compiled sheet, and
+      # postcss REBASES those paths while inlining @import — so how deep the
+      # vendored bundle sits decides whether they resolve. Reorganising
+      # assets/css/ once broke all four with a fully green build.
+      - name: Every url() resolves
+        run: node scripts/check-assets.mjs
 
       # Ghost's own validator, in fatal mode: warnings fail too.
       - name: gscan
