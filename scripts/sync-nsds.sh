@@ -61,13 +61,33 @@ cp "$DS/fonts/licences/"*     assets/fonts/licences/
 cp "$DS/icons/"*.woff2        assets/icons/
 cp "$DS/icons/namaste-icons.svg" assets/icons/
 
-# ── Scripts ─────────────────────────────────────────────────────────────────
+# ── Scripts — MIRRORED, like the fonts and icons above ──────────────────────
+# This used to be a hardcoded list of eight. That is the same shape of bug the
+# font directory note describes, pointing the other way: a plain list only
+# ever copies what someone REMEMBERED, so a module upstream adds is missing
+# here until somebody notices — and "notices" means a control that renders and
+# does nothing, which is the failure this repo keeps paying for.
+#
+# So the directory is mirrored. Upstream owns which behaviours the system has.
+#
+# ⚠ VENDORED IS NOT THE SAME AS BUNDLED. Everything upstream ships lands in
+# assets/js/0-vendor/, but gulpfile.mjs's SCRIPTS list decides what is
+# CONCATENATED into main.min.js, and it is deliberately shorter: a script that
+# binds to markup no template emits is dead weight on every page load. Adding
+# the markup means adding the script to SCRIPTS in the same commit, and
+# scripts/check-behaviour.mjs fails the build if you forget.
+#
 # theme-init stays at the top level: it is INLINED into <head> rather than
 # bundled, so it is not part of the vendored script layer.
-for f in nav toc type-fx lms training rail tabs code; do
-    cp "$DS/assets/js/$f.js" "assets/js/0-vendor/$f.js"
+rm -rf assets/js/0-vendor
+mkdir -p assets/js/0-vendor
+for f in "$DS/assets/js/"*.js; do
+    base=$(basename "$f")
+    [ "$base" = "theme-init.js" ] && continue
+    cp "$f" "assets/js/0-vendor/$base"
 done
 cp "$DS/assets/js/theme-init.js" assets/js/theme-init.js
+echo "vendored $(ls assets/js/0-vendor | wc -l | tr -d ' ') behaviour modules"
 
 # ── The preload check ───────────────────────────────────────────────────────
 # default.hbs names the above-the-fold font by filename, and a preload for a

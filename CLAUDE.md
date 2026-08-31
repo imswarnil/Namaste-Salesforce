@@ -57,10 +57,11 @@ the registry; only training drifted.
 | | |
 |---|---|
 | **Build** | gulp + Tailwind v4 + cssnano → `assets/built/`, committed |
-| **Checks** | layers, classes, icons, icon bridge, **routed templates**, inline styles, Handlebars comments, gscan |
+| **Checks** | layers, classes, icons, icon bridge, **routed templates**, **bundled behaviours**, inline styles, Handlebars comments, gscan |
 | **CI/CD** | CI on every PR; deploy on `main`; release on a `v*` tag |
-| **NSDS** | vendored at `9526e20` (v3.0.0) — 2,059 selectors available |
+| **NSDS** | vendored WHOLE at `9526e20` (v3.0.0) — 2,059 selectors, 13 behaviour modules, fonts and icons, all verified byte-identical to upstream |
 | **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 95-rule bridge |
+| **Behaviours** | all 13 upstream modules in `assets/js/0-vendor/`; **8 bundled** into `main.min.js`. VENDORED ≠ BUNDLED — a module binding markup no template emits is dead weight, so `SCRIPTS` in `gulpfile.mjs` is deliberately shorter. Emit a module's hooks and `check-behaviour.mjs` fails the build until you add it |
 | **Fonts** | Figtree, self-hosted — one face, four cuts, one preloaded |
 | **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404`, `blog`, `training`, `training-module`, `ads`, `courses`, `docs`, `resources`, plus the custom templates **`custom-about`**, **`custom-style-guide`**, **`custom-signin`**, **`custom-signup`**, **`custom-account`** |
 | **Navbar** | `partials/navbar/` — one partial per element (brand, links, search, star, theme, auth, burger), `-Label` dropdowns, `SiteNavigationElement` JSON-LD. **Contained**, not fluid: `.ns-topnav__inner` caps it at the bands' own 72rem |

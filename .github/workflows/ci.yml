@@ -82,6 +82,20 @@ jobs:
       - name: Every routed template exists
         run: node scripts/check-routes.mjs
 
+      # ── Markup that needs a script must ship that script ─────────────────
+      # NSDS is vendored WHOLE — all 13 behaviour modules are in
+      # assets/js/0-vendor/ — but only the ones in gulpfile's SCRIPTS list are
+      # concatenated into main.min.js, because a script bound to markup no
+      # template emits is dead weight on every page load.
+      #
+      # That split needs a guard. Paste NSDS's search palette or video player
+      # into a partial, forget to add search.js or video.js, and the page
+      # renders a perfect DEAD CONTROL: no error, no console warning, green
+      # build, green gscan. This theme has already shipped the mirror image of
+      # that bug once — the training rail's collapse.
+      - name: Every behaviour the markup asks for is bundled
+        run: node scripts/check-behaviour.mjs
+
       # Fonts and icons are referenced by url() in the compiled sheet, and
       # postcss REBASES those paths while inlining @import — so how deep the
       # vendored bundle sits decides whether they resolve. Reorganising

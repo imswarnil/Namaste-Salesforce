@@ -106,14 +106,16 @@ export function checkLayers(cb) {
     cb();
 }
 
-/* All three catch failures that RENDER — an undefined class renders as bare
+/* All four catch failures that RENDER — an undefined class renders as bare
    markup, a missing icon partial renders as nothing, and a template
-   routes.yaml names but the theme lacks renders as index.hbs — which is why
-   neither gscan nor a green build sees them. */
+   routes.yaml names but the theme lacks renders as index.hbs, and a control
+   whose behaviour module was never bundled renders and does nothing — which
+   is why neither gscan nor a green build sees any of them. */
 export function checkMarkup(cb) {
     execFileSync('node', ['scripts/check-classes.mjs'], { stdio: 'inherit' });
     execFileSync('node', ['scripts/check-icons.mjs'], { stdio: 'inherit' });
     execFileSync('node', ['scripts/check-routes.mjs'], { stdio: 'inherit' });
+    execFileSync('node', ['scripts/check-behaviour.mjs'], { stdio: 'inherit' });
     cb();
 }
 
