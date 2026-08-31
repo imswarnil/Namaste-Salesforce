@@ -88,7 +88,7 @@
 
     {{!-- Row 2 · the scrolling list. The only part that moves. --}}
     <div class="ns-trainingnav__scroll">
-        {{#get "posts" filter="tag:hash-training-module" order="published_at asc" limit="50" include="tags" as |modules|}}
+        {{#get "posts" filter="tag:[hash-training-module,hash-training-section]" order="published_at asc" limit="50" include="tags" as |modules|}}
             {{#foreach modules}}
                 <details class="ns-trainingnav__section"{{#match primary_tag.slug "=" ../../primary_tag.slug}} open{{/match}}>
                     <summary>
@@ -96,10 +96,10 @@
                         <span class="ns-trainingnav__num">{{@number}}</span>
                         <span class="ns-trainingnav__section-icon">{{> "icons/books"}}</span>
                         <span class="ns-trainingnav__section-name">{{title}}</span>
-                        {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-training-lesson" limit="1"}}<span class="ns-trainingnav__count">{{pagination.total}}</span>{{/get}}
+                        {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:[hash-training-lesson,hash-training-content]" limit="1"}}<span class="ns-trainingnav__count">{{pagination.total}}</span>{{/get}}
                     </summary>
 
-                    {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:hash-training-lesson" order="published_at asc" limit="100" as |lessons|}}
+                    {{#get "posts" filter="primary_tag:{{primary_tag.slug}}+tag:[hash-training-lesson,hash-training-content]" order="published_at asc" limit="100" as |lessons|}}
                         {{!-- ⚠ THE METER READS ZERO AND THAT IS DELIBERATE.
                              Upstream fills it from the learner's read state,
                              which Ghost does not have — there is no per-member

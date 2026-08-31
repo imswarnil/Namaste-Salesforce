@@ -87,12 +87,19 @@
     <div class="ns-post ns-post--wide">
         <article class="ns-post__body">
             <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+            {{!-- INSIDE the body column, not after the grid: comments are a
+                 continuation of the reading column and must share its
+                 measure. Dropped below the grid they would run the full page
+                 width, which on a wide screen is a 140-character line — the
+                 one thing .ns-prose exists to prevent. --}}
+            {{> "comments"}}
         </article>
     </div>
 {{else}}
     <div class="ns-post ns-post--sidebar">
         <article class="ns-post__body">
             <div class="gh-content ns-prose" id="post-body">{{content}}</div>
+            {{> "comments"}}
         </article>
 
         {{> "post/sidebar"}}

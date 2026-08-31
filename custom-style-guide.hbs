@@ -1,0 +1,81 @@
+{{!< default}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     custom-style-guide.hbs — the theme's own proof sheet.
+     Type scale from NSDS templates/type-specimen.html.
+     ------------------------------------------------------------------------
+     A Ghost custom template: make a page, pick "Style guide" in the editor.
+
+     ── WHAT A STYLE GUIDE IS FOR HERE, AND WHY IT IS TWO HALVES ────────────
+     The theme's job is Ghost's content model wearing NSDS's clothes, so the
+     two things that can be wrong are (a) an NSDS token drifting and (b) a
+     Ghost element nobody styled. This page shows both, and the halves are
+     built differently ON PURPOSE:
+
+     · The SPECIMEN half is markup in this file, because the type scale is
+       the theme's claim about itself and must not depend on someone
+       remembering to write it in an editor.
+
+     · The PROSE half is {{content}} — the page's own body. It cannot be
+       hard-coded: the whole question it answers is "what does GHOST's
+       output look like here", and Ghost's output comes from Koenig. Paste
+       one of every card into the page — heading, list, quote, code, table,
+       bookmark, callout, toggle, gallery — and this is where they are
+       checked. A hard-coded imitation of Koenig's markup would prove only
+       that the imitation is styled.
+
+     ⚠ gh-content AND ns-prose, both. .gh-content is what theme/ghost.css
+     scopes its Koenig overrides to; without it Ghost's own cards.min.css
+     wins and every card renders as a white box on the navy surface. The
+     long version is in page.hbs.
+
+     ── LOOK AT IT IN BOTH THEMES ───────────────────────────────────────────
+     abstract/collections.md's build list ends with "looked at — in both
+     themes, at 360px, with JavaScript off", because gscan and a green build
+     have both been green on a visually broken site. This is the page to do
+     that on.
+     ══════════════════════════════════════════════════════════════════════ --}}
+{{#post}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner ns-stack">
+        <span class="ns-kicker">{{t "// Proof sheet"}}</span>
+        <h1 class="ns-display">{{#if title}}{{title}}{{else}}{{t "Style guide"}}{{/if}}</h1>
+        {{#if custom_excerpt}}<p class="ns-band__lede">{{custom_excerpt}}</p>{{/if}}
+    </div>
+</section>
+
+{{!-- ── The type scale ───────────────────────────────────────────────── --}}
+<section class="ns-band ns-band--sunken ns-band--tight">
+    <div class="ns-band__inner ns-stack">
+        <span class="ns-label">{{t "Type scale"}}</span>
+        <p class="ns-display ns-display--mega">Aa</p>
+        <h1>{{t "Heading one"}}</h1>
+        <h2>{{t "Heading two"}}</h2>
+        <h3>{{t "Heading three"}}</h3>
+        <p class="ns-measure">{{t "Body copy sits on a measure of roughly 68 characters, because a line the full width of a wide screen is the fastest way to make good writing unreadable. This paragraph is here to be measured, not read."}}</p>
+        <p><a class="ns-link" href="#">{{t "A link in running text"}}</a></p>
+    </div>
+</section>
+
+{{!-- ── The chrome the theme draws around content ─────────────────────── --}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner ns-stack">
+        <span class="ns-label">{{t "Components"}}</span>
+        <div class="ns-cluster">
+            <a class="ns-btn ns-btn--primary" href="#">{{t "Primary"}}</a>
+            <a class="ns-btn ns-btn--outline" href="#">{{t "Outline"}}</a>
+            <a class="ns-btn ns-btn--quiet" href="#">{{t "Quiet"}}</a>
+            <span class="ns-tag">{{t "Tag"}}</span>
+            <span class="ns-status ns-status--success">{{t "Status"}}</span>
+        </div>
+        {{> "empty" title=(t "And this is an empty state") text=(t "Every listing in the theme falls back to it.")}}
+    </div>
+</section>
+
+{{!-- ── Ghost's own output, styled ────────────────────────────────────── --}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        <span class="ns-label">{{t "Ghost content"}}</span>
+        <div class="gh-content ns-prose">{{content}}</div>
+    </div>
+</section>
+{{/post}}

@@ -12,16 +12,37 @@
      branch grows its own layout, the two collections that share it start
      drifting.
 
-     ⚠ SKELETON. `article` is the only kind that exists. Each further branch
-     arrives with its collection's spec in abstract/collections.md, which names
-     the tag. Do not invent a tag here.
+     ══ ⚠ TWO VOCABULARIES, ON PURPOSE ══════════════════════════════════════
+     Every training branch matches TWO tags. That is not indecision — it is
+     the difference between what this repo decided and what the site is
+     actually serving, and both are real:
+
+       published content   canonical (tag-registry.md, decision 0004)
+       ─────────────────   ─────────────────────────────────────────
+       #training-section   #training-module     the module overview
+       #training-content   #training-lesson     a lesson inside it
+
+     Decision 0004 renamed `-content` to `-lesson` on the stated premise that
+     "the theme has no content yet". That premise was false — 20 training
+     posts were already published under the OLD names — so the rename was
+     recorded but never carried out, and the theme has been dispatching on
+     tags that ZERO live posts carry. Every training URL fell through to
+     {{else}} and rendered as a blog article: no module head, no curriculum
+     rail, and therefore no collapse control, because the markup the collapse
+     script binds to was never emitted. The script was fine the whole time.
+
+     Matching both is what makes the site correct NOW without a content
+     migration, and still correct AFTER one. Ghost's {{#has}} treats a comma
+     as OR. When the retag happens, delete the old names from these two
+     branches — nothing else in the theme needs to know.
      ══════════════════════════════════════════════════════════════════════ --}}
 {{#post}}
-    {{!-- #training-lesson BEFORE the generic branches: a training lesson is
-         not an article and must not fall through to one. Its furniture is the
-         curriculum rail, not a TOC and a meta sidebar. --}}
-    {{#has tag="#training-lesson"}}
+    {{!-- Training BEFORE the generic branches: a training lesson is also a
+         post with a primary tag, and the generic branch would claim it. --}}
+    {{#has tag="#training-lesson, #training-content"}}
         {{> "post/training-lesson"}}
+    {{else has tag="#training-module, #training-section"}}
+        {{> "post/training-module"}}
     {{else has tag="#lesson"}}
         {{> "post/lesson"}}
     {{else has tag="#docs-page"}}

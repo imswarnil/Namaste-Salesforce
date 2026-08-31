@@ -39,6 +39,21 @@ shipped in the theme zip, so it never had to agree with the one in this repo
 copy previously declared a model the live site does not have, on the stated
 premise that "nothing is published yet".
 
+⚠⚠ **THE PUBLISHED TAGS ARE NOT THE REGISTRY'S TAGS.** Verified against the
+live Content API: 20 training posts carry `#training-section` and
+`#training-content`. **Zero** carry `#training-module` or `#training-lesson`,
+which is what `abstract/05-content/tag-registry.md` and decision 0004 name —
+0004 renamed them on the same false "no content yet" premise, so the rename
+was recorded and never performed. Every training URL therefore fell through
+`post.hbs` to `{{else}}` and rendered as a blog article.
+
+`post.hbs` and every training `{{#get}}` now match **both** vocabularies
+(`tag:[a,b]`, and `{{#has}}`'s comma-OR). The site is correct now without a
+content migration and stays correct after one. When the retag happens, delete
+the old names — `grep -rn "hash-training-section\|hash-training-content" .`
+is the list. Courses (`#course`, `#lesson`) and blog (`#blog`) already match
+the registry; only training drifted.
+
 | | |
 |---|---|
 | **Build** | gulp + Tailwind v4 + cssnano → `assets/built/`, committed |
@@ -47,7 +62,7 @@ premise that "nothing is published yet".
 | **NSDS** | vendored at `9526e20` (v3.0.0) — 2,059 selectors available |
 | **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 95-rule bridge |
 | **Fonts** | Figtree, self-hosted — one face, four cuts, one preloaded |
-| **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404`, `blog`, `training`, `training-module`, `ads`, **`courses`**, **`docs`**, **`resources`** |
+| **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404`, `blog`, `training`, `training-module`, `ads`, `courses`, `docs`, `resources`, plus the custom templates **`custom-about`**, **`custom-style-guide`**, **`custom-signin`**, **`custom-signup`**, **`custom-account`** |
 | **Navbar** | `partials/navbar/` — one partial per element (brand, links, search, star, theme, auth, burger), `-Label` dropdowns, `SiteNavigationElement` JSON-LD. **Contained**, not fluid: `.ns-topnav__inner` caps it at the bands' own 72rem |
 | **Footer** | `partials/footer/` — link columns, social row, newsletter, pinned to the bottom |
 | **Homepage** | `home.hbs` is composition only — twelve bands in `partials/home/`, each data-driven one hiding itself when its data is absent |
