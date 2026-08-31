@@ -1,167 +1,140 @@
 # ════════════════════════════════════════════════════════════════════════════
 # routes.yaml — the URL model. The most expensive file in the theme to change.
 # ----------------------------------------------------------------------------
-# This is NOT part of the theme zip. Ghost stores it separately, and it is
-# uploaded in Admin → Settings → Labs → Routes. It is committed here because
-# the templates below cannot be reasoned about without it.
+# NOT part of the theme zip. Ghost stores it separately; it is uploaded in
+# Admin → Settings → Labs → Routes. Committed here because the templates
+# cannot be reasoned about without it.
 #
-# ⚠⚠ RECONSTRUCTED, NOT DOWNLOADED — DIFF BEFORE YOU UPLOAD ⚠⚠
-# This file was rebuilt to match the URLs the LIVE site is actually serving,
-# reconstructed from two sources: the previous port's routes.yaml at git
-# 206a211, and www.namastesalesforce.com/sitemap-*.xml. It has NOT been
-# diffed against the file running in Ghost Admin, because that file can only
-# be downloaded from Admin → Settings → Labs → Routes.
+# ⚠⚠ DO NOT UPLOAD THIS UNTIL THE RETAG HAS RUN ⚠⚠
+# It filters on the `-col` vocabulary. Published posts do not carry those tags
+# until scripts/migrate-col-tags.mjs has been run against production. Upload
+# it first and every post in every collection becomes unroutable — a 404 on
+# published content. The order is: retag, verify, THEN upload.
 #
-#   Download it and diff it against this BEFORE uploading anything. If they
-#   disagree, the downloaded file is right and this one is wrong.
+#     node scripts/migrate-col-tags.mjs            # dry run, changes nothing
+#     node scripts/migrate-col-tags.mjs --apply    # adds the -col tags
 #
-# ── WHY THIS FILE WAS REWRITTEN ─────────────────────────────────────────────
-# The version replaced here (git 4b83f66) declared a URL model that the live
-# site does not have, on a premise its own comments stated and that was false:
-# "nothing is published yet". At the time of writing the site has published
-# posts under /blog/, /courses/, /training/ and /archive/.
+# The migration is ADDITIVE: it adds `#blog-col` beside `#blog` and removes
+# nothing, so the old routes.yaml keeps working the whole time. That is what
+# makes this safe to do while the site is live.
 #
-# Uploading that version would have:
-#   · moved EVERY blog post from /blog/{slug}/ to /{slug}/, and
-#   · deleted the /courses/, /lessons/, /docs/, /docs-pages/, /resources/ and
-#     /archive/ collections outright, unrouting every post in them.
+# ── THE ARCHITECTURE, FROM namaste-salesforce-bright ────────────────────────
+# Three patterns, all of them earned:
 #
-# That is a full migration with 301s and lost ranking, presented as a tidy-up.
-# The rule in the header below is not decoration — it is the thing that was
-# broken.
+# 1 · ONE `-col` TAG PER COLLECTION, and the names are BRIGHT'S OWN where
+#     bright has the collection: courses-col, lessons-col, blog-col,
+#     folders-col, docs-col. Not invented — the seeded content already carries
+#     them, verified in the database. They are PLURAL for the child
+#     collections and that is not cosmetic: #lessons-col is already owned by
+#     courses' children, so training's children must be #training-lessons-col
+#     or the two collections merge into one and every training lesson gets a
+#     /courses/ URL.
 #
-#   ⚠ Every URL on the site comes from this file. Changing a permalink after
-#   publishing means 301-ing every page under it and losing whatever ranking
-#   the old one had. Decide it in abstract/collections.md BEFORE the first
-#   post — and where a post already exists, this file follows the post.
+# 2 · `data: page.x` ON EVERY COLLECTION. A real Ghost page backs each index
+#     and supplies its meta title, description and social card. Without it an
+#     index has no resource to hang metadata on and inherits the site's — which
+#     is why every listing on this site currently shares one description.
+#     ⚠ The page must EXIST or the route errors. Create all of them first.
+#
+# 3 · A HIDDEN MOUNT FOR EACH CHILD. `/__lessons__/` and `/__documents__/`
+#     exist only to give children a `{primary_tag}/{slug}` permalink. The
+#     mount itself is never linked; the underscores say so.
 #
 # THE RULE (abstract/decisions/0003): this file names ONLY templates that
-# exist and are servable. Ghost does not validate a `template:` key — it
-# silently falls back to index.hbs, so a typo here is a page that renders but
-# renders wrong. Three of the templates named below did not exist until now,
-# which is exactly how /courses/ and /docs/ came to be served as the blog.
+# exist. Ghost does not validate a `template:` key — it falls back to
+# index.hbs in silence, so a typo is a page that renders, and renders wrong.
+# scripts/check-routes.mjs enforces it.
+#
+# THE OTHER RULE: a parent post's slug must equal its own tag's slug. That is
+# what lets a parent use {slug} while its children use {primary_tag}/{slug}
+# and still nest. Break it and the child sits under a URL its parent does not
+# own — silently.
 # ════════════════════════════════════════════════════════════════════════════
 
 routes:
 
-  # The homepage is a STATIC ROUTE, not a collection index. It is a designed
-  # page — hero, what shipped, latest, subscribe — and a collection index is a
-  # paginated list. Mounting the catch-all here instead would make /page/2/
-  # render the hero a second time, which is duplicate content with a different
-  # URL, and the worst kind because it looks deliberate.
+  # The homepage is a STATIC ROUTE, not a collection. It is a designed page,
+  # and a collection index is a paginated list — mounting the catch-all here
+  # would make /page/2/ render the hero again at a second URL.
+  #
+  # ⚠ bright mounts a COLLECTION at / filtered on #landing-col, so its
+  # homepage is assembled from landing posts. That is a real option and it is
+  # deliberately NOT taken: this homepage is composed in partials/home/, and
+  # you said you would build it yourself. Nothing here forecloses it — swap
+  # this block for a collection when you want the sections to be content.
   /:
     template: home
 
-  # ads.txt — authorised digital sellers, from the ads_txt theme setting.
-  #
-  # ⚠ ONLY REACHABLE AT /ads.txt/ — with the trailing slash. A bare GET
-  # /ads.txt has a file extension, so Ghost's static-theme middleware hands it
-  # to express.static with fallthrough:false and 404s it BEFORE this router
-  # ever runs. Verified against the running site: both forms 404 without this
-  # route, and only the trailing-slash form works with it.
-  #
-  # IAB crawlers request the bare path, so production needs a proxy REWRITE
-  # (not a redirect — whether verifiers follow one is unverified):
-  #   nginx:      location = /ads.txt { proxy_pass http://ghost/ads.txt/; }
-  #   Cloudflare: rewrite /ads.txt -> /ads.txt/
   /ads.txt/:
     template: ads
     content_type: text/plain
 
 collections:
 
-  # ── COURSES — /courses/{slug}/, lessons nested beneath ────────────────────
-  # PUBLISHED AND LIVE. template: courses is new (courses.hbs); until it was
-  # written this index was served by index.hbs as a blog grid.
+  # ── TRAINING — the docs shape, which is what you asked for ───────────────
+  # A SECTION is a post whose body is the section overview; its LESSONS nest
+  # beneath it. Exactly bright's folders → documents, renamed.
+  /training/:
+    permalink: /training/{slug}/
+    template: training
+    data: page.training
+    filter: "tags:hash-training-sections-col"
+    order: "published_at asc"
+    limit: "100"
+
+  # Hidden mount. A lesson's PRIMARY tag is its section's public tag, so
+  # {primary_tag} does the nesting on its own.
+  /__training-lessons__/:
+    permalink: /training/{primary_tag}/{slug}/
+    filter: "tags:hash-training-lessons-col"
+
+  # ── COURSES ──────────────────────────────────────────────────────────────
   /courses/:
     permalink: /courses/{slug}/
     template: courses
-    filter: tag:hash-course
+    data: page.courses
+    filter: "tags:hash-courses-col"
 
-  # A lesson's PRIMARY tag IS its course's tag, so {primary_tag} does the
-  # nesting on its own. Different path depth from the course above, so the two
-  # cannot clash. THE ONE RULE applies: a course post's slug must equal its
-  # own tag's slug, or these two do not line up.
-  /lessons/:
+  /__lessons__/:
     permalink: /courses/{primary_tag}/{slug}/
-    template: index
-    filter: tag:hash-lesson
+    filter: "tags:hash-lessons-col"
 
-  # ── TRAINING — /training/{module}/{lesson}/ ───────────────────────────────
-  # PUBLISHED AND LIVE: 3 sections and 14 lessons, verified through the
-  # Content API against www.namastesalesforce.com.
-  #
-  # ⚠⚠ THE TAGS ARE NOT THE ONES THE REGISTRY NAMES ⚠⚠
-  # The published posts carry #training-section and #training-content. The
-  # canonical vocabulary in abstract/05-content/tag-registry.md, adopted in
-  # decision 0004, is #training-module and #training-lesson. 0004 renamed
-  # them on the stated premise that "the theme has no content yet" — false
-  # then and false now — so the rename was recorded and never carried out.
-  #
-  # The filters below therefore match BOTH, using NQL's tag:[a,b] OR form,
-  # and so does the dispatch in post.hbs. That is what makes the site correct
-  # now without a content migration and still correct after one. Until the
-  # retag happens the LIVE routes.yaml almost certainly filters on the old
-  # names alone — which is another reason to diff before uploading.
-  #
-  # ⚠ The mount is /training-sections/, NOT /training/. /training/ is a
-  # PAGE (Ghost page, slug `training`) that acts as the landing surface, per
-  # tag-registry.md: "a landing page needs a route, not a tag".
-  /training-sections/:
-    permalink: /training/{slug}/
-    template: training
-    filter: tag:[hash-training-section,hash-training-module]
-
-  /training-lessons/:
-    permalink: /training/{primary_tag}/{slug}/
-    template: index
-    filter: tag:[hash-training-content,hash-training-lesson]
-
-  # ── DOCS — /docs/{section}/{page}/ ────────────────────────────────────────
-  # PUBLISHED AND LIVE. template: docs is new (docs.hbs); this index was
-  # being served as a blog grid too.
-  # ⚠ UNVERIFIED — the only published docs post is
-  # /docs/documentation/say-namaste-to-salesforce/, which carries NO internal
-  # tag at all (public tag `documentation`). So the live docs collection is
-  # NOT filtering on #docs-section/#docs-page: zero posts carry either.
-  # Whatever it filters on could not be determined from outside Ghost Admin.
-  # These two entries are the CANONICAL model, kept so docs.hbs has something
-  # coherent to be checked against — they are not a claim about production.
+  # ── DOCS ─────────────────────────────────────────────────────────────────
   /docs/:
     permalink: /docs/{slug}/
     template: docs
-    filter: tag:hash-docs-section
+    data: page.docs
+    filter: "tags:hash-folders-col"
+    order: "published_at asc"
+    limit: "100"
 
-  /docs-pages/:
+  /__documents__/:
     permalink: /docs/{primary_tag}/{slug}/
-    template: index
-    filter: tag:hash-docs-page
+    filter: "tags:hash-docs-col"
 
-  # ── BLOG — /blog/{slug}/ ──────────────────────────────────────────────────
+  # ── BLOG ─────────────────────────────────────────────────────────────────
   # ⚠ THE PERMALINK IS /blog/{slug}/ AND MUST STAY THAT WAY. Posts are
-  # published at it. The replaced version of this file used /{slug}/, which
-  # would have moved every one of them.
-  # The feed is at /blog/rss/ — Ghost serves one per collection at <mount>rss/,
-  # and the theme links it in blog.hbs, resources.hbs and the footer. If this
-  # mount ever moves, `grep -rn "blog/rss" .` is the list of what moves with it.
+  # published at it. The feed is at /blog/rss/ — Ghost serves one per
+  # collection at <mount>rss/, and the theme links it in three places:
+  # `grep -rn "blog/rss" .` is the list if this mount ever moves.
   /blog/:
     permalink: /blog/{slug}/
     template: blog
-    filter: tag:hash-blog
+    data: page.blog
+    filter: "tags:hash-blog-col"
 
-  # ── RESOURCES — /resources/{slug}/ ────────────────────────────────────────
-  # PUBLISHED AND LIVE. template: resources is new (resources.hbs).
+  # ── RESOURCES ────────────────────────────────────────────────────────────
   /resources/:
     permalink: /resources/{slug}/
     template: resources
-    filter: tag:hash-resource
+    data: page.resources
+    filter: "tags:hash-resource-col"
 
-  # ── THE CATCH-ALL, mounted at /archive/ ───────────────────────────────────
+  # ── THE CATCH-ALL, mounted at /archive/ ──────────────────────────────────
   # Unfiltered and LAST: every post lands here until a narrower collection
   # claims it. A filter here would make any post matching nothing unroutable —
   # a 404 on a published post, invisible until someone reports it.
-  # Posts land at /{slug}/, which is why /archive/{post}/ does not appear in
-  # any URL: the mount is the index, the permalink is the root.
+  # Posts land at /{slug}/, which is why /archive/{post}/ appears in no URL.
   /archive/:
     permalink: /{slug}/
     template: index

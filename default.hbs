@@ -96,6 +96,21 @@
          the editor set. --}}
     {{ghost_head}}
 
+    {{!-- ── 8b · THE CODE INJECTION GHOST DOES NOT RUN ────────────────────
+         ⚠ A page named by `data:` in routes.yaml gets its code injection
+         SKIPPED. Ghost runs codeinjection_head/_foot for the resource it
+         considers the page's own context — and on a collection index that
+         context is the COLLECTION, not the page bound to it. So every
+         `data: page.x` index silently loses whatever the editor pasted into
+         its injection fields: analytics, structured data, a verification
+         meta tag. Nothing errors, and the field still shows the code in
+         Admin, which is what makes it hard to spot.
+
+         partials/page/injection.hbs fills these two slots from {{#page}}.
+         Every index template calls it; the pattern is lifted from
+         namaste-salesforce-bright, which hit this first. --}}
+    {{{block "head-after"}}}
+
     {{!-- ── 9 · What Ghost cannot know ────────────────────────────────────
          The main menu as SiteNavigationElement, from the same {{navigation}}
          helper the visible bar uses — one source, so the markup and the
@@ -166,6 +181,11 @@
     {{> "services/analytics"}}
 
     {{ghost_foot}}
+
+    {{!-- The foot half of the same problem — see "head-after" above. AFTER
+         {{ghost_foot}}, so an injected script can rely on everything Ghost
+         itself emits already being present. --}}
+    {{{block "foot-after"}}}
 
 </body>
 </html>
