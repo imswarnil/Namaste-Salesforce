@@ -26,6 +26,25 @@
     {{> "page/statement-body"}}
 {{else}}
     {{#get "pages" filter="slug:{{slug}}" limit="1" as |pages|}}
-        {{#foreach pages}}{{> "page/statement-body"}}{{/foreach}}
+        {{#if pages}}
+            {{#foreach pages}}{{> "page/statement-body"}}{{/foreach}}
+        {{else}}
+            {{!-- ⚠ A ROUTE THAT OUTLIVED ITS PAGE. /sponsor/ and
+                 /become-author/ are both in the live routes.yaml and neither
+                 has a Ghost page behind it any more — verified against the
+                 Content API, which lists eight pages and neither of those.
+
+                 Ghost cannot 404 a route that exists, so without this the URL
+                 answers 200 with a blank column, and abstract/collections.md
+                 is explicit that a blank column reads as a broken page. An
+                 empty state at least tells the truth.
+
+                 THE REAL FIX IS NOT HERE. Either write the page in Ghost
+                 Admin, or drop the route from Admin → Labs → Routes so the
+                 URL can 404 honestly. A 200 on a URL with nothing behind it
+                 is worth removing rather than decorating. --}}
+            {{> "empty" title=(t "Nothing here yet")
+                        text=(t "This page has not been written.")}}
+        {{/if}}
     {{/get}}
 {{/post}}
