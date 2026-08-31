@@ -31,7 +31,7 @@ Then point a local Ghost at `content/themes/`, and upload `routes.yaml` in
 assets/
   built/     screen.min.css + main.min.js. Committed — no build on the server
   css/       screen.css → nsds/ (vendored) + theme/0-foundation…9-generated
-  fonts/     Switzer + Roboto Mono, self-hosted, licensed
+  fonts/     Figtree, self-hosted, licensed — one face, four unicode-range cuts
   icons/     NSDS's icon font and sprite, vendored
   js/        0-vendor/ (NSDS) + 1-theme/ + theme-init.js (inlined)
 partials/

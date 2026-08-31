@@ -70,6 +70,32 @@
   .ns-burger { border-color: transparent; }
   .ns-burger:hover { border-color: var(--color-border); }
 
+  /* ── THE BAR OVERFLOWS BETWEEN 64rem AND 78rem, AND IT SCROLLS THE PAGE ──
+     Upstream hides the whole link row below 64rem. Above it the row is
+     `flex: none` — it cannot shrink — so between 64rem and roughly 78rem the
+     bar is brand + six links + a full search field + four icon controls +
+     Subscribe, and that is wider than the window.
+
+     The bar is FLUID, so the overflow is not clipped: it widens the document
+     and every page gets a horizontal scrollbar. Measured at 1100px:
+     scrollWidth 1158 against clientWidth 1100, with .ns-topnav__actions the
+     first box past the edge. It reads as a training-page bug because that is
+     the page with a fixed-width rail beside it, but it is the bar, and it is
+     on every route.
+
+     The fix is upstream's OWN affordance, applied one breakpoint earlier: the
+     expanded search field collapses to its icon, which is exactly what
+     happens below 64rem. That returns ~200px — more than the overflow — and
+     costs nothing, because the icon opens the same modal and the ⌘K shortcut
+     is unchanged.
+
+     Deliberately NOT `overflow: hidden` on the bar: that would hide the
+     Subscribe button rather than fit it, and a control you cannot reach is
+     worse than a scrollbar. */
+  @media (min-width: 64rem) and (max-width: 77.999rem) {
+    .ns-navsearch:not(.ns-navsearch--icon) { display: none; }
+  }
+
   /* ── Secondary-nav children, indented ────────────────────────────────────
      The footer shows the whole tree flat — see partials/footer/links.hbs — so
      a child needs the one thing that says it is a child. .ns-navsheet__sub

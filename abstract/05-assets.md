@@ -24,28 +24,67 @@ partials/
 
 ## 1. Fonts
 
-Two faces, both variable, both subset to latin, both self-hosted:
+**One face, four files.** Figtree — variable 300–900, normal and italic, each
+split latin / latin-ext by `unicode-range`:
 
-| file | face | carries |
+| file | style | fetched when |
 |---|---|---|
-| `switzer-var-latin.woff2` | **Switzer** | headings, prose, quotations |
-| `roboto-mono-var-latin.woff2` | **Roboto Mono** | every index, label, duration, timestamp, status tag and kicker |
+| `figtree-var-latin.woff2` | upright, latin | always — this is the fold |
+| `figtree-var-latin-ext.woff2` | upright, latin-ext | a page sets an accented glyph |
+| `figtree-italic-var-latin.woff2` | italic, latin | a page sets italic |
+| `figtree-italic-var-latin-ext.woff2` | italic, latin-ext | both of the above |
 
-The split is NSDS design principle 2 and it is structural, not decorative:
-**monospace is what makes a list of lessons read as *data* and a paragraph read
-as *writing*, without touching colour.** A lesson row set in the sans is a
-different design, not a smaller change.
+~62 KB for all four, and most pages fetch only the first 20 KB of it.
 
-Licences ship beside them — `FONTSHARE-EULA.txt` and `licences/roboto-mono-OFL.txt`.
-They are not optional and they are not clutter: the theme is distributed.
+The licence ships beside them — `licences/OFL-figtree.txt`. It is not optional
+and it is not clutter: the theme is distributed.
 
-### Both are preloaded, and only these two
+### It used to be two faces, and what replaced the second one
+
+Until NSDS 3.0 this directory held **Switzer** for words and **Roboto Mono**
+for data, and design principle 2 — *monospace is a structural material, not a
+code-block accessory* — leaned on the second one: the mono FACE is what made a
+list of lessons read as data and a paragraph read as writing, without touching
+colour.
+
+The principle survived; the face did not. Upstream's argument is that the
+label voice was never really "monospace" — it was UPPERCASE, TRACKED, BOLD,
+SMALL and TABULAR, and the family was just the loudest of those five signals.
+So `--font-mono` now resolves to Figtree, and the voice is a recipe:
+
+```css
+text-transform: uppercase;
+letter-spacing: var(--tracking-label);
+font-weight: var(--weight-label);        /* 700 */
+font-size: var(--size-label);            /* or --size-mono */
+font-variant-numeric: tabular-nums;      /* Figtree's default figures are proportional */
+```
+
+Two consequences this theme has to hold:
+
+- **A rule that sets `var(--font-mono)` and stops there no longer says
+  anything.** It used to get the label voice free from the family. Both places
+  in `theme/4-ghost/koenig.css` that did this were given the rest of the
+  recipe when the face changed; a new one must do the same.
+- **Digits need `tabular-nums` declared.** Upstream's `tokens/base.css` covers
+  `time`, `output`, `.ns-num` and `[data-numeric]` — a digit column outside
+  those four has to ask.
+
+**Code blocks are the exception and are not shipped.** Indentation is the
+syntax in a code block, so `--font-code` resolves to the platform's own mono
+(SF Mono, Consolas, …) at zero bytes — the same trade `--font-serif` already
+makes for quotations.
+
+`theme/3-components/typography.css` is where this theme trims the label voice
+back on marketing pages, and its header note carries the full argument.
+
+### One preload, and only one
 
 In `default.hbs`, before the stylesheet:
 
 ```hbs
 <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="{{asset "fonts/switzer-var-latin.woff2"}}">
+      href="{{asset "fonts/figtree-var-latin.woff2"}}">
 ```
 
 The `@font-face` rules live *inside* the compiled stylesheet, so the browser
@@ -53,13 +92,27 @@ only discovers them after fetching and parsing it — one round trip later than
 it could start. Preloading closes that gap, which is what keeps the fallback
 swap invisible on a cold load.
 
-- **Only the two that draw above the fold.** A preload for something that is
-  not immediately used is a warning in the console and bandwidth taken from
-  something that was.
-- **`crossorigin` is required even though these are same-origin.** Fonts are
+- **Only the one that draws above the fold.** The other three Figtree files are
+  gated behind `unicode-range` and `font-style`, so the browser fetches them
+  only on a page that needs them. Preloading all four would quadruple the cost
+  of the fold to save a face most pages never draw — and a preload for
+  something not immediately used is a warning in the console and bandwidth
+  taken from something that was.
+- **The gap is covered anyway.** `"Figtree Fallback"` is a `local()`
+  Helvetica/Arial with `ascent-override`/`descent-override` matched to
+  Figtree's box, so text painted before the woff2 lands does not reflow when
+  it does.
+- **`crossorigin` is required even though this is same-origin.** Fonts are
   always fetched in CORS mode; a preload without it produces a second, unused
   download instead of a warm cache hit. This is the single most commonly
   broken line in any theme's `<head>`.
+
+> `scripts/sync-nsds.sh` **wipes** `assets/fonts/` and `assets/icons/` rather
+> than copying over them, and warns if `default.hbs` still preloads a file
+> upstream no longer ships. Both exist because of this change: a merging sync
+> left the two dead woff2s and the Fontshare EULA in the zip, referenced by
+> nothing and caught by nothing — `check-assets.mjs` proves that referenced
+> files exist, not that existing files are referenced.
 
 ## 2. Icons — the theme draws its own
 

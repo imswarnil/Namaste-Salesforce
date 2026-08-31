@@ -1,0 +1,43 @@
+{{!< default}}
+{{!-- ══════════════════════════════════════════════════════════════════════
+     blog.hbs — the /blog/ index. Ported from NSDS blog-listing.html.
+     ------------------------------------------------------------------------
+     routes.yaml mounts the catch-all collection here, so this is the listing
+     for EVERY post until a narrower collection claims some of them. Posts
+     themselves still live at /{slug}/ — the mount moved, the permalink did
+     not; see the note in routes.yaml.
+
+     ── WHY THIS EXISTS RATHER THAN JUST USING index.hbs ─────────────────────
+     index.hbs stays as Ghost's generic fallback for anything routes.yaml does
+     not name, and it is deliberately plain. This one is allowed to be the
+     blog's own front page — its own heading, its own feed link, its own empty
+     state — without that styling leaking onto every unrouted listing.
+
+     THE SIDEBAR IS A POST-LEVEL DECISION, NOT A LISTING ONE. #hide-sidebar
+     applies to a single post's reading page (partials/post/article.hbs); an
+     index has no article to sit beside. A listing that grew a sidebar would
+     be competing with its own grid for the same horizontal space.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band ns-band--tight">
+    <div class="ns-band__inner">
+        <div class="ns-band__head ns-band__head--between">
+            <div>
+                <span class="ns-kicker">{{t "Writing"}}</span>
+                <h1 class="ns-band__title">{{t "The blog"}}</h1>
+                <p class="ns-band__lede">{{t "Lessons, teardowns and notes from building on the platform — written as they ship."}}</p>
+            </div>
+            <div class="ns-band__actions">
+                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/blog/rss/">{{> "icons/rss"}} RSS</a>
+            </div>
+        </div>
+
+        {{#if posts}}
+            <div class="ns-blog-grid">
+                {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+            </div>
+            {{> "pagination"}}
+        {{else}}
+            {{> "empty" title=(t "Nothing published yet")}}
+        {{/if}}
+    </div>
+</section>

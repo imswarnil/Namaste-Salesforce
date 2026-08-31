@@ -17,7 +17,12 @@
      the tag. Do not invent a tag here.
      ══════════════════════════════════════════════════════════════════════ --}}
 {{#post}}
-    {{#has tag="#lesson"}}
+    {{!-- #training-lesson BEFORE the generic branches: a training lesson is
+         not an article and must not fall through to one. Its furniture is the
+         curriculum rail, not a TOC and a meta sidebar. --}}
+    {{#has tag="#training-lesson"}}
+        {{> "post/training-lesson"}}
+    {{else has tag="#lesson"}}
         {{> "post/lesson"}}
     {{else has tag="#docs-page"}}
         {{> "post/docs"}}

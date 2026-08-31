@@ -1,0 +1,96 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     post/sidebar — the article's right-hand column.
+     ------------------------------------------------------------------------
+     RENDERED ONLY WHEN THE POST DOES NOT CARRY #hide-sidebar. The branch is
+     in post/article.hbs; this file assumes it has already been decided.
+
+     ── WHAT GOES IN A SIDEBAR, AND WHAT DOES NOT ────────────────────────────
+     Everything here is ABOUT this post or about the site. Nothing here is a
+     second navigation — a sidebar that repeats the bar is a sidebar that
+     doubles the number of things on screen without adding one.
+
+     The reel is first because it is the only thing here with no words to
+     read: it gives the column a shape before the eye starts working.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<aside class="sp-side" aria-label="{{t "About this post"}}">
+
+    {{!-- ── The outline, FIRST ──────────────────────────────────────────────
+         It moved here from a left-hand rail — see the note in
+         partials/post/article.hbs for why one column beats two. It leads the
+         column because it is the only thing here a reader uses while READING
+         rather than after; everything below is about the post, not in it.
+
+         data-toc-from lets toc.js build the outline from the article's own
+         h2/h3 and add ids to any heading missing one. With JS off the nav is
+         empty, which is why it carries its own title — an unlabelled empty
+         box reads as broken. --}}
+    <nav class="ns-toc" aria-label="{{t "On this page"}}" data-toc-from="#post-body">
+        <p class="ns-toc__title">{{t "On this page"}}</p>
+    </nav>
+
+    {{!-- ── The illustration ────────────────────────────────────────────────
+         SVG, not a photo. components/reel.hbs argues it out: a photo slot on
+         a site with nothing published is either stock or an empty box. --}}
+    <div class="sp-side__art">{{> "components/reel"}}</div>
+
+    {{!-- ── Extra meta, from INTERNAL TAGS ──────────────────────────────────
+         Ghost internal tags (`#name`) are hidden from the public tag list and
+         from the taxonomy routes, which makes them the right place for
+         facts ABOUT a post that are not topics OF it. The public tags stay a
+         clean list of subjects; these drive presentation.
+
+         Each row renders only if the tag is present, so a post with none of
+         them gets no empty panel — the whole block collapses.
+
+           #updated     the post has been revised since publishing
+           #series      it belongs to a run and should say so
+           #code        it ships runnable code
+           #level-*     who it is pitched at
+
+         ⚠ ADD A TAG HERE AND ADD IT TO abstract/01-content-model.md. An
+         internal tag that only exists in a template is one nobody else knows
+         to type, and it will silently never match. --}}
+    <div class="sp-side__facts">
+        <p class="sp-side__label">{{t "This post"}}</p>
+        <ul class="sp-side__list">
+            <li><span>{{t "Published"}}</span><time datetime="{{date format="YYYY-MM-DD"}}">{{date format="D MMM YYYY"}}</time></li>
+            {{!-- `updated_at` is a FIELD, not a helper — it has to be passed to
+                 {{date}}. Writing {{updated_at format="…"}} parses fine and
+                 fails gscan with "Missing helper", which is the only place it
+                 shows up. --}}
+            {{#has tag="#updated"}}
+                <li><span>{{t "Updated"}}</span><time datetime="{{date updated_at format="YYYY-MM-DD"}}">{{date updated_at format="D MMM YYYY"}}</time></li>
+            {{/has}}
+            <li><span>{{t "Reading"}}</span><span>{{reading_time}}</span></li>
+            {{#has tag="#level-beginner"}}<li><span>{{t "Level"}}</span><span>{{t "Beginner"}}</span></li>{{/has}}
+            {{#has tag="#level-intermediate"}}<li><span>{{t "Level"}}</span><span>{{t "Intermediate"}}</span></li>{{/has}}
+            {{#has tag="#level-advanced"}}<li><span>{{t "Level"}}</span><span>{{t "Advanced"}}</span></li>{{/has}}
+            {{#has tag="#code"}}<li><span>{{t "Includes"}}</span><span>{{t "Runnable code"}}</span></li>{{/has}}
+        </ul>
+    </div>
+
+    {{!-- ── The topics, and ONLY the public ones ────────────────────────────
+         {{tags}} excludes internal tags by default, which is exactly what is
+         wanted: the reader sees subjects, never the presentation flags above.
+         `visibility="public"` is written out anyway — it is the default, and
+         a default that load-bearing is worth stating. --}}
+    {{#if tags}}
+        <div class="sp-side__facts">
+            <p class="sp-side__label">{{t "Topics"}}</p>
+            <div class="sp-side__tags">
+                {{#foreach tags visibility="public"}}<a class="ns-tag" href="{{url}}">{{name}}</a>{{/foreach}}
+            </div>
+        </div>
+    {{/if}}
+
+    {{!-- ── The ask. One, and the same one the rest of the site makes. --}}
+    {{#if @site.members_enabled}}
+        <div class="sp-side__cta">
+            <p class="sp-side__label">{{t "Get the next one"}}</p>
+            <p class="sp-side__ctatext">{{t "New lessons and teardowns as they ship. Nothing else."}}</p>
+            <a class="ns-btn ns-btn--primary ns-btn--sm" href="#/portal/signup" data-portal="signup">
+                {{> "icons/envelope"}} {{t "Subscribe"}}
+            </a>
+        </div>
+    {{/if}}
+</aside>

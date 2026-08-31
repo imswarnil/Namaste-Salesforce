@@ -113,17 +113,33 @@ setting in Admin that stops working.
 
 ### Q2 · Does NSDS already do this?
 
-**Search the vendored bundle before writing anything.** 1,779 selectors is
+**Search the vendored bundle before writing anything.** 2,059 selectors is
 more than anyone remembers.
 
 ```bash
-grep -oE '\.ns-[a-zA-Z0-9_-]+' assets/css/namaste-ui.css | sort -u | grep card
-grep -n -A20 '\.ns-bcard\b' assets/css/namaste-ui.css
+grep -oE '\.ns-[a-zA-Z0-9_-]+' assets/css/nsds/nsds.css | sort -u | grep card
+grep -n -A20 '\.ns-bcard\b' assets/css/nsds/nsds.css
 ls ../../../../NS-Design-System/templates/     # is there an archetype?
 ```
 
 If there is an archetype, **port it** — do not rebuild it. If there is a
 component but no archetype, compose it and check the class names.
+
+**Search for MODIFIERS too, not just components.** More than one thing that
+looked like new CSS turned out to be a class upstream already ships:
+`.ns-topnav__inner` contains the bar, `.ns-hero--tall` sets the marketing
+height, `.ns-band--grid-live` drifts the grid motif. Grepping for `.ns-hero`
+alone misses all three — grep the prefix and read the list.
+
+**And check the COMBINATION.** Two upstream modifiers that are each correct
+can still be broken together: `--tall` and `--split` are both fine alone, and
+together they cancelled the split's mobile collapse, because a media query
+adds no specificity and the `--tall.--split` rule outscores it. The result was
+a 5,478px hero on a phone with one word per line. Nothing caught it — gscan
+does not read CSS, the cascade check proves layer ORDER rather than
+specificity, and at desktop width it rendered perfectly. The fix is in
+`theme/3-components/hero.css` with the upstream fix written out beside it.
+If you add a modifier, **look at the page at 430px before you believe it.**
 
 ### Q3 · Only now: write it. Where?
 
@@ -134,6 +150,7 @@ component but no archetype, compose it and check the class names.
 | Something NSDS assumes but does not ship | `theme/reset.css` |
 | A genuine, reusable component both products need | **upstream, in NSDS** |
 | A genuine component only the Ghost site needs | `theme/` + a note saying why |
+| A **patch for a bug in NSDS** | `theme/`, in `sp-`, with the upstream fix written out and marked for deletion |
 
 The fourth row is the one people skip. A component the LMS will also need
 belongs in NSDS even though that is a slower change — putting it here is how

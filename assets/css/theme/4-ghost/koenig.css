@@ -83,15 +83,38 @@
     margin-inline: 0;
   }
 
-  /* ── One NSDS layout slot this site declines ───────────────────────────
+  /* ── One NSDS layout slot this site declines — CONDITIONALLY ───────────
      `.ns-tpost-body` is `grid-template-columns: var(--ns-tsky-w) 1fr` — a
      sticky ADVERTISEMENT rail, then the article. This site carries no ads, so
-     the first column is always empty and the ARTICLE lands in it: the prose
-     collapses to the ad width and the page reads as a broken stylesheet.
+     by default the first column is empty and the ARTICLE lands in it: the
+     prose collapses to the ad width and the page reads as a broken
+     stylesheet.
 
      Not a new opinion about how anything looks — this site declining a slot
-     the design system offers. Which is exactly what the theme layer is for. */
+     the design system offers. Which is exactly what the theme layer is for.
+
+     ⚠ AND IT IS DECLINED FOR ADS, NOT FOR THE COLUMN. The training lesson
+     player (partials/post/training-lesson.hbs) fills that rail with real
+     content — the subscribe card and the brand illustration — so there the
+     reason above does not apply and the two-column layout is restored below.
+     The declining rule stays as the DEFAULT because every other surface that
+     could use .ns-tpost-body still has nothing to put there.
+
+     This cost an hour to find, so it is worth stating how it presents: with
+     the rail re-enabled in markup but this rule still winning, .ns-tsky
+     renders as a FULL-WIDTH BLOCK ABOVE THE ARTICLE rather than beside it —
+     a subscribe box and a 1080px-wide illustration stacked over the prose.
+     Measured, .ns-tpost-body computed to a single 1080px track with two
+     children in it. It looks like a broken component; it is a declined slot. */
   .ns-tpost-body { grid-template-columns: minmax(0, 1fr); }
+
+  /* The lesson player takes the column back. Scoped to --doc so it cannot
+     leak to any other .ns-tpost-body, and it re-states upstream's own value
+     rather than inventing one. Below --xl upstream already collapses this to
+     one column and turns .ns-tsky into a row, which is still correct here. */
+  @media (min-width: 80rem) {
+    .ns-training--doc .ns-tpost-body { grid-template-columns: var(--ns-tsky-w) minmax(0, 1fr); }
+  }
 
   /* ── The three places NSDS uses an inline style ─────────────────────────
      NSDS's templates are static demos, so a handful of layout values are set
@@ -128,9 +151,22 @@
     margin-block-start: var(--space-3);
     margin-inline: auto;
     max-inline-size: var(--measure-narrow);
+    /* ── The label voice is a RECIPE now, not a face ────────────────────
+       This block used to be four declarations because the fifth was free:
+       --font-mono was Roboto Mono, and the FAMILY alone said "this is a
+       caption, not the paragraph above it". NSDS 3.0 ships one face, so
+       --font-mono resolves to Figtree — the same family as the body copy —
+       and without the rest of the recipe an 11px letter-spaced caption
+       reads as undersized prose with a tracking bug.
+
+       So the two declarations upstream applies to its own caption
+       (`.ns-prose figcaption`, `.ns-figure figcaption`) are applied here
+       too: uppercase and the label weight. Keep this in step with those. */
     font-family: var(--font-mono);
     font-size: var(--size-label);
+    font-weight: var(--weight-label);
     letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
     line-height: var(--leading-snug);
     color: var(--color-label);
     text-align: center;
@@ -188,10 +224,17 @@
 
 .gh-content .kg-bookmark-description { color: var(--color-muted); }
 
+/* Publisher and author of the bookmarked page. Same one-face problem as the
+   figcaption above — the family no longer distinguishes it from the title it
+   sits under — so it takes the label weight. It does NOT take uppercase:
+   upstream's `.ns-postmeta` does, but that row holds dates and reading times,
+   and this one holds PROPER NOUNS. Shouting a person's name in caps to prove
+   it is metadata trades one wrong read for a worse one. */
 .gh-content .kg-bookmark-metadata {
   color: var(--color-label);
   font-family: var(--font-mono);
   font-size: var(--size-label);
+  font-weight: var(--weight-label);
   letter-spacing: var(--tracking-label);
 }
 

@@ -281,9 +281,9 @@ Archetype: `blog-listing.html` → `blog-post.html` · Template: `index.hbs`
 > collection claims it. A filter here makes any post matching nothing
 > unroutable — a 404 on a published post, invisible until someone reports it.
 >
-> ⚠ **The feed lives at the mount**, so it is currently `/archive/rss/` and the
+> ⚠ **The feed lives at the mount**, so it is currently `/blog/rss/` and the
 > templates link to it there. Change the mount and grep the theme for
-> `archive/rss`.
+> `blog/rss`.
 
 1. **Not:** →
 2. **Who / next action:** →

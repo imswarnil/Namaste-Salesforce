@@ -44,23 +44,36 @@
          sockets for it. --}}
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
-    {{!-- ── 5 · The two faces that draw above the fold ────────────────────
+    {{!-- ── 5 · The one face that draws above the fold ────────────────────
          The @font-face rules live inside the compiled stylesheet, so the
          browser only discovers them after fetching and parsing it — one
          round trip later than it could start. Preloading closes that gap,
          which is what keeps the fallback swap invisible on a cold load.
 
-         Only these two. A preload for something not used immediately is a
-         console warning and bandwidth taken from something that was.
+         ONE LINE, WHERE THERE USED TO BE TWO. NSDS 3.0 dropped to a single
+         face: the label voice that Roboto Mono carried is now uppercase +
+         tracking + weight + tabular figures on Figtree, so there is no
+         second family to fetch. See tokens/fonts.css upstream.
 
-         `crossorigin` is REQUIRED even though these are same-origin — fonts
+         Figtree ships as four woff2s and only THIS one is preloaded. The
+         other three — latin-ext, and the two italics — are gated behind
+         unicode-range and font-style, so the browser fetches them only on a
+         page that actually sets an accented character or an italic. A
+         preload for something not used immediately is a console warning and
+         bandwidth taken from something that was; preloading all four would
+         quadruple the cost of the fold to save a face most pages never draw.
+
+         The swap is covered meanwhile by "Figtree Fallback" — a local()
+         Helvetica/Arial with ascent/descent overrides matched to Figtree's
+         box, so text that paints before the woff2 lands does not reflow when
+         it does.
+
+         `crossorigin` is REQUIRED even though this is same-origin — fonts
          are always fetched in CORS mode, and a preload without it produces a
          second, unused download instead of a warm cache hit. It is the most
          commonly broken line in any theme's head. --}}
     <link rel="preload" as="font" type="font/woff2" crossorigin
-          href="{{asset "fonts/switzer-var-latin.woff2"}}">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-          href="{{asset "fonts/roboto-mono-var-latin.woff2"}}">
+          href="{{asset "fonts/figtree-var-latin.woff2"}}">
 
     {{!-- ── 6 · Theme, before the first paint ─────────────────────────────
          Inline and blocking, and it must stay both. A <script src> is

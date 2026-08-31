@@ -4,10 +4,26 @@
    ⚠ THIS FILE ARGUES WITH A DESIGN PRINCIPLE, so it has to say why.
 
    NSDS principle 2 is "monospace is a structural material, not a code-block
-   accessory": the mono face carries every index, duration, timestamp, status
-   tag and section kicker, and that is what makes a list of lessons read as
-   DATA and a paragraph read as WRITING without touching colour. It is a good
-   rule and most of it stays.
+   accessory": the label voice carries every index, duration, timestamp,
+   status tag and section kicker, and that is what makes a list of lessons
+   read as DATA and a paragraph read as WRITING without touching colour. It
+   is a good rule and most of it stays.
+
+   ── WHAT NSDS 3.0 CHANGED, AND WHAT IT DID NOT ───────────────────────────
+   The system now ships ONE face. --font-mono no longer resolves to Roboto
+   Mono; it resolves to Figtree, the same family as the body copy, and the
+   label voice is a RECIPE instead — uppercase + --tracking-label + weight
+   600-700 + the small sizes + tabular figures. (Code blocks are the
+   exception and take --font-code, the platform's own mono.)
+
+   That makes the trim below MORE necessary, not less. When the family did
+   the separating, an over-applied label at least looked deliberate; now the
+   only signals left are caps and tracking, and caps on a sentence is the
+   most conspicuous way to get this wrong. Every rule below still stands,
+   and the ones that set `font-family: var(--font-sans)` stay even though
+   that declaration is currently a no-op — upstream keeps the right to point
+   --font-mono at a real mono again, and these lines are what would hold if
+   it did.
 
    What it does not account for is a MARKETING page. The LMS is dense with
    real data — durations, progress, lesson counts — so mono there is carrying
@@ -38,7 +54,9 @@
      --size-label is 11px, which is a footnote size doing a heading's job at
      the top of every band. --size-small is 13px and still reads as a label.
      Tracking comes down with the size: 0.09em was tuned for 11px, and wide
-     tracking on larger type reads as spacing, not emphasis. */
+     tracking on larger type reads as spacing, not emphasis. (Tuned against
+     Roboto Mono, kept against Figtree — Figtree sets a little tighter, so if
+     anything 13px wants MORE tracking here, not less.) */
   .ns-kicker {
     font-size: var(--size-small);
     letter-spacing: 0.06em; /* lint-ok: optical tracking for 13px mono; --tracking-label is tuned for 11px */

@@ -187,8 +187,8 @@ actually ingest a site — and Ghost generates it per collection, for free, at
 Consequences worth knowing:
 
 - **The feed lives where the collection is mounted.** This site's catch-all is
-  at `/archive/`, so the feed is `/archive/rss/` and the templates link to it
-  there. Move the mount and the feed moves with it — grep `archive/rss`.
+  at `/blog/`, so the feed is `/blog/rss/` and the templates link to it
+  there. Move the mount and the feed moves with it — grep `blog/rss`.
 - **Every collection gets its own feed**, which is a feature: a reader who
   wants only the courses can have exactly that.
 - Ghost also writes `sitemap.xml` and `robots.txt` with no help from the

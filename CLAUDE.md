@@ -34,13 +34,14 @@ The foundation is built and green. The **collections are not**, deliberately.
 | **Build** | gulp + Tailwind v4 + cssnano → `assets/built/`, committed |
 | **Checks** | layers, classes, icons, icon bridge, inline styles, Handlebars comments, gscan |
 | **CI/CD** | CI on every PR; deploy on `main`; release on a `v*` tag |
-| **NSDS** | vendored at `f0dd883` — 1,779 selectors, 278 tokens available |
-| **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 85-rule bridge |
-| **Fonts** | Switzer + Roboto Mono, self-hosted, preloaded |
+| **NSDS** | vendored at `9526e20` (v3.0.0) — 2,059 selectors available |
+| **Icons** | 47 inline-SVG partials in `partials/icons/` + a generated 95-rule bridge |
+| **Fonts** | Figtree, self-hosted — one face, four cuts, one preloaded |
 | **Templates** | `default`, `home`, `index`, `post`, `page`, `tag`, `author`, `error`, `error-404` |
-| **Navbar** | `partials/navbar/` — one partial per element (brand, links, search, star, theme, auth, burger), `-Label` dropdowns, `SiteNavigationElement` JSON-LD |
+| **Navbar** | `partials/navbar/` — one partial per element (brand, links, search, star, theme, auth, burger), `-Label` dropdowns, `SiteNavigationElement` JSON-LD. **Contained**, not fluid: `.ns-topnav__inner` caps it at the bands' own 72rem |
 | **Footer** | `partials/footer/` — link columns, social row, newsletter, pinned to the bottom |
-| **Homepage** | `home.hbs` is composition only — seven bands in `partials/home/`, each hiding itself when its data is absent |
+| **Homepage** | `home.hbs` is composition only — twelve bands in `partials/home/`, each data-driven one hiding itself when its data is absent |
+| **Hero** | `--tall` (68svh) + `--split`, on a brand-blue gradient with a drifting hairline grid; the mark sits in a navy square panel — see `theme/3-components/hero.css` |
 | **Brand mark** | `partials/logo-sting.hbs` — geometry lifted from `logo-sting/intro.html`, looped in CSS |
 | **Reading surface** | `partials/post/article.hbs`, ported from `blog-post.html` |
 | **Collections** | **none.** Eight surfaces awaiting specs in `abstract/collections.md` |
@@ -118,11 +119,15 @@ component against all five before it ships.
    are a single `1px` border (`--color-border`). `--shadow-card` is nearly
    flat. Elevation comes from a border brightening to brand blue on hover —
    never a floating lift.
-2. **Monospace is a structural material, not a code-block accessory.** Roboto
-   Mono renders every index, duration, timestamp, status tag and section
-   kicker; Switzer is reserved for prose, headings and quotations. This is what
-   makes a list of lessons read as *data* and a paragraph read as *writing*,
-   without touching color.
+2. **The label voice is a structural material, not a code-block accessory.**
+   Every index, duration, timestamp, status tag and section kicker is set
+   apart from prose, which is what makes a list of lessons read as *data* and
+   a paragraph read as *writing*, without touching color. Since NSDS 3.0 the
+   separator is a RECIPE, not a family: uppercase + `--tracking-label` +
+   weight 600–700 + `--size-label`/`--size-mono` + `tabular-nums`.
+   `--font-mono` still exists as a name but resolves to Figtree, so setting
+   it alone says nothing — apply the whole recipe. Code blocks are the
+   exception: `--font-code`, the platform's own mono, not shipped.
 3. **One signal color.** Brand blue `#0176D3` is the only color meaning
    "interactive" or "active." Status shows as a small dot + mono text, never a
    background wash — so a screen has exactly one obvious next action.
@@ -146,8 +151,10 @@ glassmorphism, no glow, no neon, no photography, no emoji in UI copy.
 
 The UI base is **14px**, not 16, because this is a product with an app inside
 it. But 14 is the wrong base for an *article*, so `.ns-prose` and everything
-built on it take a separate reading scale at **17px / 68ch (`--measure-prose`)
-/ 1.7**.
+built on it take a separate reading scale at **17px / 62ch (`--measure-prose`)
+/ 1.7**. `--container-prose` (42rem) is the layout twin — at 17px in Figtree
+the two resolve to the same line, so they may not drift apart: change one and
+recompute the other.
 
 | scale | token | size | for |
 |---|---|---|---|
@@ -166,11 +173,12 @@ on a wrapping sentence.
 
 The axis is **scanned versus read**. Do not set an article at `--size-body` or
 a table row at `--size-prose`. Weights are `400 / 500 / 600 / 700` — only
-weights Switzer's designer actually drew.
+weights Figtree's designer actually drew (the variable axis runs 300–900).
+Inline `<strong>` against Figtree 400 takes 600, not 700.
 
 `text-label` is the kicker (11px, 700, `0.09em`) arriving whole so it cannot be
 half-applied; `text-data` is the same 11px **without** weight and tracking, for
-mono data, which is quiet by definition and reads wrong bold.
+data runs, which are quiet by definition and read wrong bold.
 
 ## Color, dark mode, spacing
 

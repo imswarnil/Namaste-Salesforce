@@ -168,18 +168,24 @@ item on it is a consequence of how Ghost serves a theme.*
 > theme and are gone. The *reasoning* is still correct and is what to rebuild
 > toward; the file paths and build hooks are not current.
 
-## Fonts — two, both self-hosted, both preloaded
+## Fonts — one, self-hosted, one file preloaded
 
-**Switzer** (interface AND reading layer, separated by weight not by cut) and
-**Roboto Mono** (every index, duration, kicker, tag, status, `<pre>`). Both are
-first-viewport text on essentially every route, so both are preloaded.
+**Figtree**, and only Figtree: interface, reading layer, headings and the label
+voice, separated by weight and size rather than by cut. It ships as four
+woff2s — upright/italic × latin/latin-ext — and only `figtree-var-latin.woff2`
+is preloaded, because the other three are gated behind `unicode-range` and
+`font-style` and most routes never fetch them.
 
 **No shipped serif** — `--font-serif` resolves to the platform's own (Georgia
 where it exists), so a pull-quote still reads as a quotation and costs nothing.
+**No shipped mono either**, now: `--font-code` borrows `ui-monospace` for code
+blocks, on the same trade.
 
-Two earlier states are stale: `N&M` / `nmtext` / weight 450 is pre-Switzer;
-**Sentient**, or a claim that mono is *not* shipped and borrows `ui-monospace`,
-is pre-Roboto-Mono. Both were true once; neither is now.
+Three earlier states are stale, and each was true once: `N&M` / `nmtext` /
+weight 450 is pre-Switzer. **Sentient**, or a claim that mono is *not* shipped,
+is pre-Roboto-Mono. **Switzer + Roboto Mono, both preloaded** is pre-NSDS-3.0 —
+and note that the third of these looks exactly like the second read backwards,
+which is why the version is what to check, not the claim.
 
 ## The pre-paint theme script
 

@@ -1,0 +1,47 @@
+{{!-- ══════════════════════════════════════════════════════════════════════
+     training/pace — the commitment, as a date rather than a number of hours.
+     Ported from NS-Design-System/templates/training-index.html §05.
+     ------------------------------------------------------------------------
+     ⚠ DUMMY FIGURES. A marketing band, same as training/path and
+     training/tiers — see the note at the top of training.hbs for why those
+     three may hold copy and training/modules may not.
+
+     "42 hours" is a number nobody can act on; "by 14 October" is a decision.
+     That swap is the whole point of the band, and it is why the date is the
+     largest thing in it.
+
+     ⚠ --sunken IS PART OF THE PAGE'S RHYTHM, NOT DECORATION. The bands
+     alternate default / sunken down the page, and demo-training-index.html
+     runs: thero, band, SUNKEN, band, SUNKEN(tight), band, dark. Dropping
+     --sunken here put three default-ground bands in a row — tiers, pace and
+     people read as one long undifferentiated section with no seam, which is
+     what "the spacing is wrong" actually looks like. It is not padding.
+
+     ⚠ THE SEGMENTED CONTROL IS INERT HERE. Upstream's product version
+     recomputes the date from the selected pace; this theme ships no script
+     for it, so the radios change nothing. It is kept because it states the
+     assumption the date rests on — "at 30 min a day" — which a bare date
+     would hide. If it ever needs to compute, the behaviour is upstream in
+     assets/js/training.js and this band should take that rather than grow
+     its own.
+     ══════════════════════════════════════════════════════════════════════ --}}
+<section class="ns-band ns-band--tight ns-band--sunken">
+    <div class="ns-band__inner">
+        <div class="ns-pace ns-pace--inline">
+            <div>
+                <span class="ns-pace__label">{{t "Finish the foundations by"}}</span>
+                <time class="ns-pace__date" datetime="2026-10-14">{{t "14 October 2026"}}</time>
+                <span class="ns-pace__meta"><b>{{t "53 days at 30 min a day"}}</b><span>{{t "Read at whatever pace you actually keep"}}</span></span>
+            </div>
+
+            <fieldset class="ns-pace__control ns-bare">
+                <legend class="ns-visually-hidden">{{t "How much time per day"}}</legend>
+                <div class="ns-segmented">
+                    <label class="ns-segmented__option"><input type="radio" name="training-pace" value="15"><span>{{t "15 min"}}</span></label>
+                    <label class="ns-segmented__option"><input type="radio" name="training-pace" value="30" checked><span>{{t "30 min"}}</span></label>
+                    <label class="ns-segmented__option"><input type="radio" name="training-pace" value="60"><span>{{t "1 hr"}}</span></label>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</section>
