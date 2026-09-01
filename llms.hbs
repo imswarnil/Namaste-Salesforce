@@ -1,0 +1,71 @@
+{{!-- /llms.txt — the site described for machines, llmstxt.org
+style. Served text/plain (routes.yaml), written in Markdown, and
+built entirely from live queries: navigation, courses with their
+lessons, training modules, recent writing, pages. Triple-stash
+everywhere — this is text, not HTML, so no entity escaping. --}}
+# {{{@site.title}}}
+
+> {{{@site.description}}}
+
+This site is a Salesforce learning platform built on Ghost. Content lives in
+three collections: structured courses at /courses/ (each course has ordered
+lessons at /courses/{course}/{lesson}/), modular training at /training/
+(module pages at /training/{module}/{page}/), and articles at /blog/.
+
+## Navigation
+{{#foreach @site.navigation}}
+- [{{{label}}}]({{#match this.url "~^" "http"}}{{this.url}}{{else}}{{@site.url}}{{this.url}}{{/match}})
+{{/foreach}}
+
+## Courses
+
+Each course is free and lesson-based. A lesson's URL nests under its course.
+{{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" order="published_at asc" limit="50" as |courses|}}
+{{#foreach courses}}
+
+### [{{{title}}}]({{url absolute="true"}})
+{{#if custom_excerpt}}
+{{{custom_excerpt}}}
+{{/if}}
+{{#> "with-this" courseSlug=slug}}
+{{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{courseSlug}}" order="published_at asc" limit="100" as |lessons|}}
+{{#foreach lessons}}
+- [{{{title}}}]({{url absolute="true"}})
+{{/foreach}}
+{{/get}}
+{{/with-this}}
+{{/foreach}}
+{{/get}}
+
+## Training modules
+
+A module is a topic worked through in order; its pages share a primary tag.
+{{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
+{{#foreach moduleTags}}
+{{#> "with-this" moduleTag=.}}
+{{#get "posts" filter="tag:{{moduleTag.slug}}+tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="100" as |modulePosts|}}
+{{#if modulePosts}}
+
+### {{{../moduleTag.name}}}{{#if ../moduleTag.description}} — {{{../moduleTag.description}}}{{/if}}
+{{#foreach modulePosts}}
+- [{{{title}}}]({{url absolute="true"}})
+{{/foreach}}
+{{/if}}
+{{/get}}
+{{/with-this}}
+{{/foreach}}
+{{/get}}
+
+## Recent writing
+{{#get "posts" filter="tag:hash-blog-col" limit="15" as |articles|}}
+{{#foreach articles}}
+- [{{{title}}}]({{url absolute="true"}}) — {{date format="YYYY-MM-DD"}}{{#if custom_excerpt}}: {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
+## Pages
+{{#get "pages" limit="20" as |sitepages|}}
+{{#foreach sitepages}}
+- [{{{title}}}]({{url absolute="true"}})
+{{/foreach}}
+{{/get}}

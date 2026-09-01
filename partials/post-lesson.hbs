@@ -1,0 +1,128 @@
+{{!-- The course player. Context: a lesson post.
+
+Finding the course is one query: the lesson's PRIMARY tag is the
+course's public tag, and the course post's slug equals that tag's
+slug — so "the post in the course collection carrying my primary
+tag" is the parent, always.
+
+Prev/next is {{prev_post}}/{{next_post}} with in="primary_tag",
+which keeps the walk inside this course — pure Handlebars, no
+script. The rail lists every lesson via the same query the
+course page uses, so the two can never disagree. --}}
+
+{{#contentFor "head"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "{{t "Courses"}}", "item": "{{@site.url}}/courses/" },
+        {{#primary_tag}}
+        { "@type": "ListItem", "position": 2, "name": "{{name}}", "item": "{{@site.url}}/courses/{{slug}}/" },
+        {{/primary_tag}}
+        { "@type": "ListItem", "position": 3, "name": "{{title}}" }
+    ]
+}
+</script>
+{{/contentFor}}
+
+<div class="player
+    {{~#match (post_class) "~" "tag-hash-lesson-type-video"}} lesson-type-video{{/match}}">
+
+    {{!-- Curriculum rail --}}
+    <aside class="player-rail">
+        <div class="player-rail-scroll">
+            {{#primary_tag}}
+                {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]+slug:{{slug}}" limit="1" as |courseposts|}}
+                    {{#foreach courseposts}}
+                        <a class="player-rail-course" href="{{url}}">
+                            <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
+                            <h2>{{title}}</h2>
+                        </a>
+                    {{/foreach}}
+                {{/get}}
+            {{/primary_tag}}
+
+            {{!-- Mobile: same list inside a collapsible --}}
+            <details class="player-rail-toggle">
+                <summary>
+                    {{> "icons/list-icon"}}
+                    {{t "Course contents"}}
+                    <span class="chev">{{> "icons/chevron-down"}}</span>
+                </summary>
+                <div class="player-rail-body">
+                    {{> "lesson-list" currentSlug=slug}}
+                </div>
+            </details>
+
+            <div class="player-rail-list">
+                {{> "lesson-list" currentSlug=slug}}
+            </div>
+
+            <div class="player-rail-toc" data-toc-wrap>
+                <h4 class="widget-title">{{> "icons/list-icon"}} {{t "On this page"}}</h4>
+                <ul class="toc-list" data-toc></ul>
+            </div>
+        </div>
+    </aside>
+
+    {{!-- The lesson itself --}}
+    <main id="site-main" class="player-main">
+        <article class="player-article {{post_class}}">
+
+            <header class="player-header">
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    <a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Courses"}}</a>
+                    {{#primary_tag}}
+                        {{> "icons/chevron-right"}}
+                        <a href="{{@site.url}}/courses/{{slug}}/">{{name}}</a>
+                    {{/primary_tag}}
+                    {{> "icons/chevron-right"}}
+                    <span aria-current="page">{{title}}</span>
+                </nav>
+
+                <h1>{{title}}</h1>
+
+                <div class="chips">
+                    <span class="chip chip-type">{{> "lesson-type-icon"}}
+                        {{#match (post_class) "~" "tag-hash-lesson-type-video"}}{{t "Video lesson"}}
+                        {{~else match (post_class) "~" "tag-hash-lesson-type-quiz"}}{{t "Quiz"}}
+                        {{~else match (post_class) "~" "tag-hash-lesson-type-audio"}}{{t "Audio lesson"}}
+                        {{~else}}{{t "Article lesson"}}{{/match}}
+                    </span>
+                    {{> "duration-chip"}}
+                    {{#if reading_time}}
+                        <span class="chip">{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
+                    {{/if}}
+                </div>
+            </header>
+
+            <section class="gh-content">
+                {{content}}
+            </section>
+
+            <nav class="post-nav" aria-label="{{t "Lesson navigation"}}">
+                {{#prev_post in="primary_tag"}}
+                    <a class="post-nav-link post-nav-prev" href="{{url}}">
+                        <span class="post-nav-label">{{> "icons/arrow-left"}} {{t "Previous lesson"}}</span>
+                        <span class="post-nav-title">{{title}}</span>
+                    </a>
+                {{/prev_post}}
+                {{#next_post in="primary_tag"}}
+                    <a class="post-nav-link post-nav-next" href="{{url}}">
+                        <span class="post-nav-label">{{t "Next lesson"}} {{> "icons/arrow-right"}}</span>
+                        <span class="post-nav-title">{{title}}</span>
+                    </a>
+                {{/next_post}}
+            </nav>
+
+            {{#if comments}}
+                <section class="post-comments">
+                    {{comments}}
+                </section>
+            {{/if}}
+
+        </article>
+    </main>
+
+</div>

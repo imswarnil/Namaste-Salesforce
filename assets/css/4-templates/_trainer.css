@@ -1,0 +1,308 @@
+/*  4-templates / trainer — the training reader (v4)
+    ============================================================
+
+    Full-width hero on the grid canvas, then an edge-to-edge
+    fluid two-column body: small sticky sidebar (module nav,
+    TOC, sponsor, share) on the left, content filling the rest.
+    ------------------------------------------------------------ */
+
+.trainer-hero {
+    overflow: hidden;
+    padding: clamp(4rem, 6vmin, 5.6rem) max(4vmin, 20px);
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--bg-alt);
+}
+
+.trainer-hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: center;
+}
+
+.trainer-hero h1 {
+    margin-top: 1.6rem;
+}
+
+.trainer-hero .post-excerpt {
+    margin-top: 1.2rem;
+}
+
+.trainer-hero .chips {
+    margin-top: 2rem;
+}
+
+.trainer-hero-media {
+    position: relative;
+}
+
+.trainer-hero-media img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Video pages: the dark cinematic variant of the same hero */
+.trainer-hero.is-video {
+    background:
+        radial-gradient(700px 320px at 80% -20%, rgba(27, 150, 255, 0.3), transparent 70%),
+        var(--gray-950);
+    border-bottom-color: transparent;
+}
+
+.trainer-hero.is-video h1 {
+    color: #fff;
+}
+
+.trainer-hero.is-video .post-excerpt {
+    color: var(--gray-400);
+}
+
+.trainer-hero.is-video .crumbs,
+.trainer-hero.is-video .crumbs a,
+.trainer-hero.is-video .crumbs [aria-current] {
+    color: var(--gray-400);
+}
+
+.trainer-hero.is-video .chip {
+    color: var(--gray-300);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(152, 166, 184, 0.25);
+}
+
+/*  v5 frame: [ left region | training nav ], nav full height
+    ------------------------------------------------------------ */
+
+.trainer2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    min-height: calc(100vh - var(--header-height));
+}
+
+.trainer2-nav {
+    border-left: 1px solid var(--border-soft);
+    background: var(--bg-alt);
+}
+
+.trainer2-nav-scroll {
+    position: sticky;
+    top: var(--header-height);
+    max-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 2.8rem 2.4rem 4rem;
+}
+
+.trainer2-nav .player-rail-course {
+    display: block;
+    padding-bottom: 1.6rem;
+    margin-bottom: 1.6rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.trainer2-nav .player-rail-course h2 {
+    font-size: 1.7rem;
+}
+
+/* Left region: hero spans it, then sidebar + content */
+.trainer2-left {
+    min-width: 0;
+}
+
+.trainer2-body {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+    padding: 3.2rem max(4vmin, 20px) clamp(4.8rem, 8vmin, 8rem);
+}
+
+.trainer-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    max-height: calc(100vh - var(--header-height) - 4.8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.trainer-main,
+.trainer-article {
+    min-width: 0;
+}
+
+/* Skyscraper sponsor slot */
+.widget-sponsor {
+    text-align: center;
+    background:
+        linear-gradient(165deg, var(--accent-soft), transparent 70%),
+        var(--surface);
+}
+
+.widget-sponsor-badge {
+    display: inline-block;
+    margin-bottom: 1.2rem;
+    padding: 0.2rem 0.9rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    border: 1px dashed var(--border);
+    border-radius: 999px;
+}
+
+.widget-sponsor-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    margin: 0 auto 1.2rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+}
+
+.widget-sponsor-icon svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.widget-sponsor h4 {
+    font-size: 1.55rem;
+    margin-bottom: 0.6rem;
+}
+
+.widget-sponsor p {
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    margin-bottom: 1.6rem;
+}
+
+.widget-sponsor.is-skyscraper {
+    padding-top: 3.2rem;
+    padding-bottom: 3.2rem;
+}
+
+/* Inline TOC (pages WITHOUT a sidebar — the site rule) */
+.toc-inline {
+    margin: 0 0 3.2rem;
+    padding: 0.4rem 1.8rem 0.4rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+}
+
+.toc-inline summary {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.2rem 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+}
+
+.toc-inline summary::-webkit-details-marker { display: none; }
+
+.toc-inline summary svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--accent);
+}
+
+.toc-inline summary .chev {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.toc-inline[open] summary .chev {
+    transform: rotate(180deg);
+}
+
+.toc-inline .toc-list {
+    padding-bottom: 1.4rem;
+    columns: 2;
+    column-gap: 3.2rem;
+}
+
+.toc-inline .toc-list li {
+    break-inside: avoid;
+}
+
+/* Mobile module nav */
+.trainer-nav-mobile {
+    display: none;
+    margin-bottom: 2.4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.trainer-nav-mobile summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 1.8rem;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+}
+
+.trainer-nav-mobile summary::-webkit-details-marker { display: none; }
+
+.trainer-nav-mobile summary svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    color: var(--accent);
+}
+
+.trainer-nav-mobile summary .chev { margin-left: auto; }
+
+.trainer-nav-mobile-body {
+    padding: 0 1.8rem 1.8rem;
+}
+
+@media (max-width: 1279px) {
+    .trainer2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .trainer2-nav {
+        display: none;
+    }
+    .trainer-nav-mobile {
+        display: block;
+    }
+}
+
+@media (max-width: 1023px) {
+    .trainer-hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
+    }
+
+    .trainer2-body {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .trainer-side-sticky {
+        position: static;
+        max-height: none;
+        display: none;
+    }
+
+    .toc-inline .toc-list {
+        columns: 1;
+    }
+}

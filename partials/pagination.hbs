@@ -1,48 +1,10 @@
-{{!-- ══════════════════════════════════════════════════════════════════════
-     pagination — ported from NSDS templates/pagination.html.
-     ------------------------------------------------------------------------
-     Ghost's own {{pagination}} helper renders Casper's markup, not NSDS's, so
-     this is written out rather than delegated. Prev/next only: Ghost gives
-     {{page}} and {{pages}} but no page list, and building one from a range
-     needs a helper the platform does not ship.
-
-     The direction icon carries no label; the text for a screen reader is the
-     visually-hidden span beside it. rel=prev/next is what tells a crawler
-     these are one sequence.
-
-     ⚠ NEVER WRITE {{#pagination}} IN THIS FILE. It is not a block helper —
-     {{pagination}} is Ghost's own helper and what it DOES is render this
-     partial. Calling it from inside here is unbounded recursion, and the
-     symptom is not a template error but a 500 with
-     "Maximum call stack size exceeded" and error.hbs served in place of the
-     listing. This file did exactly that, and it was invisible for as long as
-     the site had no published posts: with an empty collection the {{#if
-     posts}} branch never reached the include, so every listing looked fine.
-     The first published post broke /blog/ and would have broken every other
-     listing with it.
-
-     So the pagination data is read as PROPERTIES of the template's context —
-     `pagination.pages`, `pagination.page`, `pagination.prev` — never through
-     the helper. A dotted path is unambiguously a property lookup in
-     Handlebars, so it cannot resolve to the helper by accident. `page_url` IS
-     a real helper and is fine; it takes the page number as an argument.
-     ══════════════════════════════════════════════════════════════════════ --}}
-{{#if pagination.pages}}
-    <nav aria-label="{{t "Pagination"}}">
-        <ul class="ns-pagination">
-            {{#if pagination.prev}}
-                <li><a class="ns-pagination__link" href="{{page_url pagination.prev}}" rel="prev">
-                    {{> "icons/caret-left"}}<span class="ns-visually-hidden">{{t "Previous page"}}</span>
-                </a></li>
-            {{/if}}
-
-            <li><span class="ns-pagination__ellipsis">{{t "Page"}} {{pagination.page}} / {{pagination.pages}}</span></li>
-
-            {{#if pagination.next}}
-                <li><a class="ns-pagination__link" href="{{page_url pagination.next}}" rel="next">
-                    <span class="ns-visually-hidden">{{t "Next page"}}</span>{{> "icons/caret-right"}}
-                </a></li>
-            {{/if}}
-        </ul>
-    </nav>
-{{/if}}
+{{!-- Overrides Ghost's default pagination markup. --}}
+<nav class="pagination" role="navigation" aria-label="{{t "Pagination"}}">
+    {{#if prev}}
+        <a href="{{page_url prev}}" rel="prev">{{> "icons/arrow-left"}} {{t "Newer"}}</a>
+    {{/if}}
+    <span class="pagination-count">{{t "Page"}} {{page}} {{t "of"}} {{pages}}</span>
+    {{#if next}}
+        <a href="{{page_url next}}" rel="next">{{t "Older"}} {{> "icons/arrow-right"}}</a>
+    {{/if}}
+</nav>

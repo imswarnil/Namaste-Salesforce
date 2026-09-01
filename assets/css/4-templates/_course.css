@@ -1,0 +1,173 @@
+/*  4-templates / course — one course's landing page
+    ------------------------------------------------------------ */
+
+.course-hero {
+    background:
+        radial-gradient(900px 380px at 85% -30%, var(--accent-soft), transparent 70%),
+        var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+    padding-top: clamp(4rem, 7vmin, 6.4rem);
+    padding-bottom: clamp(4rem, 7vmin, 6.4rem);
+}
+
+.course-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: center;
+}
+
+.course-hero .crumbs {
+    margin-bottom: 2rem;
+}
+
+.course-hero h1 {
+    margin-top: 1.4rem;
+}
+
+.course-hero-excerpt {
+    margin-top: 1.6rem;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.course-hero .chips {
+    margin-top: 2.2rem;
+}
+
+.course-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.4rem 2rem;
+    margin-top: 3rem;
+}
+
+.course-hero-media img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Body: about + curriculum, instructor rail */
+.course-body {
+    padding-top: clamp(4rem, 7vmin, 6.4rem);
+    padding-bottom: clamp(4.8rem, 8vmin, 8rem);
+}
+
+.course-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: var(--gap-lg);
+    align-items: start;
+}
+
+.course-section + .course-section {
+    margin-top: 4.8rem;
+}
+
+.course-section > h2 {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.4rem;
+    font-size: 2.2rem;
+}
+
+.course-section > h2 svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: var(--accent);
+}
+
+/* Curriculum — the ordered lesson list */
+.curriculum {
+    list-style: none;
+    padding: 0;
+    counter-reset: lesson;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.curriculum-item + .curriculum-item {
+    border-top: 1px solid var(--border-soft);
+}
+
+.curriculum-item a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 1.6rem 2rem;
+    transition: background-color 0.15s ease;
+}
+
+.curriculum-item a:hover {
+    background: var(--bg-alt);
+}
+
+.curriculum-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 50%;
+}
+
+.curriculum-num::before {
+    counter-increment: lesson;
+    content: counter(lesson);
+}
+
+.curriculum-title {
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.curriculum-excerpt {
+    margin-top: 0.2rem;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.curriculum-side {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.curriculum-side > svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--text-faint);
+}
+
+.curriculum-item:hover .curriculum-title {
+    color: var(--accent);
+}
+
+@media (max-width: 1023px) {
+    .course-hero-grid,
+    .course-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .course-hero-media {
+        order: -1;
+    }
+}

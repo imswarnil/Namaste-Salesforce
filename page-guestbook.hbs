@@ -1,0 +1,51 @@
+{{!< default}}
+
+{{!-- /guestbook — Ghost auto-picks page-guestbook.hbs for the
+page with slug "guestbook". Left column: the pitch, fixed while
+the entries scroll. Right column: Ghost's native comments — a
+member signs up (or in) and their comment IS the guestbook
+entry. Needs Settings → Membership → Commenting enabled. --}}
+
+{{#post}}
+<main id="site-main" class="guestbook outer relative">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="inner">
+        <div class="guestbook-grid">
+
+            <div class="guestbook-intro">
+                <div class="guestbook-intro-sticky">
+                    <span class="kicker">{{> "icons/message"}} {{t "Guestbook"}}</span>
+                    <h1>{{title}}</h1>
+                    {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+
+                    <div class="gh-content guestbook-copy">
+                        {{content}}
+                    </div>
+
+                    {{#if @site.members_enabled}}
+                        {{^if @member}}
+                            <div class="guestbook-cta">
+                                <p>{{t "Sign in to leave your mark — it takes one email, no password."}}</p>
+                                <a class="btn" href="#/portal/signup" data-portal="signup">{{> "icons/pen"}} {{t "Sign the guestbook"}}</a>
+                            </div>
+                        {{else}}
+                            <p class="members-note">{{> "icons/check-circle"}} {{t "You're signed in — write below!"}}</p>
+                        {{/if}}
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="guestbook-entries">
+                {{#if comments}}
+                    {{comments title="" count=false}}
+                {{else}}
+                    <div class="filter-empty" style="display:block">
+                        {{t "Commenting is switched off — enable it in Ghost Admin → Settings → Membership → Commenting to open the guestbook."}}
+                    </div>
+                {{/if}}
+            </div>
+
+        </div>
+    </div>
+</main>
+{{/post}}

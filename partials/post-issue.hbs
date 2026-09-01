@@ -1,0 +1,80 @@
+{{!-- A newsletter issue — the email, framed as a page.
+
+Main: the issue. Right rail: when it was sent (the calendar
+card), the TOC (site rule: sidebar present → TOC lives there),
+and the pitch to get the next one by mail. Context: the post. --}}
+
+<main id="site-main" class="section outer">
+<div class="inner">
+<div class="video-grid {{post_class}}">
+
+    <article class="video-main">
+        <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+            {{> "icons/chevron-right"}}
+            <a href="{{@site.url}}/newsletter/">{{t "Newsletter"}}</a>
+            {{> "icons/chevron-right"}}
+            <span aria-current="page">{{title}}</span>
+        </nav>
+
+        <header class="post-header">
+            <div class="chips">
+                <span class="chip chip-accent">{{> "icons/newspaper"}} {{t "Issue"}}</span>
+                {{#if reading_time}}<span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>{{/if}}
+            </div>
+            <h1 class="post-title">{{title}}</h1>
+            {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        <section class="gh-content">
+            {{content}}
+        </section>
+
+        <footer class="post-footer">
+            {{#if tags}}
+                <ul class="tag-cloud">
+                    {{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}
+                </ul>
+            {{/if}}
+            {{> "widgets/share-links"}}
+        </footer>
+    </article>
+
+    <aside class="video-aside">
+
+        <div class="widget issue-sent">
+            <h4 class="widget-title">{{> "icons/calendar"}} {{t "Sent"}}</h4>
+            <div class="issue-sent-date">
+                <span class="issue-sent-day">{{date format="DD"}}</span>
+                <span class="issue-sent-rest">
+                    <strong>{{date format="MMMM YYYY"}}</strong>
+                    {{date format="dddd"}}
+                </span>
+            </div>
+            <dl class="detail-list">
+                {{#foreach authors limit="1"}}
+                    <div><dt>{{t "From"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
+                {{/foreach}}
+                <div><dt>{{t "Delivered to"}}</dt><dd>{{t "the whole list"}}</dd></div>
+            </dl>
+        </div>
+
+        {{> "widgets/toc"}}
+
+        {{#if @site.members_enabled}}
+            {{^if @member}}
+                <div class="widget widget-newsletter">
+                    <h4 class="widget-title">{{> "icons/mail"}} {{t "Next one, in your inbox"}}</h4>
+                    <p>{{t "Read this on the site — or get the next issue delivered the moment it's sent."}}</p>
+                    <a class="btn" href="#/portal/signup" data-portal="signup">{{t "Subscribe free"}}</a>
+                </div>
+            {{/if}}
+        {{/if}}
+
+        {{> "widgets/sponsor"}}
+
+    </aside>
+
+</div>
+</div>
+</main>

@@ -1,0 +1,22 @@
+{{!< default}}
+
+{{!-- /signin — a real page for the portal's signin flow, for
+links from emails and docs. The button opens Ghost Portal, which
+owns the actual form (magic link, no passwords). --}}
+
+<main id="site-main" class="auth-shell outer relative">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="auth-card">
+        <span class="kicker">{{> "icons/avatar"}} {{t "Welcome back"}}</span>
+        <h1>{{t "Sign in"}}</h1>
+        <p>{{t "We'll email you a magic link — no password to remember."}}</p>
+
+        {{#if @member}}
+            <p class="members-note">{{> "icons/check-circle"}} {{t "You're already signed in."}}</p>
+            <a class="btn btn-lg" href="#/portal/account" data-portal="account">{{t "Open my account"}}</a>
+        {{else}}
+            <a class="btn btn-lg" href="#/portal/signin" data-portal="signin">{{> "icons/mail"}} {{t "Sign in with email"}}</a>
+            <p class="auth-alt">{{t "New here?"}} <a href="{{@site.url}}/signup/">{{t "Create a free account"}}</a></p>
+        {{/if}}
+    </div>
+</main>

@@ -1,0 +1,369 @@
+/*  2-layout / header — the navbar
+    ============================================================
+
+    Sticky, translucent, one row. Structure comes entirely from
+    partials/header.hbs; the mobile drawer is the CSS checkbox
+    pattern — #nav-open drives everything, no JavaScript.
+
+      .site-head
+        .site-head-brand      logo / title
+        .site-head-nav        <nav> — Ghost navigation + icons
+        .site-head-actions    search · theme toggle · subscribe
+        .nav-burger           <label for="nav-open">
+    ------------------------------------------------------------ */
+
+.nav-toggle-box {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.site-head {
+    position: sticky;
+    top: 0;
+    z-index: 300;
+    height: var(--header-height);
+    background: var(--header-bg);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.site-head-inner {
+    display: flex;
+    align-items: center;
+    gap: 3.2rem;
+    height: 100%;
+}
+
+/* Brand */
+.site-head-brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.site-head-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--heading);
+}
+
+.site-head-logo img {
+    max-height: 26px;
+    width: auto;
+}
+
+/* Primary nav */
+.site-head-nav {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin-right: auto;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.site-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    padding: 0.7rem 1.2rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.site-nav a:hover {
+    color: var(--heading);
+    background: var(--bg-alt);
+}
+
+.site-nav a svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--text-faint);
+    transition: color 0.15s ease;
+}
+
+.site-nav a:hover svg {
+    color: var(--accent);
+}
+
+.site-nav .nav-current a,
+.site-nav a[aria-current="page"] {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.site-nav .nav-current a svg,
+.site-nav a[aria-current="page"] svg {
+    color: var(--accent);
+}
+
+/* Actions cluster */
+.site-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.icon-btn:hover {
+    color: var(--heading);
+    background: var(--bg-alt);
+}
+
+.icon-btn svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Theme toggle shows the icon of the mode you'd switch TO */
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+
+html[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .theme-toggle .icon-sun { display: block; }
+    html:not([data-theme]) .theme-toggle .icon-moon { display: none; }
+}
+
+.site-head-cta {
+    margin-left: 0.6rem;
+}
+
+/* Burger — a label wired to #nav-open */
+.nav-burger {
+    display: none;
+    position: relative;
+    width: 4rem;
+    height: 4rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.nav-burger span,
+.nav-burger span::before,
+.nav-burger span::after {
+    position: absolute;
+    left: 50%;
+    width: 18px;
+    height: 2px;
+    background: var(--heading);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+    content: "";
+}
+
+.nav-burger span {
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.nav-burger span::before { transform: translate(-50%, -7px); }
+.nav-burger span::after  { transform: translate(-50%, 5px); }
+
+#nav-open:checked ~ .site-head .nav-burger span { background: transparent; }
+#nav-open:checked ~ .site-head .nav-burger span::before { transform: translate(-50%, -1px) rotate(45deg); }
+#nav-open:checked ~ .site-head .nav-burger span::after  { transform: translate(-50%, -1px) rotate(-45deg); }
+
+/*  Mobile drawer
+    ------------------------------------------------------------ */
+@media (max-width: 900px) {
+
+    .nav-burger {
+        display: block;
+    }
+
+    .site-head-nav {
+        position: fixed;
+        inset: var(--header-height) 0 0 0;
+        z-index: 290;
+        flex-direction: column;
+        align-items: stretch;
+        margin: 0;
+        padding: 2rem max(4vmin, 20px) 4rem;
+        overflow-y: auto;
+        background: var(--bg);
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    }
+
+    #nav-open:checked ~ .site-head .site-head-nav {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    #nav-open:checked ~ .site-head {
+        background: var(--bg);
+    }
+
+    .site-nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+        width: 100%;
+    }
+
+    .site-nav a {
+        padding: 1.3rem 1.4rem;
+        font-size: 1.7rem;
+        border-radius: var(--radius);
+    }
+
+    .site-nav a svg {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    /* The subscribe CTA joins the drawer bottom via order in
+       header.hbs; hide the inline one to avoid crowding. */
+    .site-head-cta {
+        display: none;
+    }
+
+    .site-head-nav .site-head-cta {
+        display: inline-flex;
+        justify-content: center;
+        margin: 1.6rem 0 0;
+    }
+}
+
+/* Lock scroll under the open drawer */
+@media (max-width: 900px) {
+    body:has(#nav-open:checked) {
+        overflow: hidden;
+    }
+}
+
+/*  Logo theming: a dedicated dark logo swaps in when provided;
+    without one the regular logo is recoloured to white. The
+    footer is always dark, so it always takes the dark treatment. */
+.logo-dark { display: none; }
+
+html[data-theme="dark"] .logo-light { display: none; }
+html[data-theme="dark"] .logo-dark { display: block; }
+html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .logo-light { display: none; }
+    html:not([data-theme]) .logo-dark { display: block; }
+    html:not([data-theme]) .logo-invertible { filter: brightness(0) invert(1); }
+}
+
+.site-foot .logo-light { display: none; }
+.site-foot .logo-dark { display: block; }
+.site-foot .logo-invertible { filter: brightness(0) invert(1); }
+
+/*  Dropdowns — pure CSS. Open on hover and on keyboard focus
+    anywhere inside the item (:focus-within), so tabbing works.
+    A dropdown's children are the run of "-" labels after its
+    parent; the first unprefixed item is .is-break — it and
+    everything after it belong elsewhere in the flat list. */
+
+.nav-has-dropdown {
+    position: relative;
+}
+
+.nav-has-dropdown > a > svg:last-child {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-left: 0.1rem;
+    transition: transform 0.2s ease;
+}
+
+.nav-has-dropdown:hover > a > svg:last-child,
+.nav-has-dropdown:focus-within > a > svg:last-child {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 90;
+    min-width: 200px;
+    margin: 0;
+    padding: 0.8rem;
+    list-style: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+
+.nav-has-dropdown:hover > .nav-dropdown,
+.nav-has-dropdown:focus-within > .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-sub-item.is-break,
+.nav-sub-item.is-break ~ .nav-sub-item {
+    display: none;
+}
+
+.nav-dropdown a {
+    display: flex;
+    width: 100%;
+}
+
+/* A parent whose child is the current page reads as current */
+.site-nav .nav-has-dropdown:has(.nav-current) > a {
+    color: var(--accent);
+}
+
+/* Mobile drawer: children render inline, indented, always visible */
+@media (max-width: 900px) {
+    .nav-has-dropdown > a > svg:last-child {
+        display: none;
+    }
+
+    .nav-dropdown {
+        position: static;
+        min-width: 0;
+        padding: 0 0 0 2.4rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+    }
+}

@@ -1,56 +1,58 @@
 {{!< default}}
-{{!-- ══════════════════════════════════════════════════════════════════════
-     courses.hbs — the /courses/ index. Ported from NSDS course-listing.html.
-     ------------------------------------------------------------------------
-     ⚠ THIS TEMPLATE ALREADY HAD PUBLISHED URLs BEFORE IT EXISTED.
-     The live routes.yaml has mounted /courses/ with `template: courses`
-     since the previous port. Ghost does not validate a `template:` key — it
-     falls back to index.hbs in silence — so every course page has been
-     rendering as the BLOG listing, .ns-bcard grid and all. That is not a
-     styling drift; it is the exact failure routes.yaml warns about in its
-     own header, and it is why this file is being written now rather than
-     after abstract/collections.md §03 is answered.
 
-     What is NOT decided here: the content model. The tag (#course), the
-     permalink (/courses/{slug}/) and the lesson nesting
-     (/courses/{primary_tag}/{slug}/) are all ALREADY LIVE and published.
-     This template is a port to match what is running — it does not invent a
-     surface, and it does not authorise one. §03 still needs answering for
-     the questions this does not settle: sort order, member gating, price.
+{{!-- /courses — the catalogue. The filter toolbar is built from
+the internal #course-level-* and #course-duration-* tags that
+exist in the catalogue right now: publish a course with a new
+level tag and the button appears; retire the last course with it
+and the button goes. Button values and card data-attributes are
+the same tag slugs, so assets/js/filters.js just compares
+strings. Hero copy comes from the "courses" page
+(`data: page.courses`). --}}
 
-     ── WHY NOT THE ARCHETYPE'S FILTER RAIL ─────────────────────────────────
-     course-listing.html ships a .ns-filters sidebar with topic checkboxes, a
-     price range and a sort select. It is deliberately NOT ported yet:
-     - the filters are driven by tracks the tag registry has not defined,
-     - the price range needs Ghost tiers, which §03 has not decided,
-     - and a rail wired to nothing renders as a broken control rather than a
-       missing one.
-     A filter that lies is worse than a grid that is honest. When §03 names
-     the tracks this grows the rail, and `data-filters` + assets/js/lms.js
-     are already vendored for it.
-     ══════════════════════════════════════════════════════════════════════ --}}
-{{> "page/injection"}}
-<section class="ns-band ns-band--tight">
-    <div class="ns-band__inner">
-        <div class="ns-band__head ns-band__head--between">
-            <div>
-                <span class="ns-kicker">{{t "// Catalog"}}</span>
-                <h1 class="ns-band__title">{{t "Every course, one roadmap"}}</h1>
-                <p class="ns-band__lede">{{t "Each course states its level, its length and what you can do once you finish it."}}</p>
-            </div>
-            <div class="ns-band__actions">
-                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/training/">{{> "icons/graduation-cap"}} {{t "Training"}}</a>
-            </div>
-        </div>
-
-        {{#if posts}}
-            <div class="ns-course-grid">
-                {{#foreach posts}}{{> "course-card"}}{{/foreach}}
-            </div>
-            {{> "pagination"}}
+<section class="courses-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="inner relative">
+        <span class="kicker">{{> "icons/graduation-cap"}} {{t "Courses"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            <p>{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Structured, lesson-by-lesson paths. Pick one and start building."}}{{/if}}</p>
         {{else}}
-            {{> "empty" title=(t "No courses published yet")
-                        text=(t "The curriculum is being written. The training track is live in the meantime.")}}
-        {{/if}}
+            <h1>{{t "Courses"}}</h1>
+            <p>{{t "Structured, lesson-by-lesson paths. Pick one and start building."}}</p>
+        {{/page}}
     </div>
 </section>
+
+<main id="site-main" class="courses-main outer">
+    <div class="inner">
+
+        {{!-- The toolbar's buttons are BUILT BY assets/js/filters.js
+        from the data-level / data-duration attributes on the cards
+        below — {{#get "tags"}} cannot see internal tags (Ghost serves
+        themes through TagPublic), and deriving from the page keeps the
+        toolbar incapable of disagreeing with the catalogue. The group
+        shells stay hidden until they have at least two options. --}}
+        <div class="filter-bar" data-filter-bar hidden>
+            <div class="filter-group" data-filter-group="level" hidden>
+                <span class="filter-label">{{> "icons/signal"}} {{t "Level"}}</span>
+            </div>
+            <div class="filter-group" data-filter-group="duration" hidden>
+                <span class="filter-label">{{> "icons/clock"}} {{t "Duration"}}</span>
+            </div>
+            <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+        </div>
+
+        <div class="card-grid">
+            {{#foreach posts}}
+                {{> "card-course"}}
+            {{/foreach}}
+        </div>
+
+        <div class="filter-empty" data-filter-empty>
+            {{t "No courses match those filters — try clearing one."}}
+        </div>
+
+        {{pagination}}
+
+    </div>
+</main>

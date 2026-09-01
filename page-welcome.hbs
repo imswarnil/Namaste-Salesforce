@@ -1,0 +1,57 @@
+{{!< default}}
+
+{{!-- /welcome — where Ghost sends a member right after signup
+(Settings → Membership → "Welcome page", already pointed here).
+A thank-you and the three best first steps, all queried live. --}}
+
+{{#post}}
+<main id="site-main" class="welcome outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="inner relative">
+
+        <header class="welcome-head">
+            <span class="home-hero-badge">{{> "icons/sparkles"}} {{t "You're in!"}}</span>
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p class="home-hero-sub">{{custom_excerpt}}</p>{{/if}}
+        </header>
+
+        {{#if html}}
+            <div class="gh-content welcome-copy">
+                {{content}}
+            </div>
+        {{/if}}
+
+        <div class="welcome-steps">
+            {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" order="featured desc, published_at asc" limit="1" as |c|}}
+                {{#foreach c}}
+                    <a class="welcome-step" href="{{url}}">
+                        <span class="home-prop-icon">{{> "icons/graduation-cap"}}</span>
+                        <strong>{{t "Start your first course"}}</strong>
+                        <span>{{title}}</span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            {{#get "posts" filter="tag:hash-video-col" limit="1" as |v|}}
+                {{#foreach v}}
+                    <a class="welcome-step" href="{{url}}">
+                        <span class="home-prop-icon">{{> "icons/play-circle"}}</span>
+                        <strong>{{t "Watch something short"}}</strong>
+                        <span>{{title}}</span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            <a class="welcome-step" href="{{@site.url}}/guestbook/">
+                <span class="home-prop-icon">{{> "icons/message"}}</span>
+                <strong>{{t "Say hello"}}</strong>
+                <span>{{t "Sign the guestbook — you're a member now"}}</span>
+            </a>
+        </div>
+
+        <p class="welcome-foot">
+            {{t "Your newsletter subscription is active — the next issue lands automatically."}}
+            <a href="#/portal/account" data-portal="account">{{t "Manage your account"}}</a>
+        </p>
+
+    </div>
+</main>
+{{/post}}

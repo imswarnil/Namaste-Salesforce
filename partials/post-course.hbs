@@ -1,0 +1,146 @@
+{{!-- The course landing page. Context: a course post.
+
+Its lessons are the posts carrying this course's public tag —
+the tag whose slug EQUALS this post's slug; that equality is the
+whole parent/child mechanism (see routes.yaml). The curriculum
+queries them oldest-first, which is authoring order. --}}
+
+{{!-- Course structured data --}}
+{{#contentFor "head"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "{{title}}",
+    "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+    "url": "{{url absolute="true"}}",
+    "provider": {
+        "@type": "Organization",
+        "name": "{{@site.title}}",
+        "url": "{{@site.url}}/"
+    },
+    "isAccessibleForFree": true,
+    "inLanguage": "{{@site.locale}}"
+}
+</script>
+{{/contentFor}}
+
+<section class="course-hero outer">
+    <div class="inner">
+        <div class="course-hero-grid">
+
+            <div>
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+                    {{> "icons/chevron-right"}}
+                    <a href="{{@site.url}}/courses/">{{t "Courses"}}</a>
+                    {{> "icons/chevron-right"}}
+                    <span aria-current="page">{{title}}</span>
+                </nav>
+
+                <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
+                <h1>{{title}}</h1>
+
+                {{#if custom_excerpt}}
+                    <p class="course-hero-excerpt">{{custom_excerpt}}</p>
+                {{/if}}
+
+                <div class="chips">
+                    {{#foreach tags visibility="internal"}}
+                        {{#match slug "~^" "hash-course-level-"}}
+                            {{#if description}}<span class="chip chip-level{{#match slug "hash-course-level-beginner"}} chip-level-beginner{{/match}}">{{> "icons/signal"}} {{description}}</span>{{/if}}
+                        {{/match}}
+                    {{/foreach}}
+                    {{> "duration-chip"}}
+                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" limit="1" as |l total|}}
+                        <span class="chip">{{> "icons/play-circle"}} {{total.total}} {{t "lessons"}}</span>
+                    {{/get}}
+                    <span class="chip chip-accent">{{> "icons/check-circle"}} {{t "Free"}}</span>
+                </div>
+
+                <div class="course-hero-actions">
+                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" order="published_at asc" limit="1" as |first|}}
+                        {{#if first}}
+                            <a class="btn btn-lg" href="{{first.[0].url}}">
+                                {{> "icons/play-circle"}} {{t "Start the course"}}
+                            </a>
+                        {{/if}}
+                    {{/get}}
+                    {{#foreach authors limit="1"}}
+                        <span class="card-author">
+                            {{#if profile_image}}
+                                <img class="avatar" src="{{img_url profile_image size="xs"}}" alt="{{name}}" loading="lazy" />
+                            {{/if}}
+                            <span class="post-byline-name">{{name}}</span>
+                        </span>
+                    {{/foreach}}
+                </div>
+            </div>
+
+            {{#if feature_image}}
+                <div class="course-hero-media">
+                    <img src="{{img_url feature_image size="l"}}"
+                        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                        fetchpriority="high" loading="eager" />
+                </div>
+            {{/if}}
+
+        </div>
+    </div>
+</section>
+
+<main id="site-main" class="course-body outer">
+    <div class="inner">
+        <div class="course-grid">
+
+            <div>
+                {{#if html}}
+                    <section class="course-section">
+                        <h2>{{> "icons/info"}} {{t "About this course"}}</h2>
+                        <div class="gh-content">
+                            {{content}}
+                        </div>
+                    </section>
+                {{/if}}
+
+                <section class="course-section">
+                    <h2>{{> "icons/list-icon"}} {{t "Curriculum"}}</h2>
+                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" order="published_at asc" limit="100" include="tags" as |lessons|}}
+                        {{#if lessons}}
+                            <ol class="curriculum">
+                                {{#foreach lessons}}
+                                    <li class="curriculum-item">
+                                        <a href="{{url}}">
+                                            <span class="curriculum-num"></span>
+                                            <span>
+                                                <span class="curriculum-title">{{title}}</span>
+                                                {{#if custom_excerpt}}<span class="curriculum-excerpt">{{custom_excerpt}}</span>{{/if}}
+                                            </span>
+                                            <span class="curriculum-side">
+                                                {{> "duration-chip" chipClass="chip chip-type"}}
+                                                {{> "lesson-type-icon"}}
+                                            </span>
+                                        </a>
+                                    </li>
+                                {{/foreach}}
+                            </ol>
+                        {{else}}
+                            <p class="filter-empty" style="display:block">{{t "Lessons are on their way — check back soon."}}</p>
+                        {{/if}}
+                    {{/get}}
+                </section>
+            </div>
+
+            <aside>
+                {{> "widgets/author"}}
+                {{#if @site.members_enabled}}
+                    {{^if @member}}
+                        {{> "widgets/newsletter"}}
+                    {{/if}}
+                {{/if}}
+                {{> "widgets/share"}}
+            </aside>
+
+        </div>
+    </div>
+</main>

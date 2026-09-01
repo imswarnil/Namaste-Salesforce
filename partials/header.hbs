@@ -1,0 +1,68 @@
+{{!-- The navbar. One row: brand · nav · actions.
+
+Navigation comes straight from Ghost Admin → Settings →
+Navigation. Each item looks for an icon partial named
+icons/nav-{slug} — nav-home, nav-blog, nav-courses… — and shows
+it when one exists; an item with no matching partial simply
+renders as text, so new nav items never break.
+
+The burger label is wired to #nav-open in default.hbs; the whole
+mobile drawer is CSS. --}}
+
+<header class="site-head outer">
+    <div class="site-head-inner inner">
+
+        <div class="site-head-brand">
+            <a class="site-head-logo" href="{{@site.url}}" aria-label="{{@site.title}} — home">
+                {{#if @site.logo}}
+                    {{#if @custom.dark_logo}}
+                        <img class="logo-light" src="{{@site.logo}}" alt="{{@site.title}}" />
+                        <img class="logo-dark" src="{{@custom.dark_logo}}" alt="{{@site.title}}" />
+                    {{else}}
+                        <img class="logo-invertible" src="{{@site.logo}}" alt="{{@site.title}}" />
+                    {{/if}}
+                {{else}}
+                    {{@site.title}}
+                {{/if}}
+            </a>
+        </div>
+
+        <nav class="site-head-nav" aria-label="{{t "Main navigation"}}">
+            {{navigation}}
+
+            {{!-- In the drawer, the CTA moves down here (CSS shows
+            exactly one of the two renderings). --}}
+            {{#if @site.members_enabled}}
+                {{#unless @member}}
+                    <a class="btn site-head-cta" href="{{@site.url}}/membership/">{{t "Become a member"}}</a>
+                {{/unless}}
+            {{/if}}
+        </nav>
+
+        <div class="site-head-actions">
+            <button class="icon-btn" data-ghost-search aria-label="{{t "Search this site"}}">
+                {{> "icons/search"}}
+            </button>
+
+            <button class="icon-btn theme-toggle" data-theme-toggle aria-label="{{t "Toggle dark mode"}}">
+                <span class="icon-sun">{{> "icons/sun"}}</span>
+                <span class="icon-moon">{{> "icons/moon"}}</span>
+            </button>
+
+            {{#if @site.members_enabled}}
+                {{#unless @member}}
+                    <a class="btn btn-sm site-head-cta" href="{{@site.url}}/membership/">{{> "icons/star"}} {{t "Become a member"}}</a>
+                {{else}}
+                    <a class="icon-btn" href="#/portal/account" data-portal="account" aria-label="{{t "Account"}}">
+                        {{> "icons/avatar"}}
+                    </a>
+                {{/unless}}
+            {{/if}}
+
+            <label class="nav-burger" for="nav-open" aria-label="{{t "Menu"}}">
+                <span></span>
+            </label>
+        </div>
+
+    </div>
+</header>

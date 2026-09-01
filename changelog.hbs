@@ -1,0 +1,32 @@
+{{!< default}}
+
+{{!-- /changelog — a timeline. Compact left-aligned hero, then
+entries on a single rail, newest first. --}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/history"}} {{t "Changelog"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+        {{else}}
+            <h1>{{t "Changelog"}}</h1>
+        {{/page}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner inner-narrow">
+        <ol class="timeline">
+            {{#foreach posts}}
+                <li class="timeline-item">
+                    <span class="timeline-dot" aria-hidden="true"></span>
+                    <time class="timeline-date" datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+                    <h2 class="timeline-title"><a href="{{url}}">{{title}}</a></h2>
+                    {{#if custom_excerpt}}<p class="timeline-excerpt">{{custom_excerpt}}</p>{{/if}}
+                </li>
+            {{/foreach}}
+        </ol>
+        {{pagination}}
+    </div>
+</main>

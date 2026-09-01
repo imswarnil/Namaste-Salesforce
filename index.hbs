@@ -1,33 +1,25 @@
 {{!< default}}
-{{!-- ══════════════════════════════════════════════════════════════════════
-     index.hbs — the fallback listing, ported from NSDS blog-listing.html.
-     ------------------------------------------------------------------------
-     Ghost falls back to this for anything routes.yaml does not name, so it
-     stays generic. A collection that wants a different listing gets its own
-     template AND its own file in abstract/collections.md — never a branch
-     inside this one.
-     ══════════════════════════════════════════════════════════════════════ --}}
-{{> "page/injection"}}
-<section class="ns-band ns-band--tight">
-    <div class="ns-band__inner">
-        <div class="ns-band__head ns-band__head--between">
-            <div>
-                <span class="ns-kicker">{{@site.title}}</span>
-                <h1 class="ns-band__title">{{t "Latest"}}</h1>
-                {{#if @site.description}}<p class="ns-band__lede">{{@site.description}}</p>{{/if}}
-            </div>
-            <div class="ns-band__actions">
-                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/blog/rss/">{{> "icons/rss"}} RSS</a>
-            </div>
-        </div>
 
-        {{#if posts}}
-            <div class="ns-blog-grid">
-                {{#foreach posts}}{{> "post-card"}}{{/foreach}}
-            </div>
-            {{> "pagination"}}
-        {{else}}
-            {{> "empty" title=(t "Nothing published yet")}}
-        {{/if}}
+{{!-- The catch-all archive: any post no collection claims lands
+at /{slug}/ and paginates here (mounted at /archive/). --}}
+
+<section class="archive-hero outer">
+    <div class="archive-hero-inner inner">
+        <div>
+            <span class="kicker">{{> "icons/book-open"}} {{t "Archive"}}</span>
+            <h1>{{t "Everything else"}}</h1>
+            <p class="archive-hero-desc">{{t "Standalone posts that live outside the blog, courses and training."}}</p>
+        </div>
     </div>
 </section>
+
+<main id="site-main" class="archive-main outer">
+    <div class="inner">
+        <div class="card-grid">
+            {{#foreach posts}}
+                {{> "post-card"}}
+            {{/foreach}}
+        </div>
+        {{pagination}}
+    </div>
+</main>

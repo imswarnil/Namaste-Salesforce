@@ -1,0 +1,44 @@
+{{!-- A narrow single for newsletter issues and changelog entries.
+Params: sectionLabel, sectionUrl, sectionIcon, showSubscribe.
+Context: the post. --}}
+
+<main id="site-main" class="section outer">
+<article class="inner inner-narrow {{post_class}}">
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+        {{> "icons/chevron-right"}}
+        <a href="{{sectionUrl}}">{{sectionLabel}}</a>
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="chips">
+            <span class="chip chip-accent">{{#> (concat "icons/" sectionIcon)}}{{/undefined}} {{sectionLabel}}</span>
+            <span class="chip">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</span>
+        </div>
+        <h1 class="post-title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+    </header>
+
+    {{> "toc-inline"}}
+
+    <section class="gh-content">
+        {{content}}
+    </section>
+
+    {{#if showSubscribe}}
+        {{#if @site.members_enabled}}
+            {{^if @member}}
+                <div class="widget widget-newsletter" style="margin-top:4rem">
+                    <h4 class="widget-title">{{> "icons/mail"}} {{t "Get the next issue first"}}</h4>
+                    <p>{{t "One email a week. No spam, unsubscribe anytime."}}</p>
+                    <a class="btn" href="#/portal/signup" data-portal="signup">{{t "Subscribe free"}}</a>
+                </div>
+            {{/if}}
+        {{/if}}
+    {{/if}}
+
+</article>
+</main>

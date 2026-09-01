@@ -1,0 +1,20 @@
+{{!-- The article sidebar — a stack of widgets, each one a
+partial under partials/widgets/. Order here is display order;
+position (left/right) is the shell's concern, not this file's.
+Context: the post. --}}
+
+{{^match (post_class) "~" "tag-hash-blog-toc-hide"}}
+    {{> "widgets/toc"}}
+{{/match}}
+
+{{> "widgets/author"}}
+
+{{> "widgets/recent-posts"}}
+
+{{#if @site.members_enabled}}
+    {{^if @member}}
+        {{> "widgets/newsletter"}}
+    {{/if}}
+{{/if}}
+
+{{> "widgets/share"}}

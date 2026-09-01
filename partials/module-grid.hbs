@@ -1,0 +1,48 @@
+{{!-- Training module cards, discovered from content.
+
+A module IS a public tag: the primary tag its posts carry. This
+walks the public tags and keeps only those with training posts —
+so a module appears the moment its first post is published and
+disappears with its last, and blog-only tags never show. The tag
+supplies name, description and ordering; the posts supply the
+contents list.
+
+Param: moduleLimit — cards to render ("2" on home, "24" on
+/training/). --}}
+
+{{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
+    {{#foreach moduleTags}}
+        {{#> "with-this" moduleTag=. }}
+            {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="100" as |modulePosts|}}
+                {{#if modulePosts}}
+                    <article class="module-card">
+
+                        <header class="module-card-head">
+                            <span class="kicker">{{> "icons/layers"}} {{t "Module"}}</span>
+                            <h2><a href="{{modulePosts.[0].url}}">{{../moduleTag.name}}</a></h2>
+                            {{#if ../moduleTag.description}}
+                                <p class="module-card-desc">{{../moduleTag.description}}</p>
+                            {{/if}}
+                        </header>
+
+                        <ol class="module-list">
+                            {{#foreach modulePosts}}
+                                <li>
+                                    <a href="{{url}}">
+                                        <span>{{title}}</span>
+                                        {{> "icons/arrow-right"}}
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ol>
+
+                        <footer class="module-card-foot">
+                            {{modulePosts.length}} {{t "sections"}} · {{t "start anywhere, read in order"}}
+                        </footer>
+
+                    </article>
+                {{/if}}
+            {{/get}}
+        {{/with-this}}
+    {{/foreach}}
+{{/get}}

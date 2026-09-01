@@ -1,0 +1,79 @@
+{{!< default}}
+
+{{!-- /sitemap — the whole site, visually. The human twin of
+/llms/ and /sitemap.xml: every collection queried live, every
+page, every topic. Nothing here is hand-maintained. --}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/map-icon"}} {{t "Sitemap"}}</span>
+        <h1>{{t "Everything on this site"}}</h1>
+        <p>{{t "Built live from the content — if it exists, it is on this page."}}</p>
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+        <div class="sitemap-grid">
+
+            <section class="sitemap-block">
+                <h2><a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Courses"}}</a></h2>
+                {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" order="published_at asc" limit="20" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2><a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a></h2>
+                {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="40" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2><a href="{{@site.url}}/videos/">{{> "icons/video"}} {{t "Videos"}}</a></h2>
+                {{#get "posts" filter="tag:hash-video-col" limit="20" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2><a href="{{@site.url}}/blog/">{{> "icons/pen"}} {{t "Blog"}}</a></h2>
+                {{#get "posts" filter="tag:hash-blog-col" limit="20" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2><a href="{{@site.url}}/newsletter/">{{> "icons/newspaper"}} {{t "Newsletter"}}</a></h2>
+                {{#get "posts" filter="tag:hash-newsletter-col" limit="20" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2><a href="{{@site.url}}/changelog/">{{> "icons/history"}} {{t "Changelog"}}</a></h2>
+                {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="20" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2>{{> "icons/file-text"}} {{t "Pages"}}</h2>
+                {{#get "pages" limit="24" order="title asc" as |items|}}
+                    <ul>{{#foreach items}}<li><a href="{{url}}">{{title}}</a></li>{{/foreach}}</ul>
+                {{/get}}
+            </section>
+
+            <section class="sitemap-block">
+                <h2>{{> "icons/tag-icon"}} {{t "Topics"}}</h2>
+                {{#get "tags" filter="visibility:public" order="count.posts desc" include="count.posts" limit="24" as |topics|}}
+                    <ul class="tag-cloud">
+                        {{#foreach topics}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}
+                    </ul>
+                {{/get}}
+            </section>
+
+        </div>
+    </div>
+</main>

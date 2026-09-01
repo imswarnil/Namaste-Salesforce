@@ -1,0 +1,64 @@
+{{!-- A course card. Context: a course post (include tags).
+
+The data-level / data-duration attributes carry the FULL internal
+tag slug, and the /courses filter buttons carry the same slugs as
+their values — matching is exact string equality, no parsing.
+Chip text is always the tag's description. --}}
+
+<article class="card course-card" data-filter-item
+    {{~#foreach tags visibility="internal"~}}
+        {{~#match slug "~^" "hash-course-level-"}} data-level="{{slug}}" data-level-label="{{description}}"{{/match~}}
+        {{~#match slug "~^" "hash-course-duration-"}} data-duration="{{slug}}" data-duration-label="{{description}}"{{/match~}}
+        {{~#match slug "~^" "hash-duration-"}} data-duration="{{slug}}" data-duration-label="{{description}}"{{/match~}}
+    {{~/foreach~}}>
+
+    <div class="card-media">
+        {{#if feature_image}}
+            <img src="{{img_url feature_image size="m"}}"
+                srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
+                sizes="(max-width: 700px) 92vw, 400px"
+                alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                loading="lazy" />
+        {{/if}}
+        <div class="chips">
+            {{#foreach tags visibility="internal"}}
+                {{#match slug "~^" "hash-course-level-"}}
+                    {{#if description}}
+                        <span class="chip chip-level{{#match slug "hash-course-level-beginner"}} chip-level-beginner{{/match}}">{{> "icons/signal"}} {{description}}</span>
+                    {{/if}}
+                {{/match}}
+            {{/foreach}}
+            {{#if featured}}<span class="chip chip-featured">{{> "icons/fire"}} {{t "Featured"}}</span>{{/if}}
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="card-eyebrow">
+            <span>{{t "Course"}}</span>
+            {{> "duration-chip" chipClass="chip chip-type"}}
+        </div>
+
+        <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
+
+        {{#if custom_excerpt}}
+            <p class="card-excerpt">{{custom_excerpt}}</p>
+        {{else if excerpt}}
+            <p class="card-excerpt">{{excerpt words="24"}}</p>
+        {{/if}}
+
+        <div class="card-meta">
+            {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" limit="1" as |lessons total|}}
+                <span class="course-card-lessons">{{> "icons/play-circle"}} {{total.total}} {{t "lessons"}}</span>
+            {{/get}}
+            {{#foreach authors limit="1"}}
+                <span class="card-author">
+                    {{#if profile_image}}
+                        <img class="avatar" src="{{img_url profile_image size="xs"}}" alt="{{name}}" loading="lazy" />
+                    {{/if}}
+                    {{name}}
+                </span>
+            {{/foreach}}
+        </div>
+    </div>
+
+</article>

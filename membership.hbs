@@ -1,0 +1,77 @@
+{{!< default}}
+
+{{!-- /membership — free versus paid, spelled out. Tiers come
+live from Ghost (Settings → Tiers): names, prices and benefit
+lists all edit there, never here. The support framing at the end
+routes to /sponsor for companies. --}}
+
+<section class="courses-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="inner relative">
+        <span class="kicker">{{> "icons/star"}} {{t "Membership"}}</span>
+        <h1>{{t "Support the work, get more back"}}</h1>
+        <p>{{t "Every course, module and article stays free to read. Membership is how this keeps existing — and it comes with perks."}}</p>
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+
+        <div class="tier-grid">
+            {{#get "tiers" include="monthly_price,yearly_price,benefits" limit="10" as |tiers|}}
+                {{#foreach tiers}}
+                    <div class="tier-card{{#match type "paid"}} is-paid{{/match}}">
+                        {{#match type "paid"}}
+                            <span class="tier-flag">{{> "icons/fire"}} {{t "Most support"}}</span>
+                        {{/match}}
+                        <h2>{{name}}</h2>
+                        {{#if description}}<p class="tier-desc">{{description}}</p>{{/if}}
+
+                        <div class="tier-price">
+                            {{#match type "free"}}
+                                <strong>{{t "Free"}}</strong>
+                                <span>{{t "forever"}}</span>
+                            {{else}}
+                                <strong>{{price monthly_price currency=currency}}</strong>
+                                <span>/ {{t "month"}}</span>
+                            {{/match}}
+                        </div>
+
+                        {{#if benefits}}
+                            <ul class="auth-benefits">
+                                {{#foreach benefits}}
+                                    <li>{{> "icons/check-circle"}} {{this}}</li>
+                                {{/foreach}}
+                            </ul>
+                        {{else}}
+                            <ul class="auth-benefits">
+                                {{#match type "free"}}
+                                    <li>{{> "icons/check-circle"}} {{t "Read everything, free"}}</li>
+                                    <li>{{> "icons/check-circle"}} {{t "Weekly newsletter"}}</li>
+                                    <li>{{> "icons/check-circle"}} {{t "Comment on posts"}}</li>
+                                {{else}}
+                                    <li>{{> "icons/check-circle"}} {{t "Everything in free"}}</li>
+                                    <li>{{> "icons/check-circle"}} {{t "Keep the courses coming"}}</li>
+                                    <li>{{> "icons/check-circle"}} {{t "Our genuine gratitude"}}</li>
+                                {{/match}}
+                            </ul>
+                        {{/if}}
+
+                        {{#match type "free"}}
+                            <a class="btn btn-ghost" href="#/portal/signup/free" data-portal="signup/free">{{t "Sign up free"}}</a>
+                        {{else}}
+                            <a class="btn" href="#/portal/signup" data-portal="signup">{{t "Become a member"}}</a>
+                        {{/match}}
+                    </div>
+                {{/foreach}}
+            {{/get}}
+        </div>
+
+        <div class="home-cta" style="margin-top: 5.6rem">
+            <h2>{{t "Prefer to support another way?"}}</h2>
+            <p>{{t "Companies can sponsor the site and reach everyone learning here — or just share a lesson with someone who needs it. Both count."}}</p>
+            <a class="btn btn-lg btn-inverse" href="{{@site.url}}/sponsor/">{{> "icons/megaphone"}} {{t "Sponsor us"}}</a>
+        </div>
+
+    </div>
+</main>

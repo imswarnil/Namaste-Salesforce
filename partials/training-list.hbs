@@ -1,0 +1,39 @@
+{{!-- The training rail: EVERY module, so a reader can cross into
+another section without going back to /training/. Each module is
+a native <details> — no script — and only the module that owns
+the current page starts open. Discovery is the same walk
+module-grid.hbs does: public tags that have training posts.
+
+Params: currentSlug (this page), currentModule (its primary tag
+slug). Context: the training post. --}}
+
+{{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
+    {{#foreach moduleTags}}
+        {{!-- Two frames deep here (get + foreach), so the partial's own
+        params sit at ../../ --}}
+        {{#> "with-this" moduleTag=. currentSlug=../../currentSlug currentModule=../../currentModule}}
+            {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="100" include="tags" as |sections|}}
+                {{#if sections}}
+                    <details class="rail-module{{#match ../moduleTag.slug ../currentModule}} is-active{{/match}}"
+                        {{#match ../moduleTag.slug ../currentModule}}open{{/match}}>
+                        <summary>
+                            {{> "icons/layers"}}
+                            <span>{{../moduleTag.name}}</span>
+                            {{> "icons/chevron-down"}}
+                        </summary>
+                        <ol class="player-list">
+                            {{#foreach sections}}
+                                <li class="{{#match slug ../../currentSlug}}is-current{{/match}}">
+                                    <a href="{{url}}"{{#match slug ../../currentSlug}} aria-current="page"{{/match}}>
+                                        <span>{{title}}</span>
+                                        {{> "lesson-type-icon"}}
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ol>
+                    </details>
+                {{/if}}
+            {{/get}}
+        {{/with-this}}
+    {{/foreach}}
+{{/get}}

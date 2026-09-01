@@ -1,0 +1,139 @@
+{{!-- The blog article — five layouts, three sidebar positions,
+optional TOC, all chosen per-post with internal tags:
+
+    layout   #blog-layout-magazine · -minimal · -split · -wide
+             (none → classic)
+    sidebar  #blog-sidebar-left · #blog-sidebar-none
+             (none → right)
+    toc      #blog-toc-hide  (none → shown)
+
+The markup is ONE shape; the layout classes stamped on the shell
+below are what restyle the header. That is why every layout
+composes with every sidebar choice. Context: the post. --}}
+
+<main id="site-main" class="post-shell outer
+    {{~#match (post_class) "~" "tag-hash-blog-layout-magazine"}} post-layout-magazine
+    {{~else match (post_class) "~" "tag-hash-blog-layout-minimal"}} post-layout-minimal
+    {{~else match (post_class) "~" "tag-hash-blog-layout-split"}} post-layout-split
+    {{~else match (post_class) "~" "tag-hash-blog-layout-wide"}} post-layout-wide
+    {{~else}} post-layout-classic{{/match}}
+    {{~#match (post_class) "~" "tag-hash-blog-sidebar-none"}} post-no-sidebar
+    {{~else match (post_class) "~" "tag-hash-blog-sidebar-left"}} post-has-sidebar post-sidebar-left
+    {{~else}} post-has-sidebar{{/match}}">
+
+<div class="inner">
+<div class="post-grid">
+
+    <article class="post-main {{post_class}}">
+
+        <header class="post-header">
+            <div class="post-header-content">
+
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+                    {{> "icons/chevron-right"}}
+                    <a href="{{@site.url}}/blog/">{{t "Blog"}}</a>
+                    {{#primary_tag}}
+                        {{> "icons/chevron-right"}}
+                        <a href="{{url}}">{{name}}</a>
+                    {{/primary_tag}}
+                </nav>
+
+                <h1 class="post-title">{{title}}</h1>
+
+                {{#if custom_excerpt}}
+                    <p class="post-excerpt">{{custom_excerpt}}</p>
+                {{/if}}
+
+                <div class="post-byline">
+                    <div class="card-author">
+                        {{#foreach authors limit="1"}}
+                            {{#if profile_image}}
+                                <img class="avatar" src="{{img_url profile_image size="xs"}}" alt="{{name}}" loading="eager" />
+                            {{else}}
+                                <span class="avatar avatar-fallback">{{> "icons/avatar"}}</span>
+                            {{/if}}
+                            <span class="post-byline-name"><a href="{{url}}">{{name}}</a></span>
+                        {{/foreach}}
+                        <span class="post-byline-meta">
+                            <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+                            {{#if reading_time}}· {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}{{/if}}
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            {{#if feature_image}}
+                <figure class="post-image">
+                    <img src="{{img_url feature_image size="l"}}"
+                        srcset="{{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w, {{img_url feature_image size="xl"}} 2000w"
+                        sizes="(min-width: 1200px) 840px, 92vw"
+                        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                        fetchpriority="high" loading="eager" />
+                    {{#if feature_image_caption}}<figcaption>{{feature_image_caption}}</figcaption>{{/if}}
+                </figure>
+            {{/if}}
+        </header>
+
+        {{!-- Site TOC rule: no sidebar on this post → the TOC goes
+        inline after the hero ( #blog-toc-hide still wins). --}}
+        {{#match (post_class) "~" "tag-hash-blog-sidebar-none"}}
+            {{^match (post_class) "~" "tag-hash-blog-toc-hide"}}
+                {{> "toc-inline"}}
+            {{/match}}
+        {{/match}}
+
+        <section class="gh-content">
+            {{content}}
+        </section>
+
+        <footer class="post-footer">
+            {{#if tags}}
+                <ul class="tag-cloud">
+                    {{#foreach tags}}
+                        <li><a href="{{url}}">{{name}}</a></li>
+                    {{/foreach}}
+                </ul>
+            {{/if}}
+            {{> "widgets/share-links" bare=true}}
+        </footer>
+
+        {{#if comments}}
+            <section class="post-comments">
+                {{comments}}
+            </section>
+        {{/if}}
+
+    </article>
+
+    {{^match (post_class) "~" "tag-hash-blog-sidebar-none"}}
+        <aside class="post-aside">
+            {{> "blog-sidebar"}}
+        </aside>
+    {{/match}}
+
+</div>
+</div>
+</main>
+
+{{!-- Read next — three more from the blog, this one excluded --}}
+{{#get "posts" filter="tag:hash-blog-col+id:-{{id}}" include="tags,authors" limit="3" as |more|}}
+    {{#if more}}
+        <section class="post-related section outer">
+            <div class="inner">
+                <div class="section-head">
+                    <div>
+                        <span class="kicker">{{> "icons/book-open"}} {{t "Keep reading"}}</span>
+                        <h2>{{t "More from the blog"}}</h2>
+                    </div>
+                </div>
+                <div class="card-grid">
+                    {{#foreach more}}
+                        {{> "post-card"}}
+                    {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}

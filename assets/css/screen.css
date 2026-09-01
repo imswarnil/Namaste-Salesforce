@@ -1,66 +1,55 @@
-/* ════════════════════════════════════════════════════════════════════════════
-   screen.css — SOURCE. The browser never loads this file.
-   ----------------------------------------------------------------------------
-   `gulp` compiles it to assets/built/screen.css, which is what default.hbs
-   links. Edit this; never edit the output.
+/*  Namaste Salesforce — theme stylesheet manifest
+    ============================================================
 
-   ── The layer statement comes FIRST, before any @import ───────────────────
-   A bare @layer statement is one of only two things allowed to precede
-   @import, and it is what fixes the precedence order.
+    Source of truth for the cascade. Each folder is a layer; the
+    order below IS the specificity strategy — later layers may
+    override earlier ones, never the reverse.
 
-   WITHOUT IT THE CONTRACT INVERTS SILENTLY. The order then falls out of
-   whatever order the layer BLOCKS happen to appear in the compiled output,
-   and measured, that came out
+    0-abstracts   design tokens only, no selectors that paint
+    1-base        element defaults: reset, type, article content
+    2-layout      the frame: containers, header, footer
+    3-components  reusable pieces: buttons, cards, chips, widgets
+    4-templates   one file per template's own layout
+    5-utilities   patterns & helpers, allowed to win
 
-       theme → base → components → utilities → ns-components
+    Built by `pnpm build` (gulp + postcss-easy-import) into
+    assets/built/screen.css.
+    ------------------------------------------------------------ */
 
-   with the design system LAST — beating this theme's own layer and every
-   Tailwind utility. Nothing errors. Overrides just stop working. abstract/04
-   records that this project already shipped that bug once.
+@import "0-abstracts/_fonts.css";
+@import "0-abstracts/_tokens.css";
 
-   scripts/check-layers.mjs re-proves the order on the COMPILED file on every
-   build, because the statement below is minified away once the blocks are
-   correctly ordered — so the output is the only place the contract can still
-   be observed.
+@import "1-base/_reset.css";
+@import "1-base/_typography.css";
+@import "1-base/_content.css";
 
-   ── The three imports are NSDS's own supported path ───────────────────────
-   docs/INTEGRATION.md specifies exactly this for a Ghost theme:
-     1. tailwindcss      Tailwind's @theme defaults and preflight
-     2. nsds/nsds.css    the design system — tokens, base, @layer ns-components
-     3. nsds/tailwind.css NSDS's @theme bridge, AFTER Tailwind's so ours wins.
-                         This is what makes p-card resolve to --space-5 and
-                         bg-brand-500 to the brand blue.
+@import "2-layout/_containers.css";
+@import "2-layout/_header.css";
+@import "2-layout/_footer.css";
 
-   ⚠ NOT dist/namaste-ui.tailwind.css — that is Tailwind PLUS the system,
-   built for NSDS's own styleguide, and in a product that already runs
-   Tailwind it adds a second preflight and a second copy of every utility.
-   ═══════════════════════════════════════════════════════════════════════ */
+@import "3-components/_buttons.css";
+@import "3-components/_chips.css";
+@import "3-components/_cards.css";
+@import "3-components/_forms.css";
+@import "3-components/_widgets.css";
+@import "3-components/_toc.css";
+@import "3-components/_filters.css";
+@import "3-components/_pagination.css";
 
-@layer theme, base, ns-components, components, utilities;
+@import "4-templates/_home.css";
+@import "4-templates/_blog.css";
+@import "4-templates/_post.css";
+@import "4-templates/_courses.css";
+@import "4-templates/_course.css";
+@import "4-templates/_lesson.css";
+@import "4-templates/_training.css";
+@import "4-templates/_trainer.css";
+@import "4-templates/_videos.css";
+@import "4-templates/_newsletter.css";
+@import "4-templates/_changelog.css";
+@import "4-templates/_page.css";
+@import "4-templates/_archive.css";
+@import "4-templates/_error.css";
 
-@import "tailwindcss" source(none);
-@import "./nsds/nsds.css";
-@import "./nsds/tailwind.css";
-
-/* ── The content scan ──────────────────────────────────────────────────────
-   `source(none)` disables Tailwind's automatic filesystem scan, which is
-   git-aware — so it finds a different set of classes on a fresh clone than in
-   a dirty tree, which makes the build non-reproducible in exactly the way
-   that produces "works on my machine" CSS. Every source is listed instead. */
-@source "../../*.hbs";
-@source "../../partials/**/*.hbs";
-
-/* ── This theme's own layer, in numeric order ──────────────────────────────
-   The digits ARE the cascade inside @layer components: 5 beats 3 beats 1.
-   assets/css/theme/README.md is the map, and 0-foundation/README.md is why
-   that folder holds no design tokens. */
-@import "./theme/1-base/reset.css";
-@import "./theme/1-base/shell.css";
-@import "./theme/3-components/navbar.css";
-@import "./theme/3-components/hero.css";
-@import "./theme/3-components/logo-sting.css";
-@import "./theme/3-components/pace.css";
-@import "./theme/3-components/typography.css";
-@import "./theme/3-components/post-side.css";
-@import "./theme/4-ghost/koenig.css";
-@import "./theme/9-generated/icon-bridge.css";
+@import "5-utilities/_patterns.css";
+@import "5-utilities/_helpers.css";

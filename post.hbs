@@ -1,63 +1,43 @@
 {{!< default}}
-{{!-- ══════════════════════════════════════════════════════════════════════
-     post.hbs — THE DISPATCHER, not a page.
-     ------------------------------------------------------------------------
-     Ghost renders every post through this one template, so the kind of page a
-     post becomes is decided here, by its internal tag. Getting it wrong
-     renders every post as the wrong kind of page — which is why it is second
-     in abstract/ after the content model itself.
 
-     THE RULE: one branch per collection, each delegating to exactly one
-     partial in partials/post/, and NO markup in this file. The moment a
-     branch grows its own layout, the two collections sharing it start to
-     drift.
+{{!-- POST AS DISPATCHER. This template renders nothing itself:
+it reads the post's internal collection tag out of post_class
+and hands the whole post to the partial that owns that reading
+experience. One tag decides the URL (routes.yaml), the layout
+(here) and the queries that find the post — nothing else in the
+theme knows the difference.
 
-     ══ THREE VOCABULARIES, ON PURPOSE AND TEMPORARILY ══════════════════════
-     Every branch matches every name a post might carry, because three
-     naming schemes are alive at once and all three are real:
+    #course-col   / #courses-col  → post-course   (course landing)
+    #lesson-col   / #lessons-col  → post-lesson   (course player)
+    #training-col / #docs-col     → post-training (module reader)
+    #video-col                    → post-video    (the embed is the page)
+    #newsletter-col               → post-issue    (issue + sent-date rail)
+    #changelog-col / #feed-col    → post-simple   (narrow entry)
+    anything else                 → post-blog     (the article)
+--}}
 
-       published      canonical (registry)   target (bright's -col)
-       ─────────────  ────────────────────   ──────────────────────
-       #training-section  #training-module   #training-sections-col
-       #training-content  #training-lesson   #training-lessons-col
-       #course            #course            #courses-col
-       #lesson            #lesson            #lessons-col
-       #blog              #blog              #blog-col
-
-     The right column is bright's own vocabulary, taken from the seeded
-     content rather than invented — and PLURAL for children, which matters:
-     #lessons-col belongs to courses, so training's children must be
-     #training-lessons-col or the two collections merge.
-
-     The middle column was a rename decision 0004 recorded and never carried
-     out, on the premise that "the theme has no content yet" — false then and
-     false now. The right column is the convention being migrated TO.
-
-     Matching all three is what lets the retag be additive and reversible:
-     scripts/migrate-col-tags.mjs ADDS the -col tags and removes nothing, so
-     old routes.yaml and new both work while it runs. When the retag is done
-     and the new routes.yaml is uploaded, delete the first two columns from
-     these branches — `grep -rn "hash-training-section\|hash-blog\b" .` is
-     the list. Nothing else in the theme needs to know.
-
-     ⚠ ORDER MATTERS. Training is matched BEFORE the generic branches: a
-     lesson is also a post with a primary tag, and a generic branch placed
-     first would claim it.
-     ══════════════════════════════════════════════════════════════════════ --}}
 {{#post}}
-    {{#has tag="#training-lessons-col, #training-lesson, #training-content"}}
-        {{> "post/training-lesson"}}
-    {{else has tag="#training-sections-col, #training-module, #training-section"}}
-        {{> "post/training-module"}}
-    {{else has tag="#lessons-col, #lesson"}}
-        {{> "post/lesson"}}
-    {{else has tag="#courses-col, #course"}}
-        {{> "post/course"}}
-    {{else has tag="#folders-col, #docs-section"}}
-        {{> "post/docs-section"}}
-    {{else has tag="#docs-col, #docs-page"}}
-        {{> "post/docs"}}
+    {{#match (post_class) "~" "tag-hash-course-col"}}
+        {{> "post-course"}}
+    {{else match (post_class) "~" "tag-hash-courses-col"}}
+        {{> "post-course"}}
+    {{else match (post_class) "~" "tag-hash-lesson-col"}}
+        {{> "post-lesson"}}
+    {{else match (post_class) "~" "tag-hash-lessons-col"}}
+        {{> "post-lesson"}}
+    {{else match (post_class) "~" "tag-hash-training-col"}}
+        {{> "post-training"}}
+    {{else match (post_class) "~" "tag-hash-docs-col"}}
+        {{> "post-training"}}
+    {{else match (post_class) "~" "tag-hash-video-col"}}
+        {{> "post-video"}}
+    {{else match (post_class) "~" "tag-hash-newsletter-col"}}
+        {{> "post-issue"}}
+    {{else match (post_class) "~" "tag-hash-changelog-col"}}
+        {{> "post-simple" sectionLabel="Changelog" sectionUrl="/changelog/" sectionIcon="history"}}
+    {{else match (post_class) "~" "tag-hash-feed-col"}}
+        {{> "post-simple" sectionLabel="Changelog" sectionUrl="/changelog/" sectionIcon="history"}}
     {{else}}
-        {{> "post/article"}}
-    {{/has}}
+        {{> "post-blog"}}
+    {{/match}}
 {{/post}}

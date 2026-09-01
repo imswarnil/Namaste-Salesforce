@@ -1,0 +1,317 @@
+/*  4-templates / lesson — the course player
+    ============================================================
+
+      .player
+        .player-rail        curriculum sidebar (drawer on mobile)
+        .player-main        lesson content + prev/next
+    ------------------------------------------------------------ */
+
+.player {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    min-height: calc(100vh - var(--header-height));
+}
+
+.player-rail {
+    border-right: 1px solid var(--border-soft);
+    background: var(--bg-alt);
+}
+
+.player-rail-scroll {
+    position: sticky;
+    top: var(--header-height);
+    max-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 2.8rem 2.4rem 4rem;
+}
+
+.player-rail-course {
+    display: block;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.player-rail-course .kicker {
+    margin-bottom: 0.6rem;
+}
+
+.player-rail-course h2 {
+    font-size: 1.8rem;
+    line-height: 1.35;
+    transition: color 0.15s ease;
+}
+
+.player-rail-course:hover h2 {
+    color: var(--accent);
+}
+
+.player-rail-count {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 1.3rem;
+    color: var(--text-faint);
+}
+
+.player-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.2rem;
+    counter-reset: player;
+}
+
+.player-list a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.player-list a::before {
+    counter-increment: player;
+    content: counter(player, decimal-leading-zero);
+    font-size: 1.15rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-faint);
+}
+
+.player-list a:hover {
+    color: var(--heading);
+    background: var(--surface);
+}
+
+.player-list a svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--text-faint);
+}
+
+.player-list .is-current a {
+    color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 600;
+}
+
+.player-list .is-current a::before,
+.player-list .is-current a svg {
+    color: var(--accent);
+}
+
+/* Main column */
+.player-main {
+    padding: 3.6rem max(4vmin, 24px) clamp(4.8rem, 8vmin, 8rem);
+}
+
+.player-article {
+    max-width: var(--measure);
+    margin: 0 auto;
+}
+
+.player-header {
+    margin-bottom: 3.2rem;
+    padding-bottom: 2.4rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.player-header .crumbs {
+    margin-bottom: 1.8rem;
+}
+
+.player-header h1 {
+    font-size: clamp(2.6rem, 4vw, 3.6rem);
+}
+
+.player-header .chips {
+    margin-top: 1.6rem;
+}
+
+/* Video lessons: the first embed is the star */
+.lesson-type-video .gh-content > .kg-embed-card:first-child,
+.lesson-type-video .gh-content > .kg-video-card:first-child {
+    margin-bottom: 3.2rem;
+}
+
+/* Mobile: rail collapses into a <details> drawer */
+.player-rail-toggle {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    .player {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .player-rail {
+        border-right: none;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .player-rail-scroll {
+        position: static;
+        max-height: none;
+        padding: 0;
+    }
+
+    .player-rail-toggle {
+        display: block;
+    }
+
+    .player-rail-toggle summary {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.6rem max(4vmin, 20px);
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--heading);
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .player-rail-toggle summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .player-rail-toggle summary svg {
+        width: 1.8rem;
+        height: 1.8rem;
+        color: var(--accent);
+        transition: transform 0.2s ease;
+    }
+
+    .player-rail-toggle[open] summary svg:last-child {
+        transform: rotate(180deg);
+    }
+
+    .player-rail-toggle summary .chev {
+        margin-left: auto;
+    }
+
+    .player-rail-body {
+        padding: 0 max(4vmin, 20px) 2.4rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .player-rail-list {
+        display: none;
+    }
+}
+
+/*  Training reader additions
+    ------------------------------------------------------------ */
+
+/* Collapsible module groups in the rail. <details> does the
+   collapsing; only the active module ships open. */
+.rail-module + .rail-module {
+    margin-top: 0.4rem;
+}
+
+.rail-module summary {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1rem 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--heading);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 0.15s ease;
+}
+
+.rail-module summary::-webkit-details-marker {
+    display: none;
+}
+
+.rail-module summary:hover {
+    background: var(--surface);
+}
+
+.rail-module summary svg:first-child {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--text-faint);
+    flex-shrink: 0;
+}
+
+.rail-module summary svg:last-child {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-left: auto;
+    color: var(--text-faint);
+    transition: transform 0.2s ease;
+}
+
+.rail-module[open] summary svg:last-child {
+    transform: rotate(180deg);
+}
+
+.rail-module.is-active summary {
+    color: var(--accent);
+}
+
+.rail-module.is-active summary svg:first-child {
+    color: var(--accent);
+}
+
+.rail-module .player-list {
+    padding: 0.2rem 0 0.6rem 1.4rem;
+    border-left: 1px solid var(--border);
+    margin-left: 1.8rem;
+}
+
+/* The article + its outline: the two-column reading surface */
+.player-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.player-toc {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    .player-has-toc .player-columns {
+        grid-template-columns: minmax(0, 1fr) 220px;
+    }
+
+    .player-has-toc .player-toc {
+        display: block;
+        position: sticky;
+        top: calc(var(--header-height) + 2.4rem);
+        max-height: calc(100vh - var(--header-height) - 4.8rem);
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .player-has-toc .player-article {
+        max-width: var(--measure);
+        width: 100%;
+    }
+}
+
+/* TOC in the player rail (site rule: sidebar owns the TOC) */
+.player-rail-toc {
+    margin-top: 2.4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 1023px) {
+    .player-rail-toc {
+        display: none;
+    }
+}

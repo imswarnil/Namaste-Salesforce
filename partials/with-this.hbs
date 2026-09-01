@@ -1,0 +1,13 @@
+{{!-- Context flattener.
+
+Ghost's {{#get}} helper compiles its `filter` string against the CURRENT
+context only — `../` paths do not resolve inside it. So when a filter needs
+values from two different frames (the group tag being iterated AND the parent
+post held one frame up), pass both in as hash params to this partial and
+they arrive in a single frame:
+
+    {{#> "with-this" groupTag=. indexPage=../indexPage}}
+        {{#get "posts" filter="tags:{{indexPage.slug}}+tags:{{groupTag.slug}}"}}...{{/get}}
+    {{/with-this}}
+--}}
+{{#with this}}{{> @partial-block}}{{/with}}

@@ -1,0 +1,186 @@
+/*  0-abstracts / tokens
+    ============================================================
+
+    The NS Design System palette, verbatim: the Salesforce
+    Lightning blue ramp and the navy gray ramp shared with the
+    bright theme and the LMS. Raw ramps live on :root and never
+    change; everything the theme actually paints with is a
+    SEMANTIC token defined twice — once for light, once for dark.
+
+    Theming contract:
+      <html>                     → follows the system (auto)
+      <html data-theme="light">  → forced light
+      <html data-theme="dark">   → forced dark
+
+    assets/js/theme.js writes data-theme from the toggle and
+    localStorage; the inline script in default.hbs applies the
+    stored choice before first paint so there is no flash.
+    ------------------------------------------------------------ */
+
+:root {
+
+    /* Brand — Salesforce Lightning blue. 500 is the light-mode
+       signal; 400 takes over on navy because #0176d3 does not
+       carry enough contrast against #051222. */
+    --brand-50:  #eef6ff;
+    --brand-100: #d8edff;
+    --brand-200: #b0d7ff;
+    --brand-300: #7cbeff;
+    --brand-400: #1b96ff;
+    --brand-500: #0176d3;
+    --brand-600: #0b5cab;
+    --brand-700: #03386b;
+    --brand-800: #032d60;
+    --brand-900: #001a3e;
+
+    /* Grays — the NSDS navy ramp. The dark end doubles as brand
+       navy, which is what keeps dark mode feeling like the same
+       product instead of an inversion. */
+    --gray-50:  #f4f6f8;
+    --gray-100: #eaeef3;
+    --gray-200: #dddbda;
+    --gray-300: #c6ccd4;
+    --gray-400: #98a6b8;
+    --gray-500: #5c5a57;
+    --gray-600: #45566b;
+    --gray-700: #2c3e56;
+    --gray-800: #032d60;
+    --gray-900: #001a3e;
+    --gray-950: #051222;
+
+    /* Status. Fill/stroke take the base hue; TEXT takes the
+       darker ink — #fe9339 on white is 2.2:1 and fails AA. */
+    --success:     #2e844a;
+    --warning:     #fe9339;
+    --error:       #ea001e;
+    --success-ink: #1a6b34;
+    --warning-ink: #8a4b00;
+    --error-ink:   #ba0017;
+
+    /* Level amber — not the warning ink wearing another name.
+       An intermediate course is neither a problem nor a risk. */
+    --level-ink:    #8a5a00;
+    --featured-ink: #7c4a03;
+
+    /* Type. Figtree is the NSDS typeface; the stack behind it is
+       the same system stack Casper ships so nothing flashes ugly
+       while the font loads. */
+    --font-sans: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    --font-mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+        "Liberation Mono", monospace;
+
+    /* Shape & depth */
+    --radius-sm: 6px;
+    --radius:    10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(5, 18, 34, 0.06);
+    --shadow:    0 0 0 1px rgba(5, 18, 34, 0.03), 0 4px 16px rgba(5, 18, 34, 0.07);
+    --shadow-lg: 0 0 0 1px rgba(5, 18, 34, 0.04), 0 12px 40px rgba(5, 18, 34, 0.12);
+
+    /* Rhythm */
+    --gap:    2.4rem;
+    --gap-lg: 4rem;
+    --header-height: 64px;
+
+    /* Content measures */
+    --measure:      720px;
+    --measure-wide: 1120px;
+}
+
+/*  Semantic tokens — LIGHT (the default)
+    ------------------------------------------------------------ */
+:root {
+    --bg:          #ffffff;
+    --bg-alt:      var(--gray-50);
+    --surface:     #ffffff;
+    --surface-alt: var(--gray-50);
+    --border:      var(--gray-200);
+    --border-soft: color-mod(#dddbda a(55%));
+
+    --text:        #1a2b45;
+    --text-muted:  var(--gray-500);
+    --text-faint:  var(--gray-400);
+    --heading:     var(--gray-900);
+
+    --accent:          var(--brand-500);
+    --accent-strong:   var(--brand-600);
+    --accent-soft:     var(--brand-50);
+    --accent-contrast: #ffffff;
+
+    --header-bg:  rgba(255, 255, 255, 0.85);
+    --code-bg:    var(--gray-50);
+    --scrim:      rgba(5, 18, 34, 0.45);
+}
+
+/*  Semantic tokens — DARK
+    Two doors in: an explicit choice, or the system preference
+    when no choice has been made. Same block, twice, because CSS
+    still has no way to say it once.
+    ------------------------------------------------------------ */
+html[data-theme="dark"] {
+    --bg:          var(--gray-950);
+    --bg-alt:      #081a33;
+    --surface:     #0a1f3c;
+    --surface-alt: #081a33;
+    --border:      rgba(152, 166, 184, 0.18);
+    --border-soft: rgba(152, 166, 184, 0.1);
+
+    --text:        var(--gray-400);
+    --text-muted:  #7d8fa6;
+    --text-faint:  var(--gray-600);
+    --heading:     var(--gray-50);
+
+    --accent:          var(--brand-400);
+    --accent-strong:   var(--brand-300);
+    --accent-soft:     rgba(27, 150, 255, 0.12);
+    --accent-contrast: var(--gray-950);
+
+    --header-bg:  rgba(5, 18, 34, 0.8);
+    --code-bg:    #08192f;
+    --scrim:      rgba(0, 0, 0, 0.6);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow:    0 0 0 1px rgba(152, 166, 184, 0.08), 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 0 0 1px rgba(152, 166, 184, 0.1), 0 12px 40px rgba(0, 0, 0, 0.55);
+
+    --success-ink: #4fbf72;
+    --warning-ink: #f2a341;
+    --error-ink:   #ff6b7a;
+    --level-ink:   #d9a03f;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme]) {
+        --bg:          var(--gray-950);
+        --bg-alt:      #081a33;
+        --surface:     #0a1f3c;
+        --surface-alt: #081a33;
+        --border:      rgba(152, 166, 184, 0.18);
+        --border-soft: rgba(152, 166, 184, 0.1);
+
+        --text:        var(--gray-400);
+        --text-muted:  #7d8fa6;
+        --text-faint:  var(--gray-600);
+        --heading:     var(--gray-50);
+
+        --accent:          var(--brand-400);
+        --accent-strong:   var(--brand-300);
+        --accent-soft:     rgba(27, 150, 255, 0.12);
+        --accent-contrast: var(--gray-950);
+
+        --header-bg:  rgba(5, 18, 34, 0.8);
+        --code-bg:    #08192f;
+        --scrim:      rgba(0, 0, 0, 0.6);
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+        --shadow:    0 0 0 1px rgba(152, 166, 184, 0.08), 0 4px 16px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 0 0 1px rgba(152, 166, 184, 0.1), 0 12px 40px rgba(0, 0, 0, 0.55);
+
+        --success-ink: #4fbf72;
+        --warning-ink: #f2a341;
+        --error-ink:   #ff6b7a;
+        --level-ink:   #d9a03f;
+    }
+}

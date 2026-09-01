@@ -1,19 +1,54 @@
 {{!< default}}
-<section class="ns-band ns-band--tight">
-    <div class="ns-band__inner">
-        {{#tag}}
-            <div class="ns-band__head">
-                <div>
-                    <span class="ns-kicker">{{t "Tag"}}</span>
-                    <h1 class="ns-band__title">{{name}}</h1>
-                    {{#if description}}<p class="ns-band__lede">{{description}}</p>{{/if}}
-                </div>
-            </div>
-        {{/tag}}
 
-        <div class="ns-blog-grid">
-            {{#foreach posts}}{{> "post-card"}}{{/foreach}}
+{{!-- Tag archive — with one special case: when a COURSE shares
+this tag's slug, this tag is that course's lesson tag, and the
+course page is the better destination. A meta refresh in the
+head sends visitors there (Handlebars, no script); the banner
+below covers anyone whose client ignores refreshes. --}}
+
+{{#tag}}
+
+    {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]+slug:{{slug}}" limit="1" as |course|}}
+        {{#if course}}
+            {{#contentFor "head"}}
+                <meta http-equiv="refresh" content="0; url={{course.[0].url}}" />
+                <link rel="canonical" href="{{course.[0].url}}" />
+            {{/contentFor}}
+        {{/if}}
+    {{/get}}
+
+    <section class="archive-hero outer">
+        <div class="archive-hero-inner inner">
+            {{#if feature_image}}
+                <div class="archive-hero-media">
+                    <img src="{{img_url feature_image size="s"}}" alt="{{name}}" />
+                </div>
+            {{/if}}
+            <div>
+                <span class="kicker">{{> "icons/tag-icon"}} {{t "Topic"}}</span>
+                <h1>{{name}}</h1>
+                {{#if description}}<p class="archive-hero-desc">{{description}}</p>{{/if}}
+
+                {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]+slug:{{slug}}" limit="1" as |course|}}
+                    {{#if course}}
+                        <div class="archive-hero-meta">
+                            <span>{{> "icons/graduation-cap"}} {{t "This topic is a course"}} — <a href="{{course.[0].url}}">{{t "taking you there"}}</a></span>
+                        </div>
+                    {{/if}}
+                {{/get}}
+            </div>
         </div>
-        {{> "pagination"}}
+    </section>
+
+{{/tag}}
+
+<main id="site-main" class="archive-main outer">
+    <div class="inner">
+        <div class="card-grid">
+            {{#foreach posts}}
+                {{> "post-card"}}
+            {{/foreach}}
+        </div>
+        {{pagination}}
     </div>
-</section>
+</main>

@@ -1,38 +1,14 @@
-name: Deploy theme
-
+name: Deploy Theme
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
+      - master
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - run: npm ci || npm install
-
-      # Build BEFORE deploying. The deploy action uploads the working tree as
-      # it stands, so without this it would ship whatever assets/built/
-      # happened to be committed — which CI verifies is current, but this
-      # makes the deployed bytes independent of that.
-      - name: Build
-        run: NODE_ENV=production npx gulp build
-
-      - name: Prune non-theme files
-        run: |
-          rm -rf .claude abstract prompt scripts dummy-content node_modules
-          rm -f  gulpfile.mjs package-lock.json routes.yaml
-          find . -name '*.md' -not -path './node_modules/*' -delete
-          # The CSS SOURCE is not part of the theme — only the compiled output
-          # is served. Shipping both invites someone to edit the wrong one.
-          rm -rf assets/css
-
       - uses: TryGhost/action-deploy-theme@v1
         with:
           api-url: ${{ secrets.GHOST_ADMIN_API_URL }}

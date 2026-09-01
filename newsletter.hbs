@@ -1,0 +1,70 @@
+{{!< default}}
+
+{{!-- /newsletter — issues plus the pitch. Split hero: copy left,
+signup card right (the blog hero's louder sibling). --}}
+
+<section class="newsletter-hero outer relative">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="newsletter-hero-inner inner">
+        <div>
+            <span class="kicker">{{> "icons/newspaper"}} {{t "Newsletter"}}</span>
+            {{#page}}
+                <h1>{{title}}</h1>
+                <p class="blog-hero-desc">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{@site.description}}{{/if}}</p>
+            {{else}}
+                <h1>{{t "The newsletter"}}</h1>
+                <p class="blog-hero-desc">{{@site.description}}</p>
+            {{/page}}
+        </div>
+
+        {{!-- The latest issue, framed as the email it was --}}
+        {{#get "posts" filter="tag:hash-newsletter-col" limit="1" as |latest|}}
+            {{#if latest}}
+                <aside class="mail-window">
+                    <div class="mail-window-bar">
+                        <span></span><span></span><span></span>
+                        <em>{{t "Inbox"}}</em>
+                    </div>
+                    {{#foreach latest limit="1"}}
+                        <div class="mail-window-head">
+                            <div><dt>{{t "From"}}</dt><dd>{{@site.title}} &lt;hello@namastesalesforce.com&gt;</dd></div>
+                            <div><dt>{{t "To"}}</dt><dd>{{t "you@example.com"}}</dd></div>
+                            <div><dt>{{t "Subject"}}</dt><dd><strong>{{title}}</strong></dd></div>
+                        </div>
+                        <div class="mail-window-body">
+                            <p>{{excerpt words="40"}}</p>
+                            <a class="mail-window-more" href="{{url}}">{{t "Read the full issue"}} {{> "icons/arrow-right"}}</a>
+                        </div>
+                    {{/foreach}}
+                    {{#if @site.members_enabled}}
+                        {{^if @member}}
+                            <div class="mail-window-foot">
+                                <a class="btn" href="#/portal/signup" data-portal="signup">{{> "icons/mail"}} {{t "Get this in your inbox"}}</a>
+                            </div>
+                        {{/if}}
+                    {{/if}}
+                </aside>
+            {{/if}}
+        {{/get}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner inner-narrow">
+        <ol class="issue-list">
+            {{#foreach posts}}
+                <li class="issue-item">
+                    <a href="{{url}}">
+                        <span class="issue-date">{{date format="DD MMM YYYY"}}</span>
+                        <span class="issue-body">
+                            <span class="issue-title">{{title}}</span>
+                            {{#if custom_excerpt}}<span class="issue-excerpt">{{custom_excerpt}}</span>{{/if}}
+                        </span>
+                        {{> "icons/arrow-right"}}
+                    </a>
+                </li>
+            {{/foreach}}
+        </ol>
+        {{pagination}}
+    </div>
+</main>

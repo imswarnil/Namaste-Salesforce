@@ -1,56 +1,225 @@
 {{!< default}}
-{{!-- ══════════════════════════════════════════════════════════════════════
-     home.hbs — COMPOSITION ONLY.
-     ------------------------------------------------------------------------
-     Every band is a partial in partials/home/. This file says what the page
-     is made of and in what order; nothing about how any of it looks, and no
-     copy of its own.
 
-     THE ORDER IS AN ARGUMENT, read top to bottom:
-       hero          what this is, and the ask
-       training-cta  the one thing to do next — into /training/
-       latest        the writing itself
-       cta           the ask again, once, at the end
+{{!-- THE HOMEPAGE. Mounted as a static route (routes.yaml) with
+`data: page.home`, so {{#page}} is the Ghost page with slug
+"home": its title/excerpt feed the hero, its meta feeds SEO, and
+its code injection — which Ghost skips for route data sources —
+is re-emitted into the head/foot blocks here.
 
-     ── IT USED TO BE TWELVE BANDS, AND THAT WAS THE PROBLEM ─────────────────
-     mission, path, courses, pace, shipped, topics, stats, marquee and follow
-     were all here. Every one of them was defensible on its own and together
-     they made a page that said the same thing nine ways before the reader
-     reached anything they could actually read. A homepage with nine arguments
-     has none.
+Every number and card below is queried live; nothing on this
+page goes stale when content changes. --}}
 
-     What is left is the shape of the site: here is what this is, here is the
-     training, here is the writing, here is the ask. The curriculum argues for
-     itself on /training/ — which now has the Sections map and the real
-     modules — and the writing argues for itself on /blog/.
+{{#page}}
+    {{#if codeinjection_head}}{{#contentFor "head"}}{{{codeinjection_head}}}{{/contentFor}}{{/if}}
+    {{#if codeinjection_foot}}{{#contentFor "foot"}}{{{codeinjection_foot}}}{{/contentFor}}{{/if}}
+{{/page}}
 
-     ⚠ THE REMOVED PARTIALS STILL EXIST in partials/home/ and are not
-     deprecated. They are bands this page no longer runs, not dead code: a
-     campaign page or a future /about/ can compose them without rebuilding
-     anything. Deleting them is a separate decision from not rendering them.
+{{!-- Hero --}}
+<section class="home-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="home-hero-grid inner">
 
-     The marquee sits near the FOOT deliberately. It is a personal aside on a
-     site that is otherwise about the reader, and two bands in it interrupted
-     the value proposition before the value proposition had been made.
+        <div class="home-hero-copy">
+            <span class="home-hero-badge">
+                {{> "icons/sparkles"}}
+                {{t "Learn Salesforce, hands-on"}}
+            </span>
 
-     BACKGROUNDS ALTERNATE — default, sunken, default. Two sunken bands next
-     to each other read as one long section with a seam in it, and a run of
-     five default ones reads as an undifferentiated scroll. Because every
-     data-driven band hides itself when empty, the alternation is written for
-     the CURRENT state (no posts): hero, mission, path, courses, pace,
-     marquee, follow, cta. Re-check it when the first posts land.
+            {{#page}}
+                <h1>{{title}}</h1>
+                <p class="home-hero-sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{@site.description}}{{/if}}</p>
+            {{else}}
+                <h1>{{t "Say namaste to"}} <em>Salesforce</em></h1>
+                <p class="home-hero-sub">{{@site.description}}</p>
+            {{/page}}
 
-     There is no testimonial band. A site with no learners has no testimonial
-     to borrow, and an invented one is the fastest way to lose the trust the
-     rest of the page is building — mission takes that slot instead.
+            <div class="home-hero-actions">
+                <a class="btn btn-lg" href="{{@site.url}}/courses/">
+                    {{> "icons/graduation-cap"}}
+                    {{t "Browse courses"}}
+                </a>
+                <a class="btn btn-lg btn-ghost" href="{{@site.url}}/training/">
+                    {{> "icons/layers"}}
+                    {{t "Explore training"}}
+                </a>
+            </div>
 
-     Every DATA-driven band hides itself when its data is absent, so a site
-     with nothing published still renders a complete page. The two marked
-     DUMMY do not, because they have no data to be absent — which is exactly
-     how you will find them again when it is time to replace them.
-     ══════════════════════════════════════════════════════════════════════ --}}
-{{> "page/injection"}}
-{{> "home/hero"}}
-{{> "home/training-cta"}}
-{{> "home/latest"}}
-{{> "home/cta"}}
+            <ul class="home-hero-points">
+                <li>{{> "icons/check-circle"}} {{t "Free forever"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "Built in a real org"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "No slideware"}}</li>
+            </ul>
+        </div>
+
+        {{!-- The showcase panel: the featured (or first) course,
+        rendered live, with a floating video chip. --}}
+        {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags" order="featured desc, published_at asc" limit="1" as |star|}}
+            {{#if star}}
+                <div class="home-hero-panel">
+                    {{#foreach star}}
+                        {{> "card-course"}}
+                    {{/foreach}}
+                    {{#get "posts" filter="tag:hash-video-col" limit="1" as |v|}}
+                        {{#if v}}
+                            <a class="home-hero-float" href="{{v.[0].url}}">
+                                {{> "icons/play-circle"}}
+                                <span>
+                                    <strong>{{t "Latest video"}}</strong>
+                                    {{v.[0].title}}
+                                </span>
+                            </a>
+                        {{/if}}
+                    {{/get}}
+                </div>
+            {{/if}}
+        {{/get}}
+
+    </div>
+
+    <div class="inner">
+        {{!-- Live counts — limit 1, we only want pagination.total --}}
+        <div class="home-stats">
+            {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" limit="1" as |items counts|}}
+                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
+            {{/get}}
+            {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]" limit="1" as |items counts|}}
+                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Lessons"}}</span></div>
+            {{/get}}
+            {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |items counts|}}
+                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Training pages"}}</span></div>
+            {{/get}}
+            {{#get "posts" filter="tag:hash-blog-col" limit="1" as |items counts|}}
+                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Articles"}}</span></div>
+            {{/get}}
+        </div>
+
+    </div>
+</section>
+
+{{!-- Why here --}}
+<section class="section outer">
+    <div class="inner">
+        <div class="home-props">
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/graduation-cap"}}</span>
+                <h3>{{t "Structured courses"}}</h3>
+                <p>{{t "Lesson-by-lesson paths with a clear finish line — start at one, end with something working in your own org."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/layers"}}</span>
+                <h3>{{t "Practical training"}}</h3>
+                <p>{{t "Modular reference you can work straight through: the patterns, conventions and setups real projects run on."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/pen"}}</span>
+                <h3>{{t "Honest writing"}}</h3>
+                <p>{{t "Notes from the ecosystem — releases that matter, certifications that don't, and decisions explained."}}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{!-- Courses --}}
+{{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags,authors" order="published_at asc" limit="3" as |courses|}}
+    {{#if courses}}
+        <section class="section section-alt outer">
+            <div class="inner">
+                <div class="section-head">
+                    <div>
+                        <span class="kicker">{{> "icons/graduation-cap"}} {{t "Courses"}}</span>
+                        <h2>{{t "Pick a path, ship a thing"}}</h2>
+                        <p>{{t "Every course ends with something real running in your own Developer Edition org."}}</p>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/courses/">{{t "All courses"}} {{> "icons/arrow-right"}}</a>
+                </div>
+                <div class="card-grid">
+                    {{#foreach courses}}
+                        {{> "card-course"}}
+                    {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Training modules — a taste of the first two --}}
+<section class="section outer">
+    <div class="inner">
+        <div class="section-head">
+            <div>
+                <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
+                <h2>{{t "Reference you can work through"}}</h2>
+                <p>{{t "Self-contained modules — each one a topic, each page a step."}}</p>
+            </div>
+            <a class="section-more" href="{{@site.url}}/training/">{{t "All modules"}} {{> "icons/arrow-right"}}</a>
+        </div>
+        <div class="training-grid">
+            {{> "module-grid" moduleLimit="2"}}
+        </div>
+    </div>
+</section>
+
+{{!-- Videos --}}
+{{#get "posts" filter="tag:hash-video-col" include="tags" limit="3" as |vids|}}
+    {{#if vids}}
+        <section class="section outer">
+            <div class="inner">
+                <div class="section-head">
+                    <div>
+                        <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
+                        <h2>{{t "Watch it get built"}}</h2>
+                        <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
+                </div>
+                <div class="card-grid">
+                    {{#foreach vids}}
+                        {{> "card-video"}}
+                    {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Latest writing --}}
+{{#get "posts" filter="tag:hash-blog-col" include="tags,authors" limit="3" as |articles|}}
+    {{#if articles}}
+        <section class="section section-alt outer">
+            <div class="inner">
+                <div class="section-head">
+                    <div>
+                        <span class="kicker">{{> "icons/pen"}} {{t "Blog"}}</span>
+                        <h2>{{t "Latest from the blog"}}</h2>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/blog/">{{t "All articles"}} {{> "icons/arrow-right"}}</a>
+                </div>
+                <div class="card-grid">
+                    {{#foreach articles}}
+                        {{> "post-card"}}
+                    {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Closing CTA --}}
+{{#if @site.members_enabled}}
+<section class="section outer">
+    <div class="inner">
+        <div class="home-cta">
+            <h2>{{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "Start your Salesforce journey today"}}{{/if}}</h2>
+            <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "Free courses, weekly notes, zero spam. Join the newsletter and learn at your own pace."}}{{/if}}</p>
+            {{#unless @member}}
+                <a class="btn btn-lg btn-inverse" href="#/portal/signup" data-portal="signup">
+                    {{> "icons/mail"}}
+                    {{t "Subscribe free"}}
+                </a>
+            {{else}}
+                <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{t "Continue learning"}} {{> "icons/arrow-right"}}</a>
+            {{/unless}}
+        </div>
+    </div>
+</section>
+{{/if}}

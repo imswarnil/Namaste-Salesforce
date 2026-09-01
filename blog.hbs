@@ -1,44 +1,96 @@
 {{!< default}}
-{{!-- ══════════════════════════════════════════════════════════════════════
-     blog.hbs — the /blog/ index. Ported from NSDS blog-listing.html.
-     ------------------------------------------------------------------------
-     routes.yaml mounts the catch-all collection here, so this is the listing
-     for EVERY post until a narrower collection claims some of them. Posts
-     themselves still live at /{slug}/ — the mount moved, the permalink did
-     not; see the note in routes.yaml.
 
-     ── WHY THIS EXISTS RATHER THAN JUST USING index.hbs ─────────────────────
-     index.hbs stays as Ghost's generic fallback for anything routes.yaml does
-     not name, and it is deliberately plain. This one is allowed to be the
-     blog's own front page — its own heading, its own feed link, its own empty
-     state — without that styling leaking onto every unrouted listing.
+{{!-- /blog — split hero (copy + subscribe card), topic strip,
+then a proper two-column page: the feed beside a sidebar of
+widgets (sponsor, newsletter, topics). Newest post goes
+full-width above the grid on page one. --}}
 
-     THE SIDEBAR IS A POST-LEVEL DECISION, NOT A LISTING ONE. #hide-sidebar
-     applies to a single post's reading page (partials/post/article.hbs); an
-     index has no article to sit beside. A listing that grew a sidebar would
-     be competing with its own grid for the same horizontal space.
-     ══════════════════════════════════════════════════════════════════════ --}}
-{{> "page/injection"}}
-<section class="ns-band ns-band--tight">
-    <div class="ns-band__inner">
-        <div class="ns-band__head ns-band__head--between">
-            <div>
-                <span class="ns-kicker">{{t "Writing"}}</span>
-                <h1 class="ns-band__title">{{t "The blog"}}</h1>
-                <p class="ns-band__lede">{{t "Lessons, teardowns and notes from building on the platform — written as they ship."}}</p>
-            </div>
-            <div class="ns-band__actions">
-                <a class="ns-btn ns-btn--outline ns-btn--sm" href="{{@site.url}}/blog/rss/">{{> "icons/rss"}} RSS</a>
-            </div>
+<section class="blog-hero outer relative">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="blog-hero-inner inner">
+
+        <div>
+            <span class="kicker">{{> "icons/pen"}} {{t "Blog"}}</span>
+            {{#page}}
+                <h1>{{title}}</h1>
+                <p class="blog-hero-desc">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{@site.description}}{{/if}}</p>
+            {{else}}
+                <h1>{{t "Notes from the ecosystem"}}</h1>
+                <p class="blog-hero-desc">{{@site.description}}</p>
+            {{/page}}
+
+            {{!-- Topic cloud lives in the hero now --}}
+            {{#get "tags" filter="visibility:public" order="count.posts desc" include="count.posts" limit="8" as |topics|}}
+                {{#if topics}}
+                    <ul class="tag-cloud blog-hero-topics">
+                        {{#foreach topics}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}
+                    </ul>
+                {{/if}}
+            {{/get}}
         </div>
 
-        {{#if posts}}
-            <div class="ns-blog-grid">
-                {{#foreach posts}}{{> "post-card"}}{{/foreach}}
-            </div>
-            {{> "pagination"}}
-        {{else}}
-            {{> "empty" title=(t "Nothing published yet")}}
+        {{#if @site.members_enabled}}
+            <aside class="blog-hero-cta">
+                <h3>{{> "icons/mail"}} {{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "The weekly namaste"}}{{/if}}</h3>
+                <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "New articles, lessons and release notes that matter — in your inbox, free."}}{{/if}}</p>
+                {{#unless @member}}
+                    <div class="subscribe-row">
+                        <span class="fake-input" data-portal="signup">{{t "you@example.com"}}</span>
+                        <a class="btn" href="#/portal/signup" data-portal="signup">{{t "Subscribe"}}</a>
+                    </div>
+                    <p class="members-note">{{t "No spam. Unsubscribe anytime."}}</p>
+                {{else}}
+                    <p class="members-note">{{> "icons/check-circle"}} {{t "You're subscribed — thank you!"}}</p>
+                {{/unless}}
+            </aside>
         {{/if}}
+
     </div>
 </section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+        <div class="listing-grid">
+
+            <div class="listing-main">
+                <div class="card-grid">
+                    {{#foreach posts}}
+                        {{#if @first}}
+                            {{#match pagination.page 1}}
+                                {{> "post-card" feature=true}}
+                            {{else}}
+                                {{> "post-card"}}
+                            {{/match}}
+                        {{else}}
+                            {{> "post-card"}}
+                        {{/if}}
+                    {{/foreach}}
+                </div>
+                {{pagination}}
+            </div>
+
+            <aside class="listing-aside">
+                {{> "widgets/sponsor"}}
+                {{#if @site.members_enabled}}
+                    {{^if @member}}
+                        {{> "widgets/newsletter"}}
+                    {{/if}}
+                {{/if}}
+                {{#get "posts" filter="tag:hash-video-col" limit="1" as |v|}}
+                    {{#if v}}
+                        <div class="widget">
+                            <h4 class="widget-title">{{> "icons/video"}} {{t "Latest video"}}</h4>
+                            <a class="widget-video" href="{{v.[0].url}}">
+                                {{#if v.[0].feature_image}}
+                                    <img src="{{img_url v.[0].feature_image size="m"}}" alt="{{v.[0].title}}" loading="lazy" />
+                                {{/if}}
+                                <span class="widget-post-title">{{v.[0].title}}</span>
+                            </a>
+                        </div>
+                    {{/if}}
+                {{/get}}
+            </aside>
+
+        </div>
+    </div>
+</main>

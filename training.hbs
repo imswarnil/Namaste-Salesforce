@@ -1,67 +1,24 @@
 {{!< default}}
-{{!-- ══════════════════════════════════════════════════════════════════════
-     training.hbs — the /training/ landing page.
-     Ported from NS-Design-System/templates/training-index.html.
-     ------------------------------------------------------------------------
-     EVERY WORD AND EVERY MODULE ON THIS PAGE COMES FROM GHOST. There is no
-     curriculum data in this theme and there must not be: modules and lessons
-     are POSTS, written in Admin, and the whole point of the model in
-     abstract/01-content-model.md is that adding one is Ghost-Admin-only work.
 
-     ⚠ An earlier version of this file shipped the curriculum as JSON in
-     assets/data/ and compiled it into generated templates at build time. That
-     was wrong in the way that matters: it put content in the repo, so adding
-     a lesson meant a commit and a deploy. It is recorded here only so nobody
-     reinvents it.
+{{!-- /training — modules discovered from content. A module IS a
+public tag: every training post's primary tag names the module it
+belongs to, the tag's description is the module's blurb, and
+partials/module-grid.hbs does the discovery. Publish a post with
+a new primary tag and a new module card appears here. --}}
 
-     ── WHAT BACKS THIS PAGE ─────────────────────────────────────────────────
-     Nothing, directly — there is ONE training, so it has no post of its own.
-     A Ghost PAGE with slug `training` supplies the title and lede if one
-     exists; without it the page falls back to its own copy below, so the URL
-     works on a fresh install.
+<section class="training-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="inner relative">
+        <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
+        <h1>{{t "Training modules"}}</h1>
+        <p>{{t "Self-contained modules you can work straight through — each one a topic, each page a step, in reading order."}}</p>
+    </div>
+</section>
 
-     The MODULES are discovered: posts tagged #training-module, ordered
-     published_at asc. Backdate a module post to move it earlier.
-
-     ── THE BAND ORDER IS UPSTREAM'S, AND IT IS AN ARGUMENT ──────────────────
-     NS-Design-System/templates/training-index.html sequences the page so it
-     answers, in order:
-
-       01 thero    what is this, and how do I search it
-       02 sections what it will COVER          <- training/sections (copy)
-       03 modules  what is written TODAY       <- training/modules  (GHOST)
-
-     ⚠ THERE IS NO "FOUR STAGES" BAND, AND THAT IS DELIBERATE. Upstream's §02
-     is a .ns-path of four stages ("each ending where the next begins") and it
-     was here. It went because it said the same thing as the Sections grid
-     directly under it — six cards naming the same territory — so the page
-     made its map twice, in two shapes, and the reader had to work out whether
-     they were the same list. Sections survived because it is the one that
-     pairs with the real modules below it. The band still exists as
-     partials/home/path.hbs if it is ever wanted back.
-       04 tiers    what does it cost           <- training/tiers   (copy)
-       05 pace     how long will it take       <- training/pace    (copy)
-       06 people   who maintains it            <- training/people  (GHOST)
-       07 cta      the one closer              <- home/cta
-
-     Upstream's §03 is a grid of static track cards. Here that slot is the
-     REAL curriculum from Ghost, which is the one deliberate divergence: a
-     hand-written grid of tracks would be the same content-in-the-theme
-     mistake the modules band exists to avoid.
-
-     ── WHICH BANDS MAY HOLD COPY, AND WHICH MAY NOT ─────────────────────────
-     path, tiers and pace are MARKETING bands - editorial claims about how the
-     material is organised, what it costs and how long it takes, exactly like
-     every partial in partials/home/. They carry copy and are marked DUMMY.
-
-     modules and people are CONTENT and come from Ghost. Nothing about the
-     curriculum or the authors is ever written into a template. If you are
-     about to type a module name into a .hbs file, that is the line.
-
-     ── `hash-training-module`, NOT `#training-module` ───────────────────────
-     In a FILTER STRING Ghost writes an internal tag with a `hash-` prefix.
-     `tag:#training-module` matches nothing, silently, and an empty curriculum
-     looks exactly like a curriculum that has not been written yet.
-     ══════════════════════════════════════════════════════════════════════ --}}
-{{> "page/injection"}}
-{{> "training/index"}}
+<main id="site-main" class="training-main outer">
+    <div class="inner">
+        <div class="training-grid">
+            {{> "module-grid" moduleLimit="30"}}
+        </div>
+    </div>
+</main>

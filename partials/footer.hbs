@@ -1,0 +1,68 @@
+{{!-- Footer: brand + tagline, the two Ghost navigations as link
+columns, social row, legal line. Always dark navy — the one
+surface that doesn't flip with the theme. --}}
+
+<footer class="site-foot outer">
+    <div class="site-foot-inner inner">
+
+        <div class="site-foot-grid">
+
+            <div class="site-foot-brand">
+                <a class="site-head-logo" href="{{@site.url}}">
+                    {{#if @site.logo}}
+                        {{#if @custom.dark_logo}}
+                            <img class="logo-dark" src="{{@custom.dark_logo}}" alt="{{@site.title}}" />
+                        {{else}}
+                            <img class="logo-invertible" src="{{@site.logo}}" alt="{{@site.title}}" />
+                        {{/if}}
+                    {{else}}
+                        {{@site.title}}
+                    {{/if}}
+                </a>
+                <p class="site-foot-tagline">
+                    {{#if @custom.footer_tagline}}{{@custom.footer_tagline}}{{else}}{{@site.description}}{{/if}}
+                </p>
+                <div class="site-foot-social">
+                    {{#social_accounts @site}}
+                        <a href="{{href}}" target="_blank" rel="noopener" aria-label="{{name}}">
+                            {{#> (concat "icons/" type)}}<span>{{name}}</span>{{/undefined}}
+                        </a>
+                    {{/social_accounts}}
+                    {{#if @custom.social_youtube}}
+                        <a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube">{{> "icons/youtube"}}</a>
+                    {{/if}}
+                    {{#if @custom.social_linkedin}}
+                        <a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a>
+                    {{/if}}
+                    {{#if @custom.social_github}}
+                        <a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub">{{> "icons/github"}}</a>
+                    {{/if}}
+                    {{#if @custom.social_instagram}}
+                        <a href="{{@custom.social_instagram}}" target="_blank" rel="noopener" aria-label="Instagram">{{> "icons/instagram"}}</a>
+                    {{/if}}
+                    <a href="{{@site.url}}/rss/" target="_blank" rel="noopener" aria-label="RSS">
+                        {{> "icons/rss"}}
+                    </a>
+                </div>
+            </div>
+
+            <nav class="site-foot-nav" aria-label="{{t "Explore"}}">
+                <h4>{{t "Explore"}}</h4>
+                {{navigation isFooter=true}}
+            </nav>
+
+            <nav class="site-foot-nav" aria-label="{{t "More"}}">
+                <h4>{{t "More"}}</h4>
+                {{navigation type="secondary" isFooter=true}}
+                <ul><li><a href="{{@site.url}}/llms/">llms.txt</a></li></ul>
+            </nav>
+
+        </div>
+
+        <div class="site-foot-legal">
+            <span>&copy; {{date format="YYYY"}} <a href="{{@site.url}}">{{@site.title}}</a>. {{t "All rights reserved."}}</span>
+            <a href="https://ghost.org/" target="_blank" rel="noopener">{{t "Powered by Ghost"}}</a>
+        </div>
+
+    </div>
+</footer>

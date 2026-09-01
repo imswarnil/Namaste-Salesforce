@@ -1,0 +1,195 @@
+/*  1-base / content — the article body (.gh-content)
+    ============================================================
+
+    Everything the Ghost editor can produce, styled once and
+    shared by every reading surface: blog posts, course pages,
+    lessons, training content, static pages.
+
+    Ghost injects its own card CSS for complex cards
+    (card_assets: true in package.json); this file sets the
+    rhythm, measures and the pieces Ghost leaves to the theme.
+    ------------------------------------------------------------ */
+
+.gh-content {
+    font-size: 1.75rem;
+    line-height: 1.7;
+    word-break: break-word;
+}
+
+.gh-content > * + * {
+    margin-top: 2.2rem;
+}
+
+.gh-content > h2 { margin-top: 4.8rem; }
+.gh-content > h3 { margin-top: 3.6rem; }
+.gh-content > h4 { margin-top: 2.8rem; }
+
+.gh-content > h2 + *, .gh-content > h3 + *, .gh-content > h4 + * {
+    margin-top: 1.4rem;
+}
+
+.gh-content a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mod(#0176d3 a(35%));
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.15s ease;
+}
+
+.gh-content a:hover {
+    text-decoration-color: currentColor;
+}
+
+.gh-content ul, .gh-content ol {
+    padding-left: 2.4rem;
+}
+
+.gh-content li + li {
+    margin-top: 0.7rem;
+}
+
+.gh-content li::marker {
+    color: var(--accent);
+}
+
+.gh-content blockquote {
+    padding: 0.4rem 0 0.4rem 2rem;
+    border-left: 3px solid var(--accent);
+    font-size: 1.9rem;
+    color: var(--heading);
+}
+
+.gh-content blockquote.kg-blockquote-alt {
+    border: none;
+    padding: 0;
+    text-align: center;
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.gh-content code {
+    padding: 0.2em 0.45em;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    color: var(--heading);
+}
+
+.gh-content pre {
+    padding: 2rem 2.4rem;
+    overflow-x: auto;
+    font-size: 1.4rem;
+    line-height: 1.7;
+    background: var(--gray-950);
+    color: var(--gray-100);
+    border-radius: var(--radius);
+}
+
+html[data-theme="dark"] .gh-content pre {
+    border: 1px solid var(--border-soft);
+}
+
+.gh-content pre code {
+    padding: 0;
+    font-size: inherit;
+    background: none;
+    border: none;
+    color: inherit;
+}
+
+.gh-content hr {
+    margin-top: 4.8rem;
+    margin-bottom: 2.6rem;
+}
+
+.gh-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.5rem;
+}
+
+.gh-content th, .gh-content td {
+    padding: 1rem 1.4rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.gh-content th {
+    font-weight: 600;
+    color: var(--heading);
+    font-size: 1.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.gh-content img {
+    border-radius: var(--radius);
+}
+
+.gh-content figcaption {
+    margin-top: 1rem;
+    font-size: 1.35rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Ghost image-card widths. The article column is the measure;
+   wide and full step out of it. */
+.kg-width-wide {
+    position: relative;
+    width: min(var(--measure-wide), 92vw);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.kg-width-full {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.kg-width-full img {
+    border-radius: 0;
+}
+
+/* Cards that arrive with their own chrome get the house radius */
+.kg-card.kg-embed-card iframe {
+    border-radius: var(--radius);
+}
+
+.gh-content .kg-callout-card {
+    border-radius: var(--radius);
+}
+
+.gh-content .kg-bookmark-container {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: none;
+    transition: border-color 0.15s ease;
+}
+
+.gh-content .kg-bookmark-container:hover {
+    border-color: var(--accent);
+}
+
+.gh-content .kg-button-card .kg-btn {
+    border-radius: var(--radius-sm);
+}
+
+/* Headings get hover anchors when toc.js has stamped ids */
+.gh-content .heading-anchor {
+    margin-left: 0.4em;
+    opacity: 0;
+    font-weight: 400;
+    text-decoration: none;
+    color: var(--text-faint);
+    transition: opacity 0.15s ease;
+}
+
+.gh-content h2:hover .heading-anchor,
+.gh-content h3:hover .heading-anchor {
+    opacity: 1;
+}

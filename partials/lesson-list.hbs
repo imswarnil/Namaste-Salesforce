@@ -1,0 +1,21 @@
+{{!-- The ordered lesson list for the player rail. Rendered twice
+(desktop rail + mobile collapsible) so it lives once here.
+Params: currentSlug. Context: the lesson post (primary_tag is the
+course). --}}
+{{#primary_tag}}
+    {{#> "with-this" courseTag=. currentSlug=../currentSlug}}
+        {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{courseTag.slug}}" order="published_at asc" limit="100" include="tags" as |lessons total|}}
+            <span class="player-rail-count">{{total.total}} {{t "lessons"}}</span>
+            <ol class="player-list">
+                {{#foreach lessons}}
+                    <li class="{{#match slug ../../currentSlug}}is-current{{/match}}">
+                        <a href="{{url}}"{{#match slug ../../currentSlug}} aria-current="page"{{/match}}>
+                            <span>{{title}}</span>
+                            {{> "lesson-type-icon"}}
+                        </a>
+                    </li>
+                {{/foreach}}
+            </ol>
+        {{/get}}
+    {{/with-this}}
+{{/primary_tag}}

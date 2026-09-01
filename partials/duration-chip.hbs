@@ -1,0 +1,17 @@
+{{!-- The duration chip. One vocabulary site-wide: #duration-5m …
+#duration-55m in five-minute steps, #duration-1h-15m style for
+hours. The text is the tag's DESCRIPTION — nothing parses slugs.
+Older #lesson-duration-* / #course-duration-* tags still render,
+so imported content never breaks.
+
+Params: chipClass (optional class override — the video-card
+overlay passes its own). Context: a post with tags. --}}
+{{#foreach tags visibility="internal"}}
+    {{#match slug "~^" "hash-duration-"}}
+        {{#if description}}<span class="{{#if ../chipClass}}{{../chipClass}}{{else}}chip{{/if}}">{{> "icons/clock"}} {{description}}</span>{{/if}}
+    {{else match slug "~^" "hash-lesson-duration-"}}
+        {{#if description}}<span class="{{#if ../chipClass}}{{../chipClass}}{{else}}chip{{/if}}">{{> "icons/clock"}} {{description}}</span>{{/if}}
+    {{else match slug "~^" "hash-course-duration-"}}
+        {{#if description}}<span class="{{#if ../chipClass}}{{../chipClass}}{{else}}chip{{/if}}">{{> "icons/clock"}} {{description}}</span>{{/if}}
+    {{/match}}
+{{/foreach}}

@@ -1,0 +1,46 @@
+{{!-- Site-level structured data. One @graph: the WebSite, the
+Organization behind it, and the primary navigation spelled out
+as SiteNavigationElement items — built dynamically from Ghost's
+navigation settings, so it never drifts from the real navbar.
+Page-level types (Course, BreadcrumbList) are emitted by the
+templates that own those pages. --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebSite",
+            "@id": "{{@site.url}}/#website",
+            "url": "{{@site.url}}/",
+            "name": "{{@site.title}}",
+            "description": "{{@site.description}}",
+            "publisher": { "@id": "{{@site.url}}/#organization" }
+        },
+        {
+            "@type": "Organization",
+            "@id": "{{@site.url}}/#organization",
+            "name": "{{@site.title}}",
+            "url": "{{@site.url}}/"{{#if @site.logo}},
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{@site.logo}}"
+            }{{/if}}
+        },
+        {
+            "@type": "ItemList",
+            "@id": "{{@site.url}}/#navigation",
+            "name": "Primary navigation",
+            "itemListElement": [
+                {{#foreach @site.navigation}}
+                {
+                    "@type": "SiteNavigationElement",
+                    "position": {{@number}},
+                    "name": "{{label}}",
+                    "url": "{{#match this.url "~^" "http"}}{{this.url}}{{else}}{{@site.url}}{{this.url}}{{/match}}"
+                }{{#unless @last}},{{/unless}}
+                {{/foreach}}
+            ]
+        }
+    ]
+}
+</script>
