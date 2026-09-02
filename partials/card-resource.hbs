@@ -1,0 +1,54 @@
+{{!-- A resource card. Context: a resource post (include tags).
+
+Facets ride internal tags, surfaced as data attributes for
+filters.js: #resource-type-* (books, videos, tools, courses,
+podcasts, articles — the DESCRIPTION is the label) and
+#resource-free / #resource-paid (access). The type also picks
+the corner icon by slug suffix — the icon set's usual match
+pattern, but labels never come from slugs. --}}
+
+<article class="card resource-card" data-filter-item
+    {{~#foreach tags visibility="internal"~}}
+        {{~#match slug "~^" "hash-resource-type-"}} data-rtype="{{slug}}" data-rtype-label="{{description}}"{{/match~}}
+        {{~#match slug "hash-resource-free"}} data-raccess="{{slug}}" data-raccess-label="{{#if description}}{{description}}{{else}}Free{{/if}}"{{/match~}}
+        {{~#match slug "hash-resource-paid"}} data-raccess="{{slug}}" data-raccess-label="{{#if description}}{{description}}{{else}}Paid{{/if}}"{{/match~}}
+    {{~/foreach~}}>
+
+    <div class="card-body">
+        <div class="resource-card-head">
+            <span class="resource-card-icon">
+                {{~#foreach tags visibility="internal" limit="20"~}}
+                    {{~#match slug "hash-resource-type-books"}}{{> "icons/book-open"}}{{/match~}}
+                    {{~#match slug "hash-resource-type-videos"}}{{> "icons/video"}}{{/match~}}
+                    {{~#match slug "hash-resource-type-tools"}}{{> "icons/zap"}}{{/match~}}
+                    {{~#match slug "hash-resource-type-courses"}}{{> "icons/graduation-cap"}}{{/match~}}
+                    {{~#match slug "hash-resource-type-podcasts"}}{{> "icons/headphones"}}{{/match~}}
+                    {{~#match slug "hash-resource-type-articles"}}{{> "icons/file-text"}}{{/match~}}
+                {{~/foreach~}}
+                <span class="resource-card-icon-fallback">{{> "icons/bookmark"}}</span>
+            </span>
+            <div class="chips">
+                {{#foreach tags visibility="internal"}}
+                    {{#match slug "~^" "hash-resource-type-"}}
+                        {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                    {{/match}}
+                    {{#match slug "hash-resource-free"}}<span class="chip chip-free">{{t "Free"}}</span>{{/match}}
+                    {{#match slug "hash-resource-paid"}}<span class="chip">{{t "Paid"}}</span>{{/match}}
+                {{/foreach}}
+            </div>
+        </div>
+
+        <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
+
+        {{#if custom_excerpt}}
+            <p class="card-excerpt">{{custom_excerpt}}</p>
+        {{else if excerpt}}
+            <p class="card-excerpt">{{excerpt words="24"}}</p>
+        {{/if}}
+
+        <div class="card-meta">
+            <span>{{> "icons/external"}} {{t "View resource"}}</span>
+        </div>
+    </div>
+
+</article>

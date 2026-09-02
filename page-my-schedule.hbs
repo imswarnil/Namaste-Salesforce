@@ -1,0 +1,43 @@
+{{!< default}}
+
+{{!-- /my-schedule — when things happen. Ghost auto-picks this
+for the page with slug "my-schedule". The schedule itself is
+edited as normal page content: any TABLE in the content renders
+as the schedule board (day | time | what | where), and h2s
+split recurring vs one-off blocks. A legend of the formats sits
+on top, and the newsletter CTA closes. --}}
+
+{{#post}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/calendar"}} {{t "Schedule"}}</span>
+        <h1>{{title}}</h1>
+        {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{else}}<p>{{t "When I go live, publish and send — so you know exactly when to look."}}</p>{{/if}}
+
+        <div class="schedule-legend" aria-hidden="true">
+            <span class="chip"><span class="home-shipped-ping"></span> {{t "Live stream"}}</span>
+            <span class="chip">{{> "icons/video"}} {{t "Video"}}</span>
+            <span class="chip">{{> "icons/pen"}} {{t "Blog"}}</span>
+            <span class="chip">{{> "icons/mail"}} {{t "Newsletter"}}</span>
+        </div>
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner inner-narrow">
+        <article class="gh-content entry-content schedule-page">
+            {{content}}
+        </article>
+
+        {{#if @site.members_enabled}}
+            <div class="widget widget-newsletter" style="margin-top: 4rem;">
+                <h4 class="widget-title">{{> "icons/bell"}} {{t "Never miss a slot"}}</h4>
+                <p>{{t "The newsletter carries every schedule change and going-live note."}}</p>
+                <a class="btn" href="{{@site.url}}/signup/">{{> "icons/mail"}} {{t "Join free"}}</a>
+            </div>
+        {{/if}}
+    </div>
+</main>
+
+{{/post}}

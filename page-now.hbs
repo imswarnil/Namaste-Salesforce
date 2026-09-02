@@ -1,0 +1,72 @@
+{{!< default}}
+
+{{!-- /now — what's on the desk RIGHT NOW. Ghost auto-picks this
+for the page with slug "now".
+
+The mechanism: tag ANY post anywhere with the internal tag #now
+and it appears here, labelled by what it is — a blog post reads
+"writing", a video "filming", a course "building", a lesson
+"drafting this lesson", and so on. Untag it when it ships and it
+leaves. The page's own content renders as the intro. --}}
+
+{{#post}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker"><span class="home-shipped-ping" aria-hidden="true"></span> {{t "Now"}}</span>
+        <h1>{{title}}</h1>
+        {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{else}}<p>{{t "What I'm actually working on right now — live from the content itself."}}</p>{{/if}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner inner-narrow">
+
+        {{#if content}}
+            <div class="gh-content now-intro">
+                {{content}}
+            </div>
+        {{/if}}
+
+        {{#get "posts" filter="tag:hash-now" include="tags" limit="20" order="updated_at desc" as |doing|}}
+            {{#if doing}}
+                <ol class="now-list">
+                    {{#foreach doing}}
+                        <li class="now-item">
+                            <a href="{{url}}">
+                                <span class="now-verb">
+                                    {{#match (post_class) "~" "tag-hash-video-col"}}{{> "icons/video"}} {{t "Filming"}}
+                                    {{~else match (post_class) "~" "tag-hash-course-col"}}{{> "icons/graduation-cap"}} {{t "Building this course"}}
+                                    {{~else match (post_class) "~" "tag-hash-courses-col"}}{{> "icons/graduation-cap"}} {{t "Building this course"}}
+                                    {{~else match (post_class) "~" "tag-hash-lesson-col"}}{{> "icons/play-circle"}} {{t "Drafting this lesson"}}
+                                    {{~else match (post_class) "~" "tag-hash-lessons-col"}}{{> "icons/play-circle"}} {{t "Drafting this lesson"}}
+                                    {{~else match (post_class) "~" "tag-hash-training-col"}}{{> "icons/layers"}} {{t "Writing this module page"}}
+                                    {{~else match (post_class) "~" "tag-hash-docs-col"}}{{> "icons/layers"}} {{t "Writing this module page"}}
+                                    {{~else match (post_class) "~" "tag-hash-newsletter-col"}}{{> "icons/mail"}} {{t "Drafting this issue"}}
+                                    {{~else match (post_class) "~" "tag-hash-changelog-col"}}{{> "icons/history"}} {{t "Shipping"}}
+                                    {{~else match (post_class) "~" "tag-hash-resource-col"}}{{> "icons/bookmark"}} {{t "Curating"}}
+                                    {{~else match (post_class) "~" "tag-hash-shop-col"}}{{> "icons/gift"}} {{t "Making"}}
+                                    {{~else match (post_class) "~" "tag-hash-snippet-col"}}{{> "icons/code"}} {{t "Polishing this snippet"}}
+                                    {{~else match (post_class) "~" "tag-hash-prompt-col"}}{{> "icons/sparkles"}} {{t "Refining this prompt"}}
+                                    {{~else}}{{> "icons/pen"}} {{t "Writing"}}{{/match}}
+                                </span>
+                                <span class="now-body">
+                                    <span class="now-title">{{title}}</span>
+                                    {{#if custom_excerpt}}<span class="now-sub">{{custom_excerpt}}</span>{{/if}}
+                                </span>
+                                <time datetime="{{date updated_at format="YYYY-MM-DD"}}">{{date updated_at timeago="true"}}</time>
+                            </a>
+                        </li>
+                    {{/foreach}}
+                </ol>
+            {{else}}
+                <p class="now-quiet">{{> "icons/check-circle"}} {{t "Desk's clear — nothing tagged #now at the moment. Back soon."}}</p>
+            {{/if}}
+        {{/get}}
+
+        <p class="now-note">{{t "This page updates itself: anything on the site tagged #now shows here, and leaves when it ships. Inspired by"}} <a href="https://nownownow.com/about" rel="noopener" target="_blank">nownownow.com</a>.</p>
+
+    </div>
+</main>
+
+{{/post}}

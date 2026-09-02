@@ -1,11 +1,14 @@
-// filters.js — the /courses catalogue toolbar.
+// filters.js — card-facet filtering (/courses toolbar, /resources
+// sidebar).
 //
 // The theme cannot query internal tags ({{#get "tags"}} is served
-// by Ghost's TagPublic model), so the toolbar builds itself from
-// the cards: each card carries data-level/-duration (the internal
-// tag slug) and data-*-label (the tag's description). Unique
-// values become buttons; a facet with fewer than two values stays
-// hidden — a filter that can't change anything is noise.
+// by Ghost's TagPublic model), so the controls build themselves
+// from the cards: each card carries data-{facet} (the internal
+// tag slug) and data-{facet}-label (the tag's description).
+// Unique values become buttons; a facet with fewer than two
+// values stays hidden — a filter that can't change anything is
+// noise. The bar declares its facets in data-filter-facets
+// (comma-separated; defaults to the courses pair).
 (function () {
     var bar = document.querySelector('[data-filter-bar]');
     if (!bar) return;
@@ -14,8 +17,10 @@
     var empty = document.querySelector('[data-filter-empty]');
     var active = {}; // facet → value
 
+    var facets = (bar.getAttribute('data-filter-facets') || 'level,duration').split(',');
+
     var anyGroup = false;
-    ['level', 'duration'].forEach(function (facet) {
+    facets.forEach(function (facet) {
         var group = bar.querySelector('[data-filter-group="' + facet + '"]');
         if (!group) return;
 

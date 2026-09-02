@@ -164,6 +164,42 @@ tag("#changelog-type-improvement", "changelog-type-improvement", "Improvement")
 tag("#changelog-type-fix", "changelog-type-fix", "Fix")
 tag("#changelog-type-content", "changelog-type-content", "Content")
 
+# new collections: resources, shop, snippets, prompts — plus #now,
+# which surfaces any tagged post on /now while it's in progress
+tag("#resource-col", "resource-col", "Marks a post as a resource")
+tag("#shop-col", "shop-col", "Marks a post as a shop item")
+tag("#snippet-col", "snippet-col", "Marks a post as a code snippet")
+tag("#prompt-col", "prompt-col", "Marks a post as an AI prompt")
+tag("#now", "now", "Shows this post on /now while it's being worked on")
+
+# resource facets — the /resources filter sidebar builds from these;
+# the DESCRIPTION is the button label
+tag("#resource-type-books", "resource-type-books", "Book")
+tag("#resource-type-videos", "resource-type-videos", "Video")
+tag("#resource-type-tools", "resource-type-tools", "Tool")
+tag("#resource-type-courses", "resource-type-courses", "Course")
+tag("#resource-type-podcasts", "resource-type-podcasts", "Podcast")
+tag("#resource-type-articles", "resource-type-articles", "Article")
+tag("#resource-free", "resource-free", "Free")
+tag("#resource-paid", "resource-paid", "Paid")
+
+# shop facets — price is the DESCRIPTION, never the slug
+tag("#shop-free", "shop-free", "Free")
+tag("#shop-price-9", "shop-price-9", "$9")
+tag("#shop-price-19", "shop-price-19", "$19")
+tag("#shop-price-29", "shop-price-29", "$29")
+
+# snippet languages
+tag("#snippet-lang-apex", "snippet-lang-apex", "Apex")
+tag("#snippet-lang-soql", "snippet-lang-soql", "SOQL")
+tag("#snippet-lang-flow", "snippet-lang-flow", "Flow")
+tag("#snippet-lang-js", "snippet-lang-js", "JavaScript")
+
+# what a prompt is for
+tag("#prompt-for-agentforce", "prompt-for-agentforce", "Agentforce")
+tag("#prompt-for-claude", "prompt-for-claude", "Claude")
+tag("#prompt-for-chatgpt", "prompt-for-chatgpt", "ChatGPT")
+
 # public: the course's own tag, module tags, topics
 tag("Flow Automation Masterclass", "flow-automation-masterclass",
     "Everything about Flow, from trigger order to error handling.", "public")
@@ -200,8 +236,8 @@ def post(title, slug, tag_slugs, excerpt, sections, hours,
         posts_tags.append({"id": oid(), "post_id": pid,
                            "tag_id": tag_ids[ts_slug], "sort_order": order})
 
-def page(title, slug, excerpt, sections, hours):
-    post(title, slug, [], excerpt, sections, hours, kind="page")
+def page(title, slug, excerpt, sections, hours, lead=None):
+    post(title, slug, [], excerpt, sections, hours, kind="page", lead=lead)
 
 # THE COURSE — slug equals its public tag's slug; lessons carry
 # that tag FIRST (primary), which is the whole nesting mechanism.
@@ -422,6 +458,104 @@ for i, (title, slug, excerpt, ctype) in enumerate(changes):
           ("Why", "The problem this solves, in one honest paragraph.")],
          50 + i)
 
+# RESOURCES — curated links, each typed + free/paid for the sidebar.
+resources = [
+    ("Advanced Apex Programming", "advanced-apex-programming",
+     "Still the deepest book on Apex patterns — read it after your first triggers.",
+     ["resource-type-books", "resource-paid"]),
+    ("Salesforce Developer Docs", "salesforce-developer-docs",
+     "The primary source. Learn to read it before any course, including mine.",
+     ["resource-type-articles", "resource-free"]),
+    ("Workbench", "workbench-tool",
+     "The Swiss-army knife for SOQL, metadata and REST exploring — free and ancient and perfect.",
+     ["resource-type-tools", "resource-free"]),
+    ("Apex Hours", "apex-hours",
+     "Community-run sessions on everything platform — the archive alone is a curriculum.",
+     ["resource-type-videos", "resource-free"]),
+    ("Trailhead", "trailhead",
+     "Salesforce's own hands-on learning — badges are not skills, but the practice is real.",
+     ["resource-type-courses", "resource-free"]),
+    ("Good Day, Sir!", "good-day-sir",
+     "The podcast that keeps the ecosystem honest — opinionated, funny, technical.",
+     ["resource-type-podcasts", "resource-free"]),
+]
+for i, (title, slug, excerpt, extra) in enumerate(resources):
+    post(title, slug, ["resource-col"] + extra, excerpt,
+         [("Why it's here", "One honest paragraph on what this gives you and when to reach for it."),
+          ("Where to start", "The exact chapter, playlist or page to open first.")],
+         80 + i)
+
+# SHOP — digital assets; price is the tag's DESCRIPTION.
+shop_items = [
+    ("Flow Error-Handling Playbook (ebook)", "flow-error-handling-playbook",
+     "Forty pages of fault paths, retry patterns and the alerts worth waking up for.",
+     ["shop-price-19"]),
+    ("Admin's Release Notes Template", "admin-release-notes-template",
+     "The Notion + Sheets template I use to digest every Salesforce release in an hour.",
+     ["shop-free"]),
+    ("Org Health Check Notes", "org-health-check-notes",
+     "My raw working notes from twenty org audits — what to look at, in what order, and why.",
+     ["shop-price-9"]),
+    ("Namaste Ghost Theme", "namaste-ghost-theme",
+     "This very site's theme — courses, training trails, video library and all.",
+     ["shop-price-29"]),
+]
+for i, (title, slug, excerpt, extra) in enumerate(shop_items):
+    post(title, slug, ["shop-col"] + extra, excerpt,
+         [("What you get", "Exactly what's in the download, file by file."),
+          ("Who it's for", "And who should NOT buy it — honesty keeps refunds at zero.")],
+         84 + i)
+
+# SNIPPETS — small reusable code, language on the chip.
+snippets = [
+    ("Bulk-safe trigger handler skeleton", "bulk-safe-trigger-handler",
+     "The five-method handler shape that survives 200-record batches.", ["snippet-lang-apex"]),
+    ("SOQL: records modified since yesterday", "soql-modified-since-yesterday",
+     "Relative date literals beat hand-built timestamps every time.", ["snippet-lang-soql"]),
+    ("Flow formula: business days between dates", "flow-business-days-formula",
+     "No Apex, no loops — one formula resource.", ["snippet-lang-flow"]),
+    ("LWC: debounce a lightning-input", "lwc-debounce-input",
+     "Stop hammering the server on every keystroke.", ["snippet-lang-js"]),
+]
+for i, (title, slug, excerpt, extra) in enumerate(snippets):
+    post(title, slug, ["snippet-col"] + extra, excerpt,
+         [("The snippet", "The code itself lives here in a code card — copy, paste, adapt."),
+          ("Gotchas", "The one way people misuse this, and how to not.")],
+         88 + i)
+
+# PROMPTS — the AI-era toolbox.
+prompts = [
+    ("Explain this Flow like a code review", "explain-flow-code-review",
+     "Paste flow metadata, get back risks, misfires and the order-of-execution traps.",
+     ["prompt-for-claude"]),
+    ("Draft release notes from a diff", "release-notes-from-diff",
+     "Turns a messy changeset description into human release notes.",
+     ["prompt-for-chatgpt"]),
+    ("Agentforce action design rubric", "agentforce-action-rubric",
+     "Score a proposed agent action for safety, scope and rollback before building it.",
+     ["prompt-for-agentforce"]),
+    ("GTM engineer research brief", "gtm-research-brief",
+     "The prompt I use to research a market segment before building anything for it.",
+     ["prompt-for-claude"]),
+]
+for i, (title, slug, excerpt, extra) in enumerate(prompts):
+    post(title, slug, ["prompt-col"] + extra, excerpt,
+         [("The prompt", "The full prompt in a code card — copy it whole, fill the [BLANKS]."),
+          ("Why it works", "What each instruction is doing, so you can bend it.")],
+         92 + i)
+
+# #now — a few in-flight things surface on /now (tag any post with
+# #now in Admin and it appears there; untag when it ships).
+def add_now(slug):
+    for p in posts:
+        if p["slug"] == slug:
+            posts_tags.append({"id": oid(), "post_id": p["id"],
+                               "tag_id": tag_ids["now"], "sort_order": 99})
+            return
+add_now("state-of-salesforce-careers-2026")
+add_now("watch-a-deployment-end-to-end")
+add_now("gtm-research-brief")
+
 # EDITOR-CONTROLLED PAGES — everything the routes and the More
 # dropdown point at. All plain pages, all editable in Ghost Admin.
 page("Namaste Salesforce", "home",
@@ -450,6 +584,38 @@ page("Contact", "contact",
      "Questions, corrections, ideas — we read everything.",
      [("Email", "Write to hello@namastesalesforce.com and expect a reply within two working days."),
       ("Corrections", "Spotted something wrong in a lesson? Tell us which page and what you expected — fixes ship weekly.")], 67)
+page("Resources", "resources",
+     "Everything worth your time in one place — books, tools, videos and courses.",
+     [("About this page", "Supplies the resources hero via data: page.resources.")], 96)
+page("Shop", "shop",
+     "Digital things I made and use — ebooks, notes, themes and kits.",
+     [("About this page", "Supplies the shop hero via data: page.shop.")], 97)
+page("Snippets", "snippets",
+     "Small pieces of code I reach for again and again.",
+     [("About this page", "Supplies the snippets hero via data: page.snippets.")], 98)
+page("Prompts", "prompts",
+     "Prompts I actually reuse — tested on real work.",
+     [("About this page", "Supplies the prompts hero via data: page.prompts.")], 99)
+page("Now", "now",
+     "What I'm actually working on right now.",
+     [("How this page works", "Anything on the site tagged #now shows up here automatically, labelled by what it is — and leaves the moment it ships.")], 100)
+page("Products I Use", "products-i-use",
+     "Every product, tool and service I actually use to build, teach and ship.",
+     [("Hardware", "The desk, the mic, the camera — what I record and build on, with one honest line each."),
+      ("Software", "Editors, terminals, design tools and the automations between them."),
+      ("Salesforce tooling", "The extensions, CLIs and inspectors open in every working session.")], 101)
+page("My Schedule", "my-schedule",
+     "When I go live, publish and send — so you know exactly when to look.",
+     [("Recurring", "The weekly rhythm above is the promise; changes land in the newsletter first."),
+      ("One-off sessions", "Special builds and live deep-dives get announced a week ahead.")], 102,
+     lead=[{"type": "html", "version": 1, "html":
+            "<table><thead><tr><th>Day</th><th>Time (IST)</th><th>What</th><th>Where</th></tr></thead>"
+            "<tbody>"
+            "<tr><td>Monday</td><td>9:00 PM</td><td>\U0001F534 Live build stream</td><td>YouTube</td></tr>"
+            "<tr><td>Wednesday</td><td>8:00 AM</td><td>New blog post</td><td>/blog/</td></tr>"
+            "<tr><td>Friday</td><td>9:00 PM</td><td>New video drops</td><td>/videos/ + YouTube</td></tr>"
+            "<tr><td>Sunday</td><td>10:00 AM</td><td>The Weekly Namaste</td><td>Your inbox</td></tr>"
+            "</tbody></table>"}])
 page("Terms & Conditions", "terms-and-conditions",
      "The short, readable version of what you agree to by using this site.",
      [("Use of content", "Courses and articles are free for personal learning. Republishing requires written permission."),
@@ -580,14 +746,21 @@ settings = [
         {"label": "Training", "url": "/training/"},
         {"label": "Videos", "url": "/videos/"},
         {"label": "Blog", "url": "/blog/"},
-        {"label": "+More", "url": "/sitemap/"},
+        {"label": "+Library", "url": "/resources/"},
+        {"label": "-Resources", "url": "/resources/"},
+        {"label": "-Snippets", "url": "/snippets/"},
+        {"label": "-Prompts", "url": "/prompts/"},
+        {"label": "-Shop", "url": "/shop/"},
         {"label": "-Newsletter", "url": "/newsletter/"},
         {"label": "-Changelog", "url": "/changelog/"},
+        {"label": "+More", "url": "/sitemap/"},
+        {"label": "-Now", "url": "/now/"},
+        {"label": "-My Schedule", "url": "/my-schedule/"},
+        {"label": "-Products I Use", "url": "/products-i-use/"},
         {"label": "-Sponsor us", "url": "/sponsor/"},
-        {"label": "-Start project", "url": "https://github.com/imswarnil"},
-        {"label": "-Sitemap", "url": "/sitemap/"},
         {"label": "-Guestbook", "url": "/guestbook/"},
         {"label": "-Contact", "url": "/contact/"},
+        {"label": "-Sitemap", "url": "/sitemap/"},
         {"label": "-Terms & Conditions", "url": "/terms-and-conditions/"},
         {"label": "-Privacy", "url": "/privacy/"},
     ])},

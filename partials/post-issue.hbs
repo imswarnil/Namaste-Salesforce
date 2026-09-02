@@ -26,6 +26,15 @@ and the pitch to get the next one by mail. Context: the post. --}}
             {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
         </header>
 
+        {{#if feature_image}}
+            <figure class="entry-figure">
+                <img src="{{img_url feature_image size="l"}}"
+                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                    loading="eager" fetchpriority="high" />
+                {{#if feature_image_caption}}<figcaption>{{{feature_image_caption}}}</figcaption>{{/if}}
+            </figure>
+        {{/if}}
+
         <section class="gh-content">
             {{content}}
         </section>
@@ -66,7 +75,7 @@ and the pitch to get the next one by mail. Context: the post. --}}
                 <div class="widget widget-newsletter">
                     <h4 class="widget-title">{{> "icons/mail"}} {{t "Next one, in your inbox"}}</h4>
                     <p>{{t "Read this on the site — or get the next issue delivered the moment it's sent."}}</p>
-                    <a class="btn" href="#/portal/signup" data-portal="signup">{{t "Subscribe free"}}</a>
+                    <a class="btn" href="{{@site.url}}/signup/">{{t "Subscribe free"}}</a>
                 </div>
             {{/if}}
         {{/if}}

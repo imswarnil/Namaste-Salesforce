@@ -31,13 +31,12 @@ mobile drawer is CSS. --}}
             {{navigation}}
         </nav>
 
+        {{!-- Actions, in the agreed order: search · theme · profile
+        (icon on mobile, the member CTA on desktop) · GitHub star
+        (labelled button on desktop, bare icon on mobile) · burger.
+        The member CTA never renders in the drawer or as a wide
+        mobile button — small screens get the avatar icon only. --}}
         <div class="site-head-actions">
-            {{#if @custom.social_github}}
-                <a class="icon-btn" href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="{{t "Start a project on GitHub"}}">
-                    {{> "icons/github"}}
-                </a>
-            {{/if}}
-
             <button class="icon-btn" data-ghost-search aria-label="{{t "Search this site"}}">
                 {{> "icons/search"}}
             </button>
@@ -49,12 +48,22 @@ mobile drawer is CSS. --}}
 
             {{#if @site.members_enabled}}
                 {{#unless @member}}
-                    <a class="btn btn-sm site-head-cta" href="{{@site.url}}/membership/">{{> "icons/star"}} {{t "Become a member"}}</a>
+                    <a class="icon-btn member-icon" href="{{@site.url}}/signin/" aria-label="{{t "Sign in"}}">
+                        {{> "icons/avatar"}}
+                    </a>
+                    <a class="btn btn-sm site-head-cta" href="{{@site.url}}/signup/">{{> "icons/star"}} {{t "Become a member"}}</a>
                 {{else}}
                     <a class="icon-btn" href="#/portal/account" data-portal="account" aria-label="{{t "Account"}}">
                         {{> "icons/avatar"}}
                     </a>
                 {{/unless}}
+            {{/if}}
+
+            {{#if @custom.social_github}}
+                <a class="btn btn-sm btn-ghost gh-star" href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="{{t "Star on GitHub"}}">
+                    {{> "icons/github"}}
+                    <span class="gh-star-label">{{t "Star"}}</span>
+                </a>
             {{/if}}
 
             <label class="nav-burger" for="nav-open" aria-label="{{t "Menu"}}">

@@ -1,0 +1,51 @@
+{{!< default}}
+
+{{!-- /prompts — AI prompts that earn their keep. Cards show the
+model/tool chip (#prompt-for-* description) and the pitch; the
+single carries the prompt itself in a code block. --}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/sparkles"}} {{t "Prompts"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+        {{else}}
+            <h1>{{t "Prompt library"}}</h1>
+            <p>{{t "Prompts I actually reuse — for building, writing and working the AI era, each tested on real work."}}</p>
+        {{/page}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+        <div class="card-grid">
+            {{#foreach posts}}
+                <article class="card prompt-card">
+                    <div class="card-body">
+                        <div class="prompt-card-head">
+                            <span class="resource-card-icon">{{> "icons/sparkles"}}</span>
+                            <div class="chips">
+                                {{#foreach tags visibility="internal"}}
+                                    {{#match slug "~^" "hash-prompt-for-"}}
+                                        {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                                    {{/match}}
+                                {{/foreach}}
+                            </div>
+                        </div>
+                        <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
+                        {{#if custom_excerpt}}
+                            <p class="card-excerpt">{{custom_excerpt}}</p>
+                        {{else if excerpt}}
+                            <p class="card-excerpt">{{excerpt words="24"}}</p>
+                        {{/if}}
+                        <div class="card-meta">
+                            <span>{{> "icons/sparkles"}} {{t "Open the prompt"}}</span>
+                        </div>
+                    </div>
+                </article>
+            {{/foreach}}
+        </div>
+        {{pagination}}
+    </div>
+</main>

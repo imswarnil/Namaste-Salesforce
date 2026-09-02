@@ -1,0 +1,43 @@
+{{!< default}}
+
+{{!-- /snippets — small reusable pieces of code. Listed as dense
+rows: language chip (#snippet-lang-* description), title, one
+line. The single carries the code itself. --}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/code"}} {{t "Snippets"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+        {{else}}
+            <h1>{{t "Snippets"}}</h1>
+            <p>{{t "Small pieces of code I reach for again and again — copy, paste, adapt."}}</p>
+        {{/page}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner inner-narrow">
+        <ol class="snippet-list">
+            {{#foreach posts}}
+                <li class="snippet-item">
+                    <a href="{{url}}">
+                        <span class="snippet-icon" aria-hidden="true">{{> "icons/code"}}</span>
+                        <span class="snippet-body">
+                            <span class="snippet-title">{{title}}</span>
+                            {{#if custom_excerpt}}<span class="snippet-sub">{{custom_excerpt}}</span>{{/if}}
+                        </span>
+                        {{#foreach tags visibility="internal"}}
+                            {{#match slug "~^" "hash-snippet-lang-"}}
+                                {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                            {{/match}}
+                        {{/foreach}}
+                        {{> "icons/arrow-right"}}
+                    </a>
+                </li>
+            {{/foreach}}
+        </ol>
+        {{pagination}}
+    </div>
+</main>

@@ -29,14 +29,25 @@
     border-bottom: 1px solid var(--border-soft);
 }
 
-/* Full-bleed bar: the header spans the whole viewport width —
-   its own padding, no .inner max-width. */
+/* Container-width bar by default; ONLY the reading frames that
+   use the full viewport (lesson player, training reader) get the
+   full-bleed variant — matched on the post's collection tag in
+   body_class. */
 .site-head-inner {
     display: flex;
     align-items: center;
     gap: 3.2rem;
     height: 100%;
-    padding: 0 max(4vmin, 24px);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 max(4vmin, 20px);
+}
+
+.tag-hash-lesson-col .site-head-inner,
+.tag-hash-lessons-col .site-head-inner,
+.tag-hash-training-col .site-head-inner,
+.tag-hash-docs-col .site-head-inner {
+    max-width: none;
 }
 
 /* Brand */
@@ -161,6 +172,52 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 
 .site-head-cta {
     margin-left: 0.6rem;
+}
+
+/* Profile icon: the mobile stand-in for the member CTA */
+.member-icon {
+    display: none;
+}
+
+/* GitHub star: labelled ghost button on desktop… */
+.gh-star {
+    gap: 0.6rem;
+}
+
+.gh-star svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+@media (max-width: 900px) {
+    .member-icon {
+        display: inline-flex;
+    }
+
+    /* …bare icon on mobile */
+    .gh-star {
+        padding: 0;
+        width: 4rem;
+        height: 4rem;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+    }
+
+    .gh-star:hover {
+        color: var(--heading);
+        background: var(--bg-alt);
+    }
+
+    .gh-star svg {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .gh-star-label {
+        display: none;
+    }
 }
 
 /* Burger — a label wired to #nav-open */

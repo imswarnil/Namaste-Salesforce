@@ -1,28 +1,52 @@
 {{!< default}}
 
-{{!-- /signup — the free account pitch + the portal signup. --}}
+{{!-- /signup — two columns: the GOOD THINGS on the left (what a
+free account actually gets you), the action card on the right —
+Ghost's native members signup form with the email input right
+here. The switch to /signin/ sits on both sides. --}}
 
-<main id="site-main" class="auth-shell outer relative">
+<main id="site-main" class="auth2 outer relative">
     <div class="bg-dots" aria-hidden="true"></div>
-    <div class="auth-card">
-        <span class="kicker">{{> "icons/sparkles"}} {{t "Free account"}}</span>
-        <h1>{{t "Join Namaste Salesforce"}}</h1>
-        <p>{{t "Everything here is free to read. An account adds the parts worth signing in for:"}}</p>
+    <div class="inner auth2-grid">
 
-        <ul class="auth-benefits">
-            <li>{{> "icons/check-circle"}} {{t "The weekly newsletter, in your inbox"}}</li>
-            <li>{{> "icons/check-circle"}} {{t "Comment on lessons and articles"}}</li>
-            <li>{{> "icons/check-circle"}} {{t "Pick up any course where you left off"}}</li>
-        </ul>
+        <div class="auth2-info" data-animate="left">
+            <span class="kicker">{{> "icons/sparkles"}} {{t "Free account"}}</span>
+            <h1>{{t "Join Namaste Salesforce"}}</h1>
+            <p class="auth2-lede">{{t "Everything here is free to read. An account adds the parts worth signing in for — and it never asks for a password."}}</p>
 
-        {{#if @member}}
-            <p class="members-note">{{> "icons/check-circle"}} {{t "You're already a member — thank you!"}}</p>
-            <a class="btn btn-lg" href="#/portal/account" data-portal="account">{{t "Open my account"}}</a>
-        {{else}}
-            <a class="btn btn-lg" href="#/portal/signup" data-portal="signup">{{> "icons/mail"}} {{t "Sign up free"}}</a>
-            <p class="auth-alt">{{t "Already have an account?"}} <a href="{{@site.url}}/signin/">{{t "Sign in"}}</a></p>
-        {{/if}}
+            <ul class="auth-benefits">
+                <li>{{> "icons/check-circle"}} {{t "The weekly newsletter, in your inbox"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "Comment on lessons, sign the guestbook"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "Pick up any course where you left off"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "First to hear when new modules ship"}}</li>
+            </ul>
 
-        <p class="auth-alt">{{t "Want to go further?"}} <a href="{{@site.url}}/membership/">{{t "See membership"}}</a></p>
+            <p class="auth-alt">{{t "Already have an account?"}} <a href="{{@site.url}}/signin/">{{t "Sign in instead"}} {{> "icons/arrow-right"}}</a></p>
+            <p class="auth-alt">{{t "Want to go further?"}} <a href="{{@site.url}}/membership/">{{t "See membership"}}</a></p>
+        </div>
+
+        <div class="auth2-card" data-animate="right">
+            {{#if @member}}
+                <span class="kicker">{{> "icons/check-circle"}} {{t "Member"}}</span>
+                <h2>{{t "You're already a member — thank you!"}}</h2>
+                <p>{{t "Manage your email, newsletter and plan from your account."}}</p>
+                <a class="btn btn-lg" href="#/portal/account" data-portal="account">{{t "Open my account"}}</a>
+            {{else}}
+                <span class="kicker">{{> "icons/gift"}} {{t "Free forever"}}</span>
+                <h2>{{t "Create your account"}}</h2>
+                <form class="signup-form" data-members-form="signup">
+                    <div class="signup-row">
+                        <input class="signup-input" data-members-email type="email" required
+                            placeholder="{{t "you@work-email.com"}}" aria-label="{{t "Your email"}}" />
+                    </div>
+                    <button class="btn btn-lg signup-btn" type="submit">{{> "icons/mail"}} {{t "Sign up free"}}</button>
+                    <p class="signup-note">{{t "One magic link, no password, unsubscribe anytime."}}</p>
+                    <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox and click the magic link."}}</p>
+                    <p class="signup-error" data-members-error></p>
+                </form>
+                <p class="auth-alt">{{t "Been here before?"}} <a href="{{@site.url}}/signin/">{{t "Sign in"}}</a></p>
+            {{/if}}
+        </div>
+
     </div>
 </main>

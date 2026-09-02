@@ -1,0 +1,52 @@
+{{!< default}}
+
+{{!-- /resources — the curated library, with a filter sidebar.
+
+Facets are INTERNAL tags (invisible to {{#get "tags"}}), so the
+sidebar builds itself from the cards' data attributes
+(filters.js, data-filter-facets="rtype,raccess"): every
+#resource-type-* present becomes a button with its description
+as label, #resource-free/-paid become the access pair. --}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/bookmark"}} {{t "Resources"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+        {{else}}
+            <h1>{{t "Resources"}}</h1>
+            <p>{{t "Everything worth your time in one place — books, tools, videos and courses, each with one honest line on why."}}</p>
+        {{/page}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner resources-layout">
+
+        <aside class="resources-side">
+            <div class="resources-side-sticky filter-sidebar" data-filter-bar data-filter-facets="rtype,raccess" hidden>
+                <div class="filter-side-group" data-filter-group="rtype" hidden>
+                    <h4 class="widget-title">{{> "icons/filter-icon"}} {{t "Type"}}</h4>
+                </div>
+                <div class="filter-side-group" data-filter-group="raccess" hidden>
+                    <h4 class="widget-title">{{> "icons/lock"}} {{t "Access"}}</h4>
+                </div>
+                <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+            </div>
+        </aside>
+
+        <div class="resources-main">
+            <div class="card-grid resources-grid">
+                {{#foreach posts}}
+                    {{> "card-resource"}}
+                {{/foreach}}
+            </div>
+            <div class="filter-empty" data-filter-empty style="display:none">
+                {{t "Nothing matches that combination — clear a filter or two."}}
+            </div>
+            {{pagination}}
+        </div>
+
+    </div>
+</main>

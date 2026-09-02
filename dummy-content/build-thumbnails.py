@@ -29,10 +29,15 @@ ICONS = {
     "video":      '<rect x="2.5" y="6" width="13.5" height="12" rx="2.4"/><path d="m16 10.4 4.3-2.6a.8.8 0 0 1 1.2.7v7a.8.8 0 0 1-1.2.7L16 13.6"/>',
     "newsletter": '<path d="M4 5.5h12.5a1.5 1.5 0 0 1 1.5 1.5v11.5H5.5A1.5 1.5 0 0 1 4 17V5.5z"/><path d="M18 8.5h1.2a1.3 1.3 0 0 1 1.3 1.3V17a1.5 1.5 0 0 1-1.5 1.5H18M7 9h5M7 12.2h8M7 15.4h8"/>',
     "changelog":  '<path d="M4 12a8 8 0 1 0 2.3-5.6L4 8.7"/><path d="M4 4.5v4.2h4.2M12 8v4.4l3 1.8"/>',
+    "resource":   '<path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-3.8L6 21V4.5a1 1 0 0 1 1-1z"/>',
+    "shop":       '<path d="M4 8.5h16v3H4zM5.5 11.5V20h13v-8.5M12 8.5V20"/><path d="M12 8.5C12 8.5 8 8.7 8 6.2 8 4.3 10.4 4.1 11.3 5.1 12 6 12 8.5 12 8.5zm0 0s0-2.5.7-3.4c.9-1 3.3-.8 3.3 1.1 0 2.5-4 2.3-4 2.3z"/>',
+    "snippet":    '<path d="m9 8-4 4 4 4M15 8l4 4-4 4"/>',
+    "prompt":     '<path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4L12 3z"/><path d="M18.5 15l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9.9-2.3z"/>',
 }
 KICKERS = {"course": "COURSE", "lesson": "LESSON", "training": "TRAINING",
            "blog": "BLOG", "video": "VIDEO", "newsletter": "NEWSLETTER",
-           "changelog": "CHANGELOG"}
+           "changelog": "CHANGELOG", "resource": "RESOURCE", "shop": "SHOP",
+           "snippet": "SNIPPET", "prompt": "PROMPT"}
 
 NAVY   = "#032d60"   # brand-800 — the flat canvas
 ACCENT = "#1b96ff"   # brand-400 — kicker + rule
@@ -45,6 +50,10 @@ def kind_of(slugs):
         "video": ("hash-video-col",),
         "newsletter": ("hash-newsletter-col",),
         "changelog": ("hash-changelog-col", "hash-feed-col"),
+        "resource": ("hash-resource-col",),
+        "shop": ("hash-shop-col",),
+        "snippet": ("hash-snippet-col",),
+        "prompt": ("hash-prompt-col",),
         "blog": ("hash-blog-col",),
     }.items():
         if any(s in slugs for s in members):

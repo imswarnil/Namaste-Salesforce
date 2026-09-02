@@ -1,0 +1,246 @@
+/*  4-templates / collections — resources, shop, snippets, prompts
+    ============================================================
+
+    /resources: filter sidebar left (filters.js builds the
+    buttons from the cards' internal-tag data attributes), grid
+    right. /shop: product cards with price chips. /snippets:
+    dense rows. /prompts: pitch cards.
+    ------------------------------------------------------------ */
+
+/*  Resources: sidebar + grid
+    ------------------------------------------------------------ */
+
+.resources-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.resources-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+}
+
+.filter-sidebar {
+    display: grid;
+    gap: 2.4rem;
+    padding: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.filter-side-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.filter-side-group .widget-title {
+    margin-bottom: 0.4rem;
+}
+
+.filter-side-group .filter-btn {
+    width: 100%;
+    text-align: left;
+}
+
+.filter-sidebar .filter-clear {
+    justify-self: start;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-faint);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    transition: color 0.15s ease;
+}
+
+.filter-sidebar .filter-clear:hover {
+    color: var(--accent);
+}
+
+.filter-sidebar:not(.has-active) .filter-clear {
+    visibility: hidden;
+}
+
+/*  Resource + prompt cards
+    ------------------------------------------------------------ */
+
+.resource-card-head,
+.prompt-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.2rem;
+}
+
+.resource-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: var(--radius);
+    color: var(--accent);
+    background: var(--accent-soft);
+    flex-shrink: 0;
+}
+
+.resource-card-icon svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* When a type icon rendered, the bookmark fallback stands down */
+.resource-card-icon > svg ~ .resource-card-icon-fallback {
+    display: none;
+}
+
+.resource-card-icon-fallback {
+    display: inline-flex;
+}
+
+.resource-card-icon-fallback svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.chip-free {
+    color: var(--success-ink);
+    background: color-mod(#2e844a a(12%));
+    border-color: color-mod(#2e844a a(28%));
+}
+
+.chip-price {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: color-mod(#0176d3 a(28%));
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.product-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.product-card-cta svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/*  Snippets: dense rows
+    ------------------------------------------------------------ */
+
+.snippet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.snippet-item + .snippet-item {
+    border-top: 1px solid var(--border-soft);
+}
+
+.snippet-item a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 1.6rem 2.2rem;
+    transition: background-color 0.15s ease;
+}
+
+.snippet-item a:hover {
+    background: var(--bg-alt);
+}
+
+.snippet-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: var(--radius-sm);
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.snippet-icon svg {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+.snippet-title {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--heading);
+    transition: color 0.15s ease;
+}
+
+.snippet-item a:hover .snippet-title {
+    color: var(--accent);
+}
+
+.snippet-sub {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.snippet-item a > svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--text-faint);
+}
+
+@media (max-width: 900px) {
+    .resources-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .resources-side-sticky {
+        position: static;
+    }
+
+    .filter-side-group {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .filter-side-group .widget-title {
+        width: 100%;
+    }
+
+    .filter-side-group .filter-btn {
+        width: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .snippet-item a {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .snippet-item a > svg,
+    .snippet-item .chip {
+        display: none;
+    }
+}

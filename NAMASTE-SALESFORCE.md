@@ -24,7 +24,27 @@ all Ghost posts. One internal tag decides everything at once:
 | `#video-col` | a library video (the embed is the page) | `/videos/{slug}/` |
 | `#newsletter-col` | a newsletter issue | `/newsletter/{slug}/` |
 | `#changelog-col` (or `#feed-col`) | a changelog entry | `/changelog/{slug}/` |
+| `#resource-col` | a curated resource | `/resources/{slug}/` |
+| `#shop-col` | a shop item (digital asset) | `/shop/{slug}/` |
+| `#snippet-col` | a code snippet | `/snippets/{slug}/` |
+| `#prompt-col` | an AI prompt | `/prompts/{slug}/` |
 | *(none of these)* | a standalone post | `/{slug}/` |
+
+**`#now` is a cross-cutting tag**, not a collection: tag ANY post with
+it and it appears on `/now` (page-now.hbs) labelled by what it is —
+"writing" for blog, "filming" for video, "building this course"… —
+and leaves when untagged.
+
+**Resources facets** (`#resource-type-books/-videos/-tools/-courses/
+-podcasts/-articles`, `#resource-free/-paid`): descriptions are the
+labels; the /resources filter SIDEBAR builds itself from the cards'
+data attributes (filters.js — internal tags are invisible to the API,
+the bar declares its facets via `data-filter-facets`). **Shop prices**
+are `#shop-price-*` DESCRIPTIONS ($9, $19…), `#shop-free` for free;
+**snippet languages** `#snippet-lang-*`; **prompt targets**
+`#prompt-for-*`. `/my-schedule` (page-my-schedule.hbs) styles any
+table in the page content as the schedule board; `/products-i-use`
+(page-products-i-use.hbs) is the sectioned stack page.
 
 The bright vocabulary already on imported content is accepted everywhere:
 `#courses-col`, `#lessons-col`, `#docs-col`.
@@ -255,10 +275,15 @@ copy for the no-choice state. `pnpm build` compiles.
   a matching partial render as text. Mobile drawer is the `#nav-open`
   checkbox + label — zero JS.
 
-  The bar is **full-bleed** — `.site-head-inner` has its own padding, no
-  `.inner` max-width. The mobile drawer blooms open from the burger's
-  corner (a `clip-path: circle()` reveal, disabled under reduced
-  motion) with the items cascading in on staggered delays.
+  The bar is **container-width by default**; only the full-viewport
+  reading frames (lesson player, training reader) get the full-bleed
+  variant, matched on the post's collection tag in body_class. Actions
+  order: search · theme · profile (avatar icon linking /signin/ on
+  mobile; the "Become a member" button on desktop) · GitHub star
+  (labelled ghost button on desktop, bare icon on mobile) · burger.
+  The mobile drawer blooms open from the burger's corner (a
+  `clip-path: circle()` reveal, disabled under reduced motion) with
+  the items cascading in on staggered delays — navigation only, no CTA.
 
   **Dropdowns are a label convention** in Admin → Settings → Navigation:
   `+Learn` opens a dropdown (shown as "Learn"), the `-Courses` / `-Training`
@@ -288,18 +313,23 @@ internal tags).
 
 ## The hero (partials/hero.hbs)
 
-ONE hero, built to a brief: subscribe-first (Ghost's native members
-form — the email input — IS the primary CTA; quiet "doors" to
-courses/training/videos under it), personal creator brand (the
-instructor's avatar + name are the badge, and ride the app window as
-a chip), and the product itself as the visual — a browser-frame mock
-of the lesson player filled live with the featured course's REAL
-curriculum (course slug = tag slug). Trust signals all live: fanned
-avatar stack + count, count-up stat tiles (hero-stats.hbs),
-just-shipped pill. Choreography: blur-reveal entrance, drifting mesh
-background, masked grid, pointer tilt, progress-bar fill, pulsing
-current lesson, shine sweep on the submit button — every piece
-reduced-motion aware.
+ONE hero: Swarnil's story (7+ years IT, learning in public, build
+first → share how, aiming at GTM engineering in the AI era) with a
+COMPACT signup as the primary CTA, story fact pills, the fanned
+avatar proof, the just-shipped pill and the social icon row. The
+visual is **the stack**: every format as a connected screen on one
+dashed spine, all live data — the featured course in the app window
+(pointer tilt, progress fill), the latest video in a camcorder frame
+(blinking REC, muted autoplay when the post carries #video-preview),
+the newest training stop as a waypoint card, the latest blog post as
+a ruled sheet, the latest issue as an envelope, the latest changelog
+entry as its type badge. Below the grid: `.hero-collections` — every
+collection as one inline strip — then the stat tiles
+(hero-stats.hbs). All of it blur-reveals in sequence and respects
+reduced motion. Auth flows are real pages: two-column /signin/ (how
+magic links work) and /signup/ (the good things), each with the
+native members form and a switch link — every subscribe link on the
+site points at them, not at the Portal popup.
 
 ## Custom settings
 
