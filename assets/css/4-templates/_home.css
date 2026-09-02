@@ -2749,3 +2749,131 @@
         transform: none;
     }
 }
+
+/*  The stack as a floating collage (desktop)
+    ------------------------------------------------------------
+    On wide screens the screens stop stacking into a tall column
+    and become a bounded collage: absolutely placed, overlapping,
+    gently floating — the whole thing sized to sit inside one
+    viewport beside the copy. Below 992px the flow layout above
+    stays. */
+
+@media (min-width: 992px) {
+    .hero-stack {
+        height: clamp(540px, 76vh, 660px);
+    }
+
+    .hero-stack > *,
+    .hero-shot.is-writing,
+    .hero-shot.is-mail {
+        position: absolute;
+        margin: 0;
+    }
+
+    /* the row wrapper dissolves; its two minis place themselves */
+    .hero-stack-row {
+        display: contents;
+    }
+
+    .hero-shot.is-course {
+        top: 0;
+        left: 0;
+        width: 94%;
+        z-index: 1;
+    }
+
+    .hero-shot.is-video {
+        top: 42%;
+        right: -2%;
+        width: 60%;
+        --rot: 1.8deg;
+        transform: rotate(1.8deg);
+        z-index: 2;
+    }
+
+    .hero-shot.is-training {
+        top: 63%;
+        left: -3%;
+        width: 66%;
+        --rot: -1.6deg;
+        transform: rotate(-1.6deg);
+        z-index: 2;
+    }
+
+    .hero-shot.is-writing {
+        bottom: 3%;
+        left: 6%;
+        width: 44%;
+        --rot: -1.2deg;
+        transform: rotate(-1.2deg);
+        z-index: 1;
+    }
+
+    .hero-shot.is-mail {
+        bottom: 0;
+        right: 4%;
+        width: 44%;
+        --rot: 1.4deg;
+        transform: rotate(1.4deg);
+        z-index: 1;
+    }
+
+    .hero-shot.is-ship {
+        bottom: -3.2rem;
+        left: 50%;
+        translate: -50% 0;
+        align-self: auto;
+        z-index: 4;
+    }
+
+    /* tighter chrome so the collage stays compact */
+    .hero-shot.is-course .hero-app-rail > strong {
+        font-size: 1.15rem;
+    }
+
+    .hero-shot.is-video {
+        padding: 0.8rem 1rem 1rem;
+    }
+
+    .hero-shot-caption {
+        margin-top: 0.7rem;
+    }
+}
+
+/* the float: each screen bobs on its own beat, keeping its tilt.
+   (The float animation owns transform, so hover feedback on the
+   floating pieces is shadow/border only — by design.) */
+@media (min-width: 992px) and (prefers-reduced-motion: no-preference) {
+    .hero-shot.is-video {
+        animation:
+            hero-blur-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both,
+            shot-float 7s ease-in-out 1.4s infinite;
+    }
+
+    .hero-shot.is-training {
+        animation:
+            hero-blur-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.37s both,
+            shot-float 8s ease-in-out 1.8s infinite;
+    }
+
+    .hero-shot.is-writing {
+        animation:
+            hero-blur-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.49s both,
+            shot-float 6.5s ease-in-out 2.1s infinite;
+    }
+
+    .hero-shot.is-mail {
+        animation:
+            hero-blur-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.58s both,
+            shot-float 7.5s ease-in-out 2.4s infinite;
+    }
+
+    .hero-shot.is-ship {
+        animation: hero-blur-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both;
+    }
+
+    @keyframes shot-float {
+        0%, 100% { transform: rotate(var(--rot, 0deg)) translateY(0); }
+        50% { transform: rotate(var(--rot, 0deg)) translateY(-9px); }
+    }
+}
