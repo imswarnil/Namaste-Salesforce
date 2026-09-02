@@ -38,7 +38,7 @@ page goes stale when content changes. --}}
 
     <div class="home-hero-grid inner">
 
-        <div class="home-hero-copy" data-animate="left">
+        <div class="home-hero-copy">
             <span class="home-hero-badge">
                 {{> "icons/sparkles"}}
                 {{t "Learn Salesforce, hands-on"}}
@@ -88,7 +88,7 @@ page goes stale when content changes. --}}
         rendered live, with a floating video chip. --}}
         {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags" order="featured desc, published_at asc" limit="1" as |star|}}
             {{#if star}}
-                <div class="home-hero-panel" data-animate="right">
+                <div class="home-hero-panel">
                     <span class="home-hero-ring" aria-hidden="true"></span>
                     <span class="home-hero-deck" aria-hidden="true"></span>
                     {{#foreach star}}
@@ -148,9 +148,31 @@ page goes stale when content changes. --}}
         </div>
 
     </div>
-
-    <span class="home-scroll-cue" aria-hidden="true">{{> "icons/chevron-down"}}</span>
 </section>
+
+{{!-- The founder note — a cutout avatar circle straddling the
+hero's lower edge, with one honest line. Live author data. --}}
+{{#get "authors" limit="1" as |host|}}
+    {{#if host}}
+        <div class="outer">
+            <div class="inner">
+                {{#foreach host}}
+                    <figure class="home-founder">
+                        {{#if profile_image}}
+                            <img class="home-founder-avatar" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="lazy" />
+                        {{else}}
+                            <span class="home-founder-avatar is-icon" aria-hidden="true">{{> "icons/avatar"}}</span>
+                        {{/if}}
+                        <blockquote>
+                            <p>&ldquo;{{t "Every lesson here was built in a real org — clicks, code, and the mistakes left in."}}&rdquo;</p>
+                            <figcaption>&mdash; {{name}}, {{t "your instructor"}}</figcaption>
+                        </blockquote>
+                    </figure>
+                {{/foreach}}
+            </div>
+        </div>
+    {{/if}}
+{{/get}}
 
 {{!-- Why here --}}
 <section class="section outer">
