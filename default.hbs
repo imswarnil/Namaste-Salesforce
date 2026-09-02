@@ -8,12 +8,20 @@
     <meta name="color-scheme" content="light dark" />
 
     {{!-- Apply the stored theme before first paint — no flash.
-    States: absent = follow system, "light"/"dark" = explicit. --}}
+    States: absent = follow system, "light"/"dark" = explicit.
+    The `anim` class arms the scroll animations (animate.js /
+    _animations.css): set here, before paint, so reveal targets
+    never flash visible first — and only when motion is welcome,
+    so no-JS and reduced-motion visitors never see hidden
+    content. --}}
     <script>
         try {
             var t = localStorage.getItem('ns-theme');
             if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
         } catch (e) { /* storage unavailable — follow the system */ }
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('anim');
+        }
     </script>
 
     {{!-- Figtree — the NS Design System typeface, self-hosted

@@ -27,8 +27,10 @@ Modes:
 --}}
 
 {{#if isFooter}}
+    {{!-- linkLimit (optional hash param) caps the flat list; the
+    footer's Explore column passes 5. Unset → everything. --}}
     <ul>
-        {{#foreach navigation}}
+        {{#foreach navigation limit=linkLimit}}
             {{#match label.[0] "+"}}
                 <li><a href="{{url absolute="true"}}">{{#foreach label from="2"}}{{this}}{{/foreach}}</a></li>
             {{else match label.[0] "-"}}
@@ -59,6 +61,7 @@ Modes:
                                     <a href="{{url absolute="true"}}"{{#if current}} aria-current="page"{{/if}}>
                                         {{#> (concat "icons/nav-" slug)}}{{/undefined}}
                                         {{#foreach label from="2"}}{{this}}{{/foreach}}
+                                        <span class="nav-sub-chev">{{> "icons/chevron-right"}}</span>
                                     </a>
                                 </li>
                             {{/unless}}

@@ -160,6 +160,12 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     margin-left: 0.6rem;
 }
 
+/* Two CTA renderings exist in header.hbs; the nav one belongs to
+   the mobile drawer only. Without this, desktop shows both. */
+.site-head-nav .site-head-cta {
+    display: none;
+}
+
 /* Burger — a label wired to #nav-open */
 .nav-burger {
     display: none;
@@ -344,6 +350,27 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
     width: 100%;
 }
 
+/* Right-edge chevron on each dropdown item — appears on hover
+   or focus as an affordance that the row is a link. */
+.nav-sub-chev {
+    display: inline-flex;
+    margin-left: auto;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.nav-sub-chev svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.nav-dropdown a:hover .nav-sub-chev,
+.nav-dropdown a:focus-visible .nav-sub-chev {
+    opacity: 1;
+    transform: translateX(0);
+}
+
 /* A parent whose child is the current page reads as current */
 .site-nav .nav-has-dropdown:has(.nav-current) > a {
     color: var(--accent);
@@ -351,7 +378,8 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
 
 /* Mobile drawer: children render inline, indented, always visible */
 @media (max-width: 900px) {
-    .nav-has-dropdown > a > svg:last-child {
+    .nav-has-dropdown > a > svg:last-child,
+    .nav-sub-chev {
         display: none;
     }
 

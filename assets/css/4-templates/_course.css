@@ -171,3 +171,243 @@
         order: -1;
     }
 }
+
+/*  Course layouts — #course-layout-* stamps a class on the
+    .course-shell wrapper (see post-course.hbs). Only the hero
+    is restyled; the curriculum body is identical everywhere.
+    ------------------------------------------------------------ */
+
+/* cinema — dark full-bleed hero, feature image as a dimmed
+   backdrop behind centered light type */
+.course-layout-cinema .course-hero {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(700px 320px at 80% -20%, rgba(27, 150, 255, 0.3), transparent 70%),
+        var(--gray-950);
+    border-bottom-color: transparent;
+}
+
+.course-layout-cinema .course-hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.course-layout-cinema .course-hero-media img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+    box-shadow: none;
+    object-fit: cover;
+    opacity: 0.16;
+}
+
+.course-layout-cinema .course-hero-grid {
+    position: relative;
+    z-index: 1;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.course-layout-cinema .course-hero h1 {
+    color: #fff;
+}
+
+.course-layout-cinema .course-hero-excerpt,
+.course-layout-cinema .course-hero .crumbs,
+.course-layout-cinema .course-hero .crumbs a,
+.course-layout-cinema .course-hero .crumbs [aria-current] {
+    color: var(--gray-400);
+}
+
+.course-layout-cinema .course-hero .post-byline-name {
+    color: var(--gray-100);
+}
+
+.course-layout-cinema .course-hero .chip {
+    color: var(--gray-300);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(152, 166, 184, 0.25);
+}
+
+.course-layout-cinema .course-hero .crumbs,
+.course-layout-cinema .course-hero .chips,
+.course-layout-cinema .course-hero-actions {
+    justify-content: center;
+}
+
+/* minimal — centered type on a quiet canvas, no image */
+.course-layout-minimal .course-hero {
+    background: var(--bg);
+}
+
+.course-layout-minimal .course-hero-media {
+    display: none;
+}
+
+.course-layout-minimal .course-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.course-layout-minimal .course-hero .crumbs,
+.course-layout-minimal .course-hero .chips,
+.course-layout-minimal .course-hero-actions {
+    justify-content: center;
+}
+
+/* billboard — wide image banner first, text underneath */
+.course-layout-billboard .course-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.course-layout-billboard .course-hero-media {
+    order: -1;
+}
+
+.course-layout-billboard .course-hero-media img {
+    aspect-ratio: 21 / 9;
+}
+
+/* boxed — the classic split hero framed in a floating card */
+.course-layout-boxed .course-hero {
+    background:
+        radial-gradient(900px 380px at 15% -30%, var(--accent-soft), transparent 70%),
+        var(--bg-alt);
+}
+
+.course-layout-boxed .course-hero-grid {
+    padding: clamp(2.8rem, 4.5vmin, 4.8rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+/*  Curriculum styles — #course-curriculum-* on the same shell.
+    Classic (the default above) is numbered rows in one bordered
+    list; these four restyle only the list.
+    ------------------------------------------------------------ */
+
+/* cards — a two-column grid of tiles */
+.course-curriculum-cards .curriculum {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+}
+
+.course-curriculum-cards .curriculum-item + .curriculum-item {
+    border-top: none;
+}
+
+.course-curriculum-cards .curriculum-item a {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    height: 100%;
+    padding: 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.course-curriculum-cards .curriculum-item a:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+
+.course-curriculum-cards .curriculum-side {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-top: 0.4rem;
+}
+
+@media (max-width: 767px) {
+    .course-curriculum-cards .curriculum {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* timeline — a vertical line with the numbers as dots */
+.course-curriculum-timeline .curriculum {
+    position: relative;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+    padding-left: 0.4rem;
+}
+
+.course-curriculum-timeline .curriculum::before {
+    content: "";
+    position: absolute;
+    top: 1.6rem;
+    bottom: 1.6rem;
+    left: 2rem;
+    width: 2px;
+    background: var(--border);
+}
+
+.course-curriculum-timeline .curriculum-item + .curriculum-item {
+    border-top: none;
+    margin-top: 0.4rem;
+}
+
+.course-curriculum-timeline .curriculum-item a {
+    position: relative;
+    padding: 1.2rem 1.6rem;
+    border-radius: var(--radius);
+}
+
+.course-curriculum-timeline .curriculum-num {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 0 4px var(--bg);
+}
+
+/* compact — dense rows, excerpts dropped */
+.course-curriculum-compact .curriculum-item a {
+    padding: 1rem 1.6rem;
+    gap: 1.2rem;
+}
+
+.course-curriculum-compact .curriculum-num {
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.15rem;
+}
+
+.course-curriculum-compact .curriculum-excerpt {
+    display: none;
+}
+
+.course-curriculum-compact .curriculum-item:nth-child(even) a {
+    background: var(--bg-alt);
+}
+
+/* checklist — every step wears a check mark */
+.course-curriculum-checklist .curriculum-num {
+    color: var(--success-ink);
+    background: transparent;
+    border: 2px solid var(--success);
+}
+
+.course-curriculum-checklist .curriculum-num::before {
+    counter-increment: lesson;
+    content: "✓";
+    font-size: 1.4rem;
+}

@@ -1,0 +1,36 @@
+{{!-- Related reading — blog posts sharing this post's first
+PUBLIC tag, the post being read excluded.
+
+Two traps meet here: blog posts carry #blog-col as their first
+tag, which nulls primary_tag (it only counts when the first tag
+is public) — so the topic comes from a visibility-filtered
+foreach instead. And get filters substitute only SIMPLE
+identifiers, so with-this flattens tag slug + post id into
+scalars the filter can read. Renders nothing without a public
+tag or siblings — safe on every post. --}}
+{{#foreach tags visibility="public" limit="1"}}
+    {{#> "with-this" relSlug=slug postId=../id}}
+    {{#get "posts" filter="tag:hash-blog-col+tag:{{relSlug}}+id:-{{postId}}" limit="3" as |related|}}
+        {{#if related}}
+        <div class="widget">
+            <h4 class="widget-title">{{> "icons/bookmark"}} {{t "Related posts"}}</h4>
+            <ul class="widget-posts">
+                {{#foreach related}}
+                    <li class="widget-post">
+                        {{#if feature_image}}
+                            <img class="widget-post-thumb" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />
+                        {{else}}
+                            <span class="widget-post-thumb"></span>
+                        {{/if}}
+                        <a href="{{url}}">
+                            <span class="widget-post-title">{{title}}</span>
+                            <span class="widget-post-date">{{date format="DD MMM YYYY"}}</span>
+                        </a>
+                    </li>
+                {{/foreach}}
+            </ul>
+        </div>
+        {{/if}}
+    {{/get}}
+    {{/with-this}}
+{{/foreach}}

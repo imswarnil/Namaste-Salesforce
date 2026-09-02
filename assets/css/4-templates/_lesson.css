@@ -315,3 +315,168 @@
         display: none;
     }
 }
+
+/*  Lesson layouts — #lesson-layout-* stamps a class on .player
+    (see post-lesson.hbs). These sit AFTER the mobile rules, so
+    desktop-only geometry is guarded behind min-width.
+    ------------------------------------------------------------ */
+
+/* right — the curriculum rail crosses to the right edge */
+@media (min-width: 1024px) {
+    .lesson-layout-right {
+        grid-template-columns: minmax(0, 1fr) 320px;
+    }
+
+    .lesson-layout-right .player-rail {
+        order: 2;
+        border-right: none;
+        border-left: 1px solid var(--border-soft);
+    }
+}
+
+/* wide — narrow rail, article grows to the wide measure */
+@media (min-width: 1024px) {
+    .lesson-layout-wide {
+        grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    .lesson-layout-wide .player-article {
+        max-width: var(--measure-wide);
+    }
+}
+
+/* focus — no rail at any width: the course contents live in a
+   collapsible <details> above a centered article (the same
+   drawer the classic layout uses on mobile) */
+.lesson-layout-focus {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.lesson-layout-focus .player-rail {
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.lesson-layout-focus .player-rail-scroll {
+    position: static;
+    max-height: none;
+    padding: 0;
+    max-width: calc(var(--measure) + 8rem);
+    margin: 0 auto;
+}
+
+.lesson-layout-focus .player-rail-course {
+    padding: 2rem max(4vmin, 20px) 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.lesson-layout-focus .player-rail-list,
+.lesson-layout-focus .player-rail-toc {
+    display: none;
+}
+
+.lesson-layout-focus .player-rail-toggle {
+    display: block;
+}
+
+.lesson-layout-focus .player-rail-toggle summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.6rem max(4vmin, 20px);
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+}
+
+.lesson-layout-focus .player-rail-toggle summary::-webkit-details-marker {
+    display: none;
+}
+
+.lesson-layout-focus .player-rail-toggle summary svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--accent);
+    transition: transform 0.2s ease;
+}
+
+.lesson-layout-focus .player-rail-toggle summary .chev {
+    margin-left: auto;
+}
+
+.lesson-layout-focus .player-rail-toggle[open] summary svg:last-child {
+    transform: rotate(180deg);
+}
+
+.lesson-layout-focus .player-rail-body {
+    padding: 0 max(4vmin, 20px) 2.4rem;
+    max-width: none;
+}
+
+/* cinema — the lesson header becomes a dark hero card, with the
+   lesson's feature image as a dimmed backdrop when it has one */
+.lesson-layout-cinema .player-header {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(2.4rem, 4vmin, 3.6rem);
+    border-bottom: none;
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(600px 280px at 80% -20%, rgba(27, 150, 255, 0.3), transparent 70%),
+        var(--gray-950);
+}
+
+.player-header-bg {
+    display: none;
+}
+
+.lesson-layout-cinema .player-header-bg {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.16;
+}
+
+.lesson-layout-cinema .player-header > :not(.player-header-bg) {
+    position: relative;
+    z-index: 1;
+}
+
+.lesson-layout-cinema .player-header h1 {
+    color: #fff;
+}
+
+.lesson-layout-cinema .player-header .crumbs,
+.lesson-layout-cinema .player-header .crumbs a,
+.lesson-layout-cinema .player-header .crumbs [aria-current] {
+    color: var(--gray-400);
+}
+
+.lesson-layout-cinema .player-header .chip {
+    color: var(--gray-300);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(152, 166, 184, 0.25);
+}
+
+/* Sponsor slot at the foot of the curriculum rail */
+.player-rail-sponsor {
+    margin-top: 2.4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 1023px) {
+    .player-rail-sponsor {
+        display: none;
+    }
+}
+
+.lesson-layout-focus .player-rail-sponsor {
+    display: none;
+}

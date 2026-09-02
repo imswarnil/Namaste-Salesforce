@@ -280,3 +280,390 @@
     .home-hero-panel { padding-bottom: 0; }
     .home-hero-float { display: none; }
 }
+
+/*  Hero decorations — orbs + drifting icon bubbles
+    ------------------------------------------------------------
+    Parallax rides the OUTER .home-deco (JS writes translateY);
+    the endless drift keyframe rides the INNER bubble, so the two
+    transforms compose instead of overwriting each other. */
+
+.home-deco {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.home-bubble {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.6rem;
+    height: 4.6rem;
+    color: var(--accent);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.home-bubble svg {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+@media (max-width: 991px) {
+    .home-deco { display: none; }
+}
+
+/*  Journey — alternating steps on a scroll-drawn trail
+    ------------------------------------------------------------
+    The SVG stretches over the whole step list (preserveAspect
+    "none") and its curve is drawn by animate.js as the section
+    scrolls through. Steps hang alternately off a center spine;
+    below 768px the curve goes away and a plain left rail takes
+    over. */
+
+.home-journey {
+    position: relative;
+}
+
+.home-journey-steps {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4rem, 7vmin, 7.2rem);
+    max-width: 920px;
+    margin: 4.8rem auto 0;
+}
+
+.home-journey-trail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.home-journey-trail .trail-under {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 2px;
+    stroke-dasharray: 1 8;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.home-journey-trail .trail-over {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5px;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    filter: drop-shadow(0 0 6px var(--accent-soft));
+}
+
+.home-journey-step {
+    position: relative;
+    z-index: 1;
+    width: calc(50% - 4.4rem);
+    padding: 2.4rem 2.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.home-journey-step:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: color-mod(#0176d3 a(35%));
+}
+
+.home-journey-step:nth-child(even) {
+    margin-left: auto;
+}
+
+/* The waypoint dot, sitting on the spine */
+.home-journey-step::after {
+    content: "";
+    position: absolute;
+    top: 3.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid var(--border);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.home-journey-step:nth-child(odd)::after  { right: -5.15rem; }
+.home-journey-step:nth-child(even)::after { left: -5.15rem; }
+
+/* Lit once revealed — the dot catches up with the trail tip */
+.home-journey-step.is-in::after {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+.home-journey-num {
+    position: absolute;
+    top: -1.4rem;
+    right: 2rem;
+    font-size: 4.4rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px color-mod(#0176d3 a(30%));
+    pointer-events: none;
+}
+
+.home-journey-step h3 {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+}
+
+.home-journey-step h3 svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.home-journey-step p {
+    font-size: 1.45rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.home-journey-step .home-journey-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.home-journey-step .home-journey-link svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.home-journey-step .home-journey-link:hover svg {
+    transform: translateX(3px);
+}
+
+@media (max-width: 767px) {
+    .home-journey-trail { display: none; }
+    .home-journey-steps {
+        gap: 2.8rem;
+        padding-left: 2.4rem;
+        border-left: 2px dashed var(--border);
+    }
+    .home-journey-step,
+    .home-journey-step:nth-child(even) {
+        width: 100%;
+        margin-left: 0;
+    }
+    .home-journey-step::after,
+    .home-journey-step:nth-child(odd)::after,
+    .home-journey-step:nth-child(even)::after {
+        left: -3.35rem;
+        right: auto;
+    }
+}
+
+/*  Topics ticker
+    ------------------------------------------------------------ */
+
+.home-topics {
+    position: relative;
+    overflow: hidden;
+}
+
+.home-topics .marquee + .marquee {
+    margin-top: 1.2rem;
+}
+
+.home-topic-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 1.6rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-topic-chip:hover {
+    color: var(--accent);
+    border-color: color-mod(#0176d3 a(45%));
+    transform: translateY(-2px);
+}
+
+.home-topic-chip svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--accent);
+}
+
+.home-topic-chip small {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+/*  Stay current — changelog timeline beside newsletter card
+    ------------------------------------------------------------ */
+
+.home-current {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2.4rem;
+    align-items: stretch;
+}
+
+.home-changelog,
+.home-news {
+    padding: 2.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.home-changelog h3,
+.home-news h3 {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.home-changelog h3 svg,
+.home-news h3 svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--accent);
+}
+
+.home-changelog ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.home-changelog li {
+    position: relative;
+    padding: 0 0 2rem 2.4rem;
+    border-left: 2px solid var(--border-soft);
+}
+
+.home-changelog li:last-child {
+    padding-bottom: 0;
+    border-left-color: transparent;
+}
+
+.home-changelog li::before {
+    content: "";
+    position: absolute;
+    left: -0.55rem;
+    top: 0.4rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.home-changelog time {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.home-changelog a {
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.home-changelog a:hover {
+    color: var(--accent);
+}
+
+.home-changelog p {
+    margin-top: 0.3rem;
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.home-news {
+    display: flex;
+    flex-direction: column;
+    background:
+        radial-gradient(400px 200px at 85% -10%, var(--accent-soft), transparent 70%),
+        var(--surface);
+}
+
+.home-news p {
+    font-size: 1.45rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.home-news-issue {
+    display: block;
+    margin: 2rem 0;
+    padding: 1.6rem 2rem;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-news-issue:hover {
+    border-color: color-mod(#0176d3 a(40%));
+    transform: translateY(-2px);
+}
+
+.home-news-issue strong {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+}
+
+.home-news-issue span {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.home-news .btn {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+@media (max-width: 860px) {
+    .home-current {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

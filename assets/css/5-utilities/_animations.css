@@ -1,0 +1,124 @@
+/*  5-utilities / animations — scroll choreography
+    ------------------------------------------------------------
+
+    Partner file to assets/js/animate.js. Every hidden initial
+    state is gated on `html.anim`, set by the inline head script
+    only when the visitor allows motion — no JS, reduced motion,
+    or a failed load and everything simply sits visible.
+
+    data-animate            fade-and-rise on reveal
+    data-animate="left/right/zoom"  directional variants
+    data-animate-stagger    children wave in, 90ms apart (--i set
+                            per child by animate.js)
+    .float / .float-alt     endless gentle drift for decorations
+                            (keyframes here, parallax on the
+                            WRAPPER via data-parallax so the two
+                            transforms never fight)
+    .marquee                infinite chip ticker, pauses on hover */
+
+html.anim [data-animate] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+}
+
+html.anim [data-animate="left"]  { transform: translateX(-32px); }
+html.anim [data-animate="right"] { transform: translateX(32px); }
+html.anim [data-animate="zoom"]  { transform: scale(0.92); }
+
+html.anim [data-animate].is-in {
+    opacity: 1;
+    transform: none;
+}
+
+/* Stagger: the container reveals, each child follows at --i × 90ms */
+html.anim [data-animate-stagger] > * {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+html.anim [data-animate-stagger].is-in > * {
+    opacity: 1;
+    transform: none;
+}
+
+/*  Floating decorations
+    ------------------------------------------------------------ */
+
+@keyframes ns-float {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    33%      { transform: translate3d(4px, -10px, 0) rotate(1.2deg); }
+    66%      { transform: translate3d(-5px, 6px, 0) rotate(-1.2deg); }
+}
+
+@keyframes ns-float-alt {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    40%      { transform: translate3d(-6px, 9px, 0) rotate(-1.5deg); }
+    70%      { transform: translate3d(5px, -7px, 0) rotate(1deg); }
+}
+
+@keyframes ns-bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+
+html.anim .float     { animation: ns-float 9s ease-in-out infinite; }
+html.anim .float-alt { animation: ns-float-alt 11s ease-in-out infinite; }
+html.anim .bob       { animation: ns-bob 5s ease-in-out infinite; }
+
+/* Breathing glow orbs — decorative only, always aria-hidden */
+@keyframes ns-orb {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 0.9;  transform: scale(1.12); }
+}
+
+.orb {
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-soft), transparent 65%);
+    pointer-events: none;
+}
+
+html.anim .orb { animation: ns-orb 8s ease-in-out infinite; }
+
+/*  Marquee — an endless ticker of chips
+    ------------------------------------------------------------
+    The track holds the SAME content twice (second copy
+    aria-hidden in the template); sliding exactly -50% then
+    snapping back is what makes the loop seamless. */
+
+.marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+    display: inline-flex;
+    gap: 1.2rem;
+    padding: 0.4rem 0.6rem;
+    white-space: nowrap;
+    width: max-content;
+}
+
+@keyframes ns-marquee {
+    to { transform: translateX(-50%); }
+}
+
+html.anim .marquee-track { animation: ns-marquee 40s linear infinite; }
+html.anim .marquee-reverse .marquee-track { animation-direction: reverse; }
+html.anim .marquee:hover .marquee-track { animation-play-state: paused; }
+
+.marquee-dup { display: contents; }
+
+/* Without motion the duplicate half and the mirror row are pure
+   noise — drop both and let one row wrap into a plain chip cloud. */
+html:not(.anim) .marquee-dup { display: none; }
+html:not(.anim) .marquee-reverse { display: none; }
+html:not(.anim) .marquee-track { white-space: normal; flex-wrap: wrap; width: auto; }

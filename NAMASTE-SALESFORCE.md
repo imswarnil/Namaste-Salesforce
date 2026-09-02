@@ -70,6 +70,37 @@ slugs into words.
 | `#lesson-duration-*` | chip in curriculum + player |
 | `#lesson-type-video/-quiz/-audio` | player icon + chip (default: article) |
 
+### Course & lesson per-post layouts
+
+Same convention as the blog: an internal tag stamps a class on the
+shell; only the hero/header restyles, the body never changes.
+
+| Tag | Effect |
+| --- | --- |
+| `#course-layout-cinema` | dark full-bleed hero, image as backdrop |
+| `#course-layout-minimal` | centered type, no image |
+| `#course-layout-billboard` | wide image banner on top |
+| `#course-layout-boxed` | hero framed in a floating card |
+| *(none)* | classic — text left, image right |
+| `#course-curriculum-cards` | curriculum as a two-column tile grid |
+| `#course-curriculum-timeline` | curriculum as a vertical timeline |
+| `#course-curriculum-compact` | dense curriculum rows, no excerpts |
+| `#course-curriculum-checklist` | check-marked curriculum rows |
+| *(none)* | classic — numbered rows |
+| `#lesson-layout-right` | curriculum rail on the right |
+| `#lesson-layout-focus` | no rail — collapsible contents, centered article |
+| `#lesson-layout-cinema` | dark hero card on the lesson header |
+| `#lesson-layout-wide` | narrow rail, article grows to the wide measure |
+| *(none)* | classic — rail left, measured article |
+
+Static pages take two options the same way (pages carry tags too):
+`#page-hero-cover` (feature image becomes a full-width cover behind the
+title) and `#page-sidebar` (widget rail right; the TOC moves into it).
+
+`/style-guide/` is a page exercising every Koenig card the editor can
+produce — all of them themed in `1-base/_content.css`. When a card
+renders oddly, fix the theme, never the content.
+
 ### Blog per-post options
 
 | Tag | Effect |
@@ -103,6 +134,12 @@ above the content.
 - Video singles are wide two-column; a timestamp table in the post
   becomes the seeking **chapters** sidebar (video.js); cards show only
   thumb + play + duration.
+- **`#video-preview`** (any post with a video first): the card plays the
+  post's video as a muted autoplaying loop over its thumbnail — the
+  content rides into the card in a `<template>`
+  (partials/video-preview.hbs) and video-preview.js rewrites the first
+  YouTube/Vimeo/video embed into background mode. Ported from the
+  aspect theme's featured-video-preview.
 - `/newsletter/` frames the latest issue as a mac-window email; issues
   get a sent-date rail + subscribe CTA (post-issue.hbs).
 - `/guestbook/` (page-guestbook.hbs): sticky pitch left, Ghost comments

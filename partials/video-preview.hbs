@@ -1,0 +1,20 @@
+{{!-- Card video preview (the aspect-theme trick, ported).
+
+Posts tagged #video-preview ship a hidden copy of their content
+inside the card's media box; video-preview.js digs out the first
+YouTube/Vimeo embed or video card, rewrites it into a muted
+autoplaying loop, and lays it over the thumbnail — so the card
+plays a silent preview where its image was.
+
+On a gated post {{content}} is redacted, so html carries the
+embed instead. words="12" keeps the copy small — cards survive
+the truncation, paragraphs do not matter here.
+
+Context: a post. Include INSIDE the .card-media element. --}}
+{{#has tag="#video-preview"}}
+    {{#if access}}
+        <template data-video-preview>{{{content words="12"}}}</template>
+    {{else if html}}
+        <template data-video-preview>{{{html}}}</template>
+    {{/if}}
+{{/has}}

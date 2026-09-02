@@ -1,30 +1,91 @@
 {{!< default}}
 
-{{#post}}
-<main id="site-main" class="page-shell outer">
-    <article class="inner {{post_class}}">
+{{!-- Static pages. Ghost's own per-page toggle (show title &
+feature image) still applies; two extra options ride on internal
+tags — pages carry tags exactly like posts:
 
-        {{#match @page.show_title_and_feature_image}}
-            <header class="post-header">
+    #page-hero-cover  the feature image becomes a full-width
+                      cover behind the title (needs an image;
+                      without one the stacked header returns)
+    #page-sidebar     widget rail on the right — and the TOC
+                      moves into it (site rule), so the inline
+                      TOC goes
+
+    (neither)         centered column, stacked header, inline TOC
+--}}
+
+{{#post}}
+<main id="site-main" class="page-shell outer
+    {{~#match (post_class) "~" "tag-hash-page-sidebar"}} page-has-sidebar{{/match}}">
+
+    {{#match (post_class) "~" "tag-hash-page-hero-cover"}}
+        {{#if feature_image}}
+            <header class="page-cover">
+                <img class="page-cover-img" src="{{img_url feature_image size="xl"}}"
+                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                    loading="eager" fetchpriority="high" />
+                <div class="page-cover-copy">
+                    <div class="inner">
+                        <h1 class="post-title">{{title}}</h1>
+                        {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+                    </div>
+                </div>
+            </header>
+        {{else}}
+            {{!-- Cover requested but no image — plain title, so
+            the page never renders headless. --}}
+            <header class="post-header inner">
                 <h1 class="post-title">{{title}}</h1>
                 {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
-                {{#if feature_image}}
-                    <figure class="post-image">
-                        <img src="{{img_url feature_image size="l"}}"
-                            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-                            loading="eager" />
-                        {{#if feature_image_caption}}<figcaption>{{feature_image_caption}}</figcaption>{{/if}}
-                    </figure>
-                {{/if}}
             </header>
-        {{/match}}
+        {{/if}}
+    {{/match}}
 
-        {{> "toc-inline"}}
+    <div class="inner">
+        <div class="page-grid">
 
-        <section class="gh-content">
-            {{content}}
-        </section>
+            <article class="{{post_class}}">
 
-    </article>
+                {{!-- Stacked header — skipped when the cover above
+                already carried the title. --}}
+                {{^match (post_class) "~" "tag-hash-page-hero-cover"}}
+                    {{#match @page.show_title_and_feature_image}}
+                        <header class="post-header">
+                            <h1 class="post-title">{{title}}</h1>
+                            {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+                            {{#if feature_image}}
+                                <figure class="post-image">
+                                    <img src="{{img_url feature_image size="l"}}"
+                                        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                                        loading="eager" />
+                                    {{#if feature_image_caption}}<figcaption>{{feature_image_caption}}</figcaption>{{/if}}
+                                </figure>
+                            {{/if}}
+                        </header>
+                    {{/match}}
+                {{/match}}
+
+                {{!-- Site TOC rule: a sidebar owns the TOC. --}}
+                {{^match (post_class) "~" "tag-hash-page-sidebar"}}
+                    {{> "toc-inline"}}
+                {{/match}}
+
+                <section class="gh-content">
+                    {{content}}
+                </section>
+
+            </article>
+
+            {{#match (post_class) "~" "tag-hash-page-sidebar"}}
+                <aside class="page-aside">
+                    {{> "widgets/toc"}}
+                    {{> "widgets/start-training"}}
+                    {{> "widgets/sponsor"}}
+                    {{> "widgets/share"}}
+                </aside>
+            {{/match}}
+
+        </div>
+    </div>
 </main>
 {{/post}}

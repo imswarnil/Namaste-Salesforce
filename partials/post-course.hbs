@@ -25,6 +25,38 @@ queries them oldest-first, which is authoring order. --}}
 </script>
 {{/contentFor}}
 
+{{!-- Five hero treatments, chosen per-course with internal tags
+(same convention as the blog's #blog-layout-*):
+
+    #course-layout-cinema     dark full-bleed hero, image as backdrop
+    #course-layout-minimal    centered type, no image
+    #course-layout-billboard  wide image banner on top, text below
+    #course-layout-boxed      hero framed in a floating card
+    (none)                    classic — text left, image right
+
+The markup is ONE shape; the class stamped on the shell is all
+that changes, so every layout keeps the same curriculum body.
+
+The curriculum list has five styles of its own, chosen the same
+way — layouts and curriculum styles compose freely:
+
+    #course-curriculum-cards      two-column tile grid
+    #course-curriculum-timeline   vertical timeline with dots
+    #course-curriculum-compact    dense rows, no excerpts
+    #course-curriculum-checklist  check-marked rows
+    (none)                        classic — numbered rows --}}
+<div class="course-shell
+    {{~#match (post_class) "~" "tag-hash-course-layout-cinema"}} course-layout-cinema
+    {{~else match (post_class) "~" "tag-hash-course-layout-minimal"}} course-layout-minimal
+    {{~else match (post_class) "~" "tag-hash-course-layout-billboard"}} course-layout-billboard
+    {{~else match (post_class) "~" "tag-hash-course-layout-boxed"}} course-layout-boxed
+    {{~else}} course-layout-classic{{/match}}
+    {{~#match (post_class) "~" "tag-hash-course-curriculum-cards"}} course-curriculum-cards
+    {{~else match (post_class) "~" "tag-hash-course-curriculum-timeline"}} course-curriculum-timeline
+    {{~else match (post_class) "~" "tag-hash-course-curriculum-compact"}} course-curriculum-compact
+    {{~else match (post_class) "~" "tag-hash-course-curriculum-checklist"}} course-curriculum-checklist
+    {{~else}} course-curriculum-classic{{/match}}">
+
 <section class="course-hero outer">
     <div class="inner">
         <div class="course-hero-grid">
@@ -138,9 +170,12 @@ queries them oldest-first, which is authoring order. --}}
                         {{> "widgets/newsletter"}}
                     {{/if}}
                 {{/if}}
+                {{> "widgets/start-training"}}
+                {{> "widgets/sponsor"}}
                 {{> "widgets/share"}}
             </aside>
 
         </div>
     </div>
 </main>
+</div>

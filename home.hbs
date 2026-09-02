@@ -17,9 +17,28 @@ page goes stale when content changes. --}}
 {{!-- Hero --}}
 <section class="home-hero outer relative">
     <div class="bg-grid" aria-hidden="true"></div>
+
+    {{!-- Decorations: breathing orbs + icon bubbles that drift on
+    their own keyframe while the wrapper parallaxes with scroll.
+    Purely ornamental — hidden from AT and from small screens. --}}
+    <div class="orb" style="width: 420px; height: 420px; top: -120px; left: -140px;" aria-hidden="true"></div>
+    <div class="orb" style="width: 360px; height: 360px; bottom: -80px; right: -100px; animation-delay: -4s;" aria-hidden="true"></div>
+    <div class="home-deco" style="top: 14%; right: 6%;" data-parallax="0.10" aria-hidden="true">
+        <span class="home-bubble float">{{> "icons/cloud"}}</span>
+    </div>
+    <div class="home-deco" style="top: 58%; right: 44%;" data-parallax="0.06" aria-hidden="true">
+        <span class="home-bubble float-alt">{{> "icons/zap"}}</span>
+    </div>
+    <div class="home-deco" style="top: 24%; left: 42%;" data-parallax="0.08" aria-hidden="true">
+        <span class="home-bubble float" style="animation-delay: -3s;">{{> "icons/database"}}</span>
+    </div>
+    <div class="home-deco" style="bottom: 30%; left: 4%;" data-parallax="0.12" aria-hidden="true">
+        <span class="home-bubble float-alt" style="animation-delay: -6s;">{{> "icons/code"}}</span>
+    </div>
+
     <div class="home-hero-grid inner">
 
-        <div class="home-hero-copy">
+        <div class="home-hero-copy" data-animate="left">
             <span class="home-hero-badge">
                 {{> "icons/sparkles"}}
                 {{t "Learn Salesforce, hands-on"}}
@@ -55,7 +74,7 @@ page goes stale when content changes. --}}
         rendered live, with a floating video chip. --}}
         {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags" order="featured desc, published_at asc" limit="1" as |star|}}
             {{#if star}}
-                <div class="home-hero-panel">
+                <div class="home-hero-panel" data-animate="right">
                     {{#foreach star}}
                         {{> "card-course"}}
                     {{/foreach}}
@@ -77,19 +96,21 @@ page goes stale when content changes. --}}
     </div>
 
     <div class="inner">
-        {{!-- Live counts — limit 1, we only want pagination.total --}}
-        <div class="home-stats">
+        {{!-- Live counts — limit 1, we only want pagination.total.
+        data-count makes animate.js count each number up from 0;
+        the rendered total stays as no-JS/no-motion fallback. --}}
+        <div class="home-stats" data-animate-stagger>
             {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
             {{/get}}
             {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Lessons"}}</span></div>
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Lessons"}}</span></div>
             {{/get}}
             {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Training pages"}}</span></div>
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Training pages"}}</span></div>
             {{/get}}
             {{#get "posts" filter="tag:hash-blog-col" limit="1" as |items counts|}}
-                <div class="home-stat"><strong>{{counts.total}}</strong><span>{{t "Articles"}}</span></div>
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Articles"}}</span></div>
             {{/get}}
         </div>
 
@@ -99,7 +120,7 @@ page goes stale when content changes. --}}
 {{!-- Why here --}}
 <section class="section outer">
     <div class="inner">
-        <div class="home-props">
+        <div class="home-props" data-animate-stagger>
             <div class="home-prop">
                 <span class="home-prop-icon">{{> "icons/graduation-cap"}}</span>
                 <h3>{{t "Structured courses"}}</h3>
@@ -119,12 +140,61 @@ page goes stale when content changes. --}}
     </div>
 </section>
 
+{{!-- The journey — four waypoints on a trail the scroll draws.
+Two copies of the same curve: a dotted under-path always visible,
+and the accent over-path whose dashoffset animate.js ties to
+scroll progress (data-draw). Below 768px the CSS swaps the curve
+for a plain left rail, so the SVG can stay dumb. --}}
+<section class="section section-alt outer home-journey">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="inner relative">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/map-icon"}} {{t "The journey"}}</span>
+                <h2>{{t "From namaste to deployed"}}</h2>
+                <p>{{t "There's a path through all of this. Here's the one that works."}}</p>
+            </div>
+        </div>
+
+        <div class="home-journey-steps">
+            <svg class="home-journey-trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trail-under" vector-effect="non-scaling-stroke" d="M 50 0 C 66 11, 34 22, 50 33 C 66 44, 34 55, 50 66 C 66 77, 34 88, 50 100" />
+                <path class="trail-over" vector-effect="non-scaling-stroke" data-draw d="M 50 0 C 66 11, 34 22, 50 33 C 66 44, 34 55, 50 66 C 66 77, 34 88, 50 100" />
+            </svg>
+
+            <div class="home-journey-step" data-animate="left">
+                <span class="home-journey-num" aria-hidden="true">01</span>
+                <h3>{{> "icons/graduation-cap"}} {{t "Pick a course"}}</h3>
+                <p>{{t "Start with a structured path — every course begins at zero and ends with something running."}}</p>
+                <a class="home-journey-link" href="{{@site.url}}/courses/">{{t "Browse courses"}} {{> "icons/arrow-right"}}</a>
+            </div>
+            <div class="home-journey-step" data-animate="right">
+                <span class="home-journey-num" aria-hidden="true">02</span>
+                <h3>{{> "icons/cloud"}} {{t "Build in a real org"}}</h3>
+                <p>{{t "Spin up a free Developer Edition and follow along — clicks, code and mistakes included."}}</p>
+            </div>
+            <div class="home-journey-step" data-animate="left">
+                <span class="home-journey-num" aria-hidden="true">03</span>
+                <h3>{{> "icons/layers"}} {{t "Go deeper with training"}}</h3>
+                <p>{{t "When a topic grabs you, work the module — the patterns and conventions real projects run on."}}</p>
+                <a class="home-journey-link" href="{{@site.url}}/training/">{{t "Explore training"}} {{> "icons/arrow-right"}}</a>
+            </div>
+            <div class="home-journey-step" data-animate="right">
+                <span class="home-journey-num" aria-hidden="true">04</span>
+                <h3>{{> "icons/rocket"}} {{t "Ship and stay current"}}</h3>
+                <p>{{t "Deploy your build, then keep pace with releases through the blog and newsletter."}}</p>
+                <a class="home-journey-link" href="{{@site.url}}/blog/">{{t "Read the blog"}} {{> "icons/arrow-right"}}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
 {{!-- Courses --}}
 {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags,authors" order="published_at asc" limit="3" as |courses|}}
     {{#if courses}}
-        <section class="section section-alt outer">
+        <section class="section outer">
             <div class="inner">
-                <div class="section-head">
+                <div class="section-head" data-animate>
                     <div>
                         <span class="kicker">{{> "icons/graduation-cap"}} {{t "Courses"}}</span>
                         <h2>{{t "Pick a path, ship a thing"}}</h2>
@@ -132,7 +202,7 @@ page goes stale when content changes. --}}
                     </div>
                     <a class="section-more" href="{{@site.url}}/courses/">{{t "All courses"}} {{> "icons/arrow-right"}}</a>
                 </div>
-                <div class="card-grid">
+                <div class="card-grid" data-animate-stagger>
                     {{#foreach courses}}
                         {{> "card-course"}}
                     {{/foreach}}
@@ -143,9 +213,9 @@ page goes stale when content changes. --}}
 {{/get}}
 
 {{!-- Training modules — a taste of the first two --}}
-<section class="section outer">
+<section class="section section-alt outer">
     <div class="inner">
-        <div class="section-head">
+        <div class="section-head" data-animate>
             <div>
                 <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
                 <h2>{{t "Reference you can work through"}}</h2>
@@ -153,18 +223,62 @@ page goes stale when content changes. --}}
             </div>
             <a class="section-more" href="{{@site.url}}/training/">{{t "All modules"}} {{> "icons/arrow-right"}}</a>
         </div>
-        <div class="training-grid">
+        <div class="training-grid" data-animate-stagger>
             {{> "module-grid" moduleLimit="2"}}
         </div>
     </div>
 </section>
+
+{{!-- Topics ticker — every public tag, straight from the API, in
+two counter-rotating marquee rows. The track holds its chips
+TWICE (second run aria-hidden) because the seamless loop slides
+exactly -50%; without motion the CSS drops the duplicates and the
+rows wrap into a plain chip cloud. --}}
+{{#get "tags" filter="visibility:public" include="count.posts" order="count.posts desc" limit="16" as |topics|}}
+    {{#if topics}}
+        <section class="section outer home-topics">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/tag-icon"}} {{t "Topics"}}</span>
+                        <h2>{{t "Find your corner of the platform"}}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="marquee" data-animate>
+                <div class="marquee-track">
+                    {{#foreach topics}}
+                        <a class="home-topic-chip" href="{{url}}">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                    {{/foreach}}
+                    <span class="marquee-dup" aria-hidden="true">
+                        {{#foreach topics}}
+                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                        {{/foreach}}
+                    </span>
+                </div>
+            </div>
+            <div class="marquee marquee-reverse" data-animate>
+                <div class="marquee-track">
+                    {{#foreach topics}}
+                        <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                    {{/foreach}}
+                    <span class="marquee-dup" aria-hidden="true">
+                        {{#foreach topics}}
+                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                        {{/foreach}}
+                    </span>
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
 
 {{!-- Videos --}}
 {{#get "posts" filter="tag:hash-video-col" include="tags" limit="3" as |vids|}}
     {{#if vids}}
         <section class="section outer">
             <div class="inner">
-                <div class="section-head">
+                <div class="section-head" data-animate>
                     <div>
                         <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
                         <h2>{{t "Watch it get built"}}</h2>
@@ -172,7 +286,7 @@ page goes stale when content changes. --}}
                     </div>
                     <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
                 </div>
-                <div class="card-grid">
+                <div class="card-grid" data-animate-stagger>
                     {{#foreach vids}}
                         {{> "card-video"}}
                     {{/foreach}}
@@ -187,17 +301,70 @@ page goes stale when content changes. --}}
     {{#if articles}}
         <section class="section section-alt outer">
             <div class="inner">
-                <div class="section-head">
+                <div class="section-head" data-animate>
                     <div>
                         <span class="kicker">{{> "icons/pen"}} {{t "Blog"}}</span>
                         <h2>{{t "Latest from the blog"}}</h2>
                     </div>
                     <a class="section-more" href="{{@site.url}}/blog/">{{t "All articles"}} {{> "icons/arrow-right"}}</a>
                 </div>
-                <div class="card-grid">
+                <div class="card-grid" data-animate-stagger>
                     {{#foreach articles}}
                         {{> "post-card"}}
                     {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Stay current — the changelog timeline beside the latest
+newsletter issue. Both live queries; either half quietly drops
+out when its collection is empty. --}}
+{{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="3" as |updates|}}
+    {{#if updates}}
+        <section class="section outer">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/history"}} {{t "Stay current"}}</span>
+                        <h2>{{t "The platform moves. Keep up."}}</h2>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/changelog/">{{t "Full changelog"}} {{> "icons/arrow-right"}}</a>
+                </div>
+                <div class="home-current" data-animate-stagger>
+
+                    <div class="home-changelog">
+                        <h3>{{> "icons/history"}} {{t "Recently on the changelog"}}</h3>
+                        <ol>
+                            {{#foreach updates}}
+                                <li>
+                                    <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="D MMM YYYY"}}</time>
+                                    <a href="{{url}}">{{title}}</a>
+                                    {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+                                </li>
+                            {{/foreach}}
+                        </ol>
+                    </div>
+
+                    <div class="home-news">
+                        <h3>{{> "icons/mail"}} {{t "The newsletter"}}</h3>
+                        <p>{{t "Release notes that matter, new lessons and honest takes — straight to your inbox, at a humane pace."}}</p>
+                        {{#get "posts" filter="tag:hash-newsletter-col" limit="1" as |issue|}}
+                            {{#if issue}}
+                                <a class="home-news-issue bob" href="{{issue.[0].url}}">
+                                    <strong>{{t "Latest issue"}}</strong>
+                                    <span>{{issue.[0].title}}</span>
+                                </a>
+                            {{/if}}
+                        {{/get}}
+                        {{#if @site.members_enabled}}
+                            <a class="btn" href="#/portal/signup" data-portal="signup">{{> "icons/mail"}} {{t "Subscribe free"}}</a>
+                        {{else}}
+                            <a class="btn" href="{{@site.url}}/newsletter/">{{t "Browse issues"}} {{> "icons/arrow-right"}}</a>
+                        {{/if}}
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -208,7 +375,8 @@ page goes stale when content changes. --}}
 {{#if @site.members_enabled}}
 <section class="section outer">
     <div class="inner">
-        <div class="home-cta">
+        <div class="home-cta" data-animate="zoom">
+            <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
             <h2>{{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "Start your Salesforce journey today"}}{{/if}}</h2>
             <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "Free courses, weekly notes, zero spam. Join the newsletter and learn at your own pace."}}{{/if}}</p>
             {{#unless @member}}

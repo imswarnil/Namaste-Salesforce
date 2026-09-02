@@ -3,6 +3,11 @@
 that exercises every feature of the theme:
 
   · a course (advanced, 3h) with all four lesson types
+  · four more small courses, one per #course-layout-* variant
+    (the flagship keeps the classic default)
+  · lesson layout variants spread across the flagship's lessons
+    (#lesson-layout-cinema / -focus / -right; -wide lives in the
+    Apex course; the first lesson keeps the classic default)
   · two training modules with three pages each
   · five blog posts, one per layout, plus sidebar/TOC variants
   · every internal facet tag WITH its description (chips read
@@ -90,6 +95,8 @@ tag("#training-col", "training-col", "Marks a post as a training module page")
 tag("#blog-col", "blog-col", "Marks a post as a blog article")
 
 # facets — the description IS the chip text
+tag("#course-level-beginner", "course-level-beginner", "Beginner")
+tag("#course-level-intermediate", "course-level-intermediate", "Intermediate")
 tag("#course-level-advanced", "course-level-advanced", "Advanced")
 
 # THE DURATION RAMP — one vocabulary for lessons, training pages
@@ -105,8 +112,27 @@ for h, mins in [(1, 0), (1, 15), (1, 30), (1, 45), (2, 0), (2, 30),
     label = f"{h}h" + (f" {mins}m" if mins else "")
     tag(f"#{slug}", slug, label)
 tag("#lesson-type-video", "lesson-type-video", "Video lesson")
+tag("#video-preview", "video-preview", "Cards play this post's video as a muted preview")
 tag("#lesson-type-audio", "lesson-type-audio", "Audio lesson")
 tag("#lesson-type-quiz", "lesson-type-quiz", "Quiz")
+
+# course layouts — restyle the course hero only (none → classic)
+tag("#course-layout-cinema", "course-layout-cinema", "Dark full-bleed hero, image as backdrop")
+tag("#course-layout-minimal", "course-layout-minimal", "Centered type, no image")
+tag("#course-layout-billboard", "course-layout-billboard", "Wide image banner on top")
+tag("#course-layout-boxed", "course-layout-boxed", "Hero framed in a floating card")
+
+# curriculum styles — restyle the course lesson list (none → classic)
+tag("#course-curriculum-cards", "course-curriculum-cards", "Curriculum as a tile grid")
+tag("#course-curriculum-timeline", "course-curriculum-timeline", "Curriculum as a vertical timeline")
+tag("#course-curriculum-compact", "course-curriculum-compact", "Dense curriculum rows, no excerpts")
+tag("#course-curriculum-checklist", "course-curriculum-checklist", "Check-marked curriculum rows")
+
+# lesson layouts — restyle the player only (none → classic)
+tag("#lesson-layout-right", "lesson-layout-right", "Curriculum rail on the right")
+tag("#lesson-layout-focus", "lesson-layout-focus", "No rail — collapsible contents, centered article")
+tag("#lesson-layout-cinema", "lesson-layout-cinema", "Dark hero card on the lesson header")
+tag("#lesson-layout-wide", "lesson-layout-wide", "Narrow rail, wide article")
 
 # blog options
 tag("#blog-layout-magazine", "blog-layout-magazine", "Full-bleed hero layout")
@@ -170,14 +196,16 @@ post("Flow Automation Masterclass", "flow-automation-masterclass",
      0, featured=True)
 
 lessons = [
+    # lesson 1 keeps the classic layout; the rest each demo one
+    # #lesson-layout-* variant (-wide lives in the Apex course)
     ("Planning your flow before you build", "planning-your-flow-before-you-build",
      ["duration-15m"], "Five questions that prevent ninety percent of flow rewrites."),
     ("Record-triggered flows in practice", "record-triggered-flows-in-practice",
-     ["lesson-type-video", "duration-30m"], "Build one alongside the video: entry criteria, paths, and a safe update."),
+     ["lesson-type-video", "duration-30m", "lesson-layout-cinema"], "Build one alongside the video: entry criteria, paths, and a safe update."),
     ("Flow error handling patterns", "flow-error-handling-patterns",
-     ["lesson-type-audio", "duration-15m"], "Fault paths, platform events, and what to tell the user when it breaks."),
+     ["lesson-type-audio", "duration-15m", "lesson-layout-focus"], "Fault paths, platform events, and what to tell the user when it breaks."),
     ("Check your understanding: flows", "check-your-understanding-flows",
-     ["lesson-type-quiz", "duration-10m"], "Ten scenarios. Decide: flow, trigger, or neither."),
+     ["lesson-type-quiz", "duration-10m", "lesson-layout-right"], "Ten scenarios. Decide: flow, trigger, or neither."),
 ]
 for i, (title, slug, extra, excerpt) in enumerate(lessons):
     lead = [embed("aqz-KE-bpKQ")] if "lesson-type-video" in extra else None
@@ -185,6 +213,68 @@ for i, (title, slug, extra, excerpt) in enumerate(lessons):
          [("The idea", "One concept per lesson, applied immediately in your own org."),
           ("Watch out for", "The mistake everyone makes at this step, and how to notice it early.")],
          1 + i, lead=lead)
+
+# FOUR MORE COURSES — one per #course-layout-* variant (the
+# flagship above keeps the classic default). Same mechanism:
+# public tag slug == course slug, lessons carry that tag first.
+more_courses = [
+    ("Apex Fundamentals", "apex-fundamentals", ["course-layout-cinema", "course-curriculum-cards"],
+     "course-level-intermediate", "duration-2h",
+     "Classes, triggers and governor limits — the parts of Apex you will actually write.",
+     [("Set up once, run anywhere", "A scratch org, the CLI, and a test class before your first trigger."),
+      ("Limits are the language", "Why every Apex decision is really a governor-limit decision.")],
+     [("Your first Apex class", "your-first-apex-class",
+       ["duration-20m", "lesson-layout-wide"],
+       "Write, deploy and test a class in twenty minutes."),
+      ("Triggers without tears", "triggers-without-tears",
+       ["duration-25m"],
+       "One trigger per object, logic in a handler, and why.")]),
+    ("Reports and Dashboards Crash Course", "reports-dashboards-crash-course", ["course-layout-minimal", "course-curriculum-compact"],
+     "course-level-beginner", "duration-1h",
+     "From a blank report to a dashboard your manager actually opens.",
+     [("Report types decide everything", "Pick the wrong one and no filter will save you."),
+      ("Dashboards are for questions", "Every widget should answer one question someone really asks.")],
+     [("Building your first report", "building-your-first-report",
+       ["duration-15m"],
+       "Rows, columns, filters — and the preview trap."),
+      ("Dashboards that get opened", "dashboards-that-get-opened",
+       ["duration-15m"],
+       "Three widgets, one audience, zero clutter.")]),
+    ("Data Modeling Deep Dive", "data-modeling-deep-dive", ["course-layout-billboard", "course-curriculum-timeline"],
+     "course-level-intermediate", "duration-2h-30m",
+     "Objects, relationships and the decisions you cannot cheaply undo.",
+     [("Lookup or master-detail", "The one relationship choice that follows you forever."),
+      ("Fields are cheap, objects are not", "When a picklist beats a child object, and when it does not.")],
+     [("Choosing the right relationship", "choosing-the-right-relationship",
+       ["duration-20m"],
+       "Lookup, master-detail, junction — decided with three questions."),
+      ("Record types without regret", "record-types-without-regret",
+       ["duration-20m"],
+       "What record types are for, and the three signs you have too many.")]),
+    ("Integration Patterns", "integration-patterns", ["course-layout-boxed", "course-curriculum-checklist"],
+     "course-level-advanced", "duration-3h",
+     "REST, platform events and middleware — moving data without losing it.",
+     [("Sync or async", "The latency question that picks your pattern for you."),
+      ("Idempotency first", "Design every integration to survive being run twice.")],
+     [("Calling out with REST", "calling-out-with-rest",
+       ["duration-25m"],
+       "Named credentials, callouts and the test mock you need."),
+      ("Platform events in practice", "platform-events-in-practice",
+       ["duration-25m"],
+       "Publish, subscribe, replay — and when a flow is the subscriber.")]),
+]
+ch = 80
+for name, cslug, styles, level, duration, excerpt, sections, course_lessons in more_courses:
+    tag(name, cslug, excerpt, "public")
+    post(name, cslug, [cslug, "course-col"] + styles + [level, duration],
+         excerpt, sections, ch)
+    ch += 1
+    for ltitle, lslug, extra, lexcerpt in course_lessons:
+        post(ltitle, lslug, [cslug, "lesson-col"] + extra, lexcerpt,
+             [("The idea", "One concept per lesson, applied immediately in your own org."),
+              ("Watch out for", "The mistake everyone makes at this step, and how to notice it early.")],
+             ch)
+        ch += 1
 
 # TRAINING — the module IS the primary tag; pages in publish order.
 modules = {
@@ -268,7 +358,9 @@ CHAPTERS = {"type": "markdown", "version": 1, "markdown": (
 
 video_durations = ["duration-5m", "duration-10m", "duration-15m", "duration-20m"]
 for i, (title, slug, vid, excerpt) in enumerate(videos):
-    post(title, slug, ["video-col", "automation", video_durations[i]], excerpt,
+    # the first two demo the card video preview (#video-preview)
+    preview = ["video-preview"] if i < 2 else []
+    post(title, slug, ["video-col", "automation", video_durations[i]] + preview, excerpt,
          [("What you will see", "Screen and narration only — no slides, no intro music."),
           ("Mentioned in this video", "Links and docs referenced on screen, collected for later.")],
          30 + i, lead=[embed(vid), CHAPTERS])
@@ -359,6 +451,105 @@ page("Sponsor us", "sponsor",
       ("What we will not run", "Anything we would not use ourselves. Sponsorship never changes editorial content."),
       ("Get in touch", "Email sponsor@namastesalesforce.com with what you are building.")], 70)
 
+# THE STYLE GUIDE — /style-guide/: one page exercising every
+# Koenig card the editor can produce, in the order an author
+# meets them. Images reuse the generated thumbs (real assets).
+def sg_text(t, fmt=0):
+    n = text(t); n["format"] = fmt; return n
+
+def sg_quote(t, kind="quote"):
+    return {"children": [text(t)], "direction": "ltr", "format": "",
+            "indent": 0, "type": kind, "version": 1}
+
+THUMB = "__GHOST_URL__/assets/images/thumbs/{}.svg"
+
+def sg_image(slug, caption, width="regular"):
+    return {"type": "image", "version": 1, "src": THUMB.format(slug),
+            "width": 1200, "height": 675, "title": "", "alt": caption,
+            "caption": caption, "cardWidth": width, "href": ""}
+
+style_guide_nodes = [
+    para("Every block the Ghost editor can produce, on one page. "
+         "Write with anything below — the theme has it covered."),
+
+    h2("Text"),
+    para("Paragraphs carry the reading rhythm. Bold, italics, links and inline code are set inline; everything else on this page is a card."),
+    {"children": [sg_text("Bold pulls weight", 1), text(", "), sg_text("italics lean in", 2),
+                  text(", and "), sg_text("inline code sits in a chip", 16), text(".")],
+     "direction": "ltr", "format": "", "indent": 0, "type": "paragraph", "version": 1},
+    ul("Bulleted lists get accent markers",
+       "Keep items parallel in shape",
+       "Three is a good number"),
+    sg_quote("A quote card: one strong sentence beats three careful ones."),
+    sg_quote("The alternate quote stands centered, for the line the whole piece hangs on.", "aside"),
+
+    h2("Images"),
+    sg_image("apex-fundamentals", "A regular image sits inside the measure."),
+    sg_image("data-modeling-deep-dive", "A wide image steps out of the column.", "wide"),
+    sg_image("integration-patterns", "A full-bleed image owns the viewport.", "full"),
+    {"type": "gallery", "version": 1, "caption": "A gallery packs a row.",
+     "images": [
+        {"row": 0, "fileName": "flow-automation-masterclass.svg", "src": THUMB.format("flow-automation-masterclass"), "width": 1200, "height": 675},
+        {"row": 0, "fileName": "reports-dashboards-crash-course.svg", "src": THUMB.format("reports-dashboards-crash-course"), "width": 1200, "height": 675},
+        {"row": 0, "fileName": "salesforce-in-five-minutes.svg", "src": THUMB.format("salesforce-in-five-minutes"), "width": 1200, "height": 675},
+     ]},
+
+    h2("Callouts"),
+    {"type": "callout", "version": 1, "calloutEmoji": "💡",
+     "calloutText": "The default callout carries a tip worth stopping for.", "backgroundColor": "grey"},
+    {"type": "callout", "version": 1, "calloutEmoji": "⚠️",
+     "calloutText": "The red callout warns before the step that bites.", "backgroundColor": "red"},
+    {"type": "callout", "version": 1, "calloutEmoji": "🚀",
+     "calloutText": "The accent callout announces something shipped.", "backgroundColor": "accent"},
+
+    h2("Interactive"),
+    {"type": "toggle", "version": 1, "heading": "A toggle hides the long answer",
+     "content": "<p>Readers who need the detail open it; everyone else keeps their place. Perfect for FAQs and asides that would break the flow.</p>"},
+    {"type": "button", "version": 1, "buttonText": "A button card",
+     "alignment": "center", "buttonUrl": "__GHOST_URL__/courses/"},
+    {"type": "bookmark", "version": 1, "url": "https://ghost.org/",
+     "metadata": {"url": "https://ghost.org/", "title": "Ghost: The best open source blog & newsletter platform",
+                  "description": "Beautiful, modern publishing with email newsletters and paid subscriptions built-in.",
+                  "author": None, "publisher": "Ghost", "thumbnail": THUMB.format("namaste-salesforce-is-live"),
+                  "icon": "https://ghost.org/favicon.ico"}, "caption": ""},
+
+    h2("Media"),
+    embed("jNQXAC9IVRw", "An embed card — paste a URL, get a player."),
+    {"type": "codeblock", "version": 1, "language": "apex", "caption": "A code card with a language.",
+     "code": "public with sharing class Greeter {\n    public static String greet(String name) {\n        return 'Namaste, ' + name + '!';\n    }\n}"},
+    {"type": "markdown", "version": 1, "markdown":
+     "| Helper | Does |\n|---|---|\n| `{{#get}}` | Queries the API |\n| `{{#match}}` | Compares values |\n| `{{#foreach}}` | Iterates with @first/@last |"},
+    {"type": "html", "version": 1, "html":
+     '<p style="text-align:center"><em>An HTML card renders exactly what you give it.</em></p>'},
+
+    h2("Big furniture"),
+    {"type": "header", "version": 2, "size": "small", "style": "dark",
+     "backgroundColor": "#032d60", "backgroundImageEnabled": False,
+     "textColor": "#FFFFFF", "buttonColor": "#1b96ff", "buttonTextColor": "#FFFFFF",
+     "buttonEnabled": True, "buttonText": "Browse courses", "buttonUrl": "__GHOST_URL__/courses/",
+     "header": "A header card breaks the page", "subheader": "Use one to open a chapter or close with a call to action.",
+     "layout": "wide", "alignment": "center", "swapped": False},
+    {"type": "product", "version": 1, "productButtonEnabled": True,
+     "productRatingEnabled": True, "productStarRating": 5,
+     "productButton": "Start learning", "productUrl": "__GHOST_URL__/courses/",
+     "productTitle": "Flow Automation Masterclass",
+     "productDescription": "The product card sells one thing: image, stars, pitch, button.",
+     "productImageSrc": THUMB.format("flow-automation-masterclass"),
+     "productImageWidth": 1200, "productImageHeight": 675},
+    {"type": "horizontalrule", "version": 1},
+    para("That is the whole vocabulary. If a card renders oddly, fix the theme — never the content."),
+]
+
+sg_id = oid(); sg_when = ts(74)
+posts.append({
+    "id": sg_id, "title": "Style Guide", "slug": "style-guide",
+    "lexical": lexical(*style_guide_nodes),
+    "feature_image": None, "featured": 0,
+    "type": "page", "status": "published", "visibility": "public",
+    "custom_excerpt": "Every editor card this theme styles, on one page.",
+    "created_at": sg_when, "updated_at": sg_when, "published_at": sg_when,
+})
+
 # ── settings: navigation with the dropdown convention ───────────
 settings = [
     {"key": "navigation", "value": json.dumps([
@@ -371,6 +562,7 @@ settings = [
         {"label": "-Newsletter", "url": "/newsletter/"},
         {"label": "-Changelog", "url": "/changelog/"},
         {"label": "-Sponsor us", "url": "/sponsor/"},
+        {"label": "-Start project", "url": "https://github.com/imswarnil"},
         {"label": "-Sitemap", "url": "/sitemap/"},
         {"label": "-Guestbook", "url": "/guestbook/"},
         {"label": "-Contact", "url": "/contact/"},

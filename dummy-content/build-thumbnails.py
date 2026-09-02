@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Theme-styled SVG thumbnails.
+"""Theme-styled SVG thumbnails — the CLEAN set.
 
-Reads every post whose feature_image is a picsum placeholder (or is
-missing but should have one), draws a branded 1200x675 SVG — navy
-gradient, engineering grid, the collection's icon, kicker + wrapped
-title — into assets/images/thumbs/{slug}.svg, and repoints the post's
-feature_image at /assets/images/thumbs/{slug}.svg.
+Reads every post whose feature_image is a picsum placeholder, one of
+our own generated thumbs, or missing, and draws a clean 1200x675 SVG
+into assets/images/thumbs/{slug}.svg, then repoints the post's
+feature_image at it.
+
+Two treatments:
+  · default    flat navy canvas, kicker, wrapped title, brand line —
+               no grid, no glow, no gradient
+  · video      posts in the video library or tagged #lesson-type-video:
+               a solid colour and a centered video icon, nothing else
 
 Run from the theme root:  python3 dummy-content/build-thumbnails.py
 """
@@ -28,6 +33,9 @@ KICKERS = {"course": "COURSE", "lesson": "LESSON", "training": "TRAINING",
            "blog": "BLOG", "video": "VIDEO", "newsletter": "NEWSLETTER",
            "changelog": "CHANGELOG"}
 
+NAVY   = "#032d60"   # brand-800 — the flat canvas
+ACCENT = "#1b96ff"   # brand-400 — kicker + rule
+
 def kind_of(slugs):
     for group, members in {
         "course": ("hash-course-col", "hash-courses-col"),
@@ -42,30 +50,53 @@ def kind_of(slugs):
             return group
     return "blog"
 
-def svg(title, kind):
-    lines = textwrap.wrap(title, 26)[:3]
+def svg_video():
+    """Video thumb: one solid colour under a faint tiled icon
+    pattern — NO centre icon. The video card overlays its own
+    play badge; a drawn icon here would double it."""
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+  <defs>
+    <pattern id="icons" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
+      <g transform="translate(30,30) scale(2.2)" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{ICONS["video"]}</g>
+      <g transform="translate(105,105) scale(1.4)" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{ICONS["video"]}</g>
+    </pattern>
+  </defs>
+  <rect width="1200" height="675" fill="{NAVY}"/>
+  <rect width="1200" height="675" fill="url(#icons)"/>
+</svg>'''
+
+def svg_clean(title, kind):
+    """Default thumb: flat navy, kicker + wrapped title + brand
+    line on the left, a geometric illustration on the right —
+    glow circle, ring, dot grid, and the collection icon in a
+    rounded tile."""
+    lines = textwrap.wrap(title, 24)[:3]
     tspans = "".join(
         f'<tspan x="80" dy="{0 if i == 0 else 76}">{html.escape(line)}</tspan>'
         for i, line in enumerate(lines))
+    dots = "".join(
+        f'<circle cx="{x}" cy="{y}" r="3"/>'
+        for x in range(0, 145, 36) for y in range(0, 109, 36))
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Figtree,-apple-system,'Segoe UI',Roboto,sans-serif">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#051222"/><stop offset="0.65" stop-color="#032d60"/><stop offset="1" stop-color="#0b5cab"/>
-    </linearGradient>
-    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M48 0H0v48" fill="none" stroke="rgba(27,150,255,0.16)" stroke-width="1"/>
-    </pattern>
-    <radialGradient id="glow" cx="0.85" cy="0.15" r="0.8">
-      <stop offset="0" stop-color="rgba(27,150,255,0.5)"/><stop offset="1" stop-color="rgba(27,150,255,0)"/>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="rgba(27,150,255,0.35)"/><stop offset="1" stop-color="rgba(27,150,255,0)"/>
     </radialGradient>
+    <clipPath id="frame"><rect width="1200" height="675"/></clipPath>
   </defs>
-  <rect width="1200" height="675" fill="url(#bg)"/>
-  <rect width="1200" height="675" fill="url(#grid)"/>
-  <rect width="1200" height="675" fill="url(#glow)"/>
-  <g transform="translate(920,80) scale(9)" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9">{ICONS[kind]}</g>
-  <text x="80" y="120" font-size="26" font-weight="700" letter-spacing="6" fill="#1b96ff">{KICKERS[kind]}</text>
+  <rect width="1200" height="675" fill="{NAVY}"/>
+  <g clip-path="url(#frame)">
+    <circle cx="985" cy="300" r="290" fill="url(#glow)"/>
+    <circle cx="985" cy="300" r="180" fill="none" stroke="rgba(27,150,255,0.35)" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>
+    <circle cx="1140" cy="118" r="46" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+    <circle cx="822" cy="510" r="14" fill="rgba(27,150,255,0.45)"/>
+    <g fill="rgba(255,255,255,0.12)" transform="translate(1042,470)">{dots}</g>
+    <rect x="895" y="210" width="180" height="180" rx="36" fill="rgba(27,150,255,0.16)" stroke="rgba(27,150,255,0.55)" stroke-width="2"/>
+    <g transform="translate(931,246) scale(4.5)" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{ICONS[kind]}</g>
+  </g>
+  <text x="80" y="120" font-size="26" font-weight="700" letter-spacing="6" fill="{ACCENT}">{KICKERS[kind]}</text>
   <text x="80" y="330" font-size="64" font-weight="800" fill="#ffffff">{tspans}</text>
-  <rect x="80" y="560" width="120" height="6" rx="3" fill="#1b96ff"/>
+  <rect x="80" y="560" width="120" height="6" rx="3" fill="{ACCENT}"/>
   <text x="80" y="612" font-size="24" font-weight="600" letter-spacing="2" fill="rgba(244,246,248,0.75)">NAMASTE SALESFORCE</text>
 </svg>'''
 
@@ -85,11 +116,17 @@ def main():
 
     changed = 0
     for pid, slug, title, image, tag_slugs in rows:
-        needs = not image or 'picsum.photos' in image
+        # regenerating our own thumbs is the point — only images the
+        # editor chose by hand are left alone
+        needs = (not image or 'picsum.photos' in image
+                 or '/assets/images/thumbs/' in image)
         if not needs:
             continue
-        kind = kind_of(tag_slugs or "")
-        (OUT / f"{slug}.svg").write_text(svg(title, kind))
+        slugs = tag_slugs or ""
+        kind = kind_of(slugs)
+        videoish = kind == "video" or "hash-lesson-type-video" in slugs
+        art = svg_video() if videoish else svg_clean(title, kind)
+        (OUT / f"{slug}.svg").write_text(art)
         # Ghost stores internal URLs with the __GHOST_URL__ token and
         # substitutes the site URL when serving. A bare relative path
         # gets nulled by its URL-normalisation job — learned live.

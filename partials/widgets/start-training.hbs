@@ -1,0 +1,15 @@
+{{!-- "Start training" box card — a cross-sell into the training
+modules, live-counted so the pitch never goes stale. Renders
+nothing while no module has pages. --}}
+{{!-- NB: never alias the get block as |t| — it would shadow the
+translation helper for everything inside. --}}
+{{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |trainingPages|}}
+    {{#if trainingPages}}
+    <div class="widget widget-cta">
+        <span class="widget-cta-icon">{{> "icons/layers"}}</span>
+        <h4>{{t "Start training"}}</h4>
+        <p>{{t "Short, hands-on modules — pick one and build along in your own org."}}</p>
+        <a class="btn btn-sm" href="{{@site.url}}/training/">{{> "icons/rocket"}} {{t "Browse modules"}}</a>
+    </div>
+    {{/if}}
+{{/get}}
