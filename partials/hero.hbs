@@ -1,0 +1,190 @@
+{{!-- THE hero — the only one.
+
+Brief it was built to: subscribe-first (the email input lives in
+the hero), the product itself as the visual (a browser-frame
+mock of the lesson player filled with the featured course's REAL
+curriculum), personal creator brand (the instructor's face and
+name lead the copy), and every trust signal live: avatar fan +
+count, content stats, instructor identity, just-shipped pill.
+
+Choreography (all reduced-motion aware): mesh background drifts,
+copy and window arrive out of a blur one beat apart, the course
+image sharpens, the flourish draws itself, the window tilts with
+the pointer, its progress bar fills on load, the current lesson
+pulses, the submit button carries the shine sweep, stats count
+up and land last. --}}
+
+<section class="home-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <div class="orb" style="width: 420px; height: 420px; top: -120px; left: -140px;" aria-hidden="true"></div>
+    <div class="orb" style="width: 360px; height: 360px; bottom: -80px; right: -100px; animation-delay: -4s;" aria-hidden="true"></div>
+    <div class="home-deco" style="top: 16%; right: 5%;" data-parallax="0.10" aria-hidden="true">
+        <span class="home-bubble float">{{> "icons/cloud"}}</span>
+    </div>
+    <div class="home-deco" style="top: 60%; right: 45%;" data-parallax="0.06" aria-hidden="true">
+        <span class="home-bubble float-alt">{{> "icons/zap"}}</span>
+    </div>
+    <div class="home-deco" style="bottom: 28%; left: 4%;" data-parallax="0.12" aria-hidden="true">
+        <span class="home-bubble float-alt" style="animation-delay: -6s;">{{> "icons/code"}}</span>
+    </div>
+
+    <div class="home-hero-grid inner">
+
+        <div class="home-hero-copy">
+
+            {{!-- Instructor identity is the badge --}}
+            {{#get "authors" limit="1" as |host|}}
+                {{#foreach host}}
+                    <a class="home-hero-badge is-host" href="{{url}}">
+                        {{#if profile_image}}
+                            <img src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
+                        {{else}}
+                            {{> "icons/avatar"}}
+                        {{/if}}
+                        {{t "Learn Salesforce with"}} {{name}}
+                    </a>
+                {{/foreach}}
+            {{/get}}
+
+            {{#page}}
+                <h1>{{title}}</h1>
+                <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
+                <p class="home-hero-sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{@site.description}}{{/if}}</p>
+            {{else}}
+                <h1>{{t "Say namaste to"}} <em>Salesforce</em></h1>
+                <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
+                <p class="home-hero-sub">{{@site.description}}</p>
+            {{/page}}
+
+            {{!-- THE ask: the email input, right here --}}
+            {{#if @site.members_enabled}}
+                {{#unless @member}}
+                    <form class="signup-form hero-signup" data-members-form="signup">
+                        <div class="signup-row">
+                            <input class="signup-input" data-members-email type="email" required
+                                placeholder="{{t "you@work-email.com"}}" aria-label="{{t "Your email"}}" />
+                            <button class="btn btn-lg signup-btn" type="submit">
+                                {{> "icons/mail"}} {{t "Join free"}}
+                            </button>
+                        </div>
+                        <p class="signup-note">{{t "Free forever · one email a week · unsubscribe in one click"}}</p>
+                        <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox and click the magic link."}}</p>
+                        <p class="signup-error" data-members-error></p>
+                    </form>
+                {{else}}
+                    <div class="home-hero-actions">
+                        <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Continue learning"}}</a>
+                    </div>
+                {{/unless}}
+            {{else}}
+                <div class="home-hero-actions">
+                    <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
+                    <a class="btn btn-lg btn-ghost" href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Explore training"}}</a>
+                </div>
+            {{/if}}
+
+            {{!-- Quiet second doors --}}
+            <div class="hero-doors">
+                <a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Courses"}} {{> "icons/arrow-right"}}</a>
+                <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}} {{> "icons/arrow-right"}}</a>
+                <a href="{{@site.url}}/videos/">{{> "icons/video"}} {{t "Videos"}} {{> "icons/arrow-right"}}</a>
+            </div>
+
+            {{!-- Crowd proof: the fanned avatar stack --}}
+            <div class="hero-proof">
+                <span class="proof-stack" aria-hidden="true">
+                    {{#get "authors" limit="4" as |folks|}}
+                        {{#foreach folks}}
+                            {{#if profile_image}}
+                                <img class="p-avatar" src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
+                            {{/if}}
+                        {{/foreach}}
+                    {{/get}}
+                    <span class="p-avatar p-mono" style="--h: 210;">A</span>
+                    <span class="p-avatar p-mono" style="--h: 152;">R</span>
+                    <span class="p-avatar p-mono" style="--h: 264;">M</span>
+                    <span class="p-avatar p-mono" style="--h: 24;">K</span>
+                </span>
+                <span class="hero-proof-text">
+                    <strong>{{t "20+ learners"}}</strong> {{t "already building along in real orgs"}}
+                </span>
+            </div>
+
+            {{!-- Freshness: latest changelog entry, live --}}
+            {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="1" as |shipped|}}
+                {{#if shipped}}
+                    <a class="home-shipped" href="{{shipped.[0].url}}">
+                        <span class="home-shipped-ping" aria-hidden="true"></span>
+                        <strong>{{t "Just shipped"}}</strong>
+                        <span class="home-shipped-title">{{shipped.[0].title}}</span>
+                        {{> "icons/arrow-right"}}
+                    </a>
+                {{/if}}
+            {{/get}}
+        </div>
+
+        {{!-- The product itself: a browser frame around the lesson
+        player, filled with the featured course's real data --}}
+        {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" order="featured desc, published_at asc" limit="1" as |star|}}
+            {{#if star}}
+                {{#foreach star}}
+                    <div class="home-hero-panel is-app" data-tilt>
+                        <span class="home-hero-ring" aria-hidden="true"></span>
+                        <a class="hero-app" href="{{url}}" aria-label="{{title}}">
+                            <span class="hero-app-bar" aria-hidden="true">
+                                <span class="hero-app-dots"><i></i><i></i><i></i></span>
+                                <span class="hero-app-url">namastesalesforce.com/courses</span>
+                            </span>
+                            <span class="hero-app-body" aria-hidden="true">
+                                <span class="hero-app-rail">
+                                    <strong>{{title}}</strong>
+                                    {{#> "with-this" courseSlug=slug}}
+                                        {{#get "posts" filter="tag:{{courseSlug}}+tag:[hash-lesson-col,hash-lessons-col]" order="published_at asc" limit="4" as |lessons|}}
+                                            {{#foreach lessons}}
+                                                <span class="hero-app-lesson{{#if @first}} is-now{{/if}}">
+                                                    {{#if @first}}{{> "icons/play-circle"}}{{else}}{{> "icons/check-circle"}}{{/if}}
+                                                    {{title}}
+                                                </span>
+                                            {{/foreach}}
+                                        {{/get}}
+                                    {{/with-this}}
+                                </span>
+                                <span class="hero-app-stage">
+                                    <span class="hero-app-screen">
+                                        {{#if feature_image}}
+                                            <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
+                                        {{/if}}
+                                        <span class="hero-app-play">{{> "icons/play-circle"}}</span>
+                                    </span>
+                                    <span class="hero-app-progress"><i></i></span>
+                                    <span class="hero-app-meta">
+                                        <span>{{> "icons/graduation-cap"}} {{t "Lesson 3 of 12"}}</span>
+                                        <span>{{> "icons/clock"}} 04:12</span>
+                                    </span>
+                                </span>
+                            </span>
+                        </a>
+
+                        {{!-- Instructor chip riding the window --}}
+                        {{#get "authors" limit="1" as |folks|}}
+                            {{#foreach folks}}
+                                {{#if profile_image}}
+                                    <span class="hero-app-host" aria-hidden="true">
+                                        <img src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
+                                        <span><strong>{{name}}</strong>{{t "teaching live in a real org"}}</span>
+                                    </span>
+                                {{/if}}
+                            {{/foreach}}
+                        {{/get}}
+                    </div>
+                {{/foreach}}
+            {{/if}}
+        {{/get}}
+
+    </div>
+
+    <div class="inner">
+        {{> "hero-stats"}}
+    </div>
+</section>

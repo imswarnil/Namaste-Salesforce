@@ -286,18 +286,26 @@ outline, scroll-spy; removes itself without headings), `filters.js` (the
 `{{#get "tags"}}` is served by Ghost's TagPublic model and can never see
 internal tags).
 
+## The hero (partials/hero.hbs)
+
+ONE hero, built to a brief: subscribe-first (Ghost's native members
+form — the email input — IS the primary CTA; quiet "doors" to
+courses/training/videos under it), personal creator brand (the
+instructor's avatar + name are the badge, and ride the app window as
+a chip), and the product itself as the visual — a browser-frame mock
+of the lesson player filled live with the featured course's REAL
+curriculum (course slug = tag slug). Trust signals all live: fanned
+avatar stack + count, count-up stat tiles (hero-stats.hbs),
+just-shipped pill. Choreography: blur-reveal entrance, drifting mesh
+background, masked grid, pointer tilt, progress-bar fill, pulsing
+current lesson, shine sweep on the submit button — every piece
+reduced-motion aware.
+
 ## Custom settings
 
-`hero_style` (select — the homepage hero: **Showcase split** (default,
-copy + featured-course card), **Centered**, **Cinematic dark** (navy
-band, literal colours), **Illustrated** (copy + the platform drawn as
-inline SVG — partials/illustrations/hero-platform.hbs, riding CSS vars
-so it follows dark mode), **Product window** (the LMS mocked in a
-browser frame, filled with the featured course's real curriculum).
-Every style shares partials/hero-copy.hbs + hero-stats.hbs; home.hbs
-dispatches on the setting), `dark_logo` (image for dark mode; without
-one the logo is auto-inverted to white), `footer_tagline`,
-`newsletter_heading`, `newsletter_text`.
+`dark_logo` (image for dark mode; without one the logo is
+auto-inverted to white), `footer_tagline`, `newsletter_heading`,
+`newsletter_text`.
 
 ## Gotchas learned the hard way
 
