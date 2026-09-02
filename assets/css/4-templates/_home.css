@@ -2881,31 +2881,37 @@
 /*  Hero refinements: cover background, lo-fi screens, tidy collage
     ============================================================ */
 
-/* Publication cover as the hero's backdrop — masked so it fades
-   into the page long before it fights the copy. */
-.home-hero-cover {
+/* The crosshair blueprint — the hero's own pattern. An SVG tile
+   (plus marks at every intersection, a micro-dot at each cell's
+   heart) used as a MASK over a solid accent wash, so the pattern
+   recolours with light/dark mode instead of shipping baked-in
+   colours. A radial mask layer fades it toward the edges. */
+.home-hero-pattern {
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    background: var(--accent);
+    opacity: 0.11;
+    -webkit-mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M0 -6v12M-6 0h12M72 -6v12M66 0h12M0 66v12M-6 72h12M72 66v12M66 72h12' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='36' cy='36' r='1.7' fill='%23000'/%3E%3C/svg%3E"),
+        radial-gradient(120% 90% at 50% 30%, #000 45%, transparent 100%);
+    -webkit-mask-size: 72px 72px, 100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M0 -6v12M-6 0h12M72 -6v12M66 0h12M0 66v12M-6 72h12M72 66v12M66 72h12' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='36' cy='36' r='1.7' fill='%23000'/%3E%3C/svg%3E"),
+        radial-gradient(120% 90% at 50% 30%, #000 45%, transparent 100%);
+    mask-size: 72px 72px, 100% 100%;
+    mask-composite: intersect;
 }
 
-.home-hero-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.13;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 96%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 96%);
-}
-
-html[data-theme="dark"] .home-hero-cover img {
-    opacity: 0.2;
+html[data-theme="dark"] .home-hero-pattern {
+    opacity: 0.16;
 }
 
 @media (prefers-color-scheme: dark) {
-    html:not([data-theme]) .home-hero-cover img {
-        opacity: 0.2;
+    html:not([data-theme]) .home-hero-pattern {
+        opacity: 0.16;
     }
 }
 
