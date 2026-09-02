@@ -65,11 +65,28 @@ page goes stale when content changes. --}}
                 </a>
             </div>
 
-            <ul class="home-hero-points">
-                <li>{{> "icons/check-circle"}} {{t "Free forever"}}</li>
-                <li>{{> "icons/check-circle"}} {{t "Built in a real org"}}</li>
-                <li>{{> "icons/check-circle"}} {{t "No slideware"}}</li>
-            </ul>
+            {{!-- Social proof: overlapping avatar stack — first fully
+            visible, the rest tucked behind it; hovering spreads the
+            fan and pops the hovered face forward. Real author photos
+            first, decorative monogram circles filling the crowd. --}}
+            <div class="hero-proof">
+                <span class="proof-stack" aria-hidden="true">
+                    {{#get "authors" limit="4" as |folks|}}
+                        {{#foreach folks}}
+                            {{#if profile_image}}
+                                <img class="p-avatar" src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
+                            {{/if}}
+                        {{/foreach}}
+                    {{/get}}
+                    <span class="p-avatar p-mono" style="--h: 210;">A</span>
+                    <span class="p-avatar p-mono" style="--h: 152;">R</span>
+                    <span class="p-avatar p-mono" style="--h: 264;">M</span>
+                    <span class="p-avatar p-mono" style="--h: 24;">K</span>
+                </span>
+                <span class="hero-proof-text">
+                    <strong>{{t "20+ learners"}}</strong> {{t "already building along in real orgs — free forever, join them"}}
+                </span>
+            </div>
 
             {{!-- The site is alive: latest changelog entry, live --}}
             {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="1" as |shipped|}}
@@ -88,7 +105,7 @@ page goes stale when content changes. --}}
         rendered live, with a floating video chip. --}}
         {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags" order="featured desc, published_at asc" limit="1" as |star|}}
             {{#if star}}
-                <div class="home-hero-panel">
+                <div class="home-hero-panel" data-tilt>
                     <span class="home-hero-ring" aria-hidden="true"></span>
                     <span class="home-hero-deck" aria-hidden="true"></span>
                     {{#foreach star}}
@@ -150,52 +167,6 @@ page goes stale when content changes. --}}
     </div>
 </section>
 
-{{!-- The founder note — a cutout avatar circle straddling the
-hero's lower edge, with one honest line. Live author data. --}}
-{{#get "authors" limit="1" as |host|}}
-    {{#if host}}
-        <div class="outer">
-            <div class="inner">
-                {{#foreach host}}
-                    <figure class="home-founder">
-                        {{#if profile_image}}
-                            <img class="home-founder-avatar" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="lazy" />
-                        {{else}}
-                            <span class="home-founder-avatar is-icon" aria-hidden="true">{{> "icons/avatar"}}</span>
-                        {{/if}}
-                        <blockquote>
-                            <p>&ldquo;{{t "Every lesson here was built in a real org — clicks, code, and the mistakes left in."}}&rdquo;</p>
-                            <figcaption>&mdash; {{name}}, {{t "your instructor"}}</figcaption>
-                        </blockquote>
-                    </figure>
-                {{/foreach}}
-            </div>
-        </div>
-    {{/if}}
-{{/get}}
-
-{{!-- Why here --}}
-<section class="section outer">
-    <div class="inner">
-        <div class="home-props" data-animate-stagger>
-            <div class="home-prop">
-                <span class="home-prop-icon">{{> "icons/graduation-cap"}}</span>
-                <h3>{{t "Structured courses"}}</h3>
-                <p>{{t "Lesson-by-lesson paths with a clear finish line — start at one, end with something working in your own org."}}</p>
-            </div>
-            <div class="home-prop">
-                <span class="home-prop-icon">{{> "icons/layers"}}</span>
-                <h3>{{t "Practical training"}}</h3>
-                <p>{{t "Modular reference you can work straight through: the patterns, conventions and setups real projects run on."}}</p>
-            </div>
-            <div class="home-prop">
-                <span class="home-prop-icon">{{> "icons/pen"}}</span>
-                <h3>{{t "Honest writing"}}</h3>
-                <p>{{t "Notes from the ecosystem — releases that matter, certifications that don't, and decisions explained."}}</p>
-            </div>
-        </div>
-    </div>
-</section>
 
 {{!-- The journey — four waypoints on a trail the scroll draws.
 Two copies of the same curve: a dotted under-path always visible,

@@ -108,6 +108,24 @@
         }
     });
 
+    /* Pointer tilt — [data-tilt] leans its .card toward the cursor.
+       CSS reads the --rx/--ry vars; fine pointers only. */
+    if (window.matchMedia('(pointer: fine)').matches) {
+        document.querySelectorAll('[data-tilt]').forEach(function (panel) {
+            panel.addEventListener('mousemove', function (e) {
+                var rect = panel.getBoundingClientRect();
+                var x = (e.clientX - rect.left) / rect.width - 0.5;
+                var y = (e.clientY - rect.top) / rect.height - 0.5;
+                panel.style.setProperty('--ry', (x * 6).toFixed(2) + 'deg');
+                panel.style.setProperty('--rx', (-y * 6).toFixed(2) + 'deg');
+            });
+            panel.addEventListener('mouseleave', function () {
+                panel.style.setProperty('--rx', '0deg');
+                panel.style.setProperty('--ry', '0deg');
+            });
+        });
+    }
+
     if (!drawn.length && !floaters.length) {
         return;
     }
