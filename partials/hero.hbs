@@ -1,28 +1,27 @@
 {{!-- THE hero — Swarnil's story, told by the site itself.
 
-Left: the story (7+ years in IT, learning in public, build first
-→ share how, aiming at GTM engineering in the AI era), a compact
-signup, the avatar-fan proof, the shipped pill, and the social
-row. Right: the whole platform as a connected stack of screens —
-the featured course in an app window, the latest video in a
-camcorder frame (REC blinking, muted autoplay when the post
-carries #video-preview), the newest training stop as a waypoint
-card, the latest blog post as a sheet of writing, the latest
-issue as an envelope, the latest changelog entry as a shipped
-badge — every one live data, hanging off one dashed spine.
-Below the grid: every collection as one inline strip. --}}
+Identity comes straight from Ghost: the headline is @site.title,
+the sub is @site.description, and when a publication cover is
+set (Admin → Design → Publication cover) it becomes the hero's
+background — masked and faded so the copy always wins.
+
+Right: the stack — every format as a SMALL, low-fidelity screen
+(skeleton bars and shapes, not real meta) so each card reads as
+WHAT IT IS at a glance: an app window, a camcorder, a waypoint,
+a sheet of writing, an envelope, a shipped badge. Every card
+still links to the real latest post of its kind; the title rides
+along as the accessible label. --}}
 
 <section class="home-hero outer relative">
+    {{#if @site.cover_image}}
+        <div class="home-hero-cover" aria-hidden="true">
+            <img src="{{img_url @site.cover_image size="xl"}}" alt="" loading="eager" fetchpriority="high" />
+        </div>
+    {{/if}}
     <div class="bg-grid" aria-hidden="true"></div>
 
     <div class="orb" style="width: 420px; height: 420px; top: -120px; left: -140px;" aria-hidden="true"></div>
     <div class="orb" style="width: 360px; height: 360px; bottom: -80px; right: -100px; animation-delay: -4s;" aria-hidden="true"></div>
-    <div class="home-deco" style="top: 14%; left: 44%;" data-parallax="0.08" aria-hidden="true">
-        <span class="home-bubble float">{{> "icons/cloud"}}</span>
-    </div>
-    <div class="home-deco" style="bottom: 26%; left: 4%;" data-parallax="0.12" aria-hidden="true">
-        <span class="home-bubble float-alt" style="animation-delay: -6s;">{{> "icons/code"}}</span>
-    </div>
 
     <div class="home-hero-grid inner">
 
@@ -41,15 +40,9 @@ Below the grid: every collection as one inline strip. --}}
                 {{/foreach}}
             {{/get}}
 
-            {{#page}}
-                <h1>{{title}}</h1>
-                <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
-                <p class="home-hero-sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Namaste! I'm seven-plus years into IT, and this site is my rule made public: build the thing first, then share exactly how. Courses, training, videos and notes — all from real builds, mistakes left in."}}{{/if}}</p>
-            {{else}}
-                <h1>{{t "I build first."}} <em>{{t "Then I show you how."}}</em></h1>
-                <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
-                <p class="home-hero-sub">{{t "Namaste! I'm seven-plus years into IT, and this site is my rule made public: build the thing first, then share exactly how. Courses, training, videos and notes — all from real builds, mistakes left in."}}</p>
-            {{/page}}
+            <h1>{{@site.title}}</h1>
+            <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
+            <p class="home-hero-sub">{{#if @site.description}}{{@site.description}}{{else}}{{t "Namaste! I'm seven-plus years into IT, and this site is my rule made public: build the thing first, then share exactly how."}}{{/if}}</p>
 
             <ul class="hero-facts">
                 <li>{{> "icons/shield"}} {{t "7+ years in IT"}}</li>
@@ -125,31 +118,25 @@ Below the grid: every collection as one inline strip. --}}
             </div>
         </div>
 
-        {{!-- The stack: every format, one spine --}}
-        <div class="hero-stack" aria-hidden="false">
+        {{!-- The stack: every format as a small lo-fi screen.
+        Skeleton bars, not meta — each card reads as WHAT it is. --}}
+        <div class="hero-stack">
             <span class="hero-stack-spine" aria-hidden="true"></span>
 
-            {{!-- 1 · the featured course, as the app --}}
+            {{!-- 1 · course = app window --}}
             {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" order="featured desc, published_at asc" limit="1" as |star|}}
                 {{#foreach star}}
-                    <a class="hero-shot is-course hero-app" href="{{url}}" data-tilt>
+                    <a class="hero-shot is-course hero-app" href="{{url}}" aria-label="{{title}}" data-tilt>
                         <span class="hero-app-bar" aria-hidden="true">
                             <span class="hero-app-dots"><i></i><i></i><i></i></span>
-                            <span class="hero-app-url">/courses/{{slug}}</span>
+                            <span class="hero-app-url">/courses</span>
                         </span>
                         <span class="hero-app-body" aria-hidden="true">
                             <span class="hero-app-rail">
-                                <strong>{{title}}</strong>
-                                {{#> "with-this" courseSlug=slug}}
-                                    {{#get "posts" filter="tag:{{courseSlug}}+tag:[hash-lesson-col,hash-lessons-col]" order="published_at asc" limit="3" as |lessons|}}
-                                        {{#foreach lessons}}
-                                            <span class="hero-app-lesson{{#if @first}} is-now{{/if}}">
-                                                {{#if @first}}{{> "icons/play-circle"}}{{else}}{{> "icons/check-circle"}}{{/if}}
-                                                {{title}}
-                                            </span>
-                                        {{/foreach}}
-                                    {{/get}}
-                                {{/with-this}}
+                                <span class="sk sk-w80"></span>
+                                <span class="sk-row is-now"><i class="sk-dot"></i><span class="sk sk-w70"></span></span>
+                                <span class="sk-row"><i class="sk-dot"></i><span class="sk sk-w60"></span></span>
+                                <span class="sk-row"><i class="sk-dot"></i><span class="sk sk-w70"></span></span>
                             </span>
                             <span class="hero-app-stage">
                                 <span class="hero-app-screen">
@@ -165,10 +152,10 @@ Below the grid: every collection as one inline strip. --}}
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 2 · the latest video, in the camcorder --}}
+            {{!-- 2 · video = camcorder --}}
             {{#get "posts" filter="tag:hash-video-col" include="tags" order="published_at desc" limit="1" as |vid|}}
                 {{#foreach vid}}
-                    <a class="hero-shot is-video" href="{{url}}">
+                    <a class="hero-shot is-video" href="{{url}}" aria-label="{{title}}">
                         <span class="hero-cam-top" aria-hidden="true">
                             <span class="hero-cam-rec"><i></i> REC</span>
                             {{> "duration-chip" chipClass="hero-cam-time"}}
@@ -183,53 +170,59 @@ Below the grid: every collection as one inline strip. --}}
                             <i class="hero-cam-corner tl"></i><i class="hero-cam-corner tr"></i>
                             <i class="hero-cam-corner bl"></i><i class="hero-cam-corner br"></i>
                         </span>
-                        <span class="hero-shot-caption">{{> "icons/video"}} {{title}}</span>
                     </a>
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 3 · the newest training stop, as a waypoint card --}}
+            {{!-- 3 · training = waypoint on a trail --}}
             {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" order="published_at desc" limit="1" as |tr|}}
                 {{#foreach tr}}
-                    <a class="hero-shot is-training" href="{{url}}">
+                    <a class="hero-shot is-training" href="{{url}}" aria-label="{{title}}">
                         <span class="hero-train-node" aria-hidden="true">{{> "icons/layers"}}</span>
-                        <span class="hero-train-body">
-                            {{#primary_tag}}<small>{{name}}</small>{{/primary_tag}}
-                            <strong>{{title}}</strong>
-                            <span class="hero-train-ticks" aria-hidden="true"><i class="done"></i><i class="done"></i><i></i><i></i></span>
+                        <span class="hero-train-body" aria-hidden="true">
+                            <span class="sk sk-thin sk-w40"></span>
+                            <span class="sk sk-w80"></span>
+                            <span class="hero-train-ticks"><i class="done"></i><i class="done"></i><i></i><i></i></span>
                         </span>
                     </a>
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 4+5 · the latest writing (a sheet) and issue (an envelope) --}}
-            <div class="hero-stack-row">
-                {{#get "posts" filter="tag:hash-blog-col" limit="1" as |art|}}
-                    {{#foreach art}}
-                        <a class="hero-shot is-writing" href="{{url}}">
-                            <span class="hero-sheet-lines" aria-hidden="true"><i></i><i></i><i></i></span>
-                            <small>{{> "icons/pen"}} {{t "Writing"}}</small>
-                            <strong>{{title}}</strong>
-                        </a>
-                    {{/foreach}}
-                {{/get}}
-                {{#get "posts" filter="tag:hash-newsletter-col" limit="1" as |iss|}}
-                    {{#foreach iss}}
-                        <a class="hero-shot is-mail" href="{{url}}">
-                            <span class="hero-mail-flap" aria-hidden="true"></span>
-                            <small>{{> "icons/mail"}} {{t "Latest issue"}}</small>
-                            <strong>{{title}}</strong>
-                        </a>
-                    {{/foreach}}
-                {{/get}}
-            </div>
+            {{!-- 4 · blog = a sheet of writing --}}
+            {{#get "posts" filter="tag:hash-blog-col" limit="1" as |art|}}
+                {{#foreach art}}
+                    <a class="hero-shot is-writing" href="{{url}}" aria-label="{{title}}">
+                        <span class="hero-shot-tag" aria-hidden="true">{{> "icons/pen"}}</span>
+                        <span class="hero-sheet-body" aria-hidden="true">
+                            <span class="sk sk-w80"></span>
+                            <span class="sk sk-thin sk-w90"></span>
+                            <span class="sk sk-thin sk-w70"></span>
+                            <span class="sk sk-thin sk-w80"></span>
+                        </span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
 
-            {{!-- 6 · the latest changelog entry, as the shipped badge --}}
+            {{!-- 5 · newsletter = an envelope --}}
+            {{#get "posts" filter="tag:hash-newsletter-col" limit="1" as |iss|}}
+                {{#foreach iss}}
+                    <a class="hero-shot is-mail" href="{{url}}" aria-label="{{title}}">
+                        <span class="hero-mail-flap" aria-hidden="true"></span>
+                        <span class="hero-shot-tag" aria-hidden="true">{{> "icons/mail"}}</span>
+                        <span class="hero-sheet-body" aria-hidden="true">
+                            <span class="sk sk-w70"></span>
+                            <span class="sk sk-thin sk-w50"></span>
+                        </span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+
+            {{!-- 6 · changelog = the shipped badge --}}
             {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" include="tags" limit="1" as |chg|}}
                 {{#foreach chg}}
-                    <a class="hero-shot is-ship" href="{{url}}">
+                    <a class="hero-shot is-ship" href="{{url}}" aria-label="{{title}}">
                         {{> "changelog-badge"}}
-                        <strong>{{title}}</strong>
+                        <span class="sk sk-w60" aria-hidden="true"></span>
                         {{> "icons/arrow-right"}}
                     </a>
                 {{/foreach}}
