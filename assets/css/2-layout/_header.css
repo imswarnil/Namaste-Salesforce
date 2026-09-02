@@ -174,12 +174,13 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     margin-left: 0.6rem;
 }
 
-/* Profile icon: the mobile stand-in for the member CTA */
+/* Profile icon: the stand-in for the member CTA wherever the wide
+   button would crowd the bar (anything under 1101px). */
 .member-icon {
     display: none;
 }
 
-/* GitHub star: labelled ghost button on desktop… */
+/* GitHub star: labelled ghost button on wide screens… */
 .gh-star {
     gap: 0.6rem;
 }
@@ -189,12 +190,34 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     height: 1.7rem;
 }
 
-@media (max-width: 900px) {
+/* Mid widths: the bar must never overflow — the member button and
+   the star label both yield to icons long before the drawer kicks
+   in, and nav items drop their icons to buy room. */
+@media (max-width: 1280px) and (min-width: 901px) {
+    .site-head-inner {
+        gap: 2rem;
+    }
+
+    .site-nav a {
+        padding: 0.7rem 0.9rem;
+        font-size: 1.45rem;
+    }
+
+    .site-nav > li > a > svg:not(:last-child) {
+        display: none;
+    }
+}
+
+@media (max-width: 1100px) {
+    .site-head-cta {
+        display: none;
+    }
+
     .member-icon {
         display: inline-flex;
     }
 
-    /* …bare icon on mobile */
+    /* …bare icon below 1101px */
     .gh-star {
         padding: 0;
         width: 4rem;
@@ -218,6 +241,13 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     .gh-star-label {
         display: none;
     }
+}
+
+/* Dropdowns near the bar's right edge open LEFTWARD so the panel
+   never runs off the viewport. */
+.site-nav .nav-has-dropdown:nth-last-child(-n + 2) .nav-dropdown {
+    left: auto;
+    right: 0;
 }
 
 /* Burger — a label wired to #nav-open */

@@ -39,8 +39,9 @@ KICKERS = {"course": "COURSE", "lesson": "LESSON", "training": "TRAINING",
            "changelog": "CHANGELOG", "resource": "RESOURCE", "shop": "SHOP",
            "snippet": "SNIPPET", "prompt": "PROMPT"}
 
-NAVY   = "#032d60"   # brand-800 — the flat canvas
-ACCENT = "#1b96ff"   # brand-400 — kicker + rule
+NAVY   = "#032d60"   # brand-800 — ink + the icon tile
+ACCENT = "#0176d3"   # brand-500 — kicker + accents
+LIGHT  = "#f5f9fd"   # the light canvas
 
 def kind_of(slugs):
     for group, members in {
@@ -61,73 +62,65 @@ def kind_of(slugs):
     return "blog"
 
 def svg_video():
-    """Video thumb: one solid colour under a faint tiled icon
+    """Video thumb: the LIGHT canvas under a faint dark tiled icon
     pattern — NO centre icon. The video card overlays its own
     play badge; a drawn icon here would double it."""
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
   <defs>
     <pattern id="icons" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
-      <g transform="translate(30,30) scale(2.2)" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{ICONS["video"]}</g>
-      <g transform="translate(105,105) scale(1.4)" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{ICONS["video"]}</g>
+      <g transform="translate(30,30) scale(2.2)" fill="none" stroke="rgba(3,45,96,0.10)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{ICONS["video"]}</g>
+      <g transform="translate(105,105) scale(1.4)" fill="none" stroke="rgba(3,45,96,0.07)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{ICONS["video"]}</g>
     </pattern>
   </defs>
-  <rect width="1200" height="675" fill="{NAVY}"/>
+  <rect width="1200" height="675" fill="{LIGHT}"/>
   <rect width="1200" height="675" fill="url(#icons)"/>
 </svg>'''
 
 def svg_clean(title, kind):
-    """Default thumb: flat navy, kicker + wrapped title + brand
-    line on the left, a geometric illustration on the right —
-    glow circle, ring, dot grid, and the collection icon in a
-    rounded tile."""
-    lines = textwrap.wrap(title, 24)[:3]
+    """Default thumb — the LIGHT treatment: near-white canvas, the
+    blueprint grid and dot pattern drawn DARK on it, and the
+    collection icon dead centre in a navy tile inside a dashed
+    ring. Kicker top-left, short title bottom-left in ink, brand
+    line bottom-right — all quiet, the icon carries it."""
+    lines = textwrap.wrap(title, 34)[:2]
     tspans = "".join(
-        f'<tspan x="80" dy="{0 if i == 0 else 76}">{html.escape(line)}</tspan>'
+        f'<tspan x="80" dy="{0 if i == 0 else 46}">{html.escape(line)}</tspan>'
         for i, line in enumerate(lines))
     dots = "".join(
-        f'<circle cx="{x}" cy="{y}" r="3"/>'
+        f'<circle cx="{x}" cy="{y}" r="2.5"/>'
         for x in range(0, 145, 36) for y in range(0, 109, 36))
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Figtree,-apple-system,'Segoe UI',Roboto,sans-serif">
   <defs>
-    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="rgba(27,150,255,0.35)"/><stop offset="1" stop-color="rgba(27,150,255,0)"/>
-    </radialGradient>
-    <clipPath id="frame"><rect width="1200" height="675"/></clipPath>
+    <pattern id="lgrid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="rgba(3,45,96,0.09)"/>
+    </pattern>
   </defs>
-  <rect width="1200" height="675" fill="{NAVY}"/>
-  <g clip-path="url(#frame)">
-    <circle cx="985" cy="300" r="290" fill="url(#glow)"/>
-    <circle cx="985" cy="300" r="180" fill="none" stroke="rgba(27,150,255,0.35)" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>
-    <circle cx="1140" cy="118" r="46" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
-    <circle cx="822" cy="510" r="14" fill="rgba(27,150,255,0.45)"/>
-    <g fill="rgba(255,255,255,0.12)" transform="translate(1042,470)">{dots}</g>
-    <rect x="895" y="210" width="180" height="180" rx="36" fill="rgba(27,150,255,0.16)" stroke="rgba(27,150,255,0.55)" stroke-width="2"/>
-    <g transform="translate(931,246) scale(4.5)" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{ICONS[kind]}</g>
-  </g>
-  <text x="80" y="120" font-size="26" font-weight="700" letter-spacing="6" fill="{ACCENT}">{KICKERS[kind]}</text>
-  <text x="80" y="330" font-size="64" font-weight="800" fill="#ffffff">{tspans}</text>
-  <rect x="80" y="560" width="120" height="6" rx="3" fill="{ACCENT}"/>
-  <text x="80" y="612" font-size="24" font-weight="600" letter-spacing="2" fill="rgba(244,246,248,0.75)">NAMASTE SALESFORCE</text>
+  <rect width="1200" height="675" fill="{LIGHT}"/>
+  <rect width="1200" height="675" fill="url(#lgrid)"/>
+  <g fill="rgba(3,45,96,0.16)" transform="translate(990,64)">{dots}</g>
+  <g fill="rgba(3,45,96,0.16)" transform="translate(66,470)">{dots}</g>
+  <circle cx="600" cy="302" r="190" fill="none" stroke="rgba(1,118,211,0.30)" stroke-width="2" stroke-dasharray="2 12" stroke-linecap="round"/>
+  <circle cx="986" cy="560" r="10" fill="rgba(1,118,211,0.35)"/>
+  <circle cx="180" cy="130" r="34" fill="none" stroke="rgba(3,45,96,0.14)" stroke-width="2"/>
+  <rect x="490" y="192" width="220" height="220" rx="48" fill="{NAVY}"/>
+  <g transform="translate(534,236) scale(5.5)" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{ICONS[kind]}</g>
+  <text x="80" y="92" font-size="24" font-weight="700" letter-spacing="6" fill="{ACCENT}">{KICKERS[kind]}</text>
+  <text x="80" y="588" font-size="38" font-weight="800" fill="{NAVY}">{tspans}</text>
+  <text x="1120" y="632" font-size="20" font-weight="600" letter-spacing="2" fill="rgba(3,45,96,0.45)" text-anchor="end">NAMASTE SALESFORCE</text>
 </svg>'''
 
 def svg_tag_badge(name):
     """Square badge for a PUBLIC tag — templates render it as the
     tag's icon (module badges, card eyebrows, rail icons), usually
-    at 2–5rem, so it has to read tiny: flat navy, accent glow, a
-    rounded tile with the tag's monogram."""
+    at 2–5rem, so it has to read tiny: the LIGHT canvas, a navy
+    tile, the tag's monogram in white."""
     words = [w for w in name.split() if w and w[0].isalnum()]
     mono = html.escape("".join(w[0] for w in words[:2]).upper() or "•")
-    size = 220 if len(mono) < 2 else 170
+    size = 200 if len(mono) < 2 else 155
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" font-family="Figtree,-apple-system,'Segoe UI',Roboto,sans-serif">
-  <defs>
-    <radialGradient id="tglow" cx="0.5" cy="0.4" r="0.6">
-      <stop offset="0" stop-color="rgba(27,150,255,0.4)"/><stop offset="1" stop-color="rgba(27,150,255,0)"/>
-    </radialGradient>
-  </defs>
-  <rect width="600" height="600" fill="{NAVY}"/>
-  <circle cx="300" cy="270" r="260" fill="url(#tglow)"/>
-  <circle cx="300" cy="300" r="215" fill="none" stroke="rgba(27,150,255,0.35)" stroke-width="4" stroke-dasharray="3 16" stroke-linecap="round"/>
-  <rect x="140" y="140" width="320" height="320" rx="72" fill="rgba(27,150,255,0.2)" stroke="rgba(27,150,255,0.6)" stroke-width="5"/>
+  <rect width="600" height="600" fill="{LIGHT}"/>
+  <circle cx="300" cy="300" r="235" fill="none" stroke="rgba(1,118,211,0.30)" stroke-width="5" stroke-dasharray="3 18" stroke-linecap="round"/>
+  <rect x="140" y="140" width="320" height="320" rx="76" fill="{NAVY}"/>
   <text x="300" y="300" font-size="{size}" font-weight="800" fill="#ffffff" text-anchor="middle" dominant-baseline="central">{mono}</text>
 </svg>'''
 

@@ -19,11 +19,12 @@ itself (a live-data lesson-player window) as the visual. All of
 it in partials/hero.hbs; stats in partials/hero-stats.hbs. --}}
 {{> "hero"}}
 
-{{!-- The journey — four waypoints on a trail the scroll draws.
-Two copies of the same curve: a dotted under-path always visible,
-and the accent over-path whose dashoffset animate.js ties to
-scroll progress (data-draw). Below 768px the CSS swaps the curve
-for a plain left rail, so the SVG can stay dumb. --}}
+{{!-- The journey — the site's spine, drawn as a trail. The SVG
+curve draws itself with scroll (data-draw / animate.js); every
+step is a milestone card: waypoint icon on the spine, step pill,
+title, the honest paragraph, LIVE counts as proof chips, and a
+real CTA. Terminals bookend the trail. Below 768px the curve
+swaps for a left rail. --}}
 <section class="section section-alt outer home-journey">
     <div class="bg-dots" aria-hidden="true"></div>
     <div class="inner relative">
@@ -46,31 +47,64 @@ for a plain left rail, so the SVG can stay dumb. --}}
             </div>
 
             <div class="home-journey-step" data-animate="left">
-                <span class="home-journey-stepno">{{t "Step"}} 01</span>
                 <span class="home-journey-ico" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+                <span class="home-journey-stepno">{{t "Step"}} 01</span>
                 <h3>{{t "Pick a course"}}</h3>
                 <p>{{t "Start with a structured path — every course begins at zero and ends with something running."}}</p>
-                <a class="home-journey-link" href="{{@site.url}}/courses/">{{t "Browse courses"}} {{> "icons/arrow-right"}}</a>
+                <div class="home-journey-meta">
+                    {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" limit="1" as |i c|}}
+                        <span class="chip">{{> "icons/graduation-cap"}} {{c.total}} {{t "courses"}}</span>
+                    {{/get}}
+                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]" limit="1" as |i c|}}
+                        <span class="chip">{{> "icons/play-circle"}} {{c.total}} {{t "lessons"}}</span>
+                    {{/get}}
+                    <span class="chip chip-free">{{t "Free"}}</span>
+                </div>
+                <a class="btn btn-sm home-journey-cta" href="{{@site.url}}/courses/">{{t "Browse courses"}} {{> "icons/arrow-right"}}</a>
             </div>
+
             <div class="home-journey-step" data-animate="right">
-                <span class="home-journey-stepno">{{t "Step"}} 02</span>
                 <span class="home-journey-ico" aria-hidden="true">{{> "icons/cloud"}}</span>
+                <span class="home-journey-stepno">{{t "Step"}} 02</span>
                 <h3>{{t "Build in a real org"}}</h3>
                 <p>{{t "Spin up a free Developer Edition and follow along — clicks, code and mistakes included."}}</p>
+                <div class="home-journey-meta">
+                    <span class="chip">{{> "icons/cloud"}} {{t "Free Dev org"}}</span>
+                    <span class="chip">{{> "icons/clock"}} {{t "Ready in 5 min"}}</span>
+                </div>
+                <a class="btn btn-sm btn-ghost home-journey-cta" href="https://developer.salesforce.com/signup" target="_blank" rel="noopener">{{t "Get your org"}} {{> "icons/external"}}</a>
             </div>
+
             <div class="home-journey-step" data-animate="left">
-                <span class="home-journey-stepno">{{t "Step"}} 03</span>
                 <span class="home-journey-ico" aria-hidden="true">{{> "icons/layers"}}</span>
+                <span class="home-journey-stepno">{{t "Step"}} 03</span>
                 <h3>{{t "Go deeper with training"}}</h3>
                 <p>{{t "When a topic grabs you, work the module — the patterns and conventions real projects run on."}}</p>
-                <a class="home-journey-link" href="{{@site.url}}/training/">{{t "Explore training"}} {{> "icons/arrow-right"}}</a>
+                <div class="home-journey-meta">
+                    {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |i c|}}
+                        <span class="chip">{{> "icons/layers"}} {{c.total}} {{t "sections"}}</span>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-snippet-col" limit="1" as |i c|}}
+                        <span class="chip">{{> "icons/code"}} {{c.total}} {{t "snippets"}}</span>
+                    {{/get}}
+                </div>
+                <a class="btn btn-sm home-journey-cta" href="{{@site.url}}/training/">{{t "Walk the trail"}} {{> "icons/arrow-right"}}</a>
             </div>
+
             <div class="home-journey-step" data-animate="right">
-                <span class="home-journey-stepno">{{t "Step"}} 04</span>
                 <span class="home-journey-ico" aria-hidden="true">{{> "icons/rocket"}}</span>
+                <span class="home-journey-stepno">{{t "Step"}} 04</span>
                 <h3>{{t "Ship and stay current"}}</h3>
                 <p>{{t "Deploy your build, then keep pace with releases through the blog and newsletter."}}</p>
-                <a class="home-journey-link" href="{{@site.url}}/blog/">{{t "Read the blog"}} {{> "icons/arrow-right"}}</a>
+                <div class="home-journey-meta">
+                    {{#get "posts" filter="tag:hash-blog-col" limit="1" as |i c|}}
+                        <span class="chip">{{> "icons/pen"}} {{c.total}} {{t "articles"}}</span>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-newsletter-col" limit="1" as |i c|}}
+                        <span class="chip">{{> "icons/mail"}} {{c.total}} {{t "issues"}}</span>
+                    {{/get}}
+                </div>
+                <a class="btn btn-sm btn-ghost home-journey-cta" href="{{@site.url}}/blog/">{{t "Read the blog"}} {{> "icons/arrow-right"}}</a>
             </div>
 
             <div class="home-journey-terminal is-end" data-animate>
@@ -339,6 +373,13 @@ element gets loading/success/error classes from Ghost itself). --}}
                         {{else}}
                             <p class="home-about-bio">{{t "Salesforce is learned by building, not by watching slides. Every course, module and video on this site was made inside a real org — clicks, code and mistakes included."}}</p>
                         {{/if}}
+
+                        <ul class="hero-facts">
+                            <li>{{> "icons/shield"}} {{t "7+ years in IT"}}</li>
+                            <li>{{> "icons/zap"}} {{t "Build → then share"}}</li>
+                            <li>{{> "icons/sparkles"}} {{t "Learning in public"}}</li>
+                            <li>{{> "icons/rocket"}} {{t "Next: GTM Engineer, powered by the AI era"}}</li>
+                        </ul>
 
                         <ul class="home-about-goals">
                             <li>{{> "icons/check-circle"}} {{t "Keep every course free, forever"}}</li>
