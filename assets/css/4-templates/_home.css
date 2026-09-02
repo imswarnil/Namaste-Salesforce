@@ -938,3 +938,117 @@
         display: none;
     }
 }
+
+/*  Homepage refinements — shipped pill, stat icons, chip images
+    ------------------------------------------------------------ */
+
+/* "Just shipped": the latest changelog entry, live, with a ping */
+.home-shipped {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 100%;
+    margin-top: 2.8rem;
+    padding: 0.9rem 1.6rem;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-shipped:hover {
+    border-color: color-mod(#0176d3 a(45%));
+    transform: translateY(-2px);
+}
+
+.home-shipped strong {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+.home-shipped-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.home-shipped svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.home-shipped-ping {
+    position: relative;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+}
+
+.home-shipped-ping::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--success);
+    animation: shipped-ping 2s ease-out infinite;
+}
+
+@keyframes shipped-ping {
+    from { transform: scale(1); opacity: 0.6; }
+    to { transform: scale(2.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-shipped-ping::after { animation: none; }
+}
+
+/* Stat icons */
+.home-stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    margin-bottom: 0.8rem;
+    border-radius: 50%;
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.home-stat-icon svg {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+/* Topic chips carry the tag's own image when it has one */
+.home-topic-chip .card-tag-icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Changelog strip: date + type badge on one line */
+.home-changelog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.2rem;
+    margin-bottom: 0.3rem;
+}
+
+.home-changelog-meta .badge {
+    padding: 0.2rem 0.9rem;
+    font-size: 1.05rem;
+}

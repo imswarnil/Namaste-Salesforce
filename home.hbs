@@ -68,6 +68,18 @@ page goes stale when content changes. --}}
                 <li>{{> "icons/check-circle"}} {{t "Built in a real org"}}</li>
                 <li>{{> "icons/check-circle"}} {{t "No slideware"}}</li>
             </ul>
+
+            {{!-- The site is alive: latest changelog entry, live --}}
+            {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="1" as |shipped|}}
+                {{#if shipped}}
+                    <a class="home-shipped" href="{{shipped.[0].url}}">
+                        <span class="home-shipped-ping" aria-hidden="true"></span>
+                        <strong>{{t "Just shipped"}}</strong>
+                        <span class="home-shipped-title">{{shipped.[0].title}}</span>
+                        {{> "icons/arrow-right"}}
+                    </a>
+                {{/if}}
+            {{/get}}
         </div>
 
         {{!-- The showcase panel: the featured (or first) course,
@@ -102,16 +114,16 @@ page goes stale when content changes. --}}
         the rendered total stays as no-JS/no-motion fallback. --}}
         <div class="home-stats" data-animate-stagger>
             {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
+                <div class="home-stat"><span class="home-stat-icon">{{> "icons/graduation-cap"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
             {{/get}}
             {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Lessons"}}</span></div>
+                <div class="home-stat"><span class="home-stat-icon">{{> "icons/play-circle"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Lessons"}}</span></div>
             {{/get}}
             {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Training pages"}}</span></div>
+                <div class="home-stat"><span class="home-stat-icon">{{> "icons/layers"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Training pages"}}</span></div>
             {{/get}}
             {{#get "posts" filter="tag:hash-blog-col" limit="1" as |items counts|}}
-                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Articles"}}</span></div>
+                <div class="home-stat"><span class="home-stat-icon">{{> "icons/pen"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Articles"}}</span></div>
             {{/get}}
         </div>
 
@@ -260,11 +272,11 @@ rows wrap into a plain chip cloud. --}}
             <div class="marquee" data-animate>
                 <div class="marquee-track">
                     {{#foreach topics}}
-                        <a class="home-topic-chip" href="{{url}}">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                        <a class="home-topic-chip" href="{{url}}">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
                     {{/foreach}}
                     <span class="marquee-dup" aria-hidden="true">
                         {{#foreach topics}}
-                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
                         {{/foreach}}
                     </span>
                 </div>
@@ -272,11 +284,11 @@ rows wrap into a plain chip cloud. --}}
             <div class="marquee marquee-reverse" data-animate>
                 <div class="marquee-track">
                     {{#foreach topics}}
-                        <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                        <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
                     {{/foreach}}
                     <span class="marquee-dup" aria-hidden="true">
                         {{#foreach topics}}
-                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{> "icons/tag-icon"}} {{name}} <small>{{count.posts}}</small></a>
+                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
                         {{/foreach}}
                     </span>
                 </div>
@@ -333,7 +345,7 @@ rows wrap into a plain chip cloud. --}}
 {{!-- Stay current — the changelog timeline beside the latest
 newsletter issue. Both live queries; either half quietly drops
 out when its collection is empty. --}}
-{{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="3" as |updates|}}
+{{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" include="tags" limit="3" as |updates|}}
     {{#if updates}}
         <section class="section outer">
             <div class="inner">
@@ -351,7 +363,10 @@ out when its collection is empty. --}}
                         <ol>
                             {{#foreach updates}}
                                 <li>
-                                    <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="D MMM YYYY"}}</time>
+                                    <div class="home-changelog-meta">
+                                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="D MMM YYYY"}}</time>
+                                        {{> "changelog-badge"}}
+                                    </div>
                                     <a href="{{url}}">{{title}}</a>
                                     {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
                                 </li>
@@ -383,23 +398,26 @@ out when its collection is empty. --}}
     {{/if}}
 {{/get}}
 
-{{!-- Closing CTA --}}
-{{#if @site.members_enabled}}
+{{!-- Closing CTA — subscribe when members are on, otherwise
+straight into the courses. Never a dead end. --}}
 <section class="section outer">
     <div class="inner">
         <div class="home-cta" data-animate="zoom">
             <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
             <h2>{{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "Start your Salesforce journey today"}}{{/if}}</h2>
             <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "Free courses, weekly notes, zero spam. Join the newsletter and learn at your own pace."}}{{/if}}</p>
-            {{#unless @member}}
-                <a class="btn btn-lg btn-inverse" href="#/portal/signup" data-portal="signup">
-                    {{> "icons/mail"}}
-                    {{t "Subscribe free"}}
-                </a>
+            {{#if @site.members_enabled}}
+                {{#unless @member}}
+                    <a class="btn btn-lg btn-inverse" href="#/portal/signup" data-portal="signup">
+                        {{> "icons/mail"}}
+                        {{t "Subscribe free"}}
+                    </a>
+                {{else}}
+                    <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{t "Continue learning"}} {{> "icons/arrow-right"}}</a>
+                {{/unless}}
             {{else}}
-                <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{t "Continue learning"}} {{> "icons/arrow-right"}}</a>
-            {{/unless}}
+                <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Start learning free"}}</a>
+            {{/if}}
         </div>
     </div>
 </section>
-{{/if}}
