@@ -1,4 +1,12 @@
-/*  4-templates / changelog + sitemap — compact hero, timeline
+/*  4-templates / changelog + sitemap
+    ============================================================
+
+    /changelog: entries + sticky sidebar, two CSS-only views.
+    The .clv-box radios sit before .changelog-toolbar and
+    .changelog-layout in the DOM; :checked restyles the SAME
+    entry markup as a timeline (default) or a kanban-style board.
+
+    /changelog/{slug}: see _post.css (.entry-layout).
     ------------------------------------------------------------ */
 
 .changelog-hero {
@@ -17,14 +25,187 @@
     color: var(--text-muted);
 }
 
-.timeline {
-    list-style: none;
-    margin: 0;
-    padding: 0 0 0 2.8rem;
+/* The hidden view radios */
+.clv-box {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Toolbar: view switch */
+.changelog-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    margin-bottom: 3.6rem;
+}
+
+.changelog-toolbar-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.changelog-toolbar-label svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.view-switch {
+    display: inline-flex;
+    padding: 0.4rem;
+    gap: 0.4rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+}
+
+.view-switch label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.6rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.view-switch label svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.view-switch label:hover {
+    color: var(--heading);
+}
+
+#clv-timeline:checked ~ .changelog-toolbar label[for="clv-timeline"],
+#clv-board:checked ~ .changelog-toolbar label[for="clv-board"] {
+    color: var(--accent);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Entries + sidebar */
+.changelog-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.changelog-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    display: grid;
+    gap: 2.4rem;
+}
+
+/*  Entry — one markup, two views
+    ------------------------------------------------------------ */
+
+.changelog-entry {
     position: relative;
 }
 
-.timeline::before {
+.changelog-entry-media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-soft);
+    background: var(--bg-alt);
+}
+
+.changelog-entry-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.changelog-entry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem 1.6rem;
+}
+
+.changelog-entry-meta time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.changelog-entry-meta time svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.changelog-entry-meta .chip {
+    position: relative;
+    z-index: 2;
+}
+
+.changelog-entry-title {
+    margin-top: 0.8rem;
+    font-size: 2rem;
+}
+
+.changelog-entry:hover .changelog-entry-title a {
+    color: var(--accent);
+}
+
+.changelog-entry-excerpt {
+    margin-top: 0.6rem;
+    max-width: 62ch;
+    font-size: 1.45rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.changelog-entry-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.changelog-entry-more svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.changelog-entry:hover .changelog-entry-more svg {
+    transform: translateX(3px);
+}
+
+/*  Timeline view (default)
+    ------------------------------------------------------------ */
+
+.changelog-entries {
+    position: relative;
+    padding-left: 3.2rem;
+}
+
+.changelog-entries::before {
     content: "";
     position: absolute;
     top: 0.6rem;
@@ -34,19 +215,22 @@
     background: var(--border);
 }
 
-.timeline-item {
-    position: relative;
-    padding-bottom: 3.6rem;
+.changelog-entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 2.4rem;
+    align-items: start;
+    padding-bottom: 4.4rem;
 }
 
-.timeline-item:last-child {
+.changelog-entry:last-child {
     padding-bottom: 0;
 }
 
-.timeline-dot {
+.changelog-dot {
     position: absolute;
-    top: 0.5rem;
-    left: -2.75rem;
+    top: 0.4rem;
+    left: -3.15rem;
     width: 1.3rem;
     height: 1.3rem;
     border-radius: 50%;
@@ -54,30 +238,93 @@
     box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
-.timeline-date {
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--text-faint);
+.changelog-entry-media {
+    order: 2;
 }
 
-.timeline-title {
-    margin-top: 0.4rem;
-    font-size: 2rem;
+@media (max-width: 700px) {
+    .changelog-entry {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .changelog-entry-media {
+        order: 0;
+    }
 }
 
-.timeline-title a:hover {
-    color: var(--accent);
+/*  Board view — kanban-style card grid
+    ------------------------------------------------------------ */
+
+#clv-board:checked ~ .changelog-layout .changelog-entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 2.4rem;
+    padding-left: 0;
 }
 
-.timeline-excerpt {
-    margin-top: 0.6rem;
-    max-width: 62ch;
-    color: var(--text-muted);
+#clv-board:checked ~ .changelog-layout .changelog-entries::before,
+#clv-board:checked ~ .changelog-layout .changelog-dot {
+    display: none;
 }
 
-/* Sitemap */
+#clv-board:checked ~ .changelog-layout .changelog-entry {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#clv-board:checked ~ .changelog-layout .changelog-entry:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+#clv-board:checked ~ .changelog-layout .changelog-entry-media {
+    order: 0;
+    border: none;
+    border-radius: 0;
+}
+
+#clv-board:checked ~ .changelog-layout .changelog-entry-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 2rem 2.2rem 2.2rem;
+}
+
+#clv-board:checked ~ .changelog-layout .changelog-entry-title {
+    font-size: 1.8rem;
+}
+
+#clv-board:checked ~ .changelog-layout .changelog-entry-more {
+    margin-top: auto;
+    padding-top: 1.2rem;
+}
+
+/*  Responsive: sidebar folds under the entries
+    ------------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+    .changelog-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .changelog-side-sticky {
+        position: static;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        margin-top: 4rem;
+        padding-top: 3.2rem;
+        border-top: 1px solid var(--border-soft);
+    }
+}
+
+/*  Sitemap
+    ------------------------------------------------------------ */
+
 .sitemap-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

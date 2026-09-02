@@ -1,0 +1,28 @@
+{{!-- The homepage learning path — training modules as connected
+steps, queried live with the same discovery as module-grid.hbs
+(a module IS a public tag; only tags with training posts render).
+Each step: number node, tag image (or icon), name, section count,
+and where it starts. The whole step links to the module's first
+page. CSS threads the connector; a counter draws the numbers. --}}
+
+{{#get "tags" filter="visibility:public" order="slug asc" limit="12" as |moduleTags|}}
+    {{#foreach moduleTags}}
+        {{#> "with-this" moduleTag=. }}
+            {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="50" as |modulePosts|}}
+                {{#if modulePosts}}
+                    <a class="path-step" href="{{modulePosts.[0].url}}">
+                        <span class="path-step-num" aria-hidden="true"></span>
+                        {{#if ../moduleTag.feature_image}}
+                            <span class="path-step-art" aria-hidden="true"><img src="{{img_url ../moduleTag.feature_image size="s"}}" alt="" loading="lazy" /></span>
+                        {{else}}
+                            <span class="path-step-art is-icon" aria-hidden="true">{{> "icons/layers"}}</span>
+                        {{/if}}
+                        <strong class="path-step-name">{{../moduleTag.name}}</strong>
+                        <span class="path-step-meta">{{modulePosts.length}} {{t "sections"}}</span>
+                        <span class="path-step-start">{{> "icons/play-circle"}} {{modulePosts.[0].title}}</span>
+                    </a>
+                {{/if}}
+            {{/get}}
+        {{/with-this}}
+    {{/foreach}}
+{{/get}}

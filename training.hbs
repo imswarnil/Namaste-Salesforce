@@ -4,21 +4,33 @@
 public tag: every training post's primary tag names the module it
 belongs to, the tag's description is the module's blurb, and
 partials/module-grid.hbs does the discovery. Publish a post with
-a new primary tag and a new module card appears here. --}}
+a new primary tag and a new module card appears here.
+
+The cards render on .training-path: one connected rail, each
+module numbered, a connector flowing from every card into the
+next — module 1, then module 2, then module 3. --}}
 
 <section class="training-hero outer relative">
     <div class="bg-grid" aria-hidden="true"></div>
+    <div class="orb" style="width: 340px; height: 340px; top: -110px; right: -80px;" aria-hidden="true"></div>
+    <div class="orb" style="width: 280px; height: 280px; bottom: -120px; left: -60px; animation-delay: -3s;" aria-hidden="true"></div>
     <div class="inner relative">
         <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
         <h1>{{t "Training modules"}}</h1>
-        <p>{{t "Self-contained modules you can work straight through — each one a topic, each page a step, in reading order."}}</p>
+        <p>{{t "Self-contained modules that chain into one path — finish a module and the next one is waiting. Each page a step, in reading order."}}</p>
     </div>
 </section>
 
 <main id="site-main" class="training-main outer">
     <div class="inner">
-        <div class="training-grid">
+        <div class="training-path" data-animate-stagger>
             {{> "module-grid" moduleLimit="30"}}
+        </div>
+        <div class="training-path-end" data-animate>
+            <span class="training-path-end-icon">{{> "icons/rocket"}}</span>
+            <h2>{{t "Worked through everything?"}}</h2>
+            <p>{{t "Take a structured course next — every one ends with something running in your own org."}}</p>
+            <a class="btn" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
         </div>
     </div>
 </main>

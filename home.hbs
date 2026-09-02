@@ -75,6 +75,7 @@ page goes stale when content changes. --}}
         {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags" order="featured desc, published_at asc" limit="1" as |star|}}
             {{#if star}}
                 <div class="home-hero-panel" data-animate="right">
+                    <span class="home-hero-ring" aria-hidden="true"></span>
                     {{#foreach star}}
                         {{> "card-course"}}
                     {{/foreach}}
@@ -115,6 +116,8 @@ page goes stale when content changes. --}}
         </div>
 
     </div>
+
+    <span class="home-scroll-cue" aria-hidden="true">{{> "icons/chevron-down"}}</span>
 </section>
 
 {{!-- Why here --}}
@@ -212,19 +215,28 @@ for a plain left rail, so the SVG can stay dumb. --}}
     {{/if}}
 {{/get}}
 
-{{!-- Training modules — a taste of the first two --}}
-<section class="section section-alt outer">
-    <div class="inner">
+{{!-- Training — the live learning path. Every module currently
+published renders as a numbered step on one connected track;
+each step links straight into its module's first page. --}}
+<section class="section section-alt outer home-path">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="inner relative">
         <div class="section-head" data-animate>
             <div>
                 <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
-                <h2>{{t "Reference you can work through"}}</h2>
-                <p>{{t "Self-contained modules — each one a topic, each page a step."}}</p>
+                <h2>{{t "The learning path, live"}}</h2>
+                <p>{{t "Every module on the site, in walking order — finish one step and the next is already lit."}}</p>
             </div>
             <a class="section-more" href="{{@site.url}}/training/">{{t "All modules"}} {{> "icons/arrow-right"}}</a>
         </div>
-        <div class="training-grid" data-animate-stagger>
-            {{> "module-grid" moduleLimit="2"}}
+        <div class="home-path-track" data-animate-stagger>
+            {{> "training-path"}}
+            <a class="path-step path-step-final" href="{{@site.url}}/training/">
+                <span class="path-step-num" aria-hidden="true">{{> "icons/rocket"}}</span>
+                <strong class="path-step-name">{{t "Keep going"}}</strong>
+                <span class="path-step-meta">{{t "the full path"}}</span>
+                <span class="path-step-start">{{> "icons/arrow-right"}} {{t "All training modules"}}</span>
+            </a>
         </div>
     </div>
 </section>

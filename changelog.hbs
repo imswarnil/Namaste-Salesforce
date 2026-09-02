@@ -1,7 +1,17 @@
 {{!< default}}
 
-{{!-- /changelog — a timeline. Compact left-aligned hero, then
-entries on a single rail, newest first. --}}
+{{!-- /changelog — release notes with two CSS-only views.
+
+Two radio inputs (siblings of .changelog-layout) drive the view:
+timeline (default — one rail, dots, thumbs on the right) or
+board (kanban-style card grid). Zero JS: the labels in the
+toolbar are the switch, the :checked selectors restyle the same
+entry markup both ways.
+
+Beside the entries: a sticky sidebar — subscribe, RSS, sponsor.
+Entries carry their feature image (branded placeholder when
+missing) and their primary tag as a chip, with the TAG's own
+image as its icon. --}}
 
 <section class="changelog-hero outer">
     <div class="inner">
@@ -16,17 +26,76 @@ entries on a single rail, newest first. --}}
 </section>
 
 <main id="site-main" class="section outer">
-    <div class="inner inner-narrow">
-        <ol class="timeline">
-            {{#foreach posts}}
-                <li class="timeline-item">
-                    <span class="timeline-dot" aria-hidden="true"></span>
-                    <time class="timeline-date" datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
-                    <h2 class="timeline-title"><a href="{{url}}">{{title}}</a></h2>
-                    {{#if custom_excerpt}}<p class="timeline-excerpt">{{custom_excerpt}}</p>{{/if}}
-                </li>
-            {{/foreach}}
-        </ol>
+    <div class="inner">
+
+        <input class="clv-box" type="radio" name="clv" id="clv-timeline" checked>
+        <input class="clv-box" type="radio" name="clv" id="clv-board">
+
+        <div class="changelog-toolbar">
+            <span class="changelog-toolbar-label">{{> "icons/filter-icon"}} {{t "View"}}</span>
+            <div class="view-switch" role="group" aria-label="{{t "Change view"}}">
+                <label for="clv-timeline">{{> "icons/list-icon"}} {{t "Timeline"}}</label>
+                <label for="clv-board">{{> "icons/layers"}} {{t "Board"}}</label>
+            </div>
+        </div>
+
+        <div class="changelog-layout">
+
+            <div class="changelog-entries">
+                {{#foreach posts}}
+                    <article class="changelog-entry">
+                        <span class="changelog-dot" aria-hidden="true"></span>
+
+                        <div class="changelog-entry-media">
+                            {{#if feature_image}}
+                                <img src="{{img_url feature_image size="m"}}"
+                                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                                    loading="lazy" />
+                            {{else}}
+                                {{> "thumb-placeholder" icon="history"}}
+                            {{/if}}
+                        </div>
+
+                        <div class="changelog-entry-body">
+                            <div class="changelog-entry-meta">
+                                <time datetime="{{date format="YYYY-MM-DD"}}">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</time>
+                                {{#primary_tag}}
+                                    <span class="chip chip-type">
+                                        {{#if feature_image}}
+                                            <img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />
+                                        {{else}}
+                                            {{> "icons/tag-icon"}}
+                                        {{/if}}
+                                        {{name}}
+                                    </span>
+                                {{/primary_tag}}
+                            </div>
+                            <h2 class="changelog-entry-title"><a class="card-link" href="{{url}}">{{title}}</a></h2>
+                            {{#if custom_excerpt}}
+                                <p class="changelog-entry-excerpt">{{custom_excerpt}}</p>
+                            {{else if excerpt}}
+                                <p class="changelog-entry-excerpt">{{excerpt words="26"}}</p>
+                            {{/if}}
+                            <span class="changelog-entry-more">{{t "Read the notes"}} {{> "icons/arrow-right"}}</span>
+                        </div>
+                    </article>
+                {{/foreach}}
+            </div>
+
+            <aside class="changelog-side">
+                <div class="changelog-side-sticky">
+                    {{> "widgets/newsletter"}}
+                    <div class="widget">
+                        <h4 class="widget-title">{{> "icons/rss"}} {{t "Follow along"}}</h4>
+                        <p>{{t "Every release note, the moment it ships."}}</p>
+                        <a class="btn btn-sm btn-ghost" href="{{@site.url}}/changelog/rss/">{{> "icons/rss"}} {{t "RSS feed"}}</a>
+                    </div>
+                    {{> "widgets/sponsor"}}
+                </div>
+            </aside>
+
+        </div>
+
         {{pagination}}
     </div>
 </main>

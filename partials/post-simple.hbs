@@ -1,7 +1,83 @@
-{{!-- A narrow single for newsletter issues and changelog entries.
-Params: sectionLabel, sectionUrl, sectionIcon, showSubscribe.
-Context: the post. --}}
+{{!-- A single for newsletter issues and changelog entries.
+Params: sectionLabel, sectionUrl, sectionIcon, showSubscribe,
+withSidebar. Context: the post.
 
+Two shapes:
+  withSidebar=true  — the entry reader: sticky sidebar left
+                      (TOC, share, sponsor) + sectioned article
+                      right. Site TOC rule: a sidebar exists, so
+                      the TOC lives in it. On small screens the
+                      sidebar folds above the content (TOC
+                      first), sponsor drops out.
+  (default)         — the narrow single, TOC inline. --}}
+
+{{#if withSidebar}}
+<main id="site-main" class="section outer">
+    <div class="inner entry-layout {{post_class}}">
+
+        <aside class="entry-side">
+            <div class="entry-side-sticky">
+                {{> "widgets/toc"}}
+                <div class="widget entry-share">
+                    <h4 class="widget-title">{{> "icons/share"}} {{t "Share"}}</h4>
+                    {{> "widgets/share-links"}}
+                </div>
+                {{> "widgets/sponsor"}}
+            </div>
+        </aside>
+
+        <article class="entry-article">
+
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+                {{> "icons/chevron-right"}}
+                <a href="{{sectionUrl}}">{{sectionLabel}}</a>
+                {{> "icons/chevron-right"}}
+                <span aria-current="page">{{title}}</span>
+            </nav>
+
+            <header class="post-header">
+                <div class="chips">
+                    <span class="chip chip-accent">{{#> (concat "icons/" sectionIcon)}}{{/undefined}} {{sectionLabel}}</span>
+                    <span class="chip">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</span>
+                    {{#primary_tag}}
+                        <a class="chip chip-type" href="{{url}}">
+                            {{#if feature_image}}
+                                <img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />
+                            {{else}}
+                                {{> "icons/tag-icon"}}
+                            {{/if}}
+                            {{name}}
+                        </a>
+                    {{/primary_tag}}
+                </div>
+                <h1 class="post-title">{{title}}</h1>
+                {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+            </header>
+
+            {{#if feature_image}}
+                <figure class="entry-figure">
+                    <img src="{{img_url feature_image size="l"}}"
+                        alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                        loading="eager" fetchpriority="high" />
+                    {{#if feature_image_caption}}<figcaption>{{{feature_image_caption}}}</figcaption>{{/if}}
+                </figure>
+            {{/if}}
+
+            <section class="gh-content entry-content">
+                {{content}}
+            </section>
+
+            <footer class="entry-foot">
+                <a class="btn btn-ghost" href="{{sectionUrl}}">{{> "icons/arrow-left"}} {{t "All entries"}}</a>
+            </footer>
+
+        </article>
+
+    </div>
+</main>
+
+{{else}}
 <main id="site-main" class="section outer">
 <article class="inner inner-narrow {{post_class}}">
 
@@ -42,3 +118,4 @@ Context: the post. --}}
 
 </article>
 </main>
+{{/if}}

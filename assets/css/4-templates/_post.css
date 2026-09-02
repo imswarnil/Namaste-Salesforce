@@ -284,3 +284,96 @@
         padding: 2.4rem;
     }
 }
+
+/*  The entry reader (/changelog/{slug}) — post-simple.hbs
+    withSidebar variant: sticky sidebar left (TOC, share,
+    sponsor), sectioned article right. h2s cut the entry into
+    visible sections instead of one unbroken article. On small
+    screens the sidebar folds above the content: the TOC stays
+    on top, share and sponsor bow out.
+    ------------------------------------------------------------ */
+
+.entry-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 5.6rem;
+    align-items: start;
+}
+
+.entry-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    display: grid;
+    gap: 2.4rem;
+    max-height: calc(100vh - var(--header-height) - 4.8rem);
+    overflow-y: auto;
+}
+
+.entry-article {
+    min-width: 0;
+    max-width: 780px;
+}
+
+.entry-figure {
+    margin: 3.2rem 0 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+}
+
+.entry-figure img {
+    display: block;
+    width: 100%;
+}
+
+.entry-figure figcaption {
+    padding: 1rem 1.6rem;
+    font-size: 1.3rem;
+    color: var(--text-faint);
+    background: var(--bg-alt);
+}
+
+/* Sections, not one long article: every h2 opens a new block */
+.entry-content > h2 {
+    margin-top: 5.6rem;
+    padding-top: 3.6rem;
+    border-top: 1px solid var(--border-soft);
+    position: relative;
+}
+
+.entry-content > h2::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 6.4rem;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--accent);
+}
+
+.entry-foot {
+    margin-top: 4.8rem;
+    padding-top: 2.8rem;
+    border-top: 1px solid var(--border-soft);
+}
+
+@media (max-width: 1023px) {
+    .entry-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .entry-side-sticky {
+        position: static;
+        max-height: none;
+        overflow: visible;
+        margin-bottom: 2.4rem;
+    }
+
+    /* Mobile keeps the TOC; the rest would push content too far */
+    .entry-side .widget-sponsor,
+    .entry-side .entry-share {
+        display: none;
+    }
+}

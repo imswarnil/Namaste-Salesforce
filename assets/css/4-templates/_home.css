@@ -667,3 +667,274 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/*  The learning path — live training modules as connected steps
+    ------------------------------------------------------------
+    A horizontal track: each module a step card, numbered by CSS
+    counter (the markup ships an empty .path-step-num), a dashed
+    connector threading step → step. Overflows into a scroll-snap
+    strip instead of wrapping, so the path stays a path at every
+    width. */
+
+.home-path {
+    position: relative;
+    overflow: hidden;
+}
+
+.home-path-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(250px, 1fr);
+    gap: 2.4rem;
+    margin-top: 4.4rem;
+    padding: 2rem 0.4rem 1.6rem;
+    counter-reset: homepath;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+}
+
+.path-step {
+    position: relative;
+    counter-increment: homepath;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 100%;
+    padding: 3rem 2.2rem 2.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.path-step:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: color-mod(#0176d3 a(40%));
+}
+
+/* Dashed thread from the previous step into this one's number */
+.path-step + .path-step::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -2.8rem;
+    width: 2.8rem;
+    border-top: 2px dashed var(--border);
+}
+
+.path-step-num {
+    position: absolute;
+    top: -1.7rem;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 0 5px var(--accent-soft);
+}
+
+.path-step-num::before {
+    content: counter(homepath);
+}
+
+.path-step-art {
+    width: 4.6rem;
+    height: 4.6rem;
+    margin-bottom: 1rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+}
+
+.path-step-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.path-step-art.is-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+
+.path-step-art.is-icon svg {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.path-step-name {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--heading);
+}
+
+.path-step-meta {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.path-step-start {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: auto;
+    padding-top: 1.4rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.path-step-start svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
+}
+
+/* The terminus step points at /training */
+.path-step-final {
+    background:
+        linear-gradient(160deg, var(--accent-soft), transparent 75%),
+        var(--surface);
+    border-style: dashed;
+}
+
+.path-step-final .path-step-num::before {
+    content: none;
+}
+
+.path-step-final .path-step-num svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+/*  Hero extras — ring, shimmer, scroll cue
+    ------------------------------------------------------------ */
+
+/* Slow conic ring floating behind the showcase panel */
+.home-hero-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    width: 125%;
+    aspect-ratio: 1;
+    margin: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        var(--accent-soft) 80deg,
+        color-mod(#0176d3 a(22%)) 120deg,
+        transparent 200deg
+    );
+    -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+    mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+    animation: ring-spin 24s linear infinite;
+    translate: -50% -50%;
+    pointer-events: none;
+}
+
+@keyframes ring-spin {
+    to { rotate: 360deg; }
+}
+
+/* Shimmer sweeping the hero badge every few seconds */
+.home-hero-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.home-hero-badge::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 70%
+    );
+    transform: translateX(-110%);
+    animation: badge-shine 5.5s ease-in-out infinite;
+}
+
+@keyframes badge-shine {
+    0%, 72% { transform: translateX(-110%); }
+    88%, 100% { transform: translateX(110%); }
+}
+
+/* Gradient headline drifts through its ramp */
+.home-hero h1 em {
+    background-size: 220% 100%;
+    animation: hue-drift 7s ease-in-out infinite alternate;
+}
+
+@keyframes hue-drift {
+    from { background-position: 0% 0; }
+    to { background-position: 100% 0; }
+}
+
+/* Scroll cue at the hero's foot */
+.home-scroll-cue {
+    position: absolute;
+    left: 50%;
+    bottom: 1.6rem;
+    z-index: 1;
+    display: inline-flex;
+    translate: -50% 0;
+    color: var(--text-faint);
+    animation: cue-bob 2.2s ease-in-out infinite;
+}
+
+.home-scroll-cue svg {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+@keyframes cue-bob {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50% { transform: translateY(6px); opacity: 1; }
+}
+
+@media (max-width: 991px) {
+    .home-hero-ring,
+    .home-scroll-cue {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-hero-ring,
+    .home-hero-badge::after {
+        animation: none;
+    }
+
+    .home-hero h1 em {
+        animation: none;
+    }
+
+    .home-scroll-cue {
+        display: none;
+    }
+}

@@ -51,12 +51,22 @@ section is one click away without leaving the page. On screens ≥1280px the
 article grows a second column: the page's own table of contents
 (`data-toc`, filled by toc.js).
 
-There is no parent post. A module is a **public tag**: its name and
-description come from the tag, its pages are the `#training-col` posts
-carrying it as **primary tag**, ordered oldest-first.
+There is no parent post. A module is a **public tag**: its name,
+description and image come from the tag, its pages are the `#training-col`
+posts carrying it as **primary tag**, ordered oldest-first.
 `partials/module-grid.hbs` discovers modules by walking public tags and
 keeping only those with training posts — publish a post with a new primary
 tag and a module card appears; retire the last one and it goes.
+
+`/training/` renders the cards on **`.training-path`**: one dashed rail,
+a numbered node per module (pure CSS counter — the markup ships an empty
+`.module-num`), and a chevron connector flowing from each card into the
+next, so module 1 visibly hands off to module 2. The tag's feature image
+is the module's badge (`.module-card-art`; layers icon fallback). The
+homepage repeats the sequence as **`partials/training-path.hbs`** — the
+same live discovery rendered as compact numbered steps on a horizontal
+scroll-snap track (`.home-path`), each step linking into its module's
+first page, closing with a terminus step to /training.
 
 ### Facet tags (chip/filter vocabulary)
 
@@ -142,6 +152,20 @@ above the content.
   aspect theme's featured-video-preview.
 - `/newsletter/` frames the latest issue as a mac-window email; issues
   get a sent-date rail + subscribe CTA (post-issue.hbs).
+- `/changelog/` has two CSS-only views: two radio inputs before
+  `.changelog-layout` restyle the SAME entry markup as a timeline
+  (default) or a kanban-style board — the toolbar labels are the switch,
+  zero JS. Entries carry their feature image (placeholder fallback) and
+  their primary tag as a chip with the TAG's image as icon; a sticky
+  sidebar (subscribe, RSS, sponsor) rides right and folds under on
+  mobile. Changelog singles use post-simple.hbs `withSidebar=true`: the
+  entry reader — sticky sidebar left (TOC, share, sponsor), sectioned
+  article right (each h2 opens a bordered section). On small screens the
+  sidebar folds above the content, TOC first, share/sponsor hidden.
+  Newsletter issues keep the narrow variant with the inline TOC.
+- Post cards always carry media (feature image or the branded thumb
+  placeholder), and the eyebrow shows the primary tag with the tag's
+  feature image as a round icon (`.card-tag-icon`, tag glyph fallback).
 - `/guestbook/` (page-guestbook.hbs): sticky pitch left, Ghost comments
   right — comments are the entries. Requires commenting enabled.
 - `/welcome/` (page-welcome.hbs) is every tier's welcome_page_url —
