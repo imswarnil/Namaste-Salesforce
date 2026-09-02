@@ -1,0 +1,59 @@
+{{!-- The training trail — /training's main column.
+
+Same discovery as everywhere (a module IS a public tag with
+training posts), but here the modules AND their sections all
+hang off one rail: a numbered waypoint per module (CSS counter),
+then each section as a timeline stop with its lesson-type icon
+and duration chip, then the next module. The accent line that
+draws itself down the rail as you scroll lives in training.hbs
+(an SVG with data-draw, handled by animate.js). --}}
+
+{{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
+    {{#foreach moduleTags}}
+        {{#> "with-this" moduleTag=. }}
+            {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="100" include="tags" as |modulePosts|}}
+                {{#if modulePosts}}
+                    <section class="trail-module" id="module-{{../moduleTag.slug}}" data-animate>
+
+                        <span class="trail-node" aria-hidden="true"></span>
+
+                        <header class="trail-module-head">
+                            {{#if ../moduleTag.feature_image}}
+                                <span class="trail-module-art" aria-hidden="true">
+                                    <img src="{{img_url ../moduleTag.feature_image size="s"}}" alt="" loading="lazy" />
+                                </span>
+                            {{else}}
+                                <span class="trail-module-art is-icon" aria-hidden="true">{{> "icons/layers"}}</span>
+                            {{/if}}
+                            <div class="trail-module-copy">
+                                <span class="kicker">{{t "Module"}} <span class="module-count-chip">{{modulePosts.length}} {{t "sections"}}</span></span>
+                                <h2><a href="{{modulePosts.[0].url}}">{{../moduleTag.name}}</a></h2>
+                                {{#if ../moduleTag.description}}
+                                    <p class="trail-module-desc">{{../moduleTag.description}}</p>
+                                {{/if}}
+                            </div>
+                            <a class="btn btn-sm trail-module-start" href="{{modulePosts.[0].url}}">{{> "icons/play-circle"}} {{t "Start"}}</a>
+                        </header>
+
+                        <ol class="trail-steps">
+                            {{#foreach modulePosts}}
+                                <li class="trail-step">
+                                    <a href="{{url}}">
+                                        <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
+                                        <span class="trail-step-body">
+                                            <span class="trail-step-title">{{title}}</span>
+                                            {{#if custom_excerpt}}<span class="trail-step-sub">{{custom_excerpt}}</span>{{/if}}
+                                        </span>
+                                        {{> "duration-chip" chipClass="trail-step-time"}}
+                                        {{> "icons/arrow-right"}}
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ol>
+
+                    </section>
+                {{/if}}
+            {{/get}}
+        {{/with-this}}
+    {{/foreach}}
+{{/get}}

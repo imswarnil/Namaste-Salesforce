@@ -1,0 +1,18 @@
+{{!-- The sent calendar — a month grid with every day an issue
+went out marked. calendar.js builds the grid (current month on
+load, prev/next to walk back), lights the sent days, and puts
+the issue's title in a hover tooltip; clicking a lit day opens
+the issue. The hidden list below is the data: Handlebars renders
+every issue's date/title/url, the script reads it. Without JS
+(or with no issues) the whole widget removes itself. --}}
+<div class="widget widget-calendar" data-calendar>
+    <h4 class="widget-title">{{> "icons/calendar"}} {{t "Sent calendar"}}</h4>
+    <div class="cal" data-cal-root></div>
+    <ul hidden data-cal-dates>
+        {{#get "posts" filter="tag:hash-newsletter-col" limit="100" as |allIssues|}}
+            {{#foreach allIssues}}
+                <li data-date="{{date format="YYYY-MM-DD"}}" data-title="{{title}}" data-url="{{url}}"></li>
+            {{/foreach}}
+        {{/get}}
+    </ul>
+</div>

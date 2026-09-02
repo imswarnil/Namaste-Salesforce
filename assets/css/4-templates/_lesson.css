@@ -27,10 +27,25 @@
 }
 
 .player-rail-course {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 1.4rem;
     padding-bottom: 2rem;
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--border);
+}
+
+.player-rail-course-art {
+    width: 5.2rem;
+    height: 5.2rem;
+    border-radius: var(--radius);
+    object-fit: cover;
+    border: 1px solid var(--border-soft);
+    flex-shrink: 0;
+}
+
+.player-rail-course-copy {
+    min-width: 0;
 }
 
 .player-rail-course .kicker {
@@ -238,14 +253,32 @@
     background: var(--surface);
 }
 
-.rail-module summary svg:first-child {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: var(--text-faint);
+/* Module icon: the TAG's image when it has one, layers glyph
+   fallback — same slot either way. */
+.rail-module-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
     flex-shrink: 0;
+    color: var(--text-faint);
 }
 
-.rail-module summary svg:last-child {
+.rail-module-ico svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.rail-module-ico img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-soft);
+}
+
+.rail-module summary > svg:last-child {
     width: 1.2rem;
     height: 1.2rem;
     margin-left: auto;
@@ -253,7 +286,7 @@
     transition: transform 0.2s ease;
 }
 
-.rail-module[open] summary svg:last-child {
+.rail-module[open] summary > svg:last-child {
     transform: rotate(180deg);
 }
 
@@ -261,7 +294,7 @@
     color: var(--accent);
 }
 
-.rail-module.is-active summary svg:first-child {
+.rail-module.is-active summary .rail-module-ico {
     color: var(--accent);
 }
 

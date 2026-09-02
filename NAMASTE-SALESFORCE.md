@@ -58,15 +58,18 @@ posts carrying it as **primary tag**, ordered oldest-first.
 keeping only those with training posts — publish a post with a new primary
 tag and a module card appears; retire the last one and it goes.
 
-`/training/` renders the cards on **`.training-path`**: one dashed rail,
-a numbered node per module (pure CSS counter — the markup ships an empty
-`.module-num`), and a chevron connector flowing from each card into the
-next, so module 1 visibly hands off to module 2. The tag's feature image
-is the module's badge (`.module-card-art`; layers icon fallback). The
-homepage repeats the sequence as **`partials/training-path.hbs`** — the
-same live discovery rendered as compact numbered steps on a horizontal
-scroll-snap track (`.home-path`), each step linking into its module's
-first page, closing with a terminus step to /training.
+`/training/` is the **trail** (`partials/training-trail.hbs`): a
+two-column hero (pitch + live "up next" panel) over `.training-layout` —
+the trail left, a sticky widget sidebar right. On the trail, modules AND
+their sections hang off ONE rail: a numbered waypoint per module (CSS
+counter in `.trail-node`, tag image as the module badge), each section a
+timeline stop with its lesson-type icon and duration chip, then the next
+module. The rail itself is an SVG line (`.trail-line`) whose accent path
+draws down with scroll (`data-draw`, animate.js); waypoints light as
+they reveal (`.is-in`). The homepage repeats the sequence as
+**`partials/training-path.hbs`** — compact numbered steps on a
+horizontal scroll-snap track (`.home-path`), closing with a terminus
+step to /training.
 
 ### Facet tags (chip/filter vocabulary)
 
@@ -150,8 +153,24 @@ above the content.
   (partials/video-preview.hbs) and video-preview.js rewrites the first
   YouTube/Vimeo/video embed into background mode. Ported from the
   aspect theme's featured-video-preview.
-- `/newsletter/` frames the latest issue as a mac-window email; issues
-  get a sent-date rail + subscribe CTA (post-issue.hbs).
+- `/newsletter/` frames the latest issue as a mac-window email; below,
+  issues (thumbnails + sent dates) beside a sticky sidebar whose **sent
+  calendar** (widgets/sent-calendar.hbs + calendar.js) renders the
+  current month, marks every day an issue went out, tooltips the title
+  on hover (CSS `attr(data-tip)`) and walks months back to the first
+  issue. Issue singles keep the sent-date rail + subscribe CTA
+  (post-issue.hbs).
+- **Changelog types**: `#changelog-type-feature/-improvement/-fix/
+  -content` — the badge text is the tag DESCRIPTION, the slug suffix
+  picks colour + icon (partials/changelog-badge.hbs); renders on the
+  /changelog timeline/board and the entry header.
+- `/sponsor/` (page-sponsor.hbs) and `/contact/` (page-contact.hbs) are
+  homepage-grade: hero + live-counted stats/prop cards/social row, with
+  the page's own content still rendered in a section.
+- `/sitemap/` is a TREE: root node, trunk, one branch per collection
+  (its icon on the head), every entry a leaf on dashed connectors —
+  pure CSS, queried live. `/guestbook/` locks to the viewport ≥901px:
+  the pitch stays put, only the comments column scrolls.
 - `/changelog/` has two CSS-only views: two radio inputs before
   `.changelog-layout` restyle the SAME entry markup as a timeline
   (default) or a kanban-style board — the toolbar labels are the switch,
@@ -198,6 +217,15 @@ Ghost's `__GHOST_URL__` token, because a bare relative path gets nulled
 by Ghost's URL-normalisation job (learned live). Cards without any image
 fall back to `partials/thumb-placeholder.hbs`.
 
+The same script draws a **badge per PUBLIC tag** (monogram tile) into
+`assets/images/tags/{slug}.svg` and repoints the tag's feature_image;
+build-import.py stamps the same URLs into import.json. Templates use
+the tag image as the tag's icon everywhere — card eyebrows
+(`.card-tag-icon`), module badges on the trail and home path, the
+training reader rail (`.rail-module-ico`), sitemap topic leaves — each
+with a glyph fallback when a tag has no image. The lesson player rail
+heads with the course's own thumb the same way.
+
 Figtree is self-hosted (`assets/fonts/`, declared in
 `0-abstracts/_fonts.css`) — no Google Fonts request.
 
@@ -227,6 +255,11 @@ copy for the no-choice state. `pnpm build` compiles.
   a matching partial render as text. Mobile drawer is the `#nav-open`
   checkbox + label — zero JS.
 
+  The bar is **full-bleed** — `.site-head-inner` has its own padding, no
+  `.inner` max-width. The mobile drawer blooms open from the burger's
+  corner (a `clip-path: circle()` reveal, disabled under reduced
+  motion) with the items cascading in on staggered delays.
+
   **Dropdowns are a label convention** in Admin → Settings → Navigation:
   `+Learn` opens a dropdown (shown as "Learn"), the `-Courses` / `-Training`
   run after it are its children, and the first unprefixed label ends the run.
@@ -243,7 +276,10 @@ copy for the no-choice state. `pnpm build` compiles.
   Ghost 6's native handler owns `/llms.txt` itself (`llms_enabled` is on).
 - **prev/next** — `{{prev_post in="primary_tag"}}`, no script.
 
-The three scripts (`assets/js/`): `theme.js` (toggle + storage; the inline
+The scripts (`assets/js/`, all concatenated into built/main.js) also
+include `calendar.js` (the newsletter sent calendar — reads the hidden
+issue list the widget renders, builds the month grid with Intl names,
+removes itself without data) alongside `theme.js` (toggle + storage; the inline
 head script in default.hbs applies it pre-paint), `toc.js` (heading ids,
 outline, scroll-spy; removes itself without headings), `filters.js` (the
 /courses toolbar — built from the cards' data attributes, because

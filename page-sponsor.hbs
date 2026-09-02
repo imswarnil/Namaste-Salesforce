@@ -1,0 +1,101 @@
+{{!< default}}
+
+{{!-- /sponsor — Ghost auto-picks page-sponsor.hbs for the page
+with slug "sponsor". A homepage-grade pitch: hero with live
+audience numbers, where the placements run, what sponsors get,
+the page's own editable copy, then the CTA. Everything counted
+is queried live — the pitch never goes stale. --}}
+
+{{#post}}
+
+<section class="sponsor-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="orb" style="width: 380px; height: 380px; top: -120px; right: -100px;" aria-hidden="true"></div>
+    <div class="orb" style="width: 300px; height: 300px; bottom: -120px; left: -80px; animation-delay: -4s;" aria-hidden="true"></div>
+
+    <div class="sponsor-hero-grid inner relative">
+        <div data-animate="left">
+            <span class="kicker">{{> "icons/megaphone"}} {{t "Sponsorship"}}</span>
+            <h1>{{title}}</h1>
+            <p class="sponsor-hero-sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Put your product in front of people building on Salesforce every week — learners, admins and developers working through real builds."}}{{/if}}</p>
+            <div class="sponsor-hero-actions">
+                <a class="btn btn-lg" href="mailto:sponsor@namastesalesforce.com">{{> "icons/mail"}} {{t "Get in touch"}}</a>
+                <a class="btn btn-lg btn-ghost" href="#sponsor-placements">{{> "icons/compass"}} {{t "See placements"}}</a>
+            </div>
+
+            <div class="sponsor-stats" data-animate-stagger>
+                {{#get "posts" limit="1" as |items counts|}}
+                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Published pieces"}}</span></div>
+                {{/get}}
+                {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" limit="1" as |items counts|}}
+                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
+                {{/get}}
+                {{#get "tags" filter="visibility:public" limit="1" as |items counts|}}
+                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Topics"}}</span></div>
+                {{/get}}
+            </div>
+        </div>
+
+        {{!-- The slot itself, previewed live --}}
+        <div class="sponsor-hero-panel" data-animate="right">
+            {{> "widgets/sponsor"}}
+            <span class="sponsor-hero-note">{{> "icons/info"}} {{t "This is the actual card that runs site-wide."}}</span>
+        </div>
+    </div>
+</section>
+
+<section class="section outer" id="sponsor-placements">
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/map-icon"}} {{t "Placements"}}</span>
+                <h2>{{t "Where your card runs"}}</h2>
+                <p>{{t "One sponsor at a time, everywhere the sidebar goes."}}</p>
+            </div>
+        </div>
+        <div class="home-props" data-animate-stagger>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/layers"}}</span>
+                <h3>{{t "Training reader"}}</h3>
+                <p>{{t "The tall skyscraper slot beside every training page — long, focused reading sessions."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/graduation-cap"}}</span>
+                <h3>{{t "Lesson player"}}</h3>
+                <p>{{t "The rail slot under the course contents — visible through entire courses, lesson after lesson."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/pen"}}</span>
+                <h3>{{t "Blog, changelog & newsletter"}}</h3>
+                <p>{{t "The sidebar box beside articles, release notes and the issue archive."}}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt outer">
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/check-circle"}} {{t "The deal"}}</span>
+                <h2>{{t "What sponsors get"}}</h2>
+            </div>
+        </div>
+        <div class="sponsor-copy gh-content" data-animate>
+            {{content}}
+        </div>
+    </div>
+</section>
+
+<section class="section outer">
+    <div class="inner">
+        <div class="home-cta" data-animate="zoom">
+            <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
+            <h2>{{t "Sound like your audience?"}}</h2>
+            <p>{{t "Tell us what you're building and we'll send the details — availability, pricing, and what runs where."}}</p>
+            <a class="btn btn-lg btn-inverse" href="mailto:sponsor@namastesalesforce.com">{{> "icons/mail"}} {{t "sponsor@namastesalesforce.com"}}</a>
+        </div>
+    </div>
+</section>
+
+{{/post}}

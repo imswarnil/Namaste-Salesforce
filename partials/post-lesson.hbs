@@ -51,8 +51,13 @@ One markup shape; the class on .player is all that changes. --}}
                 {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]+slug:{{slug}}" limit="1" as |courseposts|}}
                     {{#foreach courseposts}}
                         <a class="player-rail-course" href="{{url}}">
-                            <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
-                            <h2>{{title}}</h2>
+                            {{#if feature_image}}
+                                <img class="player-rail-course-art" src="{{img_url feature_image size="s"}}" alt="" loading="lazy" />
+                            {{/if}}
+                            <span class="player-rail-course-copy">
+                                <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
+                                <h2>{{title}}</h2>
+                            </span>
                         </a>
                     {{/foreach}}
                 {{/get}}

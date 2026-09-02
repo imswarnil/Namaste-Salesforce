@@ -18,6 +18,7 @@ import sqlite3, html, textwrap, pathlib, sys
 
 DB = "/Users/swarnil/Namaste Salesforce/ghost/content/data/ghost-local.db"
 OUT = pathlib.Path("assets/images/thumbs")
+TAG_OUT = pathlib.Path("assets/images/tags")
 
 # stroke paths lifted from partials/icons/ (24-box, drawn at scale)
 ICONS = {
@@ -100,6 +101,43 @@ def svg_clean(title, kind):
   <text x="80" y="612" font-size="24" font-weight="600" letter-spacing="2" fill="rgba(244,246,248,0.75)">NAMASTE SALESFORCE</text>
 </svg>'''
 
+def svg_tag_badge(name):
+    """Square badge for a PUBLIC tag — templates render it as the
+    tag's icon (module badges, card eyebrows, rail icons), usually
+    at 2–5rem, so it has to read tiny: flat navy, accent glow, a
+    rounded tile with the tag's monogram."""
+    words = [w for w in name.split() if w and w[0].isalnum()]
+    mono = html.escape("".join(w[0] for w in words[:2]).upper() or "•")
+    size = 220 if len(mono) < 2 else 170
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" font-family="Figtree,-apple-system,'Segoe UI',Roboto,sans-serif">
+  <defs>
+    <radialGradient id="tglow" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="rgba(27,150,255,0.4)"/><stop offset="1" stop-color="rgba(27,150,255,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="600" fill="{NAVY}"/>
+  <circle cx="300" cy="270" r="260" fill="url(#tglow)"/>
+  <circle cx="300" cy="300" r="215" fill="none" stroke="rgba(27,150,255,0.35)" stroke-width="4" stroke-dasharray="3 16" stroke-linecap="round"/>
+  <rect x="140" y="140" width="320" height="320" rx="72" fill="rgba(27,150,255,0.2)" stroke="rgba(27,150,255,0.6)" stroke-width="5"/>
+  <text x="300" y="300" font-size="{size}" font-weight="800" fill="#ffffff" text-anchor="middle" dominant-baseline="central">{mono}</text>
+</svg>'''
+
+def tag_badges(c):
+    """Every public tag gets its badge; only images the editor set
+    by hand (anything not ours, not empty) are left alone."""
+    TAG_OUT.mkdir(parents=True, exist_ok=True)
+    changed = 0
+    for tid, slug, name, image in c.execute(
+            "select id, slug, name, feature_image from tags "
+            "where visibility = 'public'").fetchall():
+        if image and '/assets/images/tags/' not in image:
+            continue
+        (TAG_OUT / f"{slug}.svg").write_text(svg_tag_badge(name))
+        c.execute("update tags set feature_image=? where id=?",
+                  (f"__GHOST_URL__/assets/images/tags/{slug}.svg", tid))
+        changed += 1
+    return changed
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     db = sqlite3.connect(DB)
@@ -133,8 +171,9 @@ def main():
         c.execute("update posts set feature_image=? where id=?",
                   (f"__GHOST_URL__/assets/images/thumbs/{slug}.svg", pid))
         changed += 1
+    badges = tag_badges(c)
     db.commit()
-    print(f"generated + repointed {changed} thumbnails")
+    print(f"generated + repointed {changed} thumbnails, {badges} tag badges")
 
 if __name__ == "__main__":
     main()

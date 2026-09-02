@@ -322,58 +322,157 @@
     }
 }
 
-/*  Sitemap
-    ------------------------------------------------------------ */
+/*  Sitemap — the tree
+    ------------------------------------------------------------
+    Root node on top, a trunk down to a rail, branches hanging
+    off it in a responsive grid, every entry a leaf with its own
+    connector. All connectors pure CSS. */
 
-.sitemap-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2.4rem;
+.tree-root {
+    text-align: center;
 }
 
-.sitemap-block {
-    padding: 2.4rem;
-    background: var(--surface);
+.tree-root-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 2.6rem;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--heading);
+    background:
+        linear-gradient(160deg, var(--accent-soft), transparent 75%),
+        var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.sitemap-block h2 {
+.tree-root-node:hover {
+    color: var(--accent);
+    border-color: color-mod(#0176d3 a(40%));
+}
+
+.tree-root-node svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: var(--accent);
+}
+
+/* Trunk from root down to the branch grid */
+.tree-root::after {
+    content: "";
+    display: block;
+    width: 2px;
+    height: 3.2rem;
+    margin: 0 auto;
+    background: var(--border);
+}
+
+.tree-branches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 3.2rem 2.8rem;
+    padding-top: 3.2rem;
+    border-top: 2px solid var(--border);
+}
+
+/* Stub from the rail into each branch head */
+.tree-branch {
+    position: relative;
+}
+
+.tree-branch::before {
+    content: "";
+    position: absolute;
+    top: -3.2rem;
+    left: 2.4rem;
+    width: 2px;
+    height: 3.2rem;
+    background: var(--border);
+}
+
+.tree-branch-head {
     font-size: 1.7rem;
-    margin-bottom: 1.4rem;
+    margin: 0;
 }
 
-.sitemap-block h2 a,
-.sitemap-block h2 {
-    display: flex;
+.tree-branch-head a,
+.tree-branch-head span {
+    display: inline-flex;
     align-items: center;
     gap: 0.8rem;
+    padding: 1rem 1.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.sitemap-block h2 svg {
+.tree-branch-head a:hover {
+    color: var(--accent);
+    border-color: color-mod(#0176d3 a(40%));
+}
+
+.tree-branch-head svg {
     width: 1.8rem;
     height: 1.8rem;
     color: var(--accent);
     flex-shrink: 0;
 }
 
-.sitemap-block h2 a:hover {
-    color: var(--accent);
-}
-
-.sitemap-block ul:not(.tag-cloud) {
+/* Leaves on the branch rail */
+.tree-leaves {
     list-style: none;
-    padding: 0;
-    display: grid;
-    gap: 0.7rem;
+    margin: 0.6rem 0 0;
+    padding: 0.4rem 0 0 2.3rem;
+    border-left: 2px dashed var(--border);
+    margin-left: 2.4rem;
 }
 
-.sitemap-block ul:not(.tag-cloud) a {
+.tree-leaves li {
+    position: relative;
+    padding: 0.45rem 0;
+}
+
+.tree-leaves li::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -2.3rem;
+    width: 1.6rem;
+    border-top: 2px dashed var(--border);
+}
+
+.tree-leaves a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
     font-size: 1.45rem;
     color: var(--text-muted);
     transition: color 0.15s ease;
 }
 
-.sitemap-block ul:not(.tag-cloud) a:hover {
+.tree-leaves a:hover {
     color: var(--accent);
+}
+
+.tree-leaves a small {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Video leaves get a play glyph instead of the bare line */
+.tree-leaves.is-video a::before {
+    content: "▸";
+    color: var(--accent);
+}
+
+@media (max-width: 640px) {
+    .tree-branches {
+        gap: 2.8rem;
+    }
 }

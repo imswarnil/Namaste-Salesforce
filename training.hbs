@@ -1,36 +1,110 @@
 {{!< default}}
 
-{{!-- /training — modules discovered from content. A module IS a
-public tag: every training post's primary tag names the module it
-belongs to, the tag's description is the module's blurb, and
-partials/module-grid.hbs does the discovery. Publish a post with
-a new primary tag and a new module card appears here.
+{{!-- /training — the training path. A module IS a public tag:
+every training post's primary tag names its module, the tag's
+description/image are the module's blurb/badge, and
+partials/training-trail.hbs does the discovery. Publish a post
+with a new primary tag and a new waypoint appears here.
 
-The cards render on .training-path: one connected rail, each
-module numbered, a connector flowing from every card into the
-next — module 1, then module 2, then module 3. --}}
+Layout: two-column hero (pitch + the "up next" panel), then the
+trail — modules as numbered waypoints with their sections as
+timeline stops on one rail, an SVG accent line drawing itself
+down the rail as you scroll (data-draw / animate.js) — beside a
+sticky widget sidebar. --}}
 
-<section class="training-hero outer relative">
+<section class="training-hero2 outer relative">
     <div class="bg-grid" aria-hidden="true"></div>
-    <div class="orb" style="width: 340px; height: 340px; top: -110px; right: -80px;" aria-hidden="true"></div>
-    <div class="orb" style="width: 280px; height: 280px; bottom: -120px; left: -60px; animation-delay: -3s;" aria-hidden="true"></div>
-    <div class="inner relative">
-        <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
-        <h1>{{t "Training modules"}}</h1>
-        <p>{{t "Self-contained modules that chain into one path — finish a module and the next one is waiting. Each page a step, in reading order."}}</p>
+    <div class="orb" style="width: 380px; height: 380px; top: -120px; right: -100px;" aria-hidden="true"></div>
+    <div class="orb" style="width: 300px; height: 300px; bottom: -130px; left: -80px; animation-delay: -3s;" aria-hidden="true"></div>
+    <div class="home-deco" style="top: 18%; left: 44%;" data-parallax="0.08" aria-hidden="true">
+        <span class="home-bubble float">{{> "icons/layers"}}</span>
+    </div>
+    <div class="home-deco" style="bottom: 22%; right: 40%;" data-parallax="0.11" aria-hidden="true">
+        <span class="home-bubble float-alt" style="animation-delay: -4s;">{{> "icons/compass"}}</span>
+    </div>
+
+    <div class="training-hero2-grid inner relative">
+
+        <div class="training-hero2-copy" data-animate="left">
+            <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
+            <h1>{{t "Walk the"}} <em>{{t "training path"}}</em></h1>
+            <p class="training-hero2-sub">{{t "Self-contained modules that chain into one trail — every section a stop, every module a waypoint, in reading order. Finish one and the next is already lit."}}</p>
+
+            <div class="training-hero2-actions">
+                <a class="btn btn-lg" href="#training-trail">{{> "icons/play-circle"}} {{t "Start the path"}}</a>
+                <a class="btn btn-lg btn-ghost" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
+            </div>
+
+            <div class="training-hero2-stats">
+                {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |items counts|}}
+                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Sections"}}</span></div>
+                {{/get}}
+                {{#get "tags" filter="visibility:public" include="count.posts" limit="1" as |items counts|}}
+                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Topics"}}</span></div>
+                {{/get}}
+                <div class="home-stat"><strong>{{t "Free"}}</strong><span>{{t "Forever"}}</span></div>
+            </div>
+        </div>
+
+        {{!-- Up next: the first stops on the trail, live --}}
+        {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" order="published_at asc" include="tags" limit="4" as |next|}}
+            {{#if next}}
+                <div class="training-hero2-panel" data-animate="right">
+                    <div class="training-upnext">
+                        <h3>{{> "icons/map-icon"}} {{t "Up next on the path"}}</h3>
+                        <ol>
+                            {{#foreach next}}
+                                <li>
+                                    <a href="{{url}}">
+                                        <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
+                                        <span>{{title}}</span>
+                                        {{> "icons/arrow-right"}}
+                                    </a>
+                                </li>
+                            {{/foreach}}
+                        </ol>
+                        <a class="training-upnext-more" href="#training-trail">{{t "See the whole trail"}} {{> "icons/chevron-down"}}</a>
+                    </div>
+                </div>
+            {{/if}}
+        {{/get}}
+
     </div>
 </section>
 
 <main id="site-main" class="training-main outer">
-    <div class="inner">
-        <div class="training-path" data-animate-stagger>
-            {{> "module-grid" moduleLimit="30"}}
+    <div class="inner training-layout">
+
+        <div class="training-trail" id="training-trail">
+            <svg class="trail-line" viewBox="0 0 4 100" preserveAspectRatio="none" aria-hidden="true">
+                <path class="trail-line-under" vector-effect="non-scaling-stroke" d="M 2 0 V 100" />
+                <path class="trail-line-over" vector-effect="non-scaling-stroke" data-draw d="M 2 0 V 100" />
+            </svg>
+
+            {{> "training-trail"}}
+
+            <div class="training-path-end" data-animate>
+                <span class="training-path-end-icon">{{> "icons/rocket"}}</span>
+                <h2>{{t "Worked through everything?"}}</h2>
+                <p>{{t "Take a structured course next — every one ends with something running in your own org."}}</p>
+                <a class="btn" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
+            </div>
         </div>
-        <div class="training-path-end" data-animate>
-            <span class="training-path-end-icon">{{> "icons/rocket"}}</span>
-            <h2>{{t "Worked through everything?"}}</h2>
-            <p>{{t "Take a structured course next — every one ends with something running in your own org."}}</p>
-            <a class="btn" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
-        </div>
+
+        <aside class="training-side">
+            <div class="training-side-sticky">
+                <div class="widget">
+                    <h4 class="widget-title">{{> "icons/compass"}} {{t "How the path works"}}</h4>
+                    <ul class="training-how">
+                        <li>{{> "icons/check-circle"}} {{t "Each module is one topic, self-contained"}}</li>
+                        <li>{{> "icons/check-circle"}} {{t "Sections read in order, top to bottom"}}</li>
+                        <li>{{> "icons/check-circle"}} {{t "Build along in a free Developer Edition org"}}</li>
+                    </ul>
+                </div>
+                {{> "widgets/newsletter"}}
+                {{> "widgets/sponsor" skyscraper=true}}
+            </div>
+        </aside>
+
     </div>
 </main>

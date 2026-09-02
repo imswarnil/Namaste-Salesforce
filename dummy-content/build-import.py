@@ -80,12 +80,21 @@ tags, tag_ids = [], {}
 
 def tag(name, slug, description=None, visibility="internal"):
     """Internal tags follow Ghost's slug convention: #name → hash-name.
-    tag_ids is keyed by the BARE slug so call sites stay readable."""
+    tag_ids is keyed by the BARE slug so call sites stay readable.
+
+    Public tags get a feature image: the branded badge SVG that
+    build-thumbnails.py draws into assets/images/tags/{slug}.svg —
+    templates use it as the tag's icon everywhere (module badges,
+    card eyebrows, chips). __GHOST_URL__ token, as always: a bare
+    relative path gets nulled by Ghost's normalisation job."""
     tid = oid()
     tag_ids[slug] = tid
     real_slug = ("hash-" + slug) if visibility == "internal" else slug
+    feature_image = (f"__GHOST_URL__/assets/images/tags/{slug}.svg"
+                     if visibility == "public" else None)
     tags.append({"id": tid, "name": name, "slug": real_slug,
-                 "description": description, "visibility": visibility})
+                 "description": description, "visibility": visibility,
+                 "feature_image": feature_image})
     return tid
 
 # collections (new vocabulary)
@@ -146,6 +155,14 @@ tag("#blog-toc-hide", "blog-toc-hide", "Hide the table of contents")
 tag("#video-col", "video-col", "Marks a post as a library video")
 tag("#newsletter-col", "newsletter-col", "Marks a post as a newsletter issue")
 tag("#changelog-col", "changelog-col", "Marks a post as a changelog entry")
+
+# changelog entry types — the badge on /changelog and the entry
+# header. The description IS the badge text; the slug suffix is
+# the colour class (templates match hash-changelog-type-).
+tag("#changelog-type-feature", "changelog-type-feature", "Feature")
+tag("#changelog-type-improvement", "changelog-type-improvement", "Improvement")
+tag("#changelog-type-fix", "changelog-type-fix", "Fix")
+tag("#changelog-type-content", "changelog-type-content", "Content")
 
 # public: the course's own tag, module tags, topics
 tag("Flow Automation Masterclass", "flow-automation-masterclass",
@@ -383,19 +400,24 @@ for i, (title, slug, excerpt) in enumerate(issues):
           ("From the courses", "What changed in the curriculum since last issue.")],
          40 + (len(issues) - i))
 
-# THE CHANGELOG — entries at /changelog/{slug}/.
+# THE CHANGELOG — entries at /changelog/{slug}/. Each carries a
+# #changelog-type-* tag: the colour-coded badge on the timeline.
 changes = [
     ("Video library launched", "video-library-launched",
-     "A new home for standalone walkthroughs, outside any course."),
+     "A new home for standalone walkthroughs, outside any course.",
+     "changelog-type-feature"),
     ("Training modules get a full sidebar", "training-modules-full-sidebar",
-     "Every module now one click away from any training page."),
+     "Every module now one click away from any training page.",
+     "changelog-type-improvement"),
     ("Course filters shipped", "course-filters-shipped",
-     "Filter the catalogue by level and duration."),
+     "Filter the catalogue by level and duration.",
+     "changelog-type-feature"),
     ("Namaste Salesforce is live", "namaste-salesforce-is-live",
-     "First public release: two courses, two modules, and a blog."),
+     "First public release: two courses, two modules, and a blog.",
+     "changelog-type-content"),
 ]
-for i, (title, slug, excerpt) in enumerate(changes):
-    post(title, slug, ["changelog-col"], excerpt,
+for i, (title, slug, excerpt, ctype) in enumerate(changes):
+    post(title, slug, ["changelog-col", ctype], excerpt,
          [("What changed", "The user-visible difference, stated without ceremony."),
           ("Why", "The problem this solves, in one honest paragraph.")],
          50 + i)

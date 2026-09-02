@@ -29,11 +29,14 @@
     border-bottom: 1px solid var(--border-soft);
 }
 
+/* Full-bleed bar: the header spans the whole viewport width —
+   its own padding, no .inner max-width. */
 .site-head-inner {
     display: flex;
     align-items: center;
     gap: 3.2rem;
     height: 100%;
+    padding: 0 max(4vmin, 24px);
 }
 
 /* Brand */
@@ -209,6 +212,8 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         display: block;
     }
 
+    /* The drawer blooms open from the burger's corner — a
+       circular clip-path reveal, items cascading in behind it. */
     .site-head-nav {
         position: fixed;
         inset: var(--header-height) 0 0 0;
@@ -219,17 +224,26 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         padding: 2rem max(4vmin, 20px) calc(4rem + env(safe-area-inset-bottom, 0px));
         overflow-y: auto;
         overscroll-behavior: contain;
-        background: var(--bg);
+        background:
+            radial-gradient(640px 340px at 92% -8%, var(--accent-soft), transparent 70%),
+            var(--bg);
         visibility: hidden;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: opacity 0.25s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.25s ease;
+        clip-path: circle(0px at calc(100% - 4.4rem) -2rem);
+        transition:
+            clip-path 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+            visibility 0.5s;
     }
 
     #nav-open:checked ~ .site-head .site-head-nav {
         visibility: visible;
-        opacity: 1;
-        transform: translateY(0);
+        clip-path: circle(160% at calc(100% - 4.4rem) -2rem);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .site-head-nav {
+            clip-path: none;
+            transition: visibility 0s;
+        }
     }
 
     #nav-open:checked ~ .site-head {

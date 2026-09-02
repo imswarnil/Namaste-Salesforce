@@ -260,6 +260,47 @@
     top: calc(var(--header-height) + 2.4rem);
 }
 
+/* Desktop: the section fills the viewport, the pitch stays put,
+   and ONLY the entries column scrolls — its own scrollbar,
+   contained so it never drags the page along. */
+@media (min-width: 901px) {
+    .guestbook {
+        height: calc(100vh - var(--header-height));
+        padding-top: clamp(3.2rem, 5vmin, 5.6rem);
+        padding-bottom: clamp(3.2rem, 5vmin, 5.6rem);
+        overflow: hidden;
+    }
+
+    .guestbook > .inner,
+    .guestbook-grid {
+        height: 100%;
+    }
+
+    .guestbook-grid {
+        align-items: stretch;
+    }
+
+    .guestbook-intro {
+        display: flex;
+        align-items: center;
+        min-height: 0;
+    }
+
+    .guestbook-intro-sticky {
+        position: static;
+        max-height: 100%;
+        overflow: hidden auto;
+        scrollbar-width: thin;
+    }
+
+    .guestbook-entries {
+        height: 100%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+    }
+}
+
 .guestbook-intro h1 {
     margin-top: 1.2rem;
 }
@@ -364,4 +405,166 @@
 .welcome-foot a {
     color: var(--accent);
     font-weight: 600;
+}
+
+/*  /sponsor — page-sponsor.hbs
+    ------------------------------------------------------------ */
+
+.sponsor-hero {
+    position: relative;
+    overflow: hidden;
+    padding-top: clamp(5.6rem, 9vmin, 9rem);
+    padding-bottom: clamp(4.8rem, 8vmin, 8rem);
+}
+
+.sponsor-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 5.6rem;
+    align-items: center;
+}
+
+.sponsor-hero h1 {
+    margin-top: 1.2rem;
+    font-size: clamp(3.2rem, 5.5vw, 5.2rem);
+    line-height: 1.1;
+}
+
+.sponsor-hero-sub {
+    max-width: 54ch;
+    margin-top: 2rem;
+    font-size: 1.7rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.sponsor-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    margin-top: 3.2rem;
+}
+
+.sponsor-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 4.8rem;
+    margin-top: 4rem;
+    padding-top: 2.8rem;
+    border-top: 1px solid var(--border-soft);
+}
+
+.sponsor-stats .home-stat {
+    text-align: left;
+}
+
+.sponsor-hero-panel {
+    display: grid;
+    gap: 1.2rem;
+    justify-items: center;
+}
+
+.sponsor-hero-panel .widget-sponsor {
+    width: 100%;
+    max-width: 340px;
+    box-shadow: var(--shadow-lg);
+    transform: rotate(1.25deg);
+    transition: transform 0.25s ease;
+}
+
+.sponsor-hero-panel .widget-sponsor:hover {
+    transform: rotate(0deg);
+}
+
+.sponsor-hero-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    color: var(--text-faint);
+}
+
+.sponsor-hero-note svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.sponsor-copy {
+    max-width: 720px;
+}
+
+@media (max-width: 991px) {
+    .sponsor-hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4rem;
+    }
+}
+
+/*  /contact — page-contact.hbs
+    ------------------------------------------------------------ */
+
+.contact-hero {
+    position: relative;
+    overflow: hidden;
+    padding-top: clamp(5.6rem, 9vmin, 9rem);
+    padding-bottom: clamp(4.8rem, 8vmin, 8rem);
+    text-align: center;
+}
+
+.contact-hero-inner h1 {
+    margin-top: 1.2rem;
+    font-size: clamp(3.2rem, 5.5vw, 5.2rem);
+}
+
+.contact-hero-inner p {
+    max-width: 52ch;
+    margin: 1.8rem auto 0;
+    font-size: 1.7rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.contact-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.4rem;
+    margin-top: 3.2rem;
+}
+
+.contact-copy {
+    max-width: 720px;
+}
+
+.contact-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.6rem;
+}
+
+.contact-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 2.2rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-social:hover {
+    color: var(--accent);
+    border-color: color-mod(#0176d3 a(45%));
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.contact-social svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--accent);
 }

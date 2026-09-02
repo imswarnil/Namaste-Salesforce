@@ -1,0 +1,107 @@
+{{!< default}}
+
+{{!-- /contact — Ghost auto-picks page-contact.hbs for the page
+with slug "contact". Homepage-grade: hero, the ways to reach us
+as cards, the social row (live from the theme's custom settings
++ Ghost's own facebook/twitter), the page's editable copy, and
+a support CTA. --}}
+
+{{#post}}
+
+<section class="contact-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="orb" style="width: 360px; height: 360px; top: -110px; right: -90px;" aria-hidden="true"></div>
+    <div class="orb" style="width: 280px; height: 280px; bottom: -110px; left: -70px; animation-delay: -4s;" aria-hidden="true"></div>
+    <div class="inner relative contact-hero-inner" data-animate>
+        <span class="kicker">{{> "icons/message"}} {{t "Contact"}}</span>
+        <h1>{{title}}</h1>
+        <p>{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Questions, corrections, ideas — we read everything."}}{{/if}}</p>
+        <div class="contact-hero-actions">
+            <a class="btn btn-lg" href="mailto:hello@namastesalesforce.com">{{> "icons/mail"}} {{t "Email us"}}</a>
+            <a class="btn btn-lg btn-ghost" href="{{@site.url}}/guestbook/">{{> "icons/pen"}} {{t "Sign the guestbook"}}</a>
+        </div>
+    </div>
+</section>
+
+<section class="section outer">
+    <div class="inner">
+        <div class="home-props" data-animate-stagger>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/mail"}}</span>
+                <h3>{{t "Say hello"}}</h3>
+                <p>{{t "Write to hello@namastesalesforce.com — expect a reply within two working days."}}</p>
+                <a class="home-journey-link" href="mailto:hello@namastesalesforce.com">{{t "Email"}} {{> "icons/arrow-right"}}</a>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/file-check"}}</span>
+                <h3>{{t "Report a correction"}}</h3>
+                <p>{{t "Spotted something wrong in a lesson? Tell us which page and what you expected — fixes ship weekly."}}</p>
+                <a class="home-journey-link" href="mailto:hello@namastesalesforce.com?subject=Correction">{{t "Send a fix"}} {{> "icons/arrow-right"}}</a>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/megaphone"}}</span>
+                <h3>{{t "Sponsor the site"}}</h3>
+                <p>{{t "Put your product in front of people building on Salesforce every week."}}</p>
+                <a class="home-journey-link" href="{{@site.url}}/sponsor/">{{t "Sponsorship"}} {{> "icons/arrow-right"}}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{#if content}}
+<section class="section section-alt outer">
+    <div class="inner">
+        <div class="contact-copy gh-content" data-animate>
+            {{content}}
+        </div>
+    </div>
+</section>
+{{/if}}
+
+{{!-- Socials — only channels actually configured render --}}
+<section class="section outer">
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/share"}} {{t "Elsewhere"}}</span>
+                <h2>{{t "Follow along"}}</h2>
+            </div>
+        </div>
+        <div class="contact-socials" data-animate-stagger>
+            {{#if @custom.social_youtube}}
+                <a class="contact-social" href="{{@custom.social_youtube}}" target="_blank" rel="noopener">{{> "icons/youtube"}} <span>YouTube</span></a>
+            {{/if}}
+            {{#if @custom.social_linkedin}}
+                <a class="contact-social" href="{{@custom.social_linkedin}}" target="_blank" rel="noopener">{{> "icons/linkedin"}} <span>LinkedIn</span></a>
+            {{/if}}
+            {{#if @custom.social_github}}
+                <a class="contact-social" href="{{@custom.social_github}}" target="_blank" rel="noopener">{{> "icons/github"}} <span>GitHub</span></a>
+            {{/if}}
+            {{#if @custom.social_instagram}}
+                <a class="contact-social" href="{{@custom.social_instagram}}" target="_blank" rel="noopener">{{> "icons/instagram"}} <span>Instagram</span></a>
+            {{/if}}
+            {{#if @site.facebook}}
+                <a class="contact-social" href="{{social_url type="facebook"}}" target="_blank" rel="noopener">{{> "icons/facebook"}} <span>Facebook</span></a>
+            {{/if}}
+            {{#if @site.twitter}}
+                <a class="contact-social" href="{{social_url type="twitter"}}" target="_blank" rel="noopener">{{> "icons/x"}} <span>X</span></a>
+            {{/if}}
+            <a class="contact-social" href="{{@site.url}}/rss/">{{> "icons/rss"}} <span>RSS</span></a>
+        </div>
+    </div>
+</section>
+
+{{#if @site.members_enabled}}
+<section class="section outer">
+    <div class="inner">
+        <div class="home-cta" data-animate="zoom">
+            <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
+            <h2>{{t "Prefer it in your inbox?"}}</h2>
+            <p>{{t "One email a week — what changed, what matters, what to try. Replies land straight with us."}}</p>
+            <a class="btn btn-lg btn-inverse" href="#/portal/signup" data-portal="signup">{{> "icons/mail"}} {{t "Subscribe free"}}</a>
+        </div>
+    </div>
+</section>
+{{/if}}
+
+{{/post}}

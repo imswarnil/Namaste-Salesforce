@@ -1,0 +1,17 @@
+{{!-- The changelog entry's type badge. One vocabulary:
+#changelog-type-feature / -improvement / -fix / -content — the
+badge text is the tag's DESCRIPTION (never parsed from the
+slug), the slug suffix only picks the colour + icon. An entry
+without a type tag simply renders no badge. Context: a post with
+tags. --}}
+{{#foreach tags visibility="internal"}}
+    {{#match slug "hash-changelog-type-feature"}}
+        {{#if description}}<span class="badge badge-feature">{{> "icons/sparkles"}} {{description}}</span>{{/if}}
+    {{else match slug "hash-changelog-type-improvement"}}
+        {{#if description}}<span class="badge badge-improvement">{{> "icons/trending-up"}} {{description}}</span>{{/if}}
+    {{else match slug "hash-changelog-type-fix"}}
+        {{#if description}}<span class="badge badge-fix">{{> "icons/shield"}} {{description}}</span>{{/if}}
+    {{else match slug "hash-changelog-type-content"}}
+        {{#if description}}<span class="badge badge-content">{{> "icons/pen"}} {{description}}</span>{{/if}}
+    {{/match}}
+{{/foreach}}
