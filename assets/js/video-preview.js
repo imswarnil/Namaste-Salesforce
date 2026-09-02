@@ -88,7 +88,9 @@
     }
 
     function init() {
-        document.querySelectorAll('.card-media > template[data-video-preview]')
+        // card media boxes AND the homepage reel thumbs — both are
+        // position:relative 16:9 boxes the preview can cover
+        document.querySelectorAll('.card-media > template[data-video-preview], .reel-thumb > template[data-video-preview]')
             .forEach(mount);
     }
 

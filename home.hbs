@@ -353,6 +353,7 @@ edge but its first item aligns with the content column. --}}
                             {{else}}
                                 {{> "thumb-placeholder" icon="video"}}
                             {{/if}}
+                            {{> "video-preview"}}
                             <span class="video-card-play">{{> "icons/play-circle"}}</span>
                             {{> "duration-chip" chipClass="video-card-duration"}}
                         </span>
@@ -445,6 +446,90 @@ out when its collection is empty. --}}
                     </div>
 
                 </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- About the author + the signup moment. Left: who makes this
+and why — live author data, mission, goals. Right: the Weekly
+Namaste signup card with Ghost's native members form (the form
+element gets loading/success/error classes from Ghost itself). --}}
+{{#get "authors" limit="1" as |host|}}
+    {{#if host}}
+        <section class="section section-alt outer home-about">
+            <div class="bg-dots" aria-hidden="true"></div>
+            <div class="inner home-about-grid relative">
+
+                {{#foreach host}}
+                    <div class="home-about-copy" data-animate="left">
+                        <span class="kicker">{{> "icons/compass"}} {{t "The mission"}}</span>
+                        <h2>{{t "Why this site exists"}}</h2>
+
+                        <div class="home-about-host">
+                            {{#if profile_image}}
+                                <img class="home-about-avatar" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="lazy" />
+                            {{else}}
+                                <span class="home-about-avatar avatar-fallback">{{> "icons/avatar"}}</span>
+                            {{/if}}
+                            <div>
+                                <strong>{{name}}</strong>
+                                <span>{{t "Builds and writes everything here"}}</span>
+                            </div>
+                        </div>
+
+                        {{#if bio}}
+                            <p class="home-about-bio">{{bio}}</p>
+                        {{else}}
+                            <p class="home-about-bio">{{t "Salesforce is learned by building, not by watching slides. Every course, module and video on this site was made inside a real org — clicks, code and mistakes included."}}</p>
+                        {{/if}}
+
+                        <ul class="home-about-goals">
+                            <li>{{> "icons/check-circle"}} {{t "Keep every course free, forever"}}</li>
+                            <li>{{> "icons/check-circle"}} {{t "Teach the way real projects actually work"}}</li>
+                            <li>{{> "icons/check-circle"}} {{t "Answer honestly — even when the answer is 'don't'"}}</li>
+                        </ul>
+
+                        <div class="home-about-links">
+                            <a class="home-journey-link" href="{{url}}">{{t "More about me"}} {{> "icons/arrow-right"}}</a>
+                            <a class="home-journey-link" href="{{@site.url}}/guestbook/">{{t "Say hi in the guestbook"}} {{> "icons/arrow-right"}}</a>
+                        </div>
+                    </div>
+                {{/foreach}}
+
+                <div class="home-signup" data-animate="right">
+                    <span class="home-signup-badge">{{> "icons/gift"}} {{t "100% free"}}</span>
+                    <h3>{{t "Get the Weekly Namaste"}}</h3>
+                    <p>{{t "The one email that keeps you current on Salesforce — and it takes five seconds to join."}}</p>
+
+                    <ul class="home-signup-why">
+                        <li>{{> "icons/zap"}} {{t "Release notes decoded — only what actually affects you"}}</li>
+                        <li>{{> "icons/graduation-cap"}} {{t "New lessons and videos before they hit the homepage"}}</li>
+                        <li>{{> "icons/lock"}} {{t "Zero spam, zero selling your email, one-click unsubscribe"}}</li>
+                    </ul>
+
+                    {{#if @site.members_enabled}}
+                        {{#unless @member}}
+                            <form class="signup-form" data-members-form="signup">
+                                <div class="signup-row">
+                                    <input class="signup-input" data-members-email type="email" required
+                                        placeholder="{{t "you@work-email.com"}}" aria-label="{{t "Your email"}}" />
+                                    <button class="btn signup-btn" type="submit">
+                                        {{> "icons/mail"}} {{t "Join free"}}
+                                    </button>
+                                </div>
+                                <p class="signup-note">{{t "Join fellow admins and devs reading along — if it's not for you, one click ends it."}}</p>
+                                <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox and click the magic link."}}</p>
+                                <p class="signup-error" data-members-error></p>
+                            </form>
+                        {{else}}
+                            <p class="members-note">{{> "icons/check-circle"}} {{t "You're on the list — the next issue is coming to you."}}</p>
+                        {{/unless}}
+                    {{else}}
+                        <a class="btn" href="{{@site.url}}/newsletter/">{{> "icons/mail"}} {{t "Browse the issues"}}</a>
+                    {{/if}}
+                </div>
+
             </div>
         </section>
     {{/if}}
