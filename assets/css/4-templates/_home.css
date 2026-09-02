@@ -1052,3 +1052,117 @@
     padding: 0.2rem 0.9rem;
     font-size: 1.05rem;
 }
+
+/*  Hero v3 polish — aurora, flourish, deck, author chip
+    ------------------------------------------------------------ */
+
+/* A slow aurora breathing behind the whole hero */
+.home-hero::before {
+    content: "";
+    position: absolute;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+    background: conic-gradient(
+        from 90deg at 62% 38%,
+        rgba(1, 118, 211, 0.10),
+        rgba(27, 150, 255, 0.16),
+        rgba(80, 227, 194, 0.08),
+        rgba(1, 118, 211, 0.10)
+    );
+    filter: blur(64px);
+    animation: aurora-spin 28s linear infinite;
+}
+
+@keyframes aurora-spin {
+    to { rotate: 360deg; }
+}
+
+/* The hand-drawn stroke under the headline, drawing itself in */
+.hero-flourish {
+    display: block;
+    width: clamp(140px, 18vw, 220px);
+    height: auto;
+    margin-top: 0.8rem;
+    overflow: visible;
+}
+
+.hero-flourish path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 240;
+    stroke-dashoffset: 240;
+    animation: flourish-draw 1s ease-out 0.5s forwards;
+}
+
+@keyframes flourish-draw {
+    to { stroke-dashoffset: 0; }
+}
+
+/* Card deck: a second sheet fanned behind the showcase card */
+.home-hero-deck {
+    position: absolute;
+    inset: 0 0 3.2rem;
+    z-index: -1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    transform: rotate(-2.5deg) translate(-1rem, 1rem);
+    transition: transform 0.3s ease;
+}
+
+.home-hero-panel:hover .home-hero-deck {
+    transform: rotate(-4deg) translate(-1.6rem, 1.4rem);
+}
+
+/* Author chip floating on the panel's top edge */
+.home-hero-float-top {
+    top: -1.8rem;
+    right: -1.6rem;
+    left: auto;
+    bottom: auto;
+}
+
+.avatar-stack {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.avatar-stack .avatar {
+    width: 3rem;
+    height: 3rem;
+    border: 2px solid var(--surface);
+}
+
+.avatar-stack .avatar + .avatar {
+    margin-left: -1rem;
+}
+
+@media (max-width: 991px) {
+    .home-hero::before {
+        display: none;
+    }
+
+    .hero-flourish {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .home-hero-deck {
+        inset: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-hero::before {
+        animation: none;
+    }
+
+    .hero-flourish path {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+}

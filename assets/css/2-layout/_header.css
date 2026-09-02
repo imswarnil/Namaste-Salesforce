@@ -163,12 +163,6 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     margin-left: 0.6rem;
 }
 
-/* Two CTA renderings exist in header.hbs; the nav one belongs to
-   the mobile drawer only. Without this, desktop shows both. */
-.site-head-nav .site-head-cta {
-    display: none;
-}
-
 /* Burger — a label wired to #nav-open */
 .nav-burger {
     display: none;
@@ -212,12 +206,23 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         display: block;
     }
 
+    /* backdrop-filter turns the sticky header into the containing
+       block for FIXED descendants (spec'd, learned live) — the
+       drawer's inset would resolve against the 60px bar and the
+       whole panel collapses behind the page. Mobile drops the
+       blur for a solid bar so the drawer is viewport-fixed again. */
+    .site-head {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: var(--bg);
+    }
+
     /* The drawer blooms open from the burger's corner — a
        circular clip-path reveal, items cascading in behind it. */
     .site-head-nav {
         position: fixed;
         inset: var(--header-height) 0 0 0;
-        z-index: 290;
+        z-index: 400;
         flex-direction: column;
         align-items: stretch;
         margin: 0;
@@ -307,16 +312,9 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         color: var(--heading);
     }
 
-    /* The subscribe CTA joins the drawer bottom via order in
-       header.hbs; hide the inline one to avoid crowding. */
+    /* No member CTA on mobile — the drawer stays navigation only */
     .site-head-cta {
         display: none;
-    }
-
-    .site-head-nav .site-head-cta {
-        display: inline-flex;
-        justify-content: center;
-        margin: 1.6rem 0 0;
     }
 }
 
