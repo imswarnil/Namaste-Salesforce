@@ -317,24 +317,56 @@ rows wrap into a plain chip cloud. --}}
     {{/if}}
 {{/get}}
 
-{{!-- Videos --}}
-{{#get "posts" filter="tag:hash-video-col" include="tags" limit="3" as |vids|}}
+{{!-- Videos — the top-10 reel. Netflix grammar: giant ranked
+numbers behind the thumbs, one horizontal strip, scrollbar
+hidden (swipe/scroll-snap does the work), newest ten videos,
+closing on a subscribe tile. The strip bleeds to the viewport
+edge but its first item aligns with the content column. --}}
+{{#get "posts" filter="tag:hash-video-col" include="tags" order="published_at desc" limit="10" as |vids|}}
     {{#if vids}}
-        <section class="section outer">
-            <div class="inner">
-                <div class="section-head" data-animate>
-                    <div>
-                        <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
-                        <h2>{{t "Watch it get built"}}</h2>
-                        <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
+        <section class="section home-reel-sec">
+            <div class="outer">
+                <div class="inner">
+                    <div class="section-head" data-animate>
+                        <div>
+                            <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
+                            <h2>{{t "Watch it get built"}}</h2>
+                            <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
+                        </div>
+                        <div class="section-head-cta">
+                            {{#if @custom.social_youtube}}
+                                <a class="btn btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">{{> "icons/youtube"}} {{t "Subscribe"}}</a>
+                            {{/if}}
+                            <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
+                        </div>
                     </div>
-                    <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
                 </div>
-                <div class="card-grid" data-animate-stagger>
-                    {{#foreach vids}}
-                        {{> "card-video"}}
-                    {{/foreach}}
-                </div>
+            </div>
+
+            <div class="home-reel" data-animate-stagger>
+                {{#foreach vids}}
+                    <a class="reel-item" href="{{url}}">
+                        <span class="reel-num" aria-hidden="true">{{@number}}</span>
+                        <span class="reel-thumb">
+                            {{#if feature_image}}
+                                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" />
+                            {{else}}
+                                {{> "thumb-placeholder" icon="video"}}
+                            {{/if}}
+                            <span class="video-card-play">{{> "icons/play-circle"}}</span>
+                            {{> "duration-chip" chipClass="video-card-duration"}}
+                        </span>
+                        <span class="reel-title">{{title}}</span>
+                    </a>
+                {{/foreach}}
+
+                <a class="reel-item reel-more" href="{{#if @custom.social_youtube}}{{@custom.social_youtube}}?sub_confirmation=1{{else}}{{@site.url}}/videos/{{/if}}"{{#if @custom.social_youtube}} target="_blank" rel="noopener"{{/if}}>
+                    <span class="reel-more-tile">
+                        {{> "icons/youtube"}}
+                        <strong>{{#if @custom.social_youtube}}{{t "Subscribe on YouTube"}}{{else}}{{t "Browse every video"}}{{/if}}</strong>
+                        <span>{{t "New walkthroughs as they ship"}}</span>
+                    </span>
+                </a>
             </div>
         </section>
     {{/if}}
