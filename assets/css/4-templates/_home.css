@@ -1872,3 +1872,365 @@
         gap: 1rem;
     }
 }
+
+/*  Hero styles — @custom.hero_style variants
+    ============================================================
+    Shared: hero-copy.hbs + hero-stats.hbs. Below, only the
+    stage each style builds around them. */
+
+/*  CENTERED — one calm axis at every width */
+.hero-v-centered .home-hero-copy.is-centered,
+.hero-v-cinema .home-hero-copy.is-centered {
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.home-hero-copy.is-centered h1 {
+    text-align: center;
+}
+
+.home-hero-copy.is-centered .hero-flourish {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.home-hero-copy.is-centered .home-hero-actions,
+.home-hero-copy.is-centered .hero-proof {
+    justify-content: center;
+}
+
+.home-hero-copy.is-centered .home-hero-sub {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*  CINEMATIC DARK — full navy band; the band is always dark, so
+    colours are literal, not tokens */
+.hero-v-cinema {
+    background:
+        radial-gradient(820px 420px at 78% -10%, rgba(27, 150, 255, 0.28), transparent 70%),
+        radial-gradient(700px 380px at 12% 110%, rgba(1, 118, 211, 0.24), transparent 70%),
+        #051222;
+}
+
+.hero-v-cinema::before,
+.hero-v-cinema::after {
+    display: none;
+}
+
+.hero-v-cinema .bg-grid {
+    opacity: 0.5;
+}
+
+.hero-v-cinema h1,
+.hero-v-cinema .home-stats .home-stat strong {
+    color: #fff;
+}
+
+.hero-v-cinema .home-hero-sub,
+.hero-v-cinema .hero-proof-text {
+    color: #b8c6d9;
+}
+
+.hero-v-cinema .hero-proof-text strong {
+    color: #fff;
+}
+
+.hero-v-cinema .home-hero-badge {
+    color: #7cc0ff;
+    background: rgba(27, 150, 255, 0.14);
+    border-color: rgba(27, 150, 255, 0.35);
+}
+
+.hero-v-cinema .btn-ghost {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+    background: transparent;
+}
+
+.hero-v-cinema .btn-ghost:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-v-cinema .p-avatar {
+    border-color: #051222;
+}
+
+.hero-v-cinema .home-shipped {
+    color: #b8c6d9;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.hero-v-cinema .home-shipped-title {
+    color: #fff;
+}
+
+.hero-v-cinema .home-stats .home-stat {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.hero-v-cinema .home-stats .home-stat:hover {
+    border-color: rgba(27, 150, 255, 0.55);
+}
+
+.hero-v-cinema .home-stats .home-stat > span:last-child {
+    color: #8fa3bd;
+}
+
+.hero-v-cinema .home-stats .home-stat-icon {
+    color: #7cc0ff;
+    background: rgba(27, 150, 255, 0.16);
+}
+
+/*  ILLUSTRATED — the platform as one drawing */
+.home-hero-panel.is-illustration {
+    padding-bottom: 0;
+}
+
+.hero-il {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.hero-il [stroke],
+.hero-il .il-faint,
+.hero-il .il-trail,
+.hero-il .il-tile,
+.hero-il .il-accent,
+.hero-il .il-node,
+.hero-il .il-strong {
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.hero-il .il-faint { stroke: var(--border); }
+.hero-il .il-node { fill: var(--surface); stroke: var(--border); }
+.hero-il .il-tile { fill: var(--accent-soft); stroke: color-mod(#0176d3 a(45%)); }
+.hero-il .il-accent { stroke: var(--accent); }
+.hero-il .il-strong { stroke: var(--heading); }
+
+.hero-il .il-trail {
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-dasharray: 4 10;
+    opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .hero-il .il-rocket {
+        animation: rocket-drift 5s ease-in-out infinite alternate;
+    }
+
+    @keyframes rocket-drift {
+        from { transform: translate(422px, 84px); }
+        to { transform: translate(430px, 72px); }
+    }
+}
+
+@media (max-width: 991px) {
+    .home-hero-panel.is-illustration {
+        max-width: 440px;
+        margin: 0 auto;
+    }
+}
+
+/*  PRODUCT WINDOW — the LMS mocked in a browser frame */
+.home-hero-panel.is-app {
+    padding-bottom: 0;
+}
+
+.hero-app {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+[data-tilt] .hero-app {
+    transform: rotate(1deg) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    will-change: transform;
+    transition: box-shadow 0.2s ease;
+}
+
+.hero-app-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.4rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.hero-app-dots {
+    display: inline-flex;
+    gap: 0.5rem;
+}
+
+.hero-app-dots i {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+}
+
+.hero-app-dots i:nth-child(1) { background: #ff5f57; }
+.hero-app-dots i:nth-child(2) { background: #febc2e; }
+.hero-app-dots i:nth-child(3) { background: #28c840; }
+
+.hero-app-url {
+    flex: 1;
+    padding: 0.4rem 1.2rem;
+    font-size: 1.15rem;
+    color: var(--text-faint);
+    background: var(--bg);
+    border: 1px solid var(--border-soft);
+    border-radius: 99px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.hero-app-body {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+}
+
+.hero-app-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.4rem;
+    border-right: 1px solid var(--border-soft);
+}
+
+.hero-app-rail > strong {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    color: var(--heading);
+    margin-bottom: 0.4rem;
+}
+
+.hero-app-lesson {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.hero-app-lesson svg {
+    width: 1.3rem;
+    height: 1.3rem;
+    flex-shrink: 0;
+    color: var(--success);
+}
+
+.hero-app-lesson.is-now {
+    color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 600;
+}
+
+.hero-app-lesson.is-now svg {
+    color: var(--accent);
+}
+
+.hero-app-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.4rem;
+}
+
+.hero-app-screen {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background:
+        linear-gradient(135deg, var(--accent-soft), transparent 65%),
+        var(--bg-alt);
+}
+
+.hero-app-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-app-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: rgba(3, 20, 40, 0.3);
+}
+
+.hero-app-play svg {
+    width: 4rem;
+    height: 4rem;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4));
+    transition: transform 0.2s ease;
+}
+
+.hero-app:hover .hero-app-play svg {
+    transform: scale(1.12);
+}
+
+.hero-app-progress {
+    display: block;
+    height: 0.6rem;
+    background: var(--bg-alt);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.hero-app-progress i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--brand-400));
+    border-radius: 99px;
+}
+
+.hero-app-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 1.15rem;
+    color: var(--text-faint);
+}
+
+.hero-app-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hero-app-meta svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+@media (max-width: 560px) {
+    .hero-app-body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero-app-rail {
+        border-right: 0;
+        border-bottom: 1px solid var(--border-soft);
+    }
+}

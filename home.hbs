@@ -14,159 +14,30 @@ page goes stale when content changes. --}}
     {{#if codeinjection_foot}}{{#contentFor "foot"}}{{{codeinjection_foot}}}{{/contentFor}}{{/if}}
 {{/page}}
 
-{{!-- Hero --}}
-<section class="home-hero outer relative">
-    <div class="bg-grid" aria-hidden="true"></div>
+{{!-- THE HERO — five styles, picked in Admin → Design →
+Site-wide → "Hero style" (@custom.hero_style). Every style
+shares hero-copy.hbs (badge, headline, CTAs, avatar proof,
+shipped pill) and hero-stats.hbs; only the stage around them
+changes:
 
-    {{!-- Decorations: breathing orbs + icon bubbles that drift on
-    their own keyframe while the wrapper parallaxes with scroll.
-    Purely ornamental — hidden from AT and from small screens. --}}
-    <div class="orb" style="width: 420px; height: 420px; top: -120px; left: -140px;" aria-hidden="true"></div>
-    <div class="orb" style="width: 360px; height: 360px; bottom: -80px; right: -100px; animation-delay: -4s;" aria-hidden="true"></div>
-    <div class="home-deco" style="top: 14%; right: 6%;" data-parallax="0.10" aria-hidden="true">
-        <span class="home-bubble float">{{> "icons/cloud"}}</span>
-    </div>
-    <div class="home-deco" style="top: 58%; right: 44%;" data-parallax="0.06" aria-hidden="true">
-        <span class="home-bubble float-alt">{{> "icons/zap"}}</span>
-    </div>
-    <div class="home-deco" style="top: 24%; left: 42%;" data-parallax="0.08" aria-hidden="true">
-        <span class="home-bubble float" style="animation-delay: -3s;">{{> "icons/database"}}</span>
-    </div>
-    <div class="home-deco" style="bottom: 30%; left: 4%;" data-parallax="0.12" aria-hidden="true">
-        <span class="home-bubble float-alt" style="animation-delay: -6s;">{{> "icons/code"}}</span>
-    </div>
-
-    <div class="home-hero-grid inner">
-
-        <div class="home-hero-copy">
-            <span class="home-hero-badge">
-                {{> "icons/sparkles"}}
-                {{t "Learn Salesforce, hands-on"}}
-            </span>
-
-            {{#page}}
-                <h1>{{title}}</h1>
-                <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
-                <p class="home-hero-sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{@site.description}}{{/if}}</p>
-            {{else}}
-                <h1>{{t "Say namaste to"}} <em>Salesforce</em></h1>
-                <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
-                <p class="home-hero-sub">{{@site.description}}</p>
-            {{/page}}
-
-            <div class="home-hero-actions">
-                <a class="btn btn-lg" href="{{@site.url}}/courses/">
-                    {{> "icons/graduation-cap"}}
-                    {{t "Browse courses"}}
-                </a>
-                <a class="btn btn-lg btn-ghost" href="{{@site.url}}/training/">
-                    {{> "icons/layers"}}
-                    {{t "Explore training"}}
-                </a>
-            </div>
-
-            {{!-- Social proof: overlapping avatar stack — first fully
-            visible, the rest tucked behind it; hovering spreads the
-            fan and pops the hovered face forward. Real author photos
-            first, decorative monogram circles filling the crowd. --}}
-            <div class="hero-proof">
-                <span class="proof-stack" aria-hidden="true">
-                    {{#get "authors" limit="4" as |folks|}}
-                        {{#foreach folks}}
-                            {{#if profile_image}}
-                                <img class="p-avatar" src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
-                            {{/if}}
-                        {{/foreach}}
-                    {{/get}}
-                    <span class="p-avatar p-mono" style="--h: 210;">A</span>
-                    <span class="p-avatar p-mono" style="--h: 152;">R</span>
-                    <span class="p-avatar p-mono" style="--h: 264;">M</span>
-                    <span class="p-avatar p-mono" style="--h: 24;">K</span>
-                </span>
-                <span class="hero-proof-text">
-                    <strong>{{t "20+ learners"}}</strong> {{t "already building along in real orgs — free forever, join them"}}
-                </span>
-            </div>
-
-            {{!-- The site is alive: latest changelog entry, live --}}
-            {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="1" as |shipped|}}
-                {{#if shipped}}
-                    <a class="home-shipped" href="{{shipped.[0].url}}">
-                        <span class="home-shipped-ping" aria-hidden="true"></span>
-                        <strong>{{t "Just shipped"}}</strong>
-                        <span class="home-shipped-title">{{shipped.[0].title}}</span>
-                        {{> "icons/arrow-right"}}
-                    </a>
-                {{/if}}
-            {{/get}}
-        </div>
-
-        {{!-- The showcase panel: the featured (or first) course,
-        rendered live, with a floating video chip. --}}
-        {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags" order="featured desc, published_at asc" limit="1" as |star|}}
-            {{#if star}}
-                <div class="home-hero-panel" data-tilt>
-                    <span class="home-hero-ring" aria-hidden="true"></span>
-                    <span class="home-hero-deck" aria-hidden="true"></span>
-                    {{#foreach star}}
-                        {{> "card-course"}}
-                    {{/foreach}}
-                    {{#get "authors" limit="3" as |folks|}}
-                        {{#if folks}}
-                            <div class="home-hero-float home-hero-float-top">
-                                <span class="avatar-stack" aria-hidden="true">
-                                    {{#foreach folks}}
-                                        {{#if profile_image}}
-                                            <img class="avatar" src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
-                                        {{/if}}
-                                    {{/foreach}}
-                                </span>
-                                <span>
-                                    <strong>{{t "Taught by"}}</strong>
-                                    {{#foreach folks}}{{name}}{{#unless @last}}, {{/unless}}{{/foreach}}
-                                </span>
-                            </div>
-                        {{/if}}
-                    {{/get}}
-                    {{#get "posts" filter="tag:hash-video-col" limit="1" as |v|}}
-                        {{#if v}}
-                            <a class="home-hero-float" href="{{v.[0].url}}">
-                                {{> "icons/play-circle"}}
-                                <span>
-                                    <strong>{{t "Latest video"}}</strong>
-                                    {{v.[0].title}}
-                                </span>
-                            </a>
-                        {{/if}}
-                    {{/get}}
-                </div>
-            {{/if}}
-        {{/get}}
-
-    </div>
-
-    <div class="inner">
-        {{!-- Live counts — limit 1, we only want pagination.total.
-        data-count makes animate.js count each number up from 0;
-        the rendered total stays as no-JS/no-motion fallback. --}}
-        <div class="home-stats" data-animate-stagger>
-            {{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><span class="home-stat-icon">{{> "icons/graduation-cap"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Courses"}}</span></div>
-            {{/get}}
-            {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><span class="home-stat-icon">{{> "icons/play-circle"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Lessons"}}</span></div>
-            {{/get}}
-            {{#get "posts" filter="tag:[hash-training-col,hash-docs-col]" limit="1" as |items counts|}}
-                <div class="home-stat"><span class="home-stat-icon">{{> "icons/layers"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Training pages"}}</span></div>
-            {{/get}}
-            {{#get "posts" filter="tag:hash-blog-col" limit="1" as |items counts|}}
-                <div class="home-stat"><span class="home-stat-icon">{{> "icons/pen"}}</span><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Articles"}}</span></div>
-            {{/get}}
-        </div>
-
-    </div>
-</section>
-
+    Showcase split   copy + the featured course card    (default)
+    Centered         one calm center axis, big type
+    Cinematic dark   full navy band, glow fields
+    Illustrated      copy + the platform drawn as SVG
+    Product window   copy + the LMS mocked in a browser frame,
+                     filled with the featured course's REAL data
+--}}
+{{#match @custom.hero_style "Centered"}}
+    {{> "hero-centered"}}
+{{else match @custom.hero_style "Cinematic dark"}}
+    {{> "hero-cinematic"}}
+{{else match @custom.hero_style "Illustrated"}}
+    {{> "hero-illustrated"}}
+{{else match @custom.hero_style "Product window"}}
+    {{> "hero-product"}}
+{{else}}
+    {{> "hero-split"}}
+{{/match}}
 
 {{!-- The journey — four waypoints on a trail the scroll draws.
 Two copies of the same curve: a dotted under-path always visible,

@@ -288,8 +288,16 @@ internal tags).
 
 ## Custom settings
 
-`dark_logo` (image for dark mode; without one the logo is auto-inverted to
-white), `footer_tagline`, `newsletter_heading`, `newsletter_text`.
+`hero_style` (select — the homepage hero: **Showcase split** (default,
+copy + featured-course card), **Centered**, **Cinematic dark** (navy
+band, literal colours), **Illustrated** (copy + the platform drawn as
+inline SVG — partials/illustrations/hero-platform.hbs, riding CSS vars
+so it follows dark mode), **Product window** (the LMS mocked in a
+browser frame, filled with the featured course's real curriculum).
+Every style shares partials/hero-copy.hbs + hero-stats.hbs; home.hbs
+dispatches on the setting), `dark_logo` (image for dark mode; without
+one the logo is auto-inverted to white), `footer_tagline`,
+`newsletter_heading`, `newsletter_text`.
 
 ## Gotchas learned the hard way
 

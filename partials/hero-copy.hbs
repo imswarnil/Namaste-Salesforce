@@ -1,0 +1,65 @@
+{{!-- The hero's copy column — shared by every hero style
+(@custom.hero_style picks the wrapper in home.hbs). Badge,
+headline (the home page's own title when it exists), flourish,
+sub, CTAs, the fanned avatar proof row and the live "just
+shipped" pill. Alignment is the wrapper's business. --}}
+
+<span class="home-hero-badge">
+    {{> "icons/sparkles"}}
+    {{t "Learn Salesforce, hands-on"}}
+</span>
+
+{{#page}}
+    <h1>{{title}}</h1>
+    <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
+    <p class="home-hero-sub">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{@site.description}}{{/if}}</p>
+{{else}}
+    <h1>{{t "Say namaste to"}} <em>Salesforce</em></h1>
+    <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
+    <p class="home-hero-sub">{{@site.description}}</p>
+{{/page}}
+
+<div class="home-hero-actions">
+    <a class="btn btn-lg" href="{{@site.url}}/courses/">
+        {{> "icons/graduation-cap"}}
+        {{t "Browse courses"}}
+    </a>
+    <a class="btn btn-lg btn-ghost" href="{{@site.url}}/training/">
+        {{> "icons/layers"}}
+        {{t "Explore training"}}
+    </a>
+</div>
+
+{{!-- Social proof: overlapping avatar stack — first fully
+visible, the rest tucked behind it; hovering spreads the fan
+and pops the hovered face forward. --}}
+<div class="hero-proof">
+    <span class="proof-stack" aria-hidden="true">
+        {{#get "authors" limit="4" as |folks|}}
+            {{#foreach folks}}
+                {{#if profile_image}}
+                    <img class="p-avatar" src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
+                {{/if}}
+            {{/foreach}}
+        {{/get}}
+        <span class="p-avatar p-mono" style="--h: 210;">A</span>
+        <span class="p-avatar p-mono" style="--h: 152;">R</span>
+        <span class="p-avatar p-mono" style="--h: 264;">M</span>
+        <span class="p-avatar p-mono" style="--h: 24;">K</span>
+    </span>
+    <span class="hero-proof-text">
+        <strong>{{t "20+ learners"}}</strong> {{t "already building along in real orgs — free forever, join them"}}
+    </span>
+</div>
+
+{{!-- The site is alive: latest changelog entry, live --}}
+{{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" limit="1" as |shipped|}}
+    {{#if shipped}}
+        <a class="home-shipped" href="{{shipped.[0].url}}">
+            <span class="home-shipped-ping" aria-hidden="true"></span>
+            <strong>{{t "Just shipped"}}</strong>
+            <span class="home-shipped-title">{{shipped.[0].title}}</span>
+            {{> "icons/arrow-right"}}
+        </a>
+    {{/if}}
+{{/get}}
