@@ -129,7 +129,8 @@ def tag(name, slug, description=None, visibility="internal"):
 # vocabulary routes.yaml filters on (tag:hash-course …).
 tag("#course", "course", "Marks a post as a course landing page")
 tag("#lesson", "lesson", "Marks a post as a course lesson")
-tag("#training", "training", "Marks a post as a training module page")
+tag("#module", "module", "Marks a post as a training module landing page")
+tag("#training", "training", "Marks a post as a training module section")
 tag("#blog", "blog", "Marks a post as a blog article")
 tag("#video", "video", "Marks a post as a library video")
 tag("#newsletter", "newsletter", "Marks a post as a newsletter issue")
@@ -478,8 +479,11 @@ for i, (title, slug, extra, excerpt, sections) in enumerate(flow_lessons):
          183 + i * 3, lead=lead, closing=PRACTICE)
 
 # ════════════════════════════════════════════════════════════════
-# TRAINING — the module IS a public tag; its pages are the
-# #training posts carrying it as primary tag, oldest first.
+# TRAINING — mirrors the course mechanism. A module is a public
+# tag AND a landing post tagged #module whose slug EQUALS the
+# tag's slug (/training/{slug}/); the sections are #training
+# posts carrying that tag as primary tag
+# (/training/{primary_tag}/{slug}/), oldest first.
 # ════════════════════════════════════════════════════════════════
 tag("Data Model & Schema", "data-model",
     "Objects, relationships and the decisions you cannot cheaply undo.", "public")
@@ -487,6 +491,54 @@ tag("Apex Triggers", "apex-triggers",
     "One trigger per object, logic in handlers, bulk-safe by default.", "public")
 tag("Integration Patterns", "integration-patterns",
     "Request-reply, events, batch — picking the pattern before the tool.", "public")
+
+# MODULE LANDING POSTS — slug exactly equals the module tag's
+# slug; module tag FIRST (primary), then #module. Published just
+# before the module's first section.
+module_landings = [
+    ("Data Model & Schema", "data-model", 34,
+     "Objects, relationships and record types — the schema decisions you cannot cheaply undo, made deliberately.",
+     [("What you'll learn",
+       "How to choose between standard and custom objects, pick the right relationship type with three questions, use record types for the right reasons, read any org's real schema in Schema Builder, and build a many-to-many properly with a junction object."),
+      ("Prerequisites",
+       "Admin Foundations lessons 01–02, or equivalent comfort with objects, fields and records. A free Developer Edition org to build in."),
+      ("How the sections chain",
+       "Five sections, oldest first, each building on the last: you start by deciding whether an object should exist at all, then how it relates, then how it varies, then how to read what is already there — and finish by building the trickiest shape, the junction, end to end.")],
+     ["Run the reuse test before creating any custom object",
+      "Choose lookup vs master-detail with three questions, not habit",
+      "Spot the three warning signs of record-type overuse",
+      "Audit an inherited org's schema in ten minutes",
+      "Model a many-to-many with correct sharing on both sides"]),
+    ("Apex Triggers", "apex-triggers", 119,
+     "One trigger per object, logic in handlers, bulk-safe by default — the discipline that keeps automation debuggable.",
+     [("What you'll learn",
+       "The order of execution as a map you can actually navigate, the one-trigger-per-object rule and the handler pattern that enforces it, bulkification as a reflex rather than a review comment, and recursion control that does not break batch two."),
+      ("Prerequisites",
+       "Apex for Absolute Beginners through lesson 05, or working knowledge of classes, SOQL and DML. Every section assumes you can deploy a class to a Developer Edition."),
+      ("How the sections chain",
+       "Five sections in publish order: first the map (what runs when you press Save), then the rule, then the pattern that implements the rule, then the discipline that keeps it fast at 200 records — and finally the guard that keeps it from calling itself.")],
+     ["Sequence any save's automation from memory",
+      "Refactor multi-trigger objects to one trigger + handler",
+      "Write collect–query–map–loop–DML without thinking",
+      "Test at 200 records, not one",
+      "Break recursion with an Id set, not a boolean"]),
+    ("Integration Patterns", "integration-patterns", 249,
+     "Request-reply, events, batch, middleware — pick the integration pattern before the tool, and design for the failure first.",
+     [("What you'll learn",
+       "The four patterns that cover nearly every Salesforce integration: synchronous request-reply behind named credentials, fire-and-forget with platform events, nightly batch sync on external IDs, and when the middleware question actually becomes a middleware answer."),
+      ("Prerequisites",
+       "Comfortable Apex (the Apex Triggers module or equivalent) and a basic grasp of REST. The video section builds a callout live if you have never written one."),
+      ("How the sections chain",
+       "Four written sections plus a build-along video: synchronous first because it is the default everyone reaches for, then events for when the caller should not wait, then batch for when nobody is waiting at all — closing with the architecture question that decides how the next integration gets built.")],
+     ["Stand up a named-credential callout with a tested mock",
+      "Design idempotent subscribers for at-least-once delivery",
+      "Build reruns-are-safe batch loads on external IDs",
+      "Argue middleware vs point-to-point with edge counts",
+      "Choose a pattern from latency and ownership, not fashion"]),
+]
+for name, mslug, day, excerpt, sections, outcomes in module_landings:
+    post(name, mslug, [mslug, "module"], excerpt, sections, day,
+         closing=("What you'll be able to do", outcomes))
 
 training_modules = [
     ("data-model", 35, [

@@ -30,7 +30,9 @@ layout (post.hbs dispatches on `post_class`) and its queries:
 `#changelog` `#project` (plus `#resource` `#shop` `#snippet` `#prompt`).
 A course's slug equals its public
 tag's slug and every lesson's primary tag is that tag — that equality is
-the entire parent/child mechanism. A training module IS a public tag.
+the entire parent/child mechanism. Training mirrors it: a module IS a
+public tag, its `#module` landing post's slug equals that tag's slug
+(URL /training/{slug}/), and `#training` sections nest under it.
 
 ## Conventions that must survive edits
 

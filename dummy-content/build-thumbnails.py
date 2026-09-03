@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """Theme-styled SVG thumbnails — the CLEAN set.
 
-Reads every post whose feature_image is a picsum placeholder, one of
-our own generated thumbs, or missing, and draws a clean 1200x675 SVG
-into assets/images/thumbs/{slug}.svg, then repoints the post's
-feature_image at it.
+TWO sources, both light-canvas:
 
-Two treatments:
-  · default    flat navy canvas, kicker, wrapped title, brand line —
-               no grid, no glow, no gradient
-  · video      posts in the video library or tagged #lesson-type-video:
-               a solid colour and a centered video icon, nothing else
+  1. dummy-content/import.json (always): every post/tag whose
+     feature_image points into assets/images/thumbs|tags gets its
+     SVG drawn, so the demo import never ships broken images.
+  2. the local Ghost DB (only if it exists): same treatment plus
+     repointing feature_image, for content created in Admin.
+
+Treatments:
+  · default    light canvas, blueprint grid, navy icon tile,
+               kicker + wrapped title + brand line
+  · video      light canvas under a faint tiled icon pattern —
+               the card overlays its own play badge
 
 Run from the theme root:  python3 dummy-content/build-thumbnails.py
 """
-import sqlite3, html, textwrap, pathlib, sys
+import json, os, sqlite3, html, textwrap, pathlib, sys
 
 DB = "/Users/swarnil/Namaste Salesforce/ghost/content/data/ghost-local.db"
 OUT = pathlib.Path("assets/images/thumbs")
@@ -33,11 +36,15 @@ ICONS = {
     "shop":       '<path d="M4 8.5h16v3H4zM5.5 11.5V20h13v-8.5M12 8.5V20"/><path d="M12 8.5C12 8.5 8 8.7 8 6.2 8 4.3 10.4 4.1 11.3 5.1 12 6 12 8.5 12 8.5zm0 0s0-2.5.7-3.4c.9-1 3.3-.8 3.3 1.1 0 2.5-4 2.3-4 2.3z"/>',
     "snippet":    '<path d="m9 8-4 4 4 4M15 8l4 4-4 4"/>',
     "prompt":     '<path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4L12 3z"/><path d="M18.5 15l.9 2.3 2.3.9-2.3.9-.9 2.3-.9-2.3-2.3-.9 2.3-.9.9-2.3z"/>',
+    "project":    '<circle cx="6" cy="5.5" r="2.4"/><circle cx="6" cy="18.5" r="2.4"/><circle cx="18" cy="8" r="2.4"/><path d="M6 8v8M18 10.5c0 4-5.5 3.5-9.4 5.4"/>',
+    "module":     '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3.6 12.7 8.4 4.6 8.4-4.6M3.6 17 12 21.6 20.4 17"/>',
+    "page":       '<path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13.7 3.7V8h4.2M9 12h6M9 15.5h6"/>',
 }
 KICKERS = {"course": "COURSE", "lesson": "LESSON", "training": "TRAINING",
            "blog": "BLOG", "video": "VIDEO", "newsletter": "NEWSLETTER",
            "changelog": "CHANGELOG", "resource": "RESOURCE", "shop": "SHOP",
-           "snippet": "SNIPPET", "prompt": "PROMPT"}
+           "snippet": "SNIPPET", "prompt": "PROMPT", "project": "PROJECT",
+           "module": "MODULE", "page": "PAGE"}
 
 NAVY   = "#032d60"   # brand-800 — ink + the icon tile
 ACCENT = "#0176d3"   # brand-500 — kicker + accents
@@ -45,16 +52,18 @@ LIGHT  = "#f5f9fd"   # the light canvas
 
 def kind_of(slugs):
     for group, members in {
-        "course": ("hash-course", "hash-course"),
-        "lesson": ("hash-lesson", "hash-lesson"),
-        "training": ("hash-training", "hash-training"),
+        "course": ("hash-course",),
+        "lesson": ("hash-lesson",),
+        "module": ("hash-module",),
+        "training": ("hash-training",),
         "video": ("hash-video",),
         "newsletter": ("hash-newsletter",),
-        "changelog": ("hash-changelog", "hash-changelog"),
+        "changelog": ("hash-changelog",),
         "resource": ("hash-resource",),
         "shop": ("hash-shop",),
         "snippet": ("hash-snippet",),
         "prompt": ("hash-prompt",),
+        "project": ("hash-project",),
         "blog": ("hash-blog",),
     }.items():
         if any(s in slugs for s in members):
@@ -140,7 +149,52 @@ def tag_badges(c):
         changed += 1
     return changed
 
+def from_import():
+    """Draw every SVG the demo import references, straight from
+    import.json — no Ghost install needed. The import already
+    stamps the __GHOST_URL__ paths; this makes the files real."""
+    src = pathlib.Path(__file__).parent / "import.json"
+    if not src.exists():
+        return 0, 0
+    data = json.loads(src.read_text())["db"][0]["data"]
+    tags_by_id = {t["id"]: t for t in data["tags"]}
+    post_tags = {}
+    for m in data["posts_tags"]:
+        post_tags.setdefault(m["post_id"], []).append(m["tag_id"])
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    TAG_OUT.mkdir(parents=True, exist_ok=True)
+
+    thumbs = 0
+    for p in data["posts"]:
+        image = p.get("feature_image") or ""
+        if "/assets/images/thumbs/" not in image:
+            continue
+        name = image.rsplit("/", 1)[-1]
+        slugs = " ".join(
+            tags_by_id[tid]["slug"] for tid in post_tags.get(p["id"], [])
+            if tid in tags_by_id)
+        kind = "page" if p.get("type") == "page" else kind_of(slugs)
+        videoish = kind == "video" or "hash-lesson-type-video" in slugs
+        art = svg_video() if videoish else svg_clean(p["title"], kind)
+        (OUT / name).write_text(art)
+        thumbs += 1
+
+    badges = 0
+    for t in data["tags"]:
+        image = t.get("feature_image") or ""
+        if "/assets/images/tags/" not in image:
+            continue
+        (TAG_OUT / image.rsplit("/", 1)[-1]).write_text(svg_tag_badge(t["name"]))
+        badges += 1
+    return thumbs, badges
+
 def main():
+    it, ib = from_import()
+    print(f"import.json: generated {it} thumbnails, {ib} tag badges")
+    if not os.path.exists(DB):
+        print("no local Ghost DB — skipped the live-site pass")
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     db = sqlite3.connect(DB)
     c = db.cursor()

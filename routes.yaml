@@ -85,14 +85,20 @@ collections:
     filter: "tag:hash-lesson"
 
   # ── TRAINING ─────────────────────────────────────────────────────────────
-  # The module ({primary_tag}) does the nesting; training.hbs discovers the
-  # modules themselves from the tags.
+  # Mirrors the course model exactly: a module LANDING post (#module,
+  # slug = the module tag's slug) owns /training/{slug}/; its section
+  # posts (#training) nest under it through their primary tag.
   /training/:
-    permalink: /training/{primary_tag}/{slug}/
+    permalink: /training/{slug}/
     template: training
-    filter: "tag:hash-training"
+    filter: "tag:hash-module"
     order: published_at asc
-    limit: 100
+    limit: 20
+
+  # Hidden mount: exists only to mint nested section permalinks.
+  /__training-sections__/:
+    permalink: /training/{primary_tag}/{slug}/
+    filter: "tag:hash-training"
 
   # ── BLOG ─────────────────────────────────────────────────────────────────
   /blog/:
