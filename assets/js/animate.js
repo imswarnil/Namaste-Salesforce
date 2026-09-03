@@ -131,6 +131,133 @@ window.Prism.manual = true;
         });
     }
 
+    /* Hero gravity + the web ------------------------------------
+       The hub photo lifts away as you scroll and every orbiting
+       window chases it on its own easing — heavier pieces lag
+       behind (inertia). One thin line per screen ties the collage
+       to the hub; the lines are redrawn every frame so the web
+       stretches as the pieces drift apart. Desktop only; the whole
+       system idles (no rAF) once the hero leaves the viewport. */
+
+    var stack = document.querySelector('.hero-stack');
+    var wideMq = window.matchMedia('(min-width: 992px)');
+
+    if (stack && wideMq.matches) {
+        var hub = stack.querySelector('.hero-hub');
+        var web = stack.querySelector('.hero-web');
+        var gravNodes = [];
+
+        Array.prototype.forEach.call(
+            stack.querySelectorAll('.hero-shot:not(.is-ship), .hero-dot'),
+            function (el, i) {
+                gravNodes.push({
+                    el: el,
+                    speed: 0.05 + (i % 5) * 0.024,
+                    ease: 0.055 + (i % 4) * 0.02,
+                    cur: 0
+                });
+            }
+        );
+
+        var hubCur = 0;
+        var webLines = [];
+
+        if (web && hub) {
+            var svgNS = 'http://www.w3.org/2000/svg';
+            gravNodes.forEach(function (n) {
+                var ln = document.createElementNS(svgNS, 'line');
+                web.appendChild(ln);
+                webLines.push({ln: ln, node: n});
+            });
+        }
+
+        var heroRunning = false;
+
+        var heroFrame = function () {
+            if (!heroRunning) {
+                return;
+            }
+            if (!wideMq.matches) {
+                if (hub) {
+                    hub.style.translate = '';
+                }
+                gravNodes.forEach(function (n) {
+                    n.el.style.translate = '';
+                });
+                requestAnimationFrame(heroFrame);
+                return;
+            }
+
+            var y = Math.min(window.scrollY || window.pageYOffset || 0, 900);
+
+            hubCur += (y * -0.16 - hubCur) * 0.12;
+            if (hub) {
+                hub.style.translate = '-50% calc(-50% + ' + hubCur.toFixed(2) + 'px)';
+            }
+
+            gravNodes.forEach(function (n) {
+                n.cur += (y * -n.speed - n.cur) * n.ease;
+                n.el.style.translate = '0 ' + n.cur.toFixed(2) + 'px';
+            });
+
+            if (web && hub) {
+                var sr = stack.getBoundingClientRect();
+                var hr = hub.getBoundingClientRect();
+                var hx = hr.left + hr.width / 2 - sr.left;
+                var hy = hr.top + hr.height / 2 - sr.top;
+                web.setAttribute('viewBox', '0 0 ' + sr.width + ' ' + sr.height);
+                webLines.forEach(function (l) {
+                    var r = l.node.el.getBoundingClientRect();
+                    l.ln.setAttribute('x1', hx.toFixed(1));
+                    l.ln.setAttribute('y1', hy.toFixed(1));
+                    l.ln.setAttribute('x2', (r.left + r.width / 2 - sr.left).toFixed(1));
+                    l.ln.setAttribute('y2', (r.top + r.height / 2 - sr.top).toFixed(1));
+                });
+            }
+
+            requestAnimationFrame(heroFrame);
+        };
+
+        var heroGate = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting && !heroRunning) {
+                    heroRunning = true;
+                    requestAnimationFrame(heroFrame);
+                } else if (!entry.isIntersecting) {
+                    heroRunning = false;
+                }
+            });
+        }, {rootMargin: '200px 0px'});
+        heroGate.observe(stack);
+    }
+
+    /* The story timeline ------------------------------------------
+       [data-story] scrolls sideways; the rail fill chases the
+       reader's position and each stop lights up as the fill edge
+       passes its node. */
+
+    document.querySelectorAll('[data-story]').forEach(function (strip) {
+        var fill = strip.querySelector('[data-story-fill]');
+        var stops = strip.querySelectorAll('.story-stop');
+        if (!fill) {
+            return;
+        }
+
+        function paintStory() {
+            var head = strip.scrollLeft + strip.clientWidth * 0.62;
+            fill.style.width = Math.min(head, strip.scrollWidth) + 'px';
+            Array.prototype.forEach.call(stops, function (stop) {
+                stop.classList.toggle('is-lit', stop.offsetLeft + stop.offsetWidth * 0.4 < head);
+            });
+        }
+
+        strip.addEventListener('scroll', function () {
+            requestAnimationFrame(paintStory);
+        }, {passive: true});
+        window.addEventListener('resize', paintStory);
+        paintStory();
+    });
+
     if (!drawn.length && !floaters.length) {
         return;
     }
