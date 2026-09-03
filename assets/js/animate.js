@@ -152,14 +152,17 @@ window.Prism.manual = true;
             function (el, i) {
                 gravNodes.push({
                     el: el,
-                    speed: 0.09 + (i % 5) * 0.045,
-                    ease: 0.045 + (i % 4) * 0.03,
+                    speed: 0.12 + (i % 5) * 0.06,
+                    ease: 0.05 + (i % 4) * 0.035,
+                    drag: 1.2 + (i % 4) * 0.9,
                     cur: 0
                 });
             }
         );
 
         var hubCur = 0;
+        var lastY = window.scrollY || 0;
+        var vel = 0;
         var webLines = [];
 
         if (web && hub) {
@@ -188,15 +191,28 @@ window.Prism.manual = true;
                 return;
             }
 
-            var y = Math.min(window.scrollY || window.pageYOffset || 0, 1200);
+            var rawY = window.scrollY || window.pageYOffset || 0;
 
-            hubCur += (y * -0.34 - hubCur) * 0.14;
+            // smoothed scroll velocity (px/frame): fast flicks add a
+            // strong impulse, slow scrolling still reads clearly via
+            // the position term below.
+            vel += (rawY - lastY - vel) * 0.2;
+            lastY = rawY;
+
+            var y = Math.min(rawY, 1400);
+
+            // the hub leads: over half of scroll speed, plus a
+            // velocity kick so it visibly pulls away on fast flicks
+            hubCur += (y * -0.55 - vel * 0.8 - hubCur) * 0.16;
             if (hub) {
                 hub.style.translate = '-50% calc(-50% + ' + hubCur.toFixed(2) + 'px)';
             }
 
+            // the windows trail: slower position ramp, and velocity
+            // pushes them the OTHER way while you scroll — the web
+            // stretches, then snaps back when you stop (inertia).
             gravNodes.forEach(function (n) {
-                n.cur += (y * -n.speed - n.cur) * n.ease;
+                n.cur += (y * -n.speed + vel * n.drag - n.cur) * n.ease;
                 n.el.style.translate = '0 ' + n.cur.toFixed(2) + 'px';
             });
 

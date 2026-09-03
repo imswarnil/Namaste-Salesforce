@@ -2686,7 +2686,43 @@ html.anim .home-path-track.is-in .path-step::before {
 .hero-shot.is-mail {
     position: relative;
     padding: 1.6rem 1.8rem 1.4rem;
+    overflow: visible;
+}
+
+/*  Context labels — a tiny pill naming each screen's format,
+    pinned half-out of the card's top edge. */
+.hero-shot-label {
+    position: absolute;
+    top: -0.9rem;
+    right: 1.2rem;
+    z-index: 2;
+    padding: 0.25rem 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--accent);
+    background: var(--surface);
+    border: 1px solid color-mod(#0176d3 a(35%));
+    border-radius: 99px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* clear of the folded paper corner */
+.hero-shot.is-writing .hero-shot-label {
+    right: 2.8rem;
+}
+
+/* the envelope's real subject line */
+.hero-mail-subj {
+    display: block;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--heading);
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .hero-shot.is-writing small,
@@ -2751,6 +2787,7 @@ html.anim .home-path-track.is-in .path-step::before {
     position: absolute;
     inset: 0 0 auto 0;
     height: 2.4rem;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     background:
         linear-gradient(135deg, var(--bg-alt) 49%, transparent 50%) left / 50.5% 100% no-repeat,
         linear-gradient(225deg, var(--bg-alt) 49%, transparent 50%) right / 50.5% 100% no-repeat;
@@ -3906,19 +3943,25 @@ html[data-theme="dark"] .home-hero-pattern {
         display: inline-flex;
     }
 
-    .hero-dot.is-d1 { top: 1%; left: 58%; }
-    .hero-dot.is-d2 { bottom: 27%; left: 5%; }
-    .hero-dot.is-d3 { bottom: 2%; right: 37%; }
+    .hero-dot.is-d1 { top: 2%; left: 48%; }
+    .hero-dot.is-d2 { top: 58%; left: 1%; }
+    .hero-dot.is-d3 { bottom: 12%; right: 28%; }
 
-    .hero-shot.is-course { width: 54%; top: 0; left: 0; }
-    .hero-shot.is-video { width: 37%; top: 5%; right: 0; }
-    .hero-shot.is-snip { width: 27%; top: 40%; left: 0; --rot: -1.4deg; transform: rotate(-1.4deg); }
-    .hero-shot.is-training { width: 36%; top: 44%; right: 0; }
-    .hero-shot.is-res { top: 26%; left: 38%; --rot: 1deg; transform: rotate(1deg); z-index: 3; }
-    .hero-shot.is-writing { width: 25%; bottom: 10%; left: 3%; }
-    .hero-shot.is-chat { width: 31%; bottom: 9%; right: 1%; --rot: 1.6deg; transform: rotate(1.6deg); }
-    .hero-shot.is-mail { width: 26%; bottom: 0; left: 31%; }
-    .hero-shot.is-shop { bottom: 26%; right: 24%; --rot: -1.2deg; transform: rotate(-1.2deg); z-index: 3; }
+    /* four balanced sides — left column: course · video · chat;
+       right column: newsletter · VS Code · training; the floor:
+       blog sheet + shipped pill; chips pinned on the photo */
+    .hero-shot.is-course { width: 44%; top: 0; left: 0; }
+    .hero-shot.is-video { width: 34%; top: 30%; left: 0; }
+    .hero-shot.is-chat { width: 30%; bottom: 4%; left: 1%; --rot: 1.6deg; transform: rotate(1.6deg); }
+
+    .hero-shot.is-mail { width: 30%; top: 0; right: 0; --rot: 1.2deg; transform: rotate(1.2deg); }
+    .hero-shot.is-snip { width: 29%; top: 26%; right: 0; --rot: -1deg; transform: rotate(-1deg); }
+    .hero-shot.is-training { width: 36%; top: 55%; right: 1%; }
+
+    .hero-shot.is-writing { width: 24%; bottom: 0; left: 36%; }
+
+    .hero-shot.is-res { top: 30%; left: 36%; --rot: 1deg; transform: rotate(1deg); z-index: 3; }
+    .hero-shot.is-shop { bottom: 27%; right: 34%; --rot: -1.2deg; transform: rotate(-1.2deg); z-index: 3; }
 
     @media (prefers-reduced-motion: no-preference) {
         .hero-shot.is-snip {
