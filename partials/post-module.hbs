@@ -1,9 +1,9 @@
-{{!-- The module landing — /training/{module}/. Mirrors the
-course landing mechanism: this post's SLUG equals the module
-tag's slug, so one {{#get}} on it lists the whole module. The
-overview content reads first, then every section as a numbered
-stop (the trail grammar), then the start CTA.
-Context: a post tagged #module (dispatched by post.hbs). --}}
+{{!-- The module landing — /training/{module}/ — rendered IN the
+training reader's own frame (trainer2): same hero grammar, same
+left sidebar, same right-hand module rail, where this page shows
+as the module's active "Module overview" row. The post's SLUG
+equals the module tag's slug, so one {{#get}} lists the whole
+module. Context: a post tagged #module (dispatched by post.hbs). --}}
 
 {{#contentFor "head"}}
 <script type="application/ld+json">
@@ -18,83 +18,130 @@ Context: a post tagged #module (dispatched by post.hbs). --}}
 </script>
 {{/contentFor}}
 
-<section class="changelog-hero outer relative">
-    <div class="bg-grid" aria-hidden="true"></div>
-    <div class="inner relative">
-        <nav class="crumbs" aria-label="Breadcrumb">
-            <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
-            {{> "icons/chevron-right"}}
-            <span aria-current="page">{{title}}</span>
-        </nav>
+<div class="trainer2">
 
-        <div class="module-hero-head">
-            {{#primary_tag}}
-                {{#if feature_image}}
-                    <span class="trail-module-art" aria-hidden="true">
-                        <img src="{{img_url feature_image size="s"}}" alt="" loading="eager" />
-                    </span>
-                {{else}}
-                    <span class="trail-module-art is-icon" aria-hidden="true">{{> "icons/layers"}}</span>
-                {{/if}}
-            {{/primary_tag}}
-            <div>
-                <span class="kicker">{{> "icons/layers"}} {{t "Module"}}</span>
-                <h1>{{title}}</h1>
-                {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
-            </div>
-        </div>
+    <div class="trainer2-left">
 
-        <div class="chips">
-            {{#get "posts" filter="tag:{{slug}}+tag:hash-training" limit="1" as |s c|}}
-                <span class="chip">{{> "icons/list-icon"}} {{c.total}} {{t "sections"}}</span>
-            {{/get}}
-            <span class="chip chip-free">{{t "Free"}}</span>
-            <span class="chip">{{> "icons/calendar"}} {{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</span>
-        </div>
+        <section class="trainer-hero relative">
+            <div class="bg-grid" aria-hidden="true"></div>
+            <div class="trainer-hero-inner">
 
-        {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" limit="1" as |first|}}
-            {{#if first}}
-                <div class="module-hero-actions">
-                    <a class="btn btn-lg" href="{{first.[0].url}}">{{> "icons/play-circle"}} {{t "Start the module"}}</a>
+                <div class="trainer-hero-copy">
+                    <nav class="crumbs" aria-label="Breadcrumb">
+                        <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
+                        {{> "icons/chevron-right"}}
+                        <span aria-current="page">{{title}}</span>
+                    </nav>
+
+                    <h1>{{title}}</h1>
+
+                    {{#if custom_excerpt}}
+                        <p class="post-excerpt">{{custom_excerpt}}</p>
+                    {{/if}}
+
+                    <div class="chips">
+                        <span class="chip chip-accent">{{> "icons/map-icon"}} {{t "Module overview"}}</span>
+                        {{#get "posts" filter="tag:{{slug}}+tag:hash-training" limit="1" as |s c|}}
+                            <span class="chip">{{> "icons/list-icon"}} {{c.total}} {{t "sections"}}</span>
+                        {{/get}}
+                        <span class="chip chip-free">{{t "Free"}}</span>
+                        <span class="chip">{{> "icons/calendar"}} {{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</span>
+                    </div>
                 </div>
-            {{/if}}
-        {{/get}}
-    </div>
-</section>
 
-<main id="site-main" class="section outer">
-    <div class="inner inner-narrow">
+                {{#if feature_image}}
+                    <div class="trainer-hero-media">
+                        <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="eager" fetchpriority="high" />
+                    </div>
+                {{/if}}
 
-        <article class="gh-content entry-content">
-            {{content}}
-        </article>
+            </div>
+        </section>
 
-        {{!-- Every section, in walking order --}}
-        {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" include="tags" limit="50" as |sections|}}
-            {{#if sections}}
-                <section class="module-sections">
-                    <h2>{{> "icons/map-icon"}} {{t "The sections"}}</h2>
-                    <ol class="trail-steps">
-                        {{#foreach sections}}
-                            <li class="trail-step">
-                                <a href="{{url}}">
-                                    <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
-                                    <span class="trail-step-body">
-                                        <span class="trail-step-title">{{title}}</span>
-                                        {{#if custom_excerpt}}<span class="trail-step-sub">{{custom_excerpt}}</span>{{/if}}
-                                    </span>
-                                    {{> "duration-chip" chipClass="trail-step-time"}}
-                                    {{> "icons/arrow-right"}}
+        <div class="trainer2-body">
+
+            <aside class="trainer-side">
+                <div class="trainer-side-sticky">
+                    {{> "widgets/toc"}}
+                    {{> "widgets/sponsor" skyscraper=true}}
+                    <div class="widget">
+                        <h4 class="widget-title">{{> "icons/share"}} {{t "Share"}}</h4>
+                        {{> "widgets/share-links"}}
+                    </div>
+                </div>
+            </aside>
+
+            <main id="site-main" class="trainer-main">
+
+                {{!-- Mobile: module nav folds in above the content --}}
+                <details class="trainer-nav-mobile">
+                    <summary>
+                        {{> "icons/layers"}}
+                        {{t "Modules"}}
+                        <span class="chev">{{> "icons/chevron-down"}}</span>
+                    </summary>
+                    <div class="trainer-nav-mobile-body">
+                        {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
+                    </div>
+                </details>
+
+                <article class="trainer-article {{post_class}}">
+                    <section class="gh-content">
+                        {{content}}
+                    </section>
+
+                    {{!-- Every section, in walking order --}}
+                    {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" include="tags" limit="50" as |sections|}}
+                        {{#if sections}}
+                            <section class="module-sections">
+                                <h2>{{> "icons/map-icon"}} {{t "The sections"}}</h2>
+                                <ol class="trail-steps">
+                                    {{#foreach sections}}
+                                        <li class="trail-step">
+                                            <a href="{{url}}">
+                                                <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
+                                                <span class="trail-step-body">
+                                                    <span class="trail-step-title">{{title}}</span>
+                                                    {{#if custom_excerpt}}<span class="trail-step-sub">{{custom_excerpt}}</span>{{/if}}
+                                                </span>
+                                                {{> "duration-chip" chipClass="trail-step-time"}}
+                                                {{> "icons/arrow-right"}}
+                                            </a>
+                                        </li>
+                                    {{/foreach}}
+                                </ol>
+                            </section>
+                        {{/if}}
+                    {{/get}}
+
+                    {{!-- The only way out is forwards: into section 01 --}}
+                    <nav class="post-nav" aria-label="{{t "Module navigation"}}">
+                        {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" limit="1" as |first|}}
+                            {{#foreach first}}
+                                <a class="post-nav-link post-nav-next" href="{{url}}">
+                                    <span class="post-nav-label">{{t "Start the module"}} {{> "icons/arrow-right"}}</span>
+                                    <span class="post-nav-title">{{title}}</span>
                                 </a>
-                            </li>
-                        {{/foreach}}
-                    </ol>
-                </section>
-            {{/if}}
-        {{/get}}
+                            {{/foreach}}
+                        {{/get}}
+                    </nav>
+                </article>
 
-        <footer class="entry-foot">
-            <a class="btn btn-ghost" href="{{@site.url}}/training/">{{> "icons/arrow-left"}} {{t "All modules"}}</a>
-        </footer>
+            </main>
+
+        </div>
     </div>
-</main>
+
+    {{!-- RIGHT: the training navigation, this module open and its
+    overview row active --}}
+    <aside class="trainer2-nav">
+        <div class="trainer2-nav-scroll">
+            <a class="player-rail-course" href="{{@site.url}}/training/">
+                <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
+                <h2>{{t "All modules"}}</h2>
+            </a>
+            {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
+        </div>
+    </aside>
+
+</div>

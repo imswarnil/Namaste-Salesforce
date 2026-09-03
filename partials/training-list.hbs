@@ -28,8 +28,10 @@ slug). Context: the training post. --}}
                             {{> "icons/chevron-down"}}
                         </summary>
                         <ol class="player-list">
-                            <li>
-                                <a href="{{@site.url}}/training/{{../moduleTag.slug}}/">
+                            {{!-- the landing row — active when the reader IS
+                            the module overview (its slug = the tag's slug) --}}
+                            <li class="{{#match ../moduleTag.slug ../currentSlug}}is-current{{/match}}">
+                                <a href="{{@site.url}}/training/{{../moduleTag.slug}}/"{{#match ../moduleTag.slug ../currentSlug}} aria-current="page"{{/match}}>
                                     <span>{{t "Module overview"}}</span>
                                     {{> "icons/map-icon"}}
                                 </a>
