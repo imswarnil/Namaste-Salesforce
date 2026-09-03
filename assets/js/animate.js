@@ -152,8 +152,8 @@ window.Prism.manual = true;
             function (el, i) {
                 gravNodes.push({
                     el: el,
-                    speed: 0.05 + (i % 5) * 0.024,
-                    ease: 0.055 + (i % 4) * 0.02,
+                    speed: 0.09 + (i % 5) * 0.045,
+                    ease: 0.045 + (i % 4) * 0.03,
                     cur: 0
                 });
             }
@@ -188,9 +188,9 @@ window.Prism.manual = true;
                 return;
             }
 
-            var y = Math.min(window.scrollY || window.pageYOffset || 0, 900);
+            var y = Math.min(window.scrollY || window.pageYOffset || 0, 1200);
 
-            hubCur += (y * -0.16 - hubCur) * 0.12;
+            hubCur += (y * -0.34 - hubCur) * 0.14;
             if (hub) {
                 hub.style.translate = '-50% calc(-50% + ' + hubCur.toFixed(2) + 'px)';
             }

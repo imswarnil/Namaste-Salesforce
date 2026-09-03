@@ -72,6 +72,35 @@
     width: auto;
 }
 
+/* The brand mark — the favicon's cloud, always visible */
+.site-head-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    flex-shrink: 0;
+    border-radius: 0.9rem;
+    background: linear-gradient(135deg, var(--brand-400, #1b96ff), var(--accent));
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.site-head-mark svg {
+    width: 1.9rem;
+    height: 1.9rem;
+}
+
+.site-head-title {
+    white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+    .site-head-title {
+        font-size: 1.7rem;
+    }
+}
+
 /* Primary nav */
 .site-head-nav {
     display: flex;
@@ -240,14 +269,23 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     }
 }
 
-/* Burger — a label wired to #nav-open */
+/* Burger — a label wired to #nav-open. Three crisp lines, the
+   bottom one shorter until hover; checked, they fold into an X. */
 .nav-burger {
     display: none;
     position: relative;
-    width: 4rem;
-    height: 4rem;
+    width: 4.4rem;
+    height: 4.4rem;
     border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
     cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-burger:hover {
+    background: var(--bg-alt);
+    border-color: color-mod(#0176d3 a(35%));
 }
 
 .nav-burger span,
@@ -255,11 +293,12 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 .nav-burger span::after {
     position: absolute;
     left: 50%;
-    width: 18px;
+    width: 20px;
     height: 2px;
     background: var(--heading);
-    border-radius: 2px;
-    transition: transform 0.25s ease, opacity 0.2s ease;
+    border-radius: 99px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.2s ease, opacity 0.2s ease;
     content: "";
 }
 
@@ -268,12 +307,31 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     transform: translate(-50%, -50%);
 }
 
-.nav-burger span::before { transform: translate(-50%, -7px); }
-.nav-burger span::after  { transform: translate(-50%, 5px); }
+.nav-burger span::before { transform: translate(-50%, -8px); }
 
-#nav-open:checked ~ .site-head .nav-burger span { background: transparent; }
-#nav-open:checked ~ .site-head .nav-burger span::before { transform: translate(-50%, -1px) rotate(45deg); }
-#nav-open:checked ~ .site-head .nav-burger span::after  { transform: translate(-50%, -1px) rotate(-45deg); }
+/* the short third line — a deliberate detail */
+.nav-burger span::after {
+    width: 12px;
+    transform: translate(-10px, 6px);
+}
+
+.nav-burger:hover span::after {
+    width: 20px;
+    transform: translate(-50%, 6px);
+}
+
+#nav-open:checked ~ .site-head .nav-burger span {
+    background: transparent;
+}
+
+#nav-open:checked ~ .site-head .nav-burger span::before {
+    transform: translate(-50%, -1px) rotate(45deg);
+}
+
+#nav-open:checked ~ .site-head .nav-burger span::after {
+    width: 20px;
+    transform: translate(-50%, -1px) rotate(-45deg);
+}
 
 /*  Mobile drawer
     ------------------------------------------------------------ */
@@ -453,7 +511,10 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
     top: 100%;
     left: 0;
     z-index: 90;
-    min-width: 200px;
+    min-width: 248px;
+    max-height: min(72vh, 560px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
     margin: 0;
     padding: 0.8rem;
     list-style: none;
@@ -472,6 +533,13 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+}
+
+/* Dropdowns near the bar's right end (Library, More…) open
+   leftwards so the panel never runs off the viewport edge. */
+.site-nav > li:nth-last-child(-n + 2) > .nav-dropdown {
+    left: auto;
+    right: 0;
 }
 
 .nav-sub-item.is-break,
