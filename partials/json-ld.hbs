@@ -41,6 +41,77 @@ templates that own those pages. --}}
                 {{/foreach}}
             ]
         }
+        {{!-- Page-level nodes join the same graph. The collection
+        tag picks the type; lessons and module sections are listed
+        WITH positions, so the numbering is machine-readable. --}}
+        {{#post}}
+        {{#match (post_class) "~" "tag-hash-course"}},
+        {
+            "@type": "Course",
+            "@id": "{{url absolute="true"}}#course",
+            "name": "{{title}}",
+            "description": "{{custom_excerpt}}",
+            "url": "{{url absolute="true"}}",
+            "provider": { "@id": "{{@site.url}}/#organization" },
+            "isAccessibleForFree": true,
+            "hasPart": [
+                {{#get "posts" filter="tag:{{slug}}+tag:hash-lesson" order="published_at asc" limit="50" as |lessons|}}
+                {{#foreach lessons}}
+                {
+                    "@type": "LearningResource",
+                    "position": {{@number}},
+                    "name": "{{title}}",
+                    "url": "{{url absolute="true"}}"
+                }{{#unless @last}},{{/unless}}
+                {{/foreach}}
+                {{/get}}
+            ]
+        }
+        {{else match (post_class) "~" "tag-hash-training"}}{{#primary_tag}},
+        {
+            "@type": "Course",
+            "@id": "{{url absolute="true"}}#module",
+            "name": "{{name}}",
+            "description": "{{description}}",
+            "url": "{{url absolute="true"}}",
+            "provider": { "@id": "{{@site.url}}/#organization" },
+            "isAccessibleForFree": true,
+            "hasPart": [
+                {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" limit="50" as |sections|}}
+                {{#foreach sections}}
+                {
+                    "@type": "LearningResource",
+                    "position": {{@number}},
+                    "name": "{{title}}",
+                    "url": "{{url absolute="true"}}"
+                }{{#unless @last}},{{/unless}}
+                {{/foreach}}
+                {{/get}}
+            ]
+        }
+        {{/primary_tag}}
+        {{else match (post_class) "~" "tag-hash-video"}},
+        {
+            "@type": "VideoObject",
+            "@id": "{{url absolute="true"}}#video",
+            "name": "{{title}}",
+            "description": "{{custom_excerpt}}",
+            "url": "{{url absolute="true"}}",
+            {{#if feature_image}}"thumbnailUrl": "{{img_url feature_image size="l" absolute="true"}}",{{/if}}
+            "uploadDate": "{{date published_at format="YYYY-MM-DD"}}"
+        }
+        {{else match (post_class) "~" "tag-hash-blog"}},
+        {
+            "@type": "BreadcrumbList",
+            "@id": "{{url absolute="true"}}#crumbs",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{@site.url}}/" },
+                { "@type": "ListItem", "position": 2, "name": "Blog", "item": "{{@site.url}}/blog/" },
+                { "@type": "ListItem", "position": 3, "name": "{{title}}", "item": "{{url absolute="true"}}" }
+            ]
+        }
+        {{/match}}
+        {{/post}}
     ]
 }
 </script>

@@ -14,19 +14,11 @@ mobile drawer is CSS. --}}
 
         <div class="site-head-brand">
             <a class="site-head-logo" href="{{@site.url}}" aria-label="{{@site.title}} — home">
-                {{!-- The cloud mark always leads — same drawing as
-                the favicon, so tab and navbar match. --}}
+                {{!-- The brand IS the favicon: the cloud on its
+                blue square, then the title as a wordmark. Any
+                uploaded logo image is deliberately ignored. --}}
                 <span class="site-head-mark" aria-hidden="true">{{> "icons/cloud"}}</span>
-                {{#if @site.logo}}
-                    {{#if @custom.dark_logo}}
-                        <img class="logo-light" src="{{@site.logo}}" alt="{{@site.title}}" />
-                        <img class="logo-dark" src="{{@custom.dark_logo}}" alt="{{@site.title}}" />
-                    {{else}}
-                        <img class="logo-invertible" src="{{@site.logo}}" alt="{{@site.title}}" />
-                    {{/if}}
-                {{else}}
-                    <span class="site-head-title">{{@site.title}}</span>
-                {{/if}}
+                <span class="site-head-title">{{@site.title}}</span>
             </a>
         </div>
 
@@ -75,8 +67,15 @@ mobile drawer is CSS. --}}
                 </a>
             {{/if}}
 
+            {{!-- Salesforce App-Launcher waffle: nine dots that
+            open the drawer panel; checked swaps them for an X. --}}
             <label class="nav-burger" for="nav-open" aria-label="{{t "Menu"}}">
-                <span></span>
+                <svg class="nav-waffle" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
+                    <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+                    <circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
+                </svg>
+                <span class="nav-close" aria-hidden="true"></span>
             </label>
         </div>
 

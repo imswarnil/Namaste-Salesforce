@@ -45,17 +45,17 @@ LIGHT  = "#f5f9fd"   # the light canvas
 
 def kind_of(slugs):
     for group, members in {
-        "course": ("hash-course-col", "hash-courses-col"),
-        "lesson": ("hash-lesson-col", "hash-lessons-col"),
-        "training": ("hash-training-col", "hash-docs-col"),
-        "video": ("hash-video-col",),
-        "newsletter": ("hash-newsletter-col",),
-        "changelog": ("hash-changelog-col", "hash-feed-col"),
-        "resource": ("hash-resource-col",),
-        "shop": ("hash-shop-col",),
-        "snippet": ("hash-snippet-col",),
-        "prompt": ("hash-prompt-col",),
-        "blog": ("hash-blog-col",),
+        "course": ("hash-course", "hash-course"),
+        "lesson": ("hash-lesson", "hash-lesson"),
+        "training": ("hash-training", "hash-training"),
+        "video": ("hash-video",),
+        "newsletter": ("hash-newsletter",),
+        "changelog": ("hash-changelog", "hash-changelog"),
+        "resource": ("hash-resource",),
+        "shop": ("hash-shop",),
+        "snippet": ("hash-snippet",),
+        "prompt": ("hash-prompt",),
+        "blog": ("hash-blog",),
     }.items():
         if any(s in slugs for s in members):
             return group

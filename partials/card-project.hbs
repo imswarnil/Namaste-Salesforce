@@ -1,0 +1,37 @@
+{{!-- A repo card, GitHub grammar: book icon + mono name +
+"Public" badge, the description, then the meta row — language
+dot (colour keyed off the #project-lang-* slug, label from its
+description), star count (#project-stars-* description), topic.
+Context: a post tagged #project. --}}
+
+<article class="proj-card">
+    <a class="proj-card-link" href="{{url}}">
+        <header class="proj-head">
+            {{> "icons/book-open"}}
+            <h3 class="proj-name">{{title}}</h3>
+            <span class="proj-badge">{{t "Public"}}</span>
+        </header>
+
+        {{#if custom_excerpt}}
+            <p class="proj-desc">{{custom_excerpt}}</p>
+        {{/if}}
+
+        <footer class="proj-meta">
+            {{#foreach tags visibility="internal"}}
+                {{#match slug "~^" "hash-project-lang-"}}
+                    {{#if description}}
+                        <span class="proj-lang"><i class="proj-lang-dot {{slug}}"></i>{{description}}</span>
+                    {{/if}}
+                {{/match}}
+                {{#match slug "~^" "hash-project-stars-"}}
+                    {{#if description}}
+                        <span class="proj-stars">{{> "icons/star"}} {{description}}</span>
+                    {{/if}}
+                {{/match}}
+            {{/foreach}}
+            {{#primary_tag}}
+                <span class="proj-topic">{{name}}</span>
+            {{/primary_tag}}
+        </footer>
+    </a>
+</article>

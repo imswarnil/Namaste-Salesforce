@@ -7,44 +7,39 @@ experience. One tag decides the URL (routes.yaml), the layout
 (here) and the queries that find the post — nothing else in the
 theme knows the difference.
 
-    #course-col   / #courses-col  → post-course   (course landing)
-    #lesson-col   / #lessons-col  → post-lesson   (course player)
-    #training-col / #docs-col     → post-training (module reader)
-    #video-col                    → post-video    (the embed is the page)
-    #newsletter-col               → post-issue    (issue + sent-date rail)
-    #changelog-col / #feed-col    → post-simple   (narrow entry)
-    anything else                 → post-blog     (the article)
+    #course      → post-course   (course landing)
+    #lesson      → post-lesson   (course player)
+    #training    → post-training (module reader)
+    #video       → post-video    (the embed is the page)
+    #newsletter  → post-issue    (issue + sent-date rail)
+    #changelog   → post-simple   (narrow entry)
+    #project     → post-project  (repo readme)
+    anything else → post-blog    (the article)
 --}}
 
 {{#post}}
-    {{#match (post_class) "~" "tag-hash-course-col"}}
+    {{#match (post_class) "~" "tag-hash-course"}}
         {{> "post-course"}}
-    {{else match (post_class) "~" "tag-hash-courses-col"}}
-        {{> "post-course"}}
-    {{else match (post_class) "~" "tag-hash-lesson-col"}}
+    {{else match (post_class) "~" "tag-hash-lesson"}}
         {{> "post-lesson"}}
-    {{else match (post_class) "~" "tag-hash-lessons-col"}}
-        {{> "post-lesson"}}
-    {{else match (post_class) "~" "tag-hash-training-col"}}
+    {{else match (post_class) "~" "tag-hash-training"}}
         {{> "post-training"}}
-    {{else match (post_class) "~" "tag-hash-docs-col"}}
-        {{> "post-training"}}
-    {{else match (post_class) "~" "tag-hash-video-col"}}
+    {{else match (post_class) "~" "tag-hash-video"}}
         {{> "post-video"}}
-    {{else match (post_class) "~" "tag-hash-newsletter-col"}}
+    {{else match (post_class) "~" "tag-hash-newsletter"}}
         {{> "post-issue"}}
-    {{else match (post_class) "~" "tag-hash-changelog-col"}}
+    {{else match (post_class) "~" "tag-hash-changelog"}}
         {{> "post-simple" sectionLabel="Changelog" sectionUrl="/changelog/" sectionIcon="history" withSidebar=true}}
-    {{else match (post_class) "~" "tag-hash-feed-col"}}
-        {{> "post-simple" sectionLabel="Changelog" sectionUrl="/changelog/" sectionIcon="history" withSidebar=true}}
-    {{else match (post_class) "~" "tag-hash-resource-col"}}
+    {{else match (post_class) "~" "tag-hash-resource"}}
         {{> "post-resource"}}
-    {{else match (post_class) "~" "tag-hash-shop-col"}}
+    {{else match (post_class) "~" "tag-hash-shop"}}
         {{> "post-product"}}
-    {{else match (post_class) "~" "tag-hash-snippet-col"}}
+    {{else match (post_class) "~" "tag-hash-snippet"}}
         {{> "post-snippet"}}
-    {{else match (post_class) "~" "tag-hash-prompt-col"}}
+    {{else match (post_class) "~" "tag-hash-prompt"}}
         {{> "post-prompt"}}
+    {{else match (post_class) "~" "tag-hash-project"}}
+        {{> "post-project"}}
     {{else}}
         {{> "post-blog"}}
     {{/match}}

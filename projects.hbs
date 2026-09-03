@@ -1,0 +1,33 @@
+{{!< default}}
+
+{{!-- /projects — open-source work, GitHub-styled. Each post is a
+repo: title = repo name, custom_excerpt = description, language
+and stars ride as internal tag DESCRIPTIONS (#project-lang-*,
+#project-stars-*) — never parsed from slugs. The card links to
+the post (the readme); the GitHub button on the single links to
+@custom.social_github/{slug}. --}}
+
+<section class="changelog-hero outer relative">
+    <div class="bg-dots" aria-hidden="true"></div>
+    <div class="inner relative">
+        <span class="kicker">{{> "icons/github"}} {{t "Projects"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+        {{else}}
+            <h1>{{t "Open source"}}</h1>
+            <p>{{t "Tools and frameworks I build in the open — everything here runs in real orgs."}}</p>
+        {{/page}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+        <div class="proj-grid" data-animate-stagger>
+            {{#foreach posts}}
+                {{> "card-project"}}
+            {{/foreach}}
+        </div>
+        {{pagination}}
+    </div>
+</main>

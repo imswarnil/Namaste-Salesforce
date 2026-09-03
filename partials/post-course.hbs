@@ -84,14 +84,14 @@ way — layouts and curriculum styles compose freely:
                         {{/match}}
                     {{/foreach}}
                     {{> "duration-chip"}}
-                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" limit="1" as |l total|}}
+                    {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" limit="1" as |l total|}}
                         <span class="chip">{{> "icons/play-circle"}} {{total.total}} {{t "lessons"}}</span>
                     {{/get}}
                     <span class="chip chip-accent">{{> "icons/check-circle"}} {{t "Free"}}</span>
                 </div>
 
                 <div class="course-hero-actions">
-                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" order="published_at asc" limit="1" as |first|}}
+                    {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" order="published_at asc" limit="1" as |first|}}
                         {{#if first}}
                             <a class="btn btn-lg" href="{{first.[0].url}}">
                                 {{> "icons/play-circle"}} {{t "Start the course"}}
@@ -137,7 +137,7 @@ way — layouts and curriculum styles compose freely:
 
                 <section class="course-section">
                     <h2>{{> "icons/list-icon"}} {{t "Curriculum"}}</h2>
-                    {{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{slug}}" order="published_at asc" limit="100" include="tags" as |lessons|}}
+                    {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" order="published_at asc" limit="100" include="tags" as |lessons|}}
                         {{#if lessons}}
                             <ol class="curriculum">
                                 {{#foreach lessons}}

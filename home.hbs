@@ -98,7 +98,7 @@ reader. --}}
 </section>
 
 {{!-- Courses --}}
-{{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" include="tags,authors" order="published_at asc" limit="3" as |courses|}}
+{{#get "posts" filter="tag:hash-course" include="tags,authors" order="published_at asc" limit="3" as |courses|}}
     {{#if courses}}
         <section class="section outer">
             <div class="inner">
@@ -195,7 +195,7 @@ numbers behind the thumbs, one horizontal strip, scrollbar
 hidden (swipe/scroll-snap does the work), newest ten videos,
 closing on a subscribe tile. The strip bleeds to the viewport
 edge but its first item aligns with the content column. --}}
-{{#get "posts" filter="tag:hash-video-col" include="tags" order="published_at desc" limit="10" as |vids|}}
+{{#get "posts" filter="tag:hash-video" include="tags" order="published_at desc" limit="10" as |vids|}}
     {{#if vids}}
         <section class="section home-reel-sec">
             <div class="outer">
@@ -251,7 +251,7 @@ live in. One clean VS Code window: real file names in the tree
 (the latest snippet, the latest prompt, the /llms README), a
 lo-fi syntax-coloured buffer, a status bar. Nothing crowded —
 the window IS the section. --}}
-{{#get "posts" filter="tag:hash-snippet-col" include="tags" limit="2" as |sn|}}
+{{#get "posts" filter="tag:hash-snippet" include="tags" limit="2" as |sn|}}
     {{#if sn}}
         <section class="section outer home-lab">
             <div class="inner">
@@ -275,7 +275,7 @@ the window IS the section. --}}
                             {{#foreach sn}}
                                 <a class="vsc-file{{#if @first}} is-active{{/if}}" href="{{url}}">{{slug}}.apex</a>
                             {{/foreach}}
-                            {{#get "posts" filter="tag:hash-prompt-col" limit="2" as |pr|}}
+                            {{#get "posts" filter="tag:hash-prompt" limit="2" as |pr|}}
                                 {{#if pr}}
                                     <span class="vsc-dir">{{> "icons/sparkles"}} prompts/</span>
                                     {{#foreach pr}}
@@ -309,8 +309,32 @@ the window IS the section. --}}
     {{/if}}
 {{/get}}
 
+{{!-- Projects — open source, GitHub grammar. Latest four repos
+as cards; the strip drops out while no post carries #project. --}}
+{{#get "posts" filter="tag:hash-project" include="tags" order="featured desc, published_at desc" limit="4" as |repos|}}
+    {{#if repos}}
+        <section class="section outer">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/github"}} {{t "Projects"}}</span>
+                        <h2>{{t "Built in the open"}}</h2>
+                        <p>{{t "Frameworks and tools from real projects — fork them, break them, ship them."}}</p>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/projects/">{{t "All projects"}} {{> "icons/arrow-right"}}</a>
+                </div>
+                <div class="proj-grid" data-animate-stagger>
+                    {{#foreach repos}}
+                        {{> "card-project"}}
+                    {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
 {{!-- Latest writing --}}
-{{#get "posts" filter="tag:hash-blog-col" include="tags,authors" limit="3" as |articles|}}
+{{#get "posts" filter="tag:hash-blog" include="tags,authors" limit="3" as |articles|}}
     {{#if articles}}
         <section class="section section-alt outer">
             <div class="inner">
@@ -334,7 +358,7 @@ the window IS the section. --}}
 {{!-- Stay current — the changelog timeline beside the latest
 newsletter issue. Both live queries; either half quietly drops
 out when its collection is empty. --}}
-{{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" include="tags" limit="3" as |updates|}}
+{{#get "posts" filter="tag:hash-changelog" include="tags" limit="3" as |updates|}}
     {{#if updates}}
         <section class="section outer">
             <div class="inner">
@@ -366,7 +390,7 @@ out when its collection is empty. --}}
                     <div class="home-news">
                         <h3>{{> "icons/mail"}} {{t "The newsletter"}}</h3>
                         <p>{{t "Release notes that matter, new lessons and honest takes — straight to your inbox, at a humane pace."}}</p>
-                        {{#get "posts" filter="tag:hash-newsletter-col" limit="1" as |issue|}}
+                        {{#get "posts" filter="tag:hash-newsletter" limit="1" as |issue|}}
                             {{#if issue}}
                                 <a class="home-news-issue bob" href="{{issue.[0].url}}">
                                     <strong>{{t "Latest issue"}}</strong>
@@ -382,6 +406,33 @@ out when its collection is empty. --}}
                     </div>
 
                 </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Products I use — a teaser band for /products-i-use/, fed
+by that page's own title/excerpt so it never drifts. Drops out
+if the page doesn't exist yet. --}}
+{{#get "pages" filter="slug:products-i-use" limit="1" as |stackpage|}}
+    {{#if stackpage}}
+        <section class="section outer">
+            <div class="inner">
+                <a class="home-stack-band" href="{{stackpage.[0].url}}" data-animate>
+                    <span class="home-stack-icon" aria-hidden="true">{{> "icons/zap"}}</span>
+                    <span class="home-stack-copy">
+                        <span class="kicker">{{t "The stack"}}</span>
+                        <strong>{{stackpage.[0].title}}</strong>
+                        <span>{{#if stackpage.[0].custom_excerpt}}{{stackpage.[0].custom_excerpt}}{{else}}{{t "Every product, tool and service I actually use to build, teach and ship."}}{{/if}}</span>
+                    </span>
+                    <span class="home-stack-chips" aria-hidden="true">
+                        <span class="chip">{{> "icons/cloud"}} {{t "Salesforce tooling"}}</span>
+                        <span class="chip">{{> "icons/code"}} {{t "Dev setup"}}</span>
+                        <span class="chip">{{> "icons/video"}} {{t "Studio gear"}}</span>
+                        <span class="chip">{{> "icons/sparkles"}} {{t "AI stack"}}</span>
+                    </span>
+                    {{> "icons/arrow-right"}}
+                </a>
             </div>
         </section>
     {{/if}}
@@ -483,6 +534,15 @@ straight into the courses. Never a dead end. --}}
 <section class="section outer">
     <div class="inner">
         <div class="home-cta" data-animate="zoom">
+            {{!-- The journey video, looping muted underneath a
+            navy gradient — pure backdrop, never interactive. --}}
+            <div class="home-cta-video" aria-hidden="true">
+                <iframe src="https://www.youtube-nocookie.com/embed/RZMj7C41AuQ?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=RZMj7C41AuQ&amp;controls=0&amp;rel=0&amp;playsinline=1&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1"
+                    title="" loading="lazy" tabindex="-1"
+                    allow="autoplay; encrypted-media"
+                    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+            <div class="home-cta-shade" aria-hidden="true"></div>
             <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
             <h2>{{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "Start your Salesforce journey today"}}{{/if}}</h2>
             <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "Free courses, weekly notes, zero spam. Join the newsletter and learn at your own pace."}}{{/if}}</p>

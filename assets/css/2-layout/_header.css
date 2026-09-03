@@ -45,10 +45,10 @@
     padding: 0 max(4vmin, 20px);
 }
 
-.tag-hash-lesson-col .site-head-inner,
-.tag-hash-lessons-col .site-head-inner,
-.tag-hash-training-col .site-head-inner,
-.tag-hash-docs-col .site-head-inner {
+.tag-hash-lesson .site-head-inner,
+.tag-hash-lesson .site-head-inner,
+.tag-hash-training .site-head-inner,
+.tag-hash-training .site-head-inner {
     max-width: none;
 }
 
@@ -271,68 +271,66 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     }
 }
 
-/* Burger — a label wired to #nav-open. Three crisp lines, the
-   bottom one shorter until hover; checked, they fold into an X. */
+/* The waffle — Salesforce App-Launcher nine dots, wired to
+   #nav-open. Checked: the dots give way to an X. */
 .nav-burger {
     display: none;
     position: relative;
+    align-items: center;
+    justify-content: center;
     width: 4.4rem;
     height: 4.4rem;
     border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--surface);
+    color: var(--accent);
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .nav-burger:hover {
-    background: var(--bg-alt);
-    border-color: color-mod(#0176d3 a(35%));
+    background: var(--accent-soft);
 }
 
-.nav-burger span,
-.nav-burger span::before,
-.nav-burger span::after {
+.nav-waffle {
+    width: 2.2rem;
+    height: 2.2rem;
+    fill: currentColor;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+}
+
+/* the X, hidden behind the dots until checked */
+.nav-close {
     position: absolute;
+    inset: 0;
+}
+
+.nav-close::before,
+.nav-close::after {
+    content: "";
+    position: absolute;
+    top: 50%;
     left: 50%;
     width: 20px;
     height: 2px;
-    background: var(--heading);
     border-radius: 99px;
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-        width 0.2s ease, opacity 0.2s ease;
-    content: "";
+    background: var(--heading);
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.6);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
 }
 
-.nav-burger span {
-    top: 50%;
-    transform: translate(-50%, -50%);
+#nav-open:checked ~ .site-head .nav-waffle {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
 }
 
-.nav-burger span::before { transform: translate(-50%, -8px); }
-
-/* the short third line — a deliberate detail */
-.nav-burger span::after {
-    width: 12px;
-    transform: translate(-10px, 6px);
+#nav-open:checked ~ .site-head .nav-close::before {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(45deg) scale(1);
 }
 
-.nav-burger:hover span::after {
-    width: 20px;
-    transform: translate(-50%, 6px);
-}
-
-#nav-open:checked ~ .site-head .nav-burger span {
-    background: transparent;
-}
-
-#nav-open:checked ~ .site-head .nav-burger span::before {
-    transform: translate(-50%, -1px) rotate(45deg);
-}
-
-#nav-open:checked ~ .site-head .nav-burger span::after {
-    width: 20px;
-    transform: translate(-50%, -1px) rotate(-45deg);
+#nav-open:checked ~ .site-head .nav-close::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-45deg) scale(1);
 }
 
 /*  Mobile drawer
@@ -340,7 +338,7 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
 @media (max-width: 900px) {
 
     .nav-burger {
-        display: block;
+        display: inline-flex;
     }
 
     /* backdrop-filter turns the sticky header into the containing
@@ -420,32 +418,45 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     #nav-open:checked ~ .site-head .site-nav > li:nth-child(7) { transition-delay: 0.21s; }
     #nav-open:checked ~ .site-head .site-nav > li:nth-child(n + 8) { transition-delay: 0.24s; }
 
-    /* each item a small card — deliberate, tappable */
+    /* quiet list rows — a panel of links, not a stack of buttons */
     .site-nav > li {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        margin-bottom: 0.8rem;
-        overflow: hidden;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .site-nav > li:last-child {
+        border-bottom: 0;
     }
 
     .site-nav a {
-        padding: 1.4rem 1.4rem;
-        font-size: 1.7rem;
-        font-weight: 600;
-        border-radius: var(--radius);
+        padding: 1.1rem 0.4rem;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text);
+        border-radius: 0;
+        background: transparent;
+        transition: color 0.15s ease, padding-left 0.2s ease;
+    }
+
+    .site-nav a:hover {
+        color: var(--accent);
+        background: transparent;
+        padding-left: 0.9rem;
     }
 
     .site-nav a svg {
-        width: 2rem;
-        height: 2rem;
+        width: 1.8rem;
+        height: 1.8rem;
         color: var(--accent);
     }
 
-    /* The current page reads as a filled row with an accent bar */
+    /* the current page: accent text + a slim rail, no fill */
     .site-nav .nav-current > a,
     .site-nav a[aria-current="page"] {
-        box-shadow: inset 3px 0 0 var(--accent);
+        color: var(--accent);
+        background: transparent;
+        box-shadow: inset 2px 0 0 var(--accent);
+        padding-left: 1rem;
+        font-weight: 600;
     }
 
     /* A dropdown parent becomes a group label; its children get a

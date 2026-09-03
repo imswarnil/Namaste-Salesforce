@@ -3,7 +3,7 @@
 This repository is **the Namaste Salesforce Ghost theme** — a Salesforce
 learning platform (courses with a lesson player, tag-driven training
 modules, a video library with chapter navigation, a five-layout blog,
-newsletter, changelog, membership). Built from scratch on the NS Design
+newsletter, changelog, GitHub-styled projects, membership). Built from scratch on the NS Design
 System. It is NOT Casper, whatever the git history says.
 
 **Read `NAMASTE-SALESFORCE.md` before changing anything** — it is the
@@ -26,8 +26,9 @@ templates need no build. Run `pnpm test` before a PR.
 
 A post is a post; ONE internal tag decides its URL (routes.yaml), its
 layout (post.hbs dispatches on `post_class`) and its queries:
-`#course-col` `#lesson-col` `#training-col` `#video-col` `#blog-col`
-`#newsletter-col` `#changelog-col`. A course's slug equals its public
+`#course` `#lesson` `#training` `#video` `#blog` `#newsletter`
+`#changelog` `#project` (plus `#resource` `#shop` `#snippet` `#prompt`).
+A course's slug equals its public
 tag's slug and every lesson's primary tag is that tag — that equality is
 the entire parent/child mechanism. A training module IS a public tag.
 
@@ -43,7 +44,9 @@ the entire parent/child mechanism. A training module IS a public tag.
   `partials/toc-inline.hbs` right after the hero. toc.js self-removes
   when a page has no headings.
 - **Nav dropdowns**: `+Parent` / `-Child` label prefixes in Ghost's
-  navigation settings; icons resolve as `partials/icons/nav-{slug}`.
+  navigation settings; icons are matched per slug in
+  `partials/nav-icon.hbs` (static `{{#match}}` chain — the dynamic
+  `{{#> (concat …)}}` partial trick is banned, it fails silently).
 - **Internal tag slugs carry Ghost's `hash-` prefix** in the DB and in
   import files; templates match `tag-hash-*` via `post_class`.
 - **Feature-image URLs written directly to the DB need the

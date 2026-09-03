@@ -152,9 +152,9 @@ window.Prism.manual = true;
             function (el, i) {
                 gravNodes.push({
                     el: el,
-                    speed: 0.12 + (i % 5) * 0.06,
+                    speed: 0.16 + (i % 5) * 0.08,
                     ease: 0.05 + (i % 4) * 0.035,
-                    drag: 1.2 + (i % 4) * 0.9,
+                    drag: 1.8 + (i % 4) * 1.1,
                     cur: 0
                 });
             }
@@ -203,7 +203,7 @@ window.Prism.manual = true;
 
             // the hub leads: over half of scroll speed, plus a
             // velocity kick so it visibly pulls away on fast flicks
-            hubCur += (y * -0.55 - vel * 0.8 - hubCur) * 0.16;
+            hubCur += (y * -0.6 - vel * 1.2 - hubCur) * 0.16;
             if (hub) {
                 hub.style.translate = '-50% calc(-50% + ' + hubCur.toFixed(2) + 'px)';
             }

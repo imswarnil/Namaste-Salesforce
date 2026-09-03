@@ -26,6 +26,43 @@ on top, and the newsletter CTA closes. --}}
 
 <main id="site-main" class="section outer">
     <div class="inner inner-narrow">
+
+        {{!-- The rhythm, proven — the LAST of each format with its
+        real date, so the promised cadence is checkable at a
+        glance. Each card links to the actual post. --}}
+        <div class="schedule-rhythm" data-animate-stagger>
+            {{#get "posts" filter="tag:hash-newsletter" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/mail"}}</span>
+                        <span class="rhythm-kind">{{t "Last issue"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            {{#get "posts" filter="tag:hash-video" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/video"}}</span>
+                        <span class="rhythm-kind">{{t "Last video"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            {{#get "posts" filter="tag:hash-blog" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/pen"}}</span>
+                        <span class="rhythm-kind">{{t "Last article"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+        </div>
+
         <article class="gh-content entry-content schedule-page">
             {{content}}
         </article>

@@ -20,7 +20,7 @@ lessons at /courses/{course}/{lesson}/), modular training at /training/
 ## Courses
 
 Each course is free and lesson-based. A lesson's URL nests under its course.
-{{#get "posts" filter="tag:[hash-course-col,hash-courses-col]" order="published_at asc" limit="50" as |courses|}}
+{{#get "posts" filter="tag:hash-course" order="published_at asc" limit="50" as |courses|}}
 {{#foreach courses}}
 
 ### [{{{title}}}]({{url absolute="true"}})
@@ -28,7 +28,7 @@ Each course is free and lesson-based. A lesson's URL nests under its course.
 {{{custom_excerpt}}}
 {{/if}}
 {{#> "with-this" courseSlug=slug}}
-{{#get "posts" filter="tag:[hash-lesson-col,hash-lessons-col]+tag:{{courseSlug}}" order="published_at asc" limit="100" as |lessons|}}
+{{#get "posts" filter="tag:hash-lesson+tag:{{courseSlug}}" order="published_at asc" limit="100" as |lessons|}}
 {{#foreach lessons}}
 - [{{{title}}}]({{url absolute="true"}})
 {{/foreach}}
@@ -43,7 +43,7 @@ A module is a topic worked through in order; its pages share a primary tag.
 {{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
 {{#foreach moduleTags}}
 {{#> "with-this" moduleTag=.}}
-{{#get "posts" filter="tag:{{moduleTag.slug}}+tag:[hash-training-col,hash-docs-col]" order="published_at asc" limit="100" as |modulePosts|}}
+{{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="100" as |modulePosts|}}
 {{#if modulePosts}}
 
 ### {{{../moduleTag.name}}}{{#if ../moduleTag.description}} — {{{../moduleTag.description}}}{{/if}}
@@ -56,8 +56,15 @@ A module is a topic worked through in order; its pages share a primary tag.
 {{/foreach}}
 {{/get}}
 
+## Open-source projects
+{{#get "posts" filter="tag:hash-project" limit="20" as |repos|}}
+{{#foreach repos}}
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
 ## Recent writing
-{{#get "posts" filter="tag:hash-blog-col" limit="15" as |articles|}}
+{{#get "posts" filter="tag:hash-blog" limit="15" as |articles|}}
 {{#foreach articles}}
 - [{{{title}}}]({{url absolute="true"}}) — {{date format="YYYY-MM-DD"}}{{#if custom_excerpt}}: {{{custom_excerpt}}}{{/if}}
 {{/foreach}}

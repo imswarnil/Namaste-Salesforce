@@ -1,33 +1,47 @@
 #!/usr/bin/env python3
 """Generates dummy-content/import.json — a Ghost importable data set
-that exercises every feature of the theme:
+that exercises every feature of the theme with realistic content:
 
-  · a course (advanced, 3h) with all four lesson types
-  · four more small courses, one per #course-layout-* variant
-    (the flagship keeps the classic default)
-  · lesson layout variants spread across the flagship's lessons
-    (#lesson-layout-cinema / -focus / -right; -wide lives in the
-    Apex course; the first lesson keeps the classic default)
-  · two training modules with three pages each
-  · five blog posts, one per layout, plus sidebar/TOC variants
-  · every internal facet tag WITH its description (chips read
-    descriptions, never slugs)
-  · navigation settings including the dropdown convention
-    (+Learn / -Courses / -Training)
+  · three courses with numbered lessons ("01 · What is a Salesforce
+    org?"), published in order — the course slug EQUALS its public
+    tag's slug and every lesson's primary tag is that tag: the whole
+    parent/child mechanism
+  · three training modules (the module IS a public tag) with
+    numbered section posts
+  · six blog posts, six library videos (two with a chapters table —
+    first column timestamps — which video.js turns into the seeking
+    sidebar), four newsletter issues, six changelog entries
+  · six snippets with real Apex/SOQL/Flow/LWC code, four prompts,
+    six resources, four shop items
+  · six projects — GitHub-style repos at /projects/ — with
+    #project-lang-* / #project-stars-* internal tags whose
+    DESCRIPTIONS carry the display language and star count
+  · the COMPLETE facet taxonomy with chip text in tag DESCRIPTIONS
+    (the theme renders descriptions, never parses slugs), including
+    the full site-wide duration ramp
+  · every data: page.* the routes reference, plus navigation
+    settings using the dropdown convention (+Library / -Videos …)
 
 Import in Ghost Admin → Settings → Import/Export, or POST to
 /ghost/api/admin/db/. Slugs are all new — safe beside existing
 content. The importer dedupes tags by slug.
+
+After importing, run dummy-content/build-thumbnails.py to draw the
+branded SVG thumbnails the feature_image URLs already point at.
 """
 import json, secrets, datetime
 
-BASE = datetime.datetime(2026, 8, 1, 9, 0, 0)
+# Deterministic timeline: eighteen months of publishing, oldest
+# first, ending shortly before "now". Every post names its own day
+# offset — nothing is random, reruns are stable.
+START = datetime.datetime(2025, 3, 10, 9, 0, 0)
 
 def oid():
     return secrets.token_hex(12)
 
-def ts(offset_hours):
-    return (BASE + datetime.timedelta(hours=offset_hours)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+def ts(days, hour=9):
+    when = START + datetime.timedelta(days=days)
+    return when.replace(hour=hour).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 
 # ── lexical builders ────────────────────────────────────────────
 def text(t):
@@ -58,22 +72,36 @@ def embed(video_id, caption=""):
                      f'allowfullscreen title="Video lesson"></iframe>'),
             "metadata": {}, "caption": caption}
 
+def codecard(lang, code, caption=""):
+    return {"type": "codeblock", "version": 1, "language": lang, "code": code, "caption": caption}
+
+def chapters(rows):
+    """A chapters table — FIRST column timestamps. video.js reads
+    exactly this shape and builds the seeking sidebar from it."""
+    md = "| Time | Chapter |\n|---|---|\n"
+    md += "\n".join(f"| {t} | {c} |" for t, c in rows)
+    return {"type": "markdown", "version": 1, "markdown": md}
+
 def lexical(*nodes):
     return json.dumps({"root": {"children": list(nodes), "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1}})
 
-def body(subject, sections):
-    """A believable article: intro, then h2 sections with copy."""
-    nodes = [para(f"{subject} This page is demo content generated for the theme — replace it with the real thing, keep the tags.")]
+def body(intro, sections, closing=None):
+    """A believable article: a lead paragraph, then h2 sections."""
+    nodes = [para(intro)]
     for heading, copy in sections:
         nodes.append(h2(heading))
         nodes.append(para(copy))
-    nodes.append(h2("Try it yourself"))
-    nodes.append(ul(
-        "Open your Developer Edition org and follow along",
-        "Change one thing at a time and note what happens",
-        "When something breaks, read the error before searching it",
-    ))
+    if closing:
+        heading, items = closing
+        nodes.append(h2(heading))
+        nodes.append(ul(*items))
     return lexical(*nodes)
+
+PRACTICE = ("Practice in your org", [
+    "Open your Developer Edition org and follow along step by step",
+    "Change one thing at a time and note what happens",
+    "When something breaks, read the error before searching for it",
+])
 
 # ── tags ────────────────────────────────────────────────────────
 tags, tag_ids = [], {}
@@ -97,11 +125,20 @@ def tag(name, slug, description=None, visibility="internal"):
                  "feature_image": feature_image})
     return tid
 
-# collections (new vocabulary)
-tag("#course-col", "course-col", "Marks a post as a course landing page")
-tag("#lesson-col", "lesson-col", "Marks a post as a course lesson")
-tag("#training-col", "training-col", "Marks a post as a training module page")
-tag("#blog-col", "blog-col", "Marks a post as a blog article")
+# THE COLLECTION TAGS — one internal tag per collection, the simple
+# vocabulary routes.yaml filters on (tag:hash-course …).
+tag("#course", "course", "Marks a post as a course landing page")
+tag("#lesson", "lesson", "Marks a post as a course lesson")
+tag("#training", "training", "Marks a post as a training module page")
+tag("#blog", "blog", "Marks a post as a blog article")
+tag("#video", "video", "Marks a post as a library video")
+tag("#newsletter", "newsletter", "Marks a post as a newsletter issue")
+tag("#changelog", "changelog", "Marks a post as a changelog entry")
+tag("#resource", "resource", "Marks a post as a curated resource")
+tag("#shop", "shop", "Marks a post as a shop item")
+tag("#snippet", "snippet", "Marks a post as a code snippet")
+tag("#prompt", "prompt", "Marks a post as an AI prompt")
+tag("#project", "project", "Marks a post as an open-source project")
 
 # facets — the description IS the chip text
 tag("#course-level-beginner", "course-level-beginner", "Beginner")
@@ -114,16 +151,17 @@ tag("#course-level-advanced", "course-level-advanced", "Advanced")
 # chip text is the DESCRIPTION; templates match the slug prefix
 # hash-duration- and never parse it.
 for m in range(5, 60, 5):
-    tag(f"#duration-{m}m", f"duration-{m}m", f"{m}m")
+    tag(f"#duration-{m}m", f"duration-{m}m", f"{m} min")
 for h, mins in [(1, 0), (1, 15), (1, 30), (1, 45), (2, 0), (2, 30),
                 (3, 0), (4, 0), (5, 0), (6, 0)]:
     slug = f"duration-{h}h" + (f"-{mins}m" if mins else "")
-    label = f"{h}h" + (f" {mins}m" if mins else "")
+    label = f"{h} hr" + (f" {mins} min" if mins else "")
     tag(f"#{slug}", slug, label)
+
 tag("#lesson-type-video", "lesson-type-video", "Video lesson")
-tag("#video-preview", "video-preview", "Cards play this post's video as a muted preview")
 tag("#lesson-type-audio", "lesson-type-audio", "Audio lesson")
 tag("#lesson-type-quiz", "lesson-type-quiz", "Quiz")
+tag("#video-preview", "video-preview", "Cards play this post's video as a muted preview")
 
 # course layouts — restyle the course hero only (none → classic)
 tag("#course-layout-cinema", "course-layout-cinema", "Dark full-bleed hero, image as backdrop")
@@ -152,25 +190,13 @@ tag("#blog-sidebar-left", "blog-sidebar-left", "Sidebar on the left")
 tag("#blog-sidebar-none", "blog-sidebar-none", "No sidebar, full width")
 tag("#blog-toc-hide", "blog-toc-hide", "Hide the table of contents")
 
-tag("#video-col", "video-col", "Marks a post as a library video")
-tag("#newsletter-col", "newsletter-col", "Marks a post as a newsletter issue")
-tag("#changelog-col", "changelog-col", "Marks a post as a changelog entry")
-
 # changelog entry types — the badge on /changelog and the entry
 # header. The description IS the badge text; the slug suffix is
-# the colour class (templates match hash-changelog-type-).
+# the colour class (partials/changelog-badge.hbs).
 tag("#changelog-type-feature", "changelog-type-feature", "Feature")
 tag("#changelog-type-improvement", "changelog-type-improvement", "Improvement")
 tag("#changelog-type-fix", "changelog-type-fix", "Fix")
 tag("#changelog-type-content", "changelog-type-content", "Content")
-
-# new collections: resources, shop, snippets, prompts — plus #now,
-# which surfaces any tagged post on /now while it's in progress
-tag("#resource-col", "resource-col", "Marks a post as a resource")
-tag("#shop-col", "shop-col", "Marks a post as a shop item")
-tag("#snippet-col", "snippet-col", "Marks a post as a code snippet")
-tag("#prompt-col", "prompt-col", "Marks a post as an AI prompt")
-tag("#now", "now", "Shows this post on /now while it's being worked on")
 
 # resource facets — the /resources filter sidebar builds from these;
 # the DESCRIPTION is the button label
@@ -200,33 +226,47 @@ tag("#prompt-for-agentforce", "prompt-for-agentforce", "Agentforce")
 tag("#prompt-for-claude", "prompt-for-claude", "Claude")
 tag("#prompt-for-chatgpt", "prompt-for-chatgpt", "ChatGPT")
 
-# public: the course's own tag, module tags, topics
-tag("Flow Automation Masterclass", "flow-automation-masterclass",
-    "Everything about Flow, from trigger order to error handling.", "public")
-tag("Deployment Basics", "deployment-basics",
-    "Ship changes between orgs without fear: metadata, tooling, checklists.", "public")
-tag("Security Essentials", "security-essentials",
-    "Who sees what, and why — profiles, permission sets, sharing.", "public")
-tag("Automation", "automation", "Flows, triggers and the order they run in.", "public")
-tag("Architecture", "architecture", "Data models and decisions that age well.", "public")
+# project facets — GitHub grammar: the language dot's label and the
+# star count are both tag DESCRIPTIONS (card-project.hbs)
+tag("#project-lang-apex", "project-lang-apex", "Apex")
+tag("#project-lang-javascript", "project-lang-javascript", "JavaScript")
+tag("#project-lang-xml", "project-lang-xml", "XML")
+tag("#project-lang-python", "project-lang-python", "Python")
+
+# cross-cutting: any post tagged #now surfaces on /now
+tag("#now", "now", "Shows this post on /now while it's being worked on")
+
+# public: topics
+tag("Apex", "apex", "The platform's language: classes, triggers, tests and limits.", "public")
+tag("Flow", "flow", "Declarative automation — from screen flows to platform events.", "public")
+tag("LWC", "lwc", "Lightning Web Components: modern JavaScript on-platform.", "public")
+tag("Admin", "admin", "Configuration, security, reports — the org, run well.", "public")
+tag("Integration", "integration", "APIs, events and middleware: moving data without losing it.", "public")
+tag("AI + Agentforce", "ai-agentforce", "Agents, prompts and what actually ships on the platform.", "public")
+tag("DevOps", "devops", "Source control, deployments and the pipeline between orgs.", "public")
+tag("Careers", "careers", "The Salesforce job market without the hype.", "public")
 
 # ── posts ───────────────────────────────────────────────────────
 posts, posts_tags = [], []
 
-def post(title, slug, tag_slugs, excerpt, sections, hours,
-         featured=False, lead=None, kind="post"):
-    """Feature images are intentionally ABSENT: after importing, run
-    dummy-content/build-thumbnails.py — it draws a theme-styled SVG
-    per post and repoints feature_image at it."""
+THUMB = "__GHOST_URL__/assets/images/thumbs/{}.svg"
+
+def post(title, slug, tag_slugs, excerpt, sections, day, hour=9,
+         featured=False, lead=None, closing=None, intro=None, kind="post"):
+    """feature_image points at the branded SVG thumbnail that
+    dummy-content/build-thumbnails.py draws per post into
+    assets/images/thumbs/{slug}.svg — run it after importing. The
+    __GHOST_URL__ token is mandatory: a bare relative path gets
+    nulled by Ghost's URL-normalisation job."""
     pid = oid()
-    when = ts(hours)
+    when = ts(day, hour)
     nodes = list(lead) if lead else []
-    doc = json.loads(body(excerpt, sections))
+    doc = json.loads(body(intro or excerpt, sections, closing))
     doc["root"]["children"] = nodes + doc["root"]["children"]
     posts.append({
         "id": pid, "title": title, "slug": slug,
         "lexical": json.dumps(doc),
-        "feature_image": None,
+        "feature_image": THUMB.format(slug),
         "featured": 1 if featured else 0,
         "type": kind, "status": "published", "visibility": "public",
         "custom_excerpt": excerpt,
@@ -236,286 +276,559 @@ def post(title, slug, tag_slugs, excerpt, sections, hours,
         posts_tags.append({"id": oid(), "post_id": pid,
                            "tag_id": tag_ids[ts_slug], "sort_order": order})
 
-def page(title, slug, excerpt, sections, hours, lead=None):
-    post(title, slug, [], excerpt, sections, hours, kind="page", lead=lead)
+def page(title, slug, excerpt, sections, day, lead=None):
+    post(title, slug, [], excerpt, sections, day, kind="page", lead=lead)
 
-# THE COURSE — slug equals its public tag's slug; lessons carry
-# that tag FIRST (primary), which is the whole nesting mechanism.
-post("Flow Automation Masterclass", "flow-automation-masterclass",
-     ["flow-automation-masterclass", "course-col", "course-level-advanced", "duration-3h"],
-     "Stop writing triggers for things Flow does better — and learn where Flow stops being the answer.",
-     [("What this course covers", "Record-triggered flows, scheduled paths, error handling, and the limits you will hit in real orgs."),
-      ("Who it is for", "Admins and developers who already build basic flows and want to trust them in production.")],
+# ════════════════════════════════════════════════════════════════
+# COURSES — the slug of the course post EQUALS its public tag's
+# slug, and every lesson's PRIMARY (first) tag is that tag. That
+# single equality is the entire parent/child mechanism.
+# ════════════════════════════════════════════════════════════════
+
+# Course 1 · Salesforce Admin Foundations — 6 lessons, classic layout
+tag("Salesforce Admin Foundations", "admin-foundations",
+    "From your first login to an org you actually understand — objects, users, security and reports.", "public")
+post("Salesforce Admin Foundations", "admin-foundations",
+     ["admin-foundations", "course", "course-level-beginner", "duration-4h"],
+     "From your first login to an org you actually understand. No prior Salesforce experience needed — just a free Developer Edition.",
+     [("What this course covers",
+       "The data model, users and permissions, page layouts, and reports — the four things every admin touches every week. Each lesson ends with you having changed something real in your own org."),
+      ("Who it is for",
+       "Career changers, junior admins, and developers who inherited an org. If you can fill in a spreadsheet, you can finish this course.")],
      0, featured=True)
 
-lessons = [
-    # lesson 1 keeps the classic layout; the rest each demo one
-    # #lesson-layout-* variant (-wide lives in the Apex course)
-    ("Planning your flow before you build", "planning-your-flow-before-you-build",
-     ["duration-15m"], "Five questions that prevent ninety percent of flow rewrites."),
-    ("Record-triggered flows in practice", "record-triggered-flows-in-practice",
-     ["lesson-type-video", "duration-30m", "lesson-layout-cinema"], "Build one alongside the video: entry criteria, paths, and a safe update."),
-    ("Flow error handling patterns", "flow-error-handling-patterns",
-     ["lesson-type-audio", "duration-15m", "lesson-layout-focus"], "Fault paths, platform events, and what to tell the user when it breaks."),
-    ("Check your understanding: flows", "check-your-understanding-flows",
-     ["lesson-type-quiz", "duration-10m", "lesson-layout-right"], "Ten scenarios. Decide: flow, trigger, or neither."),
+admin_lessons = [
+    ("01 · What is a Salesforce org?", "what-is-a-salesforce-org",
+     ["duration-15m"],
+     "Instance, org, environment — the words everyone uses and nobody defines. Fifteen minutes to a mental model that sticks.",
+     [("The org is the unit of everything",
+       "Your org is one tenant on shared infrastructure: its own data, its own metadata, its own users. Sandboxes are copies of the metadata; Developer Editions are free standalone orgs — sign up for one now, it is your lab for this whole course."),
+      ("Setup is home",
+       "Almost everything an admin does starts from the Setup gear. Learn the Quick Find box first: typing beats navigating, every single time.")]),
+    ("02 · Objects, fields and records", "objects-fields-and-records",
+     ["duration-20m"],
+     "The spreadsheet analogy that gets you started, and where it breaks down.",
+     [("Objects are tables, until they aren't",
+       "An object is a table, a field is a column, a record is a row — that gets you through week one. What the analogy misses: objects carry behaviour, security and relationships that spreadsheets never had."),
+      ("Standard first, custom second",
+       "Account, Contact and Opportunity solve more than you think. Build a custom object only after you can say why a standard one does not fit — future you will thank present you.")]),
+    ("03 · Users, profiles and permission sets", "users-profiles-permission-sets",
+     ["lesson-type-video", "duration-25m", "lesson-layout-cinema"],
+     "Watch a new user go from created to correctly permissioned — the modern way, with one baseline profile and permission sets on top.",
+     [("One profile, many permission sets",
+       "Salesforce is retiring profile-based permissions for a reason. Give everyone a minimum-access profile and grant everything else through permission sets — additive, auditable, and stackable."),
+      ("The login-as trick",
+       "Nothing debugs a permission problem faster than logging in as the user. Enable it in your Developer Edition and see exactly what they see.")]),
+    ("04 · Page layouts and Lightning record pages", "page-layouts-and-lightning-record-pages",
+     ["duration-20m"],
+     "Two systems control what a record looks like, and they overlap just enough to confuse everyone.",
+     [("Layouts own the fields, Lightning pages own the page",
+       "Page layouts decide which fields and related lists exist; Lightning record pages decide where components sit around them. Change the wrong one and nothing happens — now you know why."),
+      ("Dynamic Forms changes the deal",
+       "With Dynamic Forms, fields move onto the Lightning page itself with per-field visibility rules. New builds should start there.")]),
+    ("05 · Reports and dashboards for humans", "reports-and-dashboards-for-humans",
+     ["duration-30m"],
+     "From a blank report to a dashboard your manager actually opens — report types, filters, and the three charts that cover most questions.",
+     [("The report type decides everything",
+       "Pick the wrong report type and no amount of filtering will show the records you need. Learn to read 'Accounts with or without Contacts' before you build anything."),
+      ("Dashboards answer questions",
+       "Every widget should answer one question a real person actually asks. If you cannot name the person and the question, delete the widget.")]),
+    ("06 · Check your understanding: admin foundations", "check-your-understanding-admin-foundations",
+     ["lesson-type-quiz", "duration-10m", "lesson-layout-right"],
+     "Ten scenarios from real orgs. For each: what would you change, and what would you refuse to change?",
+     [("How to take this",
+       "Answer before you peek. The scenarios are drawn from real org audits — the wrong answers here are things I have actually found in production."),
+      ("If you missed more than three",
+       "Revisit lessons 03 and 05 — permissions and report types are where foundations crack first.")]),
 ]
-for i, (title, slug, extra, excerpt) in enumerate(lessons):
+for i, (title, slug, extra, excerpt, sections) in enumerate(admin_lessons):
     lead = [embed("aqz-KE-bpKQ")] if "lesson-type-video" in extra else None
-    post(title, slug, ["flow-automation-masterclass", "lesson-col"] + extra, excerpt,
-         [("The idea", "One concept per lesson, applied immediately in your own org."),
-          ("Watch out for", "The mistake everyone makes at this step, and how to notice it early.")],
-         1 + i, lead=lead)
+    post(title, slug, ["admin-foundations", "lesson"] + extra, excerpt, sections,
+         3 + i * 3, lead=lead, closing=PRACTICE)
 
-# FOUR MORE COURSES — one per #course-layout-* variant (the
-# flagship above keeps the classic default). Same mechanism:
-# public tag slug == course slug, lessons carry that tag first.
-more_courses = [
-    ("Apex Fundamentals", "apex-fundamentals", ["course-layout-cinema", "course-curriculum-cards"],
-     "course-level-intermediate", "duration-2h",
-     "Classes, triggers and governor limits — the parts of Apex you will actually write.",
-     [("Set up once, run anywhere", "A scratch org, the CLI, and a test class before your first trigger."),
-      ("Limits are the language", "Why every Apex decision is really a governor-limit decision.")],
-     [("Your first Apex class", "your-first-apex-class",
-       ["duration-20m", "lesson-layout-wide"],
-       "Write, deploy and test a class in twenty minutes."),
-      ("Triggers without tears", "triggers-without-tears",
-       ["duration-25m"],
-       "One trigger per object, logic in a handler, and why.")]),
-    ("Reports and Dashboards Crash Course", "reports-dashboards-crash-course", ["course-layout-minimal", "course-curriculum-compact"],
-     "course-level-beginner", "duration-1h",
-     "From a blank report to a dashboard your manager actually opens.",
-     [("Report types decide everything", "Pick the wrong one and no filter will save you."),
-      ("Dashboards are for questions", "Every widget should answer one question someone really asks.")],
-     [("Building your first report", "building-your-first-report",
-       ["duration-15m"],
-       "Rows, columns, filters — and the preview trap."),
-      ("Dashboards that get opened", "dashboards-that-get-opened",
-       ["duration-15m"],
-       "Three widgets, one audience, zero clutter.")]),
-    ("Data Modeling Deep Dive", "data-modeling-deep-dive", ["course-layout-billboard", "course-curriculum-timeline"],
-     "course-level-intermediate", "duration-2h-30m",
-     "Objects, relationships and the decisions you cannot cheaply undo.",
-     [("Lookup or master-detail", "The one relationship choice that follows you forever."),
-      ("Fields are cheap, objects are not", "When a picklist beats a child object, and when it does not.")],
-     [("Choosing the right relationship", "choosing-the-right-relationship",
-       ["duration-20m"],
-       "Lookup, master-detail, junction — decided with three questions."),
-      ("Record types without regret", "record-types-without-regret",
-       ["duration-20m"],
-       "What record types are for, and the three signs you have too many.")]),
-    ("Integration Patterns", "integration-patterns", ["course-layout-boxed", "course-curriculum-checklist"],
-     "course-level-advanced", "duration-3h",
-     "REST, platform events and middleware — moving data without losing it.",
-     [("Sync or async", "The latency question that picks your pattern for you."),
-      ("Idempotency first", "Design every integration to survive being run twice.")],
-     [("Calling out with REST", "calling-out-with-rest",
-       ["duration-25m"],
-       "Named credentials, callouts and the test mock you need."),
-      ("Platform events in practice", "platform-events-in-practice",
-       ["duration-25m"],
-       "Publish, subscribe, replay — and when a flow is the subscriber.")]),
+# Course 2 · Apex for Absolute Beginners — 8 lessons, cinema hero
+tag("Apex for Absolute Beginners", "apex-beginners",
+    "Your first classes, triggers and tests — written slowly, explained completely.", "public")
+post("Apex for Absolute Beginners", "apex-beginners",
+     ["apex-beginners", "course", "course-level-beginner", "duration-6h",
+      "course-layout-cinema", "course-curriculum-cards"],
+     "You have never written code, or never written Apex. Eight lessons later you will have a tested trigger running in your own org.",
+     [("What this course covers",
+       "Classes, variables and collections, SOQL and DML from Apex, your first trigger done safely, governor limits, and the test class that proves it all works."),
+      ("Who it is for",
+       "Admins ready to cross the line, and developers from other stacks who keep tripping on the platform's rules. We assume zero Apex and explain every line.")],
+     70)
+
+apex_lessons = [
+    ("01 · Hello, Apex: your first class", "hello-apex-your-first-class",
+     ["duration-20m"],
+     "Open the Developer Console, write ten lines, run them anonymously — and understand every one of them.",
+     [("Where Apex runs",
+       "Apex executes on Salesforce's servers, inside a transaction, under limits. That one sentence explains most of what makes it different from JavaScript or Python."),
+      ("Execute Anonymous is your REPL",
+       "The Developer Console's Execute Anonymous window runs any block instantly. It is how you will test every idea in this course before committing it to a class.")]),
+    ("02 · Variables, types and collections", "variables-types-and-collections",
+     ["duration-25m"],
+     "Lists, Sets and Maps do ninety percent of the work in real Apex. Learn the three of them properly and the rest is syntax.",
+     [("Strong types, few surprises",
+       "Every variable declares its type. Id is not a String (until it is), Decimal beats Double for money, and null is the value you will meet most often."),
+      ("Map<Id, SObject> is the workhorse",
+       "Half of all bulk-safe Apex is 'build a map, look things up by Id'. We build three of them in this lesson so the shape becomes reflex.")]),
+    ("03 · SOQL: asking the database questions", "soql-asking-the-database-questions",
+     ["duration-25m", "lesson-layout-wide"],
+     "SELECT is not SQL — no joins, no wildcards, relationship dots instead. Write your first twenty queries in the Query Editor.",
+     [("Relationships replace joins",
+       "Contact.Account.Name walks up; (SELECT ... FROM Contacts) walks down. Once relationship queries click, you will stop missing joins."),
+      ("Query in loops is the cardinal sin",
+       "One SOQL query per record is how orgs die at scale. We commit the rule to memory now, two lessons before triggers make it dangerous.")]),
+    ("04 · DML and the database", "dml-and-the-database",
+     ["duration-20m"],
+     "insert, update, upsert, delete — and what happens to the transaction when one record out of two hundred fails.",
+     [("All or nothing, unless you ask",
+       "Plain DML rolls the whole batch back on one failure; Database.insert(records, false) lets the rest through and hands you the errors. Know which one each situation needs."),
+      ("Upsert and external IDs",
+       "Upsert against an external ID field is the backbone of every integration you will ever build. We set one up and watch it match.")]),
+    ("05 · Triggers, the safe way", "triggers-the-safe-way",
+     ["lesson-type-video", "duration-30m"],
+     "Watch a before-insert trigger written live: one trigger per object, logic in a handler class, bulk-safe from the first line.",
+     [("The pattern before the syntax",
+       "One trigger per object, no logic in the trigger body, a handler class with one method per event. Learn the pattern first and you will never untangle spaghetti later."),
+      ("Before vs after",
+       "Before triggers change the records in flight for free; after triggers see final field values and Ids. Choosing wrong costs you a query or an error.")]),
+    ("06 · Governor limits explained", "governor-limits-explained",
+     ["duration-25m"],
+     "100 queries, 150 DML statements, 10 seconds of CPU — the limits are not obstacles, they are the platform's design language.",
+     [("Why limits exist",
+       "You share the server with thousands of orgs. Limits are how everyone's code stays fast — and they quietly teach you to write better Apex than you would elsewhere."),
+      ("Reading a limit exception",
+       "'Too many SOQL queries: 101' tells you exactly what happened: a query inside a loop met 200 records. We trigger the error on purpose and then fix it.")]),
+    ("07 · Testing: proving it works", "testing-proving-it-works",
+     ["duration-30m"],
+     "75% coverage is the law, but coverage is not the point — assertions are. Write a test that would actually catch a bug.",
+     [("Tests build their own world",
+       "Test methods see no org data. Build every record you need inside the test — it is more work and it is also why your tests still pass in a fresh sandbox."),
+      ("Assert like you mean it",
+       "A test without assertions is a coverage donation. Assert the field values you changed, the errors you expected, and the records you did not touch.")]),
+    ("08 · Quiz: are you ready for production?", "quiz-are-you-ready-for-production",
+     ["lesson-type-quiz", "duration-15m", "lesson-layout-focus"],
+     "Twelve questions covering the whole course. Pass this and your first real trigger is next week's problem.",
+     [("How to take this",
+       "Each question is a small piece of code with something wrong: a limit about to blow, a missing bulk pattern, a test that asserts nothing. Find it before reading the answer."),
+      ("Where to go next",
+       "The Apex Triggers training module goes deeper on everything lesson 05 introduced — order of execution, recursion control, the full handler pattern.")]),
 ]
-ch = 80
-for name, cslug, styles, level, duration, excerpt, sections, course_lessons in more_courses:
-    tag(name, cslug, excerpt, "public")
-    post(name, cslug, [cslug, "course-col"] + styles + [level, duration],
-         excerpt, sections, ch)
-    ch += 1
-    for ltitle, lslug, extra, lexcerpt in course_lessons:
-        post(ltitle, lslug, [cslug, "lesson-col"] + extra, lexcerpt,
-             [("The idea", "One concept per lesson, applied immediately in your own org."),
-              ("Watch out for", "The mistake everyone makes at this step, and how to notice it early.")],
-             ch)
-        ch += 1
+for i, (title, slug, extra, excerpt, sections) in enumerate(apex_lessons):
+    lead = [embed("aqz-KE-bpKQ")] if "lesson-type-video" in extra else None
+    post(title, slug, ["apex-beginners", "lesson"] + extra, excerpt, sections,
+         73 + i * 3, lead=lead, closing=PRACTICE)
 
-# TRAINING — the module IS the primary tag; pages in publish order.
-modules = {
-    "deployment-basics": [
-        ("What counts as metadata", "what-counts-as-metadata",
-         "Fields yes, records no — mostly. The line that decides what deploys."),
-        ("Change sets versus SFDX", "change-sets-versus-sfdx",
-         "Both move metadata. One of them tells you what went wrong."),
-        ("Your first deployment checklist", "your-first-deployment-checklist",
-         "The eight checks that make Friday deploys boring."),
-    ],
-    "security-essentials": [
-        ("Profiles and permission sets", "profiles-and-permission-sets",
-         "One baseline profile, everything else in permission sets. Here is why."),
-        ("Sharing rules explained", "sharing-rules-explained",
-         "Org-wide defaults set the floor; sharing opens doors on purpose."),
-        ("Field-level security audits", "field-level-security-audits",
-         "Finding the fields everyone can see and nobody should."),
-    ],
-}
-h = 10
-for module, pages in modules.items():
-    for title, slug, excerpt in pages:
-        post(title, slug, [module, "training-col", "duration-10m"], excerpt,
-             [("The rule", "State the convention plainly, then show the one exception worth knowing."),
-              ("In practice", "What this looks like in a real org with real users mid-quarter.")],
-             h)
-        h += 1
+# Course 3 · Flow Builder Mastery — 5 lessons, billboard hero
+tag("Flow Builder Mastery", "flow-mastery",
+    "Beyond the happy path: flows that survive production — fault paths, limits and all.", "public")
+post("Flow Builder Mastery", "flow-mastery",
+     ["flow-mastery", "course", "course-level-advanced", "duration-3h",
+      "course-layout-billboard", "course-curriculum-timeline"],
+     "You already build flows. This course is about the ones that survive production — entry conditions, fault paths, and knowing when Flow is the wrong answer.",
+     [("What this course covers",
+       "Record-triggered flows done right, screen flows users finish, error handling that alerts you before the user does, and the async patterns — scheduled paths and platform events."),
+      ("Who it is for",
+       "Admins and developers who have shipped basic flows and been burned at least once. If you have never seen 'An unhandled fault has occurred', start with Admin Foundations instead.")],
+     180)
 
-# BLOG — one post per layout, plus sidebar/TOC variants.
-blog = [
-    ("Why every admin should learn SOQL", "why-every-admin-should-learn-soql",
-     ["blog-col", "automation"],  # classic, right sidebar, TOC on
-     "Reports answer questions someone predicted. SOQL answers yours."),
-    ("The state of Salesforce careers in 2026", "state-of-salesforce-careers-2026",
-     ["blog-col", "automation", "blog-layout-magazine"],
-     "Hiring cooled, expectations rose, and the interesting roles moved sideways."),
-    ("Ten releases in, what we learned", "ten-releases-in-what-we-learned",
-     ["blog-col", "architecture", "blog-layout-minimal", "blog-sidebar-left"],
-     "A retrospective on shipping with every Salesforce release since we started."),
-    ("Data model reviews that pay off", "data-model-reviews-that-pay-off",
-     ["blog-col", "architecture", "blog-layout-split"],
-     "An hour of review before the first field beats a quarter of migration after."),
-    ("A field guide to sandbox strategies", "field-guide-to-sandbox-strategies",
-     ["blog-col", "architecture", "blog-layout-wide", "blog-toc-hide"],
-     "Developer, partial, full — and the refresh schedule nobody writes down."),
+flow_lessons = [
+    ("01 · The anatomy of a flow", "the-anatomy-of-a-flow",
+     ["duration-20m"],
+     "Elements, resources, connectors — and the two panels in Flow Builder everyone ignores until a debug session forces them to look.",
+     [("Resources are variables wearing a costume",
+       "Every formula, variable, and record collection is a resource. Name them like code — get_Account, var_SendEmail — and your future debug logs become readable."),
+      ("The debug panel tells the truth",
+       "Debug runs show every element's inputs and outputs. Learn to read one now; every later lesson assumes you can.")]),
+    ("02 · Record-triggered flows done right", "record-triggered-flows-done-right",
+     ["lesson-type-video", "duration-30m", "lesson-layout-cinema"],
+     "Build one alongside the video: tight entry conditions, before-save vs after-save, and the update that cannot recurse.",
+     [("Entry conditions are your governor limit",
+       "A flow that fires on every edit of every Account is a tax on the whole org. Entry conditions keep it to the records that matter — set them first, always."),
+      ("Before-save when you can",
+       "Before-save flows update the triggering record with no extra DML and run an order of magnitude faster. Reach for after-save only when you must touch other records.")]),
+    ("03 · Screen flows people actually finish", "screen-flows-people-actually-finish",
+     ["duration-25m"],
+     "Multi-screen wizards, conditional visibility, and the difference between a form users complete and one they abandon.",
+     [("One question per screen beats ten",
+       "Users abandon walls of fields. Short screens with visibility rules feel like a conversation — completion rates prove it."),
+      ("Validate early, fail kindly",
+       "Validate on the screen where the answer lives, not three screens later. An error message should say what to do next, not what went wrong internally.")]),
+    ("04 · Fault paths and error handling", "fault-paths-and-error-handling",
+     ["duration-25m"],
+     "Every element that touches the database can fail. Decide on purpose what happens when it does.",
+     [("The fault connector nobody drags",
+       "Every Create, Update, Delete and Action element has a fault path waiting. Drag it to a subflow that logs the error and notifies someone — once, centrally, for every flow you own."),
+      ("What to tell the user",
+       "'An unhandled fault has occurred' is a resignation letter. A caught fault can say: your record was saved, the follow-up email was not, and an admin has been notified.")]),
+    ("05 · Scheduled paths and platform events", "scheduled-paths-and-platform-events",
+     ["duration-30m", "lesson-layout-right"],
+     "The async toolbox: run minutes later, run nightly, or hand off to another system entirely — without a line of Apex.",
+     [("Scheduled paths are the gentle async",
+       "'Ten minutes after the record meets conditions' covers a surprising share of async needs — reminders, escalations, SLA checks — with none of the ceremony."),
+      ("Platform events cross the boundary",
+       "Publish an event and anything can subscribe: another flow, Apex, or an external system on CometD. It is the loose coupling your integrations wanted all along.")]),
 ]
-for i, (title, slug, tag_slugs, excerpt) in enumerate(blog):
-    post(title, slug, tag_slugs, excerpt,
-         [("Where this starts", "The situation as we actually found it, before any best practice applied."),
-          ("What changed", "The decision, the trade-off it carried, and the number that moved."),
-          ("What we would do differently", "Honest hindsight — the part most write-ups leave out.")],
-         20 + i)
+for i, (title, slug, extra, excerpt, sections) in enumerate(flow_lessons):
+    lead = [embed("aqz-KE-bpKQ")] if "lesson-type-video" in extra else None
+    post(title, slug, ["flow-mastery", "lesson"] + extra, excerpt, sections,
+         183 + i * 3, lead=lead, closing=PRACTICE)
 
-# A video walkthrough inside a training module — proves the rail's
-# type icons work for training too.
-post("Watch: a deployment end to end", "watch-a-deployment-end-to-end",
-     ["deployment-basics", "training-col", "lesson-type-video", "duration-15m"],
-     "Fifteen minutes from git push to a green deployment, narrated.",
-     [("Follow along", "Pause after each step and run the same command in your own project.")],
-     16, lead=[embed("aqz-KE-bpKQ")])
+# ════════════════════════════════════════════════════════════════
+# TRAINING — the module IS a public tag; its pages are the
+# #training posts carrying it as primary tag, oldest first.
+# ════════════════════════════════════════════════════════════════
+tag("Data Model & Schema", "data-model",
+    "Objects, relationships and the decisions you cannot cheaply undo.", "public")
+tag("Apex Triggers", "apex-triggers",
+    "One trigger per object, logic in handlers, bulk-safe by default.", "public")
+tag("Integration Patterns", "integration-patterns",
+    "Request-reply, events, batch — picking the pattern before the tool.", "public")
 
-# THE VIDEO LIBRARY — standalone videos at /videos/{slug}/.
+training_modules = [
+    ("data-model", 35, [
+        ("01 · Standard objects vs custom objects", "standard-vs-custom-objects", "duration-10m",
+         "Account, Contact, Opportunity, Case solve more than you think — the checklist to run before you create anything custom.",
+         [("The reuse test",
+           "Before creating a custom object, ask: does a standard object with a record type cover this? Standard objects come with reports, mobile layouts and AppExchange integrations for free."),
+          ("The cost of custom",
+           "Every custom object is a permanent resident: permissions, layouts, sharing, API names in code. Creating one is a five-minute job; retiring one is a quarter.")]),
+        ("02 · Relationship types, decided with three questions", "relationship-types-three-questions", "duration-15m",
+         "Lookup, master-detail or junction — answered by ownership, cascade delete, and roll-ups.",
+         [("The three questions",
+           "Does the child make sense without the parent? Should deleting the parent delete the child? Do you need roll-up summaries? Master-detail answers no, yes, yes; lookup answers the reverse."),
+          ("Converting later is possible, painful",
+           "You can switch lookup to master-detail only while every child has a parent, and the switch rewrites sharing. Decide up front; this is a one-way door that pretends not to be.")]),
+        ("03 · Record types and when not to use them", "record-types-when-not-to-use-them", "duration-10m",
+         "Record types shine for genuinely different processes on one object — and multiply your maintenance everywhere else.",
+         [("The right reason",
+           "Different sales processes, different page layouts, different picklist values for the same object: that is what record types are for. One object, several shapes."),
+          ("The three warning signs",
+           "If record types differ only by one field, if users constantly pick the wrong one, or if you have more than five on an object — you probably wanted a field, a flow, or a separate object.")]),
+        ("04 · Schema Builder, the honest map", "schema-builder-the-honest-map", "duration-10m",
+         "The one Setup tool that shows your data model as it is, not as the ERD on the wiki claims it is.",
+         [("Read before you draw",
+           "Open Schema Builder on any org you inherit. The orphaned objects and mystery lookups you find in ten minutes would take a week of clicking through Object Manager."),
+          ("Draw carefully",
+           "Schema Builder can create fields and relationships directly — convenient in a Developer Edition, a footgun in production. Look with it; build through your normal deployment path.")]),
+        ("05 · Junction objects in practice", "junction-objects-in-practice", "duration-15m",
+         "Many-to-many done properly: two master-details, sharing inherited from both sides, and a real example built end to end.",
+         [("The pattern",
+           "A Course can have many Students, a Student many Courses: the Enrollment junction object carries two master-detail relationships and any fields that belong to the pair — grade, date, status."),
+          ("Sharing rides the master-details",
+           "A junction record is visible only to users who can see BOTH parents. That is usually what you want, and it is also the first place to look when someone cannot see an enrollment.")]),
+    ]),
+    ("apex-triggers", 120, [
+        ("01 · Order of execution, the map", "order-of-execution-the-map", "duration-15m",
+         "Before triggers, validation, after triggers, assignment rules, flows, roll-ups — what actually runs when you press Save.",
+         [("Why the map matters",
+           "Half of all 'my field keeps getting overwritten' mysteries are two automations at different steps of the same save. You cannot debug what you cannot sequence."),
+          ("The steps that bite",
+           "Before-save flows run before before-triggers. Workflow field updates re-fire triggers. Roll-ups run late. Print the diagram and pin it where you debug.")]),
+        ("02 · One trigger per object", "one-trigger-per-object", "duration-10m",
+         "Two triggers on one object run in an order Salesforce refuses to promise. The fix is a rule, not a framework.",
+         [("The rule",
+           "One trigger per object, ever. It contains no logic — it delegates every event to a handler class. Order becomes explicit, bypass becomes possible, tests become sane."),
+          ("Enforcing it",
+           "A naming convention (AccountTrigger, AccountTriggerHandler) plus a code review checklist is enough. Frameworks help at scale, but the rule is what saves you.")]),
+        ("03 · The handler pattern", "the-handler-pattern", "duration-15m",
+         "One method per event, a static bypass flag, and constructor-free classes your tests will thank you for.",
+         [("The shape",
+           "beforeInsert(newList), afterUpdate(oldMap, newMap) — the trigger passes context variables straight through. The handler owns every decision; the trigger owns nothing."),
+          ("The bypass flag",
+           "A public static Boolean lets data migrations and tests switch the handler off without touching metadata. Use sparingly; log every use.")]),
+        ("04 · Bulkification: 200 records or bust", "bulkification-200-records-or-bust", "duration-15m",
+         "Triggers receive up to 200 records at once. Every query and DML statement inside a loop is a countdown to 'Too many SOQL queries: 101'.",
+         [("The discipline",
+           "Collect Ids in a loop, query once into a Map, look up inside the loop, collect changes, DML once at the end. Every bulk-safe trigger is that sentence, rearranged."),
+          ("Test at 200",
+           "A test that inserts one record proves nothing about limits. Insert a List of 200 and your future data-loader migrations stop being surprises.")]),
+        ("05 · Recursion control", "recursion-control", "duration-10m",
+         "Your after-update updates the record, which fires your after-update. Breaking the loop without breaking legitimate re-entry.",
+         [("Why a plain flag is wrong",
+           "A static 'hasRun' Boolean blocks the second batch of a 400-record update too — that is legitimate re-entry, not recursion. Track processed record Ids in a static Set instead."),
+          ("Better: stop causing it",
+           "Most recursion is an after trigger doing a before trigger's job. Assigning field values on the in-flight record in before-save costs no DML and cannot recurse.")]),
+    ]),
+    ("integration-patterns", 250, [
+        ("01 · Request-reply with named credentials", "request-reply-named-credentials", "duration-15m",
+         "The synchronous callout, done properly: named credentials for auth, a timeout you chose on purpose, and a mock for the test.",
+         [("Named credentials or nothing",
+           "Endpoint URLs and secrets do not belong in Apex or custom settings. A named credential moves auth to configuration — and survives the sandbox refresh that would have leaked your token."),
+          ("Design for the timeout",
+           "Every callout needs an answer to 'what if this takes 30 seconds?' If the user is waiting on the answer, the honest fix is usually to make the integration asynchronous.")]),
+        ("02 · Fire-and-forget with platform events", "fire-and-forget-platform-events", "duration-15m",
+         "When the caller does not need an answer, publish an event and move on — decoupling, replay, and the delivery guarantees you actually get.",
+         [("At-least-once, not exactly-once",
+           "Platform events can be delivered more than once and subscribers can fall behind. Design subscribers to be idempotent and the guarantee becomes a feature, not a caveat."),
+          ("The replay Id is your safety net",
+           "External subscribers can resume from the last replay Id after a disconnect. Store it; the day your middleware restarts mid-stream you will be glad you did.")]),
+        ("03 · Batch sync without tears", "batch-sync-without-tears", "duration-15m",
+         "Nightly loads still run the world. Upsert on external IDs, order parents before children, and make reruns safe.",
+         [("External IDs are the contract",
+           "Match on the source system's key, never on Salesforce Ids the source does not know. An indexed external ID field per synced object is the whole trick."),
+          ("Idempotency first",
+           "Design every load so running it twice changes nothing the second time. When (not if) the 2 a.m. job dies halfway, the fix becomes 'run it again' instead of an archaeology project.")]),
+        ("04 · Middleware or point-to-point?", "middleware-or-point-to-point", "duration-10m",
+         "Two systems talking directly is simple right up until it is three systems, then five. Where the line actually sits.",
+         [("Count the edges",
+           "Point-to-point between n systems tends toward n² connections, each with its own auth, retries and error handling. Middleware turns that into n connections to one hub."),
+          ("But do not buy a bus for one route",
+           "One Salesforce org calling one API does not need an integration platform. Start point-to-point behind a named credential; move to middleware when the third system shows up.")]),
+    ]),
+]
+for module, start_day, sections in training_modules:
+    for i, (title, slug, dur, excerpt, body_sections) in enumerate(sections):
+        post(title, slug, [module, "training", dur], excerpt, body_sections,
+             start_day + i * 3, closing=PRACTICE)
+
+# One video section inside a module — proves the rail's type icons
+# work for training too.
+post("05 · Watch: a callout built end to end", "watch-a-callout-built-end-to-end",
+     ["integration-patterns", "training", "lesson-type-video", "duration-20m"],
+     "Twenty minutes from a blank class to a tested, mocked, named-credential callout — narrated, mistakes left in.",
+     [("Follow along",
+       "Pause after each step and run the same code in your own org. The named credential setup happens on screen too — nothing is pre-baked."),
+      ("Mentioned in this video",
+       "HttpCalloutMock, Test.setMock, and the two-minute trick for inspecting the request your code actually sent.")],
+     262, lead=[embed("aqz-KE-bpKQ")])
+
+# ════════════════════════════════════════════════════════════════
+# BLOG — six real articles, layouts spread across the variants.
+# ════════════════════════════════════════════════════════════════
+blog_posts = [
+    ("Why your Flow fails silently in production", "why-your-flow-fails-silently-in-production",
+     ["blog", "flow"], 25,
+     "The flow works in the sandbox, passes UAT, and then quietly stops firing for one profile in production. Here is the checklist that finds it.",
+     [("The usual suspects",
+       "Nine times out of ten it is one of four things: entry conditions referencing a field the running user cannot see, a paused interview waiting on a time path, an element-level fault swallowed without a fault path, or the flow simply not activated after deployment."),
+      ("Field-level security is invisible to Flow",
+       "A flow running in user context silently gets null for fields the user cannot read. No error, no debug line — the decision element just takes the other branch. Run system context deliberately or grant the permission deliberately; never leave it to luck."),
+      ("Build the alarm before the fire",
+       "A one-element subflow on every fault path — log a record, notify a channel — costs ten minutes per flow and turns 'users have been silently affected for three weeks' into 'we knew within the hour'.")]),
+    ("Salesforce release notes, decoded: Winter '26", "salesforce-release-notes-decoded-winter-26",
+     ["blog", "admin", "blog-layout-magazine"], 100,
+     "Six hundred pages of release notes, reduced to the eleven changes that will actually touch your org — and the two that might break it.",
+     [("Read the retirements first",
+       "The gold is at the back: features entering retirement. Workflow rules and process builder migrations stop being optional the release they go read-only — count backwards from that date, not forwards from today."),
+      ("The quiet permission changes",
+       "Every release tightens a default somewhere. This one touches guest user access and API versions below 40 — run the release-update checklist in a sandbox on preview weekend, not in production on go-live morning."),
+      ("What I am actually excited about",
+       "Flow gets reactive screens everywhere, and the new Apex Cursors go GA — pagination over big queries without the offset dance. Both land in the courses here over the next month.")]),
+    ("The Apex mistakes I still see in every org", "apex-mistakes-i-still-see-in-every-org",
+     ["blog", "apex", "blog-layout-split"], 150,
+     "Fifteen years of the same five mistakes: queries in loops, tests without assertions, triggers with opinions, hardcoded Ids, and empty catch blocks.",
+     [("Queries in loops, still",
+       "The 101st SOQL query has been throwing the same exception since 2008 and it remains the number one production incident I get called about. The fix is a pattern, not a talent — collect, query once, map, loop."),
+      ("Tests that assert nothing",
+       "Coverage without assertions is a donation to the deployment gods. If the method's behaviour changed completely and the test still passed, it was never a test."),
+      ("The empty catch block",
+       "catch (Exception e) {} is a decision to find out about failures from your users. Log it, rethrow it, or write the comment explaining why silence is genuinely correct — there is no fourth option.")]),
+    ("Agentforce, six months in: what actually works", "agentforce-six-months-in",
+     ["blog", "ai-agentforce", "blog-layout-wide", "blog-toc-hide"], 210,
+     "Past the keynote demos: where agents genuinely help today, where they embarrass you in front of customers, and how to scope your first one.",
+     [("What works today",
+       "Narrow, grounded, reversible: case deflection over a curated knowledge base, order status lookups, appointment rescheduling. The common thread — the agent retrieves and drafts, a human or a hard rule commits."),
+      ("What does not, yet",
+       "Anything requiring the agent to be right about your org's edge cases on the first try. Free-text actions that write to records without review generate the tickets they were meant to deflect."),
+      ("Scope your first agent like a junior hire",
+       "Give it the job you would give a smart temp on day one: bounded inputs, a script to deviate from, an escalation path, and an audit log. Expand scope the way you would for a human — after it earns it.")]),
+    ("How I'd learn Salesforce in 2026, starting from zero", "how-id-learn-salesforce-in-2026",
+     ["blog", "careers", "blog-layout-minimal", "blog-sidebar-left"], 280,
+     "No certifications-first, no 500 hours of videos. A Developer Edition, one project you care about, and a public log of what you built.",
+     [("Build before you badge",
+       "Certifications open interviews; projects survive them. A working org that solves a real problem — your club's memberships, your side hustle's invoices — teaches more than any amount of passive watching."),
+      ("The weekly loop",
+       "Build something small, break it, fix it, write two paragraphs about what you learned, in public. Twelve weeks of that loop beats a year of consuming content — and the log becomes your portfolio."),
+      ("Where the jobs moved",
+       "Pure point-and-click admin roles are consolidating; admin-plus roles — admin plus Flow, plus data, plus a scripting language — are growing. Learn declarative first, but do not stop there.")]),
+    ("Your sandbox strategy is why deploys hurt", "your-sandbox-strategy-is-why-deploys-hurt",
+     ["blog", "devops"], 440,
+     "If every deploy is a fire drill, the problem started three environments earlier. A sandbox map that actually matches how teams work.",
+     [("The minimum viable pipeline",
+       "Developer sandboxes per builder, one shared integration sandbox, one UAT that mirrors production data shape, production. Fewer than that and changes collide; more and changes queue."),
+      ("Refresh on a calendar, not a crisis",
+       "A stale sandbox lies to you about production. Put refreshes on the calendar — after each release lands is the natural rhythm — and script the post-refresh setup you currently do by hand."),
+      ("Source of truth means one",
+       "The org is the truth or the repo is the truth; pick one and mean it. Half-adopted git where hotfixes go straight to production is how Sunday deploys become Sunday-and-Monday deploys.")]),
+]
+for title, slug, tag_slugs, day, excerpt, sections in blog_posts:
+    post(title, slug, tag_slugs, excerpt, sections, day)
+
+# ════════════════════════════════════════════════════════════════
+# VIDEOS — the library at /videos/. A table whose FIRST column is
+# timestamps becomes the seeking chapter sidebar (video.js). The
+# first two carry #video-preview: cards play them muted.
+# ════════════════════════════════════════════════════════════════
 videos = [
-    ("Salesforce in five minutes", "salesforce-in-five-minutes", "jNQXAC9IVRw",
-     "The whole platform, one whiteboard, five minutes."),
-    ("Data model walkthrough", "data-model-walkthrough", "aqz-KE-bpKQ",
-     "Objects, fields and relationships drawn live, with the mistakes left in."),
-    ("Debugging a failed flow", "debugging-a-failed-flow", "9bZkp7q19f0",
-     "A real flow error, found and fixed on screen."),
-    ("Sandbox seeding in practice", "sandbox-seeding-in-practice", "kJQP7kiw5Fk",
-     "Getting believable data into a fresh sandbox without a licence."),
+    ("Build a record-triggered flow in 20 minutes", "build-a-record-triggered-flow-in-20-minutes",
+     "aqz-KE-bpKQ", ["flow", "duration-20m", "video-preview"], 55,
+     "Entry conditions, a decision, a before-save update and a fault path — a production-shaped flow, built live with no cuts.",
+     chapters([("00:00", "What we're building and why"),
+               ("01:30", "Object, trigger type, entry conditions"),
+               ("05:45", "The decision element done right"),
+               ("09:20", "Before-save field updates"),
+               ("13:10", "Adding the fault path"),
+               ("16:40", "Debug run and activation"),
+               ("18:55", "What to build next")]),
+     [("What you will see",
+       "Screen and narration only — no slides. Every click happens on screen, including the two mistakes and their fixes."),
+      ("Mentioned in this video",
+       "The Flow Builder Mastery course covers each of these elements in depth, one lesson per element.")]),
+    ("Data model walkthrough: a quoting app from scratch", "data-model-walkthrough-quoting-app",
+     "jNQXAC9IVRw", ["admin", "duration-30m", "video-preview"], 108,
+     "Watch a real data model take shape: objects, relationship choices argued out loud, and the junction object that saves the design.",
+     chapters([("00:00", "The requirements, in plain words"),
+               ("03:15", "Standard objects we get for free"),
+               ("07:40", "Quote and QuoteLine: master-detail, argued"),
+               ("14:05", "The pricing junction object"),
+               ("21:30", "Roll-up summaries and totals"),
+               ("26:10", "What we deliberately did not build")]),
+     [("What you will see",
+       "Schema Builder open the whole time — the model is drawn live, wrong turns included, because the wrong turns are the lesson."),
+      ("Mentioned in this video",
+       "The Data Model & Schema training module walks the same decisions as reference pages you can keep open while you design.")]),
+    ("Debug a failing deployment, live", "debug-a-failing-deployment-live",
+     "9bZkp7q19f0", ["devops", "duration-25m"], 160,
+     "A real change set fails with 47 errors. Watch them fall to zero: reading the first error properly, test failures vs missing components, and the retry.",
+     [("What you will see",
+       "The actual error list, worked top to bottom. Forty-six of the forty-seven trace back to two root causes — which is exactly the point."),
+      ("Mentioned in this video",
+       "The deployment checklist from the shop, and why 'run local tests' beats 'run all tests' for hotfixes.")]),
+    ("Five SOQL queries every admin should know", "five-soql-queries-every-admin-should-know",
+     "kJQP7kiw5Fk", ["admin", "duration-15m"], 220,
+     "The Developer Console query editor is the fastest answer machine in your org — five queries that replace an hour of report building.",
+     [("What you will see",
+       "Records modified yesterday, users who never logged in, accounts without contacts, the biggest attachments, and picklist value counts — typed, run, and explained."),
+      ("Mentioned in this video",
+       "Each query lives in the snippets collection too, ready to copy.")]),
+    ("Your first Lightning Web Component, line by line", "your-first-lwc-line-by-line",
+     "dQw4w9WgXcQ", ["lwc", "duration-35m"], 300,
+     "HTML template, JavaScript class, XML metadata — a working component on a record page in half an hour, every line explained.",
+     chapters([("00:00", "What LWC is and is not"),
+               ("02:50", "Scaffolding with the CLI"),
+               ("08:15", "The template: HTML with directives"),
+               ("15:30", "The class: @api, @wire, getters"),
+               ("24:00", "Deploying and adding to a record page"),
+               ("30:20", "Where to go from here")]),
+     [("What you will see",
+       "VS Code and an org side by side. We deploy after every change so you see exactly which line caused which pixel."),
+      ("Mentioned in this video",
+       "The LWC debounce snippet, and the lwc-datatable-plus project this component eventually grew into.")]),
+    ("Set up an Agentforce agent, end to end", "set-up-an-agentforce-agent-end-to-end",
+     "hY7m5jjJ9mM", ["ai-agentforce", "duration-40m"], 450,
+     "Topic, instructions, actions, guardrails, test, deploy — a working service agent grounded on a real knowledge base, in one sitting.",
+     [("What you will see",
+       "The whole builder flow with nothing skipped: writing instructions that actually constrain, wiring a flow action, and the test bench catching a hallucination before customers do."),
+      ("Mentioned in this video",
+       "The Agentforce action design rubric from the prompts collection — we score this agent's action against it on screen.")]),
 ]
-CHAPTERS = {"type": "markdown", "version": 1, "markdown": (
-    "| Time | Chapter |\n|---|---|\n"
-    "| 0:00 | Introduction |\n"
-    "| 0:45 | The setup |\n"
-    "| 2:10 | Building it live |\n"
-    "| 3:30 | Where it breaks |\n"
-    "| 4:20 | Wrap-up and next steps |")}
+for title, slug, vid, extra, day, excerpt, *rest in videos:
+    if len(rest) == 2:
+        chap, sections = rest
+        lead = [embed(vid), chap]
+    else:
+        (sections,) = rest
+        lead = [embed(vid)]
+    post(title, slug, ["video"] + extra, excerpt, sections, day, lead=lead)
 
-video_durations = ["duration-5m", "duration-10m", "duration-15m", "duration-20m"]
-for i, (title, slug, vid, excerpt) in enumerate(videos):
-    # the first two demo the card video preview (#video-preview)
-    preview = ["video-preview"] if i < 2 else []
-    post(title, slug, ["video-col", "automation", video_durations[i]] + preview, excerpt,
-         [("What you will see", "Screen and narration only — no slides, no intro music."),
-          ("Mentioned in this video", "Links and docs referenced on screen, collected for later.")],
-         30 + i, lead=[embed(vid), CHAPTERS])
-
-# THE NEWSLETTER — issues at /newsletter/{slug}/.
+# ════════════════════════════════════════════════════════════════
+# NEWSLETTER — four weekly issues, published ascending so the
+# newest issue really is the latest.
+# ════════════════════════════════════════════════════════════════
 issues = [
-    ("The Weekly Namaste #3 — Flows eat triggers", "weekly-namaste-3",
-     "Record-triggered flows keep absorbing trigger use cases. Where the line sits this release."),
-    ("The Weekly Namaste #2 — Sandboxes on a budget", "weekly-namaste-2",
-     "Partial copies, seeding scripts, and when a Developer Edition is honestly enough."),
-    ("The Weekly Namaste #1 — Hello, world", "weekly-namaste-1",
-     "Why this newsletter exists and what lands in your inbox every week."),
+    ("The Weekly Namaste #01 — Hello, world", "the-weekly-namaste-01", 490,
+     "Why this newsletter exists, what lands in your inbox every Sunday, and the one link to start with.",
+     [("This week",
+       "Issue one is a promise, not a digest: every Sunday, the three things from the Salesforce world worth your attention, each in two sentences, plus what changed on this site. No sponsor slots, no filler."),
+      ("Worth a click",
+       "The Admin Foundations course is complete and free — six lessons from first login to a dashboard someone actually opens."),
+      ("From the courses",
+       "Apex for Absolute Beginners is in progress; the trigger lesson is being filmed this week.")]),
+    ("The Weekly Namaste #02 — The fault path issue", "the-weekly-namaste-02", 497,
+     "One theme this week: errors you have decided to handle versus errors that are handling you.",
+     [("This week",
+       "A reader's production incident (shared with permission) traced to a single missing fault path; the new Flow error-handler pattern now in the projects collection; and why 'it works in the sandbox' is a sentence about permissions."),
+      ("Worth a click",
+       "The 'Why your Flow fails silently in production' post is this newsletter's origin story — read it before your next deploy."),
+      ("From the courses",
+       "Flow Builder Mastery lesson 04 covers the same ground with a build-along.")]),
+    ("The Weekly Namaste #03 — Release week survival", "the-weekly-namaste-03", 504,
+     "Preview weekend is here. What to test first, what to ignore, and the release-notes reading order that saves an afternoon.",
+     [("This week",
+       "Read retirements first, release updates second, your clouds third, everything else never. Plus: the two Winter '26 permission tightenings most likely to page you, and how to check them in ten minutes."),
+      ("Worth a click",
+       "The full decoded release notes post is on the blog — six hundred pages down to eleven changes."),
+      ("From the courses",
+       "Admin Foundations lesson 05 gets a refresh for the new report builder this week.")]),
+    ("The Weekly Namaste #04 — Agents, honestly", "the-weekly-namaste-04", 511,
+     "Six months of Agentforce in real orgs: the wins are real, the demos are still demos, and scoping is everything.",
+     [("This week",
+       "What separates the agent deployments that stuck from the ones that got quietly turned off — narrow scope, grounded answers, reversible actions. The long version is on the blog; the rubric is in the prompts collection."),
+      ("Worth a click",
+       "The new end-to-end Agentforce setup video: forty minutes, nothing skipped, one hallucination caught on camera."),
+      ("From the courses",
+       "Next up: a short course on prompt design for platform work. Reply if you want early access.")]),
 ]
-# issues[] lists newest FIRST; publish times must run the other
-# way so the newest issue really is the latest.
-for i, (title, slug, excerpt) in enumerate(issues):
-    post(title, slug, ["newsletter-col"], excerpt,
-         [("This week", "The three things worth your attention, each in two sentences."),
-          ("Worth a click", "One link we kept coming back to."),
-          ("From the courses", "What changed in the curriculum since last issue.")],
-         40 + (len(issues) - i))
+for title, slug, day, excerpt, sections in issues:
+    post(title, slug, ["newsletter"], excerpt, sections, day)
 
-# THE CHANGELOG — entries at /changelog/{slug}/. Each carries a
-# #changelog-type-* tag: the colour-coded badge on the timeline.
+# ════════════════════════════════════════════════════════════════
+# CHANGELOG — entries carrying #changelog-type-*: the badge text
+# is the tag DESCRIPTION, the slug picks colour + icon.
+# ════════════════════════════════════════════════════════════════
 changes = [
-    ("Video library launched", "video-library-launched",
-     "A new home for standalone walkthroughs, outside any course.",
-     "changelog-type-feature"),
-    ("Training modules get a full sidebar", "training-modules-full-sidebar",
-     "Every module now one click away from any training page.",
-     "changelog-type-improvement"),
-    ("Course filters shipped", "course-filters-shipped",
-     "Filter the catalogue by level and duration.",
-     "changelog-type-feature"),
-    ("Namaste Salesforce is live", "namaste-salesforce-is-live",
-     "First public release: two courses, two modules, and a blog.",
-     "changelog-type-content"),
+    ("Namaste Salesforce is live", "namaste-salesforce-is-live", "changelog-type-content", 10,
+     "First public release: the Admin Foundations course, the Data Model training module, and a blog.",
+     [("What shipped",
+       "The site opens with one complete course, one training module, and the first article. Everything is free; the newsletter starts once there is enough here to summarise."),
+      ("Why",
+       "Learning in public needs a public. This site is the log of everything I build and teach on the platform, structured so you can actually follow along.")]),
+    ("Video library launched", "video-library-launched", "changelog-type-feature", 112,
+     "Standalone walkthroughs get their own home at /videos/ — with chapter navigation on longer recordings.",
+     [("What shipped",
+       "Videos no longer hide inside courses. The library lists every walkthrough with its duration; long recordings carry a chapters sidebar that seeks the player when you click a section."),
+      ("Why",
+       "Half of you watch one specific segment, not the whole recording. Chapters make the twenty-minute videos as skimmable as the five-minute ones.")]),
+    ("Duration chips unified site-wide", "duration-chips-unified-site-wide", "changelog-type-improvement", 170,
+     "One duration vocabulary now covers lessons, training pages and videos alike — chips read the tag description everywhere.",
+     [("What changed",
+       "Courses said '2h', videos said '25 minutes', training said nothing. Every duration now comes from one site-wide ramp, rendered identically wherever it appears."),
+      ("Why",
+       "You should be able to glance at any card anywhere and know the time commitment. Consistency is a feature.")]),
+    ("Three courses now complete", "three-courses-now-complete", "changelog-type-content", 240,
+     "Flow Builder Mastery joins Admin Foundations and Apex for Absolute Beginners — nineteen lessons across the three tracks.",
+     [("What shipped",
+       "The advanced Flow track is finished: five lessons from anatomy to platform events, with build-along videos. All three launch courses are now complete and free."),
+      ("Why",
+       "The three tracks cover the three doors into the platform — admin, code, automation. Everything published next builds on one of them.")]),
+    ("Fixed: code blocks in dark mode", "fixed-code-blocks-in-dark-mode", "changelog-type-fix", 320,
+     "Snippet syntax colours were unreadable against the dark canvas on some screens. Contrast rebuilt from tokens.",
+     [("What changed",
+       "Code blocks now derive their palette from the theme's semantic tokens in both modes, instead of shipping one hardcoded scheme. Copy buttons stop overlapping line numbers on narrow screens too."),
+      ("Why",
+       "Half of all snippet views happen in dark mode after 9 p.m. Reading code should not require switching themes.")]),
+    ("Projects collection launched", "projects-collection-launched", "changelog-type-feature", 460,
+     "The open-source work gets a proper shelf: /projects/, GitHub-styled, with language and star metadata on every repo.",
+     [("What shipped",
+       "Six repositories, each with its readme rendered as the post and a real 'View on GitHub' button. Cards show the language dot and star count the way your muscle memory expects."),
+      ("Why",
+       "The code behind the courses was scattered across gists and repo links in lesson footers. Now everything installable lives in one place.")]),
 ]
-for i, (title, slug, excerpt, ctype) in enumerate(changes):
-    post(title, slug, ["changelog-col", ctype], excerpt,
-         [("What changed", "The user-visible difference, stated without ceremony."),
-          ("Why", "The problem this solves, in one honest paragraph.")],
-         50 + i)
+for title, slug, ctype, day, excerpt, sections in changes:
+    post(title, slug, ["changelog", ctype], excerpt, sections, day)
 
-# RESOURCES — curated links, each typed + free/paid for the sidebar.
-resources = [
-    ("Advanced Apex Programming", "advanced-apex-programming",
-     "Still the deepest book on Apex patterns — read it after your first triggers.",
-     ["resource-type-books", "resource-paid"]),
-    ("Salesforce Developer Docs", "salesforce-developer-docs",
-     "The primary source. Learn to read it before any course, including mine.",
-     ["resource-type-articles", "resource-free"]),
-    ("Workbench", "workbench-tool",
-     "The Swiss-army knife for SOQL, metadata and REST exploring — free and ancient and perfect.",
-     ["resource-type-tools", "resource-free"]),
-    ("Apex Hours", "apex-hours",
-     "Community-run sessions on everything platform — the archive alone is a curriculum.",
-     ["resource-type-videos", "resource-free"]),
-    ("Trailhead", "trailhead",
-     "Salesforce's own hands-on learning — badges are not skills, but the practice is real.",
-     ["resource-type-courses", "resource-free"]),
-    ("Good Day, Sir!", "good-day-sir",
-     "The podcast that keeps the ecosystem honest — opinionated, funny, technical.",
-     ["resource-type-podcasts", "resource-free"]),
-]
-for i, (title, slug, excerpt, extra) in enumerate(resources):
-    post(title, slug, ["resource-col"] + extra, excerpt,
-         [("Why it's here", "One honest paragraph on what this gives you and when to reach for it."),
-          ("Where to start", "The exact chapter, playlist or page to open first.")],
-         80 + i)
-
-# SHOP — digital assets; price is the tag's DESCRIPTION.
-shop_items = [
-    ("Flow Error-Handling Playbook (ebook)", "flow-error-handling-playbook",
-     "Forty pages of fault paths, retry patterns and the alerts worth waking up for.",
-     ["shop-price-19"]),
-    ("Admin's Release Notes Template", "admin-release-notes-template",
-     "The Notion + Sheets template I use to digest every Salesforce release in an hour.",
-     ["shop-free"]),
-    ("Org Health Check Notes", "org-health-check-notes",
-     "My raw working notes from twenty org audits — what to look at, in what order, and why.",
-     ["shop-price-9"]),
-    ("Namaste Ghost Theme", "namaste-ghost-theme",
-     "This very site's theme — courses, training trails, video library and all.",
-     ["shop-price-29"]),
-]
-for i, (title, slug, excerpt, extra) in enumerate(shop_items):
-    post(title, slug, ["shop-col"] + extra, excerpt,
-         [("What you get", "Exactly what's in the download, file by file."),
-          ("Who it's for", "And who should NOT buy it — honesty keeps refunds at zero.")],
-         84 + i)
-
-# SNIPPETS — small reusable code, language on the chip, the REAL
-# code in a code card (snippets.js dresses it as an editor window
-# with syntax colours and a copy button).
-def codecard(lang, code):
-    return {"type": "codeblock", "version": 1, "language": lang, "code": code}
-
+# ════════════════════════════════════════════════════════════════
+# SNIPPETS — real code in a code card; language on the chip.
+# ════════════════════════════════════════════════════════════════
 snippets = [
     ("Bulk-safe trigger handler skeleton", "bulk-safe-trigger-handler",
-     "The five-method handler shape that survives 200-record batches.",
-     ["snippet-lang-apex"], "apex",
+     ["snippet-lang-apex", "apex"], 410,
+     "The five-method handler shape that survives 200-record batches — collect, query once, map, loop, DML once.",
+     "apex",
      "public with sharing class AccountTriggerHandler {\n"
      "    public static Boolean bypass = false;\n\n"
      "    public static void beforeInsert(List<Account> records) {\n"
@@ -535,28 +848,73 @@ snippets = [
      "        }\n"
      "        if (!changed.isEmpty()) OwnerSync.enqueue(changed);\n"
      "    }\n"
-     "}"),
+     "}",
+     [("Gotchas",
+       "The bypass flag is for data migrations and tests only — every production use deserves a code comment explaining itself. And afterUpdate compares old to new before doing anything: change detection is what keeps recursion away.")]),
+    ("Test data factory, the minimal version", "test-data-factory-minimal",
+     ["snippet-lang-apex", "apex"], 411,
+     "One class, builder-style defaults, no framework — the 80% of a test factory most orgs actually need.",
+     "apex",
+     "@isTest\n"
+     "public class TestFactory {\n"
+     "    public static Account account() { return account('Acme ' + counter()); }\n\n"
+     "    public static Account account(String name) {\n"
+     "        return new Account(Name = name, Industry = 'Technology');\n"
+     "    }\n\n"
+     "    public static Contact contact(Id accountId) {\n"
+     "        return new Contact(FirstName = 'Test', LastName = 'Person ' + counter(),\n"
+     "                           AccountId = accountId,\n"
+     "                           Email = 'test' + counter() + '@example.com');\n"
+     "    }\n\n"
+     "    public static List<Account> accounts(Integer n) {\n"
+     "        List<Account> out = new List<Account>();\n"
+     "        for (Integer i = 0; i < n; i++) out.add(account());\n"
+     "        return out;\n"
+     "    }\n\n"
+     "    static Integer seq = 0;\n"
+     "    static Integer counter() { return ++seq; }\n"
+     "}",
+     [("Gotchas",
+       "Return unsaved records and let the test decide when to insert — tests that need Ids call insert themselves, tests that don't stay fast. The counter keeps unique fields unique across a 200-record build.")]),
     ("SOQL: records modified since yesterday", "soql-modified-since-yesterday",
-     "Relative date literals beat hand-built timestamps every time.",
-     ["snippet-lang-soql"], "soql",
+     ["snippet-lang-soql", "admin"], 412,
+     "Relative date literals beat hand-built timestamps every time — and they respect the user's time zone.",
+     "sql",
      "SELECT Id, Name, LastModifiedBy.Name, LastModifiedDate\n"
      "FROM Account\n"
      "WHERE LastModifiedDate = YESTERDAY\n"
      "   OR LastModifiedDate = TODAY\n"
      "ORDER BY LastModifiedDate DESC\n"
-     "LIMIT 200"),
+     "LIMIT 200",
+     [("Gotchas",
+       "YESTERDAY is the user's calendar yesterday, not 'the last 24 hours' — for a rolling window use LastModifiedDate >= :DateTime.now().addHours(-24) from Apex instead.")]),
+    ("SOQL: accounts with no contacts", "soql-accounts-with-no-contacts",
+     ["snippet-lang-soql", "admin"], 413,
+     "The anti-join: records missing children, without a report type gymnastics session.",
+     "sql",
+     "SELECT Id, Name, Owner.Name, CreatedDate\n"
+     "FROM Account\n"
+     "WHERE Id NOT IN (SELECT AccountId FROM Contact)\n"
+     "  AND CreatedDate = LAST_N_DAYS:90\n"
+     "ORDER BY CreatedDate DESC",
+     [("Gotchas",
+       "NOT IN with a subquery is limited to one level and can be slow on very large orgs — for millions of accounts, run it in batches or flip it into a report with a cross filter.")]),
     ("Flow formula: business days between dates", "flow-business-days-formula",
-     "No Apex, no loops — one formula resource.",
-     ["snippet-lang-flow"], "flow",
+     ["snippet-lang-flow", "flow"], 414,
+     "No Apex, no loops — one formula resource that counts weekdays between two dates.",
+     "text",
      "/* Formula (Number) — business days from {!startDate} to {!endDate} */\n"
      "(5 * FLOOR(({!endDate} - DATE(1900, 1, 8)) / 7)\n"
      "  + MIN(5, MOD({!endDate} - DATE(1900, 1, 8), 7) + 1))\n"
      "-\n"
      "(5 * FLOOR(({!startDate} - DATE(1900, 1, 8)) / 7)\n"
-     "  + MIN(5, MOD({!startDate} - DATE(1900, 1, 8), 7) + 1))"),
+     "  + MIN(5, MOD({!startDate} - DATE(1900, 1, 8), 7) + 1))",
+     [("Gotchas",
+       "DATE(1900, 1, 8) is a Monday — that anchor is what makes the modulo arithmetic work. Holidays are not weekends: if you need them excluded, that is a custom metadata lookup, not a formula.")]),
     ("LWC: debounce a lightning-input", "lwc-debounce-input",
-     "Stop hammering the server on every keystroke.",
-     ["snippet-lang-js"], "javascript",
+     ["snippet-lang-js", "lwc"], 415,
+     "Stop hammering the server on every keystroke — 300 milliseconds of patience per search box.",
+     "javascript",
      "import { LightningElement } from 'lwc';\n\n"
      "const DELAY = 300;\n\n"
      "export default class ContactSearch extends LightningElement {\n"
@@ -570,65 +928,223 @@ snippets = [
      "            );\n"
      "        }, DELAY);\n"
      "    }\n"
-     "}"),
+     "}",
+     [("Gotchas",
+       "Read event.target.value BEFORE the timeout — the event is recycled by the time the callback runs. Clear the timeout in disconnectedCallback too if the component can unmount mid-typing.")]),
 ]
-for i, (title, slug, excerpt, extra, lang, code) in enumerate(snippets):
-    post(title, slug, ["snippet-col"] + extra, excerpt,
-         [("Gotchas", "The one way people misuse this, and how to not.")],
-         88 + i, lead=[codecard(lang, code)])
+for title, slug, tag_slugs, day, excerpt, lang, code, sections in snippets:
+    post(title, slug, ["snippet"] + tag_slugs, excerpt, sections, day,
+         lead=[codecard(lang, code)])
 
-# PROMPTS — the AI-era toolbox.
+# ════════════════════════════════════════════════════════════════
+# PROMPTS — the AI-era toolbox, each with the full prompt text.
+# ════════════════════════════════════════════════════════════════
 prompts = [
     ("Explain this Flow like a code review", "explain-flow-code-review",
-     "Paste flow metadata, get back risks, misfires and the order-of-execution traps.",
-     ["prompt-for-claude"]),
+     ["prompt-for-claude", "flow"], 420,
+     "Paste flow metadata, get back risks, misfires and the order-of-execution traps — ranked by blast radius.",
+     "You are a senior Salesforce architect reviewing a Flow like a"
+     " pull request.\n\nHere is the flow metadata:\n[PASTE FLOW XML]\n\n"
+     "Review it for:\n1. Order-of-execution traps (same-record updates,"
+     " recursion)\n2. Bulk safety — what happens at 200 records?\n"
+     "3. Fault paths — every element that can fail, and what catches it\n"
+     "4. Anything Apex would do better, and why\n\nBe blunt."
+     " Rank findings by blast radius.",
+     [("Why it works",
+       "Framing it as a pull request review borrows a discipline the model knows deeply. The numbered rubric stops it from writing a summary instead of a review, and 'rank by blast radius' forces prioritisation over completeness.")]),
+    ("Write the test class for this Apex", "write-the-test-class-for-this-apex",
+     ["prompt-for-claude", "apex"], 421,
+     "Not coverage — assertions. This prompt produces tests that would actually catch the bug you will write next month.",
+     "Write an Apex test class for the code below.\n\n[PASTE APEX"
+     " CLASS]\n\nRules:\n- Build ALL data in the test; assume an empty"
+     " org. Use @testSetup.\n- One test method per behaviour, named"
+     " test_<method>_<scenario>_<expected>\n- Include: the happy path, a"
+     " 200-record bulk case, the null/empty case, and the failure path"
+     " with a try/catch asserting the exception\n- Every test method"
+     " must contain at least one Assert with a failure message\n- Do"
+     " NOT use SeeAllData, hardcoded Ids, or Test.isRunningTest"
+     " branches\n\nAfter the code, list the behaviours you could NOT"
+     " test and why.",
+     [("Why it works",
+       "The rules encode the review checklist most teams enforce by hand, so the output arrives pre-reviewed. The closing instruction — list what you could not test — surfaces the seams (callouts, async) that need mocks before you discover it in the deploy.")]),
     ("Draft release notes from a diff", "release-notes-from-diff",
-     "Turns a messy changeset description into human release notes.",
-     ["prompt-for-chatgpt"]),
+     ["prompt-for-chatgpt", "devops"], 422,
+     "Turns a messy changeset description into release notes humans read — grouped, jargon-free, action-flagged.",
+     "Turn this changeset description into release notes humans"
+     " read.\n\n[PASTE DIFF / CHANGESET]\n\nRules:\n- Lead with what the"
+     " USER can now do, never with what changed internally\n- One line"
+     " per change, grouped: New / Improved / Fixed\n- No jargon, no"
+     " ticket numbers, no 'various improvements'\n- If a change needs"
+     " action from admins, flag it with ACTION:",
+     [("Why it works",
+       "Each rule kills one specific failure mode of AI release notes: leading with internals, wall-of-text formatting, jargon, and buried breaking changes. The ACTION: flag turns the output into a checklist.")]),
     ("Agentforce action design rubric", "agentforce-action-rubric",
-     "Score a proposed agent action for safety, scope and rollback before building it.",
-     ["prompt-for-agentforce"]),
-    ("GTM engineer research brief", "gtm-research-brief",
-     "The prompt I use to research a market segment before building anything for it.",
-     ["prompt-for-claude"]),
+     ["prompt-for-agentforce", "ai-agentforce"], 423,
+     "Score a proposed agent action for safety, scope and rollback before anyone builds it.",
+     "Score this proposed Agentforce action before anyone builds"
+     " it.\n\nAction: [DESCRIBE THE ACTION]\n\nScore 1-5 on:\n-"
+     " Blast radius: what is the worst record this can touch?\n-"
+     " Reversibility: can a human undo the result in one step?\n-"
+     " Scope creep: does it do ONE thing?\n- Auditability: will the"
+     " log explain WHY it acted?\n\nBelow 16/20 → redesign before"
+     " building.",
+     [("Why it works",
+       "Four axes with a numeric floor turns 'should we build this?' from a meeting into a score. The blast-radius question in particular forces naming the worst case before the demo, not after it.")]),
 ]
-PROMPT_TEXTS = {
-    "explain-flow-code-review":
-        "You are a senior Salesforce architect reviewing a Flow like a"
-        " pull request.\n\nHere is the flow metadata:\n[PASTE FLOW XML]\n\n"
-        "Review it for:\n1. Order-of-execution traps (same-record updates,"
-        " recursion)\n2. Bulk safety — what happens at 200 records?\n"
-        "3. Fault paths — every element that can fail, and what catches it\n"
-        "4. Anything Apex would do better, and why\n\nBe blunt."
-        " Rank findings by blast radius.",
-    "release-notes-from-diff":
-        "Turn this changeset description into release notes humans"
-        " read.\n\n[PASTE DIFF / CHANGESET]\n\nRules:\n- Lead with what the"
-        " USER can now do, never with what changed internally\n- One line"
-        " per change, grouped: New / Improved / Fixed\n- No jargon, no"
-        " ticket numbers, no 'various improvements'\n- If a change needs"
-        " action from admins, flag it with ACTION:",
-    "agentforce-action-rubric":
-        "Score this proposed Agentforce action before anyone builds"
-        " it.\n\nAction: [DESCRIBE THE ACTION]\n\nScore 1-5 on:\n-"
-        " Blast radius: what is the worst record this can touch?\n-"
-        " Reversibility: can a human undo the result in one step?\n-"
-        " Scope creep: does it do ONE thing?\n- Auditability: will the"
-        " log explain WHY it acted?\n\nBelow 16/20 → redesign before"
-        " building.",
-    "gtm-research-brief":
-        "Act as a GTM engineer researching a market segment before"
-        " building anything for it.\n\nSegment: [SEGMENT]\nProduct:"
-        " [ONE-LINE PITCH]\n\nDeliver:\n1. The 5 jobs-to-be-done this"
-        " segment actually pays for\n2. Where they hang out (communities,"
-        " events, newsletters)\n3. The 3 objections that kill deals, with"
-        " counters\n4. One experiment I can run THIS WEEK for under $100\n\n"
-        "Cite real sources; mark guesses as guesses.",
-}
-for i, (title, slug, excerpt, extra) in enumerate(prompts):
-    post(title, slug, ["prompt-col"] + extra, excerpt,
-         [("Why it works", "What each instruction is doing, so you can bend it.")],
-         92 + i, lead=[codecard("markdown", PROMPT_TEXTS[slug])])
+for title, slug, tag_slugs, day, excerpt, prompt_text, sections in prompts:
+    post(title, slug, ["prompt"] + tag_slugs, excerpt, sections, day,
+         lead=[codecard("markdown", prompt_text)])
+
+# ════════════════════════════════════════════════════════════════
+# RESOURCES — curated links, typed + free/paid for the sidebar.
+# ════════════════════════════════════════════════════════════════
+resources = [
+    ("Advanced Apex Programming", "advanced-apex-programming",
+     ["resource-type-books", "resource-paid", "apex"], 390,
+     "Dan Appleman's book is still the deepest treatment of Apex patterns in print — read it after your first triggers, not before.",
+     [("Why it's here",
+       "Everything else teaches you Apex syntax; this book teaches you Apex judgment — limits as a design constraint, asynchronous patterns, and managed package realities nobody blogs about."),
+      ("Where to start",
+       "Chapter 3 (limits) and chapter 6 (triggers) pay for the book on their own. Skim the rest, return when the topics find you.")]),
+    ("Salesforce Developer Documentation", "salesforce-developer-docs",
+     ["resource-type-articles", "resource-free", "apex"], 391,
+     "The primary source. Learn to read it before any course — including mine.",
+     [("Why it's here",
+       "Every course, video and blog post is an interpretation; the docs are the contract. The Apex Developer Guide and the SOQL reference answer questions precisely that tutorials answer approximately."),
+      ("Where to start",
+       "Bookmark the Apex Reference and the Object Reference. When a method behaves oddly, the reference page's fine print usually predicted it.")]),
+    ("Workbench", "workbench-tool",
+     ["resource-type-tools", "resource-free", "admin"], 392,
+     "The Swiss-army knife for SOQL, metadata and REST exploring — free, ancient, and still unmatched for quick answers.",
+     [("Why it's here",
+       "Query any object, describe any metadata, call any REST endpoint, all from a browser with your existing session. For 'what does the API actually return here?' nothing is faster."),
+      ("Where to start",
+       "Queries → SOQL Query for data questions; Info → Standard & Custom Objects to read an object's true shape, defaults and all.")]),
+    ("Apex Hours", "apex-hours",
+     ["resource-type-videos", "resource-free", "apex"], 393,
+     "Community-run sessions on everything platform — the archive alone is a curriculum.",
+     [("Why it's here",
+       "Practitioners presenting to practitioners, for free, for years. The sessions on asynchronous Apex and integration architecture are better than most paid courses on the same topics."),
+      ("Where to start",
+       "Search the archive for the topic currently hurting you; watch the newest session on it first — the platform moves, and so do the recommendations.")]),
+    ("Trailhead", "trailhead",
+     ["resource-type-courses", "resource-free", "admin"], 394,
+     "Salesforce's own hands-on learning — badges are not skills, but the practice orgs and guided projects are genuinely good.",
+     [("Why it's here",
+       "The hands-on challenges verify your work in a real org, which beats watching videos by a mile. Use it for breadth; use projects of your own for depth."),
+      ("Where to start",
+       "The Admin Beginner and Developer Beginner trails pair well with the courses here — do the trail's challenges in the same org you use for my lessons.")]),
+    ("Good Day, Sir!", "good-day-sir",
+     ["resource-type-podcasts", "resource-free", "careers"], 395,
+     "The podcast that keeps the ecosystem honest — opinionated, funny, technical, and unafraid of the word 'no'.",
+     [("Why it's here",
+       "Two developers who say what consultants will not: which features are ready, which acquisitions matter, and when the emperor's new cloud has no clothes. Listening is how you calibrate the hype."),
+      ("Where to start",
+       "Any release-week episode — their release-notes reactions are the fastest honest summary you will find anywhere.")]),
+]
+for title, slug, tag_slugs, day, excerpt, sections in resources:
+    post(title, slug, ["resource"] + tag_slugs, excerpt, sections, day)
+
+# ════════════════════════════════════════════════════════════════
+# SHOP — digital assets; the price is the tag's DESCRIPTION.
+# ════════════════════════════════════════════════════════════════
+shop_items = [
+    ("Flow Error-Handling Playbook (ebook)", "flow-error-handling-playbook",
+     ["shop-price-19", "flow"], 400,
+     "Forty pages of fault paths, retry patterns and the alerts worth waking up for — the missing chapter of every Flow course.",
+     [("What you get",
+       "A 40-page PDF: the central error-logging subflow (with install steps), fault-path patterns per element type, alert routing that respects on-call hours, and the postmortem template we use for automation incidents."),
+      ("Who it's for",
+       "Teams running ten or more record-triggered flows in production. If you have three flows and one admin, the free blog post covers you — genuinely, save the money.")]),
+    ("Admin's Release Readiness Template", "admin-release-readiness-template",
+     ["shop-free", "admin"], 401,
+     "The Notion + Sheets template I use to digest every Salesforce release in about an hour — retirements first, updates second, hype never.",
+     [("What you get",
+       "A Notion board with the reading-order checklist, a Sheets tracker for release updates with owner and deadline columns, and the sandbox test script for preview weekend."),
+      ("Who it's for",
+       "Anyone who owns an org through three releases a year. It is free because everyone should have a system for this — pay with a newsletter subscription if it helps.")]),
+    ("Org Health Check Notes", "org-health-check-notes",
+     ["shop-price-9", "admin"], 402,
+     "My raw working notes from twenty org audits — what to look at, in what order, and the numbers that usually mean trouble.",
+     [("What you get",
+       "A 15-page working document: the query pack (unused fields, silent automations, permission sprawl), the interview questions for the team, and thresholds with the reasoning behind each one."),
+      ("Who it's for",
+       "Consultants and new-in-seat admins inheriting an org. It is notes, not a book — you are paying for the order of operations, not the prose.")]),
+    ("Namaste Salesforce Ghost Theme", "namaste-salesforce-ghost-theme",
+     ["shop-price-29", "devops"], 403,
+     "This very site's theme — courses with a lesson player, training trails, video library, snippets, the lot.",
+     [("What you get",
+       "The theme zip plus the routes file, a setup guide covering the tag conventions that drive everything, and the demo-content generator so you start from a working site."),
+      ("Who it's for",
+       "Anyone building a learning site on Ghost. Requires comfort editing routes.yaml and Ghost's navigation settings — the setup guide assumes no code beyond that.")]),
+]
+for title, slug, tag_slugs, day, excerpt, sections in shop_items:
+    post(title, slug, ["shop"] + tag_slugs, excerpt, sections, day)
+
+# ════════════════════════════════════════════════════════════════
+# PROJECTS — GitHub-style repos at /projects/. Topic tag FIRST
+# (the card's topic chip is primary_tag); language and stars ride
+# as internal tag DESCRIPTIONS.
+# ════════════════════════════════════════════════════════════════
+def stars_tag(n):
+    slug = f"project-stars-{n}"
+    if slug not in tag_ids:
+        tag(f"#{slug}", slug, str(n))
+    return slug
+
+projects = [
+    ("sf-trigger-framework", ["apex"], "project-lang-apex", 312, 330, True,
+     "Minimal trigger framework for Salesforce: one trigger per object, handler interface, per-object bypass, recursion guard. No dependencies.",
+     [("Why another trigger framework",
+       "Most frameworks solve org-scale problems with library-scale complexity. This one is four classes: a handler interface, a dispatcher, a bypass registry, and a recursion guard keyed on record Ids — read all of it in ten minutes."),
+      ("Install",
+       "Deploy the four classes, create one trigger per object that calls TriggerDispatcher.run(new AccountTriggerHandler()), and delete your old triggers one at a time as their logic moves into handlers."),
+      ("Design notes",
+       "The recursion guard tracks processed Ids per event, not a global boolean — batch two of a 400-record update still runs. Bypass is per-object and logged, because silent bypasses become permanent bypasses.")]),
+    ("lwc-datatable-plus", ["lwc"], "project-lang-javascript", 204, 340, False,
+     "lightning-datatable with the missing pieces: server-side pagination, column filters, saved views and CSV export — as one drop-in component.",
+     [("What it adds",
+       "The standard datatable stops at sorting. This wraps it with cursor-based pagination against your Apex, per-column filter inputs, view definitions users can save, and a client-side CSV export that respects the current filters."),
+      ("Install",
+       "Deploy the component and its Apex controller interface, implement one method returning a page of rows, and replace your lightning-datatable tag. The README walks a working Account table in fifteen minutes."),
+      ("Design notes",
+       "Pagination is cursor-based (keyset on Id) rather than OFFSET, so page 40 of a million rows costs the same as page one. Saved views serialise to a custom object, one record per user per table.")]),
+    ("apex-test-factory", ["apex"], "project-lang-apex", 128, 350, False,
+     "Builder-pattern test data factory for Apex: sensible defaults, relationship wiring, bulk builders — tests that read like specifications.",
+     [("Why",
+       "Test setup is where Apex tests go to die: forty lines of record building before one line of behaviour. The factory gives every object a builder with working defaults, so a test states only what it cares about."),
+      ("Usage",
+       "Account acc = TF.account().withIndustry('Banking').insertRecord(); Contact c = TF.contact(acc).build(); — bulk variants (.list(200)) cover the governor-limit cases in one call."),
+      ("Design notes",
+       "Defaults live in one class per object, so an org's required-field quirks are handled exactly once. Nothing inserts unless you ask — pure-build tests stay database-free and fast.")]),
+    ("flow-error-handler", ["flow"], "project-lang-xml", 86, 360, False,
+     "Drop-in error handling for Flow: a logging subflow, a platform event, and a notifier — every fault path in your org pointed at one place.",
+     [("What it is",
+       "An unmanaged package: the FlowError__e platform event, a logging subflow you wire every fault connector to, a subscriber flow that writes Flow_Error_Log__c records, and a notifier with quiet hours."),
+      ("Install",
+       "Deploy the package, then drag each existing fault connector to the Log Flow Error subflow — the README includes the audit query that lists every unhandled fault path in the org."),
+      ("Design notes",
+       "Logging goes through a platform event so the log survives the transaction rollback that just destroyed everything else — the whole reason most homegrown error logging silently loses the errors that matter.")]),
+    ("sfdx-org-snapshot", ["devops"], "project-lang-python", 57, 370, False,
+     "CLI that snapshots an org's metadata and sample data into versioned JSON — diff two snapshots to see what actually changed between refreshes.",
+     [("What it does",
+       "sfdx-org-snapshot pull captures metadata plus a configurable sample of records per object into a content-addressed JSON tree; diff renders what changed between any two snapshots as a readable report."),
+      ("Install",
+       "pipx install sfdx-org-snapshot, authenticate with your existing sf CLI session, and add the pull to your post-refresh script. Snapshots are plain files — commit them, diff them, grep them."),
+      ("Design notes",
+       "Records are sampled deterministically (newest N per object, IDs redacted on request) so two pulls of an unchanged org produce identical trees — which is what makes the diffs mean something.")]),
+    ("namaste-salesforce-theme", ["devops"], "project-lang-javascript", 41, 380, False,
+     "The Ghost theme powering this site: courses with a lesson player, tag-driven training modules, video chapters, snippets, prompts and a projects shelf.",
+     [("What it is",
+       "A Ghost theme where one internal tag decides a post's collection, URL and layout — courses nest lessons through a single slug equality, training modules are public tags, and a timestamp table becomes video chapters."),
+      ("Install",
+       "Upload the theme zip, mirror routes.yaml into Ghost's settings, import the demo content, run the thumbnail generator. The README's conventions section is the part to actually read."),
+      ("Design notes",
+       "Handlebars and CSS carry everything they can — prev/next inside a course is in=\"primary_tag\", the mobile drawer is a checkbox, the changelog's two views are radio inputs. JavaScript is the last resort, four small files.")]),
+]
+for title, topic, lang, stars, day, featured, excerpt, sections in projects:
+    post(title, title, topic + ["project", lang, stars_tag(stars)],
+         excerpt, sections, day, featured=featured)
 
 # #now — a few in-flight things surface on /now (tag any post with
 # #now in Admin and it appears there; untag when it ships).
@@ -638,62 +1154,71 @@ def add_now(slug):
             posts_tags.append({"id": oid(), "post_id": p["id"],
                                "tag_id": tag_ids["now"], "sort_order": 99})
             return
-add_now("state-of-salesforce-careers-2026")
-add_now("watch-a-deployment-end-to-end")
-add_now("gtm-research-brief")
+add_now("set-up-an-agentforce-agent-end-to-end")
+add_now("your-sandbox-strategy-is-why-deploys-hurt")
+add_now("lwc-datatable-plus")
 
-# EDITOR-CONTROLLED PAGES — everything the routes and the More
-# dropdown point at. All plain pages, all editable in Ghost Admin.
+# ════════════════════════════════════════════════════════════════
+# EDITOR-CONTROLLED PAGES — every data: page.* the routes
+# reference, plus the pages navigation points at. All editable
+# in Ghost Admin.
+# ════════════════════════════════════════════════════════════════
 page("Namaste Salesforce", "home",
-     "Hands-on Salesforce courses, training and writing — from your first login to production.",
-     [("About this page", "Supplies the homepage hero copy and metadata via data: page.home.")], 60)
+     "Hands-on Salesforce courses, training and writing by Swarnil Singhai — from your first login to production.",
+     [("About this page", "Supplies the homepage hero copy and metadata via data: page.home.")], 500)
 page("The Namaste Blog", "blog",
      "Notes from the ecosystem: releases that matter, decisions explained, careers without the hype.",
-     [("About this page", "Supplies the blog hero copy via data: page.blog.")], 61)
+     [("About this page", "Supplies the blog hero copy via data: page.blog.")], 500)
 page("Courses", "courses",
      "Structured, hands-on tracks. Every course ends with something working in your own org.",
-     [("About this page", "Supplies the catalogue hero copy via data: page.courses.")], 62)
+     [("About this page", "Supplies the catalogue hero copy via data: page.courses.")], 500)
 page("Video Library", "videos",
-     "Standalone walkthroughs — watch one thing get built, start to finish.",
-     [("About this page", "Supplies the video library hero via data: page.videos.")], 63)
+     "Standalone walkthroughs — watch one thing get built, start to finish, mistakes left in.",
+     [("About this page", "Supplies the video library hero via data: page.videos.")], 500)
 page("The Weekly Namaste", "newsletter",
-     "One email a week: what changed, what matters, what to try. No spam, ever.",
-     [("About this page", "Supplies the newsletter hero via data: page.newsletter.")], 64)
+     "One email every Sunday: what changed, what matters, what to try. No sponsors, no filler.",
+     [("About this page", "Supplies the newsletter hero via data: page.newsletter.")], 500)
 page("Changelog", "changelog",
      "What shipped on this site, newest first.",
-     [("About this page", "Supplies the changelog hero via data: page.changelog.")], 65)
+     [("About this page", "Supplies the changelog hero via data: page.changelog.")], 500)
+page("Resources", "resources",
+     "Everything worth your time in one place — books, tools, videos and courses, each with an honest reason it made the list.",
+     [("About this page", "Supplies the resources hero via data: page.resources.")], 500)
+page("Shop", "shop",
+     "Digital things I made and use — playbooks, templates, working notes and this theme.",
+     [("About this page", "Supplies the shop hero via data: page.shop.")], 500)
+page("Snippets", "snippets",
+     "Small pieces of code I reach for again and again — copy, paste, read the gotcha first.",
+     [("About this page", "Supplies the snippets hero via data: page.snippets.")], 500)
+page("Prompts", "prompts",
+     "Prompts I actually reuse — tested on real platform work, with notes on why each line is there.",
+     [("About this page", "Supplies the prompts hero via data: page.prompts.")], 500)
+page("Projects", "projects",
+     "Open-source work: frameworks, components and tooling that run in real orgs — everything here is installable today.",
+     [("About this page", "Supplies the projects hero via data: page.projects.")], 500)
+
 page("About", "about",
      "Who makes this, and why it is free.",
-     [("The short version", "Namaste Salesforce is a hands-on learning platform for the Salesforce ecosystem, built and written by practitioners."),
-      ("The longer version", "We believe the best way to learn the platform is to build on it from day one — every course, module and video here follows that rule.")], 66)
+     [("The short version",
+       "Namaste Salesforce is a hands-on Salesforce learning platform built and written by Swarnil Singhai — 7+ years in IT, learning in public, building first and sharing how."),
+      ("The longer version",
+       "The best way to learn this platform is to build on it from day one. Every course, module and video here follows that rule: you leave each one having changed something real in your own org.")], 502)
 page("Contact", "contact",
-     "Questions, corrections, ideas — we read everything.",
+     "Questions, corrections, ideas — I read everything.",
      [("Email", "Write to hello@namastesalesforce.com and expect a reply within two working days."),
-      ("Corrections", "Spotted something wrong in a lesson? Tell us which page and what you expected — fixes ship weekly.")], 67)
-page("Resources", "resources",
-     "Everything worth your time in one place — books, tools, videos and courses.",
-     [("About this page", "Supplies the resources hero via data: page.resources.")], 96)
-page("Shop", "shop",
-     "Digital things I made and use — ebooks, notes, themes and kits.",
-     [("About this page", "Supplies the shop hero via data: page.shop.")], 97)
-page("Snippets", "snippets",
-     "Small pieces of code I reach for again and again.",
-     [("About this page", "Supplies the snippets hero via data: page.snippets.")], 98)
-page("Prompts", "prompts",
-     "Prompts I actually reuse — tested on real work.",
-     [("About this page", "Supplies the prompts hero via data: page.prompts.")], 99)
+      ("Corrections", "Spotted something wrong in a lesson? Tell me which page and what you expected — fixes ship weekly.")], 503)
 page("Now", "now",
      "What I'm actually working on right now.",
-     [("How this page works", "Anything on the site tagged #now shows up here automatically, labelled by what it is — and leaves the moment it ships.")], 100)
+     [("How this page works", "Anything on the site tagged #now shows up here automatically, labelled by what it is — and leaves the moment it ships.")], 504)
 page("Products I Use", "products-i-use",
      "Every product, tool and service I actually use to build, teach and ship.",
      [("Hardware", "The desk, the mic, the camera — what I record and build on, with one honest line each."),
       ("Software", "Editors, terminals, design tools and the automations between them."),
-      ("Salesforce tooling", "The extensions, CLIs and inspectors open in every working session.")], 101)
+      ("Salesforce tooling", "The extensions, CLIs and inspectors open in every working session.")], 505)
 page("My Schedule", "my-schedule",
      "When I go live, publish and send — so you know exactly when to look.",
      [("Recurring", "The weekly rhythm above is the promise; changes land in the newsletter first."),
-      ("One-off sessions", "Special builds and live deep-dives get announced a week ahead.")], 102,
+      ("One-off sessions", "Special builds and live deep-dives get announced a week ahead.")], 506,
      lead=[{"type": "html", "version": 1, "html":
             "<table><thead><tr><th>Day</th><th>Time (IST)</th><th>What</th><th>Where</th></tr></thead>"
             "<tbody>"
@@ -706,36 +1231,36 @@ page("Terms & Conditions", "terms-and-conditions",
      "The short, readable version of what you agree to by using this site.",
      [("Use of content", "Courses and articles are free for personal learning. Republishing requires written permission."),
       ("No warranty", "Content is provided as-is; verify anything critical against official Salesforce documentation."),
-      ("Changes", "These terms may change; the date at the top of this page is authoritative.")], 68)
+      ("Changes", "These terms may change; the date at the top of this page is authoritative.")], 507)
 page("Privacy", "privacy",
      "What we collect (very little), and what we do with it (very little).",
      [("What we store", "Your email address if you subscribe, and standard server logs. Nothing else."),
       ("What we never do", "Sell, rent or share your address. Unsubscribing removes it entirely."),
-      ("Analytics", "Aggregate page counts only — no cross-site tracking, no fingerprinting.")], 69)
+      ("Analytics", "Aggregate page counts only — no cross-site tracking, no fingerprinting.")], 508)
 page("Sign the guestbook", "guestbook",
      "Learners from everywhere leave a line here. Add yours.",
      [("Why a guestbook", "This site is read quietly by a lot of people. The guestbook is where the quiet part ends."),
-      ("What to write", "Where are you learning from? What are you building? One line is plenty.")], 71)
+      ("What to write", "Where are you learning from? What are you building? One line is plenty.")], 509)
 page("Welcome to Namaste Salesforce", "welcome",
      "Your account is ready. Here are the three best ways to start.",
-     [("You made it", "Take a breath — you are in. The cards below are the three best first steps.")], 72)
+     [("You made it", "Take a breath — you are in. The cards below are the three best first steps.")], 510)
 page("Sponsor us", "sponsor",
      "Put your product in front of people building on Salesforce every week.",
      [("What you get", "A card across the site, a mention in the newsletter, and our genuine thanks."),
       ("What we will not run", "Anything we would not use ourselves. Sponsorship never changes editorial content."),
-      ("Get in touch", "Email sponsor@namastesalesforce.com with what you are building.")], 70)
+      ("Get in touch", "Email sponsor@namastesalesforce.com with what you are building.")], 511)
 
+# ════════════════════════════════════════════════════════════════
 # THE STYLE GUIDE — /style-guide/: one page exercising every
 # Koenig card the editor can produce, in the order an author
 # meets them. Images reuse the generated thumbs (real assets).
+# ════════════════════════════════════════════════════════════════
 def sg_text(t, fmt=0):
     n = text(t); n["format"] = fmt; return n
 
 def sg_quote(t, kind="quote"):
     return {"children": [text(t)], "direction": "ltr", "format": "",
             "indent": 0, "type": kind, "version": 1}
-
-THUMB = "__GHOST_URL__/assets/images/thumbs/{}.svg"
 
 def sg_image(slug, caption, width="regular"):
     return {"type": "image", "version": 1, "src": THUMB.format(slug),
@@ -758,14 +1283,14 @@ style_guide_nodes = [
     sg_quote("The alternate quote stands centered, for the line the whole piece hangs on.", "aside"),
 
     h2("Images"),
-    sg_image("apex-fundamentals", "A regular image sits inside the measure."),
-    sg_image("data-modeling-deep-dive", "A wide image steps out of the column.", "wide"),
-    sg_image("integration-patterns", "A full-bleed image owns the viewport.", "full"),
+    sg_image("admin-foundations", "A regular image sits inside the measure."),
+    sg_image("apex-beginners", "A wide image steps out of the column.", "wide"),
+    sg_image("flow-mastery", "A full-bleed image owns the viewport.", "full"),
     {"type": "gallery", "version": 1, "caption": "A gallery packs a row.",
      "images": [
-        {"row": 0, "fileName": "flow-automation-masterclass.svg", "src": THUMB.format("flow-automation-masterclass"), "width": 1200, "height": 675},
-        {"row": 0, "fileName": "reports-dashboards-crash-course.svg", "src": THUMB.format("reports-dashboards-crash-course"), "width": 1200, "height": 675},
-        {"row": 0, "fileName": "salesforce-in-five-minutes.svg", "src": THUMB.format("salesforce-in-five-minutes"), "width": 1200, "height": 675},
+        {"row": 0, "fileName": "sf-trigger-framework.svg", "src": THUMB.format("sf-trigger-framework"), "width": 1200, "height": 675},
+        {"row": 0, "fileName": "build-a-record-triggered-flow-in-20-minutes.svg", "src": THUMB.format("build-a-record-triggered-flow-in-20-minutes"), "width": 1200, "height": 675},
+        {"row": 0, "fileName": "namaste-salesforce-is-live.svg", "src": THUMB.format("namaste-salesforce-is-live"), "width": 1200, "height": 675},
      ]},
 
     h2("Callouts"),
@@ -789,8 +1314,9 @@ style_guide_nodes = [
 
     h2("Media"),
     embed("jNQXAC9IVRw", "An embed card — paste a URL, get a player."),
-    {"type": "codeblock", "version": 1, "language": "apex", "caption": "A code card with a language.",
-     "code": "public with sharing class Greeter {\n    public static String greet(String name) {\n        return 'Namaste, ' + name + '!';\n    }\n}"},
+    codecard("apex",
+             "public with sharing class Greeter {\n    public static String greet(String name) {\n        return 'Namaste, ' + name + '!';\n    }\n}",
+             "A code card with a language."),
     {"type": "markdown", "version": 1, "markdown":
      "| Helper | Does |\n|---|---|\n| `{{#get}}` | Queries the API |\n| `{{#match}}` | Compares values |\n| `{{#foreach}}` | Iterates with @first/@last |"},
     {"type": "html", "version": 1, "html":
@@ -806,49 +1332,44 @@ style_guide_nodes = [
     {"type": "product", "version": 1, "productButtonEnabled": True,
      "productRatingEnabled": True, "productStarRating": 5,
      "productButton": "Start learning", "productUrl": "__GHOST_URL__/courses/",
-     "productTitle": "Flow Automation Masterclass",
+     "productTitle": "Salesforce Admin Foundations",
      "productDescription": "The product card sells one thing: image, stars, pitch, button.",
-     "productImageSrc": THUMB.format("flow-automation-masterclass"),
+     "productImageSrc": THUMB.format("admin-foundations"),
      "productImageWidth": 1200, "productImageHeight": 675},
     {"type": "horizontalrule", "version": 1},
     para("That is the whole vocabulary. If a card renders oddly, fix the theme — never the content."),
 ]
 
-sg_id = oid(); sg_when = ts(74)
+sg_id = oid(); sg_when = ts(512)
 posts.append({
     "id": sg_id, "title": "Style Guide", "slug": "style-guide",
     "lexical": lexical(*style_guide_nodes),
-    "feature_image": None, "featured": 0,
+    "feature_image": THUMB.format("style-guide"), "featured": 0,
     "type": "page", "status": "published", "visibility": "public",
     "custom_excerpt": "Every editor card this theme styles, on one page.",
     "created_at": sg_when, "updated_at": sg_when, "published_at": sg_when,
 })
 
 # ── settings: navigation with the dropdown convention ───────────
+# +Parent opens a pure-CSS dropdown; the -Child run after it are
+# its items; the first unprefixed label ends the run.
 settings = [
     {"key": "navigation", "value": json.dumps([
         {"label": "Home", "url": "/"},
         {"label": "Courses", "url": "/courses/"},
         {"label": "Training", "url": "/training/"},
-        {"label": "Videos", "url": "/videos/"},
-        {"label": "Blog", "url": "/blog/"},
         {"label": "+Library", "url": "/resources/"},
-        {"label": "-Resources", "url": "/resources/"},
+        {"label": "-Videos", "url": "/videos/"},
         {"label": "-Snippets", "url": "/snippets/"},
         {"label": "-Prompts", "url": "/prompts/"},
-        {"label": "-Shop", "url": "/shop/"},
+        {"label": "-Resources", "url": "/resources/"},
+        {"label": "-Projects", "url": "/projects/"},
+        {"label": "Blog", "url": "/blog/"},
+        {"label": "+More", "url": "/sitemap/"},
         {"label": "-Newsletter", "url": "/newsletter/"},
         {"label": "-Changelog", "url": "/changelog/"},
-        {"label": "+More", "url": "/sitemap/"},
-        {"label": "-Now", "url": "/now/"},
-        {"label": "-My Schedule", "url": "/my-schedule/"},
-        {"label": "-Products I Use", "url": "/products-i-use/"},
-        {"label": "-Sponsor us", "url": "/sponsor/"},
-        {"label": "-Guestbook", "url": "/guestbook/"},
-        {"label": "-Contact", "url": "/contact/"},
-        {"label": "-Sitemap", "url": "/sitemap/"},
-        {"label": "-Terms & Conditions", "url": "/terms-and-conditions/"},
-        {"label": "-Privacy", "url": "/privacy/"},
+        {"label": "-Shop", "url": "/shop/"},
+        {"label": "-About", "url": "/about/"},
     ])},
     {"key": "secondary_navigation", "value": json.dumps([
         {"label": "About", "url": "/about/"},
@@ -861,11 +1382,13 @@ settings = [
 ]
 
 doc = {"db": [{
-    "meta": {"exported_on": int(BASE.timestamp() * 1000), "version": "6.0.0"},
+    "meta": {"exported_on": int(START.timestamp() * 1000), "version": "6.0.0"},
     "data": {"posts": posts, "tags": tags, "posts_tags": posts_tags, "settings": settings},
 }]}
 
 with open(__file__.replace('build-import.py', 'import.json'), 'w') as f:
     json.dump(doc, f, indent=2)
 
-print(f"import.json: {len(posts)} posts, {len(tags)} tags, {len(posts_tags)} mappings")
+n_posts = sum(1 for p in posts if p["type"] == "post")
+n_pages = sum(1 for p in posts if p["type"] == "page")
+print(f"import.json: {n_posts} posts + {n_pages} pages, {len(tags)} tags, {len(posts_tags)} mappings")
