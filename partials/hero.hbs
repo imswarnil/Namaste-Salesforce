@@ -115,20 +115,25 @@ along as the accessible label. --}}
         <div class="hero-stack">
             <span class="hero-stack-spine" aria-hidden="true"></span>
 
-            {{!-- The hub: the publication itself, square in the
-            middle, radar rings pulsing — the screens orbit it. --}}
+            {{!-- The hub: the PERSON. The instructor's photo in the
+            middle, radar rings pulsing, a couple of tiny UI bits
+            pinned to it — every screen orbits the human. --}}
             <span class="hero-hub" aria-hidden="true">
                 <i class="hero-hub-ring"></i>
                 <i class="hero-hub-ring r2"></i>
-                <span class="hero-hub-tile">
-                    {{#if @site.icon}}
-                        <img src="{{img_url @site.icon size="s"}}" alt="" loading="eager" />
-                    {{else if @site.logo}}
-                        <img class="is-logo" src="{{@site.logo}}" alt="" loading="eager" />
-                    {{else}}
-                        {{> "icons/cloud"}}
-                    {{/if}}
+                <span class="hero-hub-tile is-person">
+                    {{#get "authors" limit="1" as |h|}}
+                        {{#if h.[0].profile_image}}
+                            <img src="{{img_url h.[0].profile_image size="m"}}" alt="" loading="eager" fetchpriority="high" />
+                        {{else if @site.icon}}
+                            <img src="{{img_url @site.icon size="s"}}" alt="" loading="eager" />
+                        {{else}}
+                            {{> "icons/avatar"}}
+                        {{/if}}
+                    {{/get}}
                 </span>
+                <span class="hero-bit is-notif"><i></i>{{> "icons/bell"}}</span>
+                <span class="hero-bit is-verified">{{> "icons/check-circle"}} {{t "building live"}}</span>
             </span>
 
             {{!-- 1 · course = app window --}}
@@ -225,7 +230,57 @@ along as the accessible label. --}}
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 6 · changelog = the shipped badge --}}
+            {{!-- 6 · snippet = a mini code window --}}
+            {{#get "posts" filter="tag:hash-snippet-col" limit="1" as |snip|}}
+                {{#foreach snip}}
+                    <a class="hero-shot is-snip" href="{{url}}" aria-label="{{title}}">
+                        <span class="hero-snip-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+                        <span class="hero-snip-code" aria-hidden="true">
+                            <b class="vt-k" style="width: 34%;"></b>
+                            <b class="vt-s" style="width: 58%;"></b>
+                            <b style="width: 44%;"></b>
+                        </span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+
+            {{!-- 7 · prompt = a chat exchange --}}
+            {{#get "posts" filter="tag:hash-prompt-col" limit="1" as |pmt|}}
+                {{#foreach pmt}}
+                    <a class="hero-shot is-chat" href="{{url}}" aria-label="{{title}}">
+                        <span class="hero-chat-you" aria-hidden="true"><span class="sk sk-thin sk-w80"></span></span>
+                        <span class="hero-chat-ai" aria-hidden="true">{{> "icons/sparkles"}}<i></i><i></i><i></i></span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+
+            {{!-- 8 · resource = a bookmark chip --}}
+            {{#get "posts" filter="tag:hash-resource-col" limit="1" as |res|}}
+                {{#foreach res}}
+                    <a class="hero-shot is-res" href="{{url}}" aria-label="{{title}}">
+                        {{> "icons/bookmark"}}
+                        <span class="sk sk-thin" style="width: 7rem;" aria-hidden="true"></span>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+
+            {{!-- 9 · shop = a price tag --}}
+            {{#get "posts" filter="tag:hash-shop-col" include="tags" limit="1" as |item|}}
+                {{#foreach item}}
+                    <a class="hero-shot is-shop" href="{{url}}" aria-label="{{title}}">
+                        {{> "icons/gift"}}
+                        <span class="sk sk-thin" style="width: 5.6rem;" aria-hidden="true"></span>
+                        {{#foreach tags visibility="internal"}}
+                            {{#match slug "~^" "hash-shop-price-"}}
+                                {{#if description}}<b>{{description}}</b>{{/if}}
+                            {{/match}}
+                            {{#match slug "hash-shop-free"}}<b>{{t "Free"}}</b>{{/match}}
+                        {{/foreach}}
+                    </a>
+                {{/foreach}}
+            {{/get}}
+
+            {{!-- 10 · changelog = the shipped badge --}}
             {{#get "posts" filter="tag:[hash-changelog-col,hash-feed-col]" include="tags" limit="1" as |chg|}}
                 {{#foreach chg}}
                     <a class="hero-shot is-ship" href="{{url}}" aria-label="{{title}}">
