@@ -49,7 +49,13 @@ mobile drawer is CSS. --}}
             {{#if @site.members_enabled}}
                 {{#unless @member}}
                     <a class="icon-btn member-icon" href="{{@site.url}}/signin/" aria-label="{{t "Sign in"}}">
-                        {{> "icons/avatar"}}
+                        {{#get "authors" limit="1" as |h|}}
+                            {{#if h.[0].profile_image}}
+                                <img class="member-icon-img" src="{{img_url h.[0].profile_image size="xs"}}" alt="" loading="lazy" />
+                            {{else}}
+                                {{> "icons/avatar"}}
+                            {{/if}}
+                        {{/get}}
                     </a>
                     <a class="btn btn-sm site-head-cta" href="{{@site.url}}/signup/">{{> "icons/star"}} {{t "Become a member"}}</a>
                 {{else}}

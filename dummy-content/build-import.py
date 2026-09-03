@@ -506,22 +506,76 @@ for i, (title, slug, excerpt, extra) in enumerate(shop_items):
           ("Who it's for", "And who should NOT buy it — honesty keeps refunds at zero.")],
          84 + i)
 
-# SNIPPETS — small reusable code, language on the chip.
+# SNIPPETS — small reusable code, language on the chip, the REAL
+# code in a code card (snippets.js dresses it as an editor window
+# with syntax colours and a copy button).
+def codecard(lang, code):
+    return {"type": "codeblock", "version": 1, "language": lang, "code": code}
+
 snippets = [
     ("Bulk-safe trigger handler skeleton", "bulk-safe-trigger-handler",
-     "The five-method handler shape that survives 200-record batches.", ["snippet-lang-apex"]),
+     "The five-method handler shape that survives 200-record batches.",
+     ["snippet-lang-apex"], "apex",
+     "public with sharing class AccountTriggerHandler {\n"
+     "    public static Boolean bypass = false;\n\n"
+     "    public static void beforeInsert(List<Account> records) {\n"
+     "        if (bypass) return;\n"
+     "        for (Account acc : records) {\n"
+     "            // never SOQL/DML inside this loop\n"
+     "            acc.Rating = acc.AnnualRevenue > 1000000 ? 'Hot' : 'Warm';\n"
+     "        }\n"
+     "    }\n\n"
+     "    public static void afterUpdate(Map<Id, Account> oldMap,\n"
+     "                                   Map<Id, Account> newMap) {\n"
+     "        List<Account> changed = new List<Account>();\n"
+     "        for (Account acc : newMap.values()) {\n"
+     "            if (acc.OwnerId != oldMap.get(acc.Id).OwnerId) {\n"
+     "                changed.add(acc);\n"
+     "            }\n"
+     "        }\n"
+     "        if (!changed.isEmpty()) OwnerSync.enqueue(changed);\n"
+     "    }\n"
+     "}"),
     ("SOQL: records modified since yesterday", "soql-modified-since-yesterday",
-     "Relative date literals beat hand-built timestamps every time.", ["snippet-lang-soql"]),
+     "Relative date literals beat hand-built timestamps every time.",
+     ["snippet-lang-soql"], "soql",
+     "SELECT Id, Name, LastModifiedBy.Name, LastModifiedDate\n"
+     "FROM Account\n"
+     "WHERE LastModifiedDate = YESTERDAY\n"
+     "   OR LastModifiedDate = TODAY\n"
+     "ORDER BY LastModifiedDate DESC\n"
+     "LIMIT 200"),
     ("Flow formula: business days between dates", "flow-business-days-formula",
-     "No Apex, no loops — one formula resource.", ["snippet-lang-flow"]),
+     "No Apex, no loops — one formula resource.",
+     ["snippet-lang-flow"], "flow",
+     "/* Formula (Number) — business days from {!startDate} to {!endDate} */\n"
+     "(5 * FLOOR(({!endDate} - DATE(1900, 1, 8)) / 7)\n"
+     "  + MIN(5, MOD({!endDate} - DATE(1900, 1, 8), 7) + 1))\n"
+     "-\n"
+     "(5 * FLOOR(({!startDate} - DATE(1900, 1, 8)) / 7)\n"
+     "  + MIN(5, MOD({!startDate} - DATE(1900, 1, 8), 7) + 1))"),
     ("LWC: debounce a lightning-input", "lwc-debounce-input",
-     "Stop hammering the server on every keystroke.", ["snippet-lang-js"]),
+     "Stop hammering the server on every keystroke.",
+     ["snippet-lang-js"], "javascript",
+     "import { LightningElement } from 'lwc';\n\n"
+     "const DELAY = 300;\n\n"
+     "export default class ContactSearch extends LightningElement {\n"
+     "    delayTimeout;\n\n"
+     "    handleKeyChange(event) {\n"
+     "        window.clearTimeout(this.delayTimeout);\n"
+     "        const searchKey = event.target.value;\n"
+     "        this.delayTimeout = window.setTimeout(() => {\n"
+     "            this.dispatchEvent(\n"
+     "                new CustomEvent('search', { detail: { searchKey } })\n"
+     "            );\n"
+     "        }, DELAY);\n"
+     "    }\n"
+     "}"),
 ]
-for i, (title, slug, excerpt, extra) in enumerate(snippets):
+for i, (title, slug, excerpt, extra, lang, code) in enumerate(snippets):
     post(title, slug, ["snippet-col"] + extra, excerpt,
-         [("The snippet", "The code itself lives here in a code card — copy, paste, adapt."),
-          ("Gotchas", "The one way people misuse this, and how to not.")],
-         88 + i)
+         [("Gotchas", "The one way people misuse this, and how to not.")],
+         88 + i, lead=[codecard(lang, code)])
 
 # PROMPTS — the AI-era toolbox.
 prompts = [
@@ -538,11 +592,43 @@ prompts = [
      "The prompt I use to research a market segment before building anything for it.",
      ["prompt-for-claude"]),
 ]
+PROMPT_TEXTS = {
+    "explain-flow-code-review":
+        "You are a senior Salesforce architect reviewing a Flow like a"
+        " pull request.\n\nHere is the flow metadata:\n[PASTE FLOW XML]\n\n"
+        "Review it for:\n1. Order-of-execution traps (same-record updates,"
+        " recursion)\n2. Bulk safety — what happens at 200 records?\n"
+        "3. Fault paths — every element that can fail, and what catches it\n"
+        "4. Anything Apex would do better, and why\n\nBe blunt."
+        " Rank findings by blast radius.",
+    "release-notes-from-diff":
+        "Turn this changeset description into release notes humans"
+        " read.\n\n[PASTE DIFF / CHANGESET]\n\nRules:\n- Lead with what the"
+        " USER can now do, never with what changed internally\n- One line"
+        " per change, grouped: New / Improved / Fixed\n- No jargon, no"
+        " ticket numbers, no 'various improvements'\n- If a change needs"
+        " action from admins, flag it with ACTION:",
+    "agentforce-action-rubric":
+        "Score this proposed Agentforce action before anyone builds"
+        " it.\n\nAction: [DESCRIBE THE ACTION]\n\nScore 1-5 on:\n-"
+        " Blast radius: what is the worst record this can touch?\n-"
+        " Reversibility: can a human undo the result in one step?\n-"
+        " Scope creep: does it do ONE thing?\n- Auditability: will the"
+        " log explain WHY it acted?\n\nBelow 16/20 → redesign before"
+        " building.",
+    "gtm-research-brief":
+        "Act as a GTM engineer researching a market segment before"
+        " building anything for it.\n\nSegment: [SEGMENT]\nProduct:"
+        " [ONE-LINE PITCH]\n\nDeliver:\n1. The 5 jobs-to-be-done this"
+        " segment actually pays for\n2. Where they hang out (communities,"
+        " events, newsletters)\n3. The 3 objections that kill deals, with"
+        " counters\n4. One experiment I can run THIS WEEK for under $100\n\n"
+        "Cite real sources; mark guesses as guesses.",
+}
 for i, (title, slug, excerpt, extra) in enumerate(prompts):
     post(title, slug, ["prompt-col"] + extra, excerpt,
-         [("The prompt", "The full prompt in a code card — copy it whole, fill the [BLANKS]."),
-          ("Why it works", "What each instruction is doing, so you can bend it.")],
-         92 + i)
+         [("Why it works", "What each instruction is doing, so you can bend it.")],
+         92 + i, lead=[codecard("markdown", PROMPT_TEXTS[slug])])
 
 # #now — a few in-flight things surface on /now (tag any post with
 # #now in Admin and it appears there; untag when it ships).

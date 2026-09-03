@@ -1,0 +1,58 @@
+{{!-- A shop single — a product page, not an article: cover left,
+the offer right (price from #shop-price-*'s description, the
+pitch, the CTA), then "what you get" as the content below.
+Context: post. --}}
+
+<main id="site-main" class="section outer">
+<article class="inner product-single {{post_class}}">
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+        {{> "icons/chevron-right"}}
+        <a href="{{@site.url}}/shop/">{{t "Shop"}}</a>
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <div class="product-hero">
+        <div class="product-hero-media">
+            {{#if feature_image}}
+                <img src="{{img_url feature_image size="l"}}"
+                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                    loading="eager" fetchpriority="high" />
+            {{else}}
+                {{> "thumb-placeholder" icon="gift"}}
+            {{/if}}
+        </div>
+
+        <div class="product-hero-buy">
+            <div class="chips">
+                <span class="chip chip-accent">{{> "icons/gift"}} {{t "Digital"}}</span>
+                {{#foreach tags visibility="internal"}}
+                    {{#match slug "~^" "hash-shop-price-"}}
+                        {{#if description}}<span class="chip chip-price">{{description}}</span>{{/if}}
+                    {{/match}}
+                    {{#match slug "hash-shop-free"}}<span class="chip chip-free">{{t "Free"}}</span>{{/match}}
+                {{/foreach}}
+            </div>
+
+            <h1 class="post-title">{{title}}</h1>
+            {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+
+            <a class="btn btn-lg product-buy" href="mailto:hello@namastesalesforce.com?subject={{encode title}}">
+                {{> "icons/gift"}} {{t "Get this"}}
+            </a>
+            <p class="product-buy-note">{{> "icons/check-circle"}} {{t "Instant delivery by email · pay once, keep forever"}}</p>
+        </div>
+    </div>
+
+    <section class="gh-content product-body">
+        {{content}}
+    </section>
+
+    <footer class="entry-foot">
+        <a class="btn btn-ghost" href="{{@site.url}}/shop/">{{> "icons/arrow-left"}} {{t "Everything in the shop"}}</a>
+    </footer>
+
+</article>
+</main>

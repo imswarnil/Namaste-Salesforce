@@ -1,0 +1,51 @@
+{{!-- A resource single — a recommendation card, not an article:
+the type's icon large, the free/paid facet, WHY it's here, and
+the pointer to where it lives (the link sits in the content).
+Context: post. --}}
+
+<main id="site-main" class="section outer">
+<article class="inner inner-narrow resource-single {{post_class}}">
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+        {{> "icons/chevron-right"}}
+        <a href="{{@site.url}}/resources/">{{t "Resources"}}</a>
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <header class="post-header resource-single-head">
+        <span class="resource-single-icon" aria-hidden="true">
+            {{~#foreach tags visibility="internal" limit="20"~}}
+                {{~#match slug "hash-resource-type-books"}}{{> "icons/book-open"}}{{/match~}}
+                {{~#match slug "hash-resource-type-videos"}}{{> "icons/video"}}{{/match~}}
+                {{~#match slug "hash-resource-type-tools"}}{{> "icons/zap"}}{{/match~}}
+                {{~#match slug "hash-resource-type-courses"}}{{> "icons/graduation-cap"}}{{/match~}}
+                {{~#match slug "hash-resource-type-podcasts"}}{{> "icons/headphones"}}{{/match~}}
+                {{~#match slug "hash-resource-type-articles"}}{{> "icons/file-text"}}{{/match~}}
+            {{~/foreach~}}
+            <span class="resource-card-icon-fallback">{{> "icons/bookmark"}}</span>
+        </span>
+        <div class="chips">
+            {{#foreach tags visibility="internal"}}
+                {{#match slug "~^" "hash-resource-type-"}}
+                    {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                {{/match}}
+                {{#match slug "hash-resource-free"}}<span class="chip chip-free">{{t "Free"}}</span>{{/match}}
+                {{#match slug "hash-resource-paid"}}<span class="chip">{{t "Paid"}}</span>{{/match}}
+            {{/foreach}}
+        </div>
+        <h1 class="post-title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+    </header>
+
+    <section class="gh-content">
+        {{content}}
+    </section>
+
+    <footer class="entry-foot">
+        <a class="btn btn-ghost" href="{{@site.url}}/resources/">{{> "icons/arrow-left"}} {{t "Back to the library"}}</a>
+    </footer>
+
+</article>
+</main>

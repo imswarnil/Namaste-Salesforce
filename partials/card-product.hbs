@@ -3,7 +3,11 @@ Context: a shop post (include tags). The price is the DESCRIPTION
 of an internal #shop-price-* tag (never parsed from the slug);
 #shop-free renders the free chip instead. --}}
 
-<article class="card product-card">
+<article class="card product-card" data-filter-item
+    {{~#foreach tags visibility="internal"~}}
+        {{~#match slug "~^" "hash-shop-price-"}} data-sprice="{{slug}}" data-sprice-label="{{description}}"{{/match~}}
+        {{~#match slug "hash-shop-free"}} data-sprice="{{slug}}" data-sprice-label="Free"{{/match~}}
+    {{~/foreach~}}>
 
     <div class="card-media">
         {{#if feature_image}}

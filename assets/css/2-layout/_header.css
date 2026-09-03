@@ -201,10 +201,7 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     .site-nav a {
         padding: 0.7rem 0.9rem;
         font-size: 1.45rem;
-    }
-
-    .site-nav > li > a > svg:not(:last-child) {
-        display: none;
+        gap: 0.45em;
     }
 }
 
@@ -241,13 +238,6 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     .gh-star-label {
         display: none;
     }
-}
-
-/* Dropdowns near the bar's right edge open LEFTWARD so the panel
-   never runs off the viewport. */
-.site-nav .nav-has-dropdown:nth-last-child(-n + 2) .nav-dropdown {
-    left: auto;
-    right: 0;
 }
 
 /* Burger — a label wired to #nav-open */
@@ -370,8 +360,13 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
     #nav-open:checked ~ .site-head .site-nav > li:nth-child(7) { transition-delay: 0.21s; }
     #nav-open:checked ~ .site-head .site-nav > li:nth-child(n + 8) { transition-delay: 0.24s; }
 
-    .site-nav > li + li {
-        border-top: 1px solid var(--border-soft);
+    /* each item a small card — deliberate, tappable */
+    .site-nav > li {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 0.8rem;
+        overflow: hidden;
     }
 
     .site-nav a {
@@ -548,4 +543,25 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
         width: 1.8rem;
         height: 1.8rem;
     }
+}
+
+
+/* Phones: only the essentials in the bar */
+@media (max-width: 600px) {
+    .site-head-actions .gh-star {
+        display: none;
+    }
+
+    .site-head-actions {
+        gap: 0.2rem;
+    }
+}
+
+/* The profile icon wears the instructor's actual photo */
+.member-icon-img {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
 }

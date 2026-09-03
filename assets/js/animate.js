@@ -15,6 +15,11 @@
 // inline head script sets ONLY when the visitor allows motion — so
 // with JS off, reduced motion on, or a failed script load nothing is
 // ever hidden. This file is the only writer of `.is-in`.
+// Prism (vendored later in the bundle) must not auto-run — the
+// snippets script remaps language aliases first, then highlights.
+window.Prism = window.Prism || {};
+window.Prism.manual = true;
+
 (function () {
     var root = document.documentElement;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');

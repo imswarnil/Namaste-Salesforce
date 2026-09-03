@@ -28,13 +28,16 @@
         var options = [];
         cards.forEach(function (card) {
             var value = card.getAttribute('data-' + facet);
-            if (value && !seen[value]) {
-                seen[value] = true;
-                options.push({
+            if (!value) return;
+            if (!seen[value]) {
+                seen[value] = {
                     value: value,
-                    label: card.getAttribute('data-' + facet + '-label') || value
-                });
+                    label: card.getAttribute('data-' + facet + '-label') || value,
+                    count: 0
+                };
+                options.push(seen[value]);
             }
+            seen[value].count++;
         });
 
         if (options.length < 2) return;
@@ -45,7 +48,11 @@
             btn.className = 'filter-btn';
             btn.setAttribute('data-filter', facet);
             btn.setAttribute('data-value', option.value);
-            btn.textContent = option.label;
+            btn.appendChild(document.createTextNode(option.label + ' '));
+            var count = document.createElement('small');
+            count.className = 'filter-count';
+            count.textContent = option.count;
+            btn.appendChild(count);
             group.appendChild(btn);
         });
 

@@ -1,0 +1,49 @@
+{{!-- A prompt single — a CHAT. The page frames the content as a
+conversation: a chat header naming the model (#prompt-for-*'s
+description), then the thread — the prompt itself (the code
+card, dressed by snippets.js with its copy button) reads as YOUR
+message on the right; the explanation paragraphs read as replies
+on the left. Context: post. --}}
+
+<main id="site-main" class="section outer">
+<article class="inner inner-narrow prompt-single {{post_class}}">
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+        {{> "icons/chevron-right"}}
+        <a href="{{@site.url}}/prompts/">{{t "Prompts"}}</a>
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="chips">
+            <span class="chip chip-accent">{{> "icons/sparkles"}} {{t "Prompt"}}</span>
+            <span class="chip">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</span>
+        </div>
+        <h1 class="post-title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+    </header>
+
+    <div class="chat-frame">
+        <div class="chat-frame-bar">
+            <span class="chat-frame-ai" aria-hidden="true">{{> "icons/sparkles"}}</span>
+            <strong>
+                {{#foreach tags visibility="internal"}}
+                    {{#match slug "~^" "hash-prompt-for-"}}{{description}}{{/match}}
+                {{/foreach}}
+            </strong>
+            <span class="chat-frame-status"><i></i> {{t "ready"}}</span>
+        </div>
+
+        <section class="gh-content chat-thread">
+            {{content}}
+        </section>
+    </div>
+
+    <footer class="entry-foot">
+        <a class="btn btn-ghost" href="{{@site.url}}/prompts/">{{> "icons/arrow-left"}} {{t "All prompts"}}</a>
+    </footer>
+
+</article>
+</main>

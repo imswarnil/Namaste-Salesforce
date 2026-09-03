@@ -263,6 +263,69 @@ edge but its first item aligns with the content column. --}}
     {{/if}}
 {{/get}}
 
+{{!-- The lab — snippets + prompts, framed as the editor they
+live in. One clean VS Code window: real file names in the tree
+(the latest snippet, the latest prompt, the /llms README), a
+lo-fi syntax-coloured buffer, a status bar. Nothing crowded —
+the window IS the section. --}}
+{{#get "posts" filter="tag:hash-snippet-col" include="tags" limit="2" as |sn|}}
+    {{#if sn}}
+        <section class="section outer home-lab">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/code"}} {{t "The lab"}}</span>
+                        <h2>{{t "Snippets, prompts, sharp tools"}}</h2>
+                        <p>{{t "Small things I reuse every week — copy them straight out of the editor."}}</p>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/snippets/">{{t "Open the lab"}} {{> "icons/arrow-right"}}</a>
+                </div>
+
+                <div class="vsc" data-animate>
+                    <div class="vsc-titlebar" aria-hidden="true">
+                        <span class="hero-app-dots"><i></i><i></i><i></i></span>
+                        <span class="vsc-title">namaste — lab</span>
+                    </div>
+                    <div class="vsc-body">
+                        <aside class="vsc-tree">
+                            <span class="vsc-dir">{{> "icons/code"}} snippets/</span>
+                            {{#foreach sn}}
+                                <a class="vsc-file{{#if @first}} is-active{{/if}}" href="{{url}}">{{slug}}.apex</a>
+                            {{/foreach}}
+                            {{#get "posts" filter="tag:hash-prompt-col" limit="2" as |pr|}}
+                                {{#if pr}}
+                                    <span class="vsc-dir">{{> "icons/sparkles"}} prompts/</span>
+                                    {{#foreach pr}}
+                                        <a class="vsc-file" href="{{url}}">{{slug}}.md</a>
+                                    {{/foreach}}
+                                {{/if}}
+                            {{/get}}
+                            <span class="vsc-dir">{{> "icons/file-text"}} docs/</span>
+                            <a class="vsc-file" href="{{@site.url}}/llms/">README.md</a>
+                        </aside>
+
+                        <div class="vsc-editor" aria-hidden="true">
+                            <span class="vsc-ln"><i>1</i><b class="vt-k" style="width: 16%;"></b><b style="width: 22%;"></b><b class="vt-f" style="width: 14%;"></b></span>
+                            <span class="vsc-ln"><i>2</i><b class="vt-in" style="width: 8%;"></b><b class="vt-s" style="width: 30%;"></b></span>
+                            <span class="vsc-ln"><i>3</i><b class="vt-in" style="width: 8%;"></b><b class="vt-k" style="width: 10%;"></b><b style="width: 24%;"></b></span>
+                            <span class="vsc-ln"><i>4</i><b class="vt-in" style="width: 14%;"></b><b class="vt-f" style="width: 18%;"></b><b class="vt-s" style="width: 12%;"></b></span>
+                            <span class="vsc-ln"><i>5</i></span>
+                            <span class="vsc-ln"><i>6</i><b class="vt-c" style="width: 42%;"></b></span>
+                            <span class="vsc-ln"><i>7</i><b class="vt-k" style="width: 12%;"></b><b class="vt-f" style="width: 20%;"></b><b style="width: 10%;"></b></span>
+                            <span class="vsc-ln"><i>8</i><b class="vt-in" style="width: 8%;"></b><b style="width: 16%;"></b><b class="vt-s" style="width: 26%;"></b><span class="vsc-caret"></span></span>
+                        </div>
+                    </div>
+                    <div class="vsc-status" aria-hidden="true">
+                        <span>{{> "icons/github"}} main</span>
+                        <span>{{t "Apex"}}</span>
+                        <span>UTF-8</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
 {{!-- Latest writing --}}
 {{#get "posts" filter="tag:hash-blog-col" include="tags,authors" limit="3" as |articles|}}
     {{#if articles}}

@@ -1,0 +1,40 @@
+{{!-- A snippet single — code first. The code card ships at the
+top of the content (snippets.js dresses every pre>code as an
+editor window with syntax colours + a copy button), so the page
+is: tight header, THE CODE, then the gotchas. Context: post. --}}
+
+<main id="site-main" class="section outer">
+<article class="inner inner-narrow snippet-single {{post_class}}">
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+        {{> "icons/chevron-right"}}
+        <a href="{{@site.url}}/snippets/">{{t "Snippets"}}</a>
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <header class="post-header">
+        <div class="chips">
+            <span class="chip chip-accent">{{> "icons/code"}} {{t "Snippet"}}</span>
+            {{#foreach tags visibility="internal"}}
+                {{#match slug "~^" "hash-snippet-lang-"}}
+                    {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                {{/match}}
+            {{/foreach}}
+            <span class="chip">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</span>
+        </div>
+        <h1 class="post-title">{{title}}</h1>
+        {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
+    </header>
+
+    <section class="gh-content">
+        {{content}}
+    </section>
+
+    <footer class="entry-foot">
+        <a class="btn btn-ghost" href="{{@site.url}}/snippets/">{{> "icons/arrow-left"}} {{t "All snippets"}}</a>
+    </footer>
+
+</article>
+</main>
