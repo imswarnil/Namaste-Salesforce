@@ -1,0 +1,98 @@
+/*  slides / shelf — the /slides/ index (slides.hbs)
+    ============================================================
+    Every deck a card that reads as a STACK of slides: two offset
+    sheets peeking out behind the cover. The shell is chrome-less
+    so the sheets can rise above it; the front sheet is the
+    card-media. See slides/README in NAMASTE-SALESFORCE.md.  */
+
+.deck-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.8rem 2.4rem;
+}
+
+/* the shell goes chrome-less: the SHEETS carry the surface */
+.deck-card {
+    overflow: visible;
+    background: none;
+    border: 0;
+    border-radius: 0;
+}
+
+.deck-card:hover {
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.deck-card .card-body {
+    padding: 1.4rem 0.4rem 0;
+}
+
+/* the stack: two sheets peeking out behind the cover */
+.deck-card-stack {
+    position: relative;
+    padding-top: 1rem;
+}
+
+.deck-sheet {
+    display: block;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.deck-sheet.is-back,
+.deck-sheet.is-mid {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 100%;
+    background: var(--bg-alt);
+    transition: transform 0.25s ease;
+}
+
+.deck-sheet.is-back { transform: translateY(-1rem) scale(0.92); }
+.deck-sheet.is-mid { transform: translateY(-0.5rem) scale(0.96); }
+
+.deck-card:hover .deck-sheet.is-back { transform: translateY(-1.3rem) scale(0.92); }
+.deck-card:hover .deck-sheet.is-mid { transform: translateY(-0.7rem) scale(0.96); }
+
+.deck-sheet.is-front {
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s ease;
+}
+
+.deck-card:hover .deck-sheet.is-front {
+    box-shadow: var(--shadow-lg);
+}
+
+.deck-card-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    opacity: 0;
+    background: rgba(3, 45, 96, 0.35);
+    transition: opacity 0.2s ease;
+}
+
+.deck-card-play svg {
+    width: 4.4rem;
+    height: 4.4rem;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+}
+
+.deck-card:hover .deck-card-play {
+    opacity: 1;
+}
+
+/* the Members badge — shared with the player topbar */
+.deck-chip-members {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: transparent;
+    font-weight: 700;
+}

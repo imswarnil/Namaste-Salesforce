@@ -1,0 +1,111 @@
+{{!-- A slides single — the DECK PLAYER in PRESENT MODE: no
+navbar, no footer — the slide owns the viewport, and the
+topbar's ✕ is the way back (Esc does the same outside
+fullscreen). The site chrome is hidden by CSS on the post's own
+tag-hash-slides body class (slides/_frame.css) — a layout
+declaration can't do it, because this file is a PARTIAL and
+express-hbs only honours the layout named by the top-level
+template (post.hbs). Built on the NS Slides player grammar
+(../../slides in the monorepo):
+
+  · the slide is a FIXED logical canvas (1280×720) scaled with a
+    CSS transform to fit the stage — never reflowed, so a slide
+    lays out identically on every screen (deck.js sets the scale)
+  · the canvas is the NSDS LIGHT surface (the thumbnail
+    treatment: near-white, blueprint grid, navy ink), letterboxed
+    on near-black like a cinema so the slide pops
+  · click / → / Space forward, ← back, a progress bar, a counter,
+    fullscreen, and a toggle that folds the filmstrip away
+
+The post's content IS the deck: every divider card (---) ends a
+slide. The rail is a real FILMSTRIP — deck.js clones each slide
+into a miniature at thumbnail scale.
+
+With JS off nothing is hidden: the frame falls back to a normal
+scrolling article (the topbar stays, so ✕ still leads out).
+Member gating is Ghost's own post access — outside the audience
+{{access}} is false and the stage shows the locked cover
+instead. Context: post. --}}
+
+<main id="site-main" class="deck-frame {{post_class}}" data-deck>
+
+    <header class="deck-topbar">
+        <a class="deck-topbar-close" href="{{@site.url}}/slides/" data-deck-close aria-label="{{t "Close the deck"}}">
+            {{> "icons/close"}}
+        </a>
+        <div class="deck-topbar-title">
+            <strong>{{title}}</strong>
+            {{#match visibility "!=" "public"}}
+                <span class="chip deck-chip-members">{{> "icons/lock"}} {{t "Members"}}</span>
+            {{/match}}
+            {{> "duration-chip" chipClass="chip deck-topbar-chip"}}
+        </div>
+        {{#if access}}
+            <div class="deck-topbar-actions" data-deck-controls hidden>
+                <span class="deck-keys" aria-hidden="true" title="{{t "Use ← and → to move between slides"}}"><kbd>←</kbd><kbd>→</kbd></span>
+                <span class="deck-counter" data-deck-counter aria-live="polite"></span>
+                <button class="deck-btn" type="button" data-deck-prev aria-label="{{t "Previous slide"}}">{{> "icons/arrow-left"}}</button>
+                <button class="deck-btn" type="button" data-deck-next aria-label="{{t "Next slide"}}">{{> "icons/arrow-right"}}</button>
+                <button class="deck-btn" type="button" data-deck-rail-toggle aria-label="{{t "Show or hide the slide list"}}" aria-pressed="true">{{> "icons/list-icon"}}</button>
+                <button class="deck-btn" type="button" data-deck-full aria-label="{{t "Fullscreen"}}">{{> "icons/expand"}}</button>
+            </div>
+        {{/if}}
+    </header>
+
+    {{#if access}}
+
+        <div class="deck-body">
+            {{!-- The filmstrip: deck.js fills it with one mini
+            per slide — the same content, thumbnail scale. --}}
+            <aside class="deck-rail" data-deck-rail hidden>
+                <ol class="deck-nav" data-deck-nav></ol>
+            </aside>
+
+            <div class="deck-stage" data-deck-stage>
+                <div class="deck-canvas-box" data-deck-box>
+                    <div class="deck-canvas" data-deck-canvas>
+                        <section class="gh-content deck-source" data-deck-source>
+                            {{content}}
+                        </section>
+                    </div>
+                </div>
+                <span class="deck-progress" aria-hidden="true"><i data-deck-progress></i></span>
+            </div>
+        </div>
+
+    {{else}}
+
+        {{!-- The locked cover on the same cinema stage: the deck
+        is real, the door is not open. Ghost decided (post
+        visibility vs this visitor); this just says so. --}}
+        <div class="deck-body is-locked">
+            <div class="deck-stage">
+                <div class="deck-locked">
+                    {{#if feature_image}}
+                        <img class="deck-locked-cover" src="{{img_url feature_image size="l"}}" alt="" loading="lazy" aria-hidden="true" />
+                    {{/if}}
+                    <div class="deck-locked-panel">
+                        <span class="deck-locked-badge" aria-hidden="true">{{> "icons/lock"}}</span>
+                        {{#match visibility "paid"}}
+                            <h2>{{t "This deck is for paid members"}}</h2>
+                            <p>{{t "Upgrade to open every slide — and every other members-only deck, lesson and issue on the site."}}</p>
+                            <div class="deck-locked-actions">
+                                <a class="btn btn-lg" href="{{@site.url}}/membership/">{{> "icons/star"}} {{t "See membership"}}</a>
+                                <a class="btn btn-ghost" href="{{@site.url}}/signin/">{{t "Already a member? Sign in"}}</a>
+                            </div>
+                        {{else}}
+                            <h2>{{t "This deck is for members"}}</h2>
+                            <p>{{t "Join free to open every slide — it takes one email and five seconds, and you get the weekly letter with it."}}</p>
+                            <div class="deck-locked-actions">
+                                <a class="btn btn-lg" href="{{@site.url}}/signup/">{{> "icons/mail"}} {{t "Join free"}}</a>
+                                <a class="btn btn-ghost" href="{{@site.url}}/signin/">{{t "Already a member? Sign in"}}</a>
+                            </div>
+                        {{/match}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {{/if}}
+
+</main>

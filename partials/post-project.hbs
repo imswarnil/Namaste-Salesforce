@@ -1,11 +1,15 @@
-{{!-- A project single — the readme. GitHub-flavoured header
-(mono repo name, Public badge, language/stars/topic chips, a
-real "View on GitHub" button pointing at
-@custom.social_github/{slug}), then the content as the readme.
+{{!-- A project single — the repo page, GitHub grammar all the
+way: the readme on the left, a FIXED (sticky) details rail on
+the right. The repo URL is @custom.social_github/{slug} — the
+post's slug IS the repo name, appended to the GitHub profile
+URL from Admin → Design → custom settings, so the link builds
+itself. A live demo link rides in as an internal tag: any
+#project-live-* tag whose DESCRIPTION is the URL (the theme's
+usual move — descriptions carry data, slugs are never parsed).
 Context: the post (dispatched by post.hbs on #project). --}}
 
 <main id="site-main" class="section outer">
-    <div class="inner inner-narrow">
+    <div class="inner">
 
         <nav class="crumbs" aria-label="Breadcrumb">
             <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
@@ -21,39 +25,74 @@ Context: the post (dispatched by post.hbs on #project). --}}
                 <h1 class="proj-name is-title">{{title}}</h1>
                 <span class="proj-badge">{{t "Public"}}</span>
             </div>
-            {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
-
-            <div class="chips">
-                {{#foreach tags visibility="internal"}}
-                    {{#match slug "~^" "hash-project-lang-"}}
-                        {{#if description}}<span class="chip"><i class="proj-lang-dot {{slug}}"></i> {{description}}</span>{{/if}}
-                    {{/match}}
-                    {{#match slug "~^" "hash-project-stars-"}}
-                        {{#if description}}<span class="chip">{{> "icons/star"}} {{description}} {{t "stars"}}</span>{{/if}}
-                    {{/match}}
-                {{/foreach}}
-                {{#primary_tag}}
-                    <a class="chip chip-type" href="{{url}}">{{> "icons/tag-icon"}} {{name}}</a>
-                {{/primary_tag}}
-            </div>
-
-            {{#if @custom.social_github}}
-                <div class="proj-actions">
-                    <a class="btn" href="{{@custom.social_github}}/{{slug}}" target="_blank" rel="noopener">
-                        {{> "icons/github"}} {{t "View on GitHub"}}
-                    </a>
-                    <a class="btn btn-ghost" href="{{@custom.social_github}}/{{slug}}#readme" target="_blank" rel="noopener">
-                        {{> "icons/star"}} {{t "Star it"}}
-                    </a>
-                </div>
-            {{/if}}
         </header>
 
-        {{> "toc-inline"}}
+        <div class="proj-layout">
 
-        <article class="gh-content entry-content">
-            {{content}}
-        </article>
+            <article class="gh-content entry-content proj-readme">
+                {{> "toc-inline"}}
+                {{content}}
+            </article>
+
+            {{!-- The details rail — sticky, like GitHub's About
+            column. Everything here is live data: custom excerpt,
+            facet tag descriptions, the derived repo URL. --}}
+            <aside class="proj-side">
+                <div class="proj-side-sticky">
+
+                    <section class="proj-about">
+                        <h2>{{t "About"}}</h2>
+                        {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+
+                        <ul class="proj-side-meta">
+                            {{#foreach tags visibility="internal"}}
+                                {{#match slug "~^" "hash-project-live-"}}
+                                    {{#if description}}
+                                        <li class="is-live"><a href="{{description}}" target="_blank" rel="noopener">{{> "icons/external"}} {{t "Live demo"}}</a></li>
+                                    {{/if}}
+                                {{/match}}
+                            {{/foreach}}
+                            {{#if @custom.social_github}}
+                                <li><a href="{{@custom.social_github}}/{{slug}}" target="_blank" rel="noopener">{{> "icons/github"}} {{slug}}</a></li>
+                            {{/if}}
+                            {{#foreach tags visibility="internal"}}
+                                {{#match slug "~^" "hash-project-lang-"}}
+                                    {{#if description}}<li><i class="proj-lang-dot {{slug}}"></i> {{description}}</li>{{/if}}
+                                {{/match}}
+                                {{#match slug "~^" "hash-project-stars-"}}
+                                    {{#if description}}<li>{{> "icons/star"}} {{description}} {{t "stars"}}</li>{{/if}}
+                                {{/match}}
+                            {{/foreach}}
+                            <li>{{> "icons/history"}} {{t "Updated"}} {{date updated_at format="D MMM YYYY"}}</li>
+                        </ul>
+
+                        {{#primary_tag}}
+                            <a class="chip chip-type" href="{{url}}">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}}</a>
+                        {{/primary_tag}}
+                    </section>
+
+                    {{#if @custom.social_github}}
+                        <div class="proj-side-actions">
+                            <a class="btn" href="{{@custom.social_github}}/{{slug}}" target="_blank" rel="noopener">
+                                {{> "icons/github"}} {{t "View on GitHub"}}
+                            </a>
+                            <a class="btn btn-ghost" href="{{@custom.social_github}}/{{slug}}" target="_blank" rel="noopener">
+                                {{> "icons/star"}} {{t "Star it"}}
+                            </a>
+                        </div>
+
+                        {{!-- the clone line — snippets.js gives every
+                        pre a copy button, this one included --}}
+                        <div class="proj-clone">
+                            <span class="proj-clone-label">{{> "icons/code"}} {{t "Clone"}}</span>
+                            <pre><code>git clone {{@custom.social_github}}/{{slug}}.git</code></pre>
+                        </div>
+                    {{/if}}
+
+                </div>
+            </aside>
+
+        </div>
 
         <footer class="entry-foot">
             <a class="btn btn-ghost" href="{{@site.url}}/projects/">{{> "icons/arrow-left"}} {{t "All projects"}}</a>

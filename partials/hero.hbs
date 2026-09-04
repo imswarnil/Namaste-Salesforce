@@ -5,12 +5,14 @@ the sub is @site.description, and when a publication cover is
 set (Admin → Design → Publication cover) it becomes the hero's
 background — masked and faded so the copy always wins.
 
-Right: the stack — every format as a SMALL, low-fidelity screen
-(skeleton bars and shapes, not real meta) so each card reads as
-WHAT IT IS at a glance: an app window, a camcorder, a waypoint,
-a sheet of writing, an envelope, a shipped badge. Every card
-still links to the real latest post of its kind; the title rides
-along as the accessible label. --}}
+Right: the stack — FOUR screens around the hub, no more. The
+product window (the featured course as an app frame) leads;
+the camcorder, the training waypoint and the envelope orbit it.
+Low-fidelity skeletons, not meta, so each card reads as WHAT IT
+IS at a glance. Every card still links to the real latest post
+of its kind; the title rides along as the accessible label.
+Everything else the site makes lives one row down in
+.hero-collections — the hero itself stays quiet. --}}
 
 <section class="home-hero outer relative">
     {{!-- The backdrop is a PATTERN, not a photo: the crosshair
@@ -98,51 +100,27 @@ along as the accessible label. --}}
                     </a>
                 {{/if}}
             {{/get}}
-
-            {{!-- Where else I share --}}
-            <div class="hero-socials" aria-label="{{t "Elsewhere"}}">
-                {{#if @custom.social_youtube}}<a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube">{{> "icons/youtube"}}</a>{{/if}}
-                {{#if @custom.social_linkedin}}<a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a>{{/if}}
-                {{#if @custom.social_github}}<a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub">{{> "icons/github"}}</a>{{/if}}
-                {{#if @custom.social_instagram}}<a href="{{@custom.social_instagram}}" target="_blank" rel="noopener" aria-label="Instagram">{{> "icons/instagram"}}</a>{{/if}}
-                {{#if @site.twitter}}<a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X">{{> "icons/x"}}</a>{{/if}}
-                <a href="{{@site.url}}/rss/" aria-label="RSS">{{> "icons/rss"}}</a>
-            </div>
         </div>
 
-        {{!-- The stack: every format as a small lo-fi screen.
+        {{!-- The stack: four lo-fi screens around the hub.
         Skeleton bars, not meta — each card reads as WHAT it is. --}}
         <div class="hero-stack">
             {{!-- The web: animate.js draws one thin line from the
-            hub to every screen and satellite, and redraws them
-            every frame while the gravity scroll runs. --}}
+            hub to every screen and redraws them every frame while
+            the gravity scroll runs. --}}
             <svg class="hero-web" aria-hidden="true"></svg>
             <span class="hero-stack-spine" aria-hidden="true"></span>
 
-            {{!-- The hub: the publication itself. The cover photo
-            in a rounded square, radar rings pulsing, tiny UI bits
-            pinned to it — every screen orbits this tile. --}}
+            {{!-- The hub: the publication itself — the BIG square
+            NS mark (the real logo, shipped with the theme), radar
+            rings pulsing. Every screen orbits this tile. --}}
             <span class="hero-hub" aria-hidden="true">
                 <i class="hero-hub-ring"></i>
                 <i class="hero-hub-ring r2"></i>
-                <span class="hero-hub-tile is-person">
-                    {{#if @site.cover_image}}
-                        <img src="{{img_url @site.cover_image size="m"}}" alt="" loading="eager" fetchpriority="high" />
-                    {{else}}
-                        {{#get "authors" limit="1" as |h|}}
-                            {{#if h.[0].profile_image}}
-                                <img src="{{img_url h.[0].profile_image size="m"}}" alt="" loading="eager" fetchpriority="high" />
-                            {{else if @site.icon}}
-                                <img src="{{img_url @site.icon size="s"}}" alt="" loading="eager" />
-                            {{else}}
-                                {{> "icons/avatar"}}
-                            {{/if}}
-                        {{/get}}
-                    {{/if}}
+                <span class="hero-hub-tile is-brand">
+                    <img src="{{asset "images/ns-mark.svg"}}" alt="" loading="eager" fetchpriority="high" />
                 </span>
-                <span class="hero-bit is-notif"><i></i>{{> "icons/bell"}}</span>
                 <span class="hero-bit is-verified">{{> "icons/check-circle"}} {{t "building live"}}</span>
-                <span class="hero-bit is-git">{{> "icons/github"}} main<i class="ok"></i></span>
             </span>
 
             {{!-- 1 · course = app window --}}
@@ -170,6 +148,7 @@ along as the accessible label. --}}
                                 <span class="hero-app-progress"><i></i></span>
                             </span>
                         </span>
+                        <span class="hero-shot-go" aria-hidden="true">{{t "Start free"}} {{> "icons/arrow-right"}}</span>
                     </a>
                 {{/foreach}}
             {{/get}}
@@ -192,60 +171,59 @@ along as the accessible label. --}}
                             <i class="hero-cam-corner tl"></i><i class="hero-cam-corner tr"></i>
                             <i class="hero-cam-corner bl"></i><i class="hero-cam-corner br"></i>
                         </span>
+                        <span class="hero-shot-go" aria-hidden="true">{{t "Watch now"}} {{> "icons/arrow-right"}}</span>
                     </a>
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 3 · training = waypoint on a trail --}}
+            {{!-- 3 · training = the path itself: a graduation-cap
+            waypoint and a dashed trail with lit stops --}}
             {{#get "posts" filter="tag:hash-training" order="published_at desc" limit="1" as |tr|}}
                 {{#foreach tr}}
                     <a class="hero-shot is-training" href="{{url}}" aria-label="{{title}}">
                         <span class="hero-shot-label" aria-hidden="true">{{t "Training"}}</span>
-                        <span class="hero-train-node" aria-hidden="true">{{> "icons/layers"}}</span>
+                        <span class="hero-train-node" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
                         <span class="hero-train-body" aria-hidden="true">
                             <span class="sk sk-thin sk-w40"></span>
                             <span class="sk sk-w80"></span>
-                            <span class="hero-train-ticks"><i class="done"></i><i class="done"></i><i></i><i></i></span>
+                            <svg class="hero-train-trail" viewBox="0 0 132 26" aria-hidden="true">
+                                <path d="M4 20 C 34 6, 62 24, 92 12 S 118 6, 128 9"/>
+                                <circle class="done" cx="4" cy="20" r="3.2"/>
+                                <circle class="done" cx="50" cy="15" r="3.2"/>
+                                <circle cx="92" cy="12" r="3.2"/>
+                                <circle cx="128" cy="9" r="3.2"/>
+                            </svg>
                         </span>
+                        <span class="hero-shot-go" aria-hidden="true">{{t "Follow the path"}} {{> "icons/arrow-right"}}</span>
                     </a>
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 4 · blog = a sheet of writing --}}
-            {{#get "posts" filter="tag:hash-blog" limit="1" as |art|}}
-                {{#foreach art}}
-                    <a class="hero-shot is-writing" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-shot-label" aria-hidden="true">{{t "Blog"}}</span>
-                        <span class="hero-shot-tag" aria-hidden="true">{{> "icons/pen"}}</span>
+            {{!-- 4 · newsletter = the letter itself: an email
+            header (from · to) over ruled lines --}}
+            {{#get "posts" filter="tag:hash-newsletter" limit="1" as |iss|}}
+                {{#foreach iss}}
+                    <a class="hero-shot is-mail" href="{{url}}" aria-label="{{title}}">
+                        <span class="hero-shot-label" aria-hidden="true">{{t "Newsletter"}}</span>
+                        <span class="hero-mail-head" aria-hidden="true">
+                            <span class="hero-mail-ava">{{> "icons/mail"}}</span>
+                            <span class="hero-mail-meta">
+                                <b>{{t "The Weekly Namaste"}}</b>
+                                <small>{{t "to: you@work-email.com"}}</small>
+                            </span>
+                            <span class="hero-mail-stamp">{{> "icons/cloud"}}</span>
+                        </span>
                         <span class="hero-sheet-body" aria-hidden="true">
-                            <span class="sk sk-w80"></span>
                             <span class="sk sk-thin sk-w90"></span>
                             <span class="sk sk-thin sk-w70"></span>
                             <span class="sk sk-thin sk-w80"></span>
                         </span>
+                        <span class="hero-shot-go" aria-hidden="true">{{t "Get the letter"}} {{> "icons/arrow-right"}}</span>
                     </a>
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 5 · newsletter = an envelope, opened. Real subject
-            line for context; sits top-right above the VS Code
-            window in the orbit. --}}
-            {{#get "posts" filter="tag:hash-newsletter" limit="1" as |iss|}}
-                {{#foreach iss}}
-                    <a class="hero-shot is-mail" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-mail-flap" aria-hidden="true"></span>
-                        <span class="hero-shot-label" aria-hidden="true">{{t "Newsletter"}}</span>
-                        <span class="hero-shot-tag" aria-hidden="true">{{> "icons/mail"}}</span>
-                        <span class="hero-sheet-body" aria-hidden="true">
-                            <b class="hero-mail-subj">{{t "The Weekly Namaste"}}</b>
-                            <span class="sk sk-w70"></span>
-                            <span class="sk sk-thin sk-w50"></span>
-                        </span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
-
-            {{!-- 6 · snippet = a mini VS Code window: real file
+            {{!-- 5 · snippets = a mini VS Code window: real file
             names in the tab strip, lo-fi buffer, status bar --}}
             {{#get "posts" filter="tag:hash-snippet" limit="1" as |snip|}}
                 {{#foreach snip}}
@@ -266,59 +244,11 @@ along as the accessible label. --}}
                 {{/foreach}}
             {{/get}}
 
-            {{!-- 7 · prompt = a chat exchange --}}
-            {{#get "posts" filter="tag:hash-prompt" limit="1" as |pmt|}}
-                {{#foreach pmt}}
-                    <a class="hero-shot is-chat" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-shot-label" aria-hidden="true">{{t "Prompts"}}</span>
-                        <span class="hero-chat-you" aria-hidden="true"><span class="sk sk-thin sk-w80"></span></span>
-                        <span class="hero-chat-ai" aria-hidden="true">{{> "icons/sparkles"}}<i></i><i></i><i></i></span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
-
-            {{!-- 8 · resource = a bookmark chip --}}
-            {{#get "posts" filter="tag:hash-resource" limit="1" as |res|}}
-                {{#foreach res}}
-                    <a class="hero-shot is-res" href="{{url}}" aria-label="{{title}}">
-                        {{> "icons/bookmark"}}
-                        <span class="sk sk-thin" style="width: 7rem;" aria-hidden="true"></span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
-
-            {{!-- 9 · shop = a price tag --}}
-            {{#get "posts" filter="tag:hash-shop" include="tags" limit="1" as |item|}}
-                {{#foreach item}}
-                    <a class="hero-shot is-shop" href="{{url}}" aria-label="{{title}}">
-                        {{> "icons/gift"}}
-                        <span class="sk sk-thin" style="width: 5.6rem;" aria-hidden="true"></span>
-                        {{#foreach tags visibility="internal"}}
-                            {{#match slug "~^" "hash-shop-price-"}}
-                                {{#if description}}<b>{{description}}</b>{{/if}}
-                            {{/match}}
-                            {{#match slug "hash-shop-free"}}<b>{{t "Free"}}</b>{{/match}}
-                        {{/foreach}}
-                    </a>
-                {{/foreach}}
-            {{/get}}
-
-            {{!-- 10 · changelog = the shipped badge --}}
-            {{#get "posts" filter="tag:hash-changelog" include="tags" limit="1" as |chg|}}
-                {{#foreach chg}}
-                    <a class="hero-shot is-ship" href="{{url}}" aria-label="{{title}}">
-                        {{> "changelog-badge"}}
-                        <span class="sk sk-w60" aria-hidden="true"></span>
-                        {{> "icons/arrow-right"}}
-                    </a>
-                {{/foreach}}
-            {{/get}}
-
-            {{!-- Tiny satellites — pure garnish, threaded into the
+            {{!-- Tiny icon badges — garnish, threaded into the
             web so the collage reads as one connected system --}}
             <span class="hero-dot is-d1" aria-hidden="true">{{> "icons/cloud"}}</span>
             <span class="hero-dot is-d2" aria-hidden="true">{{> "icons/zap"}}</span>
-            <span class="hero-dot is-d3" aria-hidden="true">{{> "icons/sparkles"}}</span>
+
         </div>
 
     </div>
@@ -329,6 +259,7 @@ along as the accessible label. --}}
             <a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Courses"}}</a>
             <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
             <a href="{{@site.url}}/videos/">{{> "icons/video"}} {{t "Videos"}}</a>
+            <a href="{{@site.url}}/slides/">{{> "icons/presentation"}} {{t "Slides"}}</a>
             <a href="{{@site.url}}/blog/">{{> "icons/pen"}} {{t "Blog"}}</a>
             <a href="{{@site.url}}/newsletter/">{{> "icons/newspaper"}} {{t "Newsletter"}}</a>
             <a href="{{@site.url}}/snippets/">{{> "icons/code"}} {{t "Snippets"}}</a>

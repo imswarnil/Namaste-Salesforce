@@ -1,0 +1,759 @@
+/*  slides / surface — the slide canvas itself
+    ============================================================
+    Canvas content, PX values BY DESIGN: the slide is a fixed
+    1280×720 logical surface (the document owns its pixels — NSDS
+    polices chrome, never canvas content) and only the transform
+    changes per screen. deck.js stamps `deck-surface` on both the
+    real slide and its filmstrip mini clone, so ONE selector
+    dresses both.
+
+    The palette is the LIGHT treatment from the branded
+    thumbnails (dummy-content/build-thumbnails.py): near-white
+    canvas, blueprint grid, navy ink, the accent in blue — a
+    light slide on the dark stage, like paper on a desk.  */
+
+.deck-frame.is-ready .deck-surface {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-content: center;
+    gap: 0;
+    padding: 88px 96px;
+    overflow: hidden;
+    background-color: #f5f9fd;
+    background-image:
+        radial-gradient(90% 120% at 100% 0%, rgba(1, 118, 211, 0.09), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M48 0H0v48' fill='none' stroke='rgba(3,45,96,0.07)'/%3E%3C/svg%3E");
+    color: #3e5c7a;
+}
+
+.deck-frame.is-ready .deck-slide.is-current,
+.deck-frame.is-ready .deck-mini-inner {
+    display: grid;
+}
+
+/* margins are the canvas', not the article's */
+.deck-frame.is-ready .deck-source > .deck-slide {
+    margin: 0;
+    max-width: none;
+}
+
+.deck-frame.is-ready .deck-surface > * + * {
+    margin-top: 22px;
+}
+
+.deck-frame.is-ready .deck-surface h1,
+.deck-frame.is-ready .deck-surface h2,
+.deck-frame.is-ready .deck-surface h3 {
+    margin: 0;
+    font-size: 58px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    color: #032d60;
+}
+
+/* the accent wipe bar over the slide's opening heading */
+.deck-frame.is-ready .deck-surface > h1:first-child::before,
+.deck-frame.is-ready .deck-surface > h2:first-child::before,
+.deck-frame.is-ready .deck-surface > h3:first-child::before {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 6px;
+    margin-bottom: 30px;
+    border-radius: 3px;
+    background: #0176d3;
+}
+
+.deck-frame.is-ready .deck-surface p,
+.deck-frame.is-ready .deck-surface li {
+    font-size: 27px;
+    line-height: 1.55;
+    color: #3e5c7a;
+}
+
+.deck-frame.is-ready .deck-surface ul,
+.deck-frame.is-ready .deck-surface ol {
+    padding-left: 34px;
+}
+
+.deck-frame.is-ready .deck-surface li + li {
+    margin-top: 12px;
+}
+
+.deck-frame.is-ready .deck-surface li::marker {
+    color: #0176d3;
+}
+
+.deck-frame.is-ready .deck-surface strong {
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface em {
+    color: #0b5cab;
+}
+
+.deck-frame.is-ready .deck-surface a {
+    color: #0176d3;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.deck-frame.is-ready .deck-surface code {
+    padding: 2px 10px;
+    font-size: 0.85em;
+    color: #0b5cab;
+    background: rgba(1, 118, 211, 0.09);
+    border-radius: 6px;
+}
+
+.deck-frame.is-ready .deck-surface img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.deck-frame.is-ready .deck-surface blockquote {
+    margin: 0;
+    padding-left: 28px;
+    border-left: 6px solid #0176d3;
+    color: #24425f;
+    font-size: 30px;
+}
+
+/* the slide's footer line: brand left, page number right */
+.deck-frame.is-ready .deck-surface::before {
+    content: "NAMASTE SALESFORCE";
+    position: absolute;
+    left: 96px;
+    bottom: 42px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: rgba(3, 45, 96, 0.35);
+}
+
+.deck-frame.is-ready .deck-surface::after {
+    content: attr(data-num);
+    position: absolute;
+    right: 96px;
+    bottom: 42px;
+    font-size: 15px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    color: rgba(3, 45, 96, 0.5);
+}
+
+/* element entrance: each block a beat behind the last, like the
+   deck's animation.order — minis stay still */
+@media (prefers-reduced-motion: no-preference) {
+    .deck-frame.is-ready .deck-slide.is-current > * {
+        animation: deck-el-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: calc(var(--i, 0) * 110ms);
+    }
+
+    @keyframes deck-el-in {
+        from { opacity: 0; translate: 0 14px; }
+        to { opacity: 1; translate: 0 0; }
+    }
+}
+
+/*  Koenig cards as slide elements — anything the editor can
+    produce works on a slide, restyled for the light canvas (the
+    code panel stays deliberately dark: an editor on paper).
+    (The divider card is the one exception: it ENDS a slide.) */
+
+.deck-frame.is-ready .deck-surface figure {
+    margin: 0;
+}
+
+/* callout — the slide's aside */
+.deck-frame.is-ready .deck-surface .kg-callout-card {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 26px 30px;
+    border-radius: 14px;
+    background: rgba(1, 118, 211, 0.08);
+    border: 1px solid rgba(1, 118, 211, 0.25);
+}
+
+.deck-frame.is-ready .deck-surface .kg-callout-card-red {
+    background: rgba(255, 95, 87, 0.1);
+    border-color: rgba(194, 57, 52, 0.3);
+}
+
+.deck-frame.is-ready .deck-surface .kg-callout-card-green {
+    background: rgba(46, 164, 100, 0.1);
+    border-color: rgba(46, 132, 74, 0.3);
+}
+
+.deck-frame.is-ready .deck-surface .kg-callout-card-yellow {
+    background: rgba(228, 168, 0, 0.12);
+    border-color: rgba(178, 132, 0, 0.3);
+}
+
+.deck-frame.is-ready .deck-surface .kg-callout-emoji {
+    font-size: 30px;
+    line-height: 1;
+}
+
+.deck-frame.is-ready .deck-surface .kg-callout-text {
+    font-size: 24px;
+    line-height: 1.5;
+    color: #24425f;
+}
+
+/* button — the slide's call to action */
+.deck-frame.is-ready .deck-surface .kg-button-card {
+    display: flex;
+}
+
+.deck-frame.is-ready .deck-surface .kg-button-card.kg-align-center {
+    justify-content: center;
+}
+
+.deck-frame.is-ready .deck-surface .kg-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 16px 40px;
+    border-radius: 999px;
+    background: #0176d3;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* code card — the projector-sized editor panel */
+.deck-frame.is-ready .deck-surface pre {
+    margin: 0;
+    padding: 26px 30px;
+    max-height: 420px;
+    overflow: auto;
+    border-radius: 14px;
+    background: #071a30;
+    border: 1px solid rgba(3, 45, 96, 0.25);
+}
+
+.deck-frame.is-ready .deck-surface pre code {
+    display: block;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    font-size: 21px;
+    line-height: 1.55;
+    color: #7ee0b0;
+}
+
+.deck-frame.is-ready .deck-surface .kg-code-card figcaption {
+    margin-top: 12px;
+}
+
+/* image + gallery */
+.deck-frame.is-ready .deck-surface .kg-image-card {
+    text-align: center;
+}
+
+.deck-frame.is-ready .deck-surface .kg-image-card img {
+    display: block;
+    margin: 0 auto;
+    width: auto;
+    max-height: 380px;
+    border-radius: 12px;
+    box-shadow: 0 16px 44px rgba(3, 45, 96, 0.18);
+}
+
+.deck-frame.is-ready .deck-surface figcaption {
+    margin-top: 14px;
+    font-size: 17px;
+    text-align: center;
+    color: rgba(3, 45, 96, 0.55);
+}
+
+/* wide/full cards step into the canvas margins */
+.deck-frame.is-ready .deck-surface .kg-width-wide {
+    margin-left: -48px;
+    margin-right: -48px;
+}
+
+.deck-frame.is-ready .deck-surface .kg-width-full {
+    margin-left: -96px;
+    margin-right: -96px;
+}
+
+.deck-frame.is-ready .deck-surface .kg-gallery-row {
+    display: flex;
+    gap: 14px;
+}
+
+.deck-frame.is-ready .deck-surface .kg-gallery-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* embeds + video cards: 16:9, rounded, quiet */
+.deck-frame.is-ready .deck-surface .kg-embed-card iframe,
+.deck-frame.is-ready .deck-surface .kg-video-card video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: 0;
+    border-radius: 12px;
+    background: #071a30;
+}
+
+/* bookmark — a link that looks worth clicking */
+.deck-frame.is-ready .deck-surface .kg-bookmark-container {
+    display: flex;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.14);
+    text-decoration: none;
+    color: inherit;
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-content {
+    flex: 1;
+    min-width: 0;
+    padding: 22px 26px;
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-title {
+    font-size: 23px;
+    font-weight: 700;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 8px;
+    font-size: 17px;
+    color: #3e5c7a;
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-metadata {
+    margin-top: 12px;
+    font-size: 15px;
+    color: rgba(3, 45, 96, 0.6);
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-metadata img {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border-radius: 3px;
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-thumbnail {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+.deck-frame.is-ready .deck-surface .kg-bookmark-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+/* toggle — collapsed detail, dark */
+.deck-frame.is-ready .deck-surface .kg-toggle-card {
+    padding: 22px 26px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.14);
+}
+
+.deck-frame.is-ready .deck-surface .kg-toggle-heading {
+    color: #032d60;
+    font-size: 24px;
+}
+
+/* header + product cards keep their own colours; just frame them */
+.deck-frame.is-ready .deck-surface .kg-header-card,
+.deck-frame.is-ready .deck-surface .kg-product-card {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+/* tables (markdown card) */
+.deck-frame.is-ready .deck-surface table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 21px;
+}
+
+.deck-frame.is-ready .deck-surface th {
+    padding: 12px 18px;
+    text-align: left;
+    color: #032d60;
+    border-bottom: 2px solid #0176d3;
+}
+
+.deck-frame.is-ready .deck-surface td {
+    padding: 12px 18px;
+    color: #3e5c7a;
+    border-bottom: 1px solid rgba(3, 45, 96, 0.14);
+}
+
+/*  THE TEACHING KIT — sl-* slide components
+    ============================================================
+    Purpose-built blocks for teaching decks, written as plain
+    HTML cards with a class. All light-canvas, all px. The set:
+
+      .sl-kicker    eyebrow line above a heading
+      .sl-center    centered composition (title slides)
+      .sl-badge     inline pill label
+      .sl-cols      two columns (.sl-cols-3 for three)
+      .sl-steps     numbered how-to (an <ol>)
+      .sl-compare   Do / Don't panels (.sl-do + .sl-dont)
+      .sl-stat(s)   big number with a caption
+      .sl-term      definition list (<dl>)
+      .sl-quiz      question panel with A/B/C options
+      .sl-flow      process boxes joined by arrows
+      .sl-frame     browser-window frame around an image
+      .sl-foot      small footnote line  */
+
+.deck-frame.is-ready .deck-surface .sl-kicker {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0176d3;
+}
+
+.deck-frame.is-ready .deck-surface .sl-center {
+    text-align: center;
+}
+
+.deck-frame.is-ready .deck-surface .sl-center > h1:first-child::before,
+.deck-frame.is-ready .deck-surface .sl-center > h2:first-child::before {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 6px;
+    margin: 0 auto 30px;
+    border-radius: 3px;
+    background: #0176d3;
+}
+
+.deck-frame.is-ready .deck-surface .sl-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 18px;
+    margin: 0 4px;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #0176d3;
+    background: rgba(1, 118, 211, 0.1);
+}
+
+/* two (or three) columns, vertically centred */
+.deck-frame.is-ready .deck-surface .sl-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 56px;
+    align-items: center;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* numbered steps — the how-to slide */
+.deck-frame.is-ready .deck-surface ol.sl-steps {
+    list-style: none;
+    counter-reset: sl-step;
+    display: grid;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-steps li {
+    counter-increment: sl-step;
+    position: relative;
+    min-height: 46px;
+    padding-left: 66px;
+    display: grid;
+    align-content: center;
+}
+
+.deck-frame.is-ready .deck-surface .sl-steps li + li {
+    margin-top: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-steps li::before {
+    content: counter(sl-step);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    translate: 0 -50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #0176d3;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Do / Don't — the judgement slide */
+.deck-frame.is-ready .deck-surface .sl-compare {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+    align-items: start;
+}
+
+.deck-frame.is-ready .deck-surface .sl-do,
+.deck-frame.is-ready .deck-surface .sl-dont {
+    padding: 26px 30px;
+    border-radius: 14px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-do {
+    background: rgba(46, 164, 100, 0.08);
+    border: 1px solid rgba(46, 132, 74, 0.3);
+}
+
+.deck-frame.is-ready .deck-surface .sl-dont {
+    background: rgba(255, 95, 87, 0.07);
+    border: 1px solid rgba(194, 57, 52, 0.28);
+}
+
+.deck-frame.is-ready .deck-surface .sl-do::before,
+.deck-frame.is-ready .deck-surface .sl-dont::before {
+    display: block;
+    margin-bottom: 14px;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.deck-frame.is-ready .deck-surface .sl-do::before {
+    content: "✓ Do";
+    color: #2e844a;
+}
+
+.deck-frame.is-ready .deck-surface .sl-dont::before {
+    content: "✗ Don't";
+    color: #c23934;
+}
+
+.deck-frame.is-ready .deck-surface .sl-do p,
+.deck-frame.is-ready .deck-surface .sl-do li,
+.deck-frame.is-ready .deck-surface .sl-dont p,
+.deck-frame.is-ready .deck-surface .sl-dont li {
+    font-size: 23px;
+}
+
+/* the big number — evidence at projector scale */
+.deck-frame.is-ready .deck-surface .sl-stats {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 72px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-stat {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+}
+
+.deck-frame.is-ready .deck-surface .sl-stat b {
+    font-size: 110px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #0176d3;
+    font-variant-numeric: tabular-nums;
+}
+
+.deck-frame.is-ready .deck-surface .sl-stat span {
+    font-size: 23px;
+    color: #3e5c7a;
+}
+
+/* definitions — the vocabulary slide */
+.deck-frame.is-ready .deck-surface .sl-term {
+    margin: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-term dt {
+    font-size: 30px;
+    font-weight: 800;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-term dt:not(:first-child) {
+    margin-top: 28px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-term dd {
+    margin: 8px 0 0;
+    font-size: 25px;
+    line-height: 1.5;
+    color: #3e5c7a;
+}
+
+/* the quiz panel — ask before you tell */
+.deck-frame.is-ready .deck-surface .sl-quiz {
+    padding: 28px 32px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.14);
+    box-shadow: 0 10px 30px rgba(3, 45, 96, 0.08);
+}
+
+.deck-frame.is-ready .deck-surface .sl-quiz-q {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-quiz-q::before {
+    content: "?";
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #0176d3;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    translate: 0 8px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-quiz ol {
+    list-style: none;
+    counter-reset: sl-q;
+    display: grid;
+    gap: 12px;
+    margin: 22px 0 0;
+    padding: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-quiz ol li {
+    counter-increment: sl-q;
+    position: relative;
+    padding: 13px 20px 13px 62px;
+    border: 1px solid rgba(3, 45, 96, 0.14);
+    border-radius: 10px;
+    font-size: 23px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-quiz ol li + li {
+    margin-top: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-quiz ol li::before {
+    content: counter(sl-q, upper-alpha);
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    translate: 0 -50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(1, 118, 211, 0.1);
+    color: #0176d3;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+/* the process flow — boxes joined by arrows */
+.deck-frame.is-ready .deck-surface .sl-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 26px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-flow > * {
+    padding: 16px 30px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.16);
+    box-shadow: 0 8px 22px rgba(3, 45, 96, 0.08);
+    font-size: 24px;
+    font-weight: 700;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-flow > * + * {
+    position: relative;
+    margin-left: 56px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-flow > * + *::before {
+    content: "→";
+    position: absolute;
+    left: -44px;
+    top: 50%;
+    translate: 0 -50%;
+    font-size: 28px;
+    font-weight: 700;
+    color: #0176d3;
+}
+
+/* a browser-window frame around a screenshot */
+.deck-frame.is-ready .deck-surface .sl-frame {
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid rgba(3, 45, 96, 0.16);
+    box-shadow: 0 16px 44px rgba(3, 45, 96, 0.18);
+    background: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface .sl-frame::before {
+    content: "";
+    display: block;
+    height: 34px;
+    background-color: #eaf2fb;
+    background-image:
+        radial-gradient(circle 5px at 22px 17px, #ff5f57 99%, transparent),
+        radial-gradient(circle 5px at 42px 17px, #febc2e 99%, transparent),
+        radial-gradient(circle 5px at 62px 17px, #28c840 99%, transparent);
+    border-bottom: 1px solid rgba(3, 45, 96, 0.1);
+}
+
+.deck-frame.is-ready .deck-surface .sl-frame img {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* the footnote line */
+.deck-frame.is-ready .deck-surface .sl-foot {
+    font-size: 18px;
+    color: rgba(3, 45, 96, 0.5);
+}

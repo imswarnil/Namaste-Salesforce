@@ -158,7 +158,9 @@ collections:
   # ── PROJECTS ─────────────────────────────────────────────────────────────
   # Open-source work, GitHub-styled. Language + stars are internal
   # tag DESCRIPTIONS (#project-lang-*, #project-stars-*), never
-  # parsed from slugs.
+  # parsed from slugs; a live-demo URL rides in the same way
+  # (#project-live-*). The slug IS the repo name — singles link
+  # to {social_github}/{slug}.
   /projects/:
     permalink: /projects/{slug}/
     template: projects
@@ -180,6 +182,19 @@ collections:
     template: prompts
     data: page.prompts
     filter: "tag:hash-prompt"
+    limit: 24
+
+  # ── SLIDES ───────────────────────────────────────────────────────────────
+  # Teaching decks. A post IS a deck: its content splits into
+  # slides on every divider card (---), post-slides.hbs renders
+  # the player (slide rail left, stage right), and Ghost's own
+  # post visibility gates it — set a deck to members-only in
+  # Admin and the theme shows the locked cover instead.
+  /slides/:
+    permalink: /slides/{slug}/
+    template: slides
+    data: page.slides
+    filter: "tag:hash-slides"
     limit: 24
 
   # ── CATCH-ALL ────────────────────────────────────────────────────────────

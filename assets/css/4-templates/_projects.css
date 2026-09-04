@@ -352,3 +352,131 @@
         display: none;
     }
 }
+
+/*  The single's two columns — readme left, the About rail right,
+    sticky like GitHub's. Below 1024px the rail folds ABOVE the
+    readme so the details stay first on mobile. */
+
+.proj-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 30rem;
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.proj-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    display: grid;
+    gap: 2rem;
+}
+
+.proj-about h2 {
+    margin: 0 0 1rem;
+    font-size: 1.6rem;
+}
+
+.proj-about > p {
+    margin: 0 0 1.6rem;
+    font-size: 1.45rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.proj-side-meta {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0 0 1.6rem;
+    padding: 0;
+    list-style: none;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+}
+
+.proj-side-meta li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+.proj-side-meta li a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
+}
+
+.proj-side-meta li a:hover {
+    color: var(--accent);
+}
+
+.proj-side-meta li.is-live a {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.proj-side-meta svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
+    color: var(--text-faint);
+}
+
+.proj-side-meta li.is-live svg {
+    color: var(--accent);
+}
+
+.proj-side-actions {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.proj-side-actions .btn {
+    justify-content: center;
+}
+
+.proj-clone-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.proj-clone-label svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.proj-clone pre {
+    margin: 0;
+    padding: 1.2rem 1.4rem;
+    font-size: 1.2rem;
+    border-radius: var(--radius);
+    overflow-x: auto;
+}
+
+@media (max-width: 1023px) {
+    .proj-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
+    }
+
+    .proj-side {
+        order: -1;
+    }
+
+    .proj-side-sticky {
+        position: static;
+    }
+}

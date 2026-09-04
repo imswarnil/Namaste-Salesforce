@@ -1,10 +1,10 @@
 {{!-- The navbar. One row: brand · nav · actions.
 
 Navigation comes straight from Ghost Admin → Settings →
-Navigation. Each item looks for an icon partial named
-icons/nav-{slug} — nav-home, nav-blog, nav-courses… — and shows
-it when one exists; an item with no matching partial simply
-renders as text, so new nav items never break.
+Navigation. Each item's icon is matched on its slug in
+partials/nav-icon.hbs (a static {{#match}} chain); an item with
+no matching branch simply renders as text, so new nav items
+never break.
 
 The burger label is wired to #nav-open in default.hbs; the whole
 mobile drawer is CSS. --}}
@@ -14,10 +14,11 @@ mobile drawer is CSS. --}}
 
         <div class="site-head-brand">
             <a class="site-head-logo" href="{{@site.url}}" aria-label="{{@site.title}} — home">
-                {{!-- The brand IS the favicon: the cloud on its
-                blue square, then the title as a wordmark. Any
-                uploaded logo image is deliberately ignored. --}}
-                <span class="site-head-mark" aria-hidden="true">{{> "icons/cloud"}}</span>
+                {{!-- The brand IS the square NS mark (the real
+                logo from assets/logo/square, shipped with the
+                theme), then the title as a wordmark. The same
+                file is the favicon. --}}
+                <span class="site-head-mark" aria-hidden="true"><img src="{{asset "images/ns-mark.svg"}}" alt="" /></span>
                 <span class="site-head-title">{{@site.title}}</span>
             </a>
         </div>

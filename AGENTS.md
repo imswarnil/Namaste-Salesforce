@@ -26,8 +26,9 @@ templates need no build. Run `pnpm test` before a PR.
 
 A post is a post; ONE internal tag decides its URL (routes.yaml), its
 layout (post.hbs dispatches on `post_class`) and its queries:
-`#course` `#lesson` `#training` `#video` `#blog` `#newsletter`
-`#changelog` `#project` (plus `#resource` `#shop` `#snippet` `#prompt`).
+`#course` `#lesson` `#training` `#video` `#slides` `#blog`
+`#newsletter` `#changelog` `#project` (plus `#resource` `#shop`
+`#snippet` `#prompt`).
 A course's slug equals its public
 tag's slug and every lesson's primary tag is that tag — that equality is
 the entire parent/child mechanism. Training mirrors it: a module IS a
@@ -42,6 +43,12 @@ public tag, its `#module` landing post's slug equals that tag's slug
   parse slugs.
 - **Video chapters**: a table in the post whose first column is
   timestamps becomes the seeking sidebar (`assets/js/video.js`).
+- **Slide decks**: a `#slides` post's content splits into slides on
+  every divider card. `assets/js/deck.js` renders the full-viewport
+  player (NS Slides grammar: fixed 1280×720 canvas scaled by
+  transform, cinema letterbox, filmstrip rail of cloned minis).
+  Ghost's own post access gates a deck; post-slides.hbs shows the
+  locked cover when `access` is false.
 - **TOC rule**: page has a sidebar → TOC widget lives in it; no sidebar →
   `partials/toc-inline.hbs` right after the hero. toc.js self-removes
   when a page has no headings.
@@ -64,7 +71,7 @@ public tag, its `#module` landing post's slug equals that tag's slug
 - `assets/css/` — layered: `0-abstracts` (tokens/fonts) → `1-base` →
   `2-layout` → `3-components` → `4-templates` → `5-utilities`;
   `screen.css` is the manifest. Paint with semantic tokens only.
-- `assets/js/` — theme.js, toc.js, filters.js, video.js. Keep JS last
+- `assets/js/` — theme.js, toc.js, filters.js, video.js, deck.js. Keep JS last
   resort; Handlebars/CSS first (`prev_post in="primary_tag"`, `<details>`
   collapse, checkbox drawer).
 - `partials/icons/` — one drawing style: 24-box, 1.8 stroke, currentColor.

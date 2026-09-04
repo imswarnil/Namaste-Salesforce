@@ -1,0 +1,57 @@
+{{!< default}}
+
+{{!-- /slides — teaching decks. Each card reads as a STACK of
+slides: two offset sheets behind the cover, the deck's duration
+chip, and a Members badge when the post's visibility gates it
+(set in Admin → post settings → Post access — the theme just
+reflects it). The single is the deck player (post-slides.hbs). --}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/presentation"}} {{t "Slides"}}</span>
+        {{#page}}
+            <h1>{{title}}</h1>
+            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+        {{else}}
+            <h1>{{t "Slides"}}</h1>
+            <p>{{t "Teaching decks — the whiteboard version of a topic, one idea per slide, keyboard-friendly."}}</p>
+        {{/page}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+        <div class="deck-grid" data-animate-stagger>
+            {{#foreach posts}}
+                <article class="card deck-card">
+                    <div class="deck-card-stack" aria-hidden="true">
+                        <span class="deck-sheet is-back"></span>
+                        <span class="deck-sheet is-mid"></span>
+                        <div class="card-media deck-sheet is-front">
+                            {{#if feature_image}}
+                                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" />
+                            {{else}}
+                                {{> "thumb-placeholder" icon="presentation"}}
+                            {{/if}}
+                            <span class="deck-card-play">{{> "icons/play-circle"}}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chips">
+                            {{#match visibility "!=" "public"}}
+                                <span class="chip deck-chip-members">{{> "icons/lock"}} {{t "Members"}}</span>
+                            {{/match}}
+                            {{> "duration-chip" chipClass="chip"}}
+                            {{#if primary_tag}}
+                                <span class="chip">{{#if primary_tag.feature_image}}<img class="card-tag-icon" src="{{img_url primary_tag.feature_image size="xs"}}" alt="" loading="lazy" />{{/if}} {{primary_tag.name}}</span>
+                            {{/if}}
+                        </div>
+                        <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
+                        {{#if custom_excerpt}}<p class="card-excerpt">{{custom_excerpt}}</p>{{/if}}
+                    </div>
+                </article>
+            {{/foreach}}
+        </div>
+        {{pagination}}
+    </div>
+</main>

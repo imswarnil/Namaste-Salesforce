@@ -13,6 +13,11 @@ that exercises every feature of the theme with realistic content:
     sidebar), four newsletter issues, six changelog entries
   · six snippets with real Apex/SOQL/Flow/LWC code, four prompts,
     six resources, four shop items
+  · four slide decks at /slides/ — slides end at divider cards;
+    one deck is members-only (the locked cover), one is built
+    entirely from editor cards (callout, code, image, button),
+    one exercises the sl-* teaching kit (steps, do/don't, stats,
+    quiz, flow)
   · six projects — GitHub-style repos at /projects/ — with
     #project-lang-* / #project-stars-* internal tags whose
     DESCRIPTIONS carry the display language and star count
@@ -75,6 +80,16 @@ def embed(video_id, caption=""):
 def codecard(lang, code, caption=""):
     return {"type": "codeblock", "version": 1, "language": lang, "code": code, "caption": caption}
 
+def htmlcard(markup):
+    """A raw HTML card — the slide decks author each slide as one
+    of these, separated by divider cards."""
+    return {"type": "html", "version": 1, "html": markup}
+
+def hr():
+    """A divider card. In a #slides post every divider ENDS a
+    slide — deck.js splits the rendered content on them."""
+    return {"type": "horizontalrule", "version": 1}
+
 def chapters(rows):
     """A chapters table — FIRST column timestamps. video.js reads
     exactly this shape and builds the seeking sidebar from it."""
@@ -133,6 +148,7 @@ tag("#module", "module", "Marks a post as a training module landing page")
 tag("#training", "training", "Marks a post as a training module section")
 tag("#blog", "blog", "Marks a post as a blog article")
 tag("#video", "video", "Marks a post as a library video")
+tag("#slides", "slides", "Marks a post as a slide deck")
 tag("#newsletter", "newsletter", "Marks a post as a newsletter issue")
 tag("#changelog", "changelog", "Marks a post as a changelog entry")
 tag("#resource", "resource", "Marks a post as a curated resource")
@@ -253,12 +269,17 @@ posts, posts_tags = [], []
 THUMB = "__GHOST_URL__/assets/images/thumbs/{}.svg"
 
 def post(title, slug, tag_slugs, excerpt, sections, day, hour=9,
-         featured=False, lead=None, closing=None, intro=None, kind="post"):
+         featured=False, lead=None, closing=None, intro=None, kind="post",
+         visibility="public"):
     """feature_image points at the branded SVG thumbnail that
     dummy-content/build-thumbnails.py draws per post into
     assets/images/thumbs/{slug}.svg — run it after importing. The
     __GHOST_URL__ token is mandatory: a bare relative path gets
-    nulled by Ghost's URL-normalisation job."""
+    nulled by Ghost's URL-normalisation job.
+
+    visibility passes straight through to Ghost ("public",
+    "members", "paid") — the theme's member gating is Ghost's
+    own post access, nothing more."""
     pid = oid()
     when = ts(day, hour)
     nodes = list(lead) if lead else []
@@ -269,7 +290,7 @@ def post(title, slug, tag_slugs, excerpt, sections, day, hour=9,
         "lexical": json.dumps(doc),
         "feature_image": THUMB.format(slug),
         "featured": 1 if featured else 0,
-        "type": kind, "status": "published", "visibility": "public",
+        "type": kind, "status": "published", "visibility": visibility,
         "custom_excerpt": excerpt,
         "created_at": when, "updated_at": when, "published_at": when,
     })
@@ -1198,6 +1219,171 @@ for title, topic, lang, stars, day, featured, excerpt, sections in projects:
     post(title, title, topic + ["project", lang, stars_tag(stars)],
          excerpt, sections, day, featured=featured)
 
+# A live-demo link is an internal tag whose DESCRIPTION is the
+# URL (#project-live-*) — post-project.hbs surfaces it at the top
+# of the About rail. One demo project carries it.
+tag("#project-live-lwc-datatable-plus", "project-live-lwc-datatable-plus",
+    "https://demo.namastesalesforce.com/lwc-datatable-plus")
+for p in posts:
+    if p["slug"] == "lwc-datatable-plus":
+        posts_tags.append({"id": oid(), "post_id": p["id"],
+                           "tag_id": tag_ids["project-live-lwc-datatable-plus"],
+                           "sort_order": 50})
+
+# ════════════════════════════════════════════════════════════════
+# SLIDES — teaching decks at /slides/. Each slide is ONE html
+# card; every divider card ends a slide (deck.js splits on <hr>).
+# The members-only deck demonstrates Ghost's own post access
+# gating the player (post-slides.hbs shows the locked cover).
+# ════════════════════════════════════════════════════════════════
+def deck(title, slug, tag_slugs, excerpt, slides_src, day,
+         visibility="public"):
+    """Each entry in slides_src is ONE slide: an HTML string (one
+    html card) or a LIST of lexical nodes — any Koenig cards the
+    editor can produce. Divider cards go between slides."""
+    nodes = []
+    for i, s in enumerate(slides_src):
+        if i:
+            nodes.append(hr())
+        if isinstance(s, str):
+            nodes.append(htmlcard(s))
+        else:
+            nodes.extend(s)
+    pid = oid()
+    when = ts(day)
+    posts.append({
+        "id": pid, "title": title, "slug": slug,
+        "lexical": lexical(*nodes),
+        "feature_image": THUMB.format(slug), "featured": 0,
+        "type": "post", "status": "published", "visibility": visibility,
+        "custom_excerpt": excerpt,
+        "created_at": when, "updated_at": when, "published_at": when,
+    })
+    for order, s in enumerate(tag_slugs):
+        posts_tags.append({"id": oid(), "post_id": pid,
+                           "tag_id": tag_ids[s], "sort_order": order})
+
+deck("The Salesforce Org in 3 Slides", "the-salesforce-org-in-3-slides",
+     ["slides", "admin", "duration-10m"],
+     "The whole mental model on three slides — org, metadata, security. The deck I open in every intro session.",
+     ["<h2>One org, everything in it</h2>"
+      "<p>Your org is one tenant on shared infrastructure — its own data, its own metadata, its own users.</p>"
+      "<ul><li>Sandboxes are copies of the <strong>metadata</strong>, not the data</li>"
+      "<li>A Developer Edition is a free standalone org — your lab</li>"
+      "<li>Almost everything starts from Setup: learn the Quick Find box first</li></ul>",
+
+      "<h2>Metadata is the product</h2>"
+      "<p>Objects, fields, layouts, flows, classes — everything you build is metadata, and metadata can move between orgs.</p>"
+      "<ul><li>Data lives in records; behaviour lives in metadata</li>"
+      "<li>Deployments move metadata, never (normally) data</li>"
+      "<li>If you can't retrieve it with the CLI, ask what it really is</li></ul>",
+
+      "<h2>Security decides what the table shows</h2>"
+      "<p>Two users open the same list view and see different worlds — by design.</p>"
+      "<ul><li>Profiles + permission sets: what you can <em>do</em></li>"
+      "<li>Org-wide defaults + sharing: which <em>records</em> you can see</li>"
+      "<li>Field-level security: which <em>columns</em> exist for you</li></ul>"
+      "<p>Next step: open your own org and check all three for one user.</p>"],
+     385)
+
+deck("Governor Limits Survival Deck", "governor-limits-survival-deck",
+     ["slides", "apex", "duration-15m"],
+     "Members only: the four limits that actually stop real orgs, one slide each — and the reflexes that keep you clear of them.",
+     ["<h2>Limits are the platform's contract</h2>"
+      "<p>Shared infrastructure means every transaction runs inside hard budgets. The good news: only a handful matter day to day.</p>",
+
+      "<h2>100 SOQL queries</h2>"
+      "<p>The one that catches everyone. A query inside a loop over 200 trigger records is 200 queries.</p>"
+      "<ul><li>Query <strong>before</strong> the loop, into a Map by Id</li>"
+      "<li>Let the trigger handler own the queries, not the helpers</li></ul>",
+
+      "<h2>150 DML statements</h2>"
+      "<p>Same shape, same fix: collect records into a list, one insert or update at the end.</p>",
+
+      "<h2>CPU time: 10 seconds</h2>"
+      "<p>The quiet one — it accumulates across every trigger, flow and process in the transaction.</p>"
+      "<ul><li>Measure with debug logs before optimising anything</li>"
+      "<li>Move heavy work async: Queueable beats @future</li></ul>"],
+     390, visibility="members")
+
+# The third deck is built from EDITOR CARDS, not html — callout,
+# code, image, button — proving any Koenig card works on a slide.
+deck("Slides with Editor Cards", "slides-with-editor-cards",
+     ["slides", "devops", "duration-10m"],
+     "A deck made only of Ghost editor cards — callout, code, image, button — one per slide. Copy this pattern for your own decks.",
+     [[h2("Slides are just editor cards"),
+       para("Write a deck the way you write a post. Any card the editor produces works on a slide — the theme restyles it for the canvas."),
+       {"type": "callout", "version": 1, "calloutEmoji": "💡",
+        "calloutText": "End a slide with a divider card. That's the whole authoring model.",
+        "backgroundColor": "blue"}],
+
+      [h2("Show real code"),
+       codecard("apex",
+                "trigger AccountTrigger on Account (before insert, before update) {\n"
+                "    TriggerDispatcher.run(new AccountTriggerHandler());\n"
+                "}",
+                "One trigger per object — the logic lives in the handler.")],
+
+      [h2("Drop in an image"),
+       {"type": "image", "version": 1, "src": THUMB.format("admin-foundations"),
+        "width": 1200, "height": 675, "title": "", "alt": "Course cover",
+        "caption": "Images centre themselves and keep the projector honest.",
+        "cardWidth": "regular", "href": ""}],
+
+      [h2("Close with a call to action"),
+       para("A deck should end with the next step, not a thank-you slide."),
+       {"type": "button", "version": 1, "buttonText": "Browse the courses",
+        "alignment": "center", "buttonUrl": "__GHOST_URL__/courses/"}]],
+     392)
+
+# The fourth deck exercises THE TEACHING KIT — the sl-* slide
+# components (slides/_surface.css): steps, do/don't, stats,
+# quiz, flow. Each slide is one HTML card using the classes.
+deck("The Teaching Kit", "the-teaching-kit",
+     ["slides", "admin", "duration-15m"],
+     "Every sl-* slide component on one deck — title, steps, do/don't, big numbers, a quiz and a process flow. Steal these slides.",
+     ["<div class=\"sl-center\">"
+      "<p class=\"sl-kicker\">The teaching kit</p>"
+      "<h1>Slides built to teach</h1>"
+      "<p>Numbered steps, do/don't panels, big numbers, quizzes and process flows — plain HTML cards with a class.</p>"
+      "<p><span class=\"sl-badge\">.sl-steps</span><span class=\"sl-badge\">.sl-compare</span><span class=\"sl-badge\">.sl-stat</span><span class=\"sl-badge\">.sl-quiz</span><span class=\"sl-badge\">.sl-flow</span></p>"
+      "</div>",
+
+      "<h2>Deploy a change, safely</h2>"
+      "<ol class=\"sl-steps\">"
+      "<li>Pull the latest metadata from the sandbox</li>"
+      "<li>Run the full test suite locally first</li>"
+      "<li>Validate against production — deploy nothing yet</li>"
+      "<li>Deploy in a window, with the rollback ready</li>"
+      "</ol>",
+
+      "<h2>Triggers, judged</h2>"
+      "<div class=\"sl-compare\">"
+      "<div class=\"sl-do\"><ul><li>One trigger per object</li><li>Logic in a handler class</li><li>Bulk-safe from line one</li></ul></div>"
+      "<div class=\"sl-dont\"><ul><li>SOQL inside loops</li><li>Logic in the trigger body</li><li>A global boolean as a recursion guard</li></ul></div>"
+      "</div>",
+
+      "<h2>Why bulk-safety matters</h2>"
+      "<div class=\"sl-stats\">"
+      "<div class=\"sl-stat\"><b>200</b><span>records per trigger batch</span></div>"
+      "<div class=\"sl-stat\"><b>100</b><span>SOQL queries per transaction</span></div>"
+      "<div class=\"sl-stat\"><b>1</b><span>query you actually need</span></div>"
+      "</div>"
+      "<p class=\"sl-foot\">Numbers from the governor limits every org shares.</p>",
+
+      "<h2>Check yourself</h2>"
+      "<div class=\"sl-quiz\">"
+      "<p class=\"sl-quiz-q\">A trigger queries Contacts inside a for-loop over 200 Accounts. What happens?</p>"
+      "<ol><li>Nothing — Salesforce optimises it away</li>"
+      "<li>It works in the sandbox, then dies in production</li>"
+      "<li>LimitException: Too many SOQL queries — at scale</li></ol>"
+      "</div>",
+
+      "<h2>The path every change takes</h2>"
+      "<div class=\"sl-flow\"><span>Sandbox</span><span>Tests</span><span>Validate</span><span>Deploy</span><span>Monitor</span></div>"
+      "<p class=\"sl-foot\">Same five boxes, whatever the tooling — the kit's .sl-flow draws the arrows.</p>"],
+     394)
+
 # #now — a few in-flight things surface on /now (tag any post with
 # #now in Admin and it appears there; untag when it ships).
 def add_now(slug):
@@ -1227,6 +1413,9 @@ page("Courses", "courses",
 page("Video Library", "videos",
      "Standalone walkthroughs — watch one thing get built, start to finish, mistakes left in.",
      [("About this page", "Supplies the video library hero via data: page.videos.")], 500)
+page("Slides", "slides",
+     "Teaching decks — the whiteboard version of a topic, one idea per slide.",
+     [("About this page", "Supplies the slides hero via data: page.slides.")], 500)
 page("The Weekly Namaste", "newsletter",
      "One email every Sunday: what changed, what matters, what to try. No sponsors, no filler.",
      [("About this page", "Supplies the newsletter hero via data: page.newsletter.")], 500)
@@ -1412,6 +1601,7 @@ settings = [
         {"label": "Training", "url": "/training/"},
         {"label": "+Library", "url": "/resources/"},
         {"label": "-Videos", "url": "/videos/"},
+        {"label": "-Slides", "url": "/slides/"},
         {"label": "-Snippets", "url": "/snippets/"},
         {"label": "-Prompts", "url": "/prompts/"},
         {"label": "-Resources", "url": "/resources/"},

@@ -148,7 +148,7 @@ window.Prism.manual = true;
         var gravNodes = [];
 
         Array.prototype.forEach.call(
-            stack.querySelectorAll('.hero-shot:not(.is-ship), .hero-dot'),
+            stack.querySelectorAll('.hero-shot'),
             function (el, i) {
                 gravNodes.push({
                     el: el,

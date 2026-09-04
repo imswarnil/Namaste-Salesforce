@@ -30,6 +30,7 @@ ICONS = {
     "training":   '<path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3.6 12.7 8.4 4.6 8.4-4.6M3.6 17 12 21.6 20.4 17"/>',
     "blog":       '<path d="M14.5 4.5 19.5 9.5 8 21H3v-5L14.5 4.5z"/><path d="m12.5 6.5 5 5"/>',
     "video":      '<rect x="2.5" y="6" width="13.5" height="12" rx="2.4"/><path d="m16 10.4 4.3-2.6a.8.8 0 0 1 1.2.7v7a.8.8 0 0 1-1.2.7L16 13.6"/>',
+    "slides":     '<path d="M3.5 4.5h17M4.5 4.5h15V15a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 15V4.5z"/><path d="M8 12.5 10.5 10l2 1.8 3.5-3.3M12 16.5v3M9 21.5l3-2 3 2"/>',
     "newsletter": '<path d="M4 5.5h12.5a1.5 1.5 0 0 1 1.5 1.5v11.5H5.5A1.5 1.5 0 0 1 4 17V5.5z"/><path d="M18 8.5h1.2a1.3 1.3 0 0 1 1.3 1.3V17a1.5 1.5 0 0 1-1.5 1.5H18M7 9h5M7 12.2h8M7 15.4h8"/>',
     "changelog":  '<path d="M4 12a8 8 0 1 0 2.3-5.6L4 8.7"/><path d="M4 4.5v4.2h4.2M12 8v4.4l3 1.8"/>',
     "resource":   '<path d="M7 3.5h10a1 1 0 0 1 1 1V21l-6-3.8L6 21V4.5a1 1 0 0 1 1-1z"/>',
@@ -41,7 +42,8 @@ ICONS = {
     "page":       '<path d="M7 3.5h7l4 4V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z"/><path d="M13.7 3.7V8h4.2M9 12h6M9 15.5h6"/>',
 }
 KICKERS = {"course": "COURSE", "lesson": "LESSON", "training": "TRAINING",
-           "blog": "BLOG", "video": "VIDEO", "newsletter": "NEWSLETTER",
+           "blog": "BLOG", "video": "VIDEO", "slides": "SLIDES",
+           "newsletter": "NEWSLETTER",
            "changelog": "CHANGELOG", "resource": "RESOURCE", "shop": "SHOP",
            "snippet": "SNIPPET", "prompt": "PROMPT", "project": "PROJECT",
            "module": "MODULE", "page": "PAGE"}
@@ -57,6 +59,7 @@ def kind_of(slugs):
         "module": ("hash-module",),
         "training": ("hash-training",),
         "video": ("hash-video",),
+        "slides": ("hash-slides",),
         "newsletter": ("hash-newsletter",),
         "changelog": ("hash-changelog",),
         "resource": ("hash-resource",),

@@ -22,6 +22,7 @@ all Ghost posts. One internal tag decides everything at once:
 | `#training-col` | a page in a training module | `/training/{module}/{slug}/` |
 | `#blog-col` | an article | `/blog/{slug}/` |
 | `#video-col` | a library video (the embed is the page) | `/videos/{slug}/` |
+| `#slides-col` | a slide deck (the deck player) | `/slides/{slug}/` |
 | `#newsletter-col` | a newsletter issue | `/newsletter/{slug}/` |
 | `#changelog-col` (or `#feed-col`) | a changelog entry | `/changelog/{slug}/` |
 | `#resource-col` | a curated resource | `/resources/{slug}/` |
@@ -161,6 +162,59 @@ the canvas grid (thumbnail; `#lesson-type-video` flips it to the dark
 cinematic variant), then small sticky sidebar (TOC, sponsor skyscraper,
 share) + fluid content. Below 1280px the rail folds into a `<details>`
 above the content.
+
+### Slides: the post is the deck
+
+A `#slides-col` post renders as the DECK PLAYER (post-slides.hbs +
+deck.js) — a FULL-VIEWPORT frame on the NS Slides player grammar
+(the ../slides app in the monorepo): the slide is a **fixed
+1280×720 logical canvas** scaled with a CSS transform to fit the
+stage (never reflowed — a slide lays out identically on every
+screen), letterboxed on near-black in BOTH themes like a cinema.
+Topbar: back · title · counter · prev/next · fullscreen (the whole
+frame, filmstrip included). Left rail: a real **filmstrip** —
+deck.js clones each slide into a miniature at thumbnail scale, the
+same content at a smaller number. Click / → / Space forward, ←
+back, Home/End jump, Esc leaves fullscreen; progress bar along the
+stage floor; the current slide rides in the URL (#slide-2). The
+navbar goes full-bleed on `tag-hash-slides`, like the lesson
+player. Below 900px the filmstrip moves to the floor, horizontal.
+
+The content splits into slides on every **divider card** — author
+each slide as any run of editor blocks and end it with a divider.
+**Any Koenig card works as a slide element** — callout, code,
+image/gallery (wide/full step into the canvas margins), button,
+bookmark, embed/video, toggle, tables — each restyled for the
+canvas (slides/_surface.css, the Koenig block); the divider is
+the one card with a job. On top of the cards sits **THE TEACHING
+KIT** — `sl-*` classes used from plain HTML cards: `.sl-kicker`,
+`.sl-center`, `.sl-badge`, `.sl-cols(-3)`, `.sl-steps` (numbered
+circles), `.sl-compare` + `.sl-do`/`.sl-dont`, `.sl-stat(s)` (big
+numbers), `.sl-term` (definitions), `.sl-quiz` (A/B/C options),
+`.sl-flow` (arrowed process boxes), `.sl-frame` (browser frame
+around a screenshot), `.sl-foot` — the "The Teaching Kit" demo
+deck shows every one. deck.js focuses the frame on load (and
+re-takes focus after fullscreen), so → / ↓ / Space forward and
+← / ↑ back drive it immediately; the topbar shows the key hint,
+Esc closes the deck outside fullscreen, and the list toggle
+folds the filmstrip away. The slide surface (navy gradient,
+white 800 headings
+with the accent wipe bar, muted body, brand line + page number in
+the footer) is canvas content and uses PX values by design — the
+document owns its pixels; only chrome speaks tokens. Elements
+enter staggered (`--i`), reduced-motion honoured. deck.js is
+progressive enhancement: with JS off (or a single-slide post) the
+frame falls back to a plain scrolling article — all player chrome
+and canvas sizing hide behind the `is-ready` class only deck.js
+writes.
+
+Member gating is Ghost's own **post access**: set a deck to
+members/paid in Admin and `{{access}}` goes false outside the
+audience — the stage shows the locked cover instead (blurred
+feature image on the 16:9 canvas, lock badge, join/sign-in CTAs;
+paid decks point at /membership/). /slides/ (slides.hbs, data:
+page.slides) shelves every deck as a stacked-sheets card with
+duration chip and a Members badge read from post `visibility`.
 
 ### Videos, newsletter, guestbook, welcome
 
@@ -304,7 +358,10 @@ copy for the no-choice state. `pnpm build` compiles.
 The scripts (`assets/js/`, all concatenated into built/main.js) also
 include `calendar.js` (the newsletter sent calendar — reads the hidden
 issue list the widget renders, builds the month grid with Intl names,
-removes itself without data) alongside `theme.js` (toggle + storage; the inline
+removes itself without data) and `deck.js` (the /slides/ player —
+splits a deck's content on divider cards, builds the rail, drives
+prev/next/keys/fullscreen; leaves single-slide posts alone) alongside
+`theme.js` (toggle + storage; the inline
 head script in default.hbs applies it pre-paint), `toc.js` (heading ids,
 outline, scroll-spy; removes itself without headings), `filters.js` (the
 /courses toolbar — built from the cards' data attributes, because
@@ -315,21 +372,29 @@ internal tags).
 
 ONE hero: Swarnil's story (7+ years IT, learning in public, build
 first → share how, aiming at GTM engineering in the AI era) with a
-COMPACT signup as the primary CTA, story fact pills, the fanned
-avatar proof, the just-shipped pill and the social icon row. The
-visual is **the stack**: every format as a connected screen on one
-dashed spine, all live data — the featured course in the app window
-(pointer tilt, progress fill), the latest video in a camcorder frame
-(blinking REC, muted autoplay when the post carries #video-preview),
-the newest training stop as a waypoint card, the latest blog post as
-a ruled sheet, the latest issue as an envelope, the latest changelog
-entry as its type badge. Below the grid: `.hero-collections` — every
-collection as one inline strip — then the stat tiles
-(hero-stats.hbs). All of it blur-reveals in sequence and respects
-reduced motion. Auth flows are real pages: two-column /signin/ (how
-magic links work) and /signup/ (the good things), each with the
-native members form and a switch link — every subscribe link on the
-site points at them, not at the Portal popup.
+COMPACT signup as the primary CTA, the fanned avatar proof and the
+just-shipped pill. The visual is **the stack**: FIVE screens around
+a BIG brand hub (the square NS mark, the theme's own asset), all
+live data, every card wearing a small accent **CTA pill**
+(.hero-shot-go — the whole card is the link, the pill is signage):
+the featured course in the app window (pointer tilt, progress fill
+— the product, the biggest piece), the latest issue as an EMAIL
+LETTER (from/to header, dashed stamp), the newest training stop as
+a graduation-cap waypoint on a dashed trail with lit stops, a
+small camcorder video (blinking REC, muted autoplay with
+#video-preview), the latest snippet as a mini VS Code window, and
+two icon badges as garnish. Every piece floats on its own loop
+(shot-float; the course folds its tilt vars into course-float) and
+the gravity scroll (animate.js) drifts the collage; one
+positioning block owns the desktop layout (`_home.css`, "The
+orbit"). Every OTHER format lives one row down in
+`.hero-collections` — the inline all-collections strip — then the
+stat tiles (hero-stats.hbs). All of it blur-reveals in sequence
+and respects reduced motion. New collections join the strip. Auth
+flows are real pages: two-column /signin/ (how magic links work)
+and /signup/ (the good things), each with the native members form
+and a switch link — every subscribe link on the site points at
+them, not at the Portal popup.
 
 ## Custom settings
 

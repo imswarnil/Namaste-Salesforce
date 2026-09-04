@@ -1,0 +1,337 @@
+/*  slides / frame — the player's chrome (post-slides.hbs)
+    ============================================================
+    PRESENT MODE: the deck ships with its own layout (deck.hbs) —
+    no navbar, no footer. The frame IS the viewport: topbar (✕ ·
+    title · counter · controls), filmstrip rail left (foldable
+    via the list toggle), cinema stage right. The ✕ — and a bare
+    Esc — lead back to /slides/.
+
+    All player chrome hides behind `.is-ready`, which only
+    deck.js writes — with JS off the frame reads as a plain
+    scrolling article (the topbar stays, so ✕ still works). The
+    slide look itself lives in slides/_surface.css.  */
+
+/* present mode: the deck single (body carries tag-hash-slides)
+   drops the site chrome — post-slides.hbs renders inside the
+   default layout, so the navbar, footer and skip-link are hidden
+   here instead of by a layout swap (see the note in the
+   partial). */
+.tag-hash-slides .site-head,
+.tag-hash-slides .site-foot,
+.tag-hash-slides .skip-link {
+    display: none;
+}
+
+.deck-frame {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.deck-frame.is-ready,
+.deck-frame:has(.deck-body.is-locked) {
+    height: 100dvh;
+    min-height: 0;
+}
+
+/*  The topbar: ✕ · title · counter/controls
+    ------------------------------------------------------------ */
+
+.deck-topbar {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    flex-shrink: 0;
+    height: 5.4rem;
+    padding: 0 1.6rem;
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--surface);
+}
+
+.deck-topbar-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.deck-topbar-close:hover {
+    color: var(--error, #c23934);
+    background: var(--bg-alt);
+}
+
+.deck-topbar-close svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+.deck-topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.deck-topbar-title strong {
+    font-size: 1.5rem;
+    color: var(--heading);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.deck-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.deck-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.deck-btn:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+
+.deck-btn svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.deck-counter {
+    padding: 0 0.6rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--heading);
+}
+
+/* the quiet reminder that the keyboard drives the deck */
+.deck-keys {
+    display: inline-flex;
+    gap: 0.4rem;
+    margin-right: 0.6rem;
+}
+
+.deck-keys kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.2rem;
+    height: 2.2rem;
+    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 0.5rem;
+}
+
+/* the body: filmstrip left, stage right */
+.deck-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/*  The filmstrip — the same slides at thumbnail scale
+    ------------------------------------------------------------ */
+
+.deck-rail {
+    /* positioned so deck.js can scroll it by offsetTop maths */
+    position: relative;
+    width: 20rem;
+    flex-shrink: 0;
+    height: 100%;
+    padding: 1.4rem 1.2rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    background: var(--bg-alt);
+    border-right: 1px solid var(--border-soft);
+}
+
+/* the list toggle folds the filmstrip away — the stage takes
+   the room and deck.js refits the canvas */
+.deck-frame.is-rail-hidden .deck-rail {
+    display: none;
+}
+
+.deck-nav {
+    display: grid;
+    gap: 1.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.deck-nav-item {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.deck-nav-item:hover {
+    border-color: color-mod(#0176d3 a(50%));
+}
+
+.deck-nav-item.is-current {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.deck-nav-num {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.9rem;
+    height: 1.9rem;
+    padding: 0 0.5rem;
+    font-style: normal;
+    font-size: 1.05rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    background: rgba(3, 18, 34, 0.72);
+    border-radius: 0.5rem;
+}
+
+.deck-nav-item.is-current .deck-nav-num {
+    background: var(--accent);
+}
+
+.deck-mini {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: calc(var(--radius) - 2px);
+    pointer-events: none;
+}
+
+/* the clone keeps the canvas' logical size; deck.js scales it */
+.deck-mini-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1280px;
+    height: 720px;
+    transform-origin: top left;
+}
+
+/* the mini's stand-in for stripped embeds/players */
+.deck-mini-media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    background: rgba(3, 45, 96, 0.08);
+}
+
+/*  The stage — the cinema
+    ------------------------------------------------------------ */
+
+.deck-frame.is-ready .deck-stage,
+.deck-body.is-locked .deck-stage {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    /* the letterbox around a slide is near-black in BOTH themes,
+       like a cinema — a theme surface here would tint the deck */
+    background: #05070c;
+}
+
+.deck-frame.is-ready .deck-stage {
+    cursor: pointer;
+}
+
+/* the canvas frame: the slide as an object on the stage */
+.deck-frame.is-ready .deck-canvas-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+/* fixed logical surface; only the transform changes per screen */
+.deck-frame.is-ready .deck-canvas {
+    width: 1280px;
+    height: 720px;
+    transform-origin: top left;
+}
+
+.deck-frame.is-ready .deck-source {
+    width: 100%;
+    height: 100%;
+}
+
+/* progress along the stage floor */
+.deck-progress {
+    display: none;
+}
+
+.deck-frame.is-ready .deck-progress {
+    display: block;
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.deck-frame.is-ready .deck-progress i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
+/* fullscreen: the same frame, wall-sized */
+.deck-frame:fullscreen {
+    height: 100%;
+    background: #05070c;
+}
+
+/*  No-JS / single-slide fallback: a plain readable article. The
+    cinema, the rail and the fixed canvas all wait for is-ready. */
+.deck-frame:not(.is-ready) .deck-source {
+    max-width: 72ch;
+    margin: 0 auto;
+    padding: 4rem 2.4rem 6.4rem;
+}
