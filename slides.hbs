@@ -1,5 +1,9 @@
 {{!< default}}
 
+{{!-- Structured data for this listing page. Keep `filter` identical
+to this collection's filter in routes.yaml. --}}
+{{> "json-ld-collection" name="Slides" path="slides" filter="tag:hash-slides" itemType="PresentationDigitalDocument"}}
+
 {{!-- /slides — teaching decks. Each card reads as a STACK of
 slides: two offset sheets behind the cover, the deck's duration
 chip, and a Members badge when the post's visibility gates it
@@ -19,39 +23,126 @@ reflects it). The single is the deck player (post-slides.hbs). --}}
     </div>
 </section>
 
-<main id="site-main" class="section outer">
-    <div class="inner">
-        <div class="deck-grid" data-animate-stagger>
-            {{#foreach posts}}
-                <article class="card deck-card">
-                    <div class="deck-card-stack" aria-hidden="true">
-                        <span class="deck-sheet is-back"></span>
-                        <span class="deck-sheet is-mid"></span>
-                        <div class="card-media deck-sheet is-front">
+{{!-- Latest deck, as a spotlight: the newest #slides post gets a
+wide banner above the shelves — cover, title, duration, one line. --}}
+{{#get "posts" filter="tag:hash-slides" order="published_at desc" limit="1" as |latest|}}
+    {{#if latest.[0]}}
+        <section class="section outer deck-spotlight-wrap">
+            <div class="inner">
+                {{#foreach latest}}
+                    <a class="deck-spotlight" href="{{url}}" data-animate>
+                        <div class="deck-spotlight-media">
                             {{#if feature_image}}
-                                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" />
+                                <img src="{{img_url feature_image size="l"}}" alt="{{title}}" loading="eager" fetchpriority="high" />
                             {{else}}
                                 {{> "thumb-placeholder" icon="presentation"}}
                             {{/if}}
                             <span class="deck-card-play">{{> "icons/play-circle"}}</span>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="chips">
-                            {{#match visibility "!=" "public"}}
-                                <span class="chip deck-chip-members">{{> "icons/lock"}} {{t "Members"}}</span>
-                            {{/match}}
-                            {{> "duration-chip" chipClass="chip"}}
-                            {{#if primary_tag}}
-                                <span class="chip">{{#if primary_tag.feature_image}}<img class="card-tag-icon" src="{{img_url primary_tag.feature_image size="xs"}}" alt="" loading="lazy" />{{/if}} {{primary_tag.name}}</span>
-                            {{/if}}
+                        <div class="deck-spotlight-copy">
+                            <span class="kicker">{{> "icons/sparkles"}} {{t "Latest deck"}}</span>
+                            <h2>{{title}}</h2>
+                            {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
+                            <div class="chips">
+                                {{> "duration-chip" chipClass="chip"}}
+                                {{#if primary_tag}}<span class="chip">{{primary_tag.name}}</span>{{/if}}
+                                {{#match visibility "!=" "public"}}<span class="chip deck-chip-members">{{> "icons/lock"}} {{t "Members"}}</span>{{/match}}
+                            </div>
+                            <span class="btn btn-lg">{{> "icons/play-circle"}} {{t "Open the deck"}}</span>
                         </div>
-                        <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
-                        {{#if custom_excerpt}}<p class="card-excerpt">{{custom_excerpt}}</p>{{/if}}
+                    </a>
+                {{/foreach}}
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Shelves by topic. A topic is a public tag; every tag that has
+at least one deck gets a shelf, newest first, six per shelf. --}}
+{{#get "tags" filter="visibility:public" order="slug asc" limit="12" as |topics|}}
+    {{#if topics.[0]}}
+        <section class="section section-alt outer deck-topics">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/layers"}} {{t "By topic"}}</span>
+                        <h2>{{t "Decks, shelved by subject"}}</h2>
                     </div>
-                </article>
+                </div>
+                {{#foreach topics}}
+                    {{#> "with-this" dTag=. }}
+                        {{#get "posts" filter="tag:{{dTag.slug}}+tag:hash-slides" order="published_at desc" limit="6" as |decks|}}
+                            {{#if decks.[0]}}
+                                <div class="deck-shelf" data-animate>
+                                    <h3 class="deck-shelf-title">
+                                        <a href="{{../dTag.url}}">{{../dTag.name}}</a>
+                                        <span class="deck-shelf-count">{{decks.length}}</span>
+                                    </h3>
+                                    <div class="deck-grid">
+                                        {{#foreach decks}}
+                                            {{> "card-deck"}}
+                                        {{/foreach}}
+                                    </div>
+                                </div>
+                            {{/if}}
+                        {{/get}}
+                    {{/with-this}}
+                {{/foreach}}
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- All decks --}}
+<main id="site-main" class="section outer">
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/presentation"}} {{t "All decks"}}</span>
+                <h2>{{t "Every deck, newest first"}}</h2>
+            </div>
+        </div>
+        <div class="deck-grid" data-animate-stagger>
+            {{#foreach posts}}
+                {{> "card-deck"}}
             {{/foreach}}
         </div>
         {{pagination}}
     </div>
 </main>
+
+{{!-- How a deck works --}}
+<section class="section outer">
+    <div class="inner">
+        <div class="home-props deck-tips" data-animate-stagger>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/presentation"}}</span>
+                <h3>{{t "One idea per slide"}}</h3>
+                <p>{{t "The whiteboard version of a topic: the diagram, the sentence, the next step — and nothing else on the screen."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/expand"}}</span>
+                <h3>{{t "Keyboard friendly"}}</h3>
+                <p>{{t "Step through with the arrow keys, go full-screen, jump from the filmstrip. Works on a phone too."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/lock"}}</span>
+                <h3>{{t "Members decks"}}</h3>
+                <p>{{t "A lock on a card means the deck is for members. Signing up is free and takes one click."}}</p>
+                {{#if @site.members_enabled}}{{^if @member}}<a class="home-journey-link" href="{{@site.url}}/signup/">{{t "Join free"}} {{> "icons/arrow-right"}}</a>{{/if}}{{/if}}
+            </div>
+        </div>
+    </div>
+</section>
+
+{{!-- The long version --}}
+<section class="section outer">
+    <div class="inner">
+        <div class="home-cta" data-animate="zoom">
+            <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
+            <h2>{{t "Want the long version?"}}</h2>
+            <p>{{t "Every deck comes from a course or a training module — the place where you actually build the thing."}}</p>
+            <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse the courses"}}</a>
+        </div>
+    </div>
+</section>

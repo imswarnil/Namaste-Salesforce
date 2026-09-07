@@ -1,0 +1,114 @@
+{{!-- The journey — MY story, told as a horizontal timeline. One
+rail along the x-axis, a stop per chapter: job seeker, Accenture,
+Trailblazer, Cognizant, Twilio, Education First. The strip scroll-
+snaps sideways; animate.js fills the rail and lights each node as
+it passes ([data-story]). The last card hands the road to the
+reader.
+
+The band runs DARK so the film behind it reads. Nothing is
+restyled for it: .home-story re-points the semantic colour tokens
+at their dark values and the cards, rail and nodes follow, because
+they were painted with tokens rather than literals.
+
+⚠ THE YEARS BELOW ARE PLACEHOLDERS. They were spaced to fit
+"seven-plus years into IT" from the site description — they are
+not real dates. Correct them before this goes live. --}}
+<section class="section outer home-story">
+    {{!-- The backdrop, three layers deep: the film, a navy blend that
+    darkens it into brand colour without greying it, and a blueprint
+    grid masked so it fades out at the corners. All decorative, all
+    behind the content, none of it interactive. --}}
+    <div class="story-bg" aria-hidden="true">
+        <div class="story-video">
+            <iframe src="https://www.youtube-nocookie.com/embed/RZMj7C41AuQ?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=RZMj7C41AuQ&amp;controls=0&amp;rel=0&amp;playsinline=1&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1"
+                title="" loading="lazy" tabindex="-1"
+                allow="autoplay; encrypted-media"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+        <div class="story-shade"></div>
+        <div class="story-grid"></div>
+    </div>
+
+    <div class="inner relative">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/map-icon"}} {{t "The journey"}}</span>
+                <h2>{{t "From job seeker to Salesforce engineer"}}</h2>
+                <p>{{t "The road so far — every stop taught something you'll find on this site."}}</p>
+            </div>
+            {{#get "pages" filter="slug:about" limit="1" as |about|}}
+                {{#if about.[0]}}
+                    <a class="btn btn-inverse story-head-cta" href="{{about.[0].url}}">
+                        {{t "Read my story"}} {{> "icons/arrow-right"}}
+                    </a>
+                {{/if}}
+            {{/get}}
+        </div>
+    </div>
+
+    <div class="inner">
+        <div class="story-strip" data-story data-animate>
+            <div class="story-track">
+                <span class="story-rail" aria-hidden="true"><i data-story-fill></i></span>
+
+                <article class="story-stop">
+                    <span class="story-node" aria-hidden="true">{{> "icons/search"}}</span>
+                    <span class="story-tag">{{t "The start"}}</span>
+                    <time class="story-year">2018</time>
+                    <h3>{{t "Job seeker"}}</h3>
+                    <p>{{t "Degree in hand, inbox full of applications. The only real asset: the will to learn anything."}}</p>
+                </article>
+
+                <article class="story-stop">
+                    <span class="story-node" aria-hidden="true">{{> "icons/zap"}}</span>
+                    <span class="story-tag">{{t "First break"}}</span>
+                    <time class="story-year">2019</time>
+                    <h3>Accenture</h3>
+                    <p>{{t "The offer that started everything — first project, first production incident, first win."}}</p>
+                </article>
+
+                <article class="story-stop">
+                    <span class="story-node" aria-hidden="true">{{> "icons/fire"}}</span>
+                    <span class="story-tag">{{t "The spark"}}</span>
+                    <time class="story-year">2020</time>
+                    <h3>{{t "Trailblazer"}}</h3>
+                    <p>{{t "Met Salesforce on a project and never left — Trailhead badges by night, real orgs by day."}}</p>
+                </article>
+
+                <article class="story-stop">
+                    <span class="story-node" aria-hidden="true">{{> "icons/layers"}}</span>
+                    <span class="story-tag">{{t "Scale"}}</span>
+                    <time class="story-year">2022</time>
+                    <h3>Cognizant</h3>
+                    <p>{{t "Bigger enterprises, bigger orgs — the years that taught how real projects actually run."}}</p>
+                </article>
+
+                <article class="story-stop">
+                    <span class="story-node" aria-hidden="true">{{> "icons/signal"}}</span>
+                    <span class="story-tag">{{t "GTM era"}}</span>
+                    <time class="story-year">2024</time>
+                    <h3>Twilio</h3>
+                    <p>{{t "GTM engineering — where Salesforce meets revenue, data and messaging at speed."}}</p>
+                </article>
+
+                <article class="story-stop is-now">
+                    <span class="story-node" aria-hidden="true">{{> "icons/cloud"}}</span>
+                    <span class="story-tag"><i class="story-now-ping" aria-hidden="true"></i> {{t "Now"}}</span>
+                    <time class="story-year">2026</time>
+                    <h3>Education First</h3>
+                    <p>{{t "Salesforce Engineer at a global education company — and sharing every lesson here."}}</p>
+                </article>
+
+                <article class="story-stop is-next">
+                    <span class="story-node" aria-hidden="true">{{> "icons/avatar"}}</span>
+                    <span class="story-tag">{{t "Your turn"}}</span>
+                    <time class="story-year is-open">{{t "Next"}}</time>
+                    <h3>{{t "You?"}}</h3>
+                    <p>{{t "Start your own Salesforce chapter — the courses are free and the path is mapped."}}</p>
+                    <a class="btn btn-sm story-cta" href="{{@site.url}}/courses/">{{t "Start here"}} {{> "icons/arrow-right"}}</a>
+                </article>
+            </div>
+        </div>
+        <p class="story-hint" aria-hidden="true">{{> "icons/arrow-right"}} {{t "drag or scroll sideways"}}</p>
+    </div>
+</section>

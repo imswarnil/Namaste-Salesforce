@@ -17,7 +17,7 @@ a support CTA. --}}
         <h1>{{title}}</h1>
         <p>{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Questions, corrections, ideas — we read everything."}}{{/if}}</p>
         <div class="contact-hero-actions">
-            <a class="btn btn-lg" href="mailto:hello@namastesalesforce.com">{{> "icons/mail"}} {{t "Email us"}}</a>
+            <a class="btn btn-lg" href="mailto:{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}">{{> "icons/mail"}} {{t "Email us"}}</a>
             <a class="btn btn-lg btn-ghost" href="{{@site.url}}/guestbook/">{{> "icons/pen"}} {{t "Sign the guestbook"}}</a>
         </div>
     </div>
@@ -29,14 +29,14 @@ a support CTA. --}}
             <div class="home-prop">
                 <span class="home-prop-icon">{{> "icons/mail"}}</span>
                 <h3>{{t "Say hello"}}</h3>
-                <p>{{t "Write to hello@namastesalesforce.com — expect a reply within two working days."}}</p>
-                <a class="home-journey-link" href="mailto:hello@namastesalesforce.com">{{t "Email"}} {{> "icons/arrow-right"}}</a>
+                <p>{{t "Write to"}} <a href="mailto:{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}">{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}</a> — {{t "expect a reply within two working days."}}</p>
+                <a class="home-journey-link" href="mailto:{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}">{{t "Email"}} {{> "icons/arrow-right"}}</a>
             </div>
             <div class="home-prop">
                 <span class="home-prop-icon">{{> "icons/file-check"}}</span>
                 <h3>{{t "Report a correction"}}</h3>
                 <p>{{t "Spotted something wrong in a lesson? Tell us which page and what you expected — fixes ship weekly."}}</p>
-                <a class="home-journey-link" href="mailto:hello@namastesalesforce.com?subject=Correction">{{t "Send a fix"}} {{> "icons/arrow-right"}}</a>
+                <a class="home-journey-link" href="mailto:{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}?subject=Correction">{{t "Send a fix"}} {{> "icons/arrow-right"}}</a>
             </div>
             <div class="home-prop">
                 <span class="home-prop-icon">{{> "icons/megaphone"}}</span>
@@ -57,6 +57,69 @@ a support CTA. --}}
     </div>
 </section>
 {{/if}}
+
+{{!-- Write to us. Ghost has no form backend, so this is a composer:
+it builds the email — subject, your name, the message — and hands
+it to your mail app with everything filled in. Nothing is sent from
+here and nothing is stored. assets/js/contact.js does the assembly;
+without JS the button is a plain mailto. --}}
+<section class="section outer">
+    <div class="inner contact-layout">
+        <div class="contact-composer-wrap" data-animate>
+            <div class="section-head">
+                <div>
+                    <span class="kicker">{{> "icons/pen"}} {{t "Write to us"}}</span>
+                    <h2>{{t "Start the email here"}}</h2>
+                    <p>{{t "Pick what it's about, say what you need, and it opens in your mail app ready to send."}}</p>
+                </div>
+            </div>
+            <form class="contact-composer" data-contact-form data-contact-to="{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}">
+                <label class="contact-field">
+                    <span>{{t "It's about"}}</span>
+                    <select name="topic" data-contact-topic>
+                        <option value="Question">{{t "A question about a lesson"}}</option>
+                        <option value="Correction">{{t "A correction"}}</option>
+                        <option value="Topic request">{{t "A topic I'd like covered"}}</option>
+                        <option value="Sponsorship">{{t "Sponsorship"}}</option>
+                        <option value="Hello">{{t "Just saying hello"}}</option>
+                    </select>
+                </label>
+                <label class="contact-field">
+                    <span>{{t "Your name"}}</span>
+                    <input type="text" name="name" autocomplete="name" placeholder="{{t "So we know who to reply to"}}" data-contact-name />
+                </label>
+                <label class="contact-field is-wide">
+                    <span>{{t "Message"}}</span>
+                    <textarea name="message" rows="6" placeholder="{{t "Which page, what happened, what you expected — the more specific, the faster the fix."}}" data-contact-message></textarea>
+                </label>
+                <div class="contact-composer-foot is-wide">
+                    <a class="btn btn-lg" href="mailto:{{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}" data-contact-send>{{> "icons/mail"}} {{t "Open in my mail app"}}</a>
+                    <span class="contact-composer-note">{{t "Goes to"}} {{#if @custom.contact_email}}{{@custom.contact_email}}{{else}}hello@namastesalesforce.com{{/if}}</span>
+                </div>
+            </form>
+        </div>
+
+        <aside class="contact-faq" data-animate="right">
+            <h3>{{t "Before you write"}}</h3>
+            <details class="faq-item" open>
+                <summary>{{t "How fast do you reply?"}} <span class="chev">{{> "icons/chevron-down"}}</span></summary>
+                <p>{{t "Within two working days, usually sooner. Corrections are read first and ship in the weekly fix round."}}</p>
+            </details>
+            <details class="faq-item">
+                <summary>{{t "Can I ask for a topic?"}} <span class="chev">{{> "icons/chevron-down"}}</span></summary>
+                <p>{{t "Yes — pick 'A topic I'd like covered' above. Requests that come with a real problem you're stuck on get built first."}}</p>
+            </details>
+            <details class="faq-item">
+                <summary>{{t "Something on a page is wrong"}} <span class="chev">{{> "icons/chevron-down"}}</span></summary>
+                <p>{{t "Tell us the page and what you expected. Every fix lands in the changelog with a date, so you can see it shipped."}} <a href="{{@site.url}}/changelog/">{{t "Changelog"}} →</a></p>
+            </details>
+            <details class="faq-item">
+                <summary>{{t "I'd like to sponsor the site"}} <span class="chev">{{> "icons/chevron-down"}}</span></summary>
+                <p>{{t "The sponsor page has the audience, the slots and the pricing."}} <a href="{{@site.url}}/sponsor/">{{t "Sponsorship"}} →</a></p>
+            </details>
+        </aside>
+    </div>
+</section>
 
 {{!-- Socials — only channels actually configured render --}}
 <section class="section outer">

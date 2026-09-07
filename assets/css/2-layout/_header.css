@@ -42,7 +42,7 @@
        edge lines up exactly with .outer > .inner content below */
     max-width: calc(1200px + 2 * max(4vmin, 20px));
     margin: 0 auto;
-    padding: 0 max(4vmin, 20px);
+    padding: 0 max(4vmin, 20px, env(safe-area-inset-right)) 0 max(4vmin, 20px, env(safe-area-inset-left));
 }
 
 .tag-hash-lesson .site-head-inner,
@@ -54,12 +54,17 @@
 .site-head-brand {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
+    /* Shrinks only as a last resort — the actions cluster and the
+       burger have first claim on the row, so the wordmark gives
+       way (ellipsis) long before anything leaves the viewport. */
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
 .site-head-logo {
     display: flex;
     align-items: center;
+    min-width: 0;
     gap: 1rem;
     font-size: 2rem;
     font-weight: 800;
@@ -92,13 +97,10 @@
 
 .site-head-title {
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-@media (max-width: 380px) {
-    .site-head-title {
-        font-size: 1.7rem;
-    }
-}
 
 /* Primary nav */
 .site-head-nav {
@@ -349,6 +351,19 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         background: var(--bg);
     }
 
+    /* .site-head-nav goes position:fixed below, so the margin-right:auto
+       it carries stops doing any work — the actions cluster has to push
+       itself right. It also never shrinks: the burger is the one control
+       a phone cannot do without. */
+    .site-head-inner {
+        gap: 1.2rem;
+    }
+
+    .site-head-actions {
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
     /* The drawer blooms open from the burger's corner — a
        circular clip-path reveal, items cascading in behind it. */
     .site-head-nav {
@@ -424,7 +439,14 @@ html[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
         border-bottom: 0;
     }
 
+    /*  Full-width rows. The base rule is display:inline-flex, which
+        shrink-wraps to the label — so in the drawer only the WORD
+        answered a tap and the rest of the row did nothing. In a
+        drawer the whole row is the target. */
     .site-nav a {
+        display: flex;
+        align-items: center;
+        width: 100%;
         padding: 1.1rem 0.4rem;
         font-size: 1.5rem;
         font-weight: 500;
@@ -612,6 +634,9 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
     }
 
     .nav-dropdown a {
+        display: flex;
+        align-items: center;
+        width: 100%;
         padding: 1.1rem 1.2rem;
         font-size: 1.55rem;
         font-weight: 500;
@@ -624,7 +649,13 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
 }
 
 
-/* Phones: only the essentials in the bar */
+/*  Phones: only the essentials in the bar, and they all shrink
+    together so the full wordmark still fits beside them. The budget
+    at 390px is tight and deliberate —
+      40 padding + 44 burger + 3x36 icons + 6 icon gaps
+      + 12 row gap + 30 mark + 8 logo gap  =  248
+    leaving 142px for a 1.5rem wordmark that measures 133px.
+    Anything narrower falls back to the ellipsis on .site-head-title. */
 @media (max-width: 600px) {
     .site-head-actions .gh-star {
         display: none;
@@ -632,6 +663,31 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
 
     .site-head-actions {
         gap: 0.2rem;
+    }
+
+    .site-head-actions .icon-btn {
+        width: 3.6rem;
+        height: 3.6rem;
+    }
+
+    .site-head-logo {
+        gap: 0.8rem;
+    }
+
+    .site-head-mark {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .site-head-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* One more step down for 375px-class phones */
+@media (max-width: 380px) {
+    .site-head-title {
+        font-size: 1.4rem;
     }
 }
 
@@ -642,4 +698,72 @@ html[data-theme="dark"] .logo-invertible { filter: brightness(0) invert(1); }
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--border);
+}
+
+
+/*  Touch
+    ============================================================
+
+    Fingers, not cursors. Three things a pointer never needed:
+
+      · a hit area larger than the drawn control — the icons draw at
+        3.6rem on a phone (that is what fits beside the wordmark) but
+        answer to 4.6rem, via a pseudo-element that the layout never
+        sees;
+      · no tap flash, and no 300ms double-tap wait (touch-action);
+      · drawer rows tall enough to hit without aiming, with a pressed
+        state so a tap is acknowledged before the page changes.
+
+    The drawer is still pure CSS. assets/js/drawer.js only adds the
+    manners: close on a link tap, on Escape, and when the viewport
+    grows past the phone breakpoint with the drawer still open.    */
+
+.icon-btn,
+.nav-burger,
+.site-head-logo,
+.site-nav a,
+.hero-feature-toggle {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.icon-btn,
+.nav-burger {
+    position: relative;
+}
+
+.icon-btn::before,
+.nav-burger::before {
+    content: "";
+    position: absolute;
+    inset: -0.5rem;
+    border-radius: inherit;
+}
+
+@media (max-width: 900px) {
+    .site-head-nav {
+        touch-action: pan-y;
+        padding-top: 1.2rem;
+    }
+
+    .site-nav a {
+        min-height: 4.8rem;
+        padding: 1.4rem 0.6rem;
+        font-size: 1.6rem;
+    }
+
+    .site-nav a:active {
+        background: var(--bg-alt);
+        color: var(--accent);
+    }
+
+    .nav-dropdown a {
+        min-height: 4.6rem;
+        padding: 1.25rem 1.2rem;
+    }
+
+    /* the drawer's foot clears the home indicator on notched phones */
+    .site-head-nav {
+        padding-bottom: calc(5.2rem + env(safe-area-inset-bottom, 0px));
+    }
 }

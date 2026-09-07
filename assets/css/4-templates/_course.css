@@ -411,3 +411,33 @@
     content: "✓";
     font-size: 1.4rem;
 }
+
+/*  The course single's widget rail sticks, and its widgets sit at ONE
+    spacing — the rail is a flex column with a gap, and the shared
+    `.widget + .widget` margin is zeroed inside it so the two systems
+    cannot add up to uneven distances. */
+.course-grid > aside {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    max-height: calc(100vh - var(--header-height) - 4.8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.course-grid > aside .widget + .widget {
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .course-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .course-grid > aside {
+        position: static;
+        max-height: none;
+    }
+}

@@ -5,13 +5,13 @@ the sub is @site.description, and when a publication cover is
 set (Admin → Design → Publication cover) it becomes the hero's
 background — masked and faded so the copy always wins.
 
-Right: the stack — FOUR screens around the hub, no more. The
-product window (the featured course as an app frame) leads;
-the camcorder, the training waypoint and the envelope orbit it.
-Low-fidelity skeletons, not meta, so each card reads as WHAT IT
-IS at a glance. Every card still links to the real latest post
-of its kind; the title rides along as the accessible label.
-Everything else the site makes lives one row down in
+Right: ONE square — the publication's own mark, and the film
+behind it. The card sits at 1:1 until it is pressed, then morphs
+to 16:9 and plays the intro; closing it returns the square. It
+replaced a five-screen lo-fi collage: the collage said "look how
+much this site makes", which the .hero-collections strip below
+already says better, and it said it with five fake windows.
+Everything the site makes still lives one row down in
 .hero-collections — the hero itself stays quiet. --}}
 
 <section class="home-hero outer relative">
@@ -102,174 +102,201 @@ Everything else the site makes lives one row down in
             {{/get}}
         </div>
 
-        {{!-- The stack: four lo-fi screens around the hub.
-        Skeleton bars, not meta — each card reads as WHAT it is. --}}
-        <div class="hero-stack">
-            {{!-- The web: animate.js draws one thin line from the
-            hub to every screen and redraws them every frame while
-            the gravity scroll runs. --}}
-            <svg class="hero-web" aria-hidden="true"></svg>
-            <span class="hero-stack-spine" aria-hidden="true"></span>
+        {{!-- Right: the publication cover, and the film behind it.
 
-            {{!-- The hub: the publication itself — the BIG square
-            NS mark (the real logo, shipped with the theme), radar
-            rings pulsing. Every screen orbits this tile. --}}
-            <span class="hero-hub" aria-hidden="true">
-                <i class="hero-hub-ring"></i>
-                <i class="hero-hub-ring r2"></i>
-                <span class="hero-hub-tile is-brand">
-                    <img src="{{asset "images/ns-mark.svg"}}" alt="" loading="eager" fetchpriority="high" />
-                </span>
-                <span class="hero-bit is-verified">{{> "icons/check-circle"}} {{t "building live"}}</span>
-            </span>
+        The card rests at 1:1 showing the publication cover (Admin →
+        Design → Publication cover) under a brand scrim. ONE toggle
+        straddles its bottom edge: press it and the card morphs to
+        16:9 and mounts the YouTube embed, press it again and the
+        cover returns. The toggle floats OUTSIDE the frame on
+        purpose — inside, it landed on YouTube's own controls.
 
-            {{!-- 1 · course = app window --}}
-            {{#get "posts" filter="tag:hash-course" order="featured desc, published_at asc" limit="1" as |star|}}
-                {{#foreach star}}
-                    <a class="hero-shot is-course hero-app" href="{{url}}" aria-label="{{title}}" data-tilt>
-                        <span class="hero-app-bar" aria-hidden="true">
-                            <span class="hero-app-dots"><i></i><i></i><i></i></span>
-                            <span class="hero-app-url">/courses</span>
-                        </span>
-                        <span class="hero-app-body" aria-hidden="true">
-                            <span class="hero-app-rail">
-                                <span class="sk sk-w80"></span>
-                                <span class="sk-row is-now"><i class="sk-dot"></i><span class="sk sk-w70"></span></span>
-                                <span class="sk-row"><i class="sk-dot"></i><span class="sk sk-w60"></span></span>
-                                <span class="sk-row"><i class="sk-dot"></i><span class="sk sk-w70"></span></span>
-                            </span>
-                            <span class="hero-app-stage">
-                                <span class="hero-app-screen">
-                                    {{#if feature_image}}
-                                        <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
-                                    {{/if}}
-                                    <span class="hero-app-play">{{> "icons/play-circle"}}</span>
-                                </span>
-                                <span class="hero-app-progress"><i></i></span>
-                            </span>
-                        </span>
-                        <span class="hero-shot-go" aria-hidden="true">{{t "Start free"}} {{> "icons/arrow-right"}}</span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
+        NOTHING is requested from YouTube until that first press, so
+        a visitor who never plays the film meets no third-party
+        frame, script or cookie. See assets/js/hero-video.js.
 
-            {{!-- 2 · video = camcorder --}}
-            {{#get "posts" filter="tag:hash-video" include="tags" order="published_at desc" limit="1" as |vid|}}
-                {{#foreach vid}}
-                    <a class="hero-shot is-video" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-cam-top" aria-hidden="true">
-                            <span class="hero-cam-rec"><i></i> REC</span>
-                            {{> "duration-chip" chipClass="hero-cam-time"}}
-                        </span>
-                        <span class="hero-screen-media" aria-hidden="true">
-                            {{#if feature_image}}
-                                <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
+        The chips floating around the card are the publication's own
+        most-used tags, not decoration invented here — they grow and
+        change with the site instead of going stale.
+
+        The film's address comes from Admin → Design → Site-wide →
+        "Hero video". Empty, the card is simply the cover. --}}
+        <div class="hero-feature">
+            <div class="hero-feature-card{{#if @custom.hero_video}} has-video{{/if}}"
+                {{#if @custom.hero_video}}data-hero-video="{{@custom.hero_video}}"{{/if}}>
+
+                <div class="hero-feature-poster">
+                    {{#if @site.cover_image}}
+                        <img class="hero-feature-cover" src="{{img_url @site.cover_image size="l"}}" alt="" fetchpriority="high" />
+                    {{else}}
+                        {{!-- No cover set: the brand square stands in, so the
+                        hero never renders as an empty grey box. --}}
+                        <span class="hero-feature-grid" aria-hidden="true"></span>
+                        <span class="hero-feature-mark">
+                            {{#if @site.icon}}
+                                <img src="{{img_url @site.icon size="m"}}" alt="" fetchpriority="high" />
                             {{else}}
-                                {{> "thumb-placeholder" icon="video"}}
+                                <img src="{{asset "images/ns-mark.svg"}}" alt="" fetchpriority="high" />
                             {{/if}}
-                            {{> "video-preview"}}
-                            <i class="hero-cam-corner tl"></i><i class="hero-cam-corner tr"></i>
-                            <i class="hero-cam-corner bl"></i><i class="hero-cam-corner br"></i>
                         </span>
-                        <span class="hero-shot-go" aria-hidden="true">{{t "Watch now"}} {{> "icons/arrow-right"}}</span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
+                    {{/if}}
 
-            {{!-- 3 · training = the path itself: a graduation-cap
-            waypoint and a dashed trail with lit stops --}}
-            {{#get "posts" filter="tag:hash-training" order="published_at desc" limit="1" as |tr|}}
-                {{#foreach tr}}
-                    <a class="hero-shot is-training" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-shot-label" aria-hidden="true">{{t "Training"}}</span>
-                        <span class="hero-train-node" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
-                        <span class="hero-train-body" aria-hidden="true">
-                            <span class="sk sk-thin sk-w40"></span>
-                            <span class="sk sk-w80"></span>
-                            <svg class="hero-train-trail" viewBox="0 0 132 26" aria-hidden="true">
-                                <path d="M4 20 C 34 6, 62 24, 92 12 S 118 6, 128 9"/>
-                                <circle class="done" cx="4" cy="20" r="3.2"/>
-                                <circle class="done" cx="50" cy="15" r="3.2"/>
-                                <circle cx="92" cy="12" r="3.2"/>
-                                <circle cx="128" cy="9" r="3.2"/>
-                            </svg>
-                        </span>
-                        <span class="hero-shot-go" aria-hidden="true">{{t "Follow the path"}} {{> "icons/arrow-right"}}</span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
+                    <span class="hero-feature-scrim" aria-hidden="true"></span>
 
-            {{!-- 4 · newsletter = the letter itself: an email
-            header (from · to) over ruled lines --}}
-            {{#get "posts" filter="tag:hash-newsletter" limit="1" as |iss|}}
-                {{#foreach iss}}
-                    <a class="hero-shot is-mail" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-shot-label" aria-hidden="true">{{t "Newsletter"}}</span>
-                        <span class="hero-mail-head" aria-hidden="true">
-                            <span class="hero-mail-ava">{{> "icons/mail"}}</span>
-                            <span class="hero-mail-meta">
-                                <b>{{t "The Weekly Namaste"}}</b>
-                                <small>{{t "to: you@work-email.com"}}</small>
-                            </span>
-                            <span class="hero-mail-stamp">{{> "icons/cloud"}}</span>
-                        </span>
-                        <span class="hero-sheet-body" aria-hidden="true">
-                            <span class="sk sk-thin sk-w90"></span>
-                            <span class="sk sk-thin sk-w70"></span>
-                            <span class="sk sk-thin sk-w80"></span>
-                        </span>
-                        <span class="hero-shot-go" aria-hidden="true">{{t "Get the letter"}} {{> "icons/arrow-right"}}</span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
+                    <span class="hero-feature-meta">
+                        <b class="hero-feature-title">{{@site.title}}</b>
+                    </span>
+                </div>
 
-            {{!-- 5 · snippets = a mini VS Code window: real file
-            names in the tab strip, lo-fi buffer, status bar --}}
-            {{#get "posts" filter="tag:hash-snippet" limit="1" as |snip|}}
-                {{#foreach snip}}
-                    <a class="hero-shot is-snip" href="{{url}}" aria-label="{{title}}">
-                        <span class="hero-snip-bar" aria-hidden="true"><i></i><i></i><i></i><em>VS Code</em></span>
-                        <span class="hero-snip-tabs" aria-hidden="true">
-                            <b class="is-on">{{> "icons/code"}} apex.cls</b>
-                            <b>lwc.html</b>
-                            <b>flow.xml</b>
-                        </span>
-                        <span class="hero-snip-code" aria-hidden="true">
-                            <b class="vt-k" style="width: 34%;"></b>
-                            <b class="vt-s" style="width: 58%;"></b>
-                            <b style="width: 44%;"></b>
-                        </span>
-                        <span class="hero-snip-status" aria-hidden="true">{{> "icons/github"}} main &middot; Apex</span>
-                    </a>
-                {{/foreach}}
-            {{/get}}
+                {{#if @custom.hero_video}}
+                    {{!-- The embed lands here on press and is torn out again
+                    on close, so a closed card holds no frame. --}}
+                    <div class="hero-feature-stage" data-hero-stage></div>
 
-            {{!-- Tiny icon badges — garnish, threaded into the
-            web so the collage reads as one connected system --}}
-            <span class="hero-dot is-d1" aria-hidden="true">{{> "icons/cloud"}}</span>
-            <span class="hero-dot is-d2" aria-hidden="true">{{> "icons/zap"}}</span>
+                    {{!-- One control, two states — pressing it plays, pressing
+                    it again brings the cover back. --}}
+                    <button class="hero-feature-toggle" type="button"
+                        data-hero-toggle
+                        aria-expanded="false">
+                        <span class="hero-feature-disc" aria-hidden="true">
+                            <svg class="i-play" viewBox="0 0 24 24"><path d="M9 7.5v9l7.5-4.5z" fill="currentColor"/></svg>
+                            <svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>
+                        </span>
+                        <span class="hero-feature-toggle-label">
+                            <span class="on-idle">{{t "Watch the intro"}}</span>
+                            <span class="on-playing">{{t "Close"}}</span>
+                        </span>
+                    </button>
+                {{/if}}
+            </div>
 
+            {{!-- Floating chips. Typed ones win (Admin → Design →
+            Site-wide → "Hero chips"); empty falls back to the AI-era
+            defaults in assets/js/hero-video.js, which is also where
+            the labels are cut up and matched to icons — Handlebars
+            has no split, and a chip's icon is chosen from its word.
+
+            The publication's tags were the obvious source and the
+            wrong one: ordered by post count they read "Apex, Admin,
+            DevOps, Flow, Apex Triggers" — a sentence-length admin
+            vocabulary, not what the site is about now.
+
+            Decorative, hence aria-hidden: the same words are real
+            links in the quick-links strip below. --}}
+            {{#if @custom.hero_chips}}
+                <ul class="hero-feature-chips" data-hero-chips="{{@custom.hero_chips}}" aria-hidden="true"></ul>
+            {{else}}
+                <ul class="hero-feature-chips" data-hero-chips aria-hidden="true"></ul>
+            {{/if}}
+
+            {{!-- Social rail on the card's left edge. Ghost's own
+            accounts (Admin → Settings → Social accounts) plus the
+            theme's own link settings; each renders only when set, and
+            the rail disappears entirely when none are. --}}
+            <ul class="hero-feature-social">
+                {{#if @site.twitter}}
+                    <li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X">{{> "icons/x"}}</a></li>
+                {{/if}}
+                {{#if @site.facebook}}
+                    <li><a href="{{social_url type="facebook"}}" target="_blank" rel="noopener" aria-label="Facebook">{{> "icons/facebook"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_youtube}}
+                    <li><a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube">{{> "icons/youtube"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_linkedin}}
+                    <li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_github}}
+                    <li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub">{{> "icons/github"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_instagram}}
+                    <li><a href="{{@custom.social_instagram}}" target="_blank" rel="noopener" aria-label="Instagram">{{> "icons/instagram"}}</a></li>
+                {{/if}}
+            </ul>
         </div>
 
     </div>
 
-    {{!-- Every collection, one inline strip --}}
-    <div class="inner">
-        <nav class="hero-collections" aria-label="{{t "Browse everything"}}">
-            <a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Courses"}}</a>
-            <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
-            <a href="{{@site.url}}/videos/">{{> "icons/video"}} {{t "Videos"}}</a>
-            <a href="{{@site.url}}/slides/">{{> "icons/presentation"}} {{t "Slides"}}</a>
-            <a href="{{@site.url}}/blog/">{{> "icons/pen"}} {{t "Blog"}}</a>
-            <a href="{{@site.url}}/newsletter/">{{> "icons/newspaper"}} {{t "Newsletter"}}</a>
-            <a href="{{@site.url}}/snippets/">{{> "icons/code"}} {{t "Snippets"}}</a>
-            <a href="{{@site.url}}/prompts/">{{> "icons/sparkles"}} {{t "Prompts"}}</a>
-            <a href="{{@site.url}}/resources/">{{> "icons/bookmark"}} {{t "Resources"}}</a>
-            <a href="{{@site.url}}/projects/">{{> "icons/github"}} {{t "Projects"}}</a>
-            <a href="{{@site.url}}/shop/">{{> "icons/gift"}} {{t "Shop"}}</a>
-            <a href="{{@site.url}}/changelog/">{{> "icons/history"}} {{t "Changelog"}}</a>
-        </nav>
+</section>
 
-        {{> "hero-stats"}}
+{{!-- Everything the site makes, as a bento.
+
+Sizes carry the hierarchy: the two things you are meant to start
+with take double-width tiles, the rest are equal singles. Each tile
+hides an oversized icon half-off its bottom-right corner — on hover
+it rises INTO the tile rather than appearing from nothing, which is
+what makes the movement read as one object instead of a flicker. --}}
+<section class="quicklinks outer">
+    <div class="inner">
+        <div class="ql-head">
+            <span class="kicker">{{> "icons/layers"}} {{t "Everything here"}}</span>
+            <h2>{{t "Pick a way in"}}</h2>
+        </div>
+
+        <nav class="ql-grid" aria-label="{{t "Browse everything"}}">
+            <a class="ql-tile is-wide" href="{{@site.url}}/courses/">
+                <span class="ql-name">{{t "Courses"}}</span>
+                <span class="ql-note">{{t "Structured, lesson by lesson"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+            </a>
+            <a class="ql-tile is-wide" href="{{@site.url}}/training/">
+                <span class="ql-name">{{t "Training"}}</span>
+                <span class="ql-note">{{t "Modular paths you can follow live"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/layers"}}</span>
+            </a>
+
+            <a class="ql-tile" href="{{@site.url}}/videos/">
+                <span class="ql-name">{{t "Videos"}}</span>
+                <span class="ql-note">{{t "Watch it get built"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/video"}}</span>
+            </a>
+            <a class="ql-tile" href="{{@site.url}}/slides/">
+                <span class="ql-name">{{t "Slides"}}</span>
+                <span class="ql-note">{{t "Decks to skim"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/presentation"}}</span>
+            </a>
+            <a class="ql-tile" href="{{@site.url}}/blog/">
+                <span class="ql-name">{{t "Blog"}}</span>
+                <span class="ql-note">{{t "Notes from the work"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/pen"}}</span>
+            </a>
+            <a class="ql-tile" href="{{@site.url}}/newsletter/">
+                <span class="ql-name">{{t "Newsletter"}}</span>
+                <span class="ql-note">{{t "One email a week"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/newspaper"}}</span>
+            </a>
+
+            <a class="ql-tile" href="{{@site.url}}/snippets/">
+                <span class="ql-name">{{t "Snippets"}}</span>
+                <span class="ql-note">{{t "Apex, LWC, Flow"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/code"}}</span>
+            </a>
+            <a class="ql-tile" href="{{@site.url}}/prompts/">
+                <span class="ql-name">{{t "Prompts"}}</span>
+                <span class="ql-note">{{t "AI that earns its place"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/sparkles"}}</span>
+            </a>
+            <a class="ql-tile" href="{{@site.url}}/resources/">
+                <span class="ql-name">{{t "Resources"}}</span>
+                <span class="ql-note">{{t "Links worth keeping"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/bookmark"}}</span>
+            </a>
+            <a class="ql-tile" href="{{@site.url}}/projects/">
+                <span class="ql-name">{{t "Projects"}}</span>
+                <span class="ql-note">{{t "Build logs, in the open"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/github"}}</span>
+            </a>
+
+            <a class="ql-tile is-wide" href="{{@site.url}}/shop/">
+                <span class="ql-name">{{t "Shop"}}</span>
+                <span class="ql-note">{{t "Paid material, when you want to go deeper"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/gift"}}</span>
+            </a>
+            <a class="ql-tile is-wide" href="{{@site.url}}/changelog/">
+                <span class="ql-name">{{t "Changelog"}}</span>
+                <span class="ql-note">{{t "What shipped, and when"}}</span>
+                <span class="ql-mark" aria-hidden="true">{{> "icons/history"}}</span>
+            </a>
+        </nav>
     </div>
 </section>

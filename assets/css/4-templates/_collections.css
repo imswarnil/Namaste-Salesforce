@@ -454,3 +454,57 @@
 .resource-single-head .chips {
     justify-content: center;
 }
+
+/*  Listing layout — the generic name for what /resources/ built:
+    a sticky filter sidebar beside the grid. /courses/ and /shop/ use
+    these; /resources/ keeps its own names, which resolve to the same
+    rules. An ad slot (widgets/sponsor) and the newsletter card ride
+    under the filters, at one spacing. */
+.listing-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.listing-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    max-height: calc(100vh - var(--header-height) - 4.8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.listing-side-sticky .widget + .widget,
+.listing-side-sticky .filter-sidebar + .widget {
+    margin-top: 0;
+}
+
+.listing-main {
+    min-width: 0;
+}
+
+/* a filter box with nothing to show collapses rather than leaving a hole */
+.listing-side-sticky .filter-sidebar[hidden] {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .listing-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .listing-side-sticky {
+        position: static;
+        max-height: none;
+    }
+
+    /* on a phone the filters stay first; the ad and newsletter drop
+       below the grid so they never push the catalogue down */
+    .listing-side-sticky .widget {
+        display: none;
+    }
+}

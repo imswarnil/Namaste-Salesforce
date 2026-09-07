@@ -1,5 +1,9 @@
 {{!< default}}
 
+{{!-- Structured data for this listing page. Keep `filter` identical
+to this collection's filter in routes.yaml. --}}
+{{> "json-ld-collection" name="Shop" path="shop" filter="tag:hash-shop"}}
+
 {{!-- /shop — digital assets: ebooks, notes, themes, kits.
 Prices are internal-tag descriptions (#shop-price-*); the single
 holds the purchase link in its content. --}}
@@ -18,22 +22,32 @@ holds the purchase link in its content. --}}
 </section>
 
 <main id="site-main" class="section outer">
-    <div class="inner">
-        <div class="filter-bar" data-filter-bar data-filter-facets="sprice" hidden>
-            <div class="filter-group" data-filter-group="sprice" hidden>
-                <span class="filter-label">{{> "icons/gift"}} {{t "Price"}}</span>
+    <div class="inner listing-layout">
+
+        <aside class="listing-side">
+            <div class="listing-side-sticky">
+                <div class="filter-sidebar" data-filter-bar data-filter-facets="sprice" hidden>
+                    <div class="filter-side-group" data-filter-group="sprice" hidden>
+                        <h4 class="widget-title">{{> "icons/gift"}} {{t "Price"}}</h4>
+                    </div>
+                    <button class="filter-clear" data-filter-clear>{{t "Clear"}}</button>
+                </div>
+
+                {{> "widgets/sponsor"}}
             </div>
-            <button class="filter-clear" data-filter-clear>{{t "Clear"}}</button>
+        </aside>
+
+        <div class="listing-main">
+            <div class="card-grid">
+                {{#foreach posts}}
+                    {{> "card-product"}}
+                {{/foreach}}
+            </div>
+            <div class="filter-empty" data-filter-empty style="display:none">
+                {{t "Nothing at that price — clear the filter."}}
+            </div>
+            {{pagination}}
         </div>
 
-        <div class="card-grid">
-            {{#foreach posts}}
-                {{> "card-product"}}
-            {{/foreach}}
-        </div>
-        <div class="filter-empty" data-filter-empty style="display:none">
-            {{t "Nothing at that price — clear the filter."}}
-        </div>
-        {{pagination}}
     </div>
 </main>

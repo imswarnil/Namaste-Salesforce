@@ -19,83 +19,99 @@ itself (a live-data lesson-player window) as the visual. All of
 it in partials/hero.hbs; stats in partials/hero-stats.hbs. --}}
 {{> "hero"}}
 
-{{!-- The journey — MY story, told as a horizontal timeline. One
-rail along the x-axis, a stop per chapter: job seeker, Accenture,
-Trailblazer, Cognizant, Twilio, Education First. The strip scroll-
-snaps sideways; animate.js fills the rail and lights each node as
-it passes ([data-story]). The last card hands the road to the
-reader. --}}
-<section class="section section-alt outer home-story">
-    <div class="bg-dots" aria-hidden="true"></div>
-    <div class="inner relative">
-        <div class="section-head" data-animate>
-            <div>
-                <span class="kicker">{{> "icons/map-icon"}} {{t "The journey"}}</span>
-                <h2>{{t "From job seeker to Salesforce engineer"}}</h2>
-                <p>{{t "The road so far — every stop taught something you'll find on this site."}}</p>
+{{!-- The journey. Lives in partials/journey.hbs so the About page
+can tell the same story with the same markup. --}}
+{{> "journey"}}
+
+{{!-- Training path, live.
+
+Two columns. The left one scrolls: one card per module, discovered
+the same way as everywhere else (a module IS a public tag that has
+#training posts). The right one STICKS — it is the path itself,
+with a progress rail that fills and an active module that changes
+as you scroll the left column past each card.
+
+assets/js/pathlive.js drives it from an IntersectionObserver, so
+the rail follows the reader rather than the scrollbar: on a short
+viewport with tall cards those are not the same thing. --}}
+{{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |pathTags|}}
+    <section class="section outer pathlive" data-pathlive>
+        <div class="inner">
+            <div class="section-head" data-animate>
+                <div>
+                    <span class="kicker">{{> "icons/layers"}} {{t "Training path"}}</span>
+                    <h2>{{t "Follow the path, live"}}</h2>
+                    <p>{{t "Modules in order, with what each one covers. Your place on the path follows you down the page."}}</p>
+                </div>
+                <a class="section-more" href="{{@site.url}}/training/">{{t "Open training"}} {{> "icons/arrow-right"}}</a>
+            </div>
+
+            <div class="pathlive-grid">
+                <div class="pathlive-main">
+                    {{#foreach pathTags}}
+                        {{#> "with-this" mTag=. }}
+                            {{#get "posts" filter="tag:{{mTag.slug}}+tag:hash-training" order="published_at asc" limit="100" as |mPosts|}}
+                                {{#if mPosts.[0]}}
+                                    <article class="pl-card" data-pl-card data-pl-slug="{{../mTag.slug}}">
+                                        <span class="pl-card-icon" aria-hidden="true">{{> "icons/layers"}}</span>
+                                        <div class="pl-card-body">
+                                            <span class="pl-card-kicker">{{t "Module"}} · {{mPosts.length}} {{t "sections"}}</span>
+                                            <h3><a href="{{@site.url}}/training/{{../mTag.slug}}/">{{../mTag.name}}</a></h3>
+                                            {{#if ../mTag.description}}
+                                                <p>{{../mTag.description}}</p>
+                                            {{/if}}
+                                            <ol class="pl-steps">
+                                                {{#foreach mPosts}}
+                                                    {{#if @index}}{{else}}{{/if}}
+                                                    <li><a href="{{url}}">{{> "lesson-type-icon"}} {{title}}</a></li>
+                                                {{/foreach}}
+                                            </ol>
+                                            <a class="btn btn-sm pl-card-start" href="{{mPosts.[0].url}}">
+                                                {{> "icons/play-circle"}} {{t "Start module"}}
+                                            </a>
+                                        </div>
+                                    </article>
+                                {{/if}}
+                            {{/get}}
+                        {{/with-this}}
+                    {{/foreach}}
+                </div>
+
+                {{!-- The rail. Sticky, one column, and the only thing on
+                the page that reports where you are on the path. --}}
+                <aside class="pathlive-rail" aria-hidden="true">
+                    <div class="pl-rail-head">
+                        <span class="pl-live"><i></i> {{t "Live"}}</span>
+                        <strong>{{t "Your place on the path"}}</strong>
+                    </div>
+
+                    <div class="pl-progress">
+                        <div class="pl-progress-bar"><i data-pl-fill></i></div>
+                        <span class="pl-progress-num"><b data-pl-pct>0</b>%</span>
+                    </div>
+
+                    <ol class="pl-list" data-pl-list>
+                        {{#foreach pathTags}}
+                            {{#> "with-this" mTag=. }}
+                                {{#get "posts" filter="tag:{{mTag.slug}}+tag:hash-training" order="published_at asc" limit="1" as |mp counts|}}
+                                    {{#if mp.[0]}}
+                                        <li class="pl-item" data-pl-item="{{../mTag.slug}}">
+                                            <span class="pl-item-dot" aria-hidden="true">{{> "icons/layers"}}</span>
+                                            <span class="pl-item-body">
+                                                <span class="pl-item-name">{{../mTag.name}}</span>
+                                                <span class="pl-item-meta">{{counts.total}} {{t "sections"}}</span>
+                                            </span>
+                                        </li>
+                                    {{/if}}
+                                {{/get}}
+                            {{/with-this}}
+                        {{/foreach}}
+                    </ol>
+                </aside>
             </div>
         </div>
-    </div>
-
-    <div class="inner">
-        <div class="story-strip" data-story data-animate>
-            <div class="story-track">
-                <span class="story-rail" aria-hidden="true"><i data-story-fill></i></span>
-
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/search"}}</span>
-                    <span class="story-tag">{{t "The start"}}</span>
-                    <h3>{{t "Job seeker"}}</h3>
-                    <p>{{t "Degree in hand, inbox full of applications. The only real asset: the will to learn anything."}}</p>
-                </article>
-
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/zap"}}</span>
-                    <span class="story-tag">{{t "First break"}}</span>
-                    <h3>Accenture</h3>
-                    <p>{{t "The offer that started everything — first project, first production incident, first win."}}</p>
-                </article>
-
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/fire"}}</span>
-                    <span class="story-tag">{{t "The spark"}}</span>
-                    <h3>{{t "Trailblazer"}}</h3>
-                    <p>{{t "Met Salesforce on a project and never left — Trailhead badges by night, real orgs by day."}}</p>
-                </article>
-
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/layers"}}</span>
-                    <span class="story-tag">{{t "Scale"}}</span>
-                    <h3>Cognizant</h3>
-                    <p>{{t "Bigger enterprises, bigger orgs — the years that taught how real projects actually run."}}</p>
-                </article>
-
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/signal"}}</span>
-                    <span class="story-tag">{{t "GTM era"}}</span>
-                    <h3>Twilio</h3>
-                    <p>{{t "GTM engineering — where Salesforce meets revenue, data and messaging at speed."}}</p>
-                </article>
-
-                <article class="story-stop is-now">
-                    <span class="story-node" aria-hidden="true">{{> "icons/cloud"}}</span>
-                    <span class="story-tag"><i class="story-now-ping" aria-hidden="true"></i> {{t "Now"}}</span>
-                    <h3>Education First</h3>
-                    <p>{{t "Salesforce Engineer at a global education company — and sharing every lesson here."}}</p>
-                </article>
-
-                <article class="story-stop is-next">
-                    <span class="story-node" aria-hidden="true">{{> "icons/avatar"}}</span>
-                    <span class="story-tag">{{t "Your turn"}}</span>
-                    <h3>{{t "You?"}}</h3>
-                    <p>{{t "Start your own Salesforce chapter — the courses are free and the path is mapped."}}</p>
-                    <a class="btn btn-sm story-cta" href="{{@site.url}}/courses/">{{t "Start here"}} {{> "icons/arrow-right"}}</a>
-                </article>
-            </div>
-        </div>
-        <p class="story-hint" aria-hidden="true">{{> "icons/arrow-right"}} {{t "drag or scroll sideways"}}</p>
-    </div>
-</section>
+    </section>
+{{/get}}
 
 {{!-- Courses --}}
 {{#get "posts" filter="tag:hash-course" include="tags,authors" order="published_at asc" limit="3" as |courses|}}
@@ -533,7 +549,7 @@ element gets loading/success/error classes from Ghost itself). --}}
 straight into the courses. Never a dead end. --}}
 <section class="section outer">
     <div class="inner">
-        <div class="home-cta" data-animate="zoom">
+        <div class="home-cta is-split" data-animate="zoom">
             {{!-- The journey video, looping muted underneath a
             navy gradient — pure backdrop, never interactive. --}}
             <div class="home-cta-video" aria-hidden="true">
@@ -544,20 +560,36 @@ straight into the courses. Never a dead end. --}}
             </div>
             <div class="home-cta-shade" aria-hidden="true"></div>
             <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
-            <h2>{{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "Start your Salesforce journey today"}}{{/if}}</h2>
-            <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "Free courses, weekly notes, zero spam. Join the newsletter and learn at your own pace."}}{{/if}}</p>
-            {{#if @site.members_enabled}}
-                {{#unless @member}}
-                    <a class="btn btn-lg btn-inverse" href="{{@site.url}}/signup/">
-                        {{> "icons/mail"}}
-                        {{t "Subscribe free"}}
-                    </a>
+            <div class="home-cta-copy">
+                <h2>{{#if @custom.newsletter_heading}}{{@custom.newsletter_heading}}{{else}}{{t "Start your Salesforce journey today"}}{{/if}}</h2>
+                <p>{{#if @custom.newsletter_text}}{{@custom.newsletter_text}}{{else}}{{t "Free courses, weekly notes, zero spam."}}{{/if}}</p>
+            </div>
+
+            {{!-- The ask sits BESIDE the copy on a wide screen and
+            under it on a phone, which is what keeps the band short:
+            it was a stacked heading + paragraph + button before. --}}
+            <div class="home-cta-ask">
+                {{#if @site.members_enabled}}
+                    {{#unless @member}}
+                        <form class="signup-form cta-signup" data-members-form="signup">
+                            <div class="signup-row">
+                                <input class="signup-input" data-members-email type="email" required
+                                    placeholder="{{t "you@work-email.com"}}" aria-label="{{t "Your email"}}" />
+                                <button class="btn signup-btn" type="submit">
+                                    {{> "icons/mail"}} {{t "Subscribe free"}}
+                                </button>
+                            </div>
+                            <p class="signup-note">{{t "Free forever · one email a week · unsubscribe in one click"}}</p>
+                            <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox and click the magic link."}}</p>
+                            <p class="signup-error" data-members-error></p>
+                        </form>
+                    {{else}}
+                        <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{t "Continue learning"}} {{> "icons/arrow-right"}}</a>
+                    {{/unless}}
                 {{else}}
-                    <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{t "Continue learning"}} {{> "icons/arrow-right"}}</a>
-                {{/unless}}
-            {{else}}
-                <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Start learning free"}}</a>
-            {{/if}}
+                    <a class="btn btn-lg btn-inverse" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Start learning free"}}</a>
+                {{/if}}
+            </div>
         </div>
     </div>
 </section>

@@ -2,9 +2,12 @@
 
 {{!-- /products-i-use — the stack, as a page. Ghost auto-picks
 this for the page with slug "products-i-use". The content is
-edited in Ghost; every h2 opens a bordered section (the entry
-reader's grammar), so "Hardware", "Software", "Salesforce
-tooling"… each read as their own shelf. --}}
+edited in Ghost; every h2 IS a category — "Hardware", "Software",
+"Salesforce tooling"… — and assets/js/stack.js groups what follows
+each one into a shelf, with a sticky category rail beside them and
+the list items under a heading laid out as product tiles. Add a
+category by adding an h2; add a product by adding a bullet under
+it — "**Name** — one honest line" is the shape the tiles expect. --}}
 
 {{#post}}
 
@@ -19,15 +22,34 @@ tooling"… each read as their own shelf. --}}
 </section>
 
 <main id="site-main" class="section outer">
-    <div class="inner inner-narrow">
-        {{> "toc-inline"}}
-        <article class="gh-content entry-content stack-page">
-            {{content}}
-        </article>
+    <div class="inner stack-layout" data-stack>
 
-        <footer class="entry-foot">
-            <a class="btn btn-ghost" href="{{@site.url}}/resources/">{{> "icons/bookmark"}} {{t "More in resources"}}</a>
-        </footer>
+        {{!-- The category rail. Built by assets/js/stack.js from the
+        page's own h2s — every h2 in the editor IS a category — so it
+        can never list a shelf that isn't there. Sticky beside the
+        shelves; a chip strip above them on a phone. --}}
+        <aside class="stack-side">
+            <nav class="stack-nav" data-stack-nav aria-label="{{t "Categories"}}">
+                <h4 class="widget-title">{{> "icons/layers"}} {{t "By category"}}</h4>
+                <ol class="stack-nav-list" data-stack-nav-list></ol>
+            </nav>
+            {{> "widgets/sponsor"}}
+        </aside>
+
+        {{!-- The shelves. stack.js walks the editor content and wraps
+        each h2 and everything after it (until the next h2) into one
+        shelf card, then turns any list under a shelf into product
+        tiles. Without JS the content renders exactly as written. --}}
+        <div class="stack-main">
+            <article class="gh-content entry-content stack-page" data-stack-content>
+                {{content}}
+            </article>
+
+            <footer class="entry-foot">
+                <a class="btn btn-ghost" href="{{@site.url}}/resources/">{{> "icons/bookmark"}} {{t "More in resources"}}</a>
+            </footer>
+        </div>
+
     </div>
 </main>
 

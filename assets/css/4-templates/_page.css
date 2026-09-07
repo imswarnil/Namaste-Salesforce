@@ -865,3 +865,540 @@
         gap: 4rem;
     }
 }
+
+/*  Page sidebar sticks, one gap between widgets ------------------ */
+.page-aside {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    max-height: calc(100vh - var(--header-height) - 4.8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.page-aside .widget + .widget {
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .page-has-sidebar .page-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .page-aside {
+        position: static;
+        max-height: none;
+    }
+}
+
+/*  About — page-about.hbs
+    ============================================================ */
+
+.about-hero {
+    padding: clamp(4rem, 7vmin, 6.4rem) 0 clamp(3.2rem, 5vmin, 4.8rem);
+    overflow: hidden;
+}
+
+.about-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 4.8rem;
+    align-items: center;
+}
+
+.about-hero-copy .kicker {
+    margin-top: 1.6rem;
+}
+
+.about-hero-copy h1 {
+    margin-top: 0.8rem;
+    font-size: clamp(3.2rem, 5vw, 5.2rem);
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+}
+
+.about-hero-lead {
+    max-width: 52ch;
+    margin: 1.6rem 0 0;
+    font-size: 1.8rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.about-hero-copy .hero-facts {
+    margin-top: 2.4rem;
+}
+
+.about-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 2.8rem;
+}
+
+/* the host: photo over a card that carries name, role, socials */
+.about-host {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 36rem);
+}
+
+.about-host-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-alt);
+}
+
+.about-host-photo.avatar-fallback {
+    display: grid;
+    place-items: center;
+    color: var(--text-faint);
+}
+
+.about-host-photo.avatar-fallback svg {
+    width: 8rem;
+    height: 8rem;
+}
+
+.about-host-card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: -3.2rem 1.6rem 0;
+    padding: 1.6rem 1.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.about-host-card strong {
+    font-size: 1.7rem;
+    color: var(--heading);
+}
+
+.about-host-card > span {
+    font-size: 1.35rem;
+    color: var(--text-muted);
+}
+
+.about-host-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.about-host-meta svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.about-host-social {
+    display: flex;
+    gap: 0.6rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.about-host-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    color: var(--text-muted);
+    background: var(--bg-alt);
+    border-radius: 50%;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.about-host-social a:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.about-host-social svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+.about-copy {
+    font-size: 1.75rem;
+}
+
+@media (max-width: 900px) {
+    .about-hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
+    }
+
+    .about-host {
+        order: -1;
+        width: min(100%, 28rem);
+    }
+}
+
+/*  Contact — composer + FAQ (page-contact.hbs)
+    ============================================================ */
+
+.contact-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.contact-composer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem 2rem;
+    padding: 2.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.contact-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.contact-field > span {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.contact-field.is-wide,
+.contact-composer-foot.is-wide {
+    grid-column: 1 / -1;
+}
+
+.contact-field input,
+.contact-field select,
+.contact-field textarea {
+    width: 100%;
+    padding: 1.1rem 1.4rem;
+    font: inherit;
+    font-size: 1.5rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.contact-field textarea {
+    resize: vertical;
+    min-height: 12rem;
+}
+
+.contact-field input:focus,
+.contact-field select:focus,
+.contact-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.contact-composer-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem 2rem;
+}
+
+.contact-composer-note {
+    font-size: 1.3rem;
+    color: var(--text-faint);
+}
+
+.contact-faq h3 {
+    margin-bottom: 1.2rem;
+    font-size: 1.7rem;
+}
+
+.faq-item {
+    border-top: 1px solid var(--border-soft);
+}
+
+.faq-item:last-child {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.4rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item .chev {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: var(--text-faint);
+    transition: transform 0.2s ease;
+}
+
+.faq-item .chev svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.faq-item[open] .chev {
+    transform: rotate(180deg);
+}
+
+.faq-item p {
+    margin: 0 0 1.6rem;
+    font-size: 1.45rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+    .contact-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
+    }
+
+    .contact-composer {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/*  Products I use — shelves by category (page-products-i-use.hbs)
+    ============================================================ */
+
+.stack-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.stack-side {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.stack-side .widget + .widget,
+.stack-nav + .widget {
+    margin-top: 0;
+}
+
+.stack-nav {
+    padding: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.stack-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stack-nav-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.8rem 0.9rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.stack-nav-list a:hover,
+.stack-nav-list a.is-active {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.stack-nav-icon {
+    width: 1.7rem;
+    height: 1.7rem;
+    flex-shrink: 0;
+}
+
+.stack-nav-list b {
+    margin-left: auto;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-faint);
+}
+
+.stack-main {
+    min-width: 0;
+}
+
+.stack-intro {
+    margin-bottom: 3.2rem;
+    font-size: 1.75rem;
+    color: var(--text-muted);
+}
+
+.stack-shelf {
+    padding: 2.4rem 2.8rem 2.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    scroll-margin-top: calc(var(--header-height) + 2.4rem);
+}
+
+.stack-shelf + .stack-shelf {
+    margin-top: 2.4rem;
+}
+
+.stack-shelf-head {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+}
+
+.stack-shelf-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    flex-shrink: 0;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+}
+
+.stack-shelf-icon svg {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.stack-shelf-title {
+    margin: 0;
+    font-size: 2.2rem;
+}
+
+.stack-shelf-count {
+    margin-left: auto;
+    padding: 0.3rem 0.9rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    background: var(--bg-alt);
+    border-radius: 99px;
+}
+
+.stack-shelf-body > p {
+    color: var(--text-muted);
+}
+
+.stack-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stack-product {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.4rem 1.6rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+.stack-product:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.stack-product-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--heading);
+}
+
+a.stack-product-name:hover {
+    color: var(--accent);
+}
+
+.stack-product-note {
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+    .stack-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.4rem;
+    }
+
+    .stack-side {
+        position: static;
+    }
+
+    .stack-side .widget {
+        display: none;
+    }
+
+    /* the rail becomes a chip strip that scrolls sideways */
+    .stack-nav {
+        padding: 1.2rem;
+    }
+
+    .stack-nav .widget-title {
+        display: none;
+    }
+
+    .stack-nav-list {
+        flex-direction: row;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stack-nav-list a {
+        flex-shrink: 0;
+        white-space: nowrap;
+        background: var(--bg-alt);
+        border-radius: 99px;
+    }
+}

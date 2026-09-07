@@ -1,0 +1,76 @@
+{{!-- Structured data for a collection INDEX page (/courses/, /videos/,
+/blog/ …).
+
+partials/json-ld.hbs already emits the site graph (WebSite,
+Organization, navigation) and the page-level type for an individual
+POST. This is the missing half: the listing pages themselves. Without
+it a crawler sees /courses/ as an untyped document and has to infer
+the catalogue from the markup.
+
+Params
+  name      human title of the collection    "Courses"
+  path      path segment, no slashes         "courses"
+  filter    the same NQL the route uses      "tag:hash-course"
+  itemType  schema type for entries          "Course" · optional,
+                                             defaults to ListItem only
+
+One parameterised partial rather than twelve hand-written blocks, so
+adding a collection is one include rather than a new file. Keep the
+`filter` argument identical to the collection's filter in routes.yaml
+— if they drift, the page and its structured data describe different
+sets of posts.
+
+Note `items.[0]` rather than `{{#if items}}`: an empty array is truthy
+in Handlebars, which would emit an ItemList with an empty
+itemListElement. --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "CollectionPage",
+            "@id": "{{@site.url}}/{{path}}/#collection",
+            "url": "{{@site.url}}/{{path}}/",
+            "name": "{{name}}",
+            "isPartOf": { "@id": "{{@site.url}}/#website" },
+            "breadcrumb": { "@id": "{{@site.url}}/{{path}}/#crumbs" }{{#get "posts" filter=filter limit="1" as |probe|}}{{#if probe.[0]}},
+            "mainEntity": { "@id": "{{@site.url}}/{{path}}/#items" }{{/if}}{{/get}}
+        },
+        {
+            "@type": "BreadcrumbList",
+            "@id": "{{@site.url}}/{{path}}/#crumbs",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{@site.url}}/" },
+                { "@type": "ListItem", "position": 2, "name": "{{name}}", "item": "{{@site.url}}/{{path}}/" }
+            ]
+        }{{#get "posts" filter=filter order="published_at desc" limit="100" as |items|}}{{#if items.[0]}},
+        {
+            "@type": "ItemList",
+            "@id": "{{@site.url}}/{{path}}/#items",
+            "name": "{{name}}",
+            "numberOfItems": {{items.length}},
+            "itemListOrder": "https://schema.org/ItemListOrderDescending",
+            "itemListElement": [
+                {{#foreach items}}
+                {
+                    "@type": "ListItem",
+                    "position": {{@number}},
+                    "url": "{{url absolute="true"}}"{{#if ../../itemType}},
+                    "item": {
+                        "@type": "{{../../itemType}}",
+                        "@id": "{{url absolute="true"}}#item",
+                        "name": "{{title}}",
+                        "url": "{{url absolute="true"}}"{{#if custom_excerpt}},
+                        "description": "{{custom_excerpt}}"{{/if}}{{#if feature_image}},
+                        "image": "{{img_url feature_image size="l" absolute="true"}}"{{/if}},
+                        "provider": { "@id": "{{@site.url}}/#organization" },
+                        "isAccessibleForFree": true
+                    }{{else}},
+                    "name": "{{title}}"{{/if}}
+                }{{#unless @last}},{{/unless}}
+                {{/foreach}}
+            ]
+        }{{/if}}{{/get}}
+    ]
+}
+</script>

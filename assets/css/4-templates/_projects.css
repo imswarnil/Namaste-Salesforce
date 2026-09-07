@@ -321,16 +321,28 @@
     border-radius: inherit;
 }
 
+/*  Sized off the viewport so the frame always COVERS the band at
+    16:9 — the old fixed 130rem letterboxed on a wide screen. */
 .home-cta-video iframe {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 130rem;
-    height: 73.2rem;
+    width: 178vh;
+    min-width: 100%;
+    height: 56.25vw;
+    min-height: 100%;
     translate: -50% -50%;
     border: 0;
 }
 
+/*  Two stacked layers rather than one wash: a MULTIPLY pass that
+    darkens the footage into brand navy while keeping its contrast
+    (a flat overlay just greys it), then a normal pass that lifts the
+    left edge so the copy has a solid ground to sit on and fades to
+    near-clear on the right where the footage should still read. */
+/*  Weighted to the LEFT only. The copy sits there and needs a solid
+    ground; the right two-thirds are left nearly clear so the footage
+    is actually watchable rather than a texture under a wash. */
 .home-cta-shade {
     position: absolute;
     inset: 0;
@@ -338,11 +350,28 @@
     pointer-events: none;
     border-radius: inherit;
     background:
-        linear-gradient(115deg, rgba(3, 20, 40, 0.94) 0%, rgba(3, 45, 96, 0.78) 45%, rgba(3, 20, 40, 0.6) 100%),
-        radial-gradient(700px 300px at 80% -20%, rgba(27, 150, 255, 0.3), transparent 70%);
+        linear-gradient(100deg, rgba(2, 12, 26, 0.93) 0%, rgba(2, 12, 26, 0.72) 30%, rgba(3, 45, 96, 0.3) 62%, rgba(3, 45, 96, 0.12) 100%),
+        radial-gradient(700px 300px at 85% -25%, rgba(27, 150, 255, 0.22), transparent 70%);
 }
 
-.home-cta > :not(.home-cta-video):not(.home-cta-shade) {
+/*  The multiply pass sits directly on the footage. Isolated to the
+    band so it can never reach the page behind it. */
+/*  A lighter multiply than the journey band's: this one only needs
+    to pull the footage toward brand navy, not hide it. */
+.home-cta-video::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, #1d4f86 0%, #0b2b52 100%);
+    mix-blend-mode: multiply;
+}
+
+/*  Name the content wrappers rather than "everything except the
+    backdrop": the catch-all also caught .orb and forced it from
+    absolute to relative, which made a decorative blob claim a grid
+    cell and pushed the copy into the wrong column. */
+.home-cta > .home-cta-copy,
+.home-cta > .home-cta-ask {
     position: relative;
     z-index: 2;
 }

@@ -1,0 +1,169 @@
+{{!< default}}
+
+{{!-- /about — Ghost auto-picks page-about.hbs for the page with slug
+"about". Homepage-grade, built from live data where it can be:
+
+    hero        the author (Ghost's own profile: photo, bio) beside
+                the page's title and excerpt, plus the facts strip
+    the copy    the page's editable body, from the editor
+    journey     the SAME timeline the homepage tells — one partial
+    mission     what the site promises, and the ways to reach us
+    ask         the signup moment
+
+The Person/AboutPage structured data is emitted here because this
+is the one page whose subject IS the author. The #get lives INSIDE
+the contentFor: the other way round, contentFor registers against
+the #get's switched context and the block never reaches the head. --}}
+
+{{#post}}
+
+{{#contentFor "head"}}
+{{#get "authors" limit="1" as |host|}}
+{{#if host.[0]}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": "{{url absolute="true"}}#about",
+    "url": "{{url absolute="true"}}",
+    "name": "{{title}}",
+    "isPartOf": { "@id": "{{@site.url}}/#website" },
+    "mainEntity": {
+        "@type": "Person",
+        "@id": "{{@site.url}}/#person",
+        "name": "{{host.[0].name}}",
+        "url": "{{host.[0].url}}"{{#if host.[0].profile_image}},
+        "image": "{{img_url host.[0].profile_image size="m" absolute="true"}}"{{/if}}{{#if host.[0].bio}},
+        "description": "{{host.[0].bio}}"{{/if}},
+        "worksFor": { "@id": "{{@site.url}}/#organization" },
+        "sameAs": [
+            {{#if @custom.social_linkedin}}"{{@custom.social_linkedin}}",{{/if}}
+            {{#if @custom.social_github}}"{{@custom.social_github}}",{{/if}}
+            {{#if @custom.social_youtube}}"{{@custom.social_youtube}}",{{/if}}
+            {{#if @custom.social_instagram}}"{{@custom.social_instagram}}",{{/if}}
+            "{{@site.url}}/"
+        ]
+    }
+}
+</script>
+{{/if}}
+{{/get}}
+{{/contentFor}}
+
+<section class="about-hero outer relative">
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="orb" style="width: 380px; height: 380px; top: -120px; right: -100px;" aria-hidden="true"></div>
+    <div class="inner relative">
+        <div class="about-hero-grid">
+
+            <div class="about-hero-copy" data-animate>
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+                    {{> "icons/chevron-right"}}
+                    <span aria-current="page">{{title}}</span>
+                </nav>
+                <span class="kicker">{{> "icons/compass"}} {{t "About"}}</span>
+                <h1>{{title}}</h1>
+                <p class="about-hero-lead">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Who makes this, and why it is free."}}{{/if}}</p>
+
+                <ul class="hero-facts">
+                    <li>{{> "icons/shield"}} {{t "7+ years in IT"}}</li>
+                    <li>{{> "icons/zap"}} {{t "Build → then share"}}</li>
+                    <li>{{> "icons/sparkles"}} {{t "Learning in public"}}</li>
+                    <li>{{> "icons/rocket"}} {{t "Next: GTM Engineer, powered by the AI era"}}</li>
+                </ul>
+
+                <div class="about-hero-actions">
+                    <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Start a course"}}</a>
+                    <a class="btn btn-lg btn-ghost" href="{{@site.url}}/contact/">{{> "icons/message"}} {{t "Say hello"}}</a>
+                </div>
+            </div>
+
+            {{#get "authors" limit="1" as |host|}}
+                {{#foreach host}}
+                    <div class="about-host" data-animate="right">
+                        {{#if profile_image}}
+                            <img class="about-host-photo" src="{{img_url profile_image size="l"}}" alt="{{name}}" loading="eager" fetchpriority="high" />
+                        {{else}}
+                            <span class="about-host-photo avatar-fallback">{{> "icons/avatar"}}</span>
+                        {{/if}}
+                        <div class="about-host-card">
+                            <strong>{{name}}</strong>
+                            <span>{{t "Builds and writes everything here"}}</span>
+                            {{#if location}}<span class="about-host-meta">{{> "icons/map-icon"}} {{location}}</span>{{/if}}
+                            <ul class="about-host-social">
+                                {{#if @custom.social_linkedin}}<li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a></li>{{/if}}
+                                {{#if @custom.social_github}}<li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub">{{> "icons/github"}}</a></li>{{/if}}
+                                {{#if @custom.social_youtube}}<li><a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube">{{> "icons/youtube"}}</a></li>{{/if}}
+                                {{#if @site.twitter}}<li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X">{{> "icons/x"}}</a></li>{{/if}}
+                            </ul>
+                        </div>
+                    </div>
+                {{/foreach}}
+            {{/get}}
+
+        </div>
+    </div>
+</section>
+
+{{!-- The page's own words --}}
+{{#if html}}
+<main id="site-main" class="section outer">
+    <div class="inner inner-narrow">
+        <article class="gh-content about-copy" data-animate>
+            {{content}}
+        </article>
+    </div>
+</main>
+{{/if}}
+
+{{!-- The road so far — shared with the homepage --}}
+{{> "journey"}}
+
+{{!-- The promise --}}
+<section class="section outer">
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/check-circle"}} {{t "The promise"}}</span>
+                <h2>{{t "Three rules this site keeps"}}</h2>
+            </div>
+        </div>
+        <div class="home-props" data-animate-stagger>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/gift"}}</span>
+                <h3>{{t "Every course free, forever"}}</h3>
+                <p>{{t "The lessons are the product. Membership adds the newsletter and a few extras; it never gates the path."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/code"}}</span>
+                <h3>{{t "Taught the way real projects run"}}</h3>
+                <p>{{t "Built inside a real org first — clicks, code and the mistakes — then written down. Nothing here is theory that was never shipped."}}</p>
+            </div>
+            <div class="home-prop">
+                <span class="home-prop-icon">{{> "icons/shield"}}</span>
+                <h3>{{t "Honest, even when the answer is 'don't'"}}</h3>
+                <p>{{t "If a feature is the wrong tool, the lesson says so. Corrections ship weekly; the changelog shows every one."}}</p>
+                <a class="home-journey-link" href="{{@site.url}}/changelog/">{{t "See the changelog"}} {{> "icons/arrow-right"}}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{!-- The ask --}}
+{{#if @site.members_enabled}}
+    {{^if @member}}
+        <section class="section outer">
+            <div class="inner">
+                <div class="home-cta" data-animate="zoom">
+                    <div class="orb" style="width: 300px; height: 300px; top: -100px; right: 10%; animation-delay: -2s;" aria-hidden="true"></div>
+                    <h2>{{t "Follow along"}}</h2>
+                    <p>{{t "One email a week — what got built, what broke, what to try next."}}</p>
+                    <a class="btn btn-lg btn-inverse" href="{{@site.url}}/signup/">{{> "icons/mail"}} {{t "Subscribe free"}}</a>
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/if}}
+
+{{/post}}

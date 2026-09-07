@@ -1,6 +1,10 @@
 {{!< default}}
 
-{{!-- /courses — the catalogue. The filter toolbar is built from
+{{!-- Structured data for this listing page. Keep `filter` identical
+to this collection's filter in routes.yaml. --}}
+{{> "json-ld-collection" name="Courses" path="courses" filter="tag:hash-course" itemType="Course"}}
+
+{{!-- /courses — the catalogue. The filter sidebar is built from
 the internal #course-level-* and #course-duration-* tags that
 exist in the catalogue right now: publish a course with a new
 level tag and the button appears; retire the last course with it
@@ -24,35 +28,49 @@ strings. Hero copy comes from the "courses" page
 </section>
 
 <main id="site-main" class="courses-main outer">
-    <div class="inner">
+    <div class="inner listing-layout">
 
-        {{!-- The toolbar's buttons are BUILT BY assets/js/filters.js
-        from the data-level / data-duration attributes on the cards
-        below — {{#get "tags"}} cannot see internal tags (Ghost serves
-        themes through TagPublic), and deriving from the page keeps the
-        toolbar incapable of disagreeing with the catalogue. The group
-        shells stay hidden until they have at least two options. --}}
-        <div class="filter-bar" data-filter-bar hidden>
-            <div class="filter-group" data-filter-group="level" hidden>
-                <span class="filter-label">{{> "icons/signal"}} {{t "Level"}}</span>
+        {{!-- The sidebar. Filters first — their buttons are BUILT BY
+        assets/js/filters.js from the data-level / data-duration
+        attributes on the cards ({{#get "tags"}} cannot see internal
+        tags), so the sidebar can never disagree with the catalogue,
+        and it stays hidden until a facet has two options. Under it,
+        the ad slot and the newsletter card; the whole column sticks. --}}
+        <aside class="listing-side">
+            <div class="listing-side-sticky">
+                <div class="filter-sidebar" data-filter-bar hidden>
+                    <div class="filter-side-group" data-filter-group="level" hidden>
+                        <h4 class="widget-title">{{> "icons/signal"}} {{t "Level"}}</h4>
+                    </div>
+                    <div class="filter-side-group" data-filter-group="duration" hidden>
+                        <h4 class="widget-title">{{> "icons/clock"}} {{t "Duration"}}</h4>
+                    </div>
+                    <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+                </div>
+
+                {{> "widgets/sponsor"}}
+
+                {{#if @site.members_enabled}}
+                    {{^if @member}}
+                        {{> "widgets/newsletter"}}
+                    {{/if}}
+                {{/if}}
             </div>
-            <div class="filter-group" data-filter-group="duration" hidden>
-                <span class="filter-label">{{> "icons/clock"}} {{t "Duration"}}</span>
+        </aside>
+
+        <div class="listing-main">
+            <div class="card-grid">
+                {{#foreach posts}}
+                    {{> "card-course"}}
+                {{/foreach}}
             </div>
-            <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
-        </div>
 
-        <div class="card-grid">
-            {{#foreach posts}}
-                {{> "card-course"}}
-            {{/foreach}}
-        </div>
+            <div class="filter-empty" data-filter-empty>
+                {{t "No courses match those filters — try clearing one."}}
+            </div>
 
-        <div class="filter-empty" data-filter-empty>
-            {{t "No courses match those filters — try clearing one."}}
+            {{pagination}}
         </div>
-
-        {{pagination}}
 
     </div>
 </main>
