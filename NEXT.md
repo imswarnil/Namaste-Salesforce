@@ -44,12 +44,19 @@ Verified in a browser harness at 360–1400 px, not on a device:
 - hero card: chips + social rail in the gutters, toggle plays and closes
 - courses / shop: sidebar sticks, filters build, ad slot below
 
-## 5. NS-Design-System (separate repo, branch `v2-scss`)
+## 5. Design system — two repos now
 
-Has UNCOMMITTED work of yours (`_docs.scss`, docs/components pages, CI)
-mixed with the header fix from this session. Not committed here on
-purpose: committing `dist/` alone would fail the CI drift check. Commit
-it together when the docs work is ready.
+| Site | Repo | Folder | What |
+|---|---|---|---|
+| **nsds.imswarnil.com** | `imswarnil/NSDS-Design-System` (`main`) | `NS-Design-System/` | the v2 SCSS rebuild — **live** |
+| **sfdc.imswarnil.com** | `imswarnil/sfdc` (`main`) | `sfdc/` | the original token/gate system — deployed, **waiting on DNS** |
+
+**To do — one DNS record**, in the Cloudflare account that holds
+`imswarnil.com` (not the Namastesfdc one):
+`CNAME  sfdc  →  imswarnil.github.io` — mirror the `nsds` record's proxy
+setting. GitHub Pages already has the custom domain set; it goes live as
+soon as the record resolves (then tick "Enforce HTTPS" in the sfdc repo's
+Pages settings once the certificate is issued).
 
 ## 6. Running Ghost locally
 
