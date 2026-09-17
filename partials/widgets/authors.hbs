@@ -1,0 +1,25 @@
+{{!-- Every author, post count each, plus a "become an author" CTA
+to /contact/. Context: page (used on /blog/). --}}
+{{#get "authors" limit="10" include="count.posts" order="count.posts desc" as |folks|}}
+    {{#if folks}}
+    <div class="widget">
+        <h4 class="widget-title">{{> "icons/avatar"}} {{t "Written by"}}</h4>
+        <ul class="widget-authors">
+            {{#foreach folks}}
+                <li>
+                    <a href="{{url}}">
+                        {{#if profile_image}}
+                            <img class="avatar" src="{{img_url profile_image size="xs"}}" alt="{{name}}" loading="lazy" />
+                        {{else}}
+                            <span class="avatar avatar-fallback">{{> "icons/avatar"}}</span>
+                        {{/if}}
+                        <span class="widget-author-name">{{name}}</span>
+                    </a>
+                    <span class="widget-author-count">{{count.posts}}</span>
+                </li>
+            {{/foreach}}
+        </ul>
+        <a class="btn btn-sm btn-ghost widget-authors-cta" href="{{@site.url}}/contact/">{{> "icons/pen"}} {{t "Become an author"}}</a>
+    </div>
+    {{/if}}
+{{/get}}

@@ -1,5 +1,10 @@
 {{!-- The share row itself — used bare in the post footer and
-boxed by widgets/share.hbs. Plain intent URLs, no scripts.
+boxed by widgets/share.hbs. Social intents are plain URLs, no
+scripts; the copy button is the one bit that needs JS
+(assets/js/share.js, delegated so this partial can render
+anywhere without its own listener). "Ask Claude" / "Ask ChatGPT"
+open a fresh chat pre-filled with the post's link — both services'
+documented ?q= new-chat parameter, no API key, no script.
 Context: the post. --}}
 <div class="share-row">
     <a href="https://twitter.com/intent/tweet?text={{encode title}}&url={{url absolute="true"}}"
@@ -10,4 +15,12 @@ Context: the post. --}}
         target="_blank" rel="noopener" aria-label="{{t "Share on Facebook"}}">{{> "icons/facebook"}}</a>
     <a href="mailto:?subject={{encode title}}&body={{url absolute="true"}}"
         aria-label="{{t "Share by email"}}">{{> "icons/mail"}}</a>
+    <button type="button" class="share-copy" data-copy-link="{{url absolute="true"}}" aria-label="{{t "Copy link"}}">
+        <span class="share-copy-icon">{{> "icons/link-icon"}}</span>
+        <span class="share-copy-done">{{> "icons/check-circle"}}</span>
+    </button>
+    <a href="https://claude.ai/new?q={{encode "Read this and tell me what stands out: "}}{{encode (url absolute="true")}}"
+        target="_blank" rel="noopener" aria-label="{{t "Ask Claude about this"}}" class="share-ai">{{> "icons/sparkles"}}</a>
+    <a href="https://chatgpt.com/?q={{encode "Read this and tell me what stands out: "}}{{encode (url absolute="true")}}"
+        target="_blank" rel="noopener" aria-label="{{t "Ask ChatGPT about this"}}" class="share-ai">{{> "icons/message"}}</a>
 </div>
