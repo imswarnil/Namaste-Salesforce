@@ -12,6 +12,22 @@ hides the original, and wires each row to seek the YouTube player.
 No table, no widget. Below it: related videos, TOC, sponsor.
 Context: the post. --}}
 
+{{#contentFor "head"}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "{{title}}",
+    "description": "{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{excerpt words="40"}}{{/if}}",
+    "uploadDate": "{{date published_at format="YYYY-MM-DDTHH:mm:ssZ"}}",
+    "url": "{{url absolute="true"}}"{{#if feature_image}},
+    "thumbnailUrl": ["{{img_url feature_image size="l" absolute="true"}}"]{{/if}},
+    "publisher": { "@id": "{{@site.url}}/#organization" },
+    "isFamilyFriendly": true
+}
+</script>
+{{/contentFor}}
+
 <main id="site-main" class="section outer">
 <div class="inner">
 <div class="video-grid {{post_class}}">
