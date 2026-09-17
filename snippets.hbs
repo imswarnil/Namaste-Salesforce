@@ -22,26 +22,48 @@ line. The single carries the code itself. --}}
 </section>
 
 <main id="site-main" class="section outer">
-    <div class="inner inner-narrow">
-        <ol class="snippet-list">
-            {{#foreach posts}}
-                <li class="snippet-item">
-                    <a href="{{url}}">
-                        <span class="snippet-icon" aria-hidden="true">{{> "icons/code"}}</span>
-                        <span class="snippet-body">
-                            <span class="snippet-title">{{title}}</span>
-                            {{#if custom_excerpt}}<span class="snippet-sub">{{custom_excerpt}}</span>{{/if}}
-                        </span>
-                        {{#foreach tags visibility="internal"}}
-                            {{#match slug "~^" "hash-snippet-lang-"}}
-                                {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
-                            {{/match}}
-                        {{/foreach}}
-                        {{> "icons/arrow-right"}}
-                    </a>
-                </li>
-            {{/foreach}}
-        </ol>
-        {{pagination}}
+    <div class="inner listing-layout">
+
+        <aside>
+            <div class="listing-side-sticky">
+                <div class="filter-sidebar" data-filter-bar data-filter-facets="lang" hidden>
+                    <div class="filter-side-group" data-filter-group="lang" hidden>
+                        <h4 class="widget-title">{{> "icons/filter-icon"}} {{t "Language"}}</h4>
+                    </div>
+                    <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+                </div>
+                {{> "widgets/sponsor"}}
+            </div>
+        </aside>
+
+        <div class="listing-main">
+            <ol class="snippet-list">
+                {{#foreach posts}}
+                    <li class="snippet-item" data-filter-item
+                        {{~#foreach tags visibility="internal"~}}
+                            {{~#match slug "~^" "hash-snippet-lang-"}} data-lang="{{slug}}" data-lang-label="{{description}}"{{/match~}}
+                        {{~/foreach~}}>
+                        <a href="{{url}}">
+                            <span class="snippet-icon" aria-hidden="true">{{> "icons/code"}}</span>
+                            <span class="snippet-body">
+                                <span class="snippet-title">{{title}}</span>
+                                {{#if custom_excerpt}}<span class="snippet-sub">{{custom_excerpt}}</span>{{/if}}
+                            </span>
+                            {{#foreach tags visibility="internal"}}
+                                {{#match slug "~^" "hash-snippet-lang-"}}
+                                    {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                                {{/match}}
+                            {{/foreach}}
+                            {{> "icons/arrow-right"}}
+                        </a>
+                    </li>
+                {{/foreach}}
+            </ol>
+            <div class="filter-empty" data-filter-empty style="display:none">
+                {{t "Nothing matches that combination — clear a filter or two."}}
+            </div>
+            {{pagination}}
+        </div>
+
     </div>
 </main>

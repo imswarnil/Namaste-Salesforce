@@ -1,8 +1,19 @@
 {{!-- One deck as a card: a STACK of slides — two offset sheets
 behind the cover — the duration chip, and a Members badge when
 the post's access gates it. Context: a #slides post. Used by the
-/slides/ index (the all-decks grid AND the by-topic shelves). --}}
-<article class="card deck-card">
+/slides/ index (the all-decks grid AND the by-topic shelves).
+
+data-filter-item + data-duration/-access: the same courses-filter
+mechanism (assets/js/filters.js), so the /slides filter sidebar
+builds its buttons from whatever decks are actually on the page —
+this card renders in the shelves too, so a filter narrows those
+right along with the all-decks grid below them. --}}
+<article class="card deck-card" data-filter-item
+    data-access="{{#match visibility "!=" "public"}}members{{else}}free{{/match}}"
+    data-access-label="{{#match visibility "!=" "public"}}{{t "Members"}}{{else}}{{t "Free"}}{{/match}}"
+    {{~#foreach tags visibility="internal"~}}
+        {{~#match slug "~^" "hash-duration-"}} data-duration="{{slug}}" data-duration-label="{{description}}"{{/match~}}
+    {{~/foreach~}}>
     <div class="deck-card-stack" aria-hidden="true">
         <span class="deck-sheet is-back"></span>
         <span class="deck-sheet is-mid"></span>

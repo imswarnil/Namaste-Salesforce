@@ -93,21 +93,46 @@ at least one deck gets a shelf, newest first, six per shelf. --}}
     {{/if}}
 {{/get}}
 
-{{!-- All decks --}}
+{{!-- All decks — filter sidebar left (assets/js/filters.js builds
+the buttons from the cards' own data-duration/-access attributes,
+same mechanism /resources and /courses use), grid right. The
+sidebar is sticky (.listing-side-sticky). --}}
 <main id="site-main" class="section outer">
-    <div class="inner">
-        <div class="section-head" data-animate>
-            <div>
-                <span class="kicker">{{> "icons/presentation"}} {{t "All decks"}}</span>
-                <h2>{{t "Every deck, newest first"}}</h2>
+    <div class="inner listing-layout">
+
+        <aside>
+            <div class="listing-side-sticky">
+                <div class="filter-sidebar" data-filter-bar data-filter-facets="duration,access" hidden>
+                    <div class="filter-side-group" data-filter-group="duration" hidden>
+                        <h4 class="widget-title">{{> "icons/clock"}} {{t "Duration"}}</h4>
+                    </div>
+                    <div class="filter-side-group" data-filter-group="access" hidden>
+                        <h4 class="widget-title">{{> "icons/lock"}} {{t "Access"}}</h4>
+                    </div>
+                    <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+                </div>
+                {{> "widgets/sponsor"}}
             </div>
+        </aside>
+
+        <div class="listing-main">
+            <div class="section-head" data-animate>
+                <div>
+                    <span class="kicker">{{> "icons/presentation"}} {{t "All decks"}}</span>
+                    <h2>{{t "Every deck, newest first"}}</h2>
+                </div>
+            </div>
+            <div class="deck-grid" data-animate-stagger>
+                {{#foreach posts}}
+                    {{> "card-deck"}}
+                {{/foreach}}
+            </div>
+            <div class="filter-empty" data-filter-empty style="display:none">
+                {{t "Nothing matches that combination — clear a filter or two."}}
+            </div>
+            {{pagination}}
         </div>
-        <div class="deck-grid" data-animate-stagger>
-            {{#foreach posts}}
-                {{> "card-deck"}}
-            {{/foreach}}
-        </div>
-        {{pagination}}
+
     </div>
 </main>
 

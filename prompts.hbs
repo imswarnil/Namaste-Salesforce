@@ -18,38 +18,70 @@ single carries the prompt itself in a code block. --}}
             <h1>{{t "Prompt library"}}</h1>
             <p>{{t "Prompts I actually reuse — for building, writing and working the AI era, each tested on real work."}}</p>
         {{/page}}
+
+        <div class="training-hero2-stats">
+            {{#get "posts" filter="tag:hash-prompt" limit="1" as |items counts|}}
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Prompts"}}</span></div>
+            {{/get}}
+            {{#get "tags" filter="visibility:internal+slug:~'prompt-for-'" limit="1" as |items counts|}}
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Tools covered"}}</span></div>
+            {{/get}}
+            <div class="home-stat"><strong>{{t "Free"}}</strong><span>{{t "Copy & go"}}</span></div>
+        </div>
     </div>
 </section>
 
 <main id="site-main" class="section outer">
-    <div class="inner">
-        <div class="card-grid">
-            {{#foreach posts}}
-                <article class="card prompt-card">
-                    <div class="card-body">
-                        <div class="prompt-card-head">
-                            <span class="resource-card-icon">{{> "icons/sparkles"}}</span>
-                            <div class="chips">
-                                {{#foreach tags visibility="internal"}}
-                                    {{#match slug "~^" "hash-prompt-for-"}}
-                                        {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
-                                    {{/match}}
-                                {{/foreach}}
+    <div class="inner listing-layout">
+
+        <aside>
+            <div class="listing-side-sticky">
+                <div class="filter-sidebar" data-filter-bar data-filter-facets="for" hidden>
+                    <div class="filter-side-group" data-filter-group="for" hidden>
+                        <h4 class="widget-title">{{> "icons/filter-icon"}} {{t "Built for"}}</h4>
+                    </div>
+                    <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+                </div>
+                {{> "widgets/sponsor"}}
+            </div>
+        </aside>
+
+        <div class="listing-main">
+            <div class="card-grid">
+                {{#foreach posts}}
+                    <article class="card prompt-card" data-filter-item
+                        {{~#foreach tags visibility="internal"~}}
+                            {{~#match slug "~^" "hash-prompt-for-"}} data-for="{{slug}}" data-for-label="{{description}}"{{/match~}}
+                        {{~/foreach~}}>
+                        <div class="card-body">
+                            <div class="prompt-card-head">
+                                <span class="resource-card-icon">{{> "icons/sparkles"}}</span>
+                                <div class="chips">
+                                    {{#foreach tags visibility="internal"}}
+                                        {{#match slug "~^" "hash-prompt-for-"}}
+                                            {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                                        {{/match}}
+                                    {{/foreach}}
+                                </div>
+                            </div>
+                            <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
+                            {{#if custom_excerpt}}
+                                <p class="card-excerpt">{{custom_excerpt}}</p>
+                            {{else if excerpt}}
+                                <p class="card-excerpt">{{excerpt words="24"}}</p>
+                            {{/if}}
+                            <div class="card-meta">
+                                <span>{{> "icons/sparkles"}} {{t "Open the prompt"}}</span>
                             </div>
                         </div>
-                        <h3 class="card-title"><a class="card-link" href="{{url}}">{{title}}</a></h3>
-                        {{#if custom_excerpt}}
-                            <p class="card-excerpt">{{custom_excerpt}}</p>
-                        {{else if excerpt}}
-                            <p class="card-excerpt">{{excerpt words="24"}}</p>
-                        {{/if}}
-                        <div class="card-meta">
-                            <span>{{> "icons/sparkles"}} {{t "Open the prompt"}}</span>
-                        </div>
-                    </div>
-                </article>
-            {{/foreach}}
+                    </article>
+                {{/foreach}}
+            </div>
+            <div class="filter-empty" data-filter-empty style="display:none">
+                {{t "Nothing matches that combination — clear a filter or two."}}
+            </div>
+            {{pagination}}
         </div>
-        {{pagination}}
+
     </div>
 </main>
