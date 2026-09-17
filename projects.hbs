@@ -20,18 +20,45 @@ the post (the readme); the GitHub button on the single links to
             {{#if custom_excerpt}}<p>{{custom_excerpt}}</p>{{/if}}
         {{else}}
             <h1>{{t "Open source"}}</h1>
-            <p>{{t "Tools and frameworks I build in the open — everything here runs in real orgs."}}</p>
+            <p>{{t "Real projects you can build alongside me — each one a repo, a topic to place it in, and the skills you'll actually use getting there."}}</p>
         {{/page}}
     </div>
 </section>
 
 <main id="site-main" class="section outer">
-    <div class="inner">
-        <div class="proj-grid" data-animate-stagger>
-            {{#foreach posts}}
-                {{> "card-project"}}
-            {{/foreach}}
+    <div class="inner listing-layout">
+
+        <aside>
+            <div class="listing-side-sticky">
+                <div class="filter-sidebar" data-filter-bar data-filter-facets="audience" hidden>
+                    <div class="filter-side-group" data-filter-group="audience" hidden>
+                        <h4 class="widget-title">{{> "icons/avatar"}} {{t "Audience"}}</h4>
+                    </div>
+                    <button class="filter-clear" data-filter-clear>{{t "Clear filters"}}</button>
+                </div>
+                <div class="widget">
+                    <h4 class="widget-title">{{> "icons/compass"}} {{t "How to use these"}}</h4>
+                    <ul class="training-how">
+                        <li>{{> "icons/tag-icon"}} {{t "Category = the topic chip on each card"}}</li>
+                        <li>{{> "icons/zap"}} {{t "Skills used = the language/stack row"}}</li>
+                        <li>{{> "icons/github"}} {{t "Fork it, break it, ship your own version"}}</li>
+                    </ul>
+                </div>
+                {{> "widgets/sponsor"}}
+            </div>
+        </aside>
+
+        <div class="listing-main">
+            <div class="proj-grid" data-animate-stagger>
+                {{#foreach posts}}
+                    {{> "card-project"}}
+                {{/foreach}}
+            </div>
+            <div class="filter-empty" data-filter-empty style="display:none">
+                {{t "Nothing matches that combination — clear a filter or two."}}
+            </div>
+            {{pagination}}
         </div>
-        {{pagination}}
+
     </div>
 </main>

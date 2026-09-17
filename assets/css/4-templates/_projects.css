@@ -31,6 +31,21 @@
     padding: 2rem 2.2rem;
 }
 
+/* Optional cover — most repos carry no image (GitHub cards don't
+   either), but one with a real screenshot gets to show it. */
+.proj-card-media {
+    aspect-ratio: 16 / 9;
+    margin: -2rem -2.2rem 0.4rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.proj-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .proj-head {
     display: flex;
     align-items: center;
@@ -393,11 +408,27 @@
     align-items: start;
 }
 
+/* Grid items default to min-width:auto, so they respect their
+   content's intrinsic width — the clone command's long single-line
+   <pre> was blowing this column (and the whole layout) past the
+   30rem track, right off the viewport edge. */
+.proj-side {
+    min-width: 0;
+}
+
 .proj-side-sticky {
     position: sticky;
     top: calc(var(--header-height) + 2.4rem);
     display: grid;
     gap: 2rem;
+}
+
+/* Same min-width:auto default one level deeper: .proj-side-sticky
+   is itself a grid, so .proj-clone (the actual offender — its
+   .code-window won't wrap the long clone command) needs this too,
+   not just its .proj-side ancestor. */
+.proj-side-sticky > * {
+    min-width: 0;
 }
 
 .proj-about h2 {

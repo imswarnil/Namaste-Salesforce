@@ -2,10 +2,22 @@
 "Public" badge, the description, then the meta row — language
 dot (colour keyed off the #project-lang-* slug, label from its
 description), star count (#project-stars-* description), topic.
-Context: a post tagged #project. --}}
+An optional cover image sits above the head row (most repos carry
+none — GitHub cards don't either — but a project with a real
+screenshot gets to show it). #audience-admin/-dev/-consultant is
+the same facet card-resource.hbs uses, so it filters identically
+here. Context: a post tagged #project. --}}
 
-<article class="proj-card">
+<article class="proj-card" data-filter-item
+    {{~#foreach tags visibility="internal"~}}
+        {{~#match slug "~^" "hash-audience-"}} data-audience="{{slug}}" data-audience-label="{{description}}"{{/match~}}
+    {{~/foreach~}}>
     <a class="proj-card-link" href="{{url}}">
+        {{#if feature_image}}
+            <div class="proj-card-media">
+                <img src="{{img_url feature_image size="m"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="lazy" />
+            </div>
+        {{/if}}
         <header class="proj-head">
             {{> "icons/book-open"}}
             <h3 class="proj-name">{{title}}</h3>

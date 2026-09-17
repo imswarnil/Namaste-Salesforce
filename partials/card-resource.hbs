@@ -2,19 +2,28 @@
 
 Facets ride internal tags, surfaced as data attributes for
 filters.js: #resource-type-* (books, videos, tools, courses,
-podcasts, articles — the DESCRIPTION is the label) and
-#resource-free / #resource-paid (access). The type also picks
-the corner icon by slug suffix — the icon set's usual match
-pattern, but labels never come from slugs. --}}
+podcasts, articles — the DESCRIPTION is the label), #resource-free
+/ #resource-paid (access), and #audience-admin/-dev/-consultant —
+a facet the theme reuses as-is across collections (see
+card-project.hbs), so "admin" always means the same button
+everywhere. The type also picks the corner icon by slug suffix —
+the icon set's usual match pattern, but labels never come from
+slugs. --}}
 
 <article class="card resource-card" data-filter-item
     {{~#foreach tags visibility="internal"~}}
         {{~#match slug "~^" "hash-resource-type-"}} data-rtype="{{slug}}" data-rtype-label="{{description}}"{{/match~}}
         {{~#match slug "hash-resource-free"}} data-raccess="{{slug}}" data-raccess-label="{{#if description}}{{description}}{{else}}Free{{/if}}"{{/match~}}
         {{~#match slug "hash-resource-paid"}} data-raccess="{{slug}}" data-raccess-label="{{#if description}}{{description}}{{else}}Paid{{/if}}"{{/match~}}
+        {{~#match slug "~^" "hash-audience-"}} data-audience="{{slug}}" data-audience-label="{{description}}"{{/match~}}
     {{~/foreach~}}>
 
     <div class="card-body">
+        {{#if feature_image}}
+            <div class="card-media resource-card-media">
+                <img src="{{img_url feature_image size="m"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="lazy" />
+            </div>
+        {{/if}}
         <div class="resource-card-head">
             <span class="resource-card-icon">
                 {{~#foreach tags visibility="internal" limit="20"~}}
