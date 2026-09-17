@@ -101,8 +101,13 @@ def lexical(*nodes):
     return json.dumps({"root": {"children": list(nodes), "direction": "ltr", "format": "", "indent": 0, "type": "root", "version": 1}})
 
 def body(intro, sections, closing=None):
-    """A believable article: a lead paragraph, then h2 sections."""
-    nodes = [para(intro)]
+    """A believable article: an optional lead paragraph, then h2
+    sections. intro is None for most posts on purpose — the theme
+    already shows custom_excerpt once, in the hero; repeating it as
+    the body's first paragraph is the exact duplication readers
+    complained about. Pass intro explicitly only when the body's
+    opening line should say something the excerpt doesn't."""
+    nodes = [para(intro)] if intro else []
     for heading, copy in sections:
         nodes.append(h2(heading))
         nodes.append(para(copy))
@@ -283,7 +288,7 @@ def post(title, slug, tag_slugs, excerpt, sections, day, hour=9,
     pid = oid()
     when = ts(day, hour)
     nodes = list(lead) if lead else []
-    doc = json.loads(body(intro or excerpt, sections, closing))
+    doc = json.loads(body(intro, sections, closing))
     doc["root"]["children"] = nodes + doc["root"]["children"]
     posts.append({
         "id": pid, "title": title, "slug": slug,

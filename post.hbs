@@ -8,26 +8,36 @@ experience. One tag decides the URL (routes.yaml), the layout
 theme knows the difference.
 
     #course      → post-course   (course landing)
-    #lesson      → post-lesson   (course player)
     #module      → post-module   (training module landing)
     #training    → post-training (module reader)
+    #lesson      → post-lesson   (course player)
     #video       → post-video    (the embed is the page)
     #slides      → post-slides   (the deck player)
     #newsletter  → post-issue    (issue + sent-date rail)
     #changelog   → post-simple   (narrow entry)
     #project     → post-project  (repo readme)
     anything else → post-blog    (the article)
---}}
+
+Training MUST be checked before lesson: #lesson-type-video/-quiz/
+-audio and #lesson-layout-* are facet tags shared with training
+pages (post-training.hbs matches them too, for the video hero
+variant), so their post_class always contains the literal
+substring "tag-hash-lesson". A video-typed training post's classes
+read "...tag-hash-training tag-hash-lesson-type-video..." — checking
+#lesson first caught that substring and routed the whole page to
+the course player, module rail and all, before #training was ever
+reached. Checked this order, a real #lesson-col post never carries
+a "training" tag, so nothing else changes. --}}
 
 {{#post}}
     {{#match (post_class) "~" "tag-hash-course"}}
         {{> "post-course"}}
     {{else match (post_class) "~" "tag-hash-module"}}
         {{> "post-module"}}
-    {{else match (post_class) "~" "tag-hash-lesson"}}
-        {{> "post-lesson"}}
     {{else match (post_class) "~" "tag-hash-training"}}
         {{> "post-training"}}
+    {{else match (post_class) "~" "tag-hash-lesson"}}
+        {{> "post-lesson"}}
     {{else match (post_class) "~" "tag-hash-video"}}
         {{> "post-video"}}
     {{else match (post_class) "~" "tag-hash-slides"}}

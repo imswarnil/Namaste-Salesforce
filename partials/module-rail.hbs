@@ -1,0 +1,42 @@
+{{!-- The ordered section list for ONE training module, course-player
+grammar (mirrors lesson-list.hbs exactly, module-scoped instead of
+course-scoped). Rendered twice (desktop rail + mobile collapsible).
+
+Explicit params instead of {{#primary_tag}} because the two callers
+sit in different contexts: on a #training page the module is the
+primary tag, but on the #module overview page itself the module
+IS the post (its own slug equals the tag's slug) — so both callers
+just pass moduleSlug/moduleName/moduleImage directly.
+
+Params: moduleSlug, moduleName, moduleImage, currentSlug. --}}
+{{#> "with-this" moduleSlug=moduleSlug moduleName=moduleName moduleImage=moduleImage currentSlug=currentSlug}}
+    <a class="player-rail-course" href="{{@site.url}}/training/{{moduleSlug}}/">
+        {{#if moduleImage}}
+            <img class="player-rail-course-art" src="{{img_url moduleImage size="s"}}" alt="" loading="lazy" />
+        {{/if}}
+        <span class="player-rail-course-copy">
+            <span class="kicker">{{> "icons/layers"}} {{t "Module"}}</span>
+            <h2>{{moduleName}}</h2>
+        </span>
+    </a>
+
+    {{#get "posts" filter="tag:hash-training+tag:{{moduleSlug}}" order="published_at asc" limit="100" include="tags" as |sections total|}}
+        <span class="player-rail-count">{{total.total}} {{t "sections"}}</span>
+        <ol class="player-list">
+            <li class="{{#match ../moduleSlug ../currentSlug}}is-current{{/match}}">
+                <a href="{{@site.url}}/training/{{../moduleSlug}}/"{{#match ../moduleSlug ../currentSlug}} aria-current="page"{{/match}}>
+                    <span>{{t "Module overview"}}</span>
+                    {{> "icons/map-icon"}}
+                </a>
+            </li>
+            {{#foreach sections}}
+                <li class="{{#match slug ../../currentSlug}}is-current{{/match}}">
+                    <a href="{{url}}"{{#match slug ../../currentSlug}} aria-current="page"{{/match}}>
+                        <span>{{title}}</span>
+                        {{> "lesson-type-icon"}}
+                    </a>
+                </li>
+            {{/foreach}}
+        </ol>
+    {{/get}}
+{{/with-this}}
