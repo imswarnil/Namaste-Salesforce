@@ -1,0 +1,20 @@
+{{!-- Related snippets — same shape as widgets/recent-posts.hbs,
+scoped to the lab and excluding the snippet being read. --}}
+{{#get "posts" filter="tag:hash-snippet+id:-{{id}}" limit="5" as |more|}}
+    {{#if more}}
+    <div class="widget">
+        <h4 class="widget-title">{{> "icons/code"}} {{t "More snippets"}}</h4>
+        <ul class="widget-posts">
+            {{#foreach more}}
+                <li class="widget-post">
+                    <span class="widget-post-thumb widget-post-thumb-icon">{{> "icons/code"}}</span>
+                    <a href="{{url}}">
+                        <span class="widget-post-title">{{title}}</span>
+                    </a>
+                </li>
+            {{/foreach}}
+        </ul>
+        <a class="section-more" href="{{@site.url}}/snippets/">{{t "All snippets"}} {{> "icons/arrow-right"}}</a>
+    </div>
+    {{/if}}
+{{/get}}
