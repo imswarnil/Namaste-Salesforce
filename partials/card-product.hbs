@@ -1,12 +1,16 @@
-{{!-- A shop card — a digital asset: ebook, notes, theme, kit.
-Context: a shop post (include tags). The price is the DESCRIPTION
-of an internal #shop-price-* tag (never parsed from the slug);
-#shop-free renders the free chip instead. --}}
+{{!-- A shop card — a digital asset: ebook, notes, theme, resume
+template, kit. Context: a shop post (include tags). The price is
+the DESCRIPTION of an internal #shop-price-* tag (never parsed
+from the slug); #shop-free renders the free chip instead.
+#shop-type-* groups products by what they actually are (theme,
+resume template, ebook, kit…) — same convention, own facet, so
+/shop can filter by price AND type independently. --}}
 
 <article class="card product-card" data-filter-item
     {{~#foreach tags visibility="internal"~}}
         {{~#match slug "~^" "hash-shop-price-"}} data-sprice="{{slug}}" data-sprice-label="{{description}}"{{/match~}}
         {{~#match slug "hash-shop-free"}} data-sprice="{{slug}}" data-sprice-label="Free"{{/match~}}
+        {{~#match slug "~^" "hash-shop-type-"}} data-stype="{{slug}}" data-stype-label="{{description}}"{{/match~}}
     {{~/foreach~}}>
 
     <div class="card-media">
@@ -21,6 +25,9 @@ of an internal #shop-price-* tag (never parsed from the slug);
         {{/if}}
         <div class="chips">
             {{#foreach tags visibility="internal"}}
+                {{#match slug "~^" "hash-shop-type-"}}
+                    {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                {{/match}}
                 {{#match slug "~^" "hash-shop-price-"}}
                     {{#if description}}<span class="chip chip-price">{{description}}</span>{{/if}}
                 {{/match}}

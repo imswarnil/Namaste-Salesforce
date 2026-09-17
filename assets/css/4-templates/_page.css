@@ -1402,3 +1402,129 @@ a.stack-product-name:hover {
         border-radius: 99px;
     }
 }
+
+/*  /about's vertical journey — journey-stacked.hbs
+    ------------------------------------------------------------
+    Same rail-behind-node grammar as .home-path-track and
+    .activity-rail: the line is a ::before painted first, every
+    node is opaque and explicitly z-index:1, so it always sits
+    on top of the line, never under it. */
+
+.stack-timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+    max-width: 720px;
+    margin: 4rem auto 0;
+    padding-left: 5.2rem;
+    list-style: none;
+}
+
+.stack-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    left: 1.9rem;
+    z-index: 0;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--brand-400));
+    opacity: 0.5;
+}
+
+.stack-stop {
+    position: relative;
+}
+
+.stack-node {
+    position: absolute;
+    top: 0;
+    left: -4rem;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.stack-node svg {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+.stack-stop.is-now .stack-node {
+    background: var(--success);
+    box-shadow: 0 0 0 4px color-mod(#2e844a a(18%));
+}
+
+.stack-stop.is-next .stack-node {
+    background: var(--surface);
+    color: var(--accent);
+    border-style: dashed;
+    box-shadow: none;
+}
+
+.stack-stop-body {
+    padding: 1.8rem 2.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.stack-stop.is-now .stack-stop-body {
+    border-color: color-mod(#2e844a a(35%));
+}
+
+.stack-stop.is-next .stack-stop-body {
+    border-style: dashed;
+}
+
+.stack-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.stack-stop-body h3 {
+    margin: 0.4rem 0 0.6rem;
+    font-size: 1.9rem;
+}
+
+.stack-stop-body p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.stack-stop-body .btn {
+    margin-top: 1.2rem;
+}
+
+@media (max-width: 560px) {
+    .stack-timeline {
+        padding-left: 4.4rem;
+    }
+
+    .stack-node {
+        left: -3.6rem;
+        width: 3.4rem;
+        height: 3.4rem;
+    }
+
+    .stack-node svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
