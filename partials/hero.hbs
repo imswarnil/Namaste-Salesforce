@@ -24,7 +24,7 @@ to 16:9 and plays the intro; closing it returns the square. --}}
         <div class="home-hero-copy">
 
             <h1>{{@site.title}}</h1>
-            <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
+            <p class="home-hero-subtitle">{{t "Say Namaste to Salesforce!"}}</p>
             <p class="home-hero-sub">{{t "Preparing myself for the AI era — documenting the process as I learn, out in the open. This whole platform is open source. Sign up to follow everything I build here."}}</p>
 
             {{!-- The ask — compact --}}
@@ -52,6 +52,32 @@ to 16:9 and plays the intro; closing it returns the square. --}}
                     <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
                 </div>
             {{/if}}
+
+            {{!-- Social handles — Ghost's own accounts (Admin →
+            Settings → Social accounts) plus the theme's own link
+            settings; each renders only when set, and the row
+            disappears entirely when none are. Always shown, not
+            gated on membership state like the ask above it. --}}
+            <ul class="hero-social-row">
+                {{#if @site.twitter}}
+                    <li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X">{{> "icons/x"}}</a></li>
+                {{/if}}
+                {{#if @site.facebook}}
+                    <li><a href="{{social_url type="facebook"}}" target="_blank" rel="noopener" aria-label="Facebook">{{> "icons/facebook"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_youtube}}
+                    <li><a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube">{{> "icons/youtube"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_linkedin}}
+                    <li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_github}}
+                    <li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub">{{> "icons/github"}}</a></li>
+                {{/if}}
+                {{#if @custom.social_instagram}}
+                    <li><a href="{{@custom.social_instagram}}" target="_blank" rel="noopener" aria-label="Instagram">{{> "icons/instagram"}}</a></li>
+                {{/if}}
+            </ul>
         </div>
 
         {{!-- Right: the publication cover, and the film behind it.
@@ -94,10 +120,6 @@ to 16:9 and plays the intro; closing it returns the square. --}}
                     {{/if}}
 
                     <span class="hero-feature-scrim" aria-hidden="true"></span>
-
-                    <span class="hero-feature-meta">
-                        <b class="hero-feature-title">{{@site.title}}</b>
-                    </span>
                 </div>
 
                 {{#if @custom.hero_video}}
@@ -122,23 +144,6 @@ to 16:9 and plays the intro; closing it returns the square. --}}
                 {{/if}}
             </div>
 
-            {{!-- Floating chips. Typed ones win (Admin → Design →
-            Site-wide → "Hero chips"); empty falls back to the AI-era
-            defaults in assets/js/hero-video.js, which is also where
-            the labels are cut up and matched to icons — Handlebars
-            has no split, and a chip's icon is chosen from its word.
-
-            The publication's tags were the obvious source and the
-            wrong one: ordered by post count they read "Apex, Admin,
-            DevOps, Flow, Apex Triggers" — a sentence-length admin
-            vocabulary, not what the site is about now.
-
-            Decorative, hence aria-hidden. --}}
-            {{#if @custom.hero_chips}}
-                <ul class="hero-feature-chips" data-hero-chips="{{@custom.hero_chips}}" aria-hidden="true"></ul>
-            {{else}}
-                <ul class="hero-feature-chips" data-hero-chips aria-hidden="true"></ul>
-            {{/if}}
         </div>
 
     </div>

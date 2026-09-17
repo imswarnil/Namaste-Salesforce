@@ -140,33 +140,12 @@ viewport with tall cards those are not the same thing. --}}
     {{/if}}
 {{/get}}
 
-{{!-- Platform features — what makes this different, as one
-connected track. Fixed copy, not a live query: partials/platform-features.hbs.
-The "stacked" learning path with actual training content lives in
-the "Follow the path, live" section above and on /training. --}}
-<section class="section section-alt outer home-path">
-    <div class="bg-dots" aria-hidden="true"></div>
-    <div class="inner relative">
-        <div class="section-head" data-animate>
-            <div>
-                <span class="kicker">{{> "icons/compass"}} {{t "Why this platform"}}</span>
-                <h2>{{t "Built different, on purpose"}}</h2>
-                <p>{{t "Technologies come and go. Selling, and customers buying, won't. That's what this platform actually teaches."}}</p>
-            </div>
-            <a class="section-more" href="{{@site.url}}/about/">{{t "More about me"}} {{> "icons/arrow-right"}}</a>
-        </div>
-        <div class="home-path-track" data-animate-stagger>
-            {{> "platform-features"}}
-        </div>
-    </div>
-</section>
-
-{{!-- Topics ticker — every public tag, straight from the API, in
-two counter-rotating marquee rows. The track holds its chips
-TWICE (second run aria-hidden) because the seamless loop slides
-exactly -50%; without motion the CSS drops the duplicates and the
-rows wrap into a plain chip cloud. --}}
-{{#get "tags" filter="visibility:public" include="count.posts" order="count.posts desc" limit="16" as |topics|}}
+{{!-- Topics — every public tag, as a card grid: icon, name, its
+own description (when the tag has one) and the post count. A
+static grid, not a scrolling marquee — a horizontal auto-scroll
+strip hijacked the page's own vertical scroll wheel the moment the
+cursor crossed it, which read as the whole page getting stuck. --}}
+{{#get "tags" filter="visibility:public" include="count.posts" order="count.posts desc" limit="8" as |topics|}}
     {{#if topics}}
         <section class="section outer home-topics">
             <div class="inner">
@@ -176,29 +155,18 @@ rows wrap into a plain chip cloud. --}}
                         <h2>{{t "Find your corner of the platform"}}</h2>
                     </div>
                 </div>
-            </div>
-            <div class="marquee" data-animate>
-                <div class="marquee-track">
+                <div class="topic-grid" data-animate-stagger>
                     {{#foreach topics}}
-                        <a class="home-topic-chip" href="{{url}}">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
+                        <a class="topic-card" href="{{url}}">
+                            <span class="topic-card-icon" aria-hidden="true">
+                                {{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}}
+                            </span>
+                            <span class="topic-card-body">
+                                <strong class="topic-card-name">{{name}}</strong>
+                                <span class="topic-card-desc">{{#if description}}{{description}}{{else}}{{count.posts}} {{t "posts"}}{{/if}}</span>
+                            </span>
+                        </a>
                     {{/foreach}}
-                    <span class="marquee-dup" aria-hidden="true">
-                        {{#foreach topics}}
-                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
-                        {{/foreach}}
-                    </span>
-                </div>
-            </div>
-            <div class="marquee marquee-reverse" data-animate>
-                <div class="marquee-track">
-                    {{#foreach topics}}
-                        <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
-                    {{/foreach}}
-                    <span class="marquee-dup" aria-hidden="true">
-                        {{#foreach topics}}
-                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
-                        {{/foreach}}
-                    </span>
                 </div>
             </div>
         </section>
@@ -206,56 +174,32 @@ rows wrap into a plain chip cloud. --}}
 {{/get}}
 
 {{!-- Videos — the top-10 reel. Netflix grammar: giant ranked
-numbers behind the thumbs, one horizontal strip, scrollbar
-hidden (swipe/scroll-snap does the work), newest ten videos,
-closing on a subscribe tile. The strip bleeds to the viewport
-edge but its first item aligns with the content column. --}}
-{{#get "posts" filter="tag:hash-video" include="tags" order="published_at desc" limit="10" as |vids|}}
+numbers behind the thumbs — a horizontal strip a reader could
+drag, which on a trackpad also meant a plain vertical scroll over
+it could get read as a horizontal gesture. A plain grid has no
+such ambiguity. Newest four videos, closing on a subscribe tile. --}}
+{{#get "posts" filter="tag:hash-video" include="tags" order="published_at desc" limit="4" as |vids|}}
     {{#if vids}}
-        <section class="section home-reel-sec">
-            <div class="outer">
-                <div class="inner">
-                    <div class="section-head" data-animate>
-                        <div>
-                            <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
-                            <h2>{{t "Watch it get built"}}</h2>
-                            <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
-                        </div>
-                        <div class="section-head-cta">
-                            {{#if @custom.social_youtube}}
-                                <a class="btn btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">{{> "icons/youtube"}} {{t "Subscribe"}}</a>
-                            {{/if}}
-                            <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
-                        </div>
+        <section class="section outer">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
+                        <h2>{{t "Watch the videos"}}</h2>
+                        <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
+                    </div>
+                    <div class="section-head-cta">
+                        {{#if @custom.social_youtube}}
+                            <a class="btn btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">{{> "icons/youtube"}} {{t "Subscribe"}}</a>
+                        {{/if}}
+                        <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
                     </div>
                 </div>
-            </div>
-
-            <div class="home-reel" data-animate-stagger>
-                {{#foreach vids}}
-                    <a class="reel-item" href="{{url}}">
-                        <span class="reel-num" aria-hidden="true">{{@number}}</span>
-                        <span class="reel-thumb">
-                            {{#if feature_image}}
-                                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" />
-                            {{else}}
-                                {{> "thumb-placeholder" icon="video"}}
-                            {{/if}}
-                            {{> "video-preview"}}
-                            <span class="video-card-play">{{> "icons/play-circle"}}</span>
-                            {{> "duration-chip" chipClass="video-card-duration"}}
-                        </span>
-                        <span class="reel-title">{{title}}</span>
-                    </a>
-                {{/foreach}}
-
-                <a class="reel-item reel-more" href="{{#if @custom.social_youtube}}{{@custom.social_youtube}}?sub_confirmation=1{{else}}{{@site.url}}/videos/{{/if}}"{{#if @custom.social_youtube}} target="_blank" rel="noopener"{{/if}}>
-                    <span class="reel-more-tile">
-                        {{> "icons/youtube"}}
-                        <strong>{{#if @custom.social_youtube}}{{t "Subscribe on YouTube"}}{{else}}{{t "Browse every video"}}{{/if}}</strong>
-                        <span>{{t "New walkthroughs as they ship"}}</span>
-                    </span>
-                </a>
+                <div class="card-grid" data-animate-stagger>
+                    {{#foreach vids}}
+                        {{> "card-video"}}
+                    {{/foreach}}
+                </div>
             </div>
         </section>
     {{/if}}

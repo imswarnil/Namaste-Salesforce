@@ -44,9 +44,6 @@
 .post-aside {
     position: sticky;
     top: calc(var(--header-height) + 2.4rem);
-    max-height: calc(100vh - var(--header-height) - 4.8rem);
-    overflow-y: auto;
-    scrollbar-width: thin;
 }
 
 .post-no-sidebar .post-main {
@@ -300,13 +297,19 @@
     align-items: start;
 }
 
+/* Sticky, but no max-height/overflow-y of its own: a sidebar
+   taller than the remaining viewport used to become its own
+   scroll container, which trapped the mouse wheel — scrolling the
+   page while the cursor sat over a tall TOC scrolled the TOC
+   instead. It just sticks now; a widget past the fold scrolls
+   with the page like the rest of it. Same fix everywhere a
+   sidebar does this (_lesson.css, _collections.css, _course.css,
+   _videos.css, _page.css). */
 .entry-side-sticky {
     position: sticky;
     top: calc(var(--header-height) + 2.4rem);
     display: grid;
     gap: 2.4rem;
-    max-height: calc(100vh - var(--header-height) - 4.8rem);
-    overflow-y: auto;
 }
 
 .entry-article {

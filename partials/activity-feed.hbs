@@ -3,16 +3,13 @@ collection in one feed: newest posts across every tag, each
 labelled by what it is via the same post_class match post.hbs
 uses to dispatch layouts (also the pattern page-now.hbs uses to
 label #now items). No curation, no "pick a way in" — just what
-actually shipped last, in order, from a job-seeker's resource to
-a deep Apex trigger snippet.
+actually shipped last.
 
-.activity-rail draws its connector as a ::before line UNDER the
-icon nodes: the line is first in paint order (nothing on it has a
-z-index), so every opaque .activity-item-icon painted after it in
-DOM order sits on top — the same technique .home-path-track uses
-for the numbered steps below. --}}
+A compact grid, not a tall timeline — six cards fit close to one
+viewport instead of a scroll-heavy vertical list. The newest card
+carries a "Recently posted" badge; the rest just show their time. --}}
 
-{{#get "posts" include="tags" order="published_at desc" limit="8" as |activity|}}
+{{#get "posts" include="tags" order="published_at desc" limit="6" as |activity|}}
     {{#if activity}}
         <section class="section outer home-activity">
             <div class="inner">
@@ -24,10 +21,13 @@ for the numbered steps below. --}}
                     </div>
                 </div>
 
-                <ol class="activity-rail" data-animate-stagger>
+                <div class="activity-grid" data-animate-stagger>
                     {{#foreach activity}}
-                        <li class="activity-item">
-                            <span class="activity-item-icon" aria-hidden="true">
+                        <a class="activity-card{{#if @first}} is-latest{{/if}}" href="{{url}}">
+                            {{#if @first}}
+                                <span class="activity-card-badge">{{> "icons/signal"}} {{t "Recently posted"}}</span>
+                            {{/if}}
+                            <span class="activity-card-icon" aria-hidden="true">
                                 {{#match (post_class) "~" "tag-hash-course"}}{{> "icons/graduation-cap"}}
                                 {{~else match (post_class) "~" "tag-hash-lesson"}}{{> "icons/play-circle"}}
                                 {{~else match (post_class) "~" "tag-hash-module"}}{{> "icons/layers"}}
@@ -43,29 +43,27 @@ for the numbered steps below. --}}
                                 {{~else match (post_class) "~" "tag-hash-project"}}{{> "icons/github"}}
                                 {{~else}}{{> "icons/pen"}}{{/match}}
                             </span>
-                            <a class="activity-item-body" href="{{url}}">
-                                <span class="activity-item-kind">
-                                    {{#match (post_class) "~" "tag-hash-course"}}{{t "New course"}}
-                                    {{~else match (post_class) "~" "tag-hash-lesson"}}{{t "New lesson"}}
-                                    {{~else match (post_class) "~" "tag-hash-module"}}{{t "Training module"}}
-                                    {{~else match (post_class) "~" "tag-hash-training"}}{{t "Training"}}
-                                    {{~else match (post_class) "~" "tag-hash-video"}}{{t "New video"}}
-                                    {{~else match (post_class) "~" "tag-hash-slides"}}{{t "New deck"}}
-                                    {{~else match (post_class) "~" "tag-hash-newsletter"}}{{t "Newsletter"}}
-                                    {{~else match (post_class) "~" "tag-hash-changelog"}}{{t "Changelog"}}
-                                    {{~else match (post_class) "~" "tag-hash-resource"}}{{t "New resource"}}
-                                    {{~else match (post_class) "~" "tag-hash-shop"}}{{t "In the shop"}}
-                                    {{~else match (post_class) "~" "tag-hash-snippet"}}{{t "New snippet"}}
-                                    {{~else match (post_class) "~" "tag-hash-prompt"}}{{t "New prompt"}}
-                                    {{~else match (post_class) "~" "tag-hash-project"}}{{t "New project"}}
-                                    {{~else}}{{t "New on the blog"}}{{/match}}
-                                </span>
-                                <strong class="activity-item-title">{{title}}</strong>
-                                <time class="activity-item-time" datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at timeago="true"}}</time>
-                            </a>
-                        </li>
+                            <span class="activity-card-kind">
+                                {{#match (post_class) "~" "tag-hash-course"}}{{t "New course"}}
+                                {{~else match (post_class) "~" "tag-hash-lesson"}}{{t "New lesson"}}
+                                {{~else match (post_class) "~" "tag-hash-module"}}{{t "Training module"}}
+                                {{~else match (post_class) "~" "tag-hash-training"}}{{t "Training"}}
+                                {{~else match (post_class) "~" "tag-hash-video"}}{{t "New video"}}
+                                {{~else match (post_class) "~" "tag-hash-slides"}}{{t "New deck"}}
+                                {{~else match (post_class) "~" "tag-hash-newsletter"}}{{t "Newsletter"}}
+                                {{~else match (post_class) "~" "tag-hash-changelog"}}{{t "Changelog"}}
+                                {{~else match (post_class) "~" "tag-hash-resource"}}{{t "New resource"}}
+                                {{~else match (post_class) "~" "tag-hash-shop"}}{{t "In the shop"}}
+                                {{~else match (post_class) "~" "tag-hash-snippet"}}{{t "New snippet"}}
+                                {{~else match (post_class) "~" "tag-hash-prompt"}}{{t "New prompt"}}
+                                {{~else match (post_class) "~" "tag-hash-project"}}{{t "New project"}}
+                                {{~else}}{{t "New on the blog"}}{{/match}}
+                            </span>
+                            <strong class="activity-card-title">{{title}}</strong>
+                            <time class="activity-card-time" datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at timeago="true"}}</time>
+                        </a>
                     {{/foreach}}
-                </ol>
+                </div>
             </div>
         </section>
     {{/if}}

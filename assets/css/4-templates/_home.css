@@ -50,9 +50,16 @@
     -webkit-text-fill-color: transparent;
 }
 
+.home-hero-subtitle {
+    margin: 1.2rem 0 0;
+    font-size: clamp(1.7rem, 2.4vw, 2.2rem);
+    font-weight: 700;
+    color: var(--accent);
+}
+
 .home-hero-sub {
     max-width: 620px;
-    margin: 2.2rem auto 0;
+    margin: 1rem auto 0;
     font-size: clamp(1.7rem, 2.2vw, 2rem);
     line-height: 1.6;
     color: var(--text-muted);
@@ -587,18 +594,24 @@
     background: repeating-linear-gradient(to bottom, var(--border) 0 5px, transparent 5px 10px);
 }
 
-/* the station node, sitting ON the rail */
+/* the station node, sitting ON the rail — an OPAQUE solid, not
+   --surface: .home-story redefines --surface as translucent glass
+   (rgba(255,255,255,.055)) for the cards, which is the right look
+   for them but left the node see-through, so the dashed rail and
+   its stub visibly ran straight through the icon instead of
+   stopping at its edge. */
 .story-node {
     position: absolute;
     top: -7.9rem;
     left: 2rem;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 4.6rem;
     height: 4.6rem;
     border-radius: 50%;
-    background: var(--surface);
+    background: var(--bg-alt);
     border: 2px solid var(--border);
     color: var(--text-faint);
     box-shadow: var(--shadow-sm);
@@ -742,44 +755,88 @@ html.anim .story-strip.is-in .story-stop {
 
 .home-topics {
     position: relative;
-    overflow: hidden;
 }
 
-.home-topics .marquee + .marquee {
-    margin-top: 1.2rem;
+/* Topics — a plain card grid, not a scrolling marquee */
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.4rem;
+    margin-top: 3.2rem;
 }
 
-.home-topic-chip {
-    display: inline-flex;
+.topic-card {
+    display: flex;
     align-items: center;
-    gap: 0.7rem;
-    padding: 0.9rem 1.6rem;
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--text);
+    gap: 1.2rem;
+    padding: 1.6rem 1.8rem;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 999px;
-    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    border-radius: var(--radius-lg);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.home-topic-chip:hover {
-    color: var(--accent);
-    border-color: color-mod(#0176d3 a(45%));
+.topic-card:hover {
+    border-color: color-mod(#0176d3 a(40%));
+    box-shadow: var(--shadow);
     transform: translateY(-2px);
 }
 
-.home-topic-chip svg {
-    width: 1.6rem;
-    height: 1.6rem;
+.topic-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.8rem;
+    height: 3.8rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--accent-soft);
     color: var(--accent);
 }
 
-.home-topic-chip small {
-    font-size: 1.15rem;
+.topic-card-icon svg {
+    width: 1.9rem;
+    height: 1.9rem;
+}
+
+.topic-card-icon .card-tag-icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.topic-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.topic-card-name {
+    font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-faint);
-    font-variant-numeric: tabular-nums;
+    color: var(--heading);
+}
+
+.topic-card-desc {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+    .topic-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .topic-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 /*  Stay current — changelog timeline beside newsletter card
@@ -926,89 +983,85 @@ html.anim .story-strip.is-in .story-stop {
     }
 }
 
-/*  Recent activity — a vertical feed, replacing the old
-    "Pick a way in" bento
-    ------------------------------------------------------------
-    One thin rail runs down the y-axis, same technique as the
-    learning-path rail below: the rail is a ::before painted
-    first, every icon node is opaque and explicitly z-index:1, so
-    the line always passes BEHIND the icon, never over it. */
+/*  Recent activity — a compact grid, replacing the old "Pick a
+    way in" bento AND the vertical timeline that followed it. Six
+    cards fit close to a single viewport instead of a tall scroll;
+    the newest card wears a "Recently posted" badge instead of the
+    whole section reading as a timeline. */
 
 .home-activity {
     position: relative;
 }
 
-.activity-rail {
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.6rem;
+    margin-top: 3.2rem;
+}
+
+.activity-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1.6rem;
-    max-width: 760px;
-    margin: 3.2rem auto 0;
-    padding-left: 4.6rem;
-    list-style: none;
+    gap: 0.6rem;
+    padding: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.activity-rail::before {
-    content: "";
+.activity-card:hover {
+    border-color: color-mod(#0176d3 a(40%));
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+}
+
+.activity-card.is-latest {
+    border-color: color-mod(#0176d3 a(45%));
+    background: linear-gradient(165deg, var(--accent-soft), transparent 60%), var(--surface);
+}
+
+.activity-card-badge {
     position: absolute;
-    top: 0.4rem;
-    bottom: 0.4rem;
-    left: 1.5rem;
-    z-index: 0;
-    width: 2px;
-    border-radius: 2px;
-    background: linear-gradient(to bottom, var(--accent), var(--brand-400));
-    opacity: 0.4;
+    top: -1.1rem;
+    left: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 999px;
 }
 
-.activity-item {
-    position: relative;
+.activity-card-badge svg {
+    width: 1.2rem;
+    height: 1.2rem;
 }
 
-.activity-item-icon {
-    position: absolute;
-    top: 0.6rem;
-    left: -3.6rem;
-    z-index: 1;
+.activity-card-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 3.2rem;
-    height: 3.2rem;
-    border-radius: 50%;
+    width: 3.6rem;
+    height: 3.6rem;
+    margin-bottom: 0.4rem;
+    border-radius: var(--radius);
     background: var(--accent-soft);
     color: var(--accent);
-    border: 3px solid var(--bg);
 }
 
-.activity-item-icon svg {
-    width: 1.6rem;
-    height: 1.6rem;
+.activity-card-icon svg {
+    width: 1.8rem;
+    height: 1.8rem;
 }
 
-.activity-item-body {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 1.2rem;
-    align-items: center;
-    padding: 1.3rem 1.8rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.activity-item-body:hover {
-    border-color: color-mod(#0176d3 a(40%));
-    transform: translateX(3px);
-}
-
-.activity-item-kind {
-    grid-column: 1;
-    grid-row: 1;
+.activity-card-kind {
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -1016,226 +1069,30 @@ html.anim .story-strip.is-in .story-stop {
     color: var(--accent);
 }
 
-.activity-item-title {
-    grid-column: 1;
-    grid-row: 2;
-    font-size: 1.5rem;
+.activity-card-title {
+    font-size: 1.55rem;
     font-weight: 600;
     line-height: 1.4;
     color: var(--heading);
 }
 
-.activity-item-time {
-    grid-column: 2;
-    grid-row: 1 / 3;
+.activity-card-time {
+    margin-top: auto;
+    padding-top: 0.6rem;
     font-size: 1.2rem;
     color: var(--text-faint);
-    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .activity-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 560px) {
-    .activity-rail {
-        padding-left: 3.8rem;
-    }
-
-    .activity-item-icon {
-        left: -3rem;
-        width: 2.6rem;
-        height: 2.6rem;
-    }
-
-    .activity-item-icon svg {
-        width: 1.3rem;
-        height: 1.3rem;
-    }
-
-    .activity-item-body {
+    .activity-grid {
         grid-template-columns: minmax(0, 1fr);
-        row-gap: 0.3rem;
     }
-
-    .activity-item-time {
-        grid-column: 1;
-        grid-row: 3;
-    }
-}
-
-/*  The learning path — a vertical timeline of live modules
-    ------------------------------------------------------------
-    One rail runs down the y-axis; every module is a station on
-    it: numbered node ON the rail, a stub reaching into its card,
-    the module's own artwork leading the card. The rail draws
-    itself top→bottom as the section reveals; cards wave in on
-    the stagger. */
-
-.home-path {
-    position: relative;
-    overflow: hidden;
-}
-
-.home-path-track {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    max-width: 760px;
-    margin: 4.4rem auto 0;
-    padding-left: 5.6rem;
-    counter-reset: homepath;
-}
-
-/* the rail itself */
-.home-path-track::before {
-    content: "";
-    position: absolute;
-    top: 1.2rem;
-    bottom: 1.2rem;
-    left: 1.6rem;
-    width: 3px;
-    border-radius: 2px;
-    background: linear-gradient(to bottom, var(--accent), var(--brand-400));
-    opacity: 0.55;
-}
-
-/* …drawing itself in as the section arrives */
-html.anim .home-path-track::before {
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
-}
-
-html.anim .home-path-track.is-in::before {
-    transform: scaleY(1);
-}
-
-.path-step {
-    position: relative;
-    counter-increment: homepath;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto auto auto;
-    column-gap: 1.6rem;
-    align-items: center;
-    padding: 2rem 2.2rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.path-step:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: color-mod(#0176d3 a(40%));
-}
-
-/* the stub from the rail into the card */
-.path-step::before {
-    content: "";
-    position: absolute;
-    top: 3.4rem;
-    left: -4rem;
-    width: 4rem;
-    height: 2px;
-    background: repeating-linear-gradient(90deg, color-mod(#0176d3 a(45%)) 0 5px, transparent 5px 10px);
-}
-
-/* the station node, sitting ON the rail */
-.path-step-num {
-    position: absolute;
-    top: 1.8rem;
-    left: -5.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.4rem;
-    height: 3.4rem;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-size: 1.4rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    border: 3px solid var(--bg);
-    box-shadow: 0 0 0 4px var(--accent-soft);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.path-step:hover .path-step-num {
-    box-shadow: 0 0 0 7px var(--accent-soft);
-    transform: scale(1.08);
-}
-
-.path-step-num::before {
-    content: counter(homepath);
-}
-
-.path-step-art {
-    grid-row: 1 / 4;
-    width: 5.4rem;
-    height: 5.4rem;
-    border-radius: var(--radius);
-    overflow: hidden;
-    border: 1px solid var(--border-soft);
-}
-
-.path-step-name,
-.path-step-meta,
-.path-step-start {
-    grid-column: 2;
-}
-
-.path-step-art img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.path-step-art.is-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-    background: var(--accent-soft);
-    border-color: transparent;
-}
-
-.path-step-art.is-icon svg {
-    width: 2.2rem;
-    height: 2.2rem;
-}
-
-.path-step-name {
-    font-size: 1.7rem;
-    font-weight: 700;
-    line-height: 1.3;
-    color: var(--heading);
-}
-
-.path-step-meta {
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-}
-
-.path-step-start {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding-top: 0.5rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--accent);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.path-step-start svg {
-    width: 1.6rem;
-    height: 1.6rem;
-    flex-shrink: 0;
 }
 
 /*  Hero extras — ring, shimmer, scroll cue
@@ -1380,12 +1237,6 @@ html.anim .home-path-track.is-in::before {
     .home-shipped-ping::after { animation: none; }
 }
 
-/* Topic chips carry the tag's own image when it has one */
-.home-topic-chip .card-tag-icon {
-    width: 2rem;
-    height: 2rem;
-}
-
 /* Changelog strip: date + type badge on one line */
 .home-changelog-meta {
     display: flex;
@@ -1444,29 +1295,6 @@ html.anim .home-path-track.is-in::before {
     background: linear-gradient(to bottom, transparent, var(--bg));
 }
 
-/* The hand-drawn stroke under the headline, drawing itself in */
-.hero-flourish {
-    display: block;
-    width: clamp(140px, 18vw, 220px);
-    height: auto;
-    margin-top: 0.8rem;
-    overflow: visible;
-}
-
-.hero-flourish path {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 3.5;
-    stroke-linecap: round;
-    stroke-dasharray: 240;
-    stroke-dashoffset: 240;
-    animation: flourish-draw 1s ease-out 0.5s forwards;
-}
-
-@keyframes flourish-draw {
-    to { stroke-dashoffset: 0; }
-}
-
 /* Author chip floating on the panel's top edge */
 .home-hero-float-top {
     top: -1.8rem;
@@ -1491,11 +1319,6 @@ html.anim .home-path-track.is-in::before {
 }
 
 @media (max-width: 991px) {
-    .hero-flourish {
-        margin-left: auto;
-        margin-right: auto;
-    }
-
     .home-hero-deck {
         inset: 0;
     }
@@ -1505,11 +1328,6 @@ html.anim .home-path-track.is-in::before {
     .home-hero::before {
         animation: none;
     }
-
-    .hero-flourish path {
-        animation: none;
-        stroke-dashoffset: 0;
-    }
 }
 
 /*  The video reel — Netflix-style top 10
@@ -1517,10 +1335,6 @@ html.anim .home-path-track.is-in::before {
     One horizontal strip, giant ranked numbers behind the thumbs,
     no visible scrollbar. The strip bleeds to the viewport edge;
     its padding keeps item 1 aligned with the content column. */
-
-.home-reel-sec {
-    overflow: hidden;
-}
 
 .section-head-cta {
     display: flex;
@@ -1536,173 +1350,6 @@ html.anim .home-path-track.is-in::before {
 .btn-youtube:hover {
     background: #d90029;
     border-color: #d90029;
-}
-
-/* The reel stays inside the site container — content never runs
-   wider than the navbar's frame (site rule; only the lesson and
-   training readers may go full-bleed). */
-.home-reel {
-    display: flex;
-    align-items: stretch;
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.2rem max(4vmin, 20px) 2rem;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-.home-reel::-webkit-scrollbar {
-    display: none;
-}
-
-.reel-item {
-    position: relative;
-    flex: 0 0 auto;
-    width: min(320px, 72vw);
-    padding-left: clamp(4.4rem, 5vw, 6rem);
-    scroll-snap-align: start;
-}
-
-/* The rank — huge, outlined, half-tucked behind the thumb */
-.reel-num {
-    position: absolute;
-    left: 0;
-    bottom: 3.4rem;
-    z-index: 0;
-    font-size: clamp(8rem, 10vw, 12rem);
-    font-weight: 900;
-    line-height: 0.78;
-    letter-spacing: -0.06em;
-    font-variant-numeric: tabular-nums;
-    color: var(--bg);
-    -webkit-text-stroke: 2.5px var(--text-faint);
-    transition: -webkit-text-stroke-color 0.2s ease, color 0.2s ease;
-    pointer-events: none;
-}
-
-.reel-item:hover .reel-num {
-    -webkit-text-stroke-color: var(--accent);
-}
-
-.reel-thumb {
-    position: relative;
-    z-index: 1;
-    display: block;
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius);
-    overflow: hidden;
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.reel-item:hover .reel-thumb {
-    transform: scale(1.045);
-    box-shadow: var(--shadow-lg);
-}
-
-.reel-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.reel-thumb .video-card-play {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    opacity: 0;
-    background: rgba(3, 20, 40, 0.35);
-    transition: opacity 0.2s ease;
-}
-
-.reel-thumb .video-card-play svg {
-    width: 4.4rem;
-    height: 4.4rem;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4));
-}
-
-.reel-item:hover .video-card-play {
-    opacity: 1;
-}
-
-.reel-title {
-    display: block;
-    margin-top: 1rem;
-    font-size: 1.4rem;
-    font-weight: 600;
-    line-height: 1.4;
-    color: var(--text-muted);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    transition: color 0.15s ease;
-}
-
-.reel-item:hover .reel-title {
-    color: var(--accent);
-}
-
-/* The closing subscribe tile */
-.reel-more {
-    padding-left: 0;
-    width: min(280px, 64vw);
-}
-
-.reel-more-tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    aspect-ratio: 16 / 9;
-    padding: 2rem;
-    text-align: center;
-    border-radius: var(--radius);
-    color: var(--gray-100);
-    background:
-        radial-gradient(320px 180px at 50% -20%, rgba(255, 0, 51, 0.35), transparent 70%),
-        var(--gray-950);
-    border: 1px solid var(--border);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.reel-more:hover .reel-more-tile {
-    transform: scale(1.045);
-    box-shadow: var(--shadow-lg);
-}
-
-.reel-more-tile svg {
-    width: 3.6rem;
-    height: 3.6rem;
-    color: #ff0033;
-}
-
-.reel-more-tile strong {
-    font-size: 1.6rem;
-    color: #fff;
-}
-
-.reel-more-tile > span {
-    font-size: 1.25rem;
-    color: var(--gray-400);
-}
-
-@media (max-width: 640px) {
-    .reel-item {
-        width: min(260px, 74vw);
-    }
-
-    .reel-num {
-        bottom: 3rem;
-    }
 }
 
 /*  About + signup band
@@ -2223,6 +1870,43 @@ html.anim .home-path-track.is-in::before {
     font-size: 1.2rem;
 }
 
+/*  Social handles — a plain row under the ask, not the floating
+    card-edge rail the hero used to carry. Empty when the author
+    has set none (each <li> only renders when its setting is set,
+    so an all-empty row is just an empty <ul>, no visible gap). */
+.hero-social-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hero-social-row a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.8rem;
+    height: 3.8rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.hero-social-row a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.hero-social-row svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
 /*  The stack — four screens on one dashed spine
     ------------------------------------------------------------ */
 
@@ -2613,24 +2297,6 @@ html[data-theme="dark"] .home-hero-pattern {
     height: auto;
 }
 
-/*  Lifted clear of the toggle straddling the bottom edge. */
-.hero-feature-meta {
-    position: absolute;
-    right: 2.4rem;
-    bottom: 4.4rem;
-    left: 2.4rem;
-    text-align: left;
-}
-
-.hero-feature-title {
-    font-size: 2.2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    color: #fff;
-    text-shadow: 0 1px 12px rgba(0, 26, 62, 0.45);
-}
-
 /*  Stage ------------------------------------------------------ */
 
 .hero-feature-stage {
@@ -2737,77 +2403,11 @@ html[data-theme="dark"] .home-hero-pattern {
     background: var(--heading);
 }
 
-/*  Floating chips — the site's own top tags ------------------- */
-
-/*  Both furniture layers are sized and centred EXACTLY like the card,
-    so a chip's `right: -N` is N past the card's edge — not past the
-    wrapper's. Anchored to the wrapper instead, the offset drifted with
-    the viewport and the chips clipped the artwork on wide screens. */
-.hero-feature-chips {
-    position: absolute;
-    top: 3.2rem;
-    bottom: 4.4rem;
-    left: 50%;
-    width: min(100% - 12.8rem, 42rem);
-    translate: -50% 0;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    pointer-events: none;
-}
-
-.hero-chip {
-    position: absolute;
-    pointer-events: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    padding: 0.55rem 1.2rem 0.55rem 0.9rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--heading);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    box-shadow: var(--shadow);
-    /* they drift, they do not pulse — motion rule 05 */
-    animation: hero-chip-drift 9s ease-in-out infinite;
-}
-
-.hero-chip svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    flex-shrink: 0;
-    color: var(--accent);
-}
-
-/*  Chips ride down the RIGHT gutter; the card's lower third
-    belongs to the title, so it stays clear. */
-.hero-chip.is-c1 { top: -2.6rem; left: 34%; animation-delay: 0s; }
-.hero-chip.is-c2 { top: 14%; right: -2.4rem; animation-delay: -1.6s; }
-.hero-chip.is-c3 { top: 36%; right: -3.6rem; animation-delay: -3.2s; }
-.hero-chip.is-c4 { top: 58%; right: -2.4rem; animation-delay: -4.8s; }
-.hero-chip.is-c5 { top: 80%; right: -3.2rem; animation-delay: -6.4s; }
-
-/* while the film plays the chips would sit on the video — clear them */
-.hero-feature:has(.is-playing) .hero-chip {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
-
-@keyframes hero-chip-drift {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-6px); }
-}
-
 @media (prefers-reduced-motion: reduce) {
     .hero-feature-card,
     .hero-feature-poster,
     .hero-feature-toggle,
-    .hero-feature-disc,
-    .hero-chip {
+    .hero-feature-disc {
         transition: none;
         animation: none;
     }
@@ -2825,10 +2425,6 @@ html[data-theme="dark"] .home-hero-pattern {
     .hero-feature-card.is-playing {
         max-width: 54rem;
     }
-
-    .hero-chip.is-c5 {
-        display: none;
-    }
 }
 
 @media (max-width: 600px) {
@@ -2842,27 +2438,6 @@ html[data-theme="dark"] .home-hero-pattern {
 
     .hero-feature-card.is-playing {
         max-width: 100%;
-    }
-
-    /* chips come INSIDE the card's edges — outside, they were being
-       clipped by the viewport on a narrow phone */
-    .hero-chip {
-        padding: 0.45rem 1rem;
-        font-size: 1.1rem;
-    }
-
-    .hero-feature-chips {
-        width: min(100% - 8.8rem, 30rem);
-    }
-
-    .hero-chip.is-c1 { top: -2.2rem; left: 24%; }
-    .hero-chip.is-c2 { top: 16%; right: -1.6rem; }
-    .hero-chip.is-c3 { top: 44%; right: -2.2rem; }
-    .hero-chip.is-c4 { top: 72%; right: -1.6rem; }
-    .hero-chip.is-c5 { display: none; }
-
-    .hero-feature-title {
-        font-size: 1.9rem;
     }
 
     .hero-feature-toggle {
