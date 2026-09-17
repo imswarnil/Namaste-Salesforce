@@ -19,6 +19,24 @@ cards feel continuous with it. --}}
             <h1>{{t "Video Library"}}</h1>
             <p>{{t "Watch one thing get built, start to finish."}}</p>
         {{/page}}
+
+        {{#if @custom.social_youtube}}
+            <div class="training-hero2-actions">
+                <a class="btn btn-lg btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">
+                    {{> "icons/youtube"}} {{t "Subscribe on YouTube"}}
+                </a>
+            </div>
+        {{/if}}
+
+        <div class="training-hero2-stats">
+            {{#get "posts" filter="tag:hash-video" limit="1" as |items counts|}}
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Videos"}}</span></div>
+            {{/get}}
+            {{#get "tags" filter="visibility:public" limit="1" as |items counts|}}
+                <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Topics covered"}}</span></div>
+            {{/get}}
+            <div class="home-stat"><strong>{{t "Free"}}</strong><span>{{t "Forever"}}</span></div>
+        </div>
     </div>
 </section>
 

@@ -1,11 +1,15 @@
 {{!-- A library video — wide two-column layout.
 
-Main: the embed (first card in the content), then the notes.
-Aside: CHAPTERS — assets/js/video.js finds the first table in
-the content whose left column is timestamps (0:45, 2:10,
-1:02:30…), lifts it into [data-chapters], hides the original,
-and wires each row to seek the YouTube player. No table, no
-widget. Below it: a details card and the sponsor slot.
+Main: the embed (first card in the content), the notes, then a
+Details card — published date, duration, topic, presenter — sits
+right below the video itself, in the reading column, not tucked
+in the sidebar.
+
+Aside: CHAPTERS (right, alongside the video) — assets/js/video.js
+finds the first table in the content whose left column is
+timestamps (0:45, 2:10, 1:02:30…), lifts it into [data-chapters],
+hides the original, and wires each row to seek the YouTube player.
+No table, no widget. Below it: related videos, TOC, sponsor.
 Context: the post. --}}
 
 <main id="site-main" class="section outer">
@@ -35,6 +39,20 @@ Context: the post. --}}
             {{content}}
         </section>
 
+        <div class="widget widget-inline">
+            <h4 class="widget-title">{{> "icons/info"}} {{t "Details"}}</h4>
+            <dl class="detail-list">
+                <div><dt>{{t "Published"}}</dt><dd>{{date format="DD MMM YYYY"}}</dd></div>
+                <div><dt>{{t "Duration"}}</dt><dd>{{> "duration-chip" chipClass="detail-plain"}}</dd></div>
+                {{#primary_tag}}
+                    <div><dt>{{t "Topic"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
+                {{/primary_tag}}
+                {{#foreach authors limit="1"}}
+                    <div><dt>{{t "Presented by"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
+                {{/foreach}}
+            </dl>
+        </div>
+
         <footer class="post-footer">
             {{#if tags}}
                 <ul class="tag-cloud">
@@ -49,19 +67,7 @@ Context: the post. --}}
 
         {{> "widgets/chapters"}}
 
-        <div class="widget">
-            <h4 class="widget-title">{{> "icons/info"}} {{t "Details"}}</h4>
-            <dl class="detail-list">
-                <div><dt>{{t "Published"}}</dt><dd>{{date format="DD MMM YYYY"}}</dd></div>
-                <div><dt>{{t "Duration"}}</dt><dd>{{> "duration-chip" chipClass="detail-plain"}}</dd></div>
-                {{#primary_tag}}
-                    <div><dt>{{t "Topic"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
-                {{/primary_tag}}
-                {{#foreach authors limit="1"}}
-                    <div><dt>{{t "Presented by"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
-                {{/foreach}}
-            </dl>
-        </div>
+        {{> "widgets/related-videos"}}
 
         {{> "widgets/toc"}}
 
@@ -72,24 +78,3 @@ Context: the post. --}}
 </div>
 </div>
 </main>
-
-{{#get "posts" filter="tag:hash-video+id:-{{id}}" include="tags" limit="3" as |more|}}
-    {{#if more}}
-        <section class="section section-alt outer">
-            <div class="inner">
-                <div class="section-head">
-                    <div>
-                        <span class="kicker">{{> "icons/video"}} {{t "Keep watching"}}</span>
-                        <h2>{{t "More from the library"}}</h2>
-                    </div>
-                    <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
-                </div>
-                <div class="card-grid">
-                    {{#foreach more}}
-                        {{> "card-video"}}
-                    {{/foreach}}
-                </div>
-            </div>
-        </section>
-    {{/if}}
-{{/get}}
