@@ -1,18 +1,14 @@
-{{!-- THE hero — Swarnil's story, told by the site itself.
+{{!-- THE hero — quiet on purpose.
 
-Identity comes straight from Ghost: the headline is @site.title,
-the sub is @site.description, and when a publication cover is
-set (Admin → Design → Publication cover) it becomes the hero's
-background — masked and faded so the copy always wins.
+Headline is @site.title; the sub is one fixed line of positioning
+copy (not @site.description) — no badges, no social proof, no
+"just shipped" pill, no social rail on the card. Everything that
+used to prove activity here now lives in partials/activity-feed.hbs,
+right below.
 
 Right: ONE square — the publication's own mark, and the film
 behind it. The card sits at 1:1 until it is pressed, then morphs
-to 16:9 and plays the intro; closing it returns the square. It
-replaced a five-screen lo-fi collage: the collage said "look how
-much this site makes", which the .hero-collections strip below
-already says better, and it said it with five fake windows.
-Everything the site makes still lives one row down in
-.hero-collections — the hero itself stays quiet. --}}
+to 16:9 and plays the intro; closing it returns the square. --}}
 
 <section class="home-hero outer relative">
     {{!-- The backdrop is a PATTERN, not a photo: the crosshair
@@ -27,22 +23,9 @@ Everything the site makes still lives one row down in
 
         <div class="home-hero-copy">
 
-            {{#get "authors" limit="1" as |host|}}
-                {{#foreach host}}
-                    <a class="home-hero-badge is-host" href="{{url}}">
-                        {{#if profile_image}}
-                            <img src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
-                        {{else}}
-                            {{> "icons/avatar"}}
-                        {{/if}}
-                        {{name}} &middot; {{t "learning in public"}}
-                    </a>
-                {{/foreach}}
-            {{/get}}
-
             <h1>{{@site.title}}</h1>
             <svg class="hero-flourish" viewBox="0 0 220 12" aria-hidden="true"><path d="M3 9 C 45 3, 85 11, 125 6 S 195 3, 217 7"/></svg>
-            <p class="home-hero-sub">{{#if @site.description}}{{@site.description}}{{else}}{{t "Namaste! I'm seven-plus years into IT, and this site is my rule made public: build the thing first, then share exactly how."}}{{/if}}</p>
+            <p class="home-hero-sub">{{t "Preparing myself for the AI era — documenting the process as I learn, out in the open. This whole platform is open source. Sign up to follow everything I build here."}}</p>
 
             {{!-- The ask — compact --}}
             {{#if @site.members_enabled}}
@@ -69,37 +52,6 @@ Everything the site makes still lives one row down in
                     <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
                 </div>
             {{/if}}
-
-            {{!-- Crowd proof + freshness --}}
-            <div class="hero-proof">
-                <span class="proof-stack" aria-hidden="true">
-                    {{#get "authors" limit="4" as |folks|}}
-                        {{#foreach folks}}
-                            {{#if profile_image}}
-                                <img class="p-avatar" src="{{img_url profile_image size="xs"}}" alt="" loading="lazy" />
-                            {{/if}}
-                        {{/foreach}}
-                    {{/get}}
-                    <span class="p-avatar p-mono" style="--h: 210;">A</span>
-                    <span class="p-avatar p-mono" style="--h: 152;">R</span>
-                    <span class="p-avatar p-mono" style="--h: 264;">M</span>
-                    <span class="p-avatar p-mono" style="--h: 24;">K</span>
-                </span>
-                <span class="hero-proof-text">
-                    <strong>{{t "20+ learners"}}</strong> {{t "building along in real orgs"}}
-                </span>
-            </div>
-
-            {{#get "posts" filter="tag:hash-changelog" limit="1" as |shipped|}}
-                {{#if shipped}}
-                    <a class="home-shipped" href="{{shipped.[0].url}}">
-                        <span class="home-shipped-ping" aria-hidden="true"></span>
-                        <strong>{{t "Just shipped"}}</strong>
-                        <span class="home-shipped-title">{{shipped.[0].title}}</span>
-                        {{> "icons/arrow-right"}}
-                    </a>
-                {{/if}}
-            {{/get}}
         </div>
 
         {{!-- Right: the publication cover, and the film behind it.
@@ -181,122 +133,14 @@ Everything the site makes still lives one row down in
             DevOps, Flow, Apex Triggers" — a sentence-length admin
             vocabulary, not what the site is about now.
 
-            Decorative, hence aria-hidden: the same words are real
-            links in the quick-links strip below. --}}
+            Decorative, hence aria-hidden. --}}
             {{#if @custom.hero_chips}}
                 <ul class="hero-feature-chips" data-hero-chips="{{@custom.hero_chips}}" aria-hidden="true"></ul>
             {{else}}
                 <ul class="hero-feature-chips" data-hero-chips aria-hidden="true"></ul>
             {{/if}}
-
-            {{!-- Social rail on the card's left edge. Ghost's own
-            accounts (Admin → Settings → Social accounts) plus the
-            theme's own link settings; each renders only when set, and
-            the rail disappears entirely when none are. --}}
-            <ul class="hero-feature-social">
-                {{#if @site.twitter}}
-                    <li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X">{{> "icons/x"}}</a></li>
-                {{/if}}
-                {{#if @site.facebook}}
-                    <li><a href="{{social_url type="facebook"}}" target="_blank" rel="noopener" aria-label="Facebook">{{> "icons/facebook"}}</a></li>
-                {{/if}}
-                {{#if @custom.social_youtube}}
-                    <li><a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube">{{> "icons/youtube"}}</a></li>
-                {{/if}}
-                {{#if @custom.social_linkedin}}
-                    <li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn">{{> "icons/linkedin"}}</a></li>
-                {{/if}}
-                {{#if @custom.social_github}}
-                    <li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub">{{> "icons/github"}}</a></li>
-                {{/if}}
-                {{#if @custom.social_instagram}}
-                    <li><a href="{{@custom.social_instagram}}" target="_blank" rel="noopener" aria-label="Instagram">{{> "icons/instagram"}}</a></li>
-                {{/if}}
-            </ul>
         </div>
 
     </div>
 
-</section>
-
-{{!-- Everything the site makes, as a bento.
-
-Sizes carry the hierarchy: the two things you are meant to start
-with take double-width tiles, the rest are equal singles. Each tile
-hides an oversized icon half-off its bottom-right corner — on hover
-it rises INTO the tile rather than appearing from nothing, which is
-what makes the movement read as one object instead of a flicker. --}}
-<section class="quicklinks outer">
-    <div class="inner">
-        <div class="ql-head">
-            <span class="kicker">{{> "icons/layers"}} {{t "Everything here"}}</span>
-            <h2>{{t "Pick a way in"}}</h2>
-        </div>
-
-        <nav class="ql-grid" aria-label="{{t "Browse everything"}}">
-            <a class="ql-tile is-wide" href="{{@site.url}}/courses/">
-                <span class="ql-name">{{t "Courses"}}</span>
-                <span class="ql-note">{{t "Structured, lesson by lesson"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
-            </a>
-            <a class="ql-tile is-wide" href="{{@site.url}}/training/">
-                <span class="ql-name">{{t "Training"}}</span>
-                <span class="ql-note">{{t "Modular paths you can follow live"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/layers"}}</span>
-            </a>
-
-            <a class="ql-tile" href="{{@site.url}}/videos/">
-                <span class="ql-name">{{t "Videos"}}</span>
-                <span class="ql-note">{{t "Watch it get built"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/video"}}</span>
-            </a>
-            <a class="ql-tile" href="{{@site.url}}/slides/">
-                <span class="ql-name">{{t "Slides"}}</span>
-                <span class="ql-note">{{t "Decks to skim"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/presentation"}}</span>
-            </a>
-            <a class="ql-tile" href="{{@site.url}}/blog/">
-                <span class="ql-name">{{t "Blog"}}</span>
-                <span class="ql-note">{{t "Notes from the work"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/pen"}}</span>
-            </a>
-            <a class="ql-tile" href="{{@site.url}}/newsletter/">
-                <span class="ql-name">{{t "Newsletter"}}</span>
-                <span class="ql-note">{{t "One email a week"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/newspaper"}}</span>
-            </a>
-
-            <a class="ql-tile" href="{{@site.url}}/snippets/">
-                <span class="ql-name">{{t "Snippets"}}</span>
-                <span class="ql-note">{{t "Apex, LWC, Flow"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/code"}}</span>
-            </a>
-            <a class="ql-tile" href="{{@site.url}}/prompts/">
-                <span class="ql-name">{{t "Prompts"}}</span>
-                <span class="ql-note">{{t "AI that earns its place"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/sparkles"}}</span>
-            </a>
-            <a class="ql-tile" href="{{@site.url}}/resources/">
-                <span class="ql-name">{{t "Resources"}}</span>
-                <span class="ql-note">{{t "Links worth keeping"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/bookmark"}}</span>
-            </a>
-            <a class="ql-tile" href="{{@site.url}}/projects/">
-                <span class="ql-name">{{t "Projects"}}</span>
-                <span class="ql-note">{{t "Build logs, in the open"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/github"}}</span>
-            </a>
-
-            <a class="ql-tile is-wide" href="{{@site.url}}/shop/">
-                <span class="ql-name">{{t "Shop"}}</span>
-                <span class="ql-note">{{t "Paid material, when you want to go deeper"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/gift"}}</span>
-            </a>
-            <a class="ql-tile is-wide" href="{{@site.url}}/changelog/">
-                <span class="ql-name">{{t "Changelog"}}</span>
-                <span class="ql-note">{{t "What shipped, and when"}}</span>
-                <span class="ql-mark" aria-hidden="true">{{> "icons/history"}}</span>
-            </a>
-        </nav>
-    </div>
 </section>

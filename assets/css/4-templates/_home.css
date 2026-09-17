@@ -1,157 +1,4 @@
 
-/*  Quick links — the bento
-    ============================================================
-
-    Twelve doors. Tile WIDTH carries the hierarchy: the two things a
-    newcomer should start with, and the two that reward a return
-    visit, take double-width tiles; the eight in between are equal.
-
-    Each tile hides an oversized mark half off its bottom-right
-    corner. On hover it rises INTO the tile rather than fading in
-    from nothing — the movement reads as one object arriving, not a
-    flicker. The tile clips it, so the corner does the hiding.
-    ------------------------------------------------------------ */
-
-.quicklinks {
-    padding-bottom: clamp(4rem, 7vmin, 6.4rem);
-}
-
-.ql-head {
-    margin-bottom: 2.4rem;
-}
-
-.ql-head h2 {
-    margin-top: 0.8rem;
-    font-size: clamp(2.2rem, 3vw, 2.8rem);
-}
-
-.ql-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.2rem;
-}
-
-.ql-tile {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 0.3rem;
-    min-height: 11rem;
-    padding: 1.6rem 1.8rem;
-    color: var(--heading);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    transition:
-        transform 0.25s cubic-bezier(0.2, 0.6, 0.2, 1),
-        border-color 0.25s ease,
-        box-shadow 0.25s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
-
-.ql-tile.is-wide {
-    grid-column: span 2;
-}
-
-.ql-tile:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent);
-    box-shadow: var(--shadow-lg);
-}
-
-.ql-name {
-    position: relative;
-    z-index: 1;
-    font-size: 1.7rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-}
-
-.ql-note {
-    position: relative;
-    z-index: 1;
-    max-width: 22ch;
-    font-size: 1.25rem;
-    font-weight: 500;
-    line-height: 1.35;
-    color: var(--text-muted);
-}
-
-/*  The half-hidden mark. Parked mostly outside the corner and
-    clipped by the tile; hover walks it back in and warms it up. */
-.ql-mark {
-    position: absolute;
-    right: -2.2rem;
-    bottom: -2.2rem;
-    z-index: 0;
-    display: block;
-    color: var(--border);
-    transition:
-        transform 0.35s cubic-bezier(0.2, 0.6, 0.2, 1),
-        color 0.35s ease;
-}
-
-.ql-mark svg {
-    display: block;
-    width: 8.4rem;
-    height: 8.4rem;
-    stroke-width: 1.2;
-}
-
-.ql-tile:hover .ql-mark {
-    transform: translate(-0.9rem, -0.9rem) rotate(-6deg);
-    color: var(--accent-soft);
-}
-
-.ql-tile.is-wide .ql-mark svg {
-    width: 10rem;
-    height: 10rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .ql-tile,
-    .ql-mark {
-        transition: none;
-    }
-
-    .ql-tile:hover {
-        transform: none;
-    }
-
-    .ql-tile:hover .ql-mark {
-        transform: none;
-    }
-}
-
-@media (max-width: 900px) {
-    .ql-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .ql-tile.is-wide {
-        grid-column: span 2;
-    }
-}
-
-@media (max-width: 560px) {
-    .ql-grid {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .ql-tile,
-    .ql-tile.is-wide {
-        grid-column: span 1;
-        min-height: 9rem;
-    }
-
-    .ql-mark svg,
-    .ql-tile.is-wide .ql-mark svg {
-        width: 7rem;
-        height: 7rem;
-    }
-}
-
 /*  4-templates / home
     ------------------------------------------------------------ */
 
@@ -1079,6 +926,140 @@ html.anim .story-strip.is-in .story-stop {
     }
 }
 
+/*  Recent activity — a vertical feed, replacing the old
+    "Pick a way in" bento
+    ------------------------------------------------------------
+    One thin rail runs down the y-axis, same technique as the
+    learning-path rail below: the rail is a ::before painted
+    first, every icon node is opaque and explicitly z-index:1, so
+    the line always passes BEHIND the icon, never over it. */
+
+.home-activity {
+    position: relative;
+}
+
+.activity-rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    max-width: 760px;
+    margin: 3.2rem auto 0;
+    padding-left: 4.6rem;
+    list-style: none;
+}
+
+.activity-rail::before {
+    content: "";
+    position: absolute;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    left: 1.5rem;
+    z-index: 0;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--brand-400));
+    opacity: 0.4;
+}
+
+.activity-item {
+    position: relative;
+}
+
+.activity-item-icon {
+    position: absolute;
+    top: 0.6rem;
+    left: -3.6rem;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 3px solid var(--bg);
+}
+
+.activity-item-icon svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.activity-item-body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1.2rem;
+    align-items: center;
+    padding: 1.3rem 1.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.activity-item-body:hover {
+    border-color: color-mod(#0176d3 a(40%));
+    transform: translateX(3px);
+}
+
+.activity-item-kind {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.activity-item-title {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--heading);
+}
+
+.activity-item-time {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    font-size: 1.2rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+    .activity-rail {
+        padding-left: 3.8rem;
+    }
+
+    .activity-item-icon {
+        left: -3rem;
+        width: 2.6rem;
+        height: 2.6rem;
+    }
+
+    .activity-item-icon svg {
+        width: 1.3rem;
+        height: 1.3rem;
+    }
+
+    .activity-item-body {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 0.3rem;
+    }
+
+    .activity-item-time {
+        grid-column: 1;
+        grid-row: 3;
+    }
+}
+
 /*  The learning path — a vertical timeline of live modules
     ------------------------------------------------------------
     One rail runs down the y-axis; every module is a station on
@@ -1257,23 +1238,6 @@ html.anim .home-path-track.is-in::before {
     flex-shrink: 0;
 }
 
-/* The terminus step points at /training */
-.path-step-final {
-    background:
-        linear-gradient(160deg, var(--accent-soft), transparent 75%),
-        var(--surface);
-    border-style: dashed;
-}
-
-.path-step-final .path-step-num::before {
-    content: none;
-}
-
-.path-step-final .path-step-num svg {
-    width: 1.7rem;
-    height: 1.7rem;
-}
-
 /*  Hero extras — ring, shimmer, scroll cue
     ------------------------------------------------------------ */
 
@@ -1385,55 +1349,10 @@ html.anim .home-path-track.is-in::before {
     }
 }
 
-/*  Homepage refinements — shipped pill, stat icons, chip images
+/*  Homepage refinements — stat icons, chip images
     ------------------------------------------------------------ */
 
-/* "Just shipped": the latest changelog entry, live, with a ping */
-.home-shipped {
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    max-width: 100%;
-    margin-top: 2.8rem;
-    padding: 0.9rem 1.6rem;
-    font-size: 1.35rem;
-    color: var(--text-muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    box-shadow: var(--shadow-sm);
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.home-shipped:hover {
-    border-color: color-mod(#0176d3 a(45%));
-    transform: translateY(-2px);
-}
-
-.home-shipped strong {
-    font-size: 1.15rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
-    white-space: nowrap;
-}
-
-.home-shipped-title {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-weight: 600;
-    color: var(--heading);
-}
-
-.home-shipped svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: var(--accent);
-    flex-shrink: 0;
-}
-
+/* Pulsing "live" dot — shared by /now and /my-schedule */
 .home-shipped-ping {
     position: relative;
     width: 0.9rem;
@@ -2095,85 +2014,6 @@ html.anim .home-path-track.is-in::before {
     }
 }
 
-/*  Hero social proof — the fanned avatar stack
-    ------------------------------------------------------------
-    First face fully visible on top, every next one tucked behind
-    the previous; hovering the row spreads the fan, hovering a
-    face pops it forward at full size. */
-
-.hero-proof {
-    display: flex;
-    align-items: center;
-    gap: 1.4rem;
-    margin-top: 2.8rem;
-}
-
-.proof-stack {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.p-avatar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--bg);
-    background: var(--bg-alt);
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), margin 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.p-avatar + .p-avatar {
-    margin-left: -1.6rem;
-}
-
-/* first on top, each next one a layer further back */
-.p-avatar:nth-child(1) { z-index: 8; }
-.p-avatar:nth-child(2) { z-index: 7; }
-.p-avatar:nth-child(3) { z-index: 6; }
-.p-avatar:nth-child(4) { z-index: 5; }
-.p-avatar:nth-child(5) { z-index: 4; }
-.p-avatar:nth-child(6) { z-index: 3; }
-.p-avatar:nth-child(7) { z-index: 2; }
-.p-avatar:nth-child(8) { z-index: 1; }
-
-/* hover the row: the fan opens */
-.proof-stack:hover .p-avatar + .p-avatar {
-    margin-left: -0.4rem;
-}
-
-/* hover a face: it steps forward, fully visible */
-.proof-stack .p-avatar:hover {
-    transform: scale(1.3) translateY(-2px);
-    z-index: 20;
-    box-shadow: var(--shadow-lg);
-}
-
-/* decorative monogram circles filling out the crowd */
-.p-mono {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #fff;
-    background: linear-gradient(140deg,
-        hsl(var(--h, 210) 75% 52%),
-        hsl(var(--h, 210) 75% 38%));
-}
-
-.hero-proof-text {
-    font-size: 1.4rem;
-    line-height: 1.5;
-    color: var(--text-muted);
-}
-
-.hero-proof-text strong {
-    color: var(--heading);
-}
-
 /*  Pointer tilt on the showcase panel (animate.js writes --rx/--ry
     on [data-tilt]; only fine pointers, never reduced motion). */
 [data-tilt] {
@@ -2211,19 +2051,6 @@ html.anim .home-path-track.is-in::before {
     }
 }
 
-@media (max-width: 991px) {
-    .hero-proof {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-proof {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-}
 
 /*  Hero styles — @custom.hero_style variants
     ============================================================
@@ -2252,25 +2079,6 @@ html.anim .home-path-track.is-in::before {
 
 /*  THE hero — final pieces
     ------------------------------------------------------------ */
-
-/* Instructor identity as the badge */
-.home-hero-badge.is-host {
-    gap: 0.8rem;
-    padding: 0.5rem 1.4rem 0.5rem 0.5rem;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.home-hero-badge.is-host:hover {
-    border-color: color-mod(#0176d3 a(50%));
-    transform: translateY(-2px);
-}
-
-.home-hero-badge.is-host img {
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 50%;
-    object-fit: cover;
-}
 
 /* The hero signup — the ask itself */
 .hero-signup {
@@ -2935,8 +2743,7 @@ html[data-theme="dark"] .home-hero-pattern {
     so a chip's `right: -N` is N past the card's edge — not past the
     wrapper's. Anchored to the wrapper instead, the offset drifted with
     the viewport and the chips clipped the artwork on wide screens. */
-.hero-feature-chips,
-.hero-feature-social {
+.hero-feature-chips {
     position: absolute;
     top: 3.2rem;
     bottom: 4.4rem;
@@ -2975,66 +2782,13 @@ html[data-theme="dark"] .home-hero-pattern {
     color: var(--accent);
 }
 
-/*  One chip rides the card's top edge; the rest stack down the RIGHT
-    gutter. The left gutter belongs to the social rail and the card's
-    lower third belongs to the title, so neither is used. */
+/*  Chips ride down the RIGHT gutter; the card's lower third
+    belongs to the title, so it stays clear. */
 .hero-chip.is-c1 { top: -2.6rem; left: 34%; animation-delay: 0s; }
 .hero-chip.is-c2 { top: 14%; right: -2.4rem; animation-delay: -1.6s; }
 .hero-chip.is-c3 { top: 36%; right: -3.6rem; animation-delay: -3.2s; }
 .hero-chip.is-c4 { top: 58%; right: -2.4rem; animation-delay: -4.8s; }
 .hero-chip.is-c5 { top: 80%; right: -3.2rem; animation-delay: -6.4s; }
-
-/*  Social rail — Ghost's own accounts, hugging the card's left edge */
-
-.hero-feature-social {
-    z-index: 4;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 0.6rem;
-}
-
-.hero-feature-social li {
-    margin-left: -2.2rem;
-    pointer-events: auto;
-}
-
-.hero-feature-social:empty {
-    display: none;
-}
-
-.hero-feature-social a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.6rem;
-    height: 3.6rem;
-    color: var(--text-muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    box-shadow: var(--shadow);
-    transition:
-        color 0.15s ease,
-        transform 0.2s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
-
-.hero-feature-social a:hover {
-    color: var(--accent);
-    transform: translateX(-3px);
-}
-
-.hero-feature-social svg {
-    width: 1.8rem;
-    height: 1.8rem;
-}
-
-.hero-feature:has(.is-playing) .hero-feature-social {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
 
 /* while the film plays the chips would sit on the video — clear them */
 .hero-feature:has(.is-playing) .hero-chip {
@@ -3097,8 +2851,7 @@ html[data-theme="dark"] .home-hero-pattern {
         font-size: 1.1rem;
     }
 
-    .hero-feature-chips,
-    .hero-feature-social {
+    .hero-feature-chips {
         width: min(100% - 8.8rem, 30rem);
     }
 
@@ -3107,20 +2860,6 @@ html[data-theme="dark"] .home-hero-pattern {
     .hero-chip.is-c3 { top: 44%; right: -2.2rem; }
     .hero-chip.is-c4 { top: 72%; right: -1.6rem; }
     .hero-chip.is-c5 { display: none; }
-
-    .hero-feature-social li {
-        margin-left: -1.8rem;
-    }
-
-    .hero-feature-social a {
-        width: 3rem;
-        height: 3rem;
-    }
-
-    .hero-feature-social svg {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
 
     .hero-feature-title {
         font-size: 1.9rem;
