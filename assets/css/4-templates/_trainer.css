@@ -1,40 +1,19 @@
-/*  4-templates / trainer — the training reader (v6)
+/*  4-templates / trainer — the training reader (v4)
     ============================================================
 
-    Same grammar as the course player (_lesson.css: .player /
-    .player-rail / .player-main) — .trainer-player adds nothing to
-    that grid, it only exists as a hook for the hero below it. The
-    rail is module-scoped (partials/module-rail.hbs), not a
-    site-wide accordion, so it reuses .player-rail-course /
-    .player-list / .player-rail-toc / .player-rail-sponsor as-is.
+    Full-width hero on the grid canvas, then an edge-to-edge
+    fluid two-column body: small sticky sidebar (module nav,
+    TOC, sponsor, share) on the left, content filling the rest.
     ------------------------------------------------------------ */
 
-.trainer-hero2 {
-    position: relative;
+.trainer-hero {
     overflow: hidden;
-    padding: clamp(3.2rem, 5.5vmin, 5.2rem) max(4vmin, 20px) clamp(2.4rem, 4vmin, 3.6rem);
+    padding: clamp(4rem, 6vmin, 5.6rem) max(4vmin, 20px);
     border-bottom: 1px solid var(--border-soft);
     background: var(--bg-alt);
 }
 
-/* Big module-position number, blended into the hero backdrop —
-   decorative furniture, never load-bearing text. */
-.trainer-hero-num {
-    position: absolute;
-    top: -3.2rem;
-    right: -1rem;
-    z-index: 0;
-    font-size: clamp(9rem, 18vw, 16rem);
-    font-weight: 800;
-    line-height: 1;
-    color: var(--accent);
-    opacity: 0.55;
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    user-select: none;
-}
-
-.trainer-hero2-inner {
+.trainer-hero-inner {
     position: relative;
     z-index: 1;
     display: grid;
@@ -43,15 +22,15 @@
     align-items: center;
 }
 
-.trainer-hero2 h1 {
+.trainer-hero h1 {
     margin-top: 1.6rem;
 }
 
-.trainer-hero2 .post-excerpt {
+.trainer-hero .post-excerpt {
     margin-top: 1.2rem;
 }
 
-.trainer-hero2 .chips {
+.trainer-hero .chips {
     margin-top: 2rem;
 }
 
@@ -68,217 +47,96 @@
 }
 
 /* Video pages: the dark cinematic variant of the same hero */
-.trainer-hero2.is-video {
+.trainer-hero.is-video {
     background:
         radial-gradient(700px 320px at 80% -20%, rgba(27, 150, 255, 0.3), transparent 70%),
         var(--gray-950);
     border-bottom-color: transparent;
 }
 
-.trainer-hero2.is-video h1 {
+.trainer-hero.is-video h1 {
     color: #fff;
 }
 
-.trainer-hero2.is-video .post-excerpt {
+.trainer-hero.is-video .post-excerpt {
     color: var(--gray-400);
 }
 
-.trainer-hero2.is-video .crumbs,
-.trainer-hero2.is-video .crumbs a,
-.trainer-hero2.is-video .crumbs [aria-current] {
+.trainer-hero.is-video .crumbs,
+.trainer-hero.is-video .crumbs a,
+.trainer-hero.is-video .crumbs [aria-current] {
     color: var(--gray-400);
 }
 
-.trainer-hero2.is-video .chip {
+.trainer-hero.is-video .chip {
     color: var(--gray-300);
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(152, 166, 184, 0.25);
 }
 
-.trainer-hero2.is-video .trainer-hero-num {
-    mix-blend-mode: soft-light;
-    color: #fff;
-    opacity: 0.9;
-}
-
-@media (max-width: 1023px) {
-    .trainer-hero2-inner {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 3.2rem;
-    }
-
-    .trainer-hero-num {
-        font-size: clamp(7rem, 26vw, 11rem);
-    }
-}
-
-/*  Content fold — the article body collapses under a <summary>
-    once a reader has skimmed the excerpt in the hero above.
-    Open by default: nothing is hidden on first load, it's a
-    reading control, not a paywall. ------------------------------ */
-
-.content-fold {
-    margin-top: 0.4rem;
-}
-
-.content-fold summary {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding-bottom: 1.6rem;
-    margin-bottom: 2.4rem;
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    list-style: none;
-}
-
-.content-fold summary::-webkit-details-marker {
-    display: none;
-}
-
-.content-fold summary svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: var(--accent);
-}
-
-.content-fold summary .chev {
-    width: 1.3rem;
-    height: 1.3rem;
-    margin-left: auto;
-    color: var(--text-faint);
-    transition: transform 0.2s ease;
-}
-
-.content-fold[open] summary .chev {
-    transform: rotate(180deg);
-}
-
-/*  Mobile module nav — fixed to the viewport bottom, small, a
-    pagination trigger in the centre. Replaces the old inline
-    <details> fold that used to sit above the content.
+/*  v5 frame: [ left region | training nav ], nav full height
     ------------------------------------------------------------ */
 
-.trainer-mobile-nav {
-    display: none;
+.trainer2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    min-height: calc(100vh - var(--header-height));
 }
 
-@media (max-width: 1023px) {
-    .trainer-player {
-        padding-bottom: 6.4rem;
-    }
-
-    .trainer-mobile-nav {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 30;
-        display: flex;
-        align-items: stretch;
-        height: 5.6rem;
-        background: var(--bg);
-        border-top: 1px solid var(--border);
-        box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
-    }
-
-    .trainer-mobile-nav-arrow {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 5.6rem;
-        flex-shrink: 0;
-        color: var(--heading);
-    }
-
-    .trainer-mobile-nav-arrow svg {
-        width: 2rem;
-        height: 2rem;
-    }
-
-    .trainer-mobile-nav-arrow.is-disabled {
-        color: var(--text-faint);
-        opacity: 0.4;
-    }
-
-    .trainer-mobile-nav-toggle {
-        flex: 1;
-        min-width: 0;
-        border-left: 1px solid var(--border-soft);
-        border-right: 1px solid var(--border-soft);
-    }
-
-    .trainer-mobile-nav-toggle summary {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.6rem;
-        height: 5.6rem;
-        padding: 0 1.2rem;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--heading);
-        text-align: center;
-        cursor: pointer;
-        list-style: none;
-    }
-
-    .trainer-mobile-nav-toggle summary::-webkit-details-marker {
-        display: none;
-    }
-
-    .trainer-mobile-nav-toggle summary b {
-        color: var(--accent);
-    }
-
-    .trainer-mobile-nav-toggle summary svg {
-        width: 1.6rem;
-        height: 1.6rem;
-        flex-shrink: 0;
-        transition: transform 0.2s ease;
-    }
-
-    .trainer-mobile-nav-toggle[open] summary svg {
-        transform: rotate(180deg);
-    }
-
-    /* The sheet — opens UPWARD off the fixed bar, scrolls its own
-       overflow so the bar itself never grows past its 5.6rem. */
-    .trainer-mobile-nav-body {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 5.6rem;
-        z-index: 29;
-        max-height: min(65vh, 520px);
-        overflow-y: auto;
-        scrollbar-width: thin;
-        padding: 1.6rem max(4vmin, 20px) 2.4rem;
-        background: var(--bg);
-        border-top: 1px solid var(--border);
-        box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
-        animation: trainer-sheet-up 0.2s ease-out;
-    }
-
-    .trainer-mobile-nav-body .player-rail-course {
-        display: flex;
-    }
+.trainer2-nav {
+    border-left: 1px solid var(--border-soft);
+    background: var(--bg-alt);
 }
 
-@keyframes trainer-sheet-up {
-    from { transform: translateY(12px); opacity: 0.5; }
-    to { transform: translateY(0); opacity: 1; }
+.trainer2-nav-scroll {
+    position: sticky;
+    top: var(--header-height);
+    padding: 2.8rem 2.4rem 4rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .trainer-mobile-nav-body {
-        animation: none;
-    }
+.trainer2-nav .player-rail-course {
+    display: block;
+    padding-bottom: 1.6rem;
+    margin-bottom: 1.6rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.trainer2-nav .player-rail-course h2 {
+    font-size: 1.7rem;
+}
+
+/* Left region: hero spans it, then sidebar + content */
+.trainer2-left {
+    min-width: 0;
+}
+
+.trainer2-body {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 4.8rem;
+    align-items: start;
+    padding: 3.2rem max(4vmin, 20px) clamp(4.8rem, 8vmin, 8rem);
+}
+
+/* .trainer-side-sticky is nested inside .trainer-side (the actual
+   grid item), so align-items:start above — which stops grid items
+   stretching — left .trainer-side exactly as tall as its own
+   content, giving the sticky child zero room to float regardless
+   of how much taller the article column is. Stretching just this
+   one item gives it that room back without affecting anything
+   else on the align-items:start row. */
+.trainer-side {
+    align-self: stretch;
+}
+
+.trainer-side-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+}
+
+.trainer-main,
+.trainer-article {
+    min-width: 0;
 }
 
 /* Skyscraper sponsor slot */
@@ -385,8 +243,83 @@
     break-inside: avoid;
 }
 
+/* Mobile module nav */
+.trainer-nav-mobile {
+    display: none;
+    margin-bottom: 2.4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.trainer-nav-mobile summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 1.8rem;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+}
+
+.trainer-nav-mobile summary::-webkit-details-marker { display: none; }
+
+.trainer-nav-mobile summary svg {
+    width: 1.7rem;
+    height: 1.7rem;
+    color: var(--accent);
+}
+
+.trainer-nav-mobile summary .chev { margin-left: auto; }
+
+.trainer-nav-mobile-body {
+    padding: 0 1.8rem 1.8rem;
+}
+
+@media (max-width: 1279px) {
+    .trainer2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .trainer2-nav {
+        display: none;
+    }
+    .trainer-nav-mobile {
+        display: block;
+    }
+}
+
 @media (max-width: 1023px) {
+    .trainer-hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
+    }
+
+    .trainer2-body {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .trainer-side-sticky {
+        position: static;
+        max-height: none;
+        display: none;
+    }
+
     .toc-inline .toc-list {
         columns: 1;
     }
+}
+
+/*  Equal distance between the sidebar's widgets: one gap, no summed
+    margins (see the same note in _course.css). */
+.trainer-side-sticky {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.trainer-side-sticky .widget + .widget {
+    margin-top: 0;
 }

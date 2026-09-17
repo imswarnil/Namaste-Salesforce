@@ -1,30 +1,20 @@
-{{!-- The training reader — now built on the SAME grammar as the
-course player (post-lesson.hbs / .player): one rail, scoped to
-the CURRENT module only (partials/module-rail.hbs), not a giant
-accordion of every module on the site. The old two-sidebar
-"trainer2" frame (small left widget rail + full-height right
-"all modules" nav) is gone.
+{{!-- The module reader, v5 — the layout as specified:
 
-    ┌──────────┬───────────────────────────────┐
-    │ RAIL     │  HERO — big module-position   │
-    │ (module  │  number blended into the bg    │
-    │ sections,│──────────┬────────────────────┤
-    │ TOC or   │  content, first paragraph is   │
-    │ chapters │  the excerpt, rest collapsible │
-    │ for video│                                 │
-    │ sponsor) │                                 │
-    └──────────┴───────────────────────────────┘
+    ┌───────────────────────────────┬──────────────┐
+    │ HERO — full width of region,  │  TRAINING    │
+    │ canvas grid + thumbnail       │  NAVIGATION  │
+    ├──────────┬────────────────────┤  full-height │
+    │ small    │                    │  divide,     │
+    │ sidebar  │  CONTENT           │  sticky      │
+    │ (toc,    │                    │  (all        │
+    │ sponsor, │                    │  modules,    │
+    │ share)   │                    │  active open)│
+    └──────────┴────────────────────┴──────────────┘
 
-Video-typed lessons (#lesson-type-video) swap the TOC widget for
-the chapters widget: assets/js/video.js already lifts any
-timestamp table in the content into it and wires it to seek the
-embed — same mechanism /videos singles use, nothing new to write.
-
-On mobile the rail becomes a small FIXED bar pinned to the
-viewport bottom: prev/next arrows either side of a "Section N of
-M" trigger that expands the full module list upward as a sheet.
-prev/next is {{prev_post}}/{{next_post}} in="primary_tag", same as
-the course player. Context: a training post. --}}
+Site TOC rule: sidebars exist → the TOC lives in the small left
+sidebar. Video-typed pages flip the hero to the dark cinematic
+variant. prev/next walks in="primary_tag".
+Context: a training post. --}}
 
 {{#contentFor "head"}}
 <script type="application/ld+json">
@@ -42,60 +32,17 @@ the course player. Context: a training post. --}}
 </script>
 {{/contentFor}}
 
-<div class="player trainer-player
-    {{~#match (post_class) "~" "tag-hash-lesson-type-video"}} lesson-type-video{{/match}}">
+<div class="trainer2">
 
-    {{!-- Curriculum rail — this module's sections only --}}
-    <aside class="player-rail">
-        <div class="player-rail-scroll">
-            {{#primary_tag}}
-                {{> "module-rail" moduleSlug=slug moduleName=name moduleImage=feature_image currentSlug=../slug}}
-            {{/primary_tag}}
+    {{!-- LEFT REGION: hero, then sidebar + content --}}
+    <div class="trainer2-left">
 
-            {{#match (post_class) "~" "tag-hash-lesson-type-video"}}
-                {{> "widgets/chapters"}}
-            {{else}}
-                <div class="player-rail-toc" data-toc-wrap>
-                    <h4 class="widget-title">{{> "icons/list-icon"}} {{t "On this page"}}</h4>
-                    <ul class="toc-list" data-toc></ul>
-                </div>
-            {{/match}}
-
-            <div class="player-rail-sponsor">
-                {{> "widgets/sponsor"}}
-            </div>
-
-            <div class="widget">
-                <h4 class="widget-title">{{> "icons/share"}} {{t "Share"}}</h4>
-                {{> "widgets/share-links"}}
-            </div>
-        </div>
-    </aside>
-
-    {{!-- The section itself --}}
-    <main id="site-main" class="player-main">
-
-        <header class="trainer-hero2 relative
+        <section class="trainer-hero relative
             {{~#match (post_class) "~" "tag-hash-lesson-type-video"}} is-video{{/match}}">
+            <div class="bg-grid" aria-hidden="true"></div>
+            <div class="trainer-hero-inner">
 
-            {{!-- Big position-in-module number, blended into the
-            hero background — decorative, hence aria-hidden. One
-            extra query: walk the module's sections in order and
-            print @number where the slug matches this page. --}}
-            {{#primary_tag}}
-                {{#> "with-this" moduleSlug=slug pageSlug=../slug}}
-                    {{#get "posts" filter="tag:hash-training+tag:{{moduleSlug}}" order="published_at asc" limit="100" as |moduleSections|}}
-                        {{#foreach moduleSections}}
-                            {{#match slug ../../pageSlug}}
-                                <span class="trainer-hero-num" aria-hidden="true">{{@number}}</span>
-                            {{/match}}
-                        {{/foreach}}
-                    {{/get}}
-                {{/with-this}}
-            {{/primary_tag}}
-
-            <div class="trainer-hero2-inner">
-                <div class="trainer-hero2-copy">
+                <div class="trainer-hero-copy">
                     <nav class="crumbs" aria-label="Breadcrumb">
                         <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
                         {{#primary_tag}}
@@ -132,102 +79,94 @@ the course player. Context: a training post. --}}
                         {{/match}}
                     </div>
                 {{/if}}
+
             </div>
-        </header>
+        </section>
 
-        <article class="player-article trainer-article {{post_class}}">
+        <div class="trainer2-body">
 
-            {{!-- The excerpt already opened the hero above — content
-            starts fresh, collapsible so a reader can fold it once
-            they've skimmed it. Open by default: nothing hides on
-            first load. --}}
-            <details class="content-fold" open>
-                <summary>
-                    {{> "icons/list-icon"}} {{t "Lesson content"}}
-                    <span class="chev">{{> "icons/chevron-down"}}</span>
-                </summary>
-                <section class="gh-content">
-                    {{content}}
-                </section>
-            </details>
+            <aside class="trainer-side">
+                <div class="trainer-side-sticky">
+                    {{> "widgets/toc"}}
+                    {{> "widgets/sponsor" skyscraper=true}}
+                    <div class="widget">
+                        <h4 class="widget-title">{{> "icons/share"}} {{t "Share"}}</h4>
+                        {{> "widgets/share-links"}}
+                    </div>
+                </div>
+            </aside>
 
-            <nav class="post-nav" aria-label="{{t "Module navigation"}}">
-                {{#prev_post in="primary_tag"}}
-                    <a class="post-nav-link post-nav-prev" href="{{url}}">
-                        <span class="post-nav-label">{{> "icons/arrow-left"}} {{t "Previous"}}</span>
-                        <span class="post-nav-title">{{title}}</span>
-                    </a>
-                {{/prev_post}}
-                {{#next_post in="primary_tag"}}
-                    <a class="post-nav-link post-nav-next" href="{{url}}">
-                        <span class="post-nav-label">{{t "Next"}} {{> "icons/arrow-right"}}</span>
-                        <span class="post-nav-title">{{title}}</span>
-                    </a>
-                {{else}}
-                    {{!-- Last page of this module: cross into the next
-                    one. Modules order by tag slug — the same walk
-                    module-rail does — so the next module is the
-                    first later-slugged public tag that has training
-                    posts. Every candidate renders a card; CSS keeps
-                    only the first (.post-nav-module ~ hides the rest),
-                    because foreach cannot break. --}}
-                    {{#get "tags" filter="visibility:public+slug:>'{{primary_tag.slug}}'" order="slug asc" limit="15" as |laterTags|}}
-                        {{#foreach laterTags}}
-                            {{#> "with-this" moduleTag=.}}
-                                {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="1" as |firstpage|}}
-                                    {{#foreach firstpage}}
-                                        <a class="post-nav-link post-nav-next post-nav-module" href="{{url}}">
-                                            <span class="post-nav-label">{{t "Next module"}} {{> "icons/arrow-right"}}</span>
-                                            <span class="post-nav-title">{{../../moduleTag.name}} — {{title}}</span>
-                                        </a>
-                                    {{/foreach}}
-                                {{/get}}
-                            {{/with-this}}
-                        {{/foreach}}
-                    {{/get}}
-                {{/next_post}}
-            </nav>
-        </article>
+            <main id="site-main" class="trainer-main">
 
-    </main>
+                {{!-- Mobile: module nav folds in above the content --}}
+                <details class="trainer-nav-mobile">
+                    <summary>
+                        {{> "icons/layers"}}
+                        {{t "Modules"}}
+                        <span class="chev">{{> "icons/chevron-down"}}</span>
+                    </summary>
+                    <div class="trainer-nav-mobile-body">
+                        {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
+                    </div>
+                </details>
 
-</div>
+                <article class="trainer-article {{post_class}}">
+                    <section class="gh-content">
+                        {{content}}
+                    </section>
 
-{{!-- Mobile-only: a small fixed bar pinned to the viewport bottom.
-Prev/next either side, a "Section N of M" trigger in the centre
-that expands the module's full section list upward as a sheet —
-replaces the old inline <details> fold above the content. --}}
-<div class="trainer-mobile-nav">
-    {{#prev_post in="primary_tag"}}
-        <a class="trainer-mobile-nav-arrow" href="{{url}}" aria-label="{{t "Previous"}}">{{> "icons/arrow-left"}}</a>
-    {{else}}
-        <span class="trainer-mobile-nav-arrow is-disabled" aria-hidden="true">{{> "icons/arrow-left"}}</span>
-    {{/prev_post}}
+                    <nav class="post-nav" aria-label="{{t "Module navigation"}}">
+                        {{#prev_post in="primary_tag"}}
+                            <a class="post-nav-link post-nav-prev" href="{{url}}">
+                                <span class="post-nav-label">{{> "icons/arrow-left"}} {{t "Previous"}}</span>
+                                <span class="post-nav-title">{{title}}</span>
+                            </a>
+                        {{/prev_post}}
+                        {{#next_post in="primary_tag"}}
+                            <a class="post-nav-link post-nav-next" href="{{url}}">
+                                <span class="post-nav-label">{{t "Next"}} {{> "icons/arrow-right"}}</span>
+                                <span class="post-nav-title">{{title}}</span>
+                            </a>
+                        {{else}}
+                            {{!-- Last page of this module: cross into the next
+                            one. Modules order by tag slug — the same walk
+                            training-list does — so the next module is the
+                            first later-slugged public tag that has training
+                            posts. Every candidate renders a card; CSS keeps
+                            only the first (.post-nav-module ~ hides the rest),
+                            because foreach cannot break. --}}
+                            {{#get "tags" filter="visibility:public+slug:>'{{primary_tag.slug}}'" order="slug asc" limit="15" as |laterTags|}}
+                                {{#foreach laterTags}}
+                                    {{#> "with-this" moduleTag=.}}
+                                        {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="1" as |firstpage|}}
+                                            {{#foreach firstpage}}
+                                                <a class="post-nav-link post-nav-next post-nav-module" href="{{url}}">
+                                                    <span class="post-nav-label">{{t "Next module"}} {{> "icons/arrow-right"}}</span>
+                                                    <span class="post-nav-title">{{../../moduleTag.name}} — {{title}}</span>
+                                                </a>
+                                            {{/foreach}}
+                                        {{/get}}
+                                    {{/with-this}}
+                                {{/foreach}}
+                            {{/get}}
+                        {{/next_post}}
+                    </nav>
+                </article>
 
-    <details class="trainer-mobile-nav-toggle">
-        <summary>
-            {{#primary_tag}}
-                {{#> "with-this" moduleSlug=slug pageSlug=../slug}}
-                    {{#get "posts" filter="tag:hash-training+tag:{{moduleSlug}}" order="published_at asc" limit="100" as |modsecs total|}}
-                        {{#foreach modsecs}}
-                            {{#match slug ../../pageSlug}}<b>{{@number}}</b>{{/match}}
-                        {{/foreach}}
-                        <span>/ {{total.total}} · {{t "Sections"}}</span>
-                    {{/get}}
-                {{/with-this}}
-            {{/primary_tag}}
-            {{> "icons/chevron-down"}}
-        </summary>
-        <div class="trainer-mobile-nav-body">
-            {{#primary_tag}}
-                {{> "module-rail" moduleSlug=slug moduleName=name moduleImage=feature_image currentSlug=../slug}}
-            {{/primary_tag}}
+            </main>
+
         </div>
-    </details>
+    </div>
 
-    {{#next_post in="primary_tag"}}
-        <a class="trainer-mobile-nav-arrow" href="{{url}}" aria-label="{{t "Next"}}">{{> "icons/arrow-right"}}</a>
-    {{else}}
-        <span class="trainer-mobile-nav-arrow is-disabled" aria-hidden="true">{{> "icons/arrow-right"}}</span>
-    {{/next_post}}
+    {{!-- RIGHT: the training navigation, full-height divide --}}
+    <aside class="trainer2-nav">
+        <div class="trainer2-nav-scroll">
+            <a class="player-rail-course" href="{{@site.url}}/training/">
+                <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
+                <h2>{{t "All modules"}}</h2>
+            </a>
+            {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
+        </div>
+    </aside>
+
 </div>
