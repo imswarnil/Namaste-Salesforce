@@ -39,4 +39,37 @@ Params: moduleSlug, moduleName, moduleImage, currentSlug. --}}
             {{/foreach}}
         </ol>
     {{/get}}
+
+    {{!-- Every OTHER module, collapsed — the single-module rail
+    lost this when it stopped being a full all-modules accordion;
+    it's back as a fold so a reader can still cross into another
+    module without leaving the page, just not expanded by default. --}}
+    <div class="player-rail-others">
+        <span class="player-rail-others-label">{{t "Other modules"}}</span>
+        {{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |otherTags|}}
+            {{#foreach otherTags}}
+                {{~#match slug ../../moduleSlug}}{{else}}
+                    {{#> "with-this" oSlug=slug oName=name}}
+                        {{#get "posts" filter="tag:hash-training+tag:{{oSlug}}" order="published_at asc" limit="100" as |oSections|}}
+                            {{#if oSections}}
+                                <details class="rail-module">
+                                    <summary>
+                                        <span class="rail-module-ico" aria-hidden="true">{{> "icons/layers"}}</span>
+                                        <span>{{../oName}}</span>
+                                        {{> "icons/chevron-down"}}
+                                    </summary>
+                                    <ol class="player-list">
+                                        <li><a href="{{@site.url}}/training/{{../oSlug}}/"><span>{{t "Module overview"}}</span>{{> "icons/map-icon"}}</a></li>
+                                        {{#foreach oSections}}
+                                            <li><a href="{{url}}"><span>{{title}}</span>{{> "lesson-type-icon"}}</a></li>
+                                        {{/foreach}}
+                                    </ol>
+                                </details>
+                            {{/if}}
+                        {{/get}}
+                    {{/with-this}}
+                {{/match~}}
+            {{/foreach}}
+        {{/get}}
+    </div>
 {{/with-this}}

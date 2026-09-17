@@ -27,95 +27,132 @@ Lives in partials/activity-feed.hbs. --}}
 can tell the same story with the same markup. --}}
 {{> "journey"}}
 
-{{!-- Training path, live.
+{{!-- Why this platform, live-scrolled.
 
-Two columns. The left one scrolls: one card per module, discovered
-the same way as everywhere else (a module IS a public tag that has
-#training posts). The right one STICKS — it is the path itself,
-with a progress rail that fills and an active module that changes
-as you scroll the left column past each card.
+Two columns. The left one scrolls: fixed copy about the platform
+itself, not training curriculum (that's what /training and the
+"stacked" section it used to duplicate here were for — this one
+is the pitch). The right one STICKS — a progress rail that fills
+and an active card that changes as you scroll the left column
+past each one, same pathlive.js mechanic as before, just walking
+features instead of modules now: data-pl-slug/data-pl-item just
+need to agree on an id, which a feature key satisfies as well as
+a module slug did.
 
 assets/js/pathlive.js drives it from an IntersectionObserver, so
 the rail follows the reader rather than the scrollbar: on a short
 viewport with tall cards those are not the same thing. --}}
-{{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |pathTags|}}
-    <section class="section outer pathlive" data-pathlive>
-        <div class="inner">
-            <div class="section-head" data-animate>
-                <div>
-                    <span class="kicker">{{> "icons/layers"}} {{t "Training path"}}</span>
-                    <h2>{{t "Follow the path, live"}}</h2>
-                    <p>{{t "Modules in order, with what each one covers. Your place on the path follows you down the page."}}</p>
-                </div>
-                <a class="section-more" href="{{@site.url}}/training/">{{t "Open training"}} {{> "icons/arrow-right"}}</a>
+<section class="section outer pathlive" data-pathlive>
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/compass"}} {{t "Why this platform"}}</span>
+                <h2>{{t "Built different, on purpose"}}</h2>
+                <p>{{t "Technologies come and go. Selling, and customers buying, won't. That's what this platform actually teaches."}}</p>
             </div>
-
-            <div class="pathlive-grid">
-                <div class="pathlive-main">
-                    {{#foreach pathTags}}
-                        {{#> "with-this" mTag=. }}
-                            {{#get "posts" filter="tag:{{mTag.slug}}+tag:hash-training" order="published_at asc" limit="100" as |mPosts|}}
-                                {{#if mPosts.[0]}}
-                                    <article class="pl-card" data-pl-card data-pl-slug="{{../mTag.slug}}">
-                                        <span class="pl-card-icon" aria-hidden="true">{{> "icons/layers"}}</span>
-                                        <div class="pl-card-body">
-                                            <span class="pl-card-kicker">{{t "Module"}} · {{mPosts.length}} {{t "sections"}}</span>
-                                            <h3><a href="{{@site.url}}/training/{{../mTag.slug}}/">{{../mTag.name}}</a></h3>
-                                            {{#if ../mTag.description}}
-                                                <p>{{../mTag.description}}</p>
-                                            {{/if}}
-                                            <ol class="pl-steps">
-                                                {{#foreach mPosts}}
-                                                    {{#if @index}}{{else}}{{/if}}
-                                                    <li><a href="{{url}}">{{> "lesson-type-icon"}} {{title}}</a></li>
-                                                {{/foreach}}
-                                            </ol>
-                                            <a class="btn btn-sm pl-card-start" href="{{@site.url}}/training/{{../mTag.slug}}/">
-                                                {{> "icons/play-circle"}} {{t "Start module"}}
-                                            </a>
-                                        </div>
-                                    </article>
-                                {{/if}}
-                            {{/get}}
-                        {{/with-this}}
-                    {{/foreach}}
-                </div>
-
-                {{!-- The rail. Sticky, one column, and the only thing on
-                the page that reports where you are on the path. --}}
-                <aside class="pathlive-rail" aria-hidden="true">
-                    <div class="pl-rail-head">
-                        <span class="pl-live"><i></i> {{t "Live"}}</span>
-                        <strong>{{t "Your place on the path"}}</strong>
-                    </div>
-
-                    <div class="pl-progress">
-                        <div class="pl-progress-bar"><i data-pl-fill></i></div>
-                        <span class="pl-progress-num"><b data-pl-pct>0</b>%</span>
-                    </div>
-
-                    <ol class="pl-list" data-pl-list>
-                        {{#foreach pathTags}}
-                            {{#> "with-this" mTag=. }}
-                                {{#get "posts" filter="tag:{{mTag.slug}}+tag:hash-training" order="published_at asc" limit="1" as |mp counts|}}
-                                    {{#if mp.[0]}}
-                                        <li class="pl-item" data-pl-item="{{../mTag.slug}}">
-                                            <span class="pl-item-dot" aria-hidden="true">{{> "icons/layers"}}</span>
-                                            <span class="pl-item-body">
-                                                <span class="pl-item-name">{{../mTag.name}}</span>
-                                                <span class="pl-item-meta">{{counts.total}} {{t "sections"}}</span>
-                                            </span>
-                                        </li>
-                                    {{/if}}
-                                {{/get}}
-                            {{/with-this}}
-                        {{/foreach}}
-                    </ol>
-                </aside>
-            </div>
+            <a class="section-more" href="{{@site.url}}/about/">{{t "More about me"}} {{> "icons/arrow-right"}}</a>
         </div>
-    </section>
-{{/get}}
+
+        <div class="pathlive-grid">
+            <div class="pathlive-main">
+
+                <article class="pl-card" data-pl-card data-pl-slug="real">
+                    <span class="pl-card-icon" aria-hidden="true">{{> "icons/rocket"}}</span>
+                    <div class="pl-card-body">
+                        <span class="pl-card-kicker">{{t "Not just theory"}}</span>
+                        <h3><a href="{{@site.url}}/courses/">{{t "Ships something real"}}</a></h3>
+                        <p>{{t "Every course ends in your own Developer Edition org, not a quiz. If it doesn't run, it doesn't count."}}</p>
+                        <a class="btn btn-sm pl-card-start" href="{{@site.url}}/courses/">
+                            {{> "icons/graduation-cap"}} {{t "Browse courses"}}
+                        </a>
+                    </div>
+                </article>
+
+                <article class="pl-card" data-pl-card data-pl-slug="job">
+                    <span class="pl-card-icon" aria-hidden="true">{{> "icons/layers"}}</span>
+                    <div class="pl-card-body">
+                        <span class="pl-card-kicker">{{t "Live, modular training"}}</span>
+                        <h3><a href="{{@site.url}}/training/">{{t "Mirrors the actual job"}}</a></h3>
+                        <p>{{t "Paths that grow as the platform does — modules you can jump into out of order, the way real work actually arrives."}}</p>
+                        <a class="btn btn-sm pl-card-start" href="{{@site.url}}/training/">
+                            {{> "icons/layers"}} {{t "Walk the path"}}
+                        </a>
+                    </div>
+                </article>
+
+                <article class="pl-card" data-pl-card data-pl-slug="concepts">
+                    <span class="pl-card-icon" aria-hidden="true">{{> "icons/compass"}}</span>
+                    <div class="pl-card-body">
+                        <span class="pl-card-kicker">{{t "Tools change, this doesn't"}}</span>
+                        <h3><a href="{{@site.url}}/blog/">{{t "Concepts, not just clicks"}}</a></h3>
+                        <p>{{t "Sales cycles, lead capture, GTM automation, AI — the ideas that outlast whatever tool is fashionable this year."}}</p>
+                        <a class="btn btn-sm pl-card-start" href="{{@site.url}}/blog/">
+                            {{> "icons/pen"}} {{t "Read the blog"}}
+                        </a>
+                    </div>
+                </article>
+
+                <article class="pl-card" data-pl-card data-pl-slug="open">
+                    <span class="pl-card-icon" aria-hidden="true">{{> "icons/github"}}</span>
+                    <div class="pl-card-body">
+                        <span class="pl-card-kicker">{{t "Nothing hidden"}}</span>
+                        <h3><a href="{{@site.url}}/projects/">{{t "100% open source"}}</a></h3>
+                        <p>{{t "Every lesson, snippet and prompt is a post you can read the source of — and every tool I build is a repo you can fork."}}</p>
+                        <a class="btn btn-sm pl-card-start" href="{{@site.url}}/projects/">
+                            {{> "icons/github"}} {{t "See the projects"}}
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+
+            {{!-- The rail. Sticky, one column, and the only thing on
+            the page that reports where you are on the path. --}}
+            <aside class="pathlive-rail" aria-hidden="true">
+                <div class="pl-rail-head">
+                    <span class="pl-live"><i></i> {{t "Live"}}</span>
+                    <strong>{{t "Your place on the pitch"}}</strong>
+                </div>
+
+                <div class="pl-progress">
+                    <div class="pl-progress-bar"><i data-pl-fill></i></div>
+                    <span class="pl-progress-num"><b data-pl-pct>0</b>%</span>
+                </div>
+
+                <ol class="pl-list" data-pl-list>
+                    <li class="pl-item" data-pl-item="real">
+                        <span class="pl-item-dot" aria-hidden="true">{{> "icons/rocket"}}</span>
+                        <span class="pl-item-body">
+                            <span class="pl-item-name">{{t "Ships something real"}}</span>
+                            <span class="pl-item-meta">{{t "Not just theory"}}</span>
+                        </span>
+                    </li>
+                    <li class="pl-item" data-pl-item="job">
+                        <span class="pl-item-dot" aria-hidden="true">{{> "icons/layers"}}</span>
+                        <span class="pl-item-body">
+                            <span class="pl-item-name">{{t "Mirrors the actual job"}}</span>
+                            <span class="pl-item-meta">{{t "Live, modular training"}}</span>
+                        </span>
+                    </li>
+                    <li class="pl-item" data-pl-item="concepts">
+                        <span class="pl-item-dot" aria-hidden="true">{{> "icons/compass"}}</span>
+                        <span class="pl-item-body">
+                            <span class="pl-item-name">{{t "Concepts, not just clicks"}}</span>
+                            <span class="pl-item-meta">{{t "Tools change, this doesn't"}}</span>
+                        </span>
+                    </li>
+                    <li class="pl-item" data-pl-item="open">
+                        <span class="pl-item-dot" aria-hidden="true">{{> "icons/github"}}</span>
+                        <span class="pl-item-body">
+                            <span class="pl-item-name">{{t "100% open source"}}</span>
+                            <span class="pl-item-meta">{{t "Nothing hidden"}}</span>
+                        </span>
+                    </li>
+                </ol>
+            </aside>
+        </div>
+    </div>
+</section>
 
 {{!-- Courses --}}
 {{#get "posts" filter="tag:hash-course" include="tags,authors" order="published_at asc" limit="3" as |courses|}}
@@ -140,12 +177,15 @@ viewport with tall cards those are not the same thing. --}}
     {{/if}}
 {{/get}}
 
-{{!-- Topics — every public tag, as a card grid: icon, name, its
-own description (when the tag has one) and the post count. A
-static grid, not a scrolling marquee — a horizontal auto-scroll
-strip hijacked the page's own vertical scroll wheel the moment the
-cursor crossed it, which read as the whole page getting stuck. --}}
-{{#get "tags" filter="visibility:public" include="count.posts" order="count.posts desc" limit="8" as |topics|}}
+{{!-- Topics ticker — every public tag, straight from the API, in
+two counter-rotating marquee rows, the loop back after a brief
+detour to a static grid. Every chip carries the tag's own image
+when it has one, and the tag-icon glyph when it doesn't — no tag
+ever renders bare. The track holds its chips TWICE (second run
+aria-hidden) because the seamless loop slides exactly -50%;
+without motion the CSS drops the duplicates and the rows wrap into
+a plain chip cloud. --}}
+{{#get "tags" filter="visibility:public" include="count.posts" order="count.posts desc" limit="16" as |topics|}}
     {{#if topics}}
         <section class="section outer home-topics">
             <div class="inner">
@@ -155,18 +195,29 @@ cursor crossed it, which read as the whole page getting stuck. --}}
                         <h2>{{t "Find your corner of the platform"}}</h2>
                     </div>
                 </div>
-                <div class="topic-grid" data-animate-stagger>
+            </div>
+            <div class="marquee" data-animate>
+                <div class="marquee-track">
                     {{#foreach topics}}
-                        <a class="topic-card" href="{{url}}">
-                            <span class="topic-card-icon" aria-hidden="true">
-                                {{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}}
-                            </span>
-                            <span class="topic-card-body">
-                                <strong class="topic-card-name">{{name}}</strong>
-                                <span class="topic-card-desc">{{#if description}}{{description}}{{else}}{{count.posts}} {{t "posts"}}{{/if}}</span>
-                            </span>
-                        </a>
+                        <a class="home-topic-chip" href="{{url}}">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
                     {{/foreach}}
+                    <span class="marquee-dup" aria-hidden="true">
+                        {{#foreach topics}}
+                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
+                        {{/foreach}}
+                    </span>
+                </div>
+            </div>
+            <div class="marquee marquee-reverse" data-animate>
+                <div class="marquee-track">
+                    {{#foreach topics}}
+                        <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
+                    {{/foreach}}
+                    <span class="marquee-dup" aria-hidden="true">
+                        {{#foreach topics}}
+                            <a class="home-topic-chip" href="{{url}}" tabindex="-1">{{#if feature_image}}<img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />{{else}}{{> "icons/tag-icon"}}{{/if}} {{name}} <small>{{count.posts}}</small></a>
+                        {{/foreach}}
+                    </span>
                 </div>
             </div>
         </section>
@@ -174,32 +225,56 @@ cursor crossed it, which read as the whole page getting stuck. --}}
 {{/get}}
 
 {{!-- Videos — the top-10 reel. Netflix grammar: giant ranked
-numbers behind the thumbs — a horizontal strip a reader could
-drag, which on a trackpad also meant a plain vertical scroll over
-it could get read as a horizontal gesture. A plain grid has no
-such ambiguity. Newest four videos, closing on a subscribe tile. --}}
-{{#get "posts" filter="tag:hash-video" include="tags" order="published_at desc" limit="4" as |vids|}}
+numbers behind the thumbs, one horizontal strip, scrollbar
+hidden (swipe/scroll-snap does the work), newest ten videos,
+closing on a subscribe tile. The strip bleeds to the viewport
+edge but its first item aligns with the content column. --}}
+{{#get "posts" filter="tag:hash-video" include="tags" order="published_at desc" limit="10" as |vids|}}
     {{#if vids}}
-        <section class="section outer">
-            <div class="inner">
-                <div class="section-head" data-animate>
-                    <div>
-                        <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
-                        <h2>{{t "Watch the videos"}}</h2>
-                        <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
-                    </div>
-                    <div class="section-head-cta">
-                        {{#if @custom.social_youtube}}
-                            <a class="btn btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">{{> "icons/youtube"}} {{t "Subscribe"}}</a>
-                        {{/if}}
-                        <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
+        <section class="section home-reel-sec">
+            <div class="outer">
+                <div class="inner">
+                    <div class="section-head" data-animate>
+                        <div>
+                            <span class="kicker">{{> "icons/video"}} {{t "Videos"}}</span>
+                            <h2>{{t "Watch it get built"}}</h2>
+                            <p>{{t "Standalone walkthroughs — screen and narration, mistakes left in."}}</p>
+                        </div>
+                        <div class="section-head-cta">
+                            {{#if @custom.social_youtube}}
+                                <a class="btn btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">{{> "icons/youtube"}} {{t "Subscribe"}}</a>
+                            {{/if}}
+                            <a class="section-more" href="{{@site.url}}/videos/">{{t "All videos"}} {{> "icons/arrow-right"}}</a>
+                        </div>
                     </div>
                 </div>
-                <div class="card-grid" data-animate-stagger>
-                    {{#foreach vids}}
-                        {{> "card-video"}}
-                    {{/foreach}}
-                </div>
+            </div>
+
+            <div class="home-reel" data-animate-stagger>
+                {{#foreach vids}}
+                    <a class="reel-item" href="{{url}}">
+                        <span class="reel-num" aria-hidden="true">{{@number}}</span>
+                        <span class="reel-thumb">
+                            {{#if feature_image}}
+                                <img src="{{img_url feature_image size="m"}}" alt="{{title}}" loading="lazy" />
+                            {{else}}
+                                {{> "thumb-placeholder" icon="video"}}
+                            {{/if}}
+                            {{> "video-preview"}}
+                            <span class="video-card-play">{{> "icons/play-circle"}}</span>
+                            {{> "duration-chip" chipClass="video-card-duration"}}
+                        </span>
+                        <span class="reel-title">{{title}}</span>
+                    </a>
+                {{/foreach}}
+
+                <a class="reel-item reel-more" href="{{#if @custom.social_youtube}}{{@custom.social_youtube}}?sub_confirmation=1{{else}}{{@site.url}}/videos/{{/if}}"{{#if @custom.social_youtube}} target="_blank" rel="noopener"{{/if}}>
+                    <span class="reel-more-tile">
+                        {{> "icons/youtube"}}
+                        <strong>{{#if @custom.social_youtube}}{{t "Subscribe on YouTube"}}{{else}}{{t "Browse every video"}}{{/if}}</strong>
+                        <span>{{t "New walkthroughs as they ship"}}</span>
+                    </span>
+                </a>
             </div>
         </section>
     {{/if}}
