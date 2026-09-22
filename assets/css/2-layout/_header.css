@@ -34,6 +34,8 @@
    full-bleed variant — matched on the post's collection tag in
    body_class. */
 .site-head-inner {
+    /* Positioning context for the reader frames' centred menu. */
+    position: relative;
     display: flex;
     align-items: center;
     gap: 3.2rem;
@@ -46,8 +48,38 @@
 }
 
 .tag-hash-lesson .site-head-inner,
-.tag-hash-training .site-head-inner {
+.tag-hash-training .site-head-inner,
+.tag-hash-module .site-head-inner {
     max-width: none;
+}
+
+/*  READER FRAMES CENTRE THE MENU. On a full-bleed bar the nav sat
+    wherever the brand left it — hard against the wordmark on the
+    left, with a lake of empty bar between it and the actions. Taken
+    out of the flex flow and pinned to the middle of the bar, it
+    stays centred on the PAGE whatever the brand or the actions
+    happen to be that day.
+
+    Only above 1280px: below it the actions cluster grows and the
+    drawer takes over, and an absolutely-centred menu would run
+    underneath both. */
+@media (min-width: 1280px) {
+    .tag-hash-lesson .site-head-nav,
+    .tag-hash-training .site-head-nav,
+    .tag-hash-module .site-head-nav {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-right: 0;
+    }
+
+    /*  With the nav out of the flow, the actions need their own push
+        to the right edge — the nav's margin-right:auto was doing it. */
+    .tag-hash-lesson .site-head-actions,
+    .tag-hash-training .site-head-actions,
+    .tag-hash-module .site-head-actions {
+        margin-left: auto;
+    }
 }
 
 /* Brand */

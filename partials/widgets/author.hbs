@@ -1,18 +1,42 @@
-{{!-- Context: the post. --}}
+{{!-- The author, in full: photo, name, role, location, bio and the
+links. Ghost owns every value (Admin → Staff), so it never drifts.
+Context: the post. --}}
 {{#foreach authors limit="1"}}
-<div class="widget">
+<div class="widget widget-author">
     <h4 class="widget-title">{{> "icons/pen"}} {{t "Written by"}}</h4>
+
     <div class="widget-author-head">
         {{#if profile_image}}
-            <img class="avatar" src="{{img_url profile_image size="xs"}}" alt="{{name}}" loading="lazy" />
+            <img class="avatar" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="lazy" />
         {{else}}
             <span class="avatar avatar-fallback">{{> "icons/avatar"}}</span>
         {{/if}}
         <div>
             <a class="widget-author-name" href="{{url}}">{{name}}</a>
-            {{#if location}}<div class="widget-author-role">{{location}}</div>{{/if}}
+            <div class="widget-author-role">{{t "Builds and writes everything here"}}</div>
         </div>
     </div>
+
     {{#if bio}}<p class="widget-author-bio">{{bio}}</p>{{/if}}
+
+    <ul class="widget-author-meta">
+        {{#if location}}
+            <li>{{> "icons/map-icon"}} {{location}}</li>
+        {{/if}}
+        {{#if website}}
+            <li>{{> "icons/link-icon"}} <a href="{{website}}" target="_blank" rel="noopener">{{t "Website"}}</a></li>
+        {{/if}}
+        {{#get "posts" filter="authors.slug:{{slug}}" limit="1" as |written count|}}
+            <li>{{> "icons/file-text"}} {{count.total}} {{t "posts"}}</li>
+        {{/get}}
+    </ul>
+
+    <ul class="widget-author-social">
+        {{#if @custom.social_linkedin}}<li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">{{> "icons/linkedin"}}</a></li>{{/if}}
+        {{#if @site.twitter}}<li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X" title="X">{{> "icons/x"}}</a></li>{{/if}}
+        {{#if @custom.social_github}}<li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">{{> "icons/github"}}</a></li>{{/if}}
+    </ul>
+
+    <a class="widget-author-more" href="{{@site.url}}/about/">{{t "More about me"}} {{> "icons/arrow-right"}}</a>
 </div>
 {{/foreach}}

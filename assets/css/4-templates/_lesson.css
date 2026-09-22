@@ -6,39 +6,129 @@
         .player-main        lesson content + prev/next
     ------------------------------------------------------------ */
 
+/*  ONE variable drives both the grid track and the fixed rail's
+    width, so the reserved column and the thing sitting in it can
+    never disagree — including when the rail collapses. */
 .player {
+    --rail-w: 320px;
     display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: var(--rail-w) minmax(0, 1fr);
     min-height: calc(100vh - var(--header-height));
 }
 
 .player-rail {
+    position: relative;
     border-right: 1px solid var(--border-soft);
     background: var(--bg-alt);
 }
 
-.player-rail-scroll {
-    position: sticky;
-    top: var(--header-height);
-    padding: 2.8rem 2.4rem 4rem;
+/*  FIXED, not sticky: the rail holds its place for the whole page
+    instead of scrolling away once its column runs out. The grid
+    track above still reserves the space, so nothing slides under
+    it. The element carries the surface and the border because a
+    fixed child would otherwise leave the track unpainted. */
+@media (min-width: 1024px) {
+    /*  A fixed grid item is OUT OF FLOW, so it no longer claims a
+        cell — without this the article slid into the rail's 320px
+        track and wrapped to a one-word column. The track still
+        exists (grid-template-columns), the content is just told
+        which one it belongs in. */
+    .player:not(.lesson-layout-focus) .player-main {
+        grid-column: 2;
+    }
+
+    .lesson-layout-right .player-main {
+        grid-column: 1;
+    }
+
+    .player-rail {
+        position: fixed;
+        top: var(--header-height);
+        bottom: 0;
+        left: 0;
+        z-index: 20;
+        width: var(--rail-w);
+        border-right: 1px solid var(--border-soft);
+        background: var(--bg-alt);
+    }
+
+    /* Rail on the right: same idea, other edge. */
+    .lesson-layout-right .player-rail {
+        left: auto;
+        right: 0;
+        border-right: none;
+        border-left: 1px solid var(--border-soft);
+    }
 }
 
+
+/*  The rail scrolls INSIDE itself. Before, a long curriculum simply
+    grew past the bottom of a sticky block, so the last lessons of a
+    20-lesson course were unreachable without scrolling the article
+    to its end. */
+.player-rail-scroll {
+    --rail-pad: 1.4rem;
+    height: 100%;
+    overflow-y: auto;
+    /* The active row bleeds into this element's right padding to
+       meet the content. That bleed is inside the box, but a visible
+       overflow-x still offered a 10px horizontal scrollbar. */
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding: 2.8rem 1.4rem 3.2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.player-rail-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.player-rail-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+}
+
+/*  The course/module card: a real card, not a row with a rule under
+    it. It is the one thing in the rail that says where you are. */
 .player-rail-course {
     display: flex;
     align-items: center;
-    gap: 1.4rem;
-    padding-bottom: 2rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--border);
+    gap: 1.2rem;
+    padding: 1.2rem;
+    margin-bottom: 1.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.player-rail-course:hover {
+    border-color: color-mod(#0176d3 a(45%));
+    box-shadow: var(--shadow);
 }
 
 .player-rail-course-art {
-    width: 5.2rem;
-    height: 5.2rem;
+    width: 4.4rem;
+    height: 4.4rem;
     border-radius: var(--radius);
     object-fit: cover;
     border: 1px solid var(--border-soft);
     flex-shrink: 0;
+}
+
+.player-rail-course-art.is-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+
+.player-rail-course-art.is-glyph svg {
+    width: 2.2rem;
+    height: 2.2rem;
 }
 
 .player-rail-course-copy {
@@ -50,8 +140,8 @@
 }
 
 .player-rail-course h2 {
-    font-size: 1.8rem;
-    line-height: 1.35;
+    font-size: 1.6rem;
+    line-height: 1.3;
     transition: color 0.15s ease;
 }
 
@@ -59,13 +149,25 @@
     color: var(--accent);
 }
 
+/*  "6 lessons" — a section label for the list below it, so the
+    rail reads as [where you are] → [what is in it]. */
 .player-rail-count {
     display: block;
-    margin-top: 0.6rem;
-    font-size: 1.3rem;
+    margin: 0 0 0.8rem 1.2rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--text-faint);
 }
 
+/*  The curriculum rows — the piece of furniture a reader spends the
+    whole course looking at, so it earns real height and real states.
+
+    Progress needs no counter and no script: every row from the
+    current one onward is dimmed with `.is-current ~ li`, so the
+    walked part of the course reads solid and the part ahead reads
+    faint. Position is the progress bar. */
 .player-list {
     list-style: none;
     padding: 0;
@@ -74,25 +176,40 @@
     counter-reset: player;
 }
 
+/*  ONE glyph, then the title. The row used to carry a counter chip
+    on the left AND a type icon on the right — and since every
+    lesson title already begins "01 · ", the chip repeated the
+    number that was sitting two centimetres to its right. Dropping
+    the counter removed the doubling and a whole column. */
 .player-list a {
+    position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
     gap: 1rem;
-    padding: 1rem 1.2rem;
+    padding: 0.8rem 1.2rem;
     font-size: 1.4rem;
-    line-height: 1.4;
+    line-height: 1.45;
     color: var(--text-muted);
-    border-radius: var(--radius-sm);
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.player-list a::before {
-    counter-increment: player;
-    content: counter(player, decimal-leading-zero);
-    font-size: 1.15rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
+/*  Titles are allowed two lines; a three-line row in a 320px rail
+    turned the list into a paragraph. */
+.player-list a > span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.player-list a svg {
+    grid-column: 1;
+    grid-row: 1;
+    width: 1.7rem;
+    height: 1.7rem;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
     color: var(--text-faint);
 }
 
@@ -101,21 +218,46 @@
     background: var(--surface);
 }
 
-.player-list a svg {
-    width: 1.5rem;
-    height: 1.5rem;
+/*  Where you are: the row takes the CONTENT's background and runs
+    out to the rail's inner edge, so the reading surface looks like
+    it reaches back and claims this lesson. No pill, no tint, no
+    border — the join itself is the indicator, and it is the one
+    signal that cannot be confused with a hover state.
+
+    The bleed is the rail's own right padding; --rail-pad keeps the
+    two numbers from drifting apart. */
+.player-list .is-current a {
+    color: var(--accent);
+    font-weight: 700;
+    background: var(--bg);
+    border-radius: 0;
+    box-shadow: none;
+    margin-right: calc(var(--rail-pad, 1.4rem) * -1);
+    padding-right: calc(var(--rail-pad, 1.4rem) + 1.2rem);
+}
+
+.player-list .is-current a svg {
+    color: var(--accent);
+}
+
+/*  Rail on the right (lesson-layout-right): the join is on the
+    other side, so the bleed has to be too. */
+@media (min-width: 1024px) {
+    .lesson-layout-right .player-list .is-current a {
+        margin-right: 0;
+        padding-right: 1.2rem;
+        margin-left: calc(var(--rail-pad, 1.4rem) * -1);
+        padding-left: calc(var(--rail-pad, 1.4rem) + 1.2rem);
+    }
+}
+
+/*  Still ahead of you. */
+.player-list .is-current ~ li a {
     color: var(--text-faint);
 }
 
-.player-list .is-current a {
-    color: var(--accent);
-    background: var(--accent-soft);
-    font-weight: 600;
-}
-
-.player-list .is-current a::before,
-.player-list .is-current a svg {
-    color: var(--accent);
+.player-list .is-current ~ li a:hover {
+    color: var(--heading);
 }
 
 /* Main column */
@@ -128,22 +270,38 @@
     margin: 0 auto;
 }
 
+/*  The header carried a breadcrumb, a title and three chips over a
+    hairline, and read like a document property sheet. Now it opens
+    the lesson: bigger title, the lesson's own one-liner, and a plain
+    rule underneath — the same hairline the training hero closes
+    with, so the two readers keep agreeing. */
 .player-header {
+    position: relative;
     margin-bottom: 3.2rem;
-    padding-bottom: 2.4rem;
+    padding-bottom: 2.8rem;
     border-bottom: 1px solid var(--border-soft);
 }
 
 .player-header .crumbs {
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.6rem;
 }
 
 .player-header h1 {
-    font-size: clamp(2.6rem, 4vw, 3.6rem);
+    font-size: clamp(2.8rem, 4.4vw, 4.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+}
+
+.player-header-lead {
+    margin-top: 1.4rem;
+    font-size: 1.75rem;
+    line-height: 1.6;
+    color: var(--text-muted);
 }
 
 .player-header .chips {
-    margin-top: 1.6rem;
+    margin-top: 2rem;
 }
 
 /* Video lessons: the first embed is the star */
@@ -163,13 +321,16 @@
     }
 
     .player-rail {
+        position: static;
+        width: auto;
         border-right: none;
         border-bottom: 1px solid var(--border-soft);
     }
 
     .player-rail-scroll {
-        position: static;
+        height: auto;
         max-height: none;
+        overflow: visible;
         padding: 0;
     }
 
@@ -231,14 +392,14 @@
     display: flex;
     align-items: center;
     gap: 0.9rem;
-    padding: 1rem 1.2rem;
-    font-size: 1.4rem;
-    font-weight: 600;
+    padding: 1.1rem 1.2rem;
+    font-size: 1.45rem;
+    font-weight: 700;
     color: var(--heading);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     cursor: pointer;
     list-style: none;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .rail-module summary::-webkit-details-marker {
@@ -274,10 +435,36 @@
     border: 1px solid var(--border-soft);
 }
 
+.rail-module-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*  How many sections are in there — the one fact that makes a
+    COLLAPSED module worth anything. */
+.rail-module-count {
+    flex-shrink: 0;
+    min-width: 2.2rem;
+    padding: 0.15rem 0.6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--text-faint);
+    background: var(--bg);
+    border-radius: 999px;
+}
+
+.rail-module.is-active > summary .rail-module-count {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
 .rail-module summary > svg:last-child {
     width: 1.2rem;
     height: 1.2rem;
-    margin-left: auto;
     color: var(--text-faint);
     transition: transform 0.2s ease;
 }
@@ -286,60 +473,118 @@
     transform: rotate(180deg);
 }
 
-.rail-module.is-active summary {
+/*  The module you are inside: tinted, so the open group is
+    obviously the one that belongs to this page and not just the
+    one that happens to be expanded. */
+.rail-module.is-active > summary {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.rail-module.is-active > summary .rail-module-ico {
     color: var(--accent);
 }
 
-.rail-module.is-active summary .rail-module-ico {
-    color: var(--accent);
-}
-
+/*  Sections hang off a rail under their module — the indent alone
+    was doing all the work of showing containment. */
 .rail-module .player-list {
-    padding: 0.2rem 0 0.6rem 1.4rem;
-    border-left: 1px solid var(--border);
-    margin-left: 1.8rem;
+    position: relative;
+    padding: 0.4rem 0 0.8rem 1rem;
+    margin: 0.2rem 0 0 2.1rem;
+    border-left: 2px solid var(--border);
 }
 
-/* The article + its outline: the two-column reading surface */
+.rail-module.is-active .player-list {
+    border-left-color: color-mod(#0176d3 a(35%));
+}
+
+/*  Rows inside a module sit tighter and lose the number chip's
+    box — at this indent the chips read as a second list rather
+    than a numbering. */
+.rail-module .player-list a {
+    gap: 0.9rem;
+    padding: 0.7rem 1rem;
+    font-size: 1.35rem;
+}
+
+/*  Nested rows are indented on the LEFT only — they end flush with
+    the scroller's content box like every other row, so the bleed is
+    the scroller's padding and nothing more. Adding the module rail's
+    indent here too pushed them 10px past the border. */
+.rail-module .player-list .is-current a {
+    margin-right: calc(var(--rail-pad, 1.4rem) * -1);
+    padding-right: calc(var(--rail-pad, 1.4rem) + 1rem);
+}
+
+/*  The article and its outline — the two-column reading surface.
+
+    This is what a centred measure on a 1500px screen was wasting:
+    the article kept its comfortable line length AND the space to
+    its right now carries the outline, share and sponsor instead of
+    sitting empty. Site TOC rule holds — a sidebar exists, so the
+    TOC lives in it.
+
+    Single column below 1200px; the outline block falls under the
+    article, where the TOC would be useless, so only the TOC hides
+    and share/sponsor stay. */
 .player-columns {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 4.8rem;
+    gap: clamp(3.2rem, 5vmin, 6rem);
     align-items: start;
 }
 
-.player-toc {
-    display: none;
+.player-outline-sticky {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
-@media (min-width: 1280px) {
-    .player-has-toc .player-columns {
-        grid-template-columns: minmax(0, 1fr) 220px;
+@media (max-width: 1199px) {
+    .player-outline-sticky [data-toc-wrap] {
+        display: none;
     }
 
-    .player-has-toc .player-toc {
-        display: block;
+    .player-outline-sticky {
+        max-width: var(--measure);
+        margin: 4rem auto 0;
+    }
+}
+
+@media (min-width: 1200px) {
+    .player-columns {
+        grid-template-columns: minmax(0, 1fr) 260px;
+    }
+
+    .player-article {
+        max-width: var(--measure);
+        width: 100%;
+        margin: 0;
+        justify-self: end;
+    }
+
+    .player-outline {
+        align-self: stretch;
+    }
+
+    .player-outline-sticky {
         position: sticky;
         top: calc(var(--header-height) + 2.4rem);
     }
-
-    .player-has-toc .player-article {
-        max-width: var(--measure);
-        width: 100%;
-    }
 }
 
-/* TOC in the player rail (site rule: sidebar owns the TOC) */
-.player-rail-toc {
-    margin-top: 2.4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
+/*  Four icons in a 260px rail: share the width, stay on one line. */
+.player-outline .share-row {
+    flex-wrap: nowrap;
+    gap: 0.6rem;
 }
 
-@media (max-width: 1023px) {
-    .player-rail-toc {
-        display: none;
-    }
+.player-outline .share-row a,
+.player-outline .share-row button {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    height: 3.8rem;
 }
 
 /*  Lesson layouts — #lesson-layout-* stamps a class on .player
@@ -350,7 +595,7 @@
 /* right — the curriculum rail crosses to the right edge */
 @media (min-width: 1024px) {
     .lesson-layout-right {
-        grid-template-columns: minmax(0, 1fr) 320px;
+        grid-template-columns: minmax(0, 1fr) var(--rail-w);
     }
 
     .lesson-layout-right .player-rail {
@@ -360,10 +605,43 @@
     }
 }
 
+/*  Layouts that already spend the right-hand side (rail on the
+    right) or deliberately want the full measure (wide, focus) keep
+    the article in one column — two right-hand rails, or a narrowed
+    "wide" layout, would each defeat their own point. */
+@media (min-width: 1200px) {
+    .lesson-layout-right .player-columns,
+    .lesson-layout-wide .player-columns,
+    .lesson-layout-focus .player-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lesson-layout-right .player-article,
+    .lesson-layout-wide .player-article,
+    .lesson-layout-focus .player-article {
+        margin: 0 auto;
+        justify-self: center;
+    }
+
+    .lesson-layout-right .player-outline-sticky,
+    .lesson-layout-wide .player-outline-sticky,
+    .lesson-layout-focus .player-outline-sticky {
+        position: static;
+        max-width: var(--measure);
+        margin: 4rem auto 0;
+    }
+
+    .lesson-layout-right .player-outline-sticky [data-toc-wrap],
+    .lesson-layout-wide .player-outline-sticky [data-toc-wrap],
+    .lesson-layout-focus .player-outline-sticky [data-toc-wrap] {
+        display: none;
+    }
+}
+
 /* wide — narrow rail, article grows to the wide measure */
 @media (min-width: 1024px) {
     .lesson-layout-wide {
-        grid-template-columns: 260px minmax(0, 1fr);
+        --rail-w: 260px;
     }
 
     .lesson-layout-wide .player-article {
@@ -397,8 +675,7 @@
     border-bottom: none;
 }
 
-.lesson-layout-focus .player-rail-list,
-.lesson-layout-focus .player-rail-toc {
+.lesson-layout-focus .player-rail-list {
     display: none;
 }
 
@@ -490,19 +767,234 @@
     border-color: rgba(152, 166, 184, 0.25);
 }
 
-/* Sponsor slot at the foot of the curriculum rail */
-.player-rail-sponsor {
-    margin-top: 2.4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
+/*  Rail furniture: the collapse control and the way out
+    ============================================================ */
+
+/*  The collapse handle STRADDLES the rail's border, the way a
+    drawer pull sits on the drawer. It used to be a button parked in
+    the rail's top-right corner, which read as one more list item and
+    cost a row of rail. Absolutely positioned against .player-rail /
+    .trainer2-nav — deliberately outside the scrolling column, whose
+    overflow would have clipped the half that hangs over the edge. */
+.rail-collapse {
+    position: absolute;
+    top: 2rem;
+    right: -1.2rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    color: var(--text-faint);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.lesson-layout-right .rail-collapse {
+    right: auto;
+    left: -1.2rem;
+}
+
+.rail-collapse:hover {
+    color: var(--accent);
+    border-color: color-mod(#0176d3 a(55%));
+    background: var(--accent-soft);
+}
+
+.rail-collapse svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.rail-collapse-out {
+    display: none;
+}
+
+/*  Training home — the nav's first ROW, matching .rail-module
+    summary exactly (same padding, weight, radius, icon slot) so the
+    rail reads as one list: home, then the modules. It used to be a
+    bordered pill sitting above the list, which made it look like
+    chrome rather than a destination. */
+.rail-home {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--heading);
+    border-radius: var(--radius);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.rail-home:hover {
+    color: var(--accent);
+    background: var(--surface);
+}
+
+.rail-home-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    flex-shrink: 0;
+    color: var(--text-faint);
+}
+
+.rail-home:hover .rail-home-ico {
+    color: var(--accent);
+}
+
+.rail-home-ico svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.rail-home-label {
+    margin-right: auto;
+}
+
+.rail-module summary .rail-module-name {
+    margin-right: auto;
+}
+
+/*  The arrow leads OUT of the reader, where every module chevron
+    leads further in — different direction, different glyph. */
+.rail-home > svg:last-child {
+    width: 1.3rem;
+    height: 1.3rem;
+    color: var(--text-faint);
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.rail-home:hover > svg:last-child {
+    opacity: 1;
+    color: var(--accent);
+    transform: translateX(2px);
+}
+
+/*  Collapsed: icons only
+    ------------------------------------------------------------
+
+    Titles, numbers, the course card's copy and — in the training
+    rail — the nested section lists all go. What is left is one
+    glyph per row, and the title moves to the element's `title`
+    attribute (set in lesson-list.hbs / training-list.hbs) so a
+    collapsed rail is still navigable by hover.
+
+    Guarded by min-width: below the rail's own breakpoint it is
+    already a drawer, and a collapsed drawer is nothing at all. */
+
+html[data-rail="collapsed"] .rail-collapse-in {
+    display: none;
+}
+
+html[data-rail="collapsed"] .rail-collapse-out {
+    display: flex;
+}
+
+@media (min-width: 1024px) {
+    html[data-rail="collapsed"] .player:not(.lesson-layout-focus) {
+        --rail-w: 6.4rem;
+    }
+}
+
+html[data-rail="collapsed"] .player-rail-scroll,
+html[data-rail="collapsed"] .trainer2-nav-scroll {
+    --rail-pad: 0.7rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+}
+
+html[data-rail="collapsed"] .player-rail-course {
+    padding: 0.7rem;
+    justify-content: center;
+}
+
+html[data-rail="collapsed"] .player-rail-course-copy,
+html[data-rail="collapsed"] .player-rail-count,
+html[data-rail="collapsed"] .rail-home-label,
+html[data-rail="collapsed"] .rail-home > svg:last-child {
+    display: none;
+}
+
+html[data-rail="collapsed"] .rail-home {
+    justify-content: center;
+    padding: 1rem 0.4rem;
+}
+
+/*  Rows: one centred glyph. The number and the title step out; the
+    type icon becomes the whole row. */
+html[data-rail="collapsed"] .player-list a {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    padding: 1rem 0.4rem;
+}
+
+html[data-rail="collapsed"] .player-list a::before,
+html[data-rail="collapsed"] .player-list a > span {
+    display: none;
+}
+
+html[data-rail="collapsed"] .player-list a svg {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+html[data-rail="collapsed"] .player-list .is-current a {
+    margin: 0;
+    padding: 1rem 0.4rem;
+    background: var(--bg);
+}
+
+/*  Training rail: modules collapse to their own icon, and their
+    section lists go with them. Reopening the rail brings both
+    back — a stack of nested icon columns would not be navigation,
+    it would be a puzzle. */
+html[data-rail="collapsed"] .rail-module summary {
+    justify-content: center;
+    padding: 1rem 0.4rem;
+}
+
+html[data-rail="collapsed"] .rail-module summary > span:not(.rail-module-ico),
+html[data-rail="collapsed"] .rail-module summary > svg,
+html[data-rail="collapsed"] .rail-module .player-list {
+    display: none;
+}
+
+html[data-rail="collapsed"] .rail-module-ico {
+    width: 2.4rem;
+    height: 2.4rem;
+}
+
+html[data-rail="collapsed"] .rail-module-ico svg {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
+/*  No rail to collapse: the focus layout never had one, and below
+    the rail breakpoints it is a drawer. */
+.lesson-layout-focus .rail-collapse {
+    display: none;
 }
 
 @media (max-width: 1023px) {
-    .player-rail-sponsor {
+    .rail-collapse {
         display: none;
     }
 }
 
-.lesson-layout-focus .player-rail-sponsor {
-    display: none;
+/*  The module overview is a map, not a section — its row says so
+    in words rather than sharing the sections' glyph. */
+.player-list .is-overview a {
+    font-weight: 600;
+    color: var(--text-muted);
 }

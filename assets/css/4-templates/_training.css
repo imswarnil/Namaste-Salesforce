@@ -79,12 +79,6 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
-    transform: rotate(1deg);
-    transition: transform 0.25s ease;
-}
-
-.training-upnext:hover {
-    transform: rotate(0deg);
 }
 
 .training-upnext h3 {
@@ -138,6 +132,50 @@
 .training-upnext li a:hover > svg {
     opacity: 1;
     color: var(--accent);
+}
+
+/*  The module index — numbered by CSS counter so the numbers match
+    the trail's waypoints (both walk the same tag order), count chip
+    on the right, arrow on hover. */
+.training-index {
+    counter-reset: tindex;
+}
+
+.training-upnext .training-index li a {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    padding: 1.3rem 0.4rem;
+}
+
+.training-index li a::before {
+    counter-increment: tindex;
+    content: counter(tindex, decimal-leading-zero);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 50%;
+}
+
+.training-index-name {
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.training-upnext li a:hover .training-index-name {
+    color: var(--accent);
+}
+
+.training-index-count {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-faint);
+    white-space: nowrap;
 }
 
 .training-upnext-more {

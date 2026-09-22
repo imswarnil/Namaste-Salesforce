@@ -48,7 +48,10 @@
 
     // The player. Seeking needs enablejsapi=1 in the iframe URL —
     // rewrite it once now, before anyone clicks.
-    var iframe = content.querySelector('iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"]');
+    // Document-wide, not content-scoped: on a reader page
+    // reader-video.js has already lifted the player out of the body
+    // and into the hero stage by the time this runs.
+    var iframe = document.querySelector('iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"]');
     if (iframe && iframe.src.indexOf('enablejsapi=1') === -1) {
         iframe.src += (iframe.src.indexOf('?') === -1 ? '?' : '&') +
             'enablejsapi=1&origin=' + encodeURIComponent(window.location.origin);

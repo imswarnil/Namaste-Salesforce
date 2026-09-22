@@ -963,10 +963,19 @@ html.anim .story-strip.is-in .story-stop {
     position: relative;
 }
 
+/*  "Most recent on the platform" — three posts and the ask, all
+    one shape. `align-items: stretch` is the default and is the
+    whole reason the row reads as a single object: every card is
+    the height of the tallest, the media band is a fixed 16:9, the
+    title is clamped to two lines, and the footer is pinned to the
+    bottom with margin-top:auto. Nothing in a card is allowed to
+    change its dimensions.
+    ------------------------------------------------------------ */
+
 .activity-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.6rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
     margin-top: 3.2rem;
 }
 
@@ -974,8 +983,7 @@ html.anim .story-strip.is-in .story-stop {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    padding: 2rem;
+    overflow: hidden;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
@@ -985,18 +993,43 @@ html.anim .story-strip.is-in .story-stop {
 .activity-card:hover {
     border-color: color-mod(#0176d3 a(40%));
     box-shadow: var(--shadow-lg);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
 }
 
 .activity-card.is-latest {
     border-color: color-mod(#0176d3 a(45%));
-    background: linear-gradient(165deg, var(--accent-soft), transparent 60%), var(--surface);
+}
+
+/*  The image leads, at a fixed ratio so four cards never disagree
+    about where their text starts. */
+.activity-card-media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--bg-alt);
+}
+
+.activity-card-media img,
+.activity-card-media .thumb-ph {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.activity-card-media img {
+    transition: transform 0.4s ease;
+}
+
+.activity-card:hover .activity-card-media img {
+    transform: scale(1.04);
 }
 
 .activity-card-badge {
     position: absolute;
-    top: -1.1rem;
-    left: 1.6rem;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -1007,6 +1040,7 @@ html.anim .story-strip.is-in .story-stop {
     color: #fff;
     background: var(--accent);
     border-radius: 999px;
+    box-shadow: var(--shadow);
 }
 
 .activity-card-badge svg {
@@ -1014,46 +1048,118 @@ html.anim .story-strip.is-in .story-stop {
     height: 1.2rem;
 }
 
-.activity-card-icon {
+.activity-card-body {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.6rem;
-    height: 3.6rem;
-    margin-bottom: 0.4rem;
-    border-radius: var(--radius);
-    background: var(--accent-soft);
-    color: var(--accent);
-}
-
-.activity-card-icon svg {
-    width: 1.8rem;
-    height: 1.8rem;
-}
-
-.activity-card-kind {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.8rem;
 }
 
 .activity-card-title {
-    font-size: 1.55rem;
-    font-weight: 600;
-    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.35;
     color: var(--heading);
 }
 
-.activity-card-time {
-    margin-top: auto;
-    padding-top: 0.6rem;
-    font-size: 1.2rem;
-    color: var(--text-faint);
+.activity-card:hover .activity-card-title {
+    color: var(--accent);
 }
 
-@media (max-width: 900px) {
+.activity-card-sub {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 1.35rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.activity-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 1.2rem;
+    font-size: 1.2rem;
+    color: var(--text-faint);
+    border-top: 1px solid var(--border-soft);
+}
+
+.activity-card-go {
+    display: inline-flex;
+    color: var(--accent);
+    transition: transform 0.2s ease;
+}
+
+.activity-card-go svg {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.activity-card:hover .activity-card-go {
+    transform: translateX(3px);
+}
+
+/*  Last cell: the ask. Not a link card, so it centres its own
+    content instead of borrowing the media/body split. */
+.activity-card-cta {
+    justify-content: center;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 2.4rem 1.8rem;
+    text-align: center;
+    background:
+        linear-gradient(165deg, var(--accent-soft), transparent 70%),
+        var(--surface);
+    border-color: var(--accent);
+}
+
+.activity-card-cta:hover {
+    transform: none;
+}
+
+.activity-card-cta-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.4rem;
+    height: 4.4rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+}
+
+.activity-card-cta-icon svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.activity-card-cta strong {
+    font-size: 1.7rem;
+    color: var(--heading);
+}
+
+.activity-card-cta p {
+    font-size: 1.3rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.activity-card-cta .btn {
+    margin-top: 0.4rem;
+}
+
+@media (max-width: 1100px) {
     .activity-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -2926,5 +3032,83 @@ html[data-theme="dark"] .home-hero-pattern {
     .pl-card:nth-child(n+7) {
         position: static;
         top: auto;
+    }
+}
+
+/*  The scroll-fill quote band (partials/scroll-quote.hbs)
+    ------------------------------------------------------------
+
+    Base state paints the quote normally, in full colour. The
+    word-by-word fill is layered on top ONLY where a scroll-driven
+    timeline exists and motion is welcome — and only after
+    assets/js/quote-fill.js has split the text into .rq-w words and
+    stamped .is-split on the paragraph. Every rule below hangs off
+    that class, so a browser that can paint a faint word but cannot
+    run the timeline never gets the chance to strand the quote
+    half-read. Progressive enhancement, in the only order that is
+    safe. */
+
+.scroll-quote {
+    padding: clamp(7rem, 14vmin, 14rem) 0;
+    background: var(--bg-alt);
+    border-block: 1px solid var(--border-soft);
+}
+
+/*  NB: the measure cannot be set in `ch` here — on the <figure>
+    that unit resolves against the figure's own (body-sized) font,
+    not the display size of the quote inside it, which collapsed
+    the band to a 200px column of two-word lines. */
+.scroll-quote figure {
+    max-width: min(96rem, 92%);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.scroll-quote blockquote {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.scroll-quote-fill {
+    font-size: clamp(3.2rem, 6.5vw, 7.2rem);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--heading);
+    text-wrap: balance;
+}
+
+.scroll-quote figcaption {
+    max-width: 52ch;
+    margin: clamp(2.8rem, 4vmin, 4rem) auto 0;
+    font-size: clamp(1.5rem, 1.8vw, 1.8rem);
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+        /* ONE timeline for the whole quote, named here and read by
+           every word below. Per-word view() would have measured
+           each word's own trip through the viewport, so words on
+           the same line would ink at different moments and words on
+           later lines would start over. */
+        .scroll-quote-fill.is-split {
+            view-timeline-name: --rq;
+            view-timeline-axis: block;
+        }
+
+        .scroll-quote-fill.is-split .rq-w {
+            color: var(--border);
+            animation: rq-word linear both;
+            animation-timeline: --rq;
+            /* --from / --to are written per word by quote-fill.js */
+            animation-range: cover var(--from) cover var(--to);
+        }
+
+        @keyframes rq-word {
+            to { color: var(--heading); }
+        }
     }
 }

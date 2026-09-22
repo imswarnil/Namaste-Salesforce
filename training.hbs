@@ -20,13 +20,6 @@ sticky widget sidebar. --}}
     <div class="bg-grid" aria-hidden="true"></div>
     <div class="orb" style="width: 380px; height: 380px; top: -120px; right: -100px;" aria-hidden="true"></div>
     <div class="orb" style="width: 300px; height: 300px; bottom: -130px; left: -80px; animation-delay: -3s;" aria-hidden="true"></div>
-    <div class="home-deco" style="top: 18%; left: 44%;" data-parallax="0.08" aria-hidden="true">
-        <span class="home-bubble float">{{> "icons/layers"}}</span>
-    </div>
-    <div class="home-deco" style="bottom: 22%; right: 40%;" data-parallax="0.11" aria-hidden="true">
-        <span class="home-bubble float-alt" style="animation-delay: -4s;">{{> "icons/compass"}}</span>
-    </div>
-
     <div class="training-hero2-grid inner relative">
 
         <div class="training-hero2-copy" data-animate="left">
@@ -40,72 +33,50 @@ sticky widget sidebar. --}}
             </div>
 
             <div class="training-hero2-stats">
+                {{!-- Modules = #module landing posts. This used to count
+                every PUBLIC TAG on the site and call them "topics" — 14
+                on a path with 3 modules. --}}
+                {{#get "posts" filter="tag:hash-module" limit="1" as |items counts|}}
+                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Modules"}}</span></div>
+                {{/get}}
                 {{#get "posts" filter="tag:hash-training" limit="1" as |items counts|}}
                     <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Sections"}}</span></div>
-                {{/get}}
-                {{#get "tags" filter="visibility:public" include="count.posts" limit="1" as |items counts|}}
-                    <div class="home-stat"><strong data-count="{{counts.total}}">{{counts.total}}</strong><span>{{t "Topics"}}</span></div>
                 {{/get}}
                 <div class="home-stat"><strong>{{t "Free"}}</strong><span>{{t "Forever"}}</span></div>
             </div>
         </div>
 
-        {{!-- Up next: the first stops on the trail, live --}}
-        {{#get "posts" filter="tag:hash-training" order="published_at asc" include="tags" limit="4" as |next|}}
-            {{#if next}}
-                <div class="training-hero2-panel" data-animate="right">
-                    <div class="training-upnext">
-                        <h3>{{> "icons/map-icon"}} {{t "Up next on the path"}}</h3>
-                        <ol>
-                            {{#foreach next}}
-                                <li>
-                                    <a href="{{url}}">
-                                        <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
-                                        <span>{{title}}</span>
-                                        {{> "icons/arrow-right"}}
-                                    </a>
-                                </li>
-                            {{/foreach}}
-                        </ol>
-                        <a class="training-upnext-more" href="#training-trail">{{t "See the whole trail"}} {{> "icons/chevron-down"}}</a>
-                    </div>
-                </div>
-            {{/if}}
-        {{/get}}
-
-    </div>
-</section>
-
-{{!-- Why this, and what's next — framing before the trail starts.
-Fixed copy, not a live query: this is positioning, not training
-content, so it does not belong in training-trail.hbs. --}}
-<section class="section outer">
-    <div class="inner">
-        <div class="section-head" data-animate>
-            <div>
-                <span class="kicker">{{> "icons/compass"}} {{t "The idea"}}</span>
-                <h2>{{t "We start from the basics"}}</h2>
-                <p>{{t "Every module assumes nothing going in. From there we build the core concepts — selling, go-to-market, automation, AI — because tools change, but companies selling and customers buying won't."}}</p>
+        {{!-- The curriculum at a glance, and a jump nav for a long
+        page. Same walk training-trail.hbs does (public tags with
+        training posts, slug order), so the panel can never disagree
+        with the trail about what comes first — the old "up next"
+        list ordered by publish date and routinely did. --}}
+        <div class="training-hero2-panel" data-animate="right">
+            <div class="training-upnext">
+                <h3>{{> "icons/map-icon"}} {{t "The modules"}}</h3>
+                <ol class="training-index">
+                    {{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
+                        {{#foreach moduleTags}}
+                            {{#> "with-this" moduleTag=.}}
+                                {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" limit="1" as |probe probeCount|}}
+                                    {{#if probe}}
+                                        <li>
+                                            <a href="#module-{{../moduleTag.slug}}">
+                                                <span class="training-index-name">{{../moduleTag.name}}</span>
+                                                <span class="training-index-count">{{probeCount.total}} {{t "sections"}}</span>
+                                                {{> "icons/arrow-right"}}
+                                            </a>
+                                        </li>
+                                    {{/if}}
+                                {{/get}}
+                            {{/with-this}}
+                        {{/foreach}}
+                    {{/get}}
+                </ol>
+                <a class="training-upnext-more" href="#training-trail">{{t "See the whole trail"}} {{> "icons/chevron-down"}}</a>
             </div>
         </div>
 
-        <div class="home-props" data-animate-stagger>
-            <div class="home-prop">
-                <span class="home-prop-icon">{{> "icons/layers"}}</span>
-                <h3>{{t "Not just Salesforce"}}</h3>
-                <p>{{t "This platform teaches the concepts underneath the clicks — sales cycles, lead capture, lead enrichment — the same ideas whether the tool is Salesforce or whatever replaces it."}}</p>
-            </div>
-            <div class="home-prop">
-                <span class="home-prop-icon">{{> "icons/zap"}}</span>
-                <h3>{{t "Go-to-market, end to end"}}</h3>
-                <p>{{t "From a lead's first touch to a closed deal — capture, enrichment, routing, automation — how the systems around a sale actually fit together."}}</p>
-            </div>
-            <div class="home-prop">
-                <span class="home-prop-icon">{{> "icons/sparkles"}}</span>
-                <h3>{{t "My plan to learn"}}</h3>
-                <p>{{t "I'm learning this in public too — Clay, n8n, 6sense and the rest of the GTM/AI stack, documented here as I go."}}</p>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -129,19 +100,25 @@ content, so it does not belong in training-trail.hbs. --}}
         </div>
 
         <aside class="training-side">
+            {{!-- Sticky sidebar, in order: the ask (this whole page
+            is "I'm learning this too" — so the invitation leads),
+            then the why, in my own words. No sponsor slot and no
+            "how the path works" checklist: the trail itself already
+            shows how the path works. --}}
             <div class="training-side-sticky">
-                <div class="widget">
-                    <h4 class="widget-title">{{> "icons/compass"}} {{t "How the path works"}}</h4>
-                    <ul class="training-how">
-                        <li>{{> "icons/check-circle"}} {{t "Each module is one topic, self-contained"}}</li>
-                        <li>{{> "icons/check-circle"}} {{t "Sections read in order, top to bottom"}}</li>
-                        <li>{{> "icons/check-circle"}} {{t "Build along in a free Developer Edition org"}}</li>
-                    </ul>
-                </div>
-                {{> "widgets/newsletter"}}
-                {{> "widgets/sponsor" skyscraper=true}}
+                {{> "widgets/learn-with-me"}}
+                {{> "widgets/quote"}}
             </div>
         </aside>
 
     </div>
 </main>
+
+{{!-- After the curriculum: what the path is actually teaching.
+partials/training-idea.hbs — the same block every module landing
+page ends with. --}}
+<section class="section outer">
+    <div class="inner">
+        {{> "training-idea"}}
+    </div>
+</section>

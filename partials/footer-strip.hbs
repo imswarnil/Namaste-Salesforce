@@ -1,0 +1,26 @@
+{{!-- The reader footer: one line. Enough to get out of the player
+(home, the collection you are in, the legal page) and nothing more.
+Inset past the fixed rail by CSS so it never hides underneath it. --}}
+<footer class="site-foot-strip">
+    <div class="site-foot-strip-inner">
+        <a class="site-foot-strip-brand" href="{{@site.url}}">
+            <span class="site-head-mark" aria-hidden="true"><img src="{{asset "images/ns-mark.svg"}}" alt="" /></span>
+            <span>{{@site.title}}</span>
+        </a>
+
+        <nav class="site-foot-strip-nav" aria-label="{{t "Footer"}}">
+            {{#match (post_class) "~" "tag-hash-lesson"}}
+                <a href="{{@site.url}}/courses/">{{t "All courses"}}</a>
+            {{else}}
+                <a href="{{@site.url}}/training/">{{t "All training"}}</a>
+            {{/match}}
+            <a href="{{@site.url}}/blog/">{{t "Blog"}}</a>
+            <a href="{{@site.url}}/about/">{{t "About"}}</a>
+            {{#if @custom.social_github}}
+                <a href="{{@custom.social_github}}" target="_blank" rel="noopener">{{t "GitHub"}}</a>
+            {{/if}}
+        </nav>
+
+        <span class="site-foot-strip-legal">&copy; {{date format="YYYY"}} {{@site.title}}</span>
+    </div>
+</footer>

@@ -46,6 +46,11 @@ One markup shape; the class on .player is all that changes. --}}
 
     {{!-- Curriculum rail --}}
     <aside class="player-rail">
+        {{!-- The collapse handle straddles the rail's border, so it
+        sits OUTSIDE the scrolling column — inside, the rail's own
+        overflow clipped it in half. --}}
+        {{> "rail-toggle"}}
+
         <div class="player-rail-scroll">
             {{#primary_tag}}
                 {{#get "posts" filter="tag:hash-course+slug:{{slug}}" limit="1" as |courseposts|}}
@@ -53,6 +58,8 @@ One markup shape; the class on .player is all that changes. --}}
                         <a class="player-rail-course" href="{{url}}">
                             {{#if feature_image}}
                                 <img class="player-rail-course-art" src="{{img_url feature_image size="s"}}" alt="" loading="lazy" />
+                            {{else}}
+                                <span class="player-rail-course-art is-glyph">{{> "icons/graduation-cap"}}</span>
                             {{/if}}
                             <span class="player-rail-course-copy">
                                 <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
@@ -79,19 +86,24 @@ One markup shape; the class on .player is all that changes. --}}
                 {{> "lesson-list" currentSlug=slug}}
             </div>
 
-            <div class="player-rail-toc" data-toc-wrap>
-                <h4 class="widget-title">{{> "icons/list-icon"}} {{t "On this page"}}</h4>
-                <ul class="toc-list" data-toc></ul>
-            </div>
-
-            <div class="player-rail-sponsor">
-                {{> "widgets/sponsor"}}
-            </div>
         </div>
     </aside>
 
-    {{!-- The lesson itself --}}
+    {{!-- The lesson itself, beside its own outline. The outline
+    column is what fills the dead space a single centred measure
+    left on a wide screen; it collapses below 1200px (and in the
+    layouts that already spend that side of the page — see
+    _lesson.css). --}}
     <main id="site-main" class="player-main">
+        <div class="player-columns">
+
+        {{!-- Video lessons open with the player, like the training
+        reader — the stage reveals itself only if there is an embed
+        to lift into it (assets/js/reader-video.js). --}}
+        {{#match (post_class) "~" "tag-hash-lesson-type-video"}}
+            {{> "video-stage"}}
+        {{/match}}
+
         <article class="player-article {{post_class}}">
 
             <header class="player-header">
@@ -114,6 +126,10 @@ One markup shape; the class on .player is all that changes. --}}
 
                 <h1>{{title}}</h1>
 
+                {{#if custom_excerpt}}
+                    <p class="player-header-lead">{{custom_excerpt}}</p>
+                {{/if}}
+
                 <div class="chips">
                     <span class="chip chip-type">{{> "lesson-type-icon"}}
                         {{#match (post_class) "~" "tag-hash-lesson-type-video"}}{{t "Video lesson"}}
@@ -123,8 +139,9 @@ One markup shape; the class on .player is all that changes. --}}
                     </span>
                     {{> "duration-chip"}}
                     {{#if reading_time}}
-                        <span class="chip">{{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
+                        <span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
                     {{/if}}
+                    <span class="chip chip-free">{{t "Free"}}</span>
                 </div>
             </header>
 
@@ -154,6 +171,28 @@ One markup shape; the class on .player is all that changes. --}}
             {{/if}}
 
         </article>
+
+        <aside class="player-outline">
+            {{!-- Same order as the training reader's sidebar: where
+            am I in this video, what is on this page, who wrote it,
+            the ask, and share last. --}}
+            <div class="player-outline-sticky">
+                {{> "widgets/chapters"}}
+
+                <div class="widget widget-plain" data-toc-wrap>
+                    <h4 class="widget-title">{{> "icons/list-icon"}} {{t "On this page"}}</h4>
+                    <ul class="toc-list" data-toc></ul>
+                </div>
+
+                {{> "widgets/author"}}
+
+                {{> "widgets/sponsor"}}
+
+                {{> "widgets/share-compact"}}
+            </div>
+        </aside>
+
+        </div>
     </main>
 
 </div>

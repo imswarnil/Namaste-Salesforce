@@ -42,7 +42,16 @@ public tag, its `#module` landing post's slug equals that tag's slug
   DESCRIPTION; `partials/duration-chip.hbs` is the only renderer. Never
   parse slugs.
 - **Video chapters**: a table in the post whose first column is
-  timestamps becomes the seeking sidebar (`assets/js/video.js`).
+  timestamps becomes the seeking sidebar (`assets/js/video.js`). It
+  looks for the player DOCUMENT-wide, because on a reader page
+  `reader-video.js` has already lifted the body's first embed into the
+  hero stage (`partials/video-stage.hbs`). That script must keep
+  sorting before video.js in the concatenated bundle.
+- **Reader heroes**: `#lesson-type-video` pages open with the player
+  and move their title block into the reading column; article pages
+  keep the cover hero. Both render `partials/trainer-head.hbs`, which
+  exists precisely so the breadcrumb/title/chips have one definition
+  and two homes.
 - **Slide decks**: a `#slides` post's content splits into slides on
   every divider card. `assets/js/deck.js` renders the full-viewport
   player (NS Slides grammar: fixed 1280×720 canvas scaled by
@@ -60,6 +69,26 @@ public tag, its `#module` landing post's slug equals that tag's slug
   import files; templates match `tag-hash-*` via `post_class`.
 - **Feature-image URLs written directly to the DB need the
   `__GHOST_URL__` token** or Ghost's normalisation job nulls them.
+- **gscan reads Handlebars comments.** A `{{!-- --}}` that mentions the
+  translation helper by its bare mustache form fails the build with "Add
+  a string to translate". Describe it in words instead.
+- **Reader frames share one rail.** `.player-list` rows, the
+  content-coloured active row (bleeds by `--rail-pad`), the edge
+  collapse handle and `.rail-home` all live in `4-templates/_lesson.css`
+  and serve the lesson player AND the training reader; `_trainer.css`
+  only owns grid tracks and the hero. The rail is `position: fixed`
+  above its breakpoint — which takes it OUT of the grid flow, so the
+  reading region needs an explicit `grid-column`, or it slides into the
+  rail's track. `--rail-w` drives the track and the fixed width
+  together.
+- **/about tells its story ONCE.** The page's own body wins when the
+  editor has written one; the theme's built-in version is the fallback
+  for an empty page. Both used to render, one under the other. The
+  `<main id="site-main">` sits on that section, so `#the-plan` (the
+  hero button's target) lives on the inner wrapper: one element, one
+  id.
+- **Reader frames get `partials/footer-strip.hbs`**, not the navy
+  footer; `partials/footer.hbs` matches the collection tag to choose.
 - `{{#get}}` switches context to the API response: hash params carried in
   via `partials/with-this.hbs` need `../` per intervening block; filter
   strings compile in the CALLING frame. `{{#if emptyArray}}` is truthy.
@@ -71,8 +100,12 @@ public tag, its `#module` landing post's slug equals that tag's slug
 - `assets/css/` — layered: `0-abstracts` (tokens/fonts) → `1-base` →
   `2-layout` → `3-components` → `4-templates` → `5-utilities`;
   `screen.css` is the manifest. Paint with semantic tokens only.
-- `assets/js/` — theme.js, toc.js, filters.js, video.js, deck.js. Keep JS last
-  resort; Handlebars/CSS first (`prev_post in="primary_tag"`, `<details>`
+- `assets/js/` — theme.js, toc.js, filters.js, video.js, deck.js, plus the
+  reader scripts: rail.js (collapsible reader rail, state on
+  `html[data-rail]`, restored before paint by the inline script in
+  default.hbs) and quote-fill.js (word-by-word scroll fill). Keep JS
+  last resort;
+  Handlebars/CSS first (`prev_post in="primary_tag"`, `<details>`
   collapse, checkbox drawer).
 - `partials/icons/` — one drawing style: 24-box, 1.8 stroke, currentColor.
 - `dummy-content/` — `build-import.py` → `import.json` (full demo data,

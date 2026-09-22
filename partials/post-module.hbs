@@ -1,9 +1,28 @@
-{{!-- The module landing — /training/{module}/ — rendered IN the
-training reader's own frame (trainer2): same hero grammar, same
-left sidebar, same right-hand module rail, where this page shows
-as the module's active "Module overview" row. The post's SLUG
-equals the module tag's slug, so one {{#get}} lists the whole
-module. Context: a post tagged #module (dispatched by post.hbs). --}}
+{{!-- The module landing — /training/{module}/.
+
+Layout (v7): the SAME frame as the section reader
+(partials/post-training.hbs) — one nav rail down the left, fixed
+and full height, and everything else in the region beside it:
+
+    ┌──────────────┬───────────────────────────────┐
+    │  TRAINING    │ HERO — cover + module chips   │
+    │  NAVIGATION  ├────────────────────┬──────────┤
+    │  fixed,      │                    │ TOC      │
+    │  full height │  CONTENT           │ Share    │
+    │  (all        │  the sections      │ (one     │
+    │  modules,    │  the idea          │  line)   │
+    │  this open)  │  start the module  │          │
+    └──────────────┴───────────────────┴───────────┘
+
+The hero used to span the full page width above the columns. A
+fixed rail cannot start below a full-bleed hero, and the hero now
+shares the content's background anyway, so there is no band to
+preserve — it moved inside the region and the two training pages
+became one layout.
+
+The post's SLUG equals the module tag's slug, so one {{#get}}
+lists the whole module. Context: a post tagged #module
+(dispatched by post.hbs). --}}
 
 {{#contentFor "head"}}
 <script type="application/ld+json">
@@ -20,56 +39,49 @@ module. Context: a post tagged #module (dispatched by post.hbs). --}}
 
 <div class="trainer2">
 
+    {{!-- LEFT: the training navigation, this module open and its
+    overview row active. Fixed, full height. --}}
+    <aside class="trainer2-nav">
+        {{> "rail-toggle"}}
+
+        <div class="trainer2-nav-scroll">
+            {{!-- Training home — the first item in the nav, styled as
+            a row like every module under it, not a pill floating
+            above them. --}}
+            <a class="rail-home" href="{{@site.url}}/training/">
+                <span class="rail-home-ico" aria-hidden="true">{{> "icons/layers"}}</span>
+                <span class="rail-home-label">{{t "Training home"}}</span>
+                {{> "icons/arrow-right"}}
+            </a>
+            {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
+        </div>
+    </aside>
+
+    {{!-- RIGHT REGION: hero, then content + sidebar --}}
     <div class="trainer2-left">
 
-        <section class="trainer-hero relative">
-            <div class="bg-grid" aria-hidden="true"></div>
-            <div class="trainer-hero-inner">
+        {{!-- Video pages open with the player; article pages open
+        with the cover. Both title blocks are partials/trainer-head.hbs
+        — on a video page it renders below the stage, in the reading
+        column, because the video has the hero to itself. --}}
+        {{> "video-stage"}}
 
-                <div class="trainer-hero-copy">
-                    <nav class="crumbs" aria-label="Breadcrumb">
-                        <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
-                        {{> "icons/chevron-right"}}
-                        <span aria-current="page">{{title}}</span>
-                    </nav>
+        {{#match (post_class) "~" "tag-hash-lesson-type-video"}}{{else}}
+            <section class="trainer-hero relative">
+                <div class="bg-grid" aria-hidden="true"></div>
+                <div class="trainer-hero-inner">
+                    {{> "trainer-head" crumbTail=false}}
 
-                    <h1>{{title}}</h1>
-
-                    {{#if custom_excerpt}}
-                        <p class="post-excerpt">{{custom_excerpt}}</p>
+                    {{#if feature_image}}
+                        <div class="trainer-hero-media">
+                            <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="eager" fetchpriority="high" />
+                        </div>
                     {{/if}}
-
-                    <div class="chips">
-                        <span class="chip chip-accent">{{> "icons/map-icon"}} {{t "Module overview"}}</span>
-                        {{#get "posts" filter="tag:{{slug}}+tag:hash-training" limit="1" as |s c|}}
-                            <span class="chip">{{> "icons/list-icon"}} {{c.total}} {{t "sections"}}</span>
-                        {{/get}}
-                        <span class="chip chip-free">{{t "Free"}}</span>
-                        <span class="chip">{{> "icons/calendar"}} {{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</span>
-                    </div>
                 </div>
-
-                {{#if feature_image}}
-                    <div class="trainer-hero-media">
-                        <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="eager" fetchpriority="high" />
-                    </div>
-                {{/if}}
-
-            </div>
-        </section>
+            </section>
+        {{/match}}
 
         <div class="trainer2-body">
-
-            <aside class="trainer-side">
-                <div class="trainer-side-sticky">
-                    {{> "widgets/toc"}}
-                    {{> "widgets/sponsor" skyscraper=true}}
-                    <div class="widget">
-                        <h4 class="widget-title">{{> "icons/share"}} {{t "Share"}}</h4>
-                        {{> "widgets/share-links"}}
-                    </div>
-                </div>
-            </aside>
 
             <main id="site-main" class="trainer-main">
 
@@ -86,11 +98,17 @@ module. Context: a post tagged #module (dispatched by post.hbs). --}}
                 </details>
 
                 <article class="trainer-article {{post_class}}">
+                    {{#match (post_class) "~" "tag-hash-lesson-type-video"}}
+                        <header class="trainer-article-head">
+                            {{> "trainer-head" crumbTail=false}}
+                        </header>
+                    {{/match}}
+
                     <section class="gh-content">
                         {{content}}
                     </section>
 
-                    {{!-- Every section, in walking order --}}
+                    {{!-- Every section, in walking order — the curriculum --}}
                     {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" include="tags" limit="50" as |sections|}}
                         {{#if sections}}
                             <section class="module-sections">
@@ -114,6 +132,13 @@ module. Context: a post tagged #module (dispatched by post.hbs). --}}
                         {{/if}}
                     {{/get}}
 
+                    {{!-- After the curriculum: what this module is really
+                    teaching. Same four notes /training tells, repeated
+                    here because a module page is often the first page a
+                    visitor lands on — they never see the path's framing
+                    otherwise. Fixed copy: positioning, not content. --}}
+                    {{> "training-idea"}}
+
                     {{!-- The only way out is forwards: into section 01 --}}
                     <nav class="post-nav" aria-label="{{t "Module navigation"}}">
                         {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" limit="1" as |first|}}
@@ -129,19 +154,22 @@ module. Context: a post tagged #module (dispatched by post.hbs). --}}
 
             </main>
 
+            {{!-- RIGHT: TOC, then the share row on one line. No sponsor
+            card here — the module page sells the path, not an ad slot. --}}
+            {{!-- Sidebar order is reading order: where am I in this
+            video (chapters), what is on this page (TOC), who wrote it,
+            and only then the ask. Share sits last because it is the one
+            thing nobody needs until they have finished. --}}
+            <aside class="trainer-side">
+                <div class="trainer-side-sticky">
+                    {{> "widgets/chapters"}}
+                    {{> "widgets/toc"}}
+                    {{> "widgets/author"}}
+                    {{> "widgets/share-compact"}}
+                </div>
+            </aside>
+
         </div>
     </div>
-
-    {{!-- RIGHT: the training navigation, this module open and its
-    overview row active --}}
-    <aside class="trainer2-nav">
-        <div class="trainer2-nav-scroll">
-            <a class="player-rail-course" href="{{@site.url}}/training/">
-                <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
-                <h2>{{t "All modules"}}</h2>
-            </a>
-            {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
-        </div>
-    </aside>
 
 </div>

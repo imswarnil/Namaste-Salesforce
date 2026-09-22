@@ -1,19 +1,23 @@
-{{!-- The module reader, v5 — the layout as specified:
+{{!-- The module reader, v6 — the layout as specified:
 
-    ┌───────────────────────────────┬──────────────┐
-    │ HERO — full width of region,  │  TRAINING    │
-    │ canvas grid + thumbnail       │  NAVIGATION  │
-    ├──────────┬────────────────────┤  full-height │
-    │ small    │                    │  divide,     │
-    │ sidebar  │  CONTENT           │  sticky      │
-    │ (toc,    │                    │  (all        │
-    │ sponsor, │                    │  modules,    │
-    │ share)   │                    │  active open)│
-    └──────────┴────────────────────┴──────────────┘
+    ┌──────────────┬───────────────────────────────┐
+    │  TRAINING    │ HERO — full width of region,  │
+    │  NAVIGATION  │ canvas grid + thumbnail       │
+    │  full-height ├────────────────────┬──────────┤
+    │  divide,     │                    │ small    │
+    │  sticky      │  CONTENT           │ sidebar  │
+    │  (all        │                    │ (toc,    │
+    │  modules,    │                    │ share)   │
+    │  active open)│                    │          │
+    └──────────────┴────────────────────┴──────────┘
 
-Site TOC rule: sidebars exist → the TOC lives in the small left
-sidebar. Video-typed pages flip the hero to the dark cinematic
-variant. prev/next walks in="primary_tag".
+The nav rail is on the LEFT, the side the lesson player keeps
+its rail on — the two readers should not disagree about where
+"where am I" lives.
+
+Site TOC rule: sidebars exist → the TOC lives in a sidebar; here
+that is the small right-hand one. Video-typed pages flip the hero
+to the dark cinematic variant. prev/next walks in="primary_tag".
 Context: a training post. --}}
 
 {{#contentFor "head"}}
@@ -34,67 +38,48 @@ Context: a training post. --}}
 
 <div class="trainer2">
 
-    {{!-- LEFT REGION: hero, then sidebar + content --}}
+    {{!-- LEFT: the training navigation, full-height divide --}}
+    <aside class="trainer2-nav">
+        {{> "rail-toggle"}}
+
+        <div class="trainer2-nav-scroll">
+            {{!-- Training home — the first item in the nav, styled as
+            a row like every module under it, not a pill floating
+            above them. --}}
+            <a class="rail-home" href="{{@site.url}}/training/">
+                <span class="rail-home-ico" aria-hidden="true">{{> "icons/layers"}}</span>
+                <span class="rail-home-label">{{t "Training home"}}</span>
+                {{> "icons/arrow-right"}}
+            </a>
+            {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
+        </div>
+    </aside>
+
+    {{!-- RIGHT REGION: hero, then content + sidebar --}}
     <div class="trainer2-left">
 
-        <section class="trainer-hero relative
-            {{~#match (post_class) "~" "tag-hash-lesson-type-video"}} is-video{{/match}}">
-            <div class="bg-grid" aria-hidden="true"></div>
-            <div class="trainer-hero-inner">
+        {{!-- Video pages open with the player; article pages open
+        with the cover. Both title blocks are partials/trainer-head.hbs
+        — on a video page it renders below the stage, in the reading
+        column, because the video has the hero to itself. --}}
+        {{> "video-stage"}}
 
-                <div class="trainer-hero-copy">
-                    <nav class="crumbs" aria-label="Breadcrumb">
-                        <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
-                        {{#primary_tag}}
-                            {{> "icons/chevron-right"}}
-                            <a href="{{@site.url}}/training/{{slug}}/">{{name}}</a>
-                        {{/primary_tag}}
-                        {{> "icons/chevron-right"}}
-                        <span aria-current="page">{{title}}</span>
-                    </nav>
+        {{#match (post_class) "~" "tag-hash-lesson-type-video"}}{{else}}
+            <section class="trainer-hero relative">
+                <div class="bg-grid" aria-hidden="true"></div>
+                <div class="trainer-hero-inner">
+                    {{> "trainer-head" crumbTail=true}}
 
-                    <h1>{{title}}</h1>
-
-                    {{#if custom_excerpt}}
-                        <p class="post-excerpt">{{custom_excerpt}}</p>
+                    {{#if feature_image}}
+                        <div class="trainer-hero-media">
+                            <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="eager" fetchpriority="high" />
+                        </div>
                     {{/if}}
-
-                    <div class="chips">
-                        <span class="chip chip-type">{{> "lesson-type-icon"}}
-                            {{#match (post_class) "~" "tag-hash-lesson-type-video"}}{{t "Video"}}{{else}}{{t "Article"}}{{/match}}
-                        </span>
-                        {{> "duration-chip"}}
-                        {{#if reading_time}}
-                            <span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
-                        {{/if}}
-                        <span class="chip">{{> "icons/calendar"}} {{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</span>
-                    </div>
                 </div>
-
-                {{#if feature_image}}
-                    <div class="trainer-hero-media">
-                        <img src="{{img_url feature_image size="l"}}" alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}" loading="eager" fetchpriority="high" />
-                        {{#match (post_class) "~" "tag-hash-lesson-type-video"}}
-                            <span class="video-card-play">{{> "icons/play-circle"}}</span>
-                        {{/match}}
-                    </div>
-                {{/if}}
-
-            </div>
-        </section>
+            </section>
+        {{/match}}
 
         <div class="trainer2-body">
-
-            <aside class="trainer-side">
-                <div class="trainer-side-sticky">
-                    {{> "widgets/toc"}}
-                    {{> "widgets/sponsor" skyscraper=true}}
-                    <div class="widget">
-                        <h4 class="widget-title">{{> "icons/share"}} {{t "Share"}}</h4>
-                        {{> "widgets/share-links"}}
-                    </div>
-                </div>
-            </aside>
 
             <main id="site-main" class="trainer-main">
 
@@ -111,11 +96,17 @@ Context: a training post. --}}
                 </details>
 
                 <article class="trainer-article {{post_class}}">
+                    {{#match (post_class) "~" "tag-hash-lesson-type-video"}}
+                        <header class="trainer-article-head">
+                            {{> "trainer-head" crumbTail=true}}
+                        </header>
+                    {{/match}}
+
                     <section class="gh-content">
                         {{content}}
                     </section>
 
-                    <nav class="post-nav" aria-label="{{t "Module navigation"}}">
+                            <nav class="post-nav" aria-label="{{t "Module navigation"}}">
                         {{#prev_post in="primary_tag"}}
                             <a class="post-nav-link post-nav-prev" href="{{url}}">
                                 <span class="post-nav-label">{{> "icons/arrow-left"}} {{t "Previous"}}</span>
@@ -155,18 +146,23 @@ Context: a training post. --}}
 
             </main>
 
+            {{!-- TOC, then the share row on one line. No sponsor
+            card: /training and the module landing pages both
+            dropped theirs, and this page sits between them. --}}
+            {{!-- Sidebar order is reading order: where am I in this
+            video (chapters), what is on this page (TOC), who wrote it,
+            and only then the ask. Share sits last because it is the one
+            thing nobody needs until they have finished. --}}
+            <aside class="trainer-side">
+                <div class="trainer-side-sticky">
+                    {{> "widgets/chapters"}}
+                    {{> "widgets/toc"}}
+                    {{> "widgets/author"}}
+                    {{> "widgets/share-compact"}}
+                </div>
+            </aside>
+
         </div>
     </div>
-
-    {{!-- RIGHT: the training navigation, full-height divide --}}
-    <aside class="trainer2-nav">
-        <div class="trainer2-nav-scroll">
-            <a class="player-rail-course" href="{{@site.url}}/training/">
-                <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
-                <h2>{{t "All modules"}}</h2>
-            </a>
-            {{> "training-list" currentSlug=slug currentModule=primary_tag.slug}}
-        </div>
-    </aside>
 
 </div>

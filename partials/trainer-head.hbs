@@ -1,0 +1,41 @@
+{{!-- Title block for the training reader: breadcrumb, title, the
+one-liner, chips.
+
+It lives in a partial because it moves. On an article page it sits
+in the hero beside the cover; on a VIDEO page the hero is the
+player, so the same block renders at the top of the reading column
+instead. One copy, two homes — the alternative was two drifting
+copies of a breadcrumb.
+
+Param: crumbTail — the module crumb is only known on a section
+page, so post-module.hbs passes false. Context: the post. --}}
+<div class="trainer-hero-copy">
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training"}}</a>
+        {{#if crumbTail}}
+            {{#primary_tag}}
+                {{> "icons/chevron-right"}}
+                <a href="{{@site.url}}/training/{{slug}}/">{{name}}</a>
+            {{/primary_tag}}
+        {{/if}}
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
+
+    <h1>{{title}}</h1>
+
+    {{#if custom_excerpt}}
+        <p class="post-excerpt">{{custom_excerpt}}</p>
+    {{/if}}
+
+    <div class="chips">
+        <span class="chip chip-type">{{> "lesson-type-icon"}}
+            {{#match (post_class) "~" "tag-hash-lesson-type-video"}}{{t "Video"}}{{else}}{{t "Article"}}{{/match}}
+        </span>
+        {{> "duration-chip"}}
+        {{#if reading_time}}
+            <span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
+        {{/if}}
+        <span class="chip">{{> "icons/calendar"}} {{t "Updated"}} {{date updated_at format="DD MMM YYYY"}}</span>
+    </div>
+</div>

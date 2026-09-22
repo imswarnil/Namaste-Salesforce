@@ -1,15 +1,17 @@
 {{!-- Most recent on the platform — the pulse, live. Every
-collection in one feed: newest posts across every tag, each
-labelled by what it is via the same post_class match post.hbs
-uses to dispatch layouts (also the pattern page-now.hbs uses to
-label #now items). No curation, no "pick a way in" — just what
-actually shipped last.
+collection in one feed: the three newest posts across every tag,
+each naming its collection via partials/collection-chip.hbs (the
+same post_class match post.hbs dispatches layouts on), so a
+visitor can tell a video from a newsletter from a course before
+reading a word of the title.
 
-A compact grid, not a tall timeline — six cards fit close to one
-viewport instead of a scroll-heavy vertical list. The newest card
-carries a "Recently posted" badge; the rest just show their time. --}}
+THREE, not six: a short row of good cards beats a wall of them,
+and the fourth cell is the ask. Every card is the same shape —
+16:9 image, chip, two lines of title, a footer — so the row reads
+as one object instead of four different ones. Posts without a
+feature image get the branded placeholder, never a grey hole. --}}
 
-{{#get "posts" include="tags" order="published_at desc" limit="6" as |activity|}}
+{{#get "posts" include="tags" order="published_at desc" limit="3" as |activity|}}
     {{#if activity}}
         <section class="section outer home-activity">
             <div class="inner">
@@ -19,50 +21,54 @@ carries a "Recently posted" badge; the rest just show their time. --}}
                         <h2>{{t "Most recent on the platform"}}</h2>
                         <p>{{t "Everything lands here first — a resource for the job hunt one day, a trigger pattern the next."}}</p>
                     </div>
+                    <a class="section-more" href="{{@site.url}}/blog/">{{t "Browse everything"}} {{> "icons/arrow-right"}}</a>
                 </div>
 
                 <div class="activity-grid" data-animate-stagger>
                     {{#foreach activity}}
                         <a class="activity-card{{#if @first}} is-latest{{/if}}" href="{{url}}">
-                            {{#if @first}}
-                                <span class="activity-card-badge">{{> "icons/signal"}} {{t "Recently posted"}}</span>
-                            {{/if}}
-                            <span class="activity-card-icon" aria-hidden="true">
-                                {{#match (post_class) "~" "tag-hash-course"}}{{> "icons/graduation-cap"}}
-                                {{~else match (post_class) "~" "tag-hash-lesson"}}{{> "icons/play-circle"}}
-                                {{~else match (post_class) "~" "tag-hash-module"}}{{> "icons/layers"}}
-                                {{~else match (post_class) "~" "tag-hash-training"}}{{> "icons/layers"}}
-                                {{~else match (post_class) "~" "tag-hash-video"}}{{> "icons/video"}}
-                                {{~else match (post_class) "~" "tag-hash-slides"}}{{> "icons/presentation"}}
-                                {{~else match (post_class) "~" "tag-hash-newsletter"}}{{> "icons/mail"}}
-                                {{~else match (post_class) "~" "tag-hash-changelog"}}{{> "icons/history"}}
-                                {{~else match (post_class) "~" "tag-hash-resource"}}{{> "icons/bookmark"}}
-                                {{~else match (post_class) "~" "tag-hash-shop"}}{{> "icons/gift"}}
-                                {{~else match (post_class) "~" "tag-hash-snippet"}}{{> "icons/code"}}
-                                {{~else match (post_class) "~" "tag-hash-prompt"}}{{> "icons/sparkles"}}
-                                {{~else match (post_class) "~" "tag-hash-project"}}{{> "icons/github"}}
-                                {{~else}}{{> "icons/pen"}}{{/match}}
-                            </span>
-                            <span class="activity-card-kind">
-                                {{#match (post_class) "~" "tag-hash-course"}}{{t "New course"}}
-                                {{~else match (post_class) "~" "tag-hash-lesson"}}{{t "New lesson"}}
-                                {{~else match (post_class) "~" "tag-hash-module"}}{{t "Training module"}}
-                                {{~else match (post_class) "~" "tag-hash-training"}}{{t "Training"}}
-                                {{~else match (post_class) "~" "tag-hash-video"}}{{t "New video"}}
-                                {{~else match (post_class) "~" "tag-hash-slides"}}{{t "New deck"}}
-                                {{~else match (post_class) "~" "tag-hash-newsletter"}}{{t "Newsletter"}}
-                                {{~else match (post_class) "~" "tag-hash-changelog"}}{{t "Changelog"}}
-                                {{~else match (post_class) "~" "tag-hash-resource"}}{{t "New resource"}}
-                                {{~else match (post_class) "~" "tag-hash-shop"}}{{t "In the shop"}}
-                                {{~else match (post_class) "~" "tag-hash-snippet"}}{{t "New snippet"}}
-                                {{~else match (post_class) "~" "tag-hash-prompt"}}{{t "New prompt"}}
-                                {{~else match (post_class) "~" "tag-hash-project"}}{{t "New project"}}
-                                {{~else}}{{t "New on the blog"}}{{/match}}
-                            </span>
-                            <strong class="activity-card-title">{{title}}</strong>
-                            <time class="activity-card-time" datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at timeago="true"}}</time>
+
+                            <div class="activity-card-media">
+                                {{#if feature_image}}
+                                    <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
+                                {{else}}
+                                    {{> "thumb-placeholder"}}
+                                {{/if}}
+
+                                {{#if @first}}
+                                    <span class="activity-card-badge">{{> "icons/signal"}} {{t "Latest"}}</span>
+                                {{/if}}
+                            </div>
+
+                            <div class="activity-card-body">
+                                {{> "collection-chip"}}
+
+                                <strong class="activity-card-title">{{title}}</strong>
+
+                                {{#if custom_excerpt}}
+                                    <span class="activity-card-sub">{{custom_excerpt}}</span>
+                                {{/if}}
+
+                                <span class="activity-card-foot">
+                                    <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at timeago="true"}}</time>
+                                    <span class="activity-card-go" aria-hidden="true">{{> "icons/arrow-right"}}</span>
+                                </span>
+                            </div>
                         </a>
                     {{/foreach}}
+
+                    {{!-- The last cell: the ask. Same card shape as the
+                    three beside it so the row stays a row. --}}
+                    <div class="activity-card activity-card-cta">
+                        <span class="activity-card-cta-icon" aria-hidden="true">{{> "icons/mail"}}</span>
+                        <strong>{{t "Never miss one"}}</strong>
+                        <p>{{t "Subscribe and everything I post lands in your inbox — lessons, modules, videos, the lot."}}</p>
+                        {{#if @site.members_enabled}}
+                            <a class="btn btn-sm" href="{{@site.url}}/signup/">{{> "icons/mail"}} {{t "Stay updated"}}</a>
+                        {{else}}
+                            <a class="btn btn-sm" href="{{@site.url}}/newsletter/">{{> "icons/mail"}} {{t "Stay updated"}}</a>
+                        {{/if}}
+                    </div>
                 </div>
             </div>
         </section>

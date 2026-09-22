@@ -19,6 +19,12 @@ itself (a live-data lesson-player window) as the visual. All of
 it in partials/hero.hbs; stats in partials/hero-stats.hbs. --}}
 {{> "hero"}}
 
+{{!-- The thesis, inking in word by word as you scroll past it.
+Straight under the hero on purpose: it is the answer to "why
+should I care about any of this", and everything below reads as
+consequences of it. --}}
+{{> "scroll-quote"}}
+
 {{!-- Recent activity — replaces the old "Pick a way in" bento.
 Lives in partials/activity-feed.hbs. --}}
 {{> "activity-feed"}}
@@ -48,7 +54,7 @@ viewport with tall cards those are not the same thing. --}}
             <div>
                 <span class="kicker">{{> "icons/compass"}} {{t "Why this platform"}}</span>
                 <h2>{{t "Built different, on purpose"}}</h2>
-                <p>{{t "Technologies come and go. Selling, and customers buying, won't. That's what this platform actually teaches."}}</p>
+                <p>{{t "Tools come and go. Companies selling, and customers buying, won't — they only change shape. This platform teaches the system, the business process underneath it, and the AI layer growing on top."}}</p>
             </div>
             <a class="section-more" href="{{@site.url}}/about/">{{t "More about me"}} {{> "icons/arrow-right"}}</a>
         </div>
@@ -88,6 +94,18 @@ viewport with tall cards those are not the same thing. --}}
                         <p>{{t "Sales cycles, lead capture, GTM automation, AI — the ideas that outlast whatever tool is fashionable this year."}}</p>
                         <a class="btn btn-sm pl-card-start" href="{{@site.url}}/blog/">
                             {{> "icons/pen"}} {{t "Read the blog"}}
+                        </a>
+                    </div>
+                </article>
+
+                <article class="pl-card" data-pl-card data-pl-slug="stack">
+                    <span class="pl-card-icon" aria-hidden="true">{{> "icons/zap"}}</span>
+                    <div class="pl-card-body">
+                        <span class="pl-card-kicker">{{t "Salesforce, and everything around it"}}</span>
+                        <h3><a href="{{@site.url}}/training/">{{t "The whole GTM stack"}}</a></h3>
+                        <p>{{t "Don't just learn Salesforce — learn how it plugs into the rest: n8n, Clay, 6sense and the AI layer on top. I'm working through that stack too, and every piece lands here as I go."}}</p>
+                        <a class="btn btn-sm pl-card-start" href="{{@site.url}}/training/">
+                            {{> "icons/layers"}} {{t "See the modules"}}
                         </a>
                     </div>
                 </article>
@@ -141,6 +159,13 @@ viewport with tall cards those are not the same thing. --}}
                             <span class="pl-item-meta">{{t "Tools change, this doesn't"}}</span>
                         </span>
                     </li>
+                    <li class="pl-item" data-pl-item="stack">
+                        <span class="pl-item-dot" aria-hidden="true">{{> "icons/zap"}}</span>
+                        <span class="pl-item-body">
+                            <span class="pl-item-name">{{t "The whole GTM stack"}}</span>
+                            <span class="pl-item-meta">{{t "Salesforce, and everything around it"}}</span>
+                        </span>
+                    </li>
                     <li class="pl-item" data-pl-item="open">
                         <span class="pl-item-dot" aria-hidden="true">{{> "icons/github"}}</span>
                         <span class="pl-item-body">
@@ -170,6 +195,33 @@ viewport with tall cards those are not the same thing. --}}
                 <div class="card-grid" data-animate-stagger>
                     {{#foreach courses}}
                         {{> "card-course"}}
+                    {{/foreach}}
+                </div>
+            </div>
+        </section>
+    {{/if}}
+{{/get}}
+
+{{!-- Training — the homepage gave Courses, Videos, the Lab,
+Projects and the Blog a section each and never mentioned the
+training path at all. Module landing posts in slug order: the same
+order /training walks, so "first" means the same thing in both
+places. --}}
+{{#get "posts" filter="tag:hash-module" include="tags" order="slug asc" limit="3" as |modules|}}
+    {{#if modules}}
+        <section class="section section-alt outer">
+            <div class="inner">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="kicker">{{> "icons/layers"}} {{t "Training"}}</span>
+                        <h2>{{t "One topic at a time"}}</h2>
+                        <p>{{t "Short, self-contained modules — read in order, mark each section complete, and the path keeps your place."}}</p>
+                    </div>
+                    <a class="section-more" href="{{@site.url}}/training/">{{t "Walk the whole path"}} {{> "icons/arrow-right"}}</a>
+                </div>
+                <div class="card-grid" data-animate-stagger>
+                    {{#foreach modules}}
+                        {{> "card-module"}}
                     {{/foreach}}
                 </div>
             </div>
@@ -506,9 +558,9 @@ element gets loading/success/error classes from Ghost itself). --}}
                         {{/if}}
 
                         <ul class="hero-facts">
-                            <li>{{> "icons/shield"}} {{t "7+ years in IT"}}</li>
-                            <li>{{> "icons/zap"}} {{t "Build → then share"}}</li>
-                            <li>{{> "icons/sparkles"}} {{t "Learning in public"}}</li>
+                            <li>{{> "icons/database"}} {{t "Started in Salesforce CRM Analytics"}}</li>
+                            <li>{{> "icons/zap"}} {{t "Met GTM at Twilio"}}</li>
+                            <li>{{> "icons/sparkles"}} {{t "Learning in public, from scratch"}}</li>
                             <li>{{> "icons/rocket"}} {{t "Next: GTM Engineer, powered by the AI era"}}</li>
                         </ul>
 

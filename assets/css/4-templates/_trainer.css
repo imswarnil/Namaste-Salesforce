@@ -6,36 +6,61 @@
     TOC, sponsor, share) on the left, content filling the rest.
     ------------------------------------------------------------ */
 
+/*  The hero opens the page; it does not compete with it. Two
+    changes carry most of the weight: the title got the scale it
+    deserves (it was set at body-adjacent sizes under a 16:9 badge
+    twice its visual mass), and the badge is capped so it reads as
+    an accompanying mark rather than the subject. The closing rule
+    is an accent gradient, the same one the lesson header uses — the
+    two readers should look like one product. */
+/*  Same surface as the article below it: the hero is the top of the
+    page, not a separate band — so a plain hairline is all that
+    separates them. (It carried a 3px accent gradient; on a white
+    hero that read as a highlighter mark rather than a rule.) */
 .trainer-hero {
     overflow: hidden;
-    padding: clamp(4rem, 6vmin, 5.6rem) max(4vmin, 20px);
+    /* Shorter: the hero is an opening, not a landing page. */
+    padding: clamp(2.8rem, 4vmin, 4rem) max(4vmin, 20px) clamp(2.4rem, 3.5vmin, 3.4rem);
+    background: var(--bg);
     border-bottom: 1px solid var(--border-soft);
-    background: var(--bg-alt);
 }
 
 .trainer-hero-inner {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    gap: 4.8rem;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(3.2rem, 5vmin, 5.6rem);
     align-items: center;
 }
 
 .trainer-hero h1 {
-    margin-top: 1.6rem;
+    margin-top: 1.2rem;
+    font-size: clamp(2.8rem, 4.4vw, 4.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
 }
 
 .trainer-hero .post-excerpt {
-    margin-top: 1.2rem;
+    margin-top: 1.4rem;
+    max-width: 58ch;
+    font-size: 1.75rem;
+    line-height: 1.6;
+    color: var(--text-muted);
 }
 
 .trainer-hero .chips {
-    margin-top: 2rem;
+    margin-top: 1.8rem;
 }
 
+/*  An explicit width, not just a cap: `margin-left: auto` turns off
+    the grid item's stretch, so the square was sizing itself from the
+    image's own metrics and landing well under the cap. */
 .trainer-hero-media {
     position: relative;
+    width: min(42rem, 100%);
+    margin-left: auto;
 }
 
 .trainer-hero-media img {
@@ -43,15 +68,16 @@
     aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: var(--radius-lg);
+    border: 1px solid var(--border-soft);
     box-shadow: var(--shadow-lg);
 }
 
 /* Video pages: the dark cinematic variant of the same hero */
 .trainer-hero.is-video {
+    border-bottom-color: transparent;
     background:
         radial-gradient(700px 320px at 80% -20%, rgba(27, 150, 255, 0.3), transparent 70%),
         var(--gray-950);
-    border-bottom-color: transparent;
 }
 
 .trainer-hero.is-video h1 {
@@ -74,35 +100,75 @@
     border-color: rgba(152, 166, 184, 0.25);
 }
 
-/*  v5 frame: [ left region | training nav ], nav full height
+/*  v6 frame: [ training nav | reading region ], nav full height
+    on the LEFT — the side the lesson player keeps its rail on.
     ------------------------------------------------------------ */
 
 .trainer2 {
+    --rail-w: 320px;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-columns: var(--rail-w) minmax(0, 1fr);
     min-height: calc(100vh - var(--header-height));
 }
 
 .trainer2-nav {
-    border-left: 1px solid var(--border-soft);
+    position: relative;
+    border-right: 1px solid var(--border-soft);
     background: var(--bg-alt);
 }
 
+/*  Fixed, not sticky — see the same note on .player-rail in
+    _lesson.css. The grid track holds the space; this paints it. */
+@media (min-width: 1280px) {
+    /*  See the note on .player-main in _lesson.css: the fixed rail
+        is out of flow, so the reading region has to be told which
+        grid track is its own. */
+    .trainer2-left {
+        grid-column: 2;
+    }
+
+    .trainer2-nav {
+        position: fixed;
+        top: var(--header-height);
+        bottom: 0;
+        left: 0;
+        z-index: 20;
+        width: var(--rail-w);
+    }
+
+    html[data-rail="collapsed"] .trainer2 {
+        --rail-w: 6.4rem;
+    }
+}
+
+
 .trainer2-nav-scroll {
-    position: sticky;
-    top: var(--header-height);
-    padding: 2.8rem 2.4rem 4rem;
+    --rail-pad: 1.4rem;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding: 2.8rem 1.4rem 3.2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.trainer2-nav-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.trainer2-nav-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
 }
 
 .trainer2-nav .player-rail-course {
     display: block;
-    padding-bottom: 1.6rem;
-    margin-bottom: 1.6rem;
-    border-bottom: 1px solid var(--border);
+    padding: 1.4rem 1.6rem;
 }
 
 .trainer2-nav .player-rail-course h2 {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
 }
 
 /* Left region: hero spans it, then sidebar + content */
@@ -112,7 +178,7 @@
 
 .trainer2-body {
     display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 260px;
     gap: 4.8rem;
     align-items: start;
     padding: 3.2rem max(4vmin, 20px) clamp(4.8rem, 8vmin, 8rem);
@@ -322,4 +388,133 @@
 
 .trainer-side-sticky .widget + .widget {
     margin-top: 0;
+}
+
+/*  "The idea" closing the module's content column — the same block
+    /training ends with, set apart from the curriculum above it. */
+.trainer-main .training-idea {
+    margin-top: clamp(4rem, 6vmin, 5.6rem);
+    padding-top: clamp(3.2rem, 5vmin, 4.4rem);
+    border-top: 1px solid var(--border-soft);
+}
+
+.trainer-main .training-idea .section-head {
+    margin-bottom: 2.8rem;
+}
+
+/*  The share row, sidebar variant: seven icons, 260px to put them
+    in. They share the width equally on ONE line rather than
+    wrapping to a ragged second row. */
+.trainer-side .share-row {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+}
+
+.trainer-side .share-row a,
+.trainer-side .share-row button {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    height: 3.6rem;
+}
+
+.trainer-side .share-row svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/*  Below the rail's breakpoint the nav is already the <details>
+    drawer, so there is nothing to collapse and nothing to fix. */
+@media (max-width: 1279px) {
+    .trainer2-nav .rail-collapse {
+        display: none;
+    }
+
+    .trainer2-nav-scroll {
+        height: auto;
+        overflow: visible;
+    }
+}
+
+
+/*  Video pages: the player IS the hero
+    ------------------------------------------------------------
+
+    Revealed by assets/js/reader-video.js once it has lifted the
+    body's first embed in here, so a page with no embed — or a
+    visitor with no JavaScript — never sees an empty black band.
+    The title block moves to the top of the reading column
+    (.trainer-article-head); the video gets the fold to itself. */
+
+.trainer-hero.is-video-stage {
+    padding: 0;
+    background: var(--gray-950);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.trainer-hero.is-video-stage[hidden] {
+    display: none;
+}
+
+/*  Capped by VIEWPORT HEIGHT, not just width: at a full 16:9 the
+    player filled the fold on a laptop and pushed the title, the
+    chips and the first line of the lesson off screen. Driving the
+    cap through max-width keeps the frame's ratio intact — clamping
+    its height directly would have stretched it. */
+.video-stage {
+    max-width: min(112rem, calc(58vh * 16 / 9));
+    margin: 0 auto;
+    padding: clamp(1.6rem, 3vmin, 3.2rem) max(4vmin, 20px);
+}
+
+.video-stage-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+/*  Ghost's embed cards carry their own ratio padding and margins.
+    Inside the stage the frame owns the ratio, so they are flattened
+    to fill it. */
+.video-stage-frame > *,
+.video-stage-frame .kg-embed-card {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-stage-frame iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/*  The title block when it sits in the column instead of the hero. */
+.trainer-article-head {
+    margin-bottom: 2.8rem;
+    padding-bottom: 2.4rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.trainer-article-head .trainer-hero-copy h1 {
+    margin-top: 1.2rem;
+    font-size: clamp(2.6rem, 3.6vw, 3.6rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+}
+
+.trainer-article-head .post-excerpt {
+    margin-top: 1.2rem;
+    font-size: 1.65rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.trainer-article-head .chips {
+    margin-top: 1.6rem;
 }

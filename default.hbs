@@ -9,6 +9,7 @@
 
     {{!-- Apply the stored theme before first paint — no flash.
     States: absent = follow system, "light"/"dark" = explicit.
+    The same block restores a collapsed reader rail (ns-rail).
     The `anim` class arms the scroll animations (animate.js /
     _animations.css): set here, before paint, so reveal targets
     never flash visible first — and only when motion is welcome,
@@ -18,6 +19,13 @@
         try {
             var t = localStorage.getItem('ns-theme');
             if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+            /* Reader rails (lesson player, training reader) remember
+               whether they are collapsed. Applied HERE, before paint,
+               because the player is navigated lesson by lesson and a
+               rail that flashed open on every page would be worse
+               than no collapse at all. assets/js/rail.js owns the
+               toggle itself. */
+            if (localStorage.getItem('ns-rail') === 'collapsed') document.documentElement.setAttribute('data-rail', 'collapsed');
         } catch (e) { /* storage unavailable — follow the system */ }
         if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             document.documentElement.classList.add('anim');

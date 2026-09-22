@@ -1,0 +1,37 @@
+{{!-- "Learning in public" — the newsletter ask, told as an
+invitation rather than a subscription box. This is the FIRST
+widget in the training sidebar: the page's whole promise is
+"I'm working through this too", so the ask belongs at the top,
+where the sponsor card used to sit.
+
+Renders the inline members form when membership is on, and falls
+back to a plain link to /signup/ when it isn't. --}}
+<div class="widget widget-learn">
+    <h4 class="widget-title">{{> "icons/signal"}} {{t "Learning in public"}}</h4>
+
+    <p class="widget-learn-lead">{{t "I'm learning all of this myself — Salesforce, GTM, the AI tooling around it — and writing down every step as I go."}}</p>
+    <p class="widget-learn-sub">{{t "Learn with me: I'll send what I learn straight to your inbox."}}</p>
+
+    {{#if @site.members_enabled}}
+        {{#unless @member}}
+            <form class="signup-form widget-learn-form" data-members-form="signup">
+                {{!-- .signup-row is not decoration: Ghost's success
+                state hides it (.signup-form.success .signup-row), so
+                dropping it would leave the input on screen after a
+                successful subscribe. Stacked here by CSS, not markup. --}}
+                <div class="signup-row">
+                    <input class="signup-input" data-members-email type="email" required
+                        placeholder="{{t "you@work-email.com"}}" aria-label="{{t "Your email"}}" />
+                    <button class="btn btn-sm signup-btn" type="submit">{{> "icons/mail"}} {{t "Learn with me"}}</button>
+                </div>
+                <p class="signup-note">{{t "Free forever · unsubscribe in one click"}}</p>
+                <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox."}}</p>
+                <p class="signup-error" data-members-error></p>
+            </form>
+        {{else}}
+            <p class="widget-learn-sub">{{> "icons/check-circle"}} {{t "You're on the list — see you in your inbox."}}</p>
+        {{/unless}}
+    {{else}}
+        <a class="btn btn-sm" href="{{@site.url}}/signup/">{{> "icons/mail"}} {{t "Learn with me"}}</a>
+    {{/if}}
+</div>

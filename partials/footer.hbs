@@ -1,6 +1,23 @@
 {{!-- Footer: brand + tagline, the two Ghost navigations as link
 columns, social row, legal line. Always dark navy — the one
-surface that doesn't flip with the theme. --}}
+surface that doesn't flip with the theme.
+
+READER FRAMES GET A STRIP INSTEAD. The lesson player and the
+training reader run a fixed full-height rail down one side; a
+nine-column navy slab underneath it reads as a second website, and
+the rail would sit beside it looking stranded. Those pages get one
+quiet line instead, inset past the rail (see .site-foot-strip in
+2-layout/_footer.css). Matched on the post's collection tag, the
+same way post.hbs dispatches layouts — this partial renders from
+default.hbs, where `post` is in scope. --}}
+
+{{#match (post_class) "~" "tag-hash-lesson"}}
+    {{> "footer-strip"}}
+{{else match (post_class) "~" "tag-hash-training"}}
+    {{> "footer-strip"}}
+{{else match (post_class) "~" "tag-hash-module"}}
+    {{> "footer-strip"}}
+{{else}}
 
 <footer class="site-foot outer">
     <div class="site-foot-inner inner">
@@ -68,3 +85,5 @@ surface that doesn't flip with the theme. --}}
 
     </div>
 </footer>
+
+{{/match}}

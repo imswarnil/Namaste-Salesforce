@@ -7,6 +7,35 @@ navigation, a five-layout blog, newsletter, changelog and membership.
 Designed on the NS Design System (Salesforce Lightning blue, navy grays,
 Figtree — self-hosted).
 
+## Why this project exists
+
+**The goal.** Become a GTM Engineer, and use AI to get there — understand
+how a company actually sells, end to end, and build the systems that make
+it happen.
+
+**The motive.** I started in Salesforce CRM Analytics, building dashboards.
+At Twilio I met the term GTM for the first time — ToFu, opportunity
+management, customer success, CPQ, quote-to-cash — whole teams I had been
+reporting on without really understanding. I don't want to stay the CRM
+Analytics person.
+
+**The plan.** Learn Salesforce in depth, with the business metrics, process
+and foundations underneath it. Then the stack around it — n8n, Clay, 6sense
+and the AI layer on top. Then find out whether it lands the job. Every step
+gets written down on the site as it happens.
+
+**Why in public.** I went looking for a proper step-by-step GTM learning
+path and found it scattered across a hundred places. If this works, it
+becomes the one place — and it is open source so anyone can read the source
+of every lesson, and fork the platform itself.
+
+> AI will come. Selling, and doing business, will never stop — it will only
+> change shape. I just want to be able to solve a business problem in any era.
+
+This is why the site teaches *concepts*, not clicks: sales cycles, lead
+capture, lead enrichment, routing, automation. Salesforce is the way in,
+not the destination.
+
 ## Quick start
 
 ```bash

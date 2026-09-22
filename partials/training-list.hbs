@@ -12,11 +12,11 @@ slug). Context: the training post. --}}
         {{!-- Two frames deep here (get + foreach), so the partial's own
         params sit at ../../ --}}
         {{#> "with-this" moduleTag=. currentSlug=../../currentSlug currentModule=../../currentModule}}
-            {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="100" include="tags" as |sections|}}
+            {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="100" include="tags" as |sections sectionCount|}}
                 {{#if sections}}
                     <details class="rail-module{{#match ../moduleTag.slug ../currentModule}} is-active{{/match}}"
                         {{#match ../moduleTag.slug ../currentModule}}open{{/match}}>
-                        <summary>
+                        <summary title="{{../moduleTag.name}}">
                             <span class="rail-module-ico" aria-hidden="true">
                                 {{#if ../moduleTag.feature_image}}
                                     <img src="{{img_url ../moduleTag.feature_image size="xs"}}" alt="" loading="lazy" />
@@ -24,21 +24,22 @@ slug). Context: the training post. --}}
                                     {{> "icons/layers"}}
                                 {{/if}}
                             </span>
-                            <span>{{../moduleTag.name}}</span>
+                            <span class="rail-module-name">{{../moduleTag.name}}</span>
+                            <span class="rail-module-count">{{sectionCount.total}}</span>
                             {{> "icons/chevron-down"}}
                         </summary>
                         <ol class="player-list">
                             {{!-- the landing row — active when the reader IS
                             the module overview (its slug = the tag's slug) --}}
-                            <li class="{{#match ../moduleTag.slug ../currentSlug}}is-current{{/match}}">
-                                <a href="{{@site.url}}/training/{{../moduleTag.slug}}/"{{#match ../moduleTag.slug ../currentSlug}} aria-current="page"{{/match}}>
+                            <li class="is-overview{{#match ../moduleTag.slug ../currentSlug}} is-current{{/match}}">
+                                <a href="{{@site.url}}/training/{{../moduleTag.slug}}/" title="{{t "Module overview"}}"{{#match ../moduleTag.slug ../currentSlug}} aria-current="page"{{/match}}>
                                     <span>{{t "Module overview"}}</span>
                                     {{> "icons/map-icon"}}
                                 </a>
                             </li>
                             {{#foreach sections}}
                                 <li class="{{#match slug ../../currentSlug}}is-current{{/match}}">
-                                    <a href="{{url}}"{{#match slug ../../currentSlug}} aria-current="page"{{/match}}>
+                                    <a href="{{url}}" title="{{title}}"{{#match slug ../../currentSlug}} aria-current="page"{{/match}}>
                                         <span>{{title}}</span>
                                         {{> "lesson-type-icon"}}
                                     </a>

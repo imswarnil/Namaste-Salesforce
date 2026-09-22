@@ -1,0 +1,40 @@
+{{!-- What a post IS, as one colour-coded chip: icon + the name of
+its collection. Driven by the same post_class match post.hbs uses
+to dispatch layouts, so a post can never show a type its own page
+disagrees with.
+
+ONE match chain, not three (icon / label / colour class) — the
+three have to stay in step, and three parallel chains is three
+places to forget a branch. Colours live on .coll-* in
+3-components/_chips.css.
+
+Context: a post. --}}
+{{#match (post_class) "~" "tag-hash-course"}}
+    <span class="coll-chip coll-course">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
+{{~else match (post_class) "~" "tag-hash-module"}}
+    <span class="coll-chip coll-training">{{> "icons/layers"}} {{t "Training module"}}</span>
+{{~else match (post_class) "~" "tag-hash-training"}}
+    <span class="coll-chip coll-training">{{> "icons/layers"}} {{t "Training"}}</span>
+{{~else match (post_class) "~" "tag-hash-lesson"}}
+    <span class="coll-chip coll-lesson">{{> "icons/play-circle"}} {{t "Lesson"}}</span>
+{{~else match (post_class) "~" "tag-hash-video"}}
+    <span class="coll-chip coll-video">{{> "icons/video"}} {{t "Video"}}</span>
+{{~else match (post_class) "~" "tag-hash-slides"}}
+    <span class="coll-chip coll-slides">{{> "icons/presentation"}} {{t "Deck"}}</span>
+{{~else match (post_class) "~" "tag-hash-newsletter"}}
+    <span class="coll-chip coll-newsletter">{{> "icons/mail"}} {{t "Newsletter"}}</span>
+{{~else match (post_class) "~" "tag-hash-changelog"}}
+    <span class="coll-chip coll-changelog">{{> "icons/history"}} {{t "Changelog"}}</span>
+{{~else match (post_class) "~" "tag-hash-resource"}}
+    <span class="coll-chip coll-resource">{{> "icons/bookmark"}} {{t "Resource"}}</span>
+{{~else match (post_class) "~" "tag-hash-shop"}}
+    <span class="coll-chip coll-shop">{{> "icons/gift"}} {{t "Shop"}}</span>
+{{~else match (post_class) "~" "tag-hash-snippet"}}
+    <span class="coll-chip coll-snippet">{{> "icons/code"}} {{t "Snippet"}}</span>
+{{~else match (post_class) "~" "tag-hash-prompt"}}
+    <span class="coll-chip coll-prompt">{{> "icons/sparkles"}} {{t "Prompt"}}</span>
+{{~else match (post_class) "~" "tag-hash-project"}}
+    <span class="coll-chip coll-project">{{> "icons/github"}} {{t "Project"}}</span>
+{{~else}}
+    <span class="coll-chip coll-blog">{{> "icons/pen"}} {{t "Blog"}}</span>
+{{/match}}
