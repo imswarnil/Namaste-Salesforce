@@ -106,6 +106,48 @@ theme — `gulpfile.js` `zipper` and `deploy-theme.yml` `exclude` both leave
 it out of the theme zip, and the theme deploy ignores pushes that only touch
 it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/`.
 
+## Conventions added 25 Sep 2026
+
+- **No sponsor slot anywhere.** `partials/widgets/share-ask.hbs` sits in
+  every sidebar where the sponsor card used to: the share row (LinkedIn,
+  X, WhatsApp, email, copy) and three "open this page in Claude / ChatGPT /
+  Perplexity" links with a prompt pre-written for the site's reader — a
+  Salesforce person moving into an AI or GTM role. `page-sponsor.hbs` and
+  `widgets/sponsor.hbs` are gone; the /sponsor page is a draft.
+- **Positioning.** The site is for Salesforce admins/devs moving towards
+  AI and GTM roles. Hero copy, `partials/audience.hbs` (three doors under
+  the quote), `llms.hbs`, page excerpts and the site description all say
+  so. Keep new copy on that line.
+- **Lesson rail head** (`partials/post-lesson.hbs`): cover · course ·
+  meta row (lessons · length · level) · progress bar filled by
+  `rail.js` from the list (current row ÷ rows). No separate lesson-count
+  label. `.player.lesson-layout-right .player-main` needs that
+  specificity — a lower one lost to `.player:not(.lesson-layout-focus)`
+  and the article rendered under the fixed rail.
+- **Locked readers.** `partials/reader-locked.hbs` renders on lessons and
+  training sections when `{{access}}` is false: blurred excerpt + lock
+  panel + join/sign-in. Same idea as the slides' locked cover.
+- **Scroll quote** is script-driven (`quote-fill.js` toggles `.is-on`
+  per word from scroll position) — no CSS scroll-timeline, so it works in
+  Safari. Band is ~88vh tall on purpose.
+- **Snippet single is a screen**: full content width, title bar, the
+  first code window capped at the viewport and scrolling inside itself.
+- **Resources** are compact rows two to a column (`card-resource.hbs`);
+  the single has a small hero and a sidebar. `.collection-hero-compact`
+  is the short hero variant.
+- **Projects**: `widgets/build-it.hbs` finds the course (or module) that
+  teaches the repo via its primary tag; `.proj-learn` is the strip under
+  a card.
+- **Breadcrumbs** carry `margin-bottom: 1.8rem` globally; templates must
+  not add their own.
+- The About hero is copy beside the intro film (same `hero-feature`
+  grammar as the homepage); the film falls back to the journey video when
+  Admin → Design → "Hero video" is empty.
+- **Ghost Admin API keys cannot write settings or custom theme settings**
+  (403). Site description / secondary navigation / hero video are set in
+  Admin; locally they were written straight into
+  `content/data/ghost-local.db` and Ghost restarted.
+
 ## Layout of the repo
 
 - `routes.yaml` — the URL model; mirror to Ghost's

@@ -1,0 +1,40 @@
+{{!-- Learn to build this — the course or training module that
+teaches what this project is made of. The bridge is the project's
+primary tag: a course whose public tag it is, or a training module
+with pages under it. Renders the course first, the module if there
+is no course, and a generic "start with the trail" card when the
+tag teaches nothing yet. Context: a project post. --}}
+{{#primary_tag}}
+    {{#> "with-this" topic=.}}
+        {{#get "posts" filter="tag:hash-course+tag:{{topic.slug}}" limit="1" as |course|}}
+            {{#if course}}
+                {{#foreach course}}
+                    <div class="widget widget-cta widget-build">
+                        <span class="widget-cta-icon">{{> "icons/graduation-cap"}}</span>
+                        <h4>{{t "Learn to build this"}}</h4>
+                        <p>{{t "The course behind this project"}} — <strong>{{title}}</strong>{{#if custom_excerpt}}: {{custom_excerpt}}{{/if}}</p>
+                        <a class="btn btn-sm" href="{{url}}">{{> "icons/play-circle"}} {{t "Take the course"}}</a>
+                    </div>
+                {{/foreach}}
+            {{else}}
+                {{#get "posts" filter="tag:hash-training+tag:{{../topic.slug}}" order="published_at asc" limit="1" as |section|}}
+                    {{#if section}}
+                        <div class="widget widget-cta widget-build">
+                            <span class="widget-cta-icon">{{> "icons/layers"}}</span>
+                            <h4>{{t "Learn to build this"}}</h4>
+                            <p>{{t "The training module behind this project:"}} <strong>{{../../topic.name}}</strong></p>
+                            <a class="btn btn-sm" href="{{@site.url}}/training/{{../../topic.slug}}/">{{> "icons/play-circle"}} {{t "Open the module"}}</a>
+                        </div>
+                    {{else}}
+                        <div class="widget widget-cta widget-build">
+                            <span class="widget-cta-icon">{{> "icons/layers"}}</span>
+                            <h4>{{t "Learn to build this"}}</h4>
+                            <p>{{t "Everything this repo uses is on the training trail — start there and the code will read itself."}}</p>
+                            <a class="btn btn-sm" href="{{@site.url}}/training/">{{> "icons/play-circle"}} {{t "Walk the trail"}}</a>
+                        </div>
+                    {{/if}}
+                {{/get}}
+            {{/if}}
+        {{/get}}
+    {{/with-this}}
+{{/primary_tag}}

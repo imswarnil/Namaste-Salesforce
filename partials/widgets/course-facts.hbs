@@ -1,0 +1,26 @@
+{{!-- Course facts — the sidebar's opening card on a course landing:
+lessons, length, level, last update, price, then the start
+button. Every value is live (counts from the API, chips from tag
+descriptions), so the card cannot drift from the course. Context:
+the course post. --}}
+<div class="widget widget-facts">
+    <h4 class="widget-title">{{> "icons/info"}} {{t "This course"}}</h4>
+    <dl>
+        {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" limit="1" as |l total|}}
+            <dt>{{> "icons/play-circle"}} {{t "Lessons"}}</dt><dd>{{total.total}}</dd>
+        {{/get}}
+        {{#foreach tags visibility="internal"}}
+            {{#match slug "~^" "hash-course-duration-"}}{{#if description}}<dt>{{> "icons/clock"}} {{t "Length"}}</dt><dd>{{description}}</dd>{{/if}}{{/match}}
+            {{#match slug "~^" "hash-duration-"}}{{#if description}}<dt>{{> "icons/clock"}} {{t "Length"}}</dt><dd>{{description}}</dd>{{/if}}{{/match}}
+            {{#match slug "~^" "hash-course-level-"}}{{#if description}}<dt>{{> "icons/signal"}} {{t "Level"}}</dt><dd>{{description}}</dd>{{/if}}{{/match}}
+        {{/foreach}}
+        <dt>{{> "icons/history"}} {{t "Updated"}}</dt><dd>{{date updated_at format="D MMM YYYY"}}</dd>
+        <dt>{{> "icons/check-circle"}} {{t "Price"}}</dt><dd>{{#match visibility "public"}}{{t "Free"}}{{else}}{{t "Members"}}{{/match}}</dd>
+    </dl>
+    {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" order="published_at asc" limit="1" as |first|}}
+        {{#if first}}
+            <a class="btn" href="{{first.[0].url}}">{{> "icons/play-circle"}} {{t "Start lesson 1"}}</a>
+            <p class="widget-facts-note">{{t "No account needed. Pick up where you left off any time."}}</p>
+        {{/if}}
+    {{/get}}
+</div>

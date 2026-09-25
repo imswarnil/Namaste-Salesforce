@@ -54,3 +54,25 @@
         });
     });
 })();
+
+// Rail progress — the course card's bar: which row of the rail is
+// current, over how many rows. Pure DOM reading; nothing stored.
+(function () {
+    var box = document.querySelector('[data-rail-progress]');
+    if (!box) { return; }
+    var list = document.querySelector('.player-rail-list .player-list') || document.querySelector('.player-list');
+    if (!list) { return; }
+    var rows = list.querySelectorAll(':scope > li');
+    if (!rows.length) { return; }
+    var current = 0;
+    Array.prototype.forEach.call(rows, function (li, i) { if (li.classList.contains('is-current')) { current = i + 1; } });
+    var pct = Math.round((current / rows.length) * 100);
+    var bar = box.querySelector('i');
+    if (bar) { bar.style.width = pct + '%'; }
+    var label = box.querySelector('[data-rail-progress-label]');
+    if (label) { label.textContent = current + ' / ' + rows.length; }
+    box.setAttribute('role', 'progressbar');
+    box.setAttribute('aria-valuenow', String(pct));
+    box.setAttribute('aria-valuemin', '0');
+    box.setAttribute('aria-valuemax', '100');
+})();

@@ -33,9 +33,15 @@ biggest reason the hero didn't fit above the fold. --}}
 
         <div class="home-hero-copy">
 
-            <p class="home-hero-kicker">{{@site.title}}</p>
-            <h1>{{t "Say namaste to"}} <em>{{t "Salesforce"}}</em>{{t " — then to the business behind it."}}</h1>
-            <p class="home-hero-sub">{{t "The system, the go-to-market process underneath it, and the AI that automates it. Learned from scratch, in public, on my way to GTM Engineer."}}</p>
+            <p class="home-hero-kicker">{{> "icons/signal"}} {{t "For Salesforce people moving into AI and GTM roles"}}</p>
+            <h1>{{t "You know"}} <em>{{t "Salesforce"}}</em>{{t ". Now learn the business it runs — and the AI that runs it next."}}</h1>
+            <p class="home-hero-sub">{{t "Free courses, a training trail and a weekly letter that take you from the CRM to the go-to-market process underneath it, then to the AI layer on top. Built in a real org, learned in public, on my way to GTM Engineer."}}</p>
+
+            <ul class="home-hero-points" aria-label="{{t "What you get"}}">
+                <li>{{> "icons/check-circle"}} {{t "Concepts first, clicks second"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "GTM tools: n8n, Clay, 6sense, Agentforce"}}</li>
+                <li>{{> "icons/check-circle"}} {{t "Free forever, open source"}}</li>
+            </ul>
 
             {{!-- The ask — compact --}}
             {{#if @site.members_enabled}}
@@ -110,8 +116,8 @@ biggest reason the hero didn't fit above the fold. --}}
         The film's address comes from Admin → Design → Site-wide →
         "Hero video". Empty, the card is simply the cover. --}}
         <div class="hero-feature">
-            <div class="hero-feature-card{{#if @custom.hero_video}} has-video{{/if}}"
-                {{#if @custom.hero_video}}data-hero-video="{{@custom.hero_video}}"{{/if}}>
+            <div class="hero-feature-card has-video"
+                data-hero-video="{{#if @custom.hero_video}}{{@custom.hero_video}}{{else}}https://www.youtube.com/watch?v=RZMj7C41AuQ{{/if}}">
 
                 <div class="hero-feature-poster">
                     {{#if @site.cover_image}}
@@ -132,9 +138,11 @@ biggest reason the hero didn't fit above the fold. --}}
                     <span class="hero-feature-scrim" aria-hidden="true"></span>
                 </div>
 
-                {{#if @custom.hero_video}}
-                    {{!-- The embed lands here on press and is torn out again
-                    on close, so a closed card holds no frame. --}}
+                {{!-- The embed lands here on press and is torn out again
+                on close, so a closed card holds no frame. Without a
+                "Hero video" setting the intro film stands in, so the
+                card always has something to play. --}}
+                {{#if true}}
                     <div class="hero-feature-stage" data-hero-stage></div>
 
                     {{!-- One control, two states — pressing it plays, pressing

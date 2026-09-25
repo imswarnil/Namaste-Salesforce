@@ -55,15 +55,36 @@ One markup shape; the class on .player is all that changes. --}}
             {{#primary_tag}}
                 {{#get "posts" filter="tag:hash-course+slug:{{slug}}" limit="1" as |courseposts|}}
                     {{#foreach courseposts}}
+                        {{!-- The course card: cover on top, then the
+                        name, then what the course is (lessons · length ·
+                        level) and how far along this reader is. rail.js
+                        fills the progress bar from the list below —
+                        current row ÷ rows. --}}
                         <a class="player-rail-course" href="{{url}}">
-                            {{#if feature_image}}
-                                <img class="player-rail-course-art" src="{{img_url feature_image size="s"}}" alt="" loading="lazy" />
-                            {{else}}
-                                <span class="player-rail-course-art is-glyph">{{> "icons/graduation-cap"}}</span>
-                            {{/if}}
+                            <span class="player-rail-course-art">
+                                {{#if feature_image}}
+                                    <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
+                                {{else}}
+                                    {{> "thumb-placeholder" icon="graduation-cap"}}
+                                {{/if}}
+                            </span>
                             <span class="player-rail-course-copy">
                                 <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
                                 <h2>{{title}}</h2>
+                                <span class="player-rail-course-meta">
+                                    {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" limit="1" as |l total|}}
+                                        <span>{{> "icons/play-circle"}} {{total.total}} {{t "lessons"}}</span>
+                                    {{/get}}
+                                    {{#foreach tags visibility="internal"}}
+                                        {{#match slug "~^" "hash-course-duration-"}}{{#if description}}<span>{{> "icons/clock"}} {{description}}</span>{{/if}}{{/match}}
+                                        {{#match slug "~^" "hash-duration-"}}{{#if description}}<span>{{> "icons/clock"}} {{description}}</span>{{/if}}{{/match}}
+                                        {{#match slug "~^" "hash-course-level-"}}{{#if description}}<span>{{> "icons/signal"}} {{description}}</span>{{/if}}{{/match}}
+                                    {{/foreach}}
+                                </span>
+                                <span class="player-rail-progress" data-rail-progress>
+                                    <span class="player-rail-progress-bar"><i></i></span>
+                                    <span class="player-rail-progress-label" data-rail-progress-label></span>
+                                </span>
                             </span>
                         </a>
                     {{/foreach}}
@@ -141,13 +162,19 @@ One markup shape; the class on .player is all that changes. --}}
                     {{#if reading_time}}
                         <span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>
                     {{/if}}
-                    <span class="chip chip-free">{{t "Free"}}</span>
+                    {{#match visibility "public"}}<span class="chip chip-free">{{t "Free"}}</span>{{else}}<span class="chip chip-accent">{{> "icons/lock"}} {{t "Members"}}</span>{{/match}}
                 </div>
             </header>
 
+            {{#if access}}
             <section class="gh-content">
                 {{content}}
             </section>
+            {{else}}
+                {{!-- Members-only and this reader is outside: the locked
+                surface instead of a truncated article. --}}
+                {{> "reader-locked"}}
+            {{/if}}
 
             <nav class="post-nav" aria-label="{{t "Lesson navigation"}}">
                 {{#prev_post in="primary_tag"}}
@@ -186,7 +213,7 @@ One markup shape; the class on .player is all that changes. --}}
 
                 {{> "widgets/author"}}
 
-                {{> "widgets/sponsor"}}
+                {{> "widgets/share-ask"}}
 
                 {{> "widgets/share-compact"}}
             </div>

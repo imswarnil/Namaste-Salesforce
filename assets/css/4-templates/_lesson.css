@@ -37,7 +37,11 @@
         grid-column: 2;
     }
 
-    .lesson-layout-right .player-main {
+    /* Rail on the right: the reading region takes the FIRST track.
+       Written with the same specificity as the rule above — a bare
+       .lesson-layout-right .player-main lost to .player:not(…) and
+       the article rendered under the fixed rail. */
+    .player.lesson-layout-right .player-main {
         grid-column: 1;
     }
 
@@ -89,58 +93,54 @@
     border-radius: 999px;
 }
 
-/*  The course/module card: a real card, not a row with a rule under
-    it. It is the one thing in the rail that says where you are. */
+/*  The course card: cover, name, facts, progress. The one thing in
+    the rail that says where you are — so it looks like a course,
+    not a row. The old 4.4rem thumb beside a title read as a list
+    item; the "6 lessons" label that used to float under it now
+    lives inside the card as a meta row. */
 .player-rail-course {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    padding: 1.2rem;
+    display: block;
     margin-bottom: 1.6rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
+    overflow: hidden;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .player-rail-course:hover {
-    border-color: color-mod(#0176d3 a(45%));
+    border-color: rgba(1, 118, 211, 0.45);
     box-shadow: var(--shadow);
 }
 
 .player-rail-course-art {
-    width: 4.4rem;
-    height: 4.4rem;
-    border-radius: var(--radius);
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.player-rail-course-art img,
+.player-rail-course-art svg.thumb-ph-bg {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border: 1px solid var(--border-soft);
-    flex-shrink: 0;
-}
-
-.player-rail-course-art.is-glyph {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-    background: var(--accent-soft);
-    border-color: transparent;
-}
-
-.player-rail-course-art.is-glyph svg {
-    width: 2.2rem;
-    height: 2.2rem;
 }
 
 .player-rail-course-copy {
+    display: block;
     min-width: 0;
+    padding: 1.4rem 1.6rem 1.6rem;
 }
 
 .player-rail-course .kicker {
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
 }
 
 .player-rail-course h2 {
-    font-size: 1.6rem;
+    font-size: 1.65rem;
     line-height: 1.3;
     transition: color 0.15s ease;
 }
@@ -149,16 +149,59 @@
     color: var(--accent);
 }
 
-/*  "6 lessons" — a section label for the list below it, so the
-    rail reads as [where you are] → [what is in it]. */
-.player-rail-count {
-    display: block;
-    margin: 0 0 0.8rem 1.2rem;
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+.player-rail-course-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.2rem;
+    margin-top: 0.9rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.player-rail-course-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.player-rail-course-meta svg {
+    width: 1.35rem;
+    height: 1.35rem;
     color: var(--text-faint);
+}
+
+.player-rail-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.2rem;
+}
+
+.player-rail-progress-bar {
+    flex: 1;
+    height: 0.6rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.player-rail-progress-bar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--brand-500), var(--brand-400));
+    border-radius: inherit;
+    transition: width 0.4s ease;
+}
+
+.player-rail-progress-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    white-space: nowrap;
 }
 
 /*  The curriculum rows — the piece of furniture a reader spends the
@@ -919,6 +962,10 @@ html[data-rail="collapsed"] .player-rail-course {
     justify-content: center;
 }
 
+html[data-rail="collapsed"] .player-rail-course-art {
+    display: none;
+}
+
 html[data-rail="collapsed"] .player-rail-course-copy,
 html[data-rail="collapsed"] .player-rail-count,
 html[data-rail="collapsed"] .rail-home-label,
@@ -997,4 +1044,83 @@ html[data-rail="collapsed"] .rail-module-ico svg {
 .player-list .is-overview a {
     font-weight: 600;
     color: var(--text-muted);
+}
+
+/*  The locked reader — partials/reader-locked.hbs
+    ------------------------------------------------------------
+    The article's first paragraphs, blurred and fading, under a
+    panel with the lock and the door handles. Same grammar as the
+    deck's locked cover (slides/_locked.css), on a light surface. */
+.reader-locked {
+    position: relative;
+    min-height: 44rem;
+    margin: 1.6rem 0 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.reader-locked-blur {
+    padding: 0.4rem 0 4rem;
+    font-size: 1.75rem;
+    line-height: 1.7;
+    color: var(--text);
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+}
+
+.reader-locked-blur p + p {
+    margin-top: 2.2rem;
+}
+
+.reader-locked-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    padding: 3.2rem;
+    text-align: center;
+    background: linear-gradient(to bottom, transparent 0%, var(--bg) 55%);
+}
+
+.reader-locked-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.6rem;
+    height: 5.6rem;
+    border-radius: 50%;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid rgba(1, 118, 211, 0.25);
+    box-shadow: var(--shadow);
+}
+
+.reader-locked-badge svg {
+    width: 2.4rem;
+    height: 2.4rem;
+}
+
+.reader-locked-panel h2 {
+    margin: 0;
+    font-size: clamp(2.2rem, 3vw, 2.8rem);
+}
+
+.reader-locked-panel p {
+    max-width: 46ch;
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.reader-locked-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.2rem;
 }

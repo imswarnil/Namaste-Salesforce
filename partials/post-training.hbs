@@ -102,9 +102,15 @@ Context: a training post. --}}
                         </header>
                     {{/match}}
 
+                    {{#if access}}
                     <section class="gh-content">
                         {{content}}
                     </section>
+                    {{else}}
+                        {{!-- Members-only and this reader is outside: the locked
+                        surface instead of a truncated article. --}}
+                        {{> "reader-locked"}}
+                    {{/if}}
 
                             <nav class="post-nav" aria-label="{{t "Module navigation"}}">
                         {{#prev_post in="primary_tag"}}

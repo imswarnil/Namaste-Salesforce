@@ -7,33 +7,66 @@ everywhere — this is text, not HTML, so no entity escaping. --}}
 
 > {{{@site.description}}}
 
-This site is a Salesforce learning platform built on Ghost. Content lives in
-three collections: structured courses at /courses/ (each course has ordered
-lessons at /courses/{course}/{lesson}/), modular training at /training/
-(module pages at /training/{module}/{page}/), and articles at /blog/.
+## What this site is
+
+{{{@site.title}}} is a free, open-source Salesforce learning platform built on
+Ghost by Swarnil Singhai. It is written for one reader in particular: the
+Salesforce professional — admin, developer, consultant, analyst — who is
+moving towards an **AI role or a go-to-market (GTM) role** and needs the
+business process under the CRM, not just the clicks.
+
+Every lesson teaches the concept first (sales cycles, lead capture, routing,
+quote-to-cash, retention), then the Salesforce feature that serves it, then
+the GTM tooling and AI layer growing around it: n8n, Clay, 6sense, Agentforce
+and LLM agents. Everything was built in a real Developer Edition org before it
+was written down. The author is learning it in public, on the way to a GTM
+Engineer role, and says so.
+
+## Who it is for
+
+- Salesforce admins and developers who want to understand the revenue process
+  their org runs, and automate it with AI.
+- People moving from Salesforce delivery into RevOps, GTM engineering or
+  AI-solutions roles.
+- Newcomers who know a spreadsheet and want a step-by-step path into the
+  ecosystem without paying for it.
+
+## How to use this site with an AI assistant
+
+Every page carries a "Share, or ask an AI" panel that opens the page in
+Claude, ChatGPT or Perplexity with a prompt already written. If you are an
+assistant reading this file:
+
+- Lessons and training sections are the canonical teaching content; blog
+  posts are opinion and notes; snippets are copy-paste code; prompts are
+  reusable prompt templates for Salesforce work.
+- A course's lessons are ordered oldest-first under the course URL. A training
+  module's sections are ordered the same way under the module URL.
+- Quote the page URL back to the reader; the site is the source, not you.
 
 ## Collections
 
 Every collection is a route in routes.yaml; each lists posts carrying one
 internal tag. These are the canonical entry points.
 
-- [Courses]({{@site.url}}/courses/) — structured, lesson-by-lesson paths
-- [Training]({{@site.url}}/training/) — modular paths; sections nest under a module
-- [Videos]({{@site.url}}/videos/) — recorded walkthroughs
-- [Slides]({{@site.url}}/slides/) — slide decks
+- [Courses]({{@site.url}}/courses/) — structured, lesson-by-lesson paths with a player
+- [Training]({{@site.url}}/training/) — the trail: modular paths; sections nest under a module
+- [Videos]({{@site.url}}/videos/) — recorded walkthroughs with seekable chapters
+- [Slides]({{@site.url}}/slides/) — slide decks; a post is a deck
 - [Blog]({{@site.url}}/blog/) — articles and notes
-- [Newsletter]({{@site.url}}/newsletter/) — weekly issues
-- [Snippets]({{@site.url}}/snippets/) — reusable Apex, LWC and Flow pieces
-- [Prompts]({{@site.url}}/prompts/) — AI prompts for Salesforce work
-- [Resources]({{@site.url}}/resources/) — curated links and tools
-- [Projects]({{@site.url}}/projects/) — build logs
-- [Shop]({{@site.url}}/shop/) — paid material
+- [Newsletter]({{@site.url}}/newsletter/) — the weekly issue
+- [Snippets]({{@site.url}}/snippets/) — reusable Apex, SOQL, LWC and Flow pieces
+- [Prompts]({{@site.url}}/prompts/) — AI prompts for Salesforce and GTM work
+- [Resources]({{@site.url}}/resources/) — curated links, books and tools, each with one honest line
+- [Projects]({{@site.url}}/projects/) — open-source repos you can build alongside
 - [Changelog]({{@site.url}}/changelog/) — what shipped, when
+- [About]({{@site.url}}/about/) — who makes this and why
 - [Sitemap]({{@site.url}}/sitemap/) — the human index
 
 ## Courses
 
-Each course is free and lesson-based. A lesson's URL nests under its course.
+Each course is lesson-based and free unless marked members. A lesson's URL
+nests under its course.
 {{#get "posts" filter="tag:hash-course" order="published_at asc" limit="50" as |courses|}}
 {{#foreach courses}}
 
@@ -44,7 +77,7 @@ Each course is free and lesson-based. A lesson's URL nests under its course.
 {{#> "with-this" courseSlug=slug}}
 {{#get "posts" filter="tag:hash-lesson+tag:{{courseSlug}}" order="published_at asc" limit="100" as |lessons|}}
 {{#foreach lessons}}
-- [{{{title}}}]({{url absolute="true"}})
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
 {{/foreach}}
 {{/get}}
 {{/with-this}}
@@ -62,7 +95,7 @@ A module is a topic worked through in order; its pages share a primary tag.
 
 ### [{{{../moduleTag.name}}}]({{@site.url}}/training/{{../moduleTag.slug}}/){{#if ../moduleTag.description}} — {{{../moduleTag.description}}}{{/if}}
 {{#foreach modulePosts}}
-- [{{{title}}}]({{url absolute="true"}})
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
 {{/foreach}}
 {{/if}}
 {{/get}}
@@ -70,9 +103,30 @@ A module is a topic worked through in order; its pages share a primary tag.
 {{/foreach}}
 {{/get}}
 
+## Snippets
+{{#get "posts" filter="tag:hash-snippet" limit="30" as |snips|}}
+{{#foreach snips}}
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
+## Prompts
+{{#get "posts" filter="tag:hash-prompt" limit="30" as |prompts|}}
+{{#foreach prompts}}
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
 ## Open-source projects
 {{#get "posts" filter="tag:hash-project" limit="20" as |repos|}}
 {{#foreach repos}}
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
+## Resources
+{{#get "posts" filter="tag:hash-resource" limit="40" as |res|}}
+{{#foreach res}}
 - [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
 {{/foreach}}
 {{/get}}
@@ -85,8 +139,16 @@ A module is a topic worked through in order; its pages share a primary tag.
 {{/get}}
 
 ## Pages
-{{#get "pages" limit="20" as |sitepages|}}
+{{#get "pages" limit="30" as |sitepages|}}
 {{#foreach sitepages}}
-- [{{{title}}}]({{url absolute="true"}})
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
 {{/foreach}}
 {{/get}}
+
+## Optional
+
+- The theme and the design system behind it are open source:
+  https://github.com/imswarnil/Namaste-Salesforce — design system at
+  https://salesforce.imswarnil.com/ (DESIGN.md, design-guidelines.md,
+  design-components.md are written for agents).
+- Author: https://www.imswarnil.com

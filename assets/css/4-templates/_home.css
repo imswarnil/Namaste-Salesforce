@@ -3038,21 +3038,108 @@ html[data-theme="dark"] .home-hero-pattern {
 /*  The scroll-fill quote band (partials/scroll-quote.hbs)
     ------------------------------------------------------------
 
-    Base state paints the quote normally, in full colour. The
-    word-by-word fill is layered on top ONLY where a scroll-driven
-    timeline exists and motion is welcome — and only after
-    assets/js/quote-fill.js has split the text into .rq-w words and
-    stamped .is-split on the paragraph. Every rule below hangs off
-    that class, so a browser that can paint a faint word but cannot
-    run the timeline never gets the chance to strand the quote
-    half-read. Progressive enhancement, in the only order that is
-    safe. */
+    A tall, quiet band with one sentence set very large. Base state
+    paints the quote in full colour; assets/js/quote-fill.js splits
+    it into .rq-w words and lights them one by one (.is-on) as the
+    band crosses the viewport — colour, a small rise and a blur
+    that resolves. Every motion rule hangs off .is-split, so a
+    browser without the script never strands the quote half-read.
+    ------------------------------------------------------------ */
 
 .scroll-quote {
-    padding: clamp(7rem, 14vmin, 14rem) 0;
-    background: var(--bg-alt);
+    position: relative;
+    min-height: 88vh;
+    display: flex;
+    align-items: center;
+    padding: clamp(8rem, 16vmin, 18rem) 0;
+    background:
+        radial-gradient(900px 400px at 50% 0%, var(--accent-soft), transparent 70%),
+        var(--bg-alt);
     border-block: 1px solid var(--border-soft);
+    overflow: hidden;
 }
+
+.scroll-quote > .inner {
+    position: relative;
+    z-index: 1;
+}
+
+.scroll-quote figure {
+    max-width: min(104rem, 94%);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.scroll-quote blockquote {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.scroll-quote-fill {
+    font-size: clamp(3.4rem, 7.2vw, 8.4rem);
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: var(--heading);
+    text-wrap: balance;
+}
+
+.scroll-quote figcaption {
+    max-width: 54ch;
+    margin: clamp(3.2rem, 5vmin, 5.6rem) auto 0;
+    font-size: clamp(1.6rem, 1.9vw, 2rem);
+    line-height: 1.6;
+    color: var(--text-muted);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+/* the caption arrives once the last word has inked */
+.scroll-quote:has(.scroll-quote-fill[style*="--p: 1"]) figcaption,
+.scroll-quote:has(.rq-w:last-child.is-on) figcaption {
+    opacity: 1;
+    transform: none;
+}
+
+.scroll-quote-fill.is-split .rq-w {
+    display: inline-block;
+    color: var(--border);
+    opacity: 0.55;
+    filter: blur(2px);
+    transform: translateY(0.12em);
+    transition: color 0.35s ease, opacity 0.35s ease, filter 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-quote-fill.is-split .rq-w.is-on {
+    color: var(--heading);
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+}
+
+/* the word being inked right now carries the accent for a beat */
+.scroll-quote-fill.is-split .rq-w.is-on:has(+ .rq-w:not(.is-on)) {
+    color: var(--accent);
+}
+
+/* a faint progress hairline under the quote */
+.scroll-quote-fill.is-split::after {
+    content: "";
+    display: block;
+    width: min(32rem, 60%);
+    height: 3px;
+    margin: clamp(2rem, 3vmin, 3.2rem) auto 0;
+    background: linear-gradient(90deg, var(--accent), var(--brand-400));
+    border-radius: 999px;
+    transform: scaleX(var(--p, 0));
+    transform-origin: left;
+    transition: transform 0.2s linear;
+}
+
+html:not(.anim) .scroll-quote figcaption { opacity: 1; transform: none; }
+html:not(.anim) .scroll-quote-fill.is-split .rq-w { color: var(--heading); opacity: 1; filter: none; transform: none; }
 
 /*  NB: the measure cannot be set in `ch` here — on the <figure>
     that unit resolves against the figure's own (body-sized) font,
@@ -3111,4 +3198,160 @@ html[data-theme="dark"] .home-hero-pattern {
             to { color: var(--heading); }
         }
     }
+}
+
+/*  Who this is for — partials/audience.hbs
+    ------------------------------------------------------------ */
+
+.audience-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.4rem;
+}
+
+.audience-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 3.2rem 2.8rem 2.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.audience-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(1, 118, 211, 0.45);
+}
+
+.audience-card.is-featured {
+    background:
+        radial-gradient(600px 260px at 100% 0%, var(--accent-soft), transparent 70%),
+        var(--surface);
+    border-color: rgba(1, 118, 211, 0.35);
+}
+
+.audience-num {
+    position: absolute;
+    top: 1.6rem;
+    right: 2rem;
+    font-size: 4.8rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--accent-soft);
+    -webkit-text-stroke: 1px rgba(1, 118, 211, 0.35);
+}
+
+.audience-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4.8rem;
+    height: 4.8rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+}
+
+.audience-ico svg {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.audience-card h3 {
+    font-size: 2rem;
+    line-height: 1.25;
+}
+
+.audience-gap {
+    font-size: 1.45rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.audience-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.4rem;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.audience-list li {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+}
+
+.audience-list svg {
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: 0.2rem;
+    color: var(--success);
+}
+
+.audience-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: auto;
+    padding-top: 1.6rem;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.audience-go svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    transition: transform 0.15s ease;
+}
+
+.audience-card:hover .audience-go svg {
+    transform: translateX(4px);
+}
+
+@media (max-width: 1023px) {
+    .audience-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Hero points — three ticks under the sub-line */
+.home-hero-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 2rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.home-hero-points li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.home-hero-points svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--success);
+}
+
+.home-hero-kicker svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    vertical-align: -0.2em;
+    margin-right: 0.3rem;
 }

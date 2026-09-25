@@ -65,48 +65,81 @@ page cannot claim a course count it no longer has. --}}
     <div class="orb" style="width: 320px; height: 320px; bottom: -160px; left: -90px; animation-delay: -3s;" aria-hidden="true"></div>
 
     <div class="inner relative">
-        <div class="about-intro" data-animate>
-            <nav class="crumbs" aria-label="Breadcrumb">
-                <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
-                {{> "icons/chevron-right"}}
-                <span aria-current="page">{{title}}</span>
-            </nav>
+        <div class="about-hero-grid">
 
-            <span class="kicker">{{> "icons/compass"}} {{t "About"}}</span>
-            <h1>{{title}}</h1>
+            <div class="about-intro" data-animate="left">
+                <nav class="crumbs" aria-label="Breadcrumb">
+                    <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+                    {{> "icons/chevron-right"}}
+                    <span aria-current="page">{{title}}</span>
+                </nav>
 
-            <p class="about-hero-lead">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "One person learning Salesforce, go-to-market and the AI around it from scratch — in public, with every step written down."}}{{/if}}</p>
+                {{#get "authors" limit="1" as |host|}}
+                    {{#foreach host}}
+                        <div class="about-byline about-byline-top">
+                            {{#if profile_image}}
+                                <img class="about-byline-photo" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="eager" />
+                            {{else}}
+                                <span class="about-byline-photo is-glyph">{{> "icons/avatar"}}</span>
+                            {{/if}}
+                            <span class="about-byline-copy">
+                                <strong>{{name}}</strong>
+                                <span>{{t "Salesforce · CRM Analytics · on the way to GTM Engineer"}}{{#if location}} · {{location}}{{/if}}</span>
+                            </span>
+                        </div>
+                    {{/foreach}}
+                {{/get}}
 
-            {{!-- The byline. Ghost owns every value here: Admin →
-            Staff for the photo, name, role and location. --}}
-            {{#get "authors" limit="1" as |host|}}
-                {{#foreach host}}
-                    <div class="about-byline">
-                        {{#if profile_image}}
-                            <img class="about-byline-photo" src="{{img_url profile_image size="s"}}" alt="{{name}}" loading="eager" />
-                        {{else}}
-                            <span class="about-byline-photo is-glyph">{{> "icons/avatar"}}</span>
-                        {{/if}}
+                <h1>{{t "Hi, I'm Swarnil. I learn Salesforce, GTM and AI"}} <em>{{t "in public"}}</em>{{t " — so you don't have to learn it alone."}}</h1>
 
-                        <span class="about-byline-copy">
-                            <strong>{{name}}</strong>
-                            <span>{{t "Builds and writes everything here"}}{{#if location}} · {{location}}{{/if}}</span>
-                        </span>
+                <p class="about-hero-lead">{{#if custom_excerpt}}{{custom_excerpt}}{{else}}{{t "Seven-plus years in IT, four on the platform, most of them building dashboards for sales teams I did not fully understand. This site is me closing that gap — the CRM, the revenue process underneath it and the AI layer on top — one written-down lesson at a time."}}{{/if}}</p>
 
-                        <ul class="about-byline-social">
-                            {{#if @custom.social_linkedin}}<li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">{{> "icons/linkedin"}}</a></li>{{/if}}
-                            {{#if @site.twitter}}<li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X" title="X">{{> "icons/x"}}</a></li>{{/if}}
-                            {{#if @custom.social_github}}<li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">{{> "icons/github"}}</a></li>{{/if}}
-                            {{#if @custom.social_youtube}}<li><a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">{{> "icons/youtube"}}</a></li>{{/if}}
-                        </ul>
-                    </div>
-                {{/foreach}}
-            {{/get}}
+                <div class="about-hero-actions">
+                    <a class="btn btn-lg" href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Walk the trail"}}</a>
+                    <a class="btn btn-lg btn-ghost" href="#the-plan">{{> "icons/compass"}} {{t "Why this exists"}}</a>
+                </div>
 
-            <div class="about-hero-actions">
-                <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Start a course"}}</a>
-                <a class="btn btn-lg btn-ghost" href="#the-plan">{{> "icons/compass"}} {{t "Why this exists"}}</a>
+                <ul class="about-byline-social about-hero-social">
+                    {{#if @custom.social_youtube}}<li><a href="{{@custom.social_youtube}}" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">{{> "icons/youtube"}}</a></li>{{/if}}
+                    {{#if @custom.social_linkedin}}<li><a href="{{@custom.social_linkedin}}" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">{{> "icons/linkedin"}}</a></li>{{/if}}
+                    {{#if @site.twitter}}<li><a href="{{social_url type="twitter"}}" target="_blank" rel="noopener" aria-label="X" title="X">{{> "icons/x"}}</a></li>{{/if}}
+                    {{#if @custom.social_github}}<li><a href="{{@custom.social_github}}" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">{{> "icons/github"}}</a></li>{{/if}}
+                    {{#if @custom.social_instagram}}<li><a href="{{@custom.social_instagram}}" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">{{> "icons/instagram"}}</a></li>{{/if}}
+                    <li><a href="{{@site.url}}/my-schedule/" aria-label="{{t "Schedule"}}" title="{{t "When I go live and publish"}}">{{> "icons/calendar"}}</a></li>
+                </ul>
             </div>
+
+            {{!-- The film. Same card grammar as the homepage hero
+            (partials/hero.hbs, assets/js/hero-video.js): the cover at
+            rest, press to play, press again to close. Nothing is
+            requested from YouTube until the first press. --}}
+            <div class="hero-feature about-hero-feature" data-animate="right">
+                <div class="hero-feature-card has-video"
+                    data-hero-video="{{#if @custom.hero_video}}{{@custom.hero_video}}{{else}}https://www.youtube.com/watch?v=RZMj7C41AuQ{{/if}}">
+                    <div class="hero-feature-poster">
+                        {{#if @site.cover_image}}
+                            <img class="hero-feature-cover" src="{{img_url @site.cover_image size="l"}}" alt="" fetchpriority="high" />
+                        {{else}}
+                            <span class="hero-feature-grid" aria-hidden="true"></span>
+                            <span class="hero-feature-mark"><img src="{{asset "images/ns-mark.svg"}}" alt="" /></span>
+                        {{/if}}
+                        <span class="hero-feature-scrim" aria-hidden="true"></span>
+                        <span class="about-film-label">{{> "icons/video"}} {{t "Two minutes on why this exists"}}</span>
+                    </div>
+                    <div class="hero-feature-stage" data-hero-stage></div>
+                    <button class="hero-feature-toggle" type="button" data-hero-toggle aria-expanded="false">
+                        <span class="hero-feature-disc" aria-hidden="true">
+                            <svg class="i-play" viewBox="0 0 24 24"><path d="M9 7.5v9l7.5-4.5z" fill="currentColor"/></svg>
+                            <svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg>
+                        </span>
+                        <span class="hero-feature-toggle-label">
+                            <span class="on-idle">{{t "Watch the intro"}}</span>
+                            <span class="on-playing">{{t "Close"}}</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         {{!-- Live counts, not claims --}}
@@ -123,6 +156,12 @@ page cannot claim a course count it no longer has. --}}
                     <span>{{t "Training sections"}}</span>
                 </a>
             {{/get}}
+            {{#get "posts" filter="tag:hash-video" limit="1" as |i c|}}
+                <a class="about-stat" href="{{@site.url}}/videos/">
+                    <strong data-count="{{c.total}}">{{c.total}}</strong>
+                    <span>{{t "Videos"}}</span>
+                </a>
+            {{/get}}
             {{#get "posts" filter="tag:hash-blog" limit="1" as |i c|}}
                 <a class="about-stat" href="{{@site.url}}/blog/">
                     <strong data-count="{{c.total}}">{{c.total}}</strong>
@@ -133,6 +172,71 @@ page cannot claim a course count it no longer has. --}}
                 <strong>{{t "Free"}}</strong>
                 <span>{{t "Forever"}}</span>
             </span>
+        </div>
+    </div>
+</section>
+
+{{!-- WHEN THINGS HAPPEN — the rhythm, proven: the last issue, video
+and article with their real dates, then the standing schedule.
+Every card links to the real post; /my-schedule/ has the full
+board. --}}
+<section class="section section-alt outer about-rhythm">
+    <div class="inner">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/calendar"}} {{t "The schedule"}}</span>
+                <h2>{{t "When I go live, publish and send"}}</h2>
+                <p>{{t "A weekly letter, a video most weeks, live sessions on YouTube — the dates below are the real last ones, not a promise."}}</p>
+            </div>
+            <div class="section-head-cta">
+                {{#if @custom.social_youtube}}
+                    <a class="btn btn-youtube" href="{{@custom.social_youtube}}?sub_confirmation=1" target="_blank" rel="noopener">{{> "icons/youtube"}} {{t "Subscribe on YouTube"}}</a>
+                {{/if}}
+                <a class="section-more" href="{{@site.url}}/my-schedule/">{{t "Full schedule"}} {{> "icons/arrow-right"}}</a>
+            </div>
+        </div>
+
+        <div class="schedule-rhythm" data-animate-stagger>
+            {{#get "posts" filter="tag:hash-newsletter" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/mail"}}</span>
+                        <span class="rhythm-kind">{{t "Last issue"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            {{#get "posts" filter="tag:hash-video" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/video"}}</span>
+                        <span class="rhythm-kind">{{t "Last video"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            {{#get "posts" filter="tag:hash-blog" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/pen"}}</span>
+                        <span class="rhythm-kind">{{t "Last article"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
+            {{#get "posts" filter="tag:hash-lesson" limit="1" as |last|}}
+                {{#foreach last}}
+                    <a class="rhythm-card" href="{{url}}">
+                        <span class="rhythm-ico" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+                        <span class="rhythm-kind">{{t "Last lesson"}}</span>
+                        <strong>{{title}}</strong>
+                        <time datetime="{{date published_at format="YYYY-MM-DD"}}">{{date published_at format="ddd, D MMM"}}</time>
+                    </a>
+                {{/foreach}}
+            {{/get}}
         </div>
     </div>
 </section>

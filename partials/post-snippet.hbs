@@ -1,58 +1,61 @@
-{{!-- A snippet single — code first. The code card ships at the
-top of the content (snippets.js dresses every pre>code as an
-editor window with syntax colours + a copy button), so the page
-is: tight header, THE CODE, then the gotchas.
+{{!-- A snippet single — the CODE SCREEN. The page is an editor: a
+title bar across the full content width (crumbs, chips, title,
+the one-line excerpt), then the code filling the viewport height
+beside a narrow sidebar. The first code card is the screen —
+snippets.js dresses every pre>code as an editor window with
+syntax colours and a copy button, and _collections.css caps that
+first window at the viewport so the code scrolls INSIDE it, not
+the page. The gotchas (the rest of the content) sit under it.
+Context: post. --}}
 
-A sidebar (TOC, more snippets, sponsor) — the single used to be
-one bare narrow column with nowhere to go but the "All snippets"
-link at the bottom. Context: post. --}}
-
-<main id="site-main" class="section outer">
+<main id="site-main" class="section outer snippet-screen">
 <div class="inner">
-<div class="snippet-layout">
 
-    <article class="snippet-single {{post_class}}">
-
-        <nav class="crumbs" aria-label="Breadcrumb">
-            <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
-            {{> "icons/chevron-right"}}
-            <a href="{{@site.url}}/snippets/">{{t "Snippets"}}</a>
-            {{> "icons/chevron-right"}}
-            <span aria-current="page">{{title}}</span>
-        </nav>
-
-        <header class="post-header">
-            <div class="chips">
-                <span class="chip chip-accent">{{> "icons/code"}} {{t "Snippet"}}</span>
-                {{#foreach tags visibility="internal"}}
-                    {{#match slug "~^" "hash-snippet-lang-"}}
-                        {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
-                    {{/match}}
-                {{/foreach}}
-                <span class="chip">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</span>
-            </div>
+    <header class="snippet-bar">
+        <div class="snippet-bar-copy">
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+                {{> "icons/chevron-right"}}
+                <a href="{{@site.url}}/snippets/">{{t "Snippets"}}</a>
+                {{> "icons/chevron-right"}}
+                <span aria-current="page">{{title}}</span>
+            </nav>
             <h1 class="post-title">{{title}}</h1>
             {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
-        </header>
-
-        <section class="gh-content">
-            {{content}}
-        </section>
-
-        <footer class="entry-foot">
-            <a class="btn btn-ghost" href="{{@site.url}}/snippets/">{{> "icons/arrow-left"}} {{t "All snippets"}}</a>
-        </footer>
-
-    </article>
-
-    <aside class="snippet-side">
-        <div class="entry-side-sticky">
-            {{> "widgets/toc"}}
-            {{> "widgets/related-snippets"}}
-            {{> "widgets/sponsor"}}
         </div>
-    </aside>
+        <div class="chips snippet-bar-chips">
+            <span class="chip chip-accent">{{> "icons/code"}} {{t "Snippet"}}</span>
+            {{#foreach tags visibility="internal"}}
+                {{#match slug "~^" "hash-snippet-lang-"}}
+                    {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                {{/match}}
+            {{/foreach}}
+            <span class="chip">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</span>
+        </div>
+    </header>
 
-</div>
+    <div class="snippet-layout {{post_class}}">
+
+        <article class="snippet-single">
+            <section class="gh-content snippet-content">
+                {{content}}
+            </section>
+
+            <footer class="entry-foot">
+                <a class="btn btn-ghost" href="{{@site.url}}/snippets/">{{> "icons/arrow-left"}} {{t "All snippets"}}</a>
+                {{#prev_post in="primary_tag"}}<a class="btn btn-ghost" href="{{url}}">{{> "icons/arrow-left"}} {{t "Previous"}}</a>{{/prev_post}}
+                {{#next_post in="primary_tag"}}<a class="btn btn-ghost" href="{{url}}">{{t "Next"}} {{> "icons/arrow-right"}}</a>{{/next_post}}
+            </footer>
+        </article>
+
+        <aside class="snippet-side">
+            <div class="entry-side-sticky">
+                {{> "widgets/toc"}}
+                {{> "widgets/related-snippets"}}
+                {{> "widgets/share-ask"}}
+            </div>
+        </aside>
+
+    </div>
 </div>
 </main>

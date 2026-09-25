@@ -46,4 +46,14 @@ here. Context: a post tagged #project. --}}
             {{/primary_tag}}
         </footer>
     </a>
+    {{#primary_tag}}
+        {{#> "with-this" topic=.}}
+            {{#get "posts" filter="tag:hash-course+tag:{{topic.slug}}" limit="1" as |course|}}
+                {{#foreach course}}
+                    <a class="proj-learn" href="{{url}}">{{> "icons/graduation-cap"}} {{t "Learn to build it:"}} <strong>{{title}}</strong> {{> "icons/arrow-right"}}</a>
+                {{/foreach}}
+            {{/get}}
+        {{/with-this}}
+    {{/primary_tag}}
+    <span hidden></span>
 </article>

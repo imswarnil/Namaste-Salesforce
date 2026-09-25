@@ -80,20 +80,67 @@
 /*  Resource + prompt cards
     ------------------------------------------------------------ */
 
-/* Optional cover — most resources link out and carry no image,
-   but a card with one (a course, a video, a tool with a logo)
-   gets it above the head row instead of the bookmark icon alone. */
-.resource-card-media {
-    aspect-ratio: 16 / 9;
-    margin: -2rem -2.2rem 1.6rem;
-    overflow: hidden;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+/*  Resource card — a compact row: icon · body · arrow. */
+.resources-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem;
 }
 
-.resource-card-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.resource-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 1.4rem;
+    padding: 1.8rem 2rem;
+}
+
+.resource-card .card-title {
+    font-size: 1.7rem;
+    margin-top: 0.6rem;
+}
+
+.resource-card .card-excerpt {
+    margin-top: 0.4rem;
+    font-size: 1.4rem;
+    -webkit-line-clamp: 2;
+}
+
+.resource-card .chips {
+    gap: 0.5rem;
+}
+
+.resource-card .chip {
+    padding: 0.2rem 0.8rem;
+    font-size: 1.15rem;
+}
+
+.resource-card-body {
+    min-width: 0;
+}
+
+.resource-card-go {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    margin-top: 0.4rem;
+    color: var(--text-faint);
+    border: 1px solid var(--border-soft);
+    border-radius: 50%;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+
+.resource-card-go svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.resource-card:hover .resource-card-go {
+    color: var(--accent-contrast);
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateX(3px);
 }
 
 .resource-card-head,
@@ -133,6 +180,44 @@
 .resource-card-icon-fallback svg {
     width: 2rem;
     height: 2rem;
+}
+
+@media (max-width: 700px) {
+    .resources-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/*  Compact collection hero: title left, the calls to action right,
+    a third of the old height. */
+.collection-hero-compact {
+    padding-top: clamp(3.2rem, 5vmin, 4.8rem);
+    padding-bottom: clamp(3.2rem, 5vmin, 4.8rem);
+}
+
+.collection-hero-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem 3.2rem;
+}
+
+.collection-hero-row h1 {
+    margin-top: 0.6rem;
+    font-size: clamp(3rem, 4.5vw, 4.2rem);
+}
+
+.collection-hero-row p {
+    max-width: 56ch;
+    margin-top: 0.8rem;
+    font-size: 1.6rem;
+}
+
+.collection-hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .chip-free {
@@ -177,6 +262,79 @@
 .prompt-single {
     min-width: 0;
     max-width: var(--measure);
+}
+
+/*  The snippet screen — the single as an editor. The article runs
+    the full content width (no prose measure: code is wide), the
+    title bar is one row, and the FIRST code window is capped at
+    the viewport so it reads as a screen: the code scrolls inside
+    it, the page does not. */
+.snippet-screen {
+    padding-top: 2.4rem;
+}
+
+.snippet-screen .snippet-single {
+    max-width: none;
+}
+
+.snippet-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.6rem 3.2rem;
+    margin-bottom: 2.4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.snippet-bar-copy {
+    min-width: 0;
+    max-width: 76ch;
+}
+
+.snippet-bar .post-title {
+    margin-top: 1.2rem;
+    font-size: clamp(2.4rem, 3.6vw, 3.4rem);
+}
+
+.snippet-bar .post-excerpt {
+    margin-top: 0.6rem;
+    font-size: 1.55rem;
+}
+
+.snippet-bar-chips {
+    flex-shrink: 0;
+}
+
+.snippet-content > .code-window:first-child,
+.snippet-content > .code-window:first-of-type {
+    margin-top: 0;
+}
+
+.snippet-content .code-window:first-of-type pre {
+    max-height: calc(100vh - var(--header-height) - 22rem);
+    min-height: 32rem;
+    overflow: auto;
+}
+
+/* Under the screen: the gotchas keep the prose measure so they
+   still read as text, without shrinking the code above them. */
+.snippet-content > :not(.code-window):not(pre) {
+    max-width: var(--measure);
+}
+
+.snippet-screen .entry-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+@media (max-width: 1023px) {
+    .snippet-content .code-window:first-of-type pre {
+        max-height: 70vh;
+        min-height: 0;
+    }
 }
 
 .snippet-side,
@@ -481,9 +639,20 @@
     }
 }
 
-/* Resource single */
+/* Resource single — small hero (icon beside the title), then
+   article + sidebar */
 .resource-single-head {
-    text-align: center;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2rem;
+    align-items: center;
+    margin: 2rem 0 3.6rem;
+    padding: 2.4rem 2.8rem;
+    background:
+        radial-gradient(700px 300px at 100% 0%, var(--accent-soft), transparent 70%),
+        var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
 }
 
 .resource-single-icon {
@@ -492,10 +661,10 @@
     justify-content: center;
     width: 7.2rem;
     height: 7.2rem;
-    margin-bottom: 1.6rem;
     border-radius: var(--radius-lg);
     background: var(--accent-soft);
     color: var(--accent);
+    flex-shrink: 0;
 }
 
 .resource-single-icon svg {
@@ -507,8 +676,43 @@
     display: none;
 }
 
-.resource-single-head .chips {
-    justify-content: center;
+.resource-single-copy .post-title {
+    margin-top: 1rem;
+    font-size: clamp(2.6rem, 4vw, 3.6rem);
+}
+
+.resource-single-copy .post-excerpt {
+    margin-top: 0.8rem;
+    font-size: 1.7rem;
+}
+
+.resource-single-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 4.8rem;
+    align-items: start;
+}
+
+.resource-single {
+    min-width: 0;
+    max-width: var(--measure);
+}
+
+.resource-side {
+    min-width: 0;
+    align-self: stretch;
+}
+
+@media (max-width: 1023px) {
+    .resource-single-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .resource-single-head {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 /*  Listing layout — the generic name for what /resources/ built:
@@ -571,4 +775,97 @@
     .listing-side-sticky .widget {
         display: none;
     }
+}
+
+
+/*  Prompt cards — a tiny chat: model bar, the pitch as the user's
+    bubble on the right, the reply on the left. */
+.prompt-card {
+    overflow: hidden;
+}
+
+.prompt-card-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.6rem;
+    font-size: 1.3rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.prompt-card-bar strong {
+    color: var(--heading);
+}
+
+.prompt-card-ai {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    color: var(--accent-contrast);
+    background: linear-gradient(160deg, var(--brand-500), var(--brand-400));
+}
+
+.prompt-card-ai svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.prompt-card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-faint);
+}
+
+.prompt-card-status i {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--success);
+}
+
+.prompt-card .card-title {
+    font-size: 1.75rem;
+}
+
+.prompt-card-bubble {
+    align-self: flex-end;
+    max-width: 92%;
+    margin: 0.4rem 0 0;
+    padding: 1rem 1.4rem;
+    font-size: 1.4rem;
+    line-height: 1.55;
+    color: var(--accent-contrast);
+    background: var(--accent);
+    border-radius: var(--radius) var(--radius) 0.4rem var(--radius);
+}
+
+.prompt-card-reply {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    align-self: flex-start;
+    margin: 0.2rem 0 0;
+    padding: 0.8rem 1.2rem;
+    font-size: 1.3rem;
+    color: var(--text-muted);
+    background: var(--bg-alt);
+    border-radius: var(--radius) var(--radius) var(--radius) 0.4rem;
+}
+
+.prompt-card-reply svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--accent);
+}
+
+.prompt-card:hover .prompt-card-reply {
+    color: var(--accent);
 }

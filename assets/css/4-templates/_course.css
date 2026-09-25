@@ -357,7 +357,10 @@
     position: absolute;
     top: 1.6rem;
     bottom: 1.6rem;
-    left: 2rem;
+    /* the number discs are 3.2rem wide and start 1.6rem into the row
+       (the row's own padding), so their centre — and this line —
+       sits at padding + 1.6rem + 1.6rem, minus half the line */
+    left: calc(0.4rem + 1.6rem + 1.6rem - 1px);
     width: 2px;
     background: var(--border);
 }
@@ -437,4 +440,47 @@
         position: static;
         max-height: none;
     }
+}
+
+
+/*  Course facts — widgets/course-facts.hbs, the first thing in the
+    course sidebar: what you are signing up for, then the start
+    button. Live counts, chip vocabulary, nothing typed twice. */
+.widget-facts dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.8rem 1.6rem;
+    margin: 0 0 1.8rem;
+    font-size: 1.4rem;
+}
+
+.widget-facts dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.widget-facts dt svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--accent);
+}
+
+.widget-facts dd {
+    margin: 0;
+    color: var(--heading);
+    font-weight: 500;
+}
+
+.widget-facts .btn {
+    width: 100%;
+}
+
+.widget-facts-note {
+    margin: 1rem 0 0;
+    font-size: 1.25rem;
+    text-align: center;
+    color: var(--text-faint);
 }

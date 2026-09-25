@@ -1,0 +1,30 @@
+{{!-- The locked reader — a lesson or training section whose post
+access is members/paid and this visitor is outside it. Ghost has
+already decided ({{access}} is false); this partial says so on the
+reading surface: the first paragraphs, blurred, under a lock
+panel with the door handles. Context: the post. --}}
+<div class="reader-locked">
+    <div class="reader-locked-blur" aria-hidden="true">
+        <p>{{excerpt words="120"}}</p>
+        <p>{{excerpt words="90"}}</p>
+        <p>{{excerpt words="70"}}</p>
+    </div>
+    <div class="reader-locked-panel">
+        <span class="reader-locked-badge" aria-hidden="true">{{> "icons/lock"}}</span>
+        {{#match visibility "paid"}}
+            <h2>{{t "This lesson is for paid members"}}</h2>
+            <p>{{t "Upgrade to read every members-only lesson, module and deck on the site — and keep the free ones free for everyone else."}}</p>
+            <div class="reader-locked-actions">
+                <a class="btn btn-lg" href="{{@site.url}}/membership/">{{> "icons/star"}} {{t "See membership"}}</a>
+                <a class="btn btn-ghost" href="{{@site.url}}/signin/">{{t "Already a member? Sign in"}}</a>
+            </div>
+        {{else}}
+            <h2>{{t "This lesson is for members"}}</h2>
+            <p>{{t "Join free to read it — one email, five seconds, and the weekly letter comes with it."}}</p>
+            <div class="reader-locked-actions">
+                <a class="btn btn-lg" href="{{@site.url}}/signup/">{{> "icons/mail"}} {{t "Join free"}}</a>
+                <a class="btn btn-ghost" href="{{@site.url}}/signin/">{{t "Already a member? Sign in"}}</a>
+            </div>
+        {{/match}}
+    </div>
+</div>

@@ -1,10 +1,10 @@
-{{!-- A resource single — a recommendation card, not an article:
-the type's icon large, the free/paid facet, WHY it's here, and
-the pointer to where it lives (the link sits in the content).
-Context: post. --}}
+{{!-- A resource single — a recommendation, not an article: a
+small hero (the type icon, the facets, the title, WHY it is here),
+the body beside a sidebar (the link out, more of this type, share
+and ask-AI, the letter). Context: post. --}}
 
 <main id="site-main" class="section outer">
-<article class="inner inner-narrow resource-single {{post_class}}">
+<div class="inner">
 
     <nav class="crumbs" aria-label="Breadcrumb">
         <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
@@ -14,7 +14,7 @@ Context: post. --}}
         <span aria-current="page">{{title}}</span>
     </nav>
 
-    <header class="post-header resource-single-head">
+    <header class="resource-single-head">
         <span class="resource-single-icon" aria-hidden="true">
             {{~#foreach tags visibility="internal" limit="20"~}}
                 {{~#match slug "hash-resource-type-books"}}{{> "icons/book-open"}}{{/match~}}
@@ -26,26 +26,72 @@ Context: post. --}}
             {{~/foreach~}}
             <span class="resource-card-icon-fallback">{{> "icons/bookmark"}}</span>
         </span>
-        <div class="chips">
-            {{#foreach tags visibility="internal"}}
-                {{#match slug "~^" "hash-resource-type-"}}
-                    {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
-                {{/match}}
-                {{#match slug "hash-resource-free"}}<span class="chip chip-free">{{t "Free"}}</span>{{/match}}
-                {{#match slug "hash-resource-paid"}}<span class="chip">{{t "Paid"}}</span>{{/match}}
-            {{/foreach}}
+        <div class="resource-single-copy">
+            <div class="chips">
+                <span class="chip chip-accent">{{> "icons/bookmark"}} {{t "Resource"}}</span>
+                {{#foreach tags visibility="internal"}}
+                    {{#match slug "~^" "hash-resource-type-"}}
+                        {{#if description}}<span class="chip chip-type">{{description}}</span>{{/if}}
+                    {{/match}}
+                    {{#match slug "hash-resource-free"}}<span class="chip chip-free">{{t "Free"}}</span>{{/match}}
+                    {{#match slug "hash-resource-paid"}}<span class="chip">{{t "Paid"}}</span>{{/match}}
+                    {{#match slug "~^" "hash-audience-"}}{{#if description}}<span class="chip">{{> "icons/avatar"}} {{description}}</span>{{/if}}{{/match}}
+                {{/foreach}}
+            </div>
+            <h1 class="post-title">{{title}}</h1>
+            {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
         </div>
-        <h1 class="post-title">{{title}}</h1>
-        {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
     </header>
 
-    <section class="gh-content">
-        {{content}}
-    </section>
+    <div class="resource-single-layout {{post_class}}">
 
-    <footer class="entry-foot">
-        <a class="btn btn-ghost" href="{{@site.url}}/resources/">{{> "icons/arrow-left"}} {{t "Back to the library"}}</a>
-    </footer>
+        <article class="resource-single">
+            <section class="gh-content">
+                {{content}}
+            </section>
 
-</article>
+            <footer class="entry-foot">
+                <a class="btn btn-ghost" href="{{@site.url}}/resources/">{{> "icons/arrow-left"}} {{t "Back to the library"}}</a>
+            </footer>
+        </article>
+
+        <aside class="resource-side">
+            <div class="entry-side-sticky">
+                {{!-- More of the same type — the first #resource-type-* tag
+                this post carries; every other resource carrying it. --}}
+                {{#foreach tags visibility="internal" limit="20"}}
+                    {{#match slug "~^" "hash-resource-type-"}}
+                        {{#> "with-this" typeTag=. thisId=../id}}
+                            {{#get "posts" filter="tag:{{typeTag.slug}}+id:-{{thisId}}" limit="5" as |more|}}
+                                {{#if more}}
+                                    <div class="widget">
+                                        <h4 class="widget-title">{{> "icons/bookmark"}} {{t "More"}} {{../typeTag.description}}</h4>
+                                        <ul class="widget-posts">
+                                            {{#foreach more}}
+                                                <li class="widget-post">
+                                                    <span class="widget-post-thumb widget-post-thumb-icon">{{> "icons/bookmark"}}</span>
+                                                    <a href="{{url}}"><span class="widget-post-title">{{title}}</span></a>
+                                                </li>
+                                            {{/foreach}}
+                                        </ul>
+                                        <a class="section-more" href="{{@site.url}}/resources/">{{t "All resources"}} {{> "icons/arrow-right"}}</a>
+                                    </div>
+                                {{/if}}
+                            {{/get}}
+                        {{/with-this}}
+                    {{/match}}
+                {{/foreach}}
+
+                {{> "widgets/share-ask"}}
+
+                {{#if @site.members_enabled}}
+                    {{^if @member}}
+                        {{> "widgets/newsletter"}}
+                    {{/if}}
+                {{/if}}
+            </div>
+        </aside>
+
+    </div>
+</div>
 </main>
