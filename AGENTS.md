@@ -148,6 +148,26 @@ it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/
   Admin; locally they were written straight into
   `content/data/ghost-local.db` and Ghost restarted.
 
+- **Teaching kit** (`3-components/_teach.css`) is the design system's
+  component layer ported verbatim — callouts, alerts, tabs, accordions,
+  tables, lists, progress/rings, steppers, quiz, media frames, stats,
+  pager, lesson-nav, lesson-bar. Restyle in `design-system/src/scss`
+  and re-port; never edit the copy. `.badge`, pricing, avatars and the
+  code face are deliberately NOT ported (the theme owns those names).
+  Ghost's `kg-callout-card` wears the callout rail look.
+- **Patterns** (`5-utilities/_patterns.css`): eight backgrounds —
+  grid, dots, blueprint, rings, diagonal, topo, circuit, noise — each
+  a positioned aria-hidden child of a `relative` band, one pattern per
+  band, never two of the same on one screen. Fade modifiers and
+  `.bg-anim`. Mirrored in the design system with a docs section.
+- **Hover language** (`5-utilities/_hover.css`): lift · ring · shine ·
+  reveal · nudge · zoom, applied from ONE curated selector list. A new
+  card joins the list; nothing copies the rules. `html.anim` gates the
+  shine; reduced motion keeps colour only.
+- **Mobile lesson bar** (`partials/lesson-bar.hbs`) sits under the
+  lesson player and the training reader below 1024px; rail.js fills
+  it from the rail list.
+
 ## Layout of the repo
 
 - `routes.yaml` — the URL model; mirror to Ghost's

@@ -1,43 +1,180 @@
-/*  5-utilities / patterns — decorative backgrounds
-    ------------------------------------------------------------
+/*  5-utilities / patterns — the background family
+    ============================================================
 
-    Pure CSS, no images. .bg-grid draws the engineering-paper
-    grid behind heroes; .bg-dots the quieter variant. Both fade
-    out radially so content never fights them. */
+    Eight decorative backgrounds, all pure CSS or inline SVG, all
+    painted in the ACCENT so they recolour with the theme, and all
+    masked so content never fights them. Every one is a positioned
+    child (position:absolute, inset:0) of a `position: relative`
+    band, always aria-hidden.
+
+      .bg-grid       engineering paper — heroes
+      .bg-dots       the quiet halftone — soft bands
+      .bg-blueprint  crosshair tiles with a centre dot — the brand
+                     mark's own drawing grid (homepage hero, training)
+      .bg-rings      concentric rings from a corner — "a path"
+      .bg-diagonal   hatched stripes — libraries, lists
+      .bg-topo       contour lines — the journey, about, schedule
+      .bg-circuit    traces and nodes — code, the lab, CTAs
+      .bg-noise      film grain over a dark band
+
+    Modifiers:
+      .bg-fade-top / .bg-fade-bottom / .bg-fade-left / .bg-fade-right
+                     where the pattern is strongest
+      .bg-strong     roughly double the ink
+      .bg-anim       the pattern drifts slowly (html.anim only)
+
+    Which pattern goes where is a choice per section, not a default:
+    two patterns on one screen should be two different ones.
+    ------------------------------------------------------------ */
 
 .bg-grid,
-.bg-dots {
+.bg-dots,
+.bg-blueprint,
+.bg-rings,
+.bg-diagonal,
+.bg-topo,
+.bg-circuit,
+.bg-noise {
     position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    --ink: var(--accent);
+    --ink-a: 0.09;
+    /* default fade: strongest at the top, gone by the foot */
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, #000 30%, transparent 78%);
 }
 
+.bg-strong { --ink-a: 0.18; }
+
+.bg-fade-top    { -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); mask-image: linear-gradient(to bottom, #000 30%, transparent 100%); }
+.bg-fade-bottom { -webkit-mask-image: linear-gradient(to top, #000 30%, transparent 100%); mask-image: linear-gradient(to top, #000 30%, transparent 100%); }
+.bg-fade-left   { -webkit-mask-image: linear-gradient(to right, #000 20%, transparent 90%); mask-image: linear-gradient(to right, #000 20%, transparent 90%); }
+.bg-fade-right  { -webkit-mask-image: linear-gradient(to left, #000 20%, transparent 90%); mask-image: linear-gradient(to left, #000 20%, transparent 90%); }
+.bg-fade-radial { -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 20%, transparent 75%); }
+
+/* grid */
 .bg-grid {
     background-image:
-        linear-gradient(to right, color-mod(#0176d3 a(7%)) 1px, transparent 1px),
-        linear-gradient(to bottom, color-mod(#0176d3 a(7%)) 1px, transparent 1px);
+        linear-gradient(to right, color-mix(in srgb, var(--ink) calc(var(--ink-a) * 100%), transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--ink) calc(var(--ink-a) * 100%), transparent) 1px, transparent 1px);
     background-size: 44px 44px;
-    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, #000 30%, transparent 75%);
-    mask-image: radial-gradient(ellipse 90% 80% at 50% 0%, #000 30%, transparent 75%);
 }
 
+/* dots */
 .bg-dots {
-    background-image: radial-gradient(color-mod(#0176d3 a(16%)) 1.5px, transparent 1.5px);
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) calc(var(--ink-a) * 200%), transparent) 1.5px, transparent 1.5px);
     background-size: 26px 26px;
-    -webkit-mask-image: radial-gradient(ellipse 80% 90% at 50% 20%, #000 25%, transparent 72%);
-    mask-image: radial-gradient(ellipse 80% 90% at 50% 20%, #000 25%, transparent 72%);
 }
 
-html[data-theme="dark"] .bg-grid {
-    background-image:
-        linear-gradient(to right, rgba(27, 150, 255, 0.09) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(27, 150, 255, 0.09) 1px, transparent 1px);
+/* blueprint — crosshair tile + centre dot, the brand's drawing grid.
+   Painted as a mask over the ink so the tile itself never needs a
+   colour baked in. */
+.bg-blueprint {
+    background: var(--ink);
+    opacity: calc(var(--ink-a) * 1.2);
+    -webkit-mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M0 -6v12M-6 0h12M72 -6v12M66 0h12M0 66v12M-6 72h12M72 66v12M66 72h12' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='36' cy='36' r='1.7' fill='%23000'/%3E%3C/svg%3E"),
+        radial-gradient(120% 90% at 50% 30%, #000 45%, transparent 100%);
+    -webkit-mask-size: 72px 72px, 100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cpath d='M0 -6v12M-6 0h12M72 -6v12M66 0h12M0 66v12M-6 72h12M72 66v12M66 72h12' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='36' cy='36' r='1.7' fill='%23000'/%3E%3C/svg%3E"),
+        radial-gradient(120% 90% at 50% 30%, #000 45%, transparent 100%);
+    mask-size: 72px 72px, 100% 100%;
+    mask-composite: intersect;
 }
 
-html[data-theme="dark"] .bg-dots {
-    background-image: radial-gradient(rgba(27, 150, 255, 0.2) 1.5px, transparent 1.5px);
+/* rings — concentric circles anchored at the top right */
+.bg-rings {
+    background-image: repeating-radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ink) calc(var(--ink-a) * 120%), transparent) 0 1px, transparent 1px 56px);
+    -webkit-mask-image: radial-gradient(ellipse 90% 90% at 100% 0%, #000 10%, transparent 70%);
+    mask-image: radial-gradient(ellipse 90% 90% at 100% 0%, #000 10%, transparent 70%);
 }
+
+/* diagonal hatch */
+.bg-diagonal {
+    background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) calc(var(--ink-a) * 100%), transparent) 0 1px, transparent 1px 18px);
+    -webkit-mask-image: linear-gradient(to left, #000 10%, transparent 70%);
+    mask-image: linear-gradient(to left, #000 10%, transparent 70%);
+}
+
+/* topo — contour lines */
+.bg-topo {
+    background: var(--ink);
+    opacity: calc(var(--ink-a) * 1.1);
+    -webkit-mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160' viewBox='0 0 320 160'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.2'%3E%3Cpath d='M0 40c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 70c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 100c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 130c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 10c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 160c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(to bottom, #000 20%, transparent 100%);
+    -webkit-mask-size: 320px 160px, 100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160' viewBox='0 0 320 160'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.2'%3E%3Cpath d='M0 40c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 70c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 100c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 130c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 10c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3Cpath d='M0 160c40-20 80-20 120 0s80 20 120 0 60-10 80-10'/%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(to bottom, #000 20%, transparent 100%);
+    mask-size: 320px 160px, 100% 100%;
+    mask-composite: intersect;
+}
+
+/* circuit — traces and nodes */
+.bg-circuit {
+    background: var(--ink);
+    opacity: calc(var(--ink-a) * 1.3);
+    -webkit-mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.4'%3E%3Cpath d='M10 10h40v30h30M60 110V80H20M110 60H80V30M90 110v-20h20'/%3E%3C/g%3E%3Cg fill='%23000'%3E%3Ccircle cx='10' cy='10' r='2.4'/%3E%3Ccircle cx='80' cy='40' r='2.4'/%3E%3Ccircle cx='60' cy='110' r='2.4'/%3E%3Ccircle cx='20' cy='80' r='2.4'/%3E%3Ccircle cx='110' cy='60' r='2.4'/%3E%3Ccircle cx='80' cy='30' r='2.4'/%3E%3Ccircle cx='90' cy='110' r='2.4'/%3E%3Ccircle cx='110' cy='90' r='2.4'/%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(ellipse 80% 90% at 100% 100%, #000 20%, transparent 75%);
+    -webkit-mask-size: 120px 120px, 100% 100%;
+    -webkit-mask-composite: source-in;
+    mask-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.4'%3E%3Cpath d='M10 10h40v30h30M60 110V80H20M110 60H80V30M90 110v-20h20'/%3E%3C/g%3E%3Cg fill='%23000'%3E%3Ccircle cx='10' cy='10' r='2.4'/%3E%3Ccircle cx='80' cy='40' r='2.4'/%3E%3Ccircle cx='60' cy='110' r='2.4'/%3E%3Ccircle cx='20' cy='80' r='2.4'/%3E%3Ccircle cx='110' cy='60' r='2.4'/%3E%3Ccircle cx='80' cy='30' r='2.4'/%3E%3Ccircle cx='90' cy='110' r='2.4'/%3E%3Ccircle cx='110' cy='90' r='2.4'/%3E%3C/g%3E%3C/svg%3E"),
+        radial-gradient(ellipse 80% 90% at 100% 100%, #000 20%, transparent 75%);
+    mask-size: 120px 120px, 100% 100%;
+    mask-composite: intersect;
+}
+
+/* noise — film grain, for dark bands only */
+.bg-noise {
+    opacity: 0.35;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.12 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+/* on a dark band the ink reads brighter */
+.on-dark .bg-grid, .on-dark .bg-dots, .on-dark .bg-blueprint, .on-dark .bg-rings, .on-dark .bg-diagonal, .on-dark .bg-topo, .on-dark .bg-circuit,
+.home-cta .bg-grid, .home-cta .bg-dots, .home-cta .bg-blueprint, .home-cta .bg-rings, .home-cta .bg-diagonal, .home-cta .bg-topo, .home-cta .bg-circuit,
+.site-foot .bg-blueprint, .site-foot .bg-topo, .site-foot .bg-circuit {
+    --ink: var(--brand-400);
+    --ink-a: 0.14;
+}
+
+/* dark theme: a touch more ink everywhere */
+html[data-theme="dark"] .bg-grid,
+html[data-theme="dark"] .bg-dots,
+html[data-theme="dark"] .bg-blueprint,
+html[data-theme="dark"] .bg-rings,
+html[data-theme="dark"] .bg-diagonal,
+html[data-theme="dark"] .bg-topo,
+html[data-theme="dark"] .bg-circuit {
+    --ink: var(--brand-400);
+    --ink-a: 0.13;
+}
+
+/* a slow drift, only when motion is welcome */
+@keyframes ns-pattern-drift {
+    from { background-position: 0 0; }
+    to { background-position: 44px 44px; }
+}
+
+@keyframes ns-mask-drift {
+    from { -webkit-mask-position: 0 0, 0 0; mask-position: 0 0, 0 0; }
+    to { -webkit-mask-position: 72px 72px, 0 0; mask-position: 72px 72px, 0 0; }
+}
+
+html.anim .bg-grid.bg-anim,
+html.anim .bg-dots.bg-anim { animation: ns-pattern-drift 60s linear infinite; }
+html.anim .bg-blueprint.bg-anim { animation: ns-mask-drift 90s linear infinite; }
 
 /* A soft accent glow anchoring a hero's corner */
 .bg-glow {

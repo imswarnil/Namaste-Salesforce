@@ -1,0 +1,1346 @@
+/*  3-components / teach — the teaching kit, ported from the NS Design
+    System (design-system/src/scss/3-components). Plain CSS so a lesson
+    can use any of it from an HTML card: callouts, alerts, tabs,
+    accordions, tables, check/number/definition lists, progress bars
+    and rings, steppers, the quiz, media frames, stats, empty states,
+    the numbered pager, prev/next lesson cards and the sticky mobile
+    lesson bar. Kept byte-close to the source so the two stay one
+    system; do not restyle here, restyle there and re-port.
+
+    Left out on purpose: .badge (the changelog badge owns that name
+    here), pricing (.tier-card is the membership grid), avatars and
+    the code face (.code-window is the theme's).
+    ============================================================ */
+
+
+/* ---- from _alerts.scss ---- */
+/*  3-components / alerts & callouts
+    ============================================================
+
+      .alert            inline status message (info default)
+        .alert-success / -warning / -error
+        .alert-icon · .alert-body · .alert-title · .alert-close
+      .callout          the lesson-content aside: note / tip /
+                        warn / key — a coloured rail, no fill
+    Text always takes an *-ink token; fills take the base hue
+    at low alpha so both themes stay AA.
+    ------------------------------------------------------------ */
+
+.alert {
+    display: flex;
+    gap: 1.2rem;
+    padding: 1.4rem 1.6rem;
+    font-size: 1.45rem;
+    line-height: 1.55;
+    color: var(--info-ink);
+    background: rgba(1, 118, 211, 0.08);
+    border: 1px solid rgba(1, 118, 211, 0.25);
+    border-radius: var(--radius);
+}
+
+.alert-icon {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 0.1rem;
+}
+
+.alert-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert-title {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+}
+
+.alert-close {
+    flex-shrink: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    border-radius: var(--radius-sm);
+}
+
+.alert-close:hover { opacity: 1; }
+.alert-close svg { width: 1.4rem; height: 1.4rem; }
+
+.alert-success {
+    color: var(--success-ink);
+    background: rgba(46, 132, 74, 0.1);
+    border-color: rgba(46, 132, 74, 0.3);
+}
+
+.alert-warning {
+    color: var(--warning-ink);
+    background: rgba(254, 147, 57, 0.12);
+    border-color: rgba(254, 147, 57, 0.35);
+}
+
+.alert-error {
+    color: var(--error-ink);
+    background: rgba(234, 0, 30, 0.08);
+    border-color: rgba(234, 0, 30, 0.25);
+}
+
+/* Callouts — the reading-surface aside. Rail colour carries the
+   type; the body stays in normal ink so long notes read easily. */
+.callout {
+    position: relative;
+    padding: 1.6rem 2rem 1.6rem 2.4rem;
+    margin: 0;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    font-size: 1.55rem;
+    line-height: 1.6;
+}
+
+.callout-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.6rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.callout-label svg { width: 1.5rem; height: 1.5rem; }
+
+.callout p + p { margin-top: 0.8rem; }
+
+.callout-tip  { border-left-color: var(--success); }
+.callout-tip  .callout-label { color: var(--success-ink); }
+.callout-warn { border-left-color: var(--warning); }
+.callout-warn .callout-label { color: var(--warning-ink); }
+.callout-danger { border-left-color: var(--error); }
+.callout-danger .callout-label { color: var(--error-ink); }
+.callout-key  { border-left-color: var(--level-ink); background: rgba(254, 147, 57, 0.06); }
+.callout-key  .callout-label { color: var(--level-ink); }
+
+/* Ghost's own callout card, when it lands on a lesson */
+.gh-content .callout { margin-top: 2.2rem; }
+
+
+/* ---- from _tabs.scss ---- */
+/*  3-components / tabs — CSS-only, radio driven
+    ============================================================
+
+      <div class="tabs">
+        <input type="radio" name="t" id="t-1" checked>
+        <input type="radio" name="t" id="t-2">
+        <div class="tabs-nav" role="tablist">
+          <label for="t-1">Overview</label>
+          <label for="t-2">Curriculum</label>
+        </div>
+        <section class="tab-panel">…</section>
+        <section class="tab-panel">…</section>
+      </div>
+
+    The n-th radio shows the n-th <section>. Up to eight tabs.
+    Add .tabs-pill for the segmented-control face.
+    ------------------------------------------------------------ */
+
+.tabs > input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+}
+
+.tabs-nav::-webkit-scrollbar { display: none; }
+
+.tabs-nav label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 1.1rem 1.4rem;
+    margin-bottom: -1px;
+    font-size: 1.45rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.tabs-nav label:hover { color: var(--heading); }
+.tabs-nav label svg { width: 1.6rem; height: 1.6rem; }
+.tabs-nav .badge { margin-left: 0.2rem; }
+
+.tabs > .tab-panel {
+    display: none;
+    padding-top: 2.4rem;
+}
+
+/* wire radio n → label n and panel n */
+.tabs > input:nth-of-type(1):checked ~ .tabs-nav label:nth-of-type(1),
+.tabs > input:nth-of-type(2):checked ~ .tabs-nav label:nth-of-type(2),
+.tabs > input:nth-of-type(3):checked ~ .tabs-nav label:nth-of-type(3),
+.tabs > input:nth-of-type(4):checked ~ .tabs-nav label:nth-of-type(4),
+.tabs > input:nth-of-type(5):checked ~ .tabs-nav label:nth-of-type(5),
+.tabs > input:nth-of-type(6):checked ~ .tabs-nav label:nth-of-type(6),
+.tabs > input:nth-of-type(7):checked ~ .tabs-nav label:nth-of-type(7),
+.tabs > input:nth-of-type(8):checked ~ .tabs-nav label:nth-of-type(8) {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.tabs > input:nth-of-type(1):checked ~ .tab-panel:nth-of-type(1),
+.tabs > input:nth-of-type(2):checked ~ .tab-panel:nth-of-type(2),
+.tabs > input:nth-of-type(3):checked ~ .tab-panel:nth-of-type(3),
+.tabs > input:nth-of-type(4):checked ~ .tab-panel:nth-of-type(4),
+.tabs > input:nth-of-type(5):checked ~ .tab-panel:nth-of-type(5),
+.tabs > input:nth-of-type(6):checked ~ .tab-panel:nth-of-type(6),
+.tabs > input:nth-of-type(7):checked ~ .tab-panel:nth-of-type(7),
+.tabs > input:nth-of-type(8):checked ~ .tab-panel:nth-of-type(8) {
+    display: block;
+}
+
+.tabs > input:focus-visible ~ .tabs-nav {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Segmented-control face */
+.tabs-pill .tabs-nav {
+    display: inline-flex;
+    padding: 0.4rem;
+    gap: 0.2rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-full);
+}
+
+.tabs-pill .tabs-nav label {
+    padding: 0.7rem 1.4rem;
+    margin: 0;
+    font-size: 1.35rem;
+    border: none;
+    border-radius: var(--radius-full);
+}
+
+.tabs-pill > input:nth-of-type(1):checked ~ .tabs-nav label:nth-of-type(1),
+.tabs-pill > input:nth-of-type(2):checked ~ .tabs-nav label:nth-of-type(2),
+.tabs-pill > input:nth-of-type(3):checked ~ .tabs-nav label:nth-of-type(3),
+.tabs-pill > input:nth-of-type(4):checked ~ .tabs-nav label:nth-of-type(4),
+.tabs-pill > input:nth-of-type(5):checked ~ .tabs-nav label:nth-of-type(5),
+.tabs-pill > input:nth-of-type(6):checked ~ .tabs-nav label:nth-of-type(6) {
+    color: var(--heading);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* ---- from _accordion.scss ---- */
+/*  3-components / accordion — native <details>
+    ------------------------------------------------------------
+
+      <details class="acc" open>
+        <summary>Question<svg class="acc-chev">…</svg></summary>
+        <div class="acc-body">Answer</div>
+      </details>
+
+    .acc-group stacks them with shared hairlines; .faq is the
+    same thing with the question set in heading weight.
+    ------------------------------------------------------------ */
+
+.acc {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.acc + .acc { margin-top: 1rem; }
+
+.acc > summary {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.6rem 2rem;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color var(--dur-fast) var(--ease);
+}
+
+.acc > summary::-webkit-details-marker { display: none; }
+.acc > summary:hover { background: var(--bg-alt); }
+
+.acc > summary > svg:first-child {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.acc-chev {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-left: auto;
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transition: transform var(--dur) var(--ease);
+}
+
+.acc[open] > summary { border-bottom: 1px solid var(--border-soft); }
+.acc[open] .acc-chev { transform: rotate(180deg); }
+
+.acc-body {
+    padding: 1.6rem 2rem 2rem;
+    font-size: 1.5rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.acc-body > * + * { margin-top: 1rem; }
+
+/* Grouped: one box, hairlines between */
+.acc-group .acc {
+    border-radius: 0;
+    border-width: 0 0 1px;
+}
+
+.acc-group .acc + .acc { margin-top: 0; }
+.acc-group { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface); }
+.acc-group .acc:last-child { border-bottom: 0; }
+
+/* Flush FAQ face — no box, just the rule */
+.faq .acc {
+    background: transparent;
+    border-width: 0 0 1px;
+    border-radius: 0;
+}
+
+.faq .acc > summary { padding: 1.8rem 0; font-size: 1.7rem; }
+.faq .acc > summary:hover { background: transparent; color: var(--accent); }
+.faq .acc[open] > summary { border-bottom: 0; }
+.faq .acc-body { padding: 0 0 2rem; }
+
+
+/* ---- from _tables.scss ---- */
+/*  3-components / tables
+    ------------------------------------------------------------
+
+      .table-wrap    horizontal scroll guard on small screens
+      .table         the data table face
+        .table-striped · .table-compact · .table-hover
+    Cells carrying numbers get .num (right-aligned, tabular).
+    ------------------------------------------------------------ */
+
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.45rem;
+    line-height: 1.5;
+}
+
+.table th,
+.table td {
+    padding: 1.2rem 1.6rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.table thead th {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    background: var(--bg-alt);
+    white-space: nowrap;
+}
+
+.table tbody tr:last-child td { border-bottom: 0; }
+.table td strong { color: var(--heading); }
+.table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.table-striped tbody tr:nth-child(even) td { background: var(--bg-alt); }
+.table-hover tbody tr:hover td { background: var(--accent-soft); }
+.table-compact th, .table-compact td { padding: 0.8rem 1.2rem; font-size: 1.35rem; }
+
+/* Comparison table — the first column is the row label */
+.table-compare tbody th {
+    font-weight: 600;
+    color: var(--heading);
+    background: transparent;
+    white-space: normal;
+}
+
+.table .tick { color: var(--success-ink); }
+.table .cross { color: var(--text-faint); }
+.table .tick svg, .table .cross svg { width: 1.8rem; height: 1.8rem; }
+
+
+/* ---- from _lists.scss ---- */
+/*  3-components / lists — check lists, icon lists, definition grids
+    ------------------------------------------------------------ */
+
+.check-list,
+.icon-list {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    font-size: 1.5rem;
+    line-height: 1.55;
+}
+
+.check-list li,
+.icon-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.check-list li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 0.2rem;
+    border-radius: 50%;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232e844a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center / 60% no-repeat,
+        rgba(46, 132, 74, 0.12);
+}
+
+.icon-list svg {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 0.2rem;
+    color: var(--accent);
+}
+
+/* Two-column definition grid: term | description */
+.dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 1rem 2.4rem;
+    margin: 0;
+    font-size: 1.45rem;
+}
+
+.dl dt {
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.dl dd {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+@media (max-width: 520px) {
+    .dl { grid-template-columns: minmax(0, 1fr); gap: 0.2rem 0; }
+    .dl dd { margin-bottom: 1rem; }
+}
+
+/* Numbered feature list — big number, title, line */
+.num-list {
+    display: grid;
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+    counter-reset: num;
+}
+
+.num-list li {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 1.6rem;
+    align-items: start;
+}
+
+.num-list li::before {
+    counter-increment: num;
+    content: counter(num, decimal-leading-zero);
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    padding-top: 0.3rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.num-list h4 { margin-bottom: 0.3rem; }
+.num-list p { font-size: 1.45rem; color: var(--text-muted); }
+
+
+/* ---- from _progress.scss ---- */
+/*  3-components / progress — bars, rings, steppers
+    ============================================================
+
+      .progress          a bar; --value is 0–100 on the element
+      .ring              a conic ring; same --value contract
+      .steps             horizontal stepper (.is-done / .is-current)
+    Progress is how a learning site says "you are here".
+    ------------------------------------------------------------ */
+
+.progress {
+    --value: 0;
+    position: relative;
+    height: 0.8rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progress::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: calc(var(--value) * 1%);
+    background: linear-gradient(90deg, var(--brand-500), var(--brand-400));
+    border-radius: inherit;
+    transition: width var(--dur-slow) var(--ease);
+}
+
+.progress-lg { height: 1.2rem; }
+.progress-sm { height: 0.5rem; border: 0; }
+.progress-success::before { background: var(--success); }
+
+.progress-row {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-size: 1.3rem;
+    color: var(--text-muted);
+}
+
+.progress-row .progress { flex: 1; }
+.progress-row strong { color: var(--heading); font-variant-numeric: tabular-nums; }
+
+/* Ring */
+.ring {
+    --value: 0;
+    --ring-size: 6.4rem;
+    --ring-w: 0.6rem;
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: var(--ring-size);
+    height: var(--ring-size);
+    border-radius: 50%;
+    background:
+        conic-gradient(var(--accent) calc(var(--value) * 1%), var(--bg-alt) 0);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--heading);
+    font-variant-numeric: tabular-nums;
+}
+
+.ring::before {
+    content: "";
+    position: absolute;
+    inset: var(--ring-w);
+    background: var(--surface);
+    border-radius: 50%;
+}
+
+.ring > * { position: relative; }
+.ring-sm { --ring-size: 4rem; --ring-w: 0.4rem; font-size: 1.05rem; }
+.ring-lg { --ring-size: 9.6rem; --ring-w: 0.8rem; font-size: 1.8rem; }
+
+/* Stepper */
+.steps {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+}
+
+.steps li {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-faint);
+}
+
+.steps li::before {
+    counter-increment: step;
+    content: counter(step);
+    display: inline-grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    z-index: 1;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 1.6rem;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+}
+
+.steps .is-done { color: var(--text-muted); }
+.steps .is-done::before {
+    content: "";
+    color: #fff;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center / 55% no-repeat,
+        var(--accent);
+    border-color: var(--accent);
+}
+.steps .is-done::after { background: var(--accent); }
+.steps .is-current { color: var(--accent); }
+.steps .is-current::before {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+@media (max-width: 600px) {
+    .steps li span { display: none; }
+    .steps .is-current span { display: block; }
+}
+
+/* Vertical stepper — a lesson's inner steps */
+.steps-v {
+    flex-direction: column;
+    gap: 0;
+}
+
+.steps-v li {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.6rem;
+    text-align: left;
+    padding-bottom: 2.4rem;
+}
+
+.steps-v li:not(:last-child)::after {
+    top: 3.2rem;
+    left: 1.5rem;
+    width: 2px;
+    height: calc(100% - 3.2rem);
+}
+
+.steps-v li::before { flex-shrink: 0; }
+.steps-v h4 { margin-bottom: 0.3rem; font-size: 1.6rem; }
+.steps-v p { font-size: 1.45rem; font-weight: 400; color: var(--text-muted); }
+
+
+/* ---- from _quiz.scss ---- */
+/*  3-components / quiz — check-your-understanding, CSS only
+    ============================================================
+
+      <form class="quiz">
+        <fieldset class="quiz-q">
+          <legend>1. Which object holds a deal?</legend>
+          <label class="quiz-opt"><input type="radio" name="q1" data-correct><span>Opportunity</span></label>
+          <label class="quiz-opt"><input type="radio" name="q1"><span>Lead</span></label>
+          <p class="quiz-explain">…</p>
+        </fieldset>
+      </form>
+
+    :has() paints the chosen option right or wrong and reveals
+    the explanation — no script, no submit. .quiz-score is the
+    optional tally nsds.js fills in.
+    ------------------------------------------------------------ */
+
+.quiz {
+    display: grid;
+    gap: 2.4rem;
+}
+
+.quiz-q {
+    margin: 0;
+    padding: 2.2rem 2.4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.quiz-q legend {
+    float: left;
+    width: 100%;
+    margin-bottom: 1.6rem;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--heading);
+}
+
+.quiz-q legend + * { clear: both; }
+
+.quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.4rem;
+    margin-top: 0.8rem;
+    font-size: 1.5rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.quiz-opt:hover { border-color: var(--accent); }
+
+.quiz-opt input {
+    appearance: none;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.quiz-opt input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* The verdict */
+.quiz-opt:has(input:checked) {
+    border-color: var(--error);
+    background: rgba(234, 0, 30, 0.06);
+}
+.quiz-opt:has(input:checked) input { border-color: var(--error); background: var(--error); box-shadow: inset 0 0 0 3px var(--bg); }
+
+.quiz-opt:has(input[data-correct]:checked) {
+    border-color: var(--success);
+    background: rgba(46, 132, 74, 0.08);
+}
+.quiz-opt:has(input[data-correct]:checked) input { border-color: var(--success); background: var(--success); }
+
+/* Once anything is picked, show the right one and the explanation */
+.quiz-q:has(input:checked) .quiz-opt:has(input[data-correct]) { border-color: var(--success); }
+
+.quiz-explain {
+    display: none;
+    margin-top: 1.4rem;
+    padding: 1.2rem 1.4rem;
+    font-size: 1.4rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    background: var(--bg-alt);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+}
+
+.quiz-q:has(input:checked) .quiz-explain { display: block; }
+
+.quiz-score {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 1.6rem 2rem;
+    font-size: 1.45rem;
+    color: var(--text-muted);
+    background: var(--accent-soft);
+    border-radius: var(--radius-lg);
+}
+
+.quiz-score strong { font-size: 2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+
+/* ---- from _pager.scss ---- */
+/*  3-components / pager & lesson navigation
+    ============================================================
+
+      .pager        numbered page links — archives, catalogues
+      .lesson-nav   prev / next lesson cards under an article
+      .lesson-bar   the sticky mobile footer: progress + arrows
+    .pagination (newer / older) and .post-nav already exist in
+    _pagination.scss; these are the learning-site additions.
+    ------------------------------------------------------------ */
+
+.pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    list-style: none;
+    padding: 0;
+}
+
+.pager a,
+.pager span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4rem;
+    height: 4rem;
+    padding: 0 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.pager a:hover { color: var(--accent); border-color: var(--accent); }
+.pager a svg { width: 1.6rem; height: 1.6rem; }
+.pager .is-current a,
+.pager a[aria-current="page"] { color: var(--accent-contrast); background: var(--accent); border-color: var(--accent); }
+.pager .pager-gap { border: 0; min-width: 2rem; padding: 0; color: var(--text-faint); }
+
+/* Prev / next lesson cards */
+.lesson-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem;
+    margin-top: 4.8rem;
+    padding-top: 3.2rem;
+    border-top: 1px solid var(--border-soft);
+}
+
+.lesson-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.8rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.lesson-nav-link:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+.lesson-nav-next { text-align: right; align-items: flex-end; grid-column: 2; }
+.lesson-nav-prev { grid-column: 1; }
+
+.lesson-nav-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.lesson-nav-label svg { width: 1.4rem; height: 1.4rem; }
+
+.lesson-nav-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--heading);
+}
+
+.lesson-nav-link:hover .lesson-nav-title { color: var(--accent); }
+.lesson-nav-meta { font-size: 1.3rem; color: var(--text-muted); }
+
+@media (max-width: 600px) {
+    .lesson-nav { grid-template-columns: minmax(0, 1fr); }
+    .lesson-nav-next, .lesson-nav-prev { grid-column: auto; }
+}
+
+/* Sticky mobile lesson bar: progress + prev/next, shown ≤1023px */
+.lesson-bar {
+    display: none;
+    position: sticky;
+    bottom: 0;
+    z-index: var(--z-sticky);
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem max(4vmin, 20px);
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    background: var(--header-bg);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-soft);
+}
+
+.lesson-bar .progress { flex: 1; }
+.lesson-bar-count { font-size: 1.25rem; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lesson-bar .icon-btn { border: 1px solid var(--border); }
+
+@media (max-width: 1023px) {
+    .lesson-bar { display: flex; }
+}
+
+
+/* ---- from _media.scss ---- */
+/*  3-components / media frames
+    ============================================================
+
+      .frame          16:9 media well (video embed, thumbnail)
+        .frame-play   the play badge
+        .frame-4x3 / .frame-square / .frame-cinema (21:9)
+      .browser        a mac-style window around a screenshot or
+                      code sample — .browser-bar dots + address
+      .device         a phone bezel for mobile screenshots
+    ------------------------------------------------------------ */
+
+.frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background:
+        radial-gradient(600px 300px at 70% -20%, rgba(27, 150, 255, 0.35), transparent 70%),
+        var(--gray-950);
+    border-radius: var(--radius-lg);
+}
+
+.frame > img,
+.frame > iframe,
+.frame > video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 0;
+}
+
+.frame-4x3 { aspect-ratio: 4 / 3; }
+.frame-square { aspect-ratio: 1; }
+.frame-cinema { aspect-ratio: 21 / 9; }
+.frame-flat { border-radius: 0; }
+
+.frame-play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #fff;
+}
+
+.frame-play svg {
+    width: 6.4rem;
+    height: 6.4rem;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
+    transition: transform var(--dur) var(--ease);
+}
+
+.frame:hover .frame-play svg { transform: scale(1.08); }
+
+.frame-badge {
+    position: absolute;
+    right: 1.2rem;
+    bottom: 1.2rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(5, 18, 34, 0.75);
+    border-radius: var(--radius-sm);
+    font-variant-numeric: tabular-nums;
+}
+
+.frame-caption {
+    margin-top: 1rem;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Browser window */
+.browser {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.4rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.browser-dots {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.browser-dots span {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    background: var(--border);
+}
+
+.browser-dots span:nth-child(1) { background: #ff5f57; }
+.browser-dots span:nth-child(2) { background: #febc2e; }
+.browser-dots span:nth-child(3) { background: #28c840; }
+
+.browser-url {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 2.8rem;
+    padding: 0 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    color: var(--text-faint);
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.browser-url svg { width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+.browser-body { position: relative; }
+.browser-body > img { width: 100%; }
+.browser-body > pre { margin: 0; border-radius: 0; }
+
+/* Dark browser (code windows) */
+.browser-dark { background: #08192f; border-color: rgba(152, 166, 184, 0.15); }
+.browser-dark .browser-bar { background: #0a1f3c; border-color: rgba(152, 166, 184, 0.12); }
+.browser-dark .browser-url { color: var(--gray-400); background: #08192f; border-color: rgba(152, 166, 184, 0.15); }
+.browser-dark .browser-body { color: var(--gray-100); }
+
+/* Phone bezel */
+.device {
+    width: min(100%, 320px);
+    margin: 0 auto;
+    padding: 1.2rem;
+    background: var(--gray-950);
+    border-radius: 3.6rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.device-screen {
+    aspect-ratio: 9 / 19.5;
+    overflow: hidden;
+    background: var(--bg);
+    border-radius: 2.6rem;
+}
+
+.device-screen > img { width: 100%; height: 100%; object-fit: cover; }
+
+
+/* ---- from _stats.scss ---- */
+/*  3-components / stats — number tiles
+    ------------------------------------------------------------
+
+      .stats          the grid
+      .stat           one tile: .stat-value, .stat-label, .stat-delta
+      .stats-inline   the borderless row (hero / footer strip)
+    ------------------------------------------------------------ */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.6rem;
+}
+
+.stat {
+    padding: 2rem 2.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.stat-value {
+    display: block;
+    font-size: clamp(2.6rem, 3.5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--heading);
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-value em {
+    font-style: normal;
+    color: var(--accent);
+}
+
+.stat-label {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.stat-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    margin-top: 0.8rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--success-ink);
+}
+
+.stat-delta svg { width: 1.3rem; height: 1.3rem; }
+.stat-delta-down { color: var(--error-ink); }
+
+.stat-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1.4rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius);
+}
+
+.stat-icon svg { width: 2rem; height: 2rem; }
+
+.stats-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem 4.8rem;
+}
+
+.stats-inline .stat {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+/* On a dark band */
+.on-dark .stat { background: rgba(255, 255, 255, 0.04); border-color: rgba(152, 166, 184, 0.18); }
+.on-dark .stat-value { color: #fff; }
+.on-dark .stat-label { color: var(--gray-400); }
+
+
+/* ---- from _empty.scss ---- */
+/*  3-components / empty states, dialog, toast
+    ------------------------------------------------------------ */
+
+.empty {
+    display: grid;
+    justify-items: center;
+    gap: 1.2rem;
+    padding: 5.6rem 2.4rem;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.empty-icon {
+    display: grid;
+    place-items: center;
+    width: 6.4rem;
+    height: 6.4rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius-lg);
+}
+
+.empty-icon svg { width: 2.8rem; height: 2.8rem; }
+.empty h3 { font-size: 2rem; }
+.empty p { max-width: 42ch; font-size: 1.5rem; color: var(--text-muted); }
+
+/* <dialog class="modal"> — native, ::backdrop, no JS beyond showModal() */
+.modal {
+    width: min(92vw, 560px);
+    padding: 0;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal::backdrop {
+    background: var(--scrim);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    padding: 2rem 2.4rem 1.6rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.modal-head h3 { font-size: 1.9rem; }
+.modal-body { padding: 2rem 2.4rem; font-size: 1.5rem; line-height: 1.6; color: var(--text-muted); }
+.modal-body > * + * { margin-top: 1.2rem; }
+
+.modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.6rem 2.4rem 2rem;
+    background: var(--bg-alt);
+    border-top: 1px solid var(--border-soft);
+}
+
+@media (max-width: 600px) {
+    .modal { width: 100vw; max-width: none; margin: auto 0 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+    .modal-foot .btn { flex: 1; }
+}
+
+/* Toast — fixed bottom-centre, nsds.js toggles .is-open */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 2.4rem;
+    z-index: var(--z-toast);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    max-width: min(92vw, 420px);
+    padding: 1.2rem 1.6rem;
+    font-size: 1.4rem;
+    color: var(--gray-50);
+    background: var(--gray-900);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    transform: translate(-50%, 1.6rem);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
+}
+
+.toast.is-open { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.toast svg { width: 1.8rem; height: 1.8rem; color: var(--brand-400); flex-shrink: 0; }
+
+
+/* ---- from _badges.scss ---- */
+/*  3-components / badges, status dots, kbd
+    ------------------------------------------------------------
+
+      .badge          a count or short token on a pill
+      .badge-dot      a live/status marker (colour by modifier)
+      .status         dot + word, for "Live", "Draft", "Done"
+      .kbd            a keyboard key
+    ------------------------------------------------------------ */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.badge-dot {
+    display: inline-block;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+}
+
+.badge-dot-success { background: var(--success); }
+.badge-dot-warning { background: var(--warning); }
+.badge-dot-error   { background: var(--error); }
+.badge-dot-accent  { background: var(--accent); }
+
+.badge-dot-live {
+    background: var(--error);
+    box-shadow: 0 0 0 0 rgba(234, 0, 30, 0.5);
+    animation: nsds-pulse 1.6s var(--ease-out) infinite;
+}
+
+@keyframes nsds-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(234, 0, 30, 0.45); }
+    70%  { box-shadow: 0 0 0 8px rgba(234, 0, 30, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(234, 0, 30, 0); }
+}
+
+.kbd {
+    display: inline-block;
+    min-width: 2.2rem;
+    padding: 0.15rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    text-align: center;
+    color: var(--heading);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: var(--radius-sm);
+}
+
+
+/* ---- Ghost callout cards, in the callout grammar ---- */
+.gh-content .kg-callout-card {
+    display: flex;
+    gap: 1.2rem;
+    padding: 1.6rem 2rem 1.6rem 2.4rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    font-size: 1.55rem;
+    line-height: 1.6;
+}
+
+.gh-content .kg-callout-card-grey  { border-left-color: var(--text-faint); }
+.gh-content .kg-callout-card-white { background: var(--surface); }
+.gh-content .kg-callout-card-blue  { background: var(--accent-soft); border-left-color: var(--accent); }
+.gh-content .kg-callout-card-green { background: rgba(46, 132, 74, 0.08); border-left-color: var(--success); }
+.gh-content .kg-callout-card-yellow { background: rgba(254, 147, 57, 0.1); border-left-color: var(--warning); }
+.gh-content .kg-callout-card-red   { background: rgba(234, 0, 30, 0.07); border-left-color: var(--error); }
+.gh-content .kg-callout-card-pink  { background: rgba(234, 0, 30, 0.05); border-left-color: #d63384; }
+.gh-content .kg-callout-card-purple { background: rgba(120, 80, 220, 0.08); border-left-color: #7850dc; }
+.gh-content .kg-callout-card-accent { background: var(--accent); color: var(--accent-contrast); border-left-color: var(--brand-800); }
+.gh-content .kg-callout-emoji { font-size: 1.8rem; line-height: 1.4; }

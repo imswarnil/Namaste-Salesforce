@@ -1,0 +1,342 @@
+/*  5-utilities / hover — the one hover language
+    ============================================================
+
+    Every interactive surface answers the pointer the same way:
+
+      lift      a 3px rise and the large shadow
+      ring      the border turns accent
+      shine     a light sweep crosses the surface once, left→right
+      reveal    the halftone pattern fades in behind the content
+      nudge     a trailing arrow moves 4px along its direction
+      zoom      media inside a card scales 4%
+
+    The list of surfaces is curated here, in one place, so a new
+    card gets the language by joining the list rather than by
+    copying five rules. Everything is transform/opacity/colour;
+    reduced motion turns it all into a plain colour change.
+    ------------------------------------------------------------ */
+
+.card,
+.prop,
+.home-prop,
+.audience-card,
+.proj-card,
+.activity-card,
+.module-card,
+.resource-card,
+.rhythm-card,
+.about-stat,
+.tier,
+.stat,
+.pl-card,
+.widget-cta,
+.reel-item .reel-thumb,
+.home-stack-band,
+.stack-item,
+.training-index li a,
+.trail-module-head {
+    position: relative;
+    isolation: isolate;
+    transition:
+        transform var(--dur) var(--ease),
+        box-shadow var(--dur) var(--ease),
+        border-color var(--dur) var(--ease),
+        background-color var(--dur) var(--ease);
+}
+
+/* shine: a diagonal light band parked off the left edge */
+.card::before,
+.prop::before,
+.home-prop::before,
+.audience-card::before,
+.proj-card::before,
+.activity-card::before,
+.module-card::before,
+.resource-card::before,
+.rhythm-card::before,
+.about-stat::before,
+.tier::before,
+.stat::before,
+.pl-card::before,
+.widget-cta::before,
+.home-stack-band::before,
+.trail-module-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+    transform: translateX(-120%);
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease);
+}
+
+html[data-theme="dark"] .card::before,
+html[data-theme="dark"] .prop::before,
+html[data-theme="dark"] .home-prop::before,
+html[data-theme="dark"] .audience-card::before,
+html[data-theme="dark"] .proj-card::before,
+html[data-theme="dark"] .activity-card::before,
+html[data-theme="dark"] .module-card::before,
+html[data-theme="dark"] .resource-card::before,
+html[data-theme="dark"] .rhythm-card::before,
+html[data-theme="dark"] .about-stat::before,
+html[data-theme="dark"] .tier::before,
+html[data-theme="dark"] .stat::before,
+html[data-theme="dark"] .pl-card::before,
+html[data-theme="dark"] .widget-cta::before,
+html[data-theme="dark"] .home-stack-band::before,
+html[data-theme="dark"] .trail-module-head::before {
+    background: linear-gradient(115deg, transparent 35%, rgba(27, 150, 255, 0.22) 50%, transparent 65%);
+}
+
+@keyframes ns-shine {
+    from { transform: translateX(-120%); }
+    to { transform: translateX(120%); }
+}
+
+html.anim .card:hover::before,
+html.anim .prop:hover::before,
+html.anim .home-prop:hover::before,
+html.anim .audience-card:hover::before,
+html.anim .proj-card:hover::before,
+html.anim .activity-card:hover::before,
+html.anim .module-card:hover::before,
+html.anim .resource-card:hover::before,
+html.anim .rhythm-card:hover::before,
+html.anim .about-stat:hover::before,
+html.anim .tier:hover::before,
+html.anim .stat:hover::before,
+html.anim .pl-card:hover::before,
+html.anim .widget-cta:hover::before,
+html.anim .home-stack-band:hover::before,
+html.anim .trail-module-head:hover::before {
+    opacity: 1;
+    animation: ns-shine 0.9s var(--ease) forwards;
+}
+
+/* reveal: the halftone behind the content, top-right corner */
+.card::after,
+.prop::after,
+.home-prop::after,
+.audience-card::after,
+.proj-card::after,
+.module-card::after,
+.resource-card::after,
+.rhythm-card::after,
+.about-stat::after,
+.tier::after,
+.stat::after,
+.pl-card::after,
+.widget-cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: radial-gradient(color-mix(in srgb, var(--accent) 22%, transparent) 1.4px, transparent 1.4px);
+    background-size: 18px 18px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 60% at 100% 0%, #000 0%, transparent 70%);
+    mask-image: radial-gradient(ellipse 60% 60% at 100% 0%, #000 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+}
+
+.card:hover::after,
+.prop:hover::after,
+.home-prop:hover::after,
+.audience-card:hover::after,
+.proj-card:hover::after,
+.module-card:hover::after,
+.resource-card:hover::after,
+.rhythm-card:hover::after,
+.about-stat:hover::after,
+.tier:hover::after,
+.stat:hover::after,
+.pl-card:hover::after,
+.widget-cta:hover::after {
+    opacity: 1;
+}
+
+/* the content sits above the reveal, below the shine */
+.card > *,
+.prop > *,
+.home-prop > *,
+.audience-card > *,
+.proj-card > *,
+.module-card > *,
+.resource-card > *,
+.rhythm-card > *,
+.about-stat > *,
+.tier > *,
+.stat > *,
+.pl-card > *,
+.widget-cta > * {
+    position: relative;
+    z-index: 0;
+}
+
+/* lift + ring — the base motion, for the surfaces that did not
+   already declare their own hover (those keep theirs; the shine and
+   the reveal join them regardless). */
+.prop:hover,
+.home-prop:hover,
+.proj-card:hover,
+.module-card:hover,
+.rhythm-card:hover,
+.tier:hover,
+.stat:hover,
+.pl-card:hover,
+.widget-cta:hover,
+.stack-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(1, 118, 211, 0.45);
+}
+
+/* zoom: media inside a card */
+.card .card-media img,
+.activity-card-media img,
+.proj-card-media img,
+.reel-thumb img {
+    transition: transform var(--dur-slow) var(--ease);
+}
+
+.card:hover .card-media img,
+.activity-card:hover .activity-card-media img,
+.proj-card:hover .proj-card-media img,
+.reel-item:hover .reel-thumb img {
+    transform: scale(1.04);
+}
+
+/* nudge: trailing arrows move along their direction */
+.section-more svg,
+.card-meta svg:last-child,
+.audience-go svg,
+.home-journey-link svg,
+.widget-author-more svg,
+.proj-learn > svg:last-child,
+.btn > svg:last-child:not(:first-child) {
+    transition: transform var(--dur-fast) var(--ease);
+}
+
+.section-more:hover svg,
+.audience-go:hover svg,
+.home-journey-link:hover svg,
+.widget-author-more:hover svg,
+.proj-learn:hover > svg:last-child,
+.btn:hover > svg:last-child:not(:first-child) {
+    transform: translateX(4px);
+}
+
+/* buttons: the shine crosses them too, and the leading icon ticks */
+.btn {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+    transform: translateX(-120%);
+    opacity: 0;
+}
+
+html.anim .btn:hover::before {
+    opacity: 1;
+    animation: ns-shine 0.7s var(--ease) forwards;
+}
+
+.btn > svg:first-child {
+    transition: transform var(--dur-fast) var(--ease);
+}
+
+.btn:hover > svg:first-child {
+    transform: scale(1.12) rotate(-6deg);
+}
+
+.btn-ghost:hover {
+    box-shadow: inset 0 0 0 1px var(--accent);
+    color: var(--accent);
+}
+
+/* chips answer with the accent */
+a.chip,
+.tag-cloud a,
+.home-topic-chip {
+    transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+a.chip:hover,
+.home-topic-chip:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+}
+
+/* nav icons tick on hover */
+.site-nav a svg:first-child {
+    transition: transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.site-nav a:hover svg:first-child {
+    transform: translateY(-1px) rotate(-8deg);
+}
+
+/* article links: the underline thickens into a highlight */
+.gh-content a:not(.btn):not(.kg-btn):not(.kg-bookmark-container) {
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color var(--dur-fast) var(--ease), text-decoration-thickness var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.gh-content a:not(.btn):not(.kg-btn):not(.kg-bookmark-container):hover {
+    text-decoration-thickness: 3px;
+    background: var(--accent-soft);
+}
+
+/* icon buttons and share squares */
+.icon-btn,
+.share-row a,
+.share-row button,
+.about-byline-social a,
+.site-foot-social a {
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+.icon-btn:hover,
+.share-row a:hover,
+.share-row button:hover,
+.about-byline-social a:hover,
+.site-foot-social a:hover {
+    transform: translateY(-2px);
+}
+
+.icon-btn:hover svg,
+.share-row a:hover svg,
+.share-row button:hover svg {
+    animation: ns-tick 0.4s var(--ease);
+}
+
+@keyframes ns-tick {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.18) rotate(-8deg); }
+    100% { transform: scale(1); }
+}
+
+/* Reduced motion: keep the colour, lose the movement */
+@media (prefers-reduced-motion: reduce) {
+    .card:hover, .prop:hover, .home-prop:hover, .audience-card:hover, .proj-card:hover, .activity-card:hover,
+    .module-card:hover, .resource-card:hover, .rhythm-card:hover, .about-stat:hover, .tier:hover, .stat:hover,
+    .pl-card:hover, .widget-cta:hover, .stack-item:hover {
+        transform: none;
+    }
+    .card:hover .card-media img, .activity-card:hover .activity-card-media img, .proj-card:hover .proj-card-media img, .reel-item:hover .reel-thumb img {
+        transform: none;
+    }
+}

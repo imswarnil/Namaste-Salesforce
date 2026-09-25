@@ -100,7 +100,7 @@
                   <li><a href="#motion">Motion</a></li>
                   <li><a href="#elevation">Elevation &amp; z-index</a></li>
                   <li><a href="#breakpoints">Breakpoints</a></li>
-                  <li><a href="#icons">Icons</a></li>
+                  <li><a href="#icons">Icons</a></li><li><a href="#patterns">Patterns</a></li><li><a href="#hover">Hover language</a></li>
                 </ul>
               </div>
               <div class="docs-rail-group">
@@ -420,7 +420,47 @@ npm run serve    # static server at :4322</code></pre>
             <p>Decorative icons get <code>aria-hidden="true"</code>; an icon that is the whole control gets an <code>aria-label</code> on the button. Solid glyphs (the play badge, social marks) use <code>fill="currentColor"</code> and no stroke.</p>
           </section>
 
-          <section class="docs-section" id="states">
+          
+<section class="docs-section" id="patterns">
+<h2>Background patterns</h2>
+<p>Eight decorative backgrounds, all painted in the accent so they recolour with the theme, all masked so content never fights them. Each is a positioned, <code>aria-hidden</code> child of a <code>position: relative</code> band. Two patterns on one screen should be two different ones.</p>
+<div class="table-wrap"><table class="table table-compact"><thead><tr><th>Class</th><th>Drawing</th><th>Where it belongs</th></tr></thead><tbody>
+<tr><td><code>.bg-grid</code></td><td>engineering paper</td><td>heroes</td></tr>
+<tr><td><code>.bg-dots</code></td><td>quiet halftone</td><td>soft bands, the idea sections</td></tr>
+<tr><td><code>.bg-blueprint</code></td><td>crosshair tiles with a centre dot</td><td>the brand's own grid: homepage hero, training, course heroes, footer</td></tr>
+<tr><td><code>.bg-rings</code></td><td>concentric rings from a corner</td><td>anything that is a path: audiences, prompts</td></tr>
+<tr><td><code>.bg-diagonal</code></td><td>hatched stripes</td><td>libraries and lists: resources, courses, the stack</td></tr>
+<tr><td><code>.bg-topo</code></td><td>contour lines</td><td>the journey, schedules, changelogs</td></tr>
+<tr><td><code>.bg-circuit</code></td><td>traces and nodes</td><td>code: snippets, projects, the lab</td></tr>
+<tr><td><code>.bg-noise</code></td><td>film grain</td><td>dark bands only</td></tr>
+</tbody></table></div>
+<p>Modifiers: <code>.bg-fade-top</code>, <code>.bg-fade-bottom</code>, <code>.bg-fade-left</code>, <code>.bg-fade-right</code>, <code>.bg-fade-radial</code> choose where the ink is strongest; <code>.bg-strong</code> doubles it; <code>.bg-anim</code> lets the grid, dots and blueprint drift slowly.</p>
+<div class="specimen"><div class="specimen-canvas" style="padding:0"><div style="display:grid;grid-template-columns:repeat(4,1fr)">
+<div class="relative" style="height:12rem"><div class="bg-grid bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">grid</span></div>
+<div class="relative" style="height:12rem"><div class="bg-blueprint bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">blueprint</span></div>
+<div class="relative" style="height:12rem"><div class="bg-rings bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">rings</span></div>
+<div class="relative" style="height:12rem"><div class="bg-diagonal bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">diagonal</span></div>
+<div class="relative" style="height:12rem"><div class="bg-topo bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">topo</span></div>
+<div class="relative" style="height:12rem"><div class="bg-circuit bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">circuit</span></div>
+<div class="relative" style="height:12rem"><div class="bg-dots bg-strong"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem">dots</span></div>
+<div class="relative" style="height:12rem;background:var(--gray-950)"><div class="bg-noise"></div><span class="kicker" style="position:absolute;left:1.2rem;bottom:1rem;color:var(--brand-300)">noise</span></div>
+</div></div><div class="specimen-code"><details><summary>Show code</summary><pre><code>&lt;section class="section outer relative"&gt;
+  &lt;div class="bg-rings" aria-hidden="true"&gt;&lt;/div&gt;
+  &lt;div class="inner relative"&gt;…&lt;/div&gt;
+&lt;/section&gt;</code></pre></details></div></div>
+</section>
+
+<section class="docs-section" id="hover">
+<h2>Hover language</h2>
+<p>Every interactive surface answers the pointer the same way, from one curated list in <code>5-utilities/_hover.scss</code>: a 3px <strong>lift</strong> with the large shadow, the border turning accent (<strong>ring</strong>), a light <strong>shine</strong> that sweeps the surface once, the halftone <strong>reveal</strong> fading in behind the content, a 4px <strong>nudge</strong> on trailing arrows, and a 4% <strong>zoom</strong> on media. Buttons get the shine too and tick their leading icon; chips take the accent; article links thicken their underline into a highlight. Reduced motion keeps the colour changes and drops the movement. A new card joins the language by joining the list, never by copying rules.</p>
+<div class="specimen"><div class="specimen-canvas specimen-canvas-alt"><div class="card-grid">
+<article class="card"><div class="card-media"></div><div class="card-body"><div class="card-eyebrow"><span>Hover me</span></div><h3 class="card-title"><a class="card-link" href="#hover">Lift, ring, shine, reveal, zoom</a></h3><p class="card-excerpt">Move the pointer over this card to see the whole language at once.</p></div></article>
+<div class="prop"><span class="prop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4.5 13h6L11 22l8.5-11h-6z"/></svg></span><h3>Props too</h3><p>Same lift, same shine, same reveal.</p><a class="prop-more" href="#hover">Nudge <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+<div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start"><a class="btn" href="#hover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>Button shine</a><a class="btn btn-ghost" href="#hover">Ghost ring</a><a class="chip" href="#hover">Chip</a></div>
+</div></div></div>
+</section>
+
+<section class="docs-section" id="states">
             <h2>Interaction states</h2>
             <div class="table-wrap">
               <table>

@@ -59,8 +59,9 @@
 // current, over how many rows. Pure DOM reading; nothing stored.
 (function () {
     var box = document.querySelector('[data-rail-progress]');
-    if (!box) { return; }
-    var list = document.querySelector('.player-rail-list .player-list') || document.querySelector('.player-list');
+    var list = document.querySelector('.player-rail-list .player-list') || document.querySelector('.rail-module.is-active .player-list') || document.querySelector('.player-list');
+    if (!box && !document.querySelector('[data-lesson-bar]')) { return; }
+    if (!box) { box = document.createElement('span'); }
     if (!list) { return; }
     var rows = list.querySelectorAll(':scope > li');
     if (!rows.length) { return; }
@@ -69,6 +70,10 @@
     var pct = Math.round((current / rows.length) * 100);
     var bar = box.querySelector('i');
     if (bar) { bar.style.width = pct + '%'; }
+    var mbar = document.querySelector('[data-lesson-bar-progress]');
+    if (mbar) { mbar.style.setProperty('--value', pct); }
+    var mcount = document.querySelector('[data-lesson-bar-count]');
+    if (mcount) { mcount.textContent = current + ' / ' + rows.length; }
     var label = box.querySelector('[data-rail-progress-label]');
     if (label) { label.textContent = current + ' / ' + rows.length; }
     box.setAttribute('role', 'progressbar');
