@@ -49,16 +49,10 @@ Verified in a browser harness at 360–1400 px, not on a device:
 | Site | Where | What |
 |---|---|---|
 | **salesforce.imswarnil.com** | this repo, `design-system/` (`main`) | v3 — the NS Design System + styleguide site, **published by `.github/workflows/design-system.yml`** |
-| nsds.imswarnil.com | `imswarnil/NSDS-Design-System` | the v2 build this folder replaced — still live; archive the repo or point its README here when convenient |
+| nsds.imswarnil.com | — | the v2 build this folder replaced; repo archived and deleted 26 Sep 2026, history kept in `../../../../backups/NSDS-Design-System-2026-09-26.bundle`. The `nsds` CNAME in Cloudflare now points at nothing — delete it or redirect it to salesforce.imswarnil.com |
 | sfdc.imswarnil.com | `imswarnil/sfdc` | the original token/gate system — DNS record exists now |
 
-**To do — DNS.** `salesforce.imswarnil.com` is currently a Cloudflare
-Workers custom domain for the `salesforce-passport` Worker (a Nuxt app,
-"Salesforce Passport"). GitHub Pages has the custom domain set and will
-serve the moment the hostname points at it. To switch: remove the Worker
-custom domain, then add `CNAME salesforce → imswarnil.github.io` (proxied,
-like `nsds`), then tick "Enforce HTTPS" in the repo's Pages settings once
-the certificate is issued.
+**DNS.** Done — `salesforce.imswarnil.com` serves the design system from GitHub Pages.
 
 ## 6. Running Ghost locally
 
