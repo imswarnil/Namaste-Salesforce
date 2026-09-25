@@ -33,12 +33,17 @@ Modes:
     footer's Explore column passes 5. Unset → everything. --}}
     <ul>
         {{#foreach navigation limit=linkLimit}}
+            {{!-- The site carries no sponsorship any more; a "Sponsor us"
+            item left in Admin → Navigation would point at a 404, so the
+            footer quietly skips it. --}}
+            {{#match slug "~" "sponsor"}}{{else}}
             {{#match label.[0] "+"}}
                 <li><a href="{{url absolute="true"}}">{{#foreach label from="2"}}{{this}}{{/foreach}}</a></li>
             {{else match label.[0] "-"}}
                 <li><a href="{{url absolute="true"}}">{{#foreach label from="2"}}{{this}}{{/foreach}}</a></li>
             {{else}}
                 <li><a href="{{url absolute="true"}}">{{label}}</a></li>
+            {{/match}}
             {{/match}}
         {{/foreach}}
     </ul>
