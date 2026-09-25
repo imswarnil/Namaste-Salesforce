@@ -49,7 +49,7 @@ Verified in a browser harness at 360–1400 px, not on a device:
 | Site | Where | What |
 |---|---|---|
 | **salesforce.imswarnil.com** | this repo, `design-system/` (`main`) | v3 — the NS Design System + styleguide site, **published by `.github/workflows/design-system.yml`** |
-| nsds.imswarnil.com | — | the v2 build this folder replaced; repo archived and deleted 26 Sep 2026, history kept in `../../../../backups/NSDS-Design-System-2026-09-26.bundle`. The `nsds` CNAME in Cloudflare now points at nothing — delete it or redirect it to salesforce.imswarnil.com |
+| nsds.imswarnil.com | — | the v2 build this folder replaced; repo archived and deleted 26 Sep 2026, history kept in `../../../../backups/NSDS-Design-System-2026-09-26.bundle`. The `nsds` DNS record was deleted from Cloudflare the same day |
 | sfdc.imswarnil.com | `imswarnil/sfdc` | the original token/gate system — DNS record exists now |
 
 **DNS.** Done — `salesforce.imswarnil.com` serves the design system from GitHub Pages.
