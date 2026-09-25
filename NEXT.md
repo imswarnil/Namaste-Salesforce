@@ -4,6 +4,20 @@ Everything below is either a value only you can set, a decision only
 you can make, or a follow-up that was deliberately left out. The build
 is green (`pnpm build`, `pnpm test` / gscan, all templates parse).
 
+## 0. Two settings only Ghost Admin can change (API keys get 403)
+
+| Where | Set it to |
+|---|---|
+| Settings → General → Title & description | "Learn Salesforce, then the go-to-market process and AI around it. Free courses with a lesson player, a training trail, videos, snippets, prompts and a weekly letter — for Salesforce people moving into AI and GTM roles." |
+| Settings → General → Metadata (the homepage's search description) | "Free Salesforce courses with a lesson player, a training trail, videos, snippets and prompts — built for admins and developers moving into AI and go-to-market roles." |
+
+Optional: Navigation → remove "Sponsor us" (the footer already hides
+it), Design → Site-wide → Hero video.
+
+Page excerpts and meta are applied to the live site by the
+`content-sync` workflow (Actions → content-sync → Run workflow); edit
+`.github/content/page-meta.json` and re-run it.
+
 ## 1. Set these in Ghost Admin (nothing to code)
 
 | Where | Setting | Why |
