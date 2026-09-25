@@ -1,0 +1,31 @@
+# Content sync — applies .github/content/page-meta.json (page excerpts, meta
+# descriptions, pages to unpublish) to the live Ghost site. Manual only.
+# Uses the theme deploy's GHOST_ADMIN_API_URL / GHOST_ADMIN_API_KEY secrets.
+# The log prints every page's previous values first: that is the undo record.
+name: content-sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Print the changes without writing them'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply page meta
+        env:
+          GHOST_ADMIN_API_URL: ${{ secrets.GHOST_ADMIN_API_URL }}
+          GHOST_ADMIN_API_KEY: ${{ secrets.GHOST_ADMIN_API_KEY }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: node .github/content/sync-page-meta.mjs

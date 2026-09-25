@@ -16,9 +16,8 @@ is green (`pnpm build`, `pnpm test` / gscan, all templates parse).
 
 ## 2. Content only you can write
 
-- **Journey years** — `partials/journey.hbs` carries PLACEHOLDER years
-  (2018 … 2026), spaced to fit "7+ years in IT". Replace with real dates.
-  The ⚠ comment in the file marks them.
+- **Journey years** — done: real dates from the resume in both journey
+  partials.
 - **Products I use** — the page is grouped by category now (every `h2` is a
   shelf). Shelves are empty until you add bullets under each heading, in
   the shape `**Name** — one honest line`. Each bullet becomes a tile.
