@@ -93,6 +93,19 @@ public tag, its `#module` landing post's slug equals that tag's slug
   via `partials/with-this.hbs` need `../` per intervening block; filter
   strings compile in the CALLING frame. `{{#if emptyArray}}` is truthy.
 
+## design-system/ — the NS Design System lives here now
+
+`design-system/` is the NS Design System (moved in from the standalone
+NSDS-Design-System repo on 24 Sep 2026): SCSS source, committed `dist/`, the
+styleguide site (index, docs, components, sections, five `templates/`) and
+the AI-readable spec (`DESIGN.md`, `design-guidelines.md`,
+`design-components.md`, `llms.txt`). It has its own `CLAUDE.md`, `npm`
+lockfile and CI: `.github/workflows/design-system.yml` publishes it to
+GitHub Pages at **https://salesforce.imswarnil.com/**. It is NOT part of the
+theme — `gulpfile.js` `zipper` and `deploy-theme.yml` `exclude` both leave
+it out of the theme zip, and the theme deploy ignores pushes that only touch
+it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/`.
+
 ## Layout of the repo
 
 - `routes.yaml` — the URL model; mirror to Ghost's
@@ -110,6 +123,7 @@ public tag, its `#module` landing post's slug equals that tag's slug
 - `partials/icons/` — one drawing style: 24-box, 1.8 stroke, currentColor.
 - `dummy-content/` — `build-import.py` → `import.json` (full demo data,
   navigation included), `build-thumbnails.py` → branded SVG thumbs.
+- `design-system/` — the NS Design System + styleguide site (see above).
 - Fonts are self-hosted in `assets/fonts/`.
 
 ## Boundaries

@@ -44,19 +44,21 @@ Verified in a browser harness at 360–1400 px, not on a device:
 - hero card: chips + social rail in the gutters, toggle plays and closes
 - courses / shop: sidebar sticks, filters build, ad slot below
 
-## 5. Design system — two repos now
+## 5. Design system — one repo now
 
-| Site | Repo | Folder | What |
-|---|---|---|---|
-| **nsds.imswarnil.com** | `imswarnil/NSDS-Design-System` (`main`) | `NS-Design-System/` | the v2 SCSS rebuild — **live** |
-| **sfdc.imswarnil.com** | `imswarnil/sfdc` (`main`) | `sfdc/` | the original token/gate system — deployed, **waiting on DNS** |
+| Site | Where | What |
+|---|---|---|
+| **salesforce.imswarnil.com** | this repo, `design-system/` (`main`) | v3 — the NS Design System + styleguide site, **published by `.github/workflows/design-system.yml`** |
+| nsds.imswarnil.com | `imswarnil/NSDS-Design-System` | the v2 build this folder replaced — still live; archive the repo or point its README here when convenient |
+| sfdc.imswarnil.com | `imswarnil/sfdc` | the original token/gate system — DNS record exists now |
 
-**To do — one DNS record**, in the Cloudflare account that holds
-`imswarnil.com` (not the Namastesfdc one):
-`CNAME  sfdc  →  imswarnil.github.io` — mirror the `nsds` record's proxy
-setting. GitHub Pages already has the custom domain set; it goes live as
-soon as the record resolves (then tick "Enforce HTTPS" in the sfdc repo's
-Pages settings once the certificate is issued).
+**To do — DNS.** `salesforce.imswarnil.com` is currently a Cloudflare
+Workers custom domain for the `salesforce-passport` Worker (a Nuxt app,
+"Salesforce Passport"). GitHub Pages has the custom domain set and will
+serve the moment the hostname points at it. To switch: remove the Worker
+custom domain, then add `CNAME salesforce → imswarnil.github.io` (proxied,
+like `nsds`), then tick "Enforce HTTPS" in the repo's Pages settings once
+the certificate is issued.
 
 ## 6. Running Ghost locally
 

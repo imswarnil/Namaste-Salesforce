@@ -1,0 +1,75 @@
+# NS Design System — CI/CD for design-system/
+# ===========================================================================
+#   check   every push & PR that touches design-system/ — compiles the SCSS
+#           and proves the committed dist/ matches the source byte for byte.
+#   deploy  pushes to main only — stages the styleguide site + dist into
+#           _site/ and publishes to GitHub Pages at
+#           https://salesforce.imswarnil.com/. _site/CNAME is what pins the
+#           custom domain on an Actions deploy; a deploy without it drops
+#           the domain on the next publish.
+name: design-system
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'design-system/**'
+      - '.github/workflows/design-system.yml'
+  pull_request:
+    paths:
+      - 'design-system/**'
+      - '.github/workflows/design-system.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: design-system
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: generated files committed
+        run: git diff --exit-code --stat -- .
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: stage site
+        run: npm run stage
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: design-system/_site
+      - id: deployment
+        uses: actions/deploy-pages@v4

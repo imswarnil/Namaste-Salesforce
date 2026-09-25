@@ -1,0 +1,86 @@
+/*  3-components / accordion — native <details>
+    ------------------------------------------------------------
+
+      <details class="acc" open>
+        <summary>Question<svg class="acc-chev">…</svg></summary>
+        <div class="acc-body">Answer</div>
+      </details>
+
+    .acc-group stacks them with shared hairlines; .faq is the
+    same thing with the question set in heading weight.
+    ------------------------------------------------------------ */
+
+.acc {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.acc + .acc { margin-top: 1rem; }
+
+.acc > summary {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.6rem 2rem;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--heading);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color var(--dur-fast) var(--ease);
+}
+
+.acc > summary::-webkit-details-marker { display: none; }
+.acc > summary:hover { background: var(--bg-alt); }
+
+.acc > summary > svg:first-child {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.acc-chev {
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-left: auto;
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transition: transform var(--dur) var(--ease);
+}
+
+.acc[open] > summary { border-bottom: 1px solid var(--border-soft); }
+.acc[open] .acc-chev { transform: rotate(180deg); }
+
+.acc-body {
+    padding: 1.6rem 2rem 2rem;
+    font-size: 1.5rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+.acc-body > * + * { margin-top: 1rem; }
+
+/* Grouped: one box, hairlines between */
+.acc-group .acc {
+    border-radius: 0;
+    border-width: 0 0 1px;
+}
+
+.acc-group .acc + .acc { margin-top: 0; }
+.acc-group { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--surface); }
+.acc-group .acc:last-child { border-bottom: 0; }
+
+/* Flush FAQ face — no box, just the rule */
+.faq .acc {
+    background: transparent;
+    border-width: 0 0 1px;
+    border-radius: 0;
+}
+
+.faq .acc > summary { padding: 1.8rem 0; font-size: 1.7rem; }
+.faq .acc > summary:hover { background: transparent; color: var(--accent); }
+.faq .acc[open] > summary { border-bottom: 0; }
+.faq .acc-body { padding: 0 0 2rem; }

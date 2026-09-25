@@ -1,0 +1,439 @@
+/*  4-templates / docs
+    ------------------------------------------------------------
+
+    The documentation pages: docs.html (framework docs) and
+    components.html (the component gallery). A sticky rail of
+    .toc-list links beside a .gh-content article, plus the
+    specimen furniture the docs draw with — color swatches,
+    type-scale rows, shape demos and component specimen frames. */
+
+.docs-shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 5.6rem;
+    padding-top: clamp(3.2rem, 6vmin, 5.6rem);
+    padding-bottom: clamp(4.8rem, 8vmin, 8rem);
+}
+
+.docs-rail {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+}
+
+.docs-rail-group + .docs-rail-group {
+    margin-top: 2.8rem;
+}
+
+.docs-rail-title {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.docs-article {
+    min-width: 0;
+    max-width: var(--measure);
+}
+
+.docs-article .gh-content {
+    margin: 0;
+}
+
+.docs-header {
+    margin-bottom: 3.6rem;
+}
+
+.docs-header h1 {
+    margin-top: 0.8rem;
+    font-size: clamp(3rem, 5vw, 4.2rem);
+}
+
+.docs-lead {
+    margin-top: 1.4rem;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.docs-section {
+    margin-top: 5.6rem;
+    scroll-margin-top: calc(var(--header-height) + 2.4rem);
+}
+
+.docs-section > h2 {
+    padding-bottom: 1.2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+/*  Color swatches
+    ------------------------------------------------------------ */
+
+.swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+}
+
+.swatch {
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.swatch-chip {
+    height: 6.4rem;
+}
+
+.swatch-info {
+    padding: 1rem 1.2rem;
+}
+
+.swatch-name {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.swatch-value {
+    display: block;
+    margin-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    color: var(--text-faint);
+    text-transform: lowercase;
+}
+
+/*  Type scale rows
+    ------------------------------------------------------------ */
+
+.type-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2.4rem;
+    padding: 1.6rem 0;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.type-row-sample {
+    margin: 0;
+    color: var(--heading);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.type-row-meta {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+/*  Shape & depth demos
+    ------------------------------------------------------------ */
+
+.shape-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.6rem;
+    margin: 2rem 0;
+}
+
+.shape-demo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 9.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/*  Component specimens — components.html
+    ------------------------------------------------------------ */
+
+.specimen {
+    overflow: hidden;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.specimen-canvas {
+    padding: 3.2rem;
+    background: var(--bg);
+}
+
+.specimen-canvas-alt {
+    background: var(--bg-alt);
+}
+
+.specimen-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.specimen-code {
+    border-top: 1px solid var(--border);
+}
+
+/* The snippet keeps the article's dark code-block face; only the
+   frame geometry changes — flush to the specimen's edges. */
+.specimen-code pre {
+    margin: 0;
+    border-radius: 0;
+}
+
+/*  Inside a specimen canvas the components own their faces — undo
+    the .gh-content article link treatment, then re-assert the few
+    colors the higher-specificity undo would otherwise flatten. */
+.gh-content .specimen-canvas a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.gh-content .specimen-canvas .btn {
+    color: var(--accent-contrast);
+}
+
+.gh-content .specimen-canvas .btn-ghost {
+    color: var(--heading);
+}
+
+.gh-content .specimen-canvas .btn-soft {
+    color: var(--accent);
+}
+
+.gh-content .specimen-canvas .btn-inverse {
+    color: var(--gray-900);
+}
+
+.gh-content .specimen-canvas .widget-author-name,
+.gh-content .specimen-canvas .widget-post-title,
+.gh-content .specimen-canvas .tag-cloud a {
+    color: var(--heading);
+}
+
+.gh-content .specimen-canvas .widget-author-name:hover,
+.gh-content .specimen-canvas .widget-post-title:hover,
+.gh-content .specimen-canvas .tag-cloud a:hover,
+.gh-content .specimen-canvas .pagination a:hover,
+.gh-content .specimen-canvas .timeline-title a:hover {
+    color: var(--accent);
+}
+
+/*  Wide pages (components.html) relax the article measure —
+    specimens need the room. */
+.docs-article-wide {
+    max-width: none;
+}
+
+@media (max-width: 991px) {
+    .docs-shell {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
+    }
+
+    .docs-rail {
+        position: static;
+    }
+
+    .docs-rail .toc-list {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+
+    .docs-rail-group + .docs-rail-group {
+        margin-top: 2rem;
+    }
+}
+
+/*  Docs extras — mobile rail drawer, specimen chrome, page grid
+    ------------------------------------------------------------ */
+
+.docs-rail-toggle { display: none; }
+
+@media (max-width: 991px) {
+    .docs-rail {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface);
+    }
+
+    .docs-rail-toggle {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.4rem 1.8rem;
+        font-size: 1.45rem;
+        font-weight: 600;
+        color: var(--heading);
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .docs-rail-toggle::-webkit-details-marker { display: none; }
+    .docs-rail-toggle svg { width: 1.7rem; height: 1.7rem; color: var(--accent); }
+    .docs-rail-toggle .chev { margin-left: auto; transition: transform var(--dur) var(--ease); }
+    .docs-rail details[open] .docs-rail-toggle .chev { transform: rotate(180deg); }
+    .docs-rail-body { padding: 0 1.8rem 1.8rem; }
+    .docs-rail .toc-list { grid-template-columns: minmax(0, 1fr); }
+}
+
+.specimen-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+    padding: 0.8rem 1.2rem 0.8rem 1.6rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-faint);
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.specimen-head .chips { gap: 0.4rem; }
+.specimen-head .chip { font-size: 1.05rem; padding: 0.15rem 0.7rem; }
+
+.specimen-canvas-dark {
+    color: var(--gray-100);
+    background: var(--gray-950);
+}
+
+.specimen-canvas-narrow > * { max-width: 560px; }
+.specimen-canvas-stack { display: grid; gap: 2rem; }
+
+/* The code drawer under a specimen: closed by default, "Show code" */
+.specimen-code details > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 1.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--bg-alt);
+    cursor: pointer;
+    list-style: none;
+}
+
+.specimen-code details > summary::-webkit-details-marker { display: none; }
+.specimen-code details > summary:hover { color: var(--accent); }
+.specimen-code details > summary svg { width: 1.4rem; height: 1.4rem; transition: transform var(--dur) var(--ease); }
+.specimen-code details[open] > summary svg { transform: rotate(180deg); }
+
+/* Token tables get a swatch cell */
+.token-swatch {
+    display: inline-block;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.6rem;
+    vertical-align: -0.3rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+/* Landing grid of template thumbnails */
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 2.4rem;
+}
+
+.template-card .card-media {
+    aspect-ratio: 16 / 10;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.template-thumb {
+    position: absolute;
+    inset: 12% 10% 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.template-thumb::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 12%;
+    border-bottom: 1px solid var(--border-soft);
+    background: var(--bg-alt);
+}
+
+.template-thumb-lines {
+    position: absolute;
+    inset: 22% 10% 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8%;
+    align-content: start;
+}
+
+.template-thumb-lines span {
+    display: block;
+    height: 2.4rem;
+    background: var(--accent-soft);
+    border-radius: 4px;
+}
+
+.template-thumb-lines span:first-child { grid-column: 1 / -1; height: 3.6rem; background: linear-gradient(90deg, var(--accent), var(--brand-400)); opacity: 0.85; }
+
+/* Breakpoint table */
+.bp-bar { display: flex; height: 1.6rem; border-radius: var(--radius-full); overflow: hidden; margin: 1.6rem 0; }
+.bp-bar span { display: block; height: 100%; }
+.bp-bar span:nth-child(1) { flex: 600; background: var(--brand-200); }
+.bp-bar span:nth-child(2) { flex: 300; background: var(--brand-300); }
+.bp-bar span:nth-child(3) { flex: 380; background: var(--brand-400); }
+.bp-bar span:nth-child(4) { flex: 320; background: var(--brand-500); }
+
+/* Copy button on a light specimen head */
+.specimen-head .copy-btn { color: var(--text-muted); border-color: var(--border); }
+.specimen-head .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.specimen-head .copy-btn.is-copied { color: var(--success-ink); border-color: var(--success); }
+
+/* The strip above a template page: which template, way back */
+.template-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem 2rem;
+    padding: 0.8rem max(4vmin, 20px);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--gray-300);
+    background: var(--gray-950);
+}
+
+.template-bar a { display: inline-flex; align-items: center; gap: 0.4em; color: var(--brand-300); }
+.template-bar a:hover { color: #fff; }
+.template-bar a svg { width: 1.3rem; height: 1.3rem; }
+.template-bar strong { color: #fff; }
+.template-bar .badge { margin-left: auto; }
+
+/* Code drawers scroll sideways; nothing in a specimen may widen the page */
+.specimen-code pre { overflow-x: auto; max-width: 100%; }
+.specimen, .specimen-canvas { min-width: 0; max-width: 100%; }
+.specimen-canvas > * { max-width: 100%; }

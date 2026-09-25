@@ -1,0 +1,191 @@
+/*  4-templates / trail & path — the learning sequence
+    ============================================================
+
+      .trail          vertical rail: modules as numbered waypoints,
+                      their sections as stops. CSS counter numbers
+                      the modules; the accent line joins them.
+        .trail-node   a module waypoint (badge, title, meta)
+        .trail-stop   a section under it (icon, title, chip)
+        .is-done / .is-current on either
+      .path           the compact horizontal version for a
+                      homepage — scroll-snap track of steps
+    ------------------------------------------------------------ */
+
+.trail {
+    position: relative;
+    list-style: none;
+    padding: 0 0 0 4.4rem;
+    margin: 0;
+    counter-reset: trail;
+}
+
+.trail::before {
+    content: "";
+    position: absolute;
+    top: 1.6rem;
+    bottom: 1.6rem;
+    left: 1.75rem;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent) 0, var(--accent) var(--trail-progress, 0%), var(--border) var(--trail-progress, 0%));
+}
+
+.trail-node {
+    position: relative;
+    padding: 0.6rem 0 2.4rem;
+}
+
+.trail-node::before {
+    counter-increment: trail;
+    content: counter(trail);
+    position: absolute;
+    top: 0;
+    left: -4.4rem;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.trail-node.is-done::before {
+    content: "";
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center / 55% no-repeat,
+        var(--accent);
+}
+
+.trail-node.is-current::before { box-shadow: 0 0 0 5px var(--accent-soft); }
+.trail-node.is-locked::before { color: var(--text-faint); border-color: var(--border); }
+
+.trail-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem 1.6rem;
+}
+
+.trail-head h3 { font-size: 2rem; }
+.trail-head h3 a:hover { color: var(--accent); }
+.trail-head .chips { margin-left: auto; }
+.trail-desc { margin-top: 0.6rem; max-width: 60ch; font-size: 1.45rem; color: var(--text-muted); }
+
+.trail-stops {
+    display: grid;
+    gap: 0.4rem;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.trail-stop a,
+.trail-stop > span {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.4rem;
+    font-size: 1.45rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.trail-stop a:hover { color: var(--heading); border-color: var(--accent); }
+.trail-stop svg:first-child { width: 1.7rem; height: 1.7rem; color: var(--text-faint); }
+.trail-stop a:hover svg:first-child { color: var(--accent); }
+.trail-stop.is-done a { color: var(--text-faint); }
+.trail-stop.is-done svg:first-child { color: var(--success); }
+.trail-stop.is-current a { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.trail-stop.is-current svg:first-child { color: var(--accent); }
+.trail-stop .chip { font-size: 1.1rem; padding: 0.2rem 0.8rem; }
+
+.trail-end {
+    position: relative;
+    padding: 0.6rem 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.trail-end::before {
+    content: "";
+    position: absolute;
+    top: 0.9rem;
+    left: -3.6rem;
+    width: 2rem;
+    height: 2rem;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--bg);
+    z-index: 1;
+}
+
+/* Path — horizontal, homepage */
+.path {
+    display: flex;
+    gap: 1.6rem;
+    margin: 0 calc(-1 * max(4vmin, 20px));
+    padding: 0.8rem max(4vmin, 20px) 1.6rem;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    counter-reset: path;
+}
+
+.path::-webkit-scrollbar { display: none; }
+
+.path-step {
+    position: relative;
+    flex: 0 0 min(280px, 78vw);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 2rem 2.2rem 2.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+a.path-step:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+.path-step::before {
+    counter-increment: path;
+    content: counter(path, decimal-leading-zero);
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+}
+
+.path-step::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -1.6rem;
+    width: 1.6rem;
+    height: 2px;
+    background: var(--border);
+}
+
+.path-step:last-child::after { display: none; }
+.path-step h4 { font-size: 1.7rem; }
+.path-step p { font-size: 1.4rem; color: var(--text-muted); }
+.path-step .chips { margin-top: auto; padding-top: 0.8rem; }
+.path-step.is-current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.path-step.is-done::before { color: var(--success-ink); }
+.path-terminus { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); justify-content: center; align-items: center; text-align: center; }
+.path-terminus::before { content: ""; }
+.path-terminus h4 { color: inherit; }
+.path-terminus svg { width: 3.2rem; height: 3.2rem; }

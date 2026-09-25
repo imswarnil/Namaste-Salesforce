@@ -61,6 +61,14 @@ Read `NAMASTE-SALESFORCE.md` for the full architecture — URL model, the
 duration-tag ramp, video chapters, the sidebar/TOC rule, and the
 Handlebars traps already hit once so you don't hit them twice.
 
+## Design system
+
+The NS Design System — tokens, components, sections and learning templates
+— lives in [`design-system/`](./design-system/) and is published to
+**https://salesforce.imswarnil.com/** by GitHub Pages on every push that
+touches it. Start with its [readme](./design-system/readme.md) and
+[DESIGN.md](./design-system/DESIGN.md).
+
 ## Deploy
 
 Pushes to `main` deploy automatically to Ghost via

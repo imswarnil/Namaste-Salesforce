@@ -1,0 +1,115 @@
+/*  3-components / alerts & callouts
+    ============================================================
+
+      .alert            inline status message (info default)
+        .alert-success / -warning / -error
+        .alert-icon · .alert-body · .alert-title · .alert-close
+      .callout          the lesson-content aside: note / tip /
+                        warn / key — a coloured rail, no fill
+    Text always takes an *-ink token; fills take the base hue
+    at low alpha so both themes stay AA.
+    ------------------------------------------------------------ */
+
+.alert {
+    display: flex;
+    gap: 1.2rem;
+    padding: 1.4rem 1.6rem;
+    font-size: 1.45rem;
+    line-height: 1.55;
+    color: var(--info-ink);
+    background: rgba(1, 118, 211, 0.08);
+    border: 1px solid rgba(1, 118, 211, 0.25);
+    border-radius: var(--radius);
+}
+
+.alert-icon {
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    margin-top: 0.1rem;
+}
+
+.alert-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert-title {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+}
+
+.alert-close {
+    flex-shrink: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    border-radius: var(--radius-sm);
+}
+
+.alert-close:hover { opacity: 1; }
+.alert-close svg { width: 1.4rem; height: 1.4rem; }
+
+.alert-success {
+    color: var(--success-ink);
+    background: rgba(46, 132, 74, 0.1);
+    border-color: rgba(46, 132, 74, 0.3);
+}
+
+.alert-warning {
+    color: var(--warning-ink);
+    background: rgba(254, 147, 57, 0.12);
+    border-color: rgba(254, 147, 57, 0.35);
+}
+
+.alert-error {
+    color: var(--error-ink);
+    background: rgba(234, 0, 30, 0.08);
+    border-color: rgba(234, 0, 30, 0.25);
+}
+
+/* Callouts — the reading-surface aside. Rail colour carries the
+   type; the body stays in normal ink so long notes read easily. */
+.callout {
+    position: relative;
+    padding: 1.6rem 2rem 1.6rem 2.4rem;
+    margin: 0;
+    background: var(--bg-alt);
+    border: 1px solid var(--border-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    font-size: 1.55rem;
+    line-height: 1.6;
+}
+
+.callout-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.6rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.callout-label svg { width: 1.5rem; height: 1.5rem; }
+
+.callout p + p { margin-top: 0.8rem; }
+
+.callout-tip  { border-left-color: var(--success); }
+.callout-tip  .callout-label { color: var(--success-ink); }
+.callout-warn { border-left-color: var(--warning); }
+.callout-warn .callout-label { color: var(--warning-ink); }
+.callout-danger { border-left-color: var(--error); }
+.callout-danger .callout-label { color: var(--error-ink); }
+.callout-key  { border-left-color: var(--level-ink); background: rgba(254, 147, 57, 0.06); }
+.callout-key  .callout-label { color: var(--level-ink); }
+
+/* Ghost's own callout card, when it lands on a lesson */
+.gh-content .callout { margin-top: 2.2rem; }

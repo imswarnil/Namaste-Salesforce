@@ -1,0 +1,286 @@
+/*  4-templates / post — the blog single, five layouts
+    ============================================================
+
+    post.hbs stamps the article shell with classes derived from
+    the post's tags:
+
+      layout   .post-layout-classic   (default)
+               .post-layout-magazine  #blog-layout-magazine
+               .post-layout-minimal   #blog-layout-minimal
+               .post-layout-split     #blog-layout-split
+               .post-layout-wide      #blog-layout-wide
+
+      sidebar  .post-has-sidebar / .post-sidebar-left
+               (right is default; #blog-sidebar-left flips it,
+                #blog-sidebar-none drops it → .post-no-sidebar)
+
+    The article column + sidebar is one grid; layouts restyle
+    only the HEADER, so any layout composes with any sidebar.
+    ------------------------------------------------------------ */
+
+.post-shell {
+    padding-top: 4rem;
+    padding-bottom: clamp(4.8rem, 8vmin, 8rem);
+}
+
+.post-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap-lg);
+    align-items: start;
+}
+
+.post-has-sidebar .post-grid {
+    grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.post-sidebar-left .post-grid {
+    grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.post-sidebar-left .post-main { order: 2; }
+.post-sidebar-left .post-aside { order: 1; }
+
+.post-aside {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem);
+    max-height: calc(100vh - var(--header-height) - 4.8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.post-no-sidebar .post-main {
+    max-width: var(--measure);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+/* Article header — CLASSIC (default): crumbs, tag, title,
+   excerpt, byline, then a rounded feature image. */
+.post-header {
+    margin-bottom: 3.6rem;
+}
+
+.post-header .crumbs {
+    margin-bottom: 2rem;
+}
+
+.post-title {
+    margin-top: 1.2rem;
+}
+
+.post-excerpt {
+    margin-top: 1.6rem;
+    font-size: 1.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.post-byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem 2rem;
+    margin-top: 2.4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-soft);
+    font-size: 1.4rem;
+    color: var(--text-muted);
+}
+
+.post-byline .card-author {
+    margin-right: auto;
+}
+
+.post-byline-name {
+    font-weight: 600;
+    color: var(--heading);
+}
+
+.post-byline-name a:hover {
+    color: var(--accent);
+}
+
+.post-byline-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-size: 1.3rem;
+    color: var(--text-faint);
+}
+
+.post-image {
+    margin-top: 2.8rem;
+}
+
+.post-image img {
+    width: 100%;
+    border-radius: var(--radius-lg);
+}
+
+.post-image figcaption {
+    margin-top: 1rem;
+    font-size: 1.35rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/*  MAGAZINE — full-bleed image with the title overlaid
+    ------------------------------------------------------------ */
+.post-layout-magazine .post-header {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 480px;
+    padding: 4rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    color: #fff;
+}
+
+.post-layout-magazine .post-header .post-image {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    z-index: 0;
+}
+
+.post-layout-magazine .post-header .post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+.post-layout-magazine .post-header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, rgba(5, 18, 34, 0.88) 0%, rgba(5, 18, 34, 0.25) 55%, rgba(5, 18, 34, 0.1) 100%);
+}
+
+.post-layout-magazine .post-header-content {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+}
+
+.post-layout-magazine .post-title,
+.post-layout-magazine .post-byline-name,
+.post-layout-magazine .post-byline-name a {
+    color: #fff;
+}
+
+.post-layout-magazine .post-excerpt,
+.post-layout-magazine .post-byline,
+.post-layout-magazine .post-byline-meta {
+    color: rgba(244, 246, 248, 0.85);
+}
+
+.post-layout-magazine .post-byline {
+    border-top-color: rgba(244, 246, 248, 0.25);
+}
+
+.post-layout-magazine .crumbs,
+.post-layout-magazine .crumbs a,
+.post-layout-magazine .crumbs [aria-current] {
+    color: rgba(244, 246, 248, 0.8);
+}
+
+/*  MINIMAL — centered type, no feature image
+    ------------------------------------------------------------ */
+.post-layout-minimal .post-header {
+    max-width: var(--measure);
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.post-layout-minimal .crumbs,
+.post-layout-minimal .post-byline {
+    justify-content: center;
+}
+
+.post-layout-minimal .post-byline .card-author {
+    margin-right: 0;
+}
+
+.post-layout-minimal .post-image {
+    display: none;
+}
+
+/*  SPLIT — text left, image right
+    ------------------------------------------------------------ */
+@media (min-width: 900px) {
+    .post-layout-split .post-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        gap: 4rem;
+        align-items: center;
+    }
+
+    .post-layout-split .post-image {
+        margin-top: 0;
+    }
+
+    .post-layout-split .post-image img {
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+    }
+}
+
+/*  WIDE — image breaks out of the article column
+    ------------------------------------------------------------ */
+.post-layout-wide .post-image {
+    position: relative;
+    width: min(var(--measure-wide), 100%);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.post-has-sidebar.post-layout-wide .post-image,
+.post-sidebar-left.post-layout-wide .post-image {
+    width: 100%;
+    left: auto;
+    transform: none;
+}
+
+/* After the article: tags, share, author bio, comments */
+.post-footer {
+    margin-top: 4.8rem;
+    padding-top: 2.8rem;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.post-comments {
+    margin-top: 4.8rem;
+}
+
+.post-related {
+    border-top: 1px solid var(--border-soft);
+}
+
+@media (max-width: 1023px) {
+    .post-has-sidebar .post-grid,
+    .post-sidebar-left .post-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .post-sidebar-left .post-main { order: 1; }
+    .post-sidebar-left .post-aside { order: 2; }
+    .post-aside {
+        position: static;
+        max-height: none;
+        overflow: visible;
+    }
+    .post-layout-magazine .post-header {
+        min-height: 380px;
+        padding: 2.4rem;
+    }
+}

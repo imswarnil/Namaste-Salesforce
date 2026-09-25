@@ -1,0 +1,32 @@
+{
+  "name": "nsds-design-system",
+  "version": "3.0.0",
+  "description": "NS Design System — the design system behind Namaste Salesforce: tokens, base, layout, components, sections and learning templates compiled to one stylesheet.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./css": "./dist/css/screen.css",
+    "./css/min": "./dist/css/screen.min.css",
+    "./js": "./dist/js/nsds.js",
+    "./scss": "./src/scss/screen.scss"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "scripts": {
+    "build": "sass src/scss/screen.scss dist/css/screen.css --style=expanded --no-source-map && sass src/scss/screen.scss dist/css/screen.min.css --style=compressed --no-source-map && mkdir -p dist/fonts dist/js && cp src/fonts/*.woff2 dist/fonts/ && cp src/js/nsds.js dist/js/nsds.js",
+    "watch": "sass --watch src/scss/screen.scss dist/css/screen.css --style=expanded --no-source-map",
+    "serve": "npx serve -l 4322 .",
+    "stage": "rm -rf _site && mkdir -p _site && cp *.html llms.txt _site/ && cp -R templates dist assets _site/ && cp DESIGN.md design-guidelines.md design-components.md _site/ && echo salesforce.imswarnil.com > _site/CNAME && touch _site/.nojekyll"
+  },
+  "devDependencies": {
+    "sass": "^1.80.0"
+  },
+  "homepage": "https://salesforce.imswarnil.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imswarnil/Namaste-Salesforce.git",
+    "directory": "design-system"
+  }
+}

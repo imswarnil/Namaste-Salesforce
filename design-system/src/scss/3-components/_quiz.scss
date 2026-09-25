@@ -1,0 +1,113 @@
+/*  3-components / quiz — check-your-understanding, CSS only
+    ============================================================
+
+      <form class="quiz">
+        <fieldset class="quiz-q">
+          <legend>1. Which object holds a deal?</legend>
+          <label class="quiz-opt"><input type="radio" name="q1" data-correct><span>Opportunity</span></label>
+          <label class="quiz-opt"><input type="radio" name="q1"><span>Lead</span></label>
+          <p class="quiz-explain">…</p>
+        </fieldset>
+      </form>
+
+    :has() paints the chosen option right or wrong and reveals
+    the explanation — no script, no submit. .quiz-score is the
+    optional tally nsds.js fills in.
+    ------------------------------------------------------------ */
+
+.quiz {
+    display: grid;
+    gap: 2.4rem;
+}
+
+.quiz-q {
+    margin: 0;
+    padding: 2.2rem 2.4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.quiz-q legend {
+    float: left;
+    width: 100%;
+    margin-bottom: 1.6rem;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--heading);
+}
+
+.quiz-q legend + * { clear: both; }
+
+.quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.4rem;
+    margin-top: 0.8rem;
+    font-size: 1.5rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.quiz-opt:hover { border-color: var(--accent); }
+
+.quiz-opt input {
+    appearance: none;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+
+.quiz-opt input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* The verdict */
+.quiz-opt:has(input:checked) {
+    border-color: var(--error);
+    background: rgba(234, 0, 30, 0.06);
+}
+.quiz-opt:has(input:checked) input { border-color: var(--error); background: var(--error); box-shadow: inset 0 0 0 3px var(--bg); }
+
+.quiz-opt:has(input[data-correct]:checked) {
+    border-color: var(--success);
+    background: rgba(46, 132, 74, 0.08);
+}
+.quiz-opt:has(input[data-correct]:checked) input { border-color: var(--success); background: var(--success); }
+
+/* Once anything is picked, show the right one and the explanation */
+.quiz-q:has(input:checked) .quiz-opt:has(input[data-correct]) { border-color: var(--success); }
+
+.quiz-explain {
+    display: none;
+    margin-top: 1.4rem;
+    padding: 1.2rem 1.4rem;
+    font-size: 1.4rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    background: var(--bg-alt);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+}
+
+.quiz-q:has(input:checked) .quiz-explain { display: block; }
+
+.quiz-score {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    padding: 1.6rem 2rem;
+    font-size: 1.45rem;
+    color: var(--text-muted);
+    background: var(--accent-soft);
+    border-radius: var(--radius-lg);
+}
+
+.quiz-score strong { font-size: 2rem; color: var(--accent); font-variant-numeric: tabular-nums; }
