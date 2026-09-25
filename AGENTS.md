@@ -168,6 +168,14 @@ it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/
   lesson player and the training reader below 1024px; rail.js fills
   it from the rail list.
 
+- **Responsive layer** (`5-utilities/_responsive.css`, loaded last):
+  every rule came from a measured audit of all 35 page types at 360,
+  768 and 1024px — no sideways scroll (`overflow-x: clip` on the
+  viewport, never `hidden`, so sticky rails survive), 44px tap targets
+  on phones, nothing under 12px, single-column grids on phones and
+  two-up on tablets, folded reader rails as a slim bar. Add to it the
+  same way: measure, then fix.
+
 ## Layout of the repo
 
 - `routes.yaml` — the URL model; mirror to Ghost's
