@@ -111,12 +111,38 @@ lists the whole module. Context: a post tagged #module
                     {{!-- Every section, in walking order — the curriculum --}}
                     {{#get "posts" filter="tag:{{slug}}+tag:hash-training" order="published_at asc" include="tags" limit="50" as |sections|}}
                         {{#if sections}}
-                            <section class="module-sections">
-                                <h2>{{> "icons/map-icon"}} {{t "The sections"}}</h2>
+                            <section class="module-sections sf-window">
+                                {{!-- The same Salesforce window the trail draws on
+                                /training — app bar, tab row, related list. --}}
+                                <header class="sf-bar">
+                                    <span class="sf-waffle" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                                    <span class="sf-app">
+                                        <span class="sf-app-ico">{{> "icons/layers"}}</span>
+                                        <span>{{title}}</span>
+                                    </span>
+                                    <span class="sf-search" aria-hidden="true">{{> "icons/search"}} <span>{{t "Search this module…"}}</span></span>
+                                    <span class="sf-utils" aria-hidden="true">
+                                        <span>{{> "icons/bell"}}</span>
+                                        <span>{{> "icons/help-circle"}}</span>
+                                        <span class="sf-utils-avatar">{{> "icons/avatar"}}</span>
+                                    </span>
+                                </header>
+                                <nav class="sf-tabs" aria-label="{{t "The sections"}}">
+                                    <span class="sf-tab">{{> "icons/map-icon"}} {{t "Overview"}}</span>
+                                    <span class="sf-tab is-active">{{> "icons/list-icon"}} {{t "Sections"}} <b>{{sections.length}}</b></span>
+                                </nav>
+                                <div class="sf-body">
+                                <div class="sf-related">
+                                <div class="sf-related-head">
+                                    <span class="sf-related-ico">{{> "icons/list-icon"}}</span>
+                                    <strong>{{t "The sections"}} ({{sections.length}})</strong>
+                                    <span class="sf-related-cols" aria-hidden="true"><span>{{t "Type"}}</span><span>{{t "Time"}}</span></span>
+                                </div>
                                 <ol class="trail-steps">
                                     {{#foreach sections}}
                                         <li class="trail-step">
                                             <a href="{{url}}">
+                                                <span class="trail-step-num" aria-hidden="true">{{@number}}</span>
                                                 <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
                                                 <span class="trail-step-body">
                                                     <span class="trail-step-title">{{title}}</span>
@@ -128,6 +154,8 @@ lists the whole module. Context: a post tagged #module
                                         </li>
                                     {{/foreach}}
                                 </ol>
+                                </div>
+                                </div>
                             </section>
                         {{/if}}
                     {{/get}}

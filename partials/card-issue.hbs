@@ -1,0 +1,41 @@
+{{!-- A newsletter issue as an ENVELOPE. The letter (the issue's
+cover) sits tucked in the pocket; hover lifts the flap and slides
+the letter up. The stamp is the sent date, the postmark says it
+went out, the address block is the subject line and the preview.
+All CSS — the flap, the pocket and the stamp's perforation are
+clip-paths and borders, no images. Context: a #newsletter post.
+Used by /newsletter (the grid) and anywhere an issue is listed. --}}
+<a class="mail-card" href="{{url}}">
+    <span class="mail-env" aria-hidden="true">
+        <span class="mail-env-back"></span>
+        <span class="mail-env-letter">
+            {{#if feature_image}}
+                <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
+            {{else}}
+                {{> "thumb-placeholder" icon="newspaper"}}
+            {{/if}}
+        </span>
+        <span class="mail-env-pocket"></span>
+        <span class="mail-env-flap"></span>
+        <span class="mail-stamp">
+            <b>{{date format="DD"}}</b>
+            <i>{{date format="MMM"}}</i>
+        </span>
+        <span class="mail-postmark"><i>{{t "Sent"}}</i><em>{{date format="YYYY"}}</em></span>
+    </span>
+
+    <span class="mail-card-body">
+        <span class="mail-card-from">
+            {{> "icons/mail"}}
+            <span>{{t "From"}} <strong>{{@site.title}}</strong></span>
+            <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="DD MMM YYYY"}}</time>
+        </span>
+        <strong class="mail-card-subject">{{title}}</strong>
+        {{#if custom_excerpt}}
+            <span class="mail-card-preview">{{custom_excerpt}}</span>
+        {{else}}
+            <span class="mail-card-preview">{{excerpt words="24"}}</span>
+        {{/if}}
+        <span class="mail-card-open">{{t "Open the letter"}} {{> "icons/arrow-right"}}</span>
+    </span>
+</a>

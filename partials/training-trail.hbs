@@ -1,56 +1,104 @@
 {{!-- The training trail — /training's main column.
 
 Same discovery as everywhere (a module IS a public tag with
-training posts), but here the modules AND their sections all
-hang off one rail: a numbered waypoint per module (CSS counter),
-then each section as a timeline stop with its lesson-type icon
-and duration chip, then the next module. The accent line that
-draws itself down the rail as you scroll lives in training.hbs
-(an SVG with data-draw, handled by animate.js). --}}
+training posts), but here every module is a SALESFORCE WINDOW:
+the Lightning app header (waffle, app name, search, utilities),
+the tab row, and the page body with the module as the record
+highlights panel and its sections as the related list — one row
+per section with its number, lesson-type icon, title, duration.
+The modules still hang off one rail: a numbered waypoint per
+module (CSS counter), lit as its window lands. All chrome is CSS;
+the waffle, search and utility icons are decoration (aria-hidden)
+— the real controls are the rows and the two buttons.
+
+On load the windows arrive in sequence (assets/js/trail.js with
+anime.js): the bar slides in, the tabs fade, the rows cascade,
+the waypoint pops. The accent line that draws itself down the
+rail as you scroll lives in training.hbs (an SVG with data-draw,
+handled by animate.js). --}}
 
 {{#get "tags" filter="visibility:public" order="slug asc" limit="30" as |moduleTags|}}
     {{#foreach moduleTags}}
         {{#> "with-this" moduleTag=. }}
             {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="100" include="tags" as |modulePosts|}}
                 {{#if modulePosts}}
-                    <section class="trail-module" id="module-{{../moduleTag.slug}}" data-animate>
+                    <section class="trail-module sf-window" id="module-{{../moduleTag.slug}}" data-trail-module>
 
                         <span class="trail-node" aria-hidden="true"></span>
 
-                        <header class="trail-module-head">
-                            {{#if ../moduleTag.feature_image}}
-                                <span class="trail-module-art" aria-hidden="true">
-                                    <img src="{{img_url ../moduleTag.feature_image size="s"}}" alt="" loading="lazy" />
-                                </span>
-                            {{else}}
-                                <span class="trail-module-art is-icon" aria-hidden="true">{{> "icons/layers"}}</span>
-                            {{/if}}
-                            <div class="trail-module-copy">
-                                <span class="kicker">{{t "Module"}} <span class="module-count-chip">{{modulePosts.length}} {{t "sections"}}</span></span>
-                                <h2><a href="{{@site.url}}/training/{{../moduleTag.slug}}/">{{../moduleTag.name}}</a></h2>
-                                {{#if ../moduleTag.description}}
-                                    <p class="trail-module-desc">{{../moduleTag.description}}</p>
+                        {{!-- Lightning app header --}}
+                        <header class="sf-bar" data-trail-bar>
+                            <span class="sf-waffle" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                            <a class="sf-app" href="{{@site.url}}/training/{{../moduleTag.slug}}/">
+                                {{#if ../moduleTag.feature_image}}
+                                    <img src="{{img_url ../moduleTag.feature_image size="xs"}}" alt="" loading="lazy" />
+                                {{else}}
+                                    <span class="sf-app-ico">{{> "icons/layers"}}</span>
                                 {{/if}}
-                            </div>
-                            <a class="btn btn-sm trail-module-start" href="{{@site.url}}/training/{{../moduleTag.slug}}/">{{> "icons/play-circle"}} {{t "Start"}}</a>
+                                <span>{{../moduleTag.name}}</span>
+                            </a>
+                            <span class="sf-search" aria-hidden="true">{{> "icons/search"}} <span>{{t "Search this module…"}}</span></span>
+                            <span class="sf-utils" aria-hidden="true">
+                                <span>{{> "icons/bell"}}</span>
+                                <span>{{> "icons/help-circle"}}</span>
+                                <span class="sf-utils-avatar">{{> "icons/avatar"}}</span>
+                            </span>
                         </header>
 
-                        <ol class="trail-steps">
-                            {{#foreach modulePosts}}
-                                <li class="trail-step">
-                                    <a href="{{url}}">
-                                        <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
-                                        <span class="trail-step-body">
-                                            <span class="trail-step-title">{{title}}</span>
-                                            {{#if custom_excerpt}}<span class="trail-step-sub">{{custom_excerpt}}</span>{{/if}}
-                                        </span>
-                                        {{> "duration-chip" chipClass="trail-step-time"}}
-                                        {{> "icons/arrow-right"}}
-                                    </a>
-                                </li>
-                            {{/foreach}}
-                        </ol>
+                        {{!-- Tab row --}}
+                        <nav class="sf-tabs" aria-label="{{../moduleTag.name}}" data-trail-tabs>
+                            <a class="sf-tab is-active" href="{{@site.url}}/training/{{../moduleTag.slug}}/">{{> "icons/map-icon"}} {{t "Overview"}}</a>
+                            <span class="sf-tab">{{> "icons/list-icon"}} {{t "Sections"}} <b>{{modulePosts.length}}</b></span>
+                            <span class="sf-tab is-ghost">{{> "icons/file-check"}} {{t "Done"}} <b>0</b></span>
+                        </nav>
 
+                        <div class="sf-body">
+
+                            {{!-- Record highlights: the module --}}
+                            <div class="sf-highlights" data-trail-head>
+                                {{#if ../moduleTag.feature_image}}
+                                    <span class="trail-module-art" aria-hidden="true">
+                                        <img src="{{img_url ../moduleTag.feature_image size="s"}}" alt="" loading="lazy" />
+                                    </span>
+                                {{else}}
+                                    <span class="trail-module-art is-icon" aria-hidden="true">{{> "icons/layers"}}</span>
+                                {{/if}}
+                                <div class="trail-module-copy">
+                                    <span class="kicker">{{t "Module"}} <span class="module-count-chip">{{modulePosts.length}} {{t "sections"}}</span></span>
+                                    <h2><a href="{{@site.url}}/training/{{../moduleTag.slug}}/">{{../moduleTag.name}}</a></h2>
+                                    {{#if ../moduleTag.description}}
+                                        <p class="trail-module-desc">{{../moduleTag.description}}</p>
+                                    {{/if}}
+                                </div>
+                                <a class="btn btn-sm trail-module-start" href="{{@site.url}}/training/{{../moduleTag.slug}}/">{{> "icons/play-circle"}} {{t "Start"}}</a>
+                            </div>
+
+                            {{!-- Related list: the sections --}}
+                            <div class="sf-related">
+                                <div class="sf-related-head">
+                                    <span class="sf-related-ico">{{> "icons/list-icon"}}</span>
+                                    <strong>{{t "Sections"}} ({{modulePosts.length}})</strong>
+                                    <span class="sf-related-cols" aria-hidden="true"><span>{{t "Type"}}</span><span>{{t "Time"}}</span></span>
+                                </div>
+                                <ol class="trail-steps">
+                                    {{#foreach modulePosts}}
+                                        <li class="trail-step" data-trail-row>
+                                            <a href="{{url}}">
+                                                <span class="trail-step-num" aria-hidden="true">{{@number}}</span>
+                                                <span class="trail-step-dot" aria-hidden="true">{{> "lesson-type-icon"}}</span>
+                                                <span class="trail-step-body">
+                                                    <span class="trail-step-title">{{title}}</span>
+                                                    {{#if custom_excerpt}}<span class="trail-step-sub">{{custom_excerpt}}</span>{{/if}}
+                                                </span>
+                                                {{> "duration-chip" chipClass="trail-step-time"}}
+                                                {{> "icons/arrow-right"}}
+                                            </a>
+                                        </li>
+                                    {{/foreach}}
+                                </ol>
+                            </div>
+
+                        </div>
                     </section>
                 {{/if}}
             {{/get}}

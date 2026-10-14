@@ -53,6 +53,16 @@
         return; // one slide is an article — leave it be
     }
 
+    // From here on the frame is building: the raw article hides
+    // behind the loading panel until every slide is cut, every
+    // mini is cloned and every picture has arrived (see the end).
+    deck.classList.add('is-loading');
+    var loading = deck.querySelector('[data-deck-loading]');
+    var loadingCount = deck.querySelector('[data-deck-loading-count]');
+    if (loadingCount) {
+        loadingCount.textContent = groups.length;
+    }
+
     var slides = groups.map(function (group, i) {
         var section = document.createElement('section');
         // deck-surface carries the shared canvas look — the same
@@ -62,6 +72,16 @@
         section.setAttribute('data-num', (i + 1) + ' / ' + groups.length);
         group.forEach(function (n) {
             section.appendChild(n);
+            // a card that names a surface (sl-theme-navy …) hands
+            // the class to the slide itself, so the whole canvas
+            // changes colour, not just the card
+            if (n.nodeType === 1 && n.classList) {
+                Array.prototype.forEach.call(n.classList, function (c) {
+                    if (/^sl-theme-/.test(c)) {
+                        section.classList.add(c);
+                    }
+                });
+            }
         });
         // entry stagger: each child a beat behind the last
         Array.prototype.forEach.call(section.children, function (child, k) {
@@ -289,19 +309,73 @@
         rail.hidden = false;
     }
 
-    deck.classList.add('is-ready');
+    /* Everything is cut and cloned; now wait for the pictures.
+       The deck opens ONCE, fully rendered — no slide pops in a
+       beat late, no mini reflows under the cursor. Each image is
+       awaited through decode() (or load/error), with a cap so a
+       dead link can never hold the deck hostage. The counter on
+       the loading panel ticks as they land. */
+    var pictures = Array.prototype.slice.call(deck.querySelectorAll('[data-deck-source] img'));
+    var loadingPics = deck.querySelector('[data-deck-loading-pics]');
+    var landed = 0;
 
-    // keyboard first: focus the frame so ← / → land immediately,
-    // and take it back whenever fullscreen flips or Portal's
-    // iframe steals it
-    deck.setAttribute('tabindex', '-1');
-    deck.focus({preventScroll: true});
-    document.addEventListener('fullscreenchange', function () {
-        deck.focus({preventScroll: true});
+    function tick() {
+        landed += 1;
+        if (loadingPics) {
+            loadingPics.textContent = landed + ' / ' + pictures.length;
+        }
+    }
+
+    function awaitImage(img) {
+        return new Promise(function (resolve) {
+            var done = function () {
+                tick();
+                resolve();
+            };
+            if (img.complete && img.naturalWidth) {
+                done();
+                return;
+            }
+            if (img.decode) {
+                img.decode().then(done, done);
+            } else {
+                img.addEventListener('load', done, {once: true});
+                img.addEventListener('error', done, {once: true});
+            }
+        });
+    }
+
+    var cap = new Promise(function (resolve) {
+        setTimeout(resolve, 6000);
     });
 
-    // arrive on the slide the URL names, if any
-    var m = /^#slide-(\d+)$/.exec(location.hash);
-    go(m ? parseInt(m[1], 10) - 1 : 0);
-    fit();
+    function open() {
+        if (deck.classList.contains('is-ready')) {
+            return;
+        }
+        deck.classList.remove('is-loading');
+        deck.classList.add('is-ready');
+        if (loading) {
+            loading.setAttribute('hidden', '');
+        }
+
+        // keyboard first: focus the frame so ← / → land immediately,
+        // and take it back whenever fullscreen flips or Portal's
+        // iframe steals it
+        deck.setAttribute('tabindex', '-1');
+        deck.focus({preventScroll: true});
+        document.addEventListener('fullscreenchange', function () {
+            deck.focus({preventScroll: true});
+        });
+
+        // arrive on the slide the URL names, if any
+        var m = /^#slide-(\d+)$/.exec(location.hash);
+        go(m ? parseInt(m[1], 10) - 1 : 0);
+        fit();
+    }
+
+    if (loadingPics) {
+        loadingPics.textContent = '0 / ' + pictures.length;
+    }
+    Promise.race([Promise.all(pictures.map(awaitImage)), cap]).then(open, open);
 })();

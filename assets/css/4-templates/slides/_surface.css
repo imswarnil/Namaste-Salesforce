@@ -63,7 +63,7 @@
     height: 6px;
     margin-bottom: 30px;
     border-radius: 3px;
-    background: #0176d3;
+    background: var(--deck-accent, #0176d3);
 }
 
 .deck-frame.is-ready .deck-surface p,
@@ -83,7 +83,7 @@
 }
 
 .deck-frame.is-ready .deck-surface li::marker {
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
 }
 
 .deck-frame.is-ready .deck-surface strong {
@@ -95,7 +95,7 @@
 }
 
 .deck-frame.is-ready .deck-surface a {
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -116,7 +116,7 @@
 .deck-frame.is-ready .deck-surface blockquote {
     margin: 0;
     padding-left: 28px;
-    border-left: 6px solid #0176d3;
+    border-left: 6px solid var(--deck-accent, #0176d3);
     color: #24425f;
     font-size: 30px;
 }
@@ -219,7 +219,7 @@
     align-items: center;
     padding: 16px 40px;
     border-radius: 999px;
-    background: #0176d3;
+    background: var(--deck-accent, #0176d3);
     color: #ffffff;
     font-size: 24px;
     font-weight: 700;
@@ -397,7 +397,7 @@
     padding: 12px 18px;
     text-align: left;
     color: #032d60;
-    border-bottom: 2px solid #0176d3;
+    border-bottom: 2px solid var(--deck-accent, #0176d3);
 }
 
 .deck-frame.is-ready .deck-surface td {
@@ -429,7 +429,7 @@
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
 }
 
 .deck-frame.is-ready .deck-surface .sl-center {
@@ -444,7 +444,7 @@
     height: 6px;
     margin: 0 auto 30px;
     border-radius: 3px;
-    background: #0176d3;
+    background: var(--deck-accent, #0176d3);
 }
 
 .deck-frame.is-ready .deck-surface .sl-badge {
@@ -455,7 +455,7 @@
     border-radius: 999px;
     font-size: 18px;
     font-weight: 700;
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
     background: rgba(1, 118, 211, 0.1);
 }
 
@@ -506,7 +506,7 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: #0176d3;
+    background: var(--deck-accent, #0176d3);
     color: #ffffff;
     font-size: 21px;
     font-weight: 800;
@@ -583,7 +583,7 @@
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.03em;
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
     font-variant-numeric: tabular-nums;
 }
 
@@ -641,7 +641,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #0176d3;
+    background: var(--deck-accent, #0176d3);
     color: #fff;
     font-size: 22px;
     font-weight: 800;
@@ -683,7 +683,7 @@
     height: 34px;
     border-radius: 50%;
     background: rgba(1, 118, 211, 0.1);
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
     font-size: 17px;
     font-weight: 800;
 }
@@ -720,7 +720,7 @@
     translate: 0 -50%;
     font-size: 28px;
     font-weight: 700;
-    color: #0176d3;
+    color: var(--deck-accent, #0176d3);
 }
 
 /* a browser-window frame around a screenshot */
@@ -756,4 +756,780 @@
 .deck-frame.is-ready .deck-surface .sl-foot {
     font-size: 18px;
     color: rgba(3, 45, 96, 0.5);
+}
+
+
+/*  THE TEACHING KIT, PART TWO — more slide shapes
+    ============================================================
+    Same contract as above: plain HTML cards with a class, px
+    values, light canvas. The accent reads var(--deck-accent),
+    which post-slides.hbs sets from the deck's primary tag colour
+    — so a deck can wear its topic's colour without touching CSS.
+
+      .sl-theme-navy / .sl-theme-accent / .sl-theme-paper
+                    per-slide surface (deck.js lifts the class
+                    from the card to the slide)
+      .sl-cover     the title slide (kicker, h1, lead, meta row)
+      .sl-section   a chapter divider (big number + title)
+      .sl-agenda    numbered agenda in two columns
+      .sl-quote     one big quotation with its source
+      .sl-timeline  stops on a horizontal line
+      .sl-cards     a row of boxed cards (.sl-cards-2 / -4)
+      .sl-split     copy beside a picture (.sl-split-media)
+      .sl-checklist ticked list
+      .sl-window    a Salesforce (Lightning) window on the slide
+      .sl-bars      a CSS bar chart (each li sets --v, 0–100)
+      .sl-kpi       four boxed numbers in a 2×2
+      .sl-code-note code with a note beside it
+      .sl-figure    one big picture, framed
+      .sl-end       the closing slide with a row of links   */
+
+/* per-slide surfaces */
+.deck-frame.is-ready .deck-surface.sl-theme-navy {
+    background-color: #051222;
+    background-image:
+        radial-gradient(90% 120% at 100% 0%, rgba(27, 150, 255, 0.22), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M48 0H0v48' fill='none' stroke='rgba(124,190,255,0.09)'/%3E%3C/svg%3E");
+    color: #b7c4d6;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-accent {
+    background-color: var(--deck-accent, #0176d3);
+    background-image:
+        radial-gradient(90% 120% at 100% 0%, rgba(255, 255, 255, 0.18), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M48 0H0v48' fill='none' stroke='rgba(255,255,255,0.12)'/%3E%3C/svg%3E");
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-paper {
+    background-color: #f7f1e6;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M48 0H0v48' fill='none' stroke='rgba(92,74,42,0.08)'/%3E%3C/svg%3E");
+    color: #5c4a2a;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy h1,
+.deck-frame.is-ready .deck-surface.sl-theme-navy h2,
+.deck-frame.is-ready .deck-surface.sl-theme-navy h3,
+.deck-frame.is-ready .deck-surface.sl-theme-accent h1,
+.deck-frame.is-ready .deck-surface.sl-theme-accent h2,
+.deck-frame.is-ready .deck-surface.sl-theme-accent h3,
+.deck-frame.is-ready .deck-surface.sl-theme-navy strong,
+.deck-frame.is-ready .deck-surface.sl-theme-accent strong {
+    color: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-kicker,
+.deck-frame.is-ready .deck-surface.sl-theme-navy li::marker,
+.deck-frame.is-ready .deck-surface.sl-theme-navy a {
+    color: #7cbeff;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-accent .sl-kicker,
+.deck-frame.is-ready .deck-surface.sl-theme-accent li::marker,
+.deck-frame.is-ready .deck-surface.sl-theme-accent a {
+    color: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy > h1:first-child::before,
+.deck-frame.is-ready .deck-surface.sl-theme-navy > h2:first-child::before,
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-center > h1:first-child::before,
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-center > h2:first-child::before,
+.deck-frame.is-ready .deck-surface.sl-theme-accent > h1:first-child::before,
+.deck-frame.is-ready .deck-surface.sl-theme-accent > h2:first-child::before {
+    background: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy::before,
+.deck-frame.is-ready .deck-surface.sl-theme-navy::after,
+.deck-frame.is-ready .deck-surface.sl-theme-accent::before,
+.deck-frame.is-ready .deck-surface.sl-theme-accent::after {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-paper h1,
+.deck-frame.is-ready .deck-surface.sl-theme-paper h2,
+.deck-frame.is-ready .deck-surface.sl-theme-paper h3 {
+    color: #2b2114;
+}
+
+/* the title slide */
+.deck-frame.is-ready .deck-surface .sl-cover {
+    display: grid;
+    gap: 22px;
+    align-content: center;
+    min-height: 544px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cover h1 {
+    font-size: 76px;
+    line-height: 1.04;
+    max-width: 18ch;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cover h1::before {
+    display: none;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cover .sl-lead {
+    font-size: 30px;
+    max-width: 34ch;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cover-meta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 18px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(124, 190, 255, 0.3);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cover-meta span + span::before {
+    content: "·";
+    margin-right: 18px;
+    opacity: 0.5;
+}
+
+/* the chapter divider */
+.deck-frame.is-ready .deck-surface .sl-section {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 48px;
+    align-items: center;
+    min-height: 544px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-section-num {
+    font-size: 220px;
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+    color: var(--deck-accent, #0176d3);
+    opacity: 0.18;
+    font-variant-numeric: tabular-nums;
+}
+
+.deck-frame.is-ready .deck-surface .sl-section h2 {
+    font-size: 64px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-section h2::before {
+    display: none;
+}
+
+.deck-frame.is-ready .deck-surface .sl-section p {
+    margin-top: 16px;
+    font-size: 27px;
+}
+
+/* the agenda */
+.deck-frame.is-ready .deck-surface ol.sl-agenda {
+    list-style: none;
+    counter-reset: sl-ag;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 56px;
+    margin: 0;
+    padding: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-agenda li {
+    counter-increment: sl-ag;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(3, 45, 96, 0.12);
+    font-size: 26px;
+    font-weight: 700;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-agenda li + li {
+    margin-top: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-agenda li::before {
+    content: counter(sl-ag, decimal-leading-zero);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--deck-accent, #0176d3);
+    font-variant-numeric: tabular-nums;
+}
+
+.deck-frame.is-ready .deck-surface .sl-agenda li span {
+    display: block;
+    margin-top: 4px;
+    font-size: 19px;
+    font-weight: 500;
+    color: #3e5c7a;
+}
+
+/* the quotation */
+.deck-frame.is-ready .deck-surface .sl-quote {
+    display: grid;
+    gap: 26px;
+    align-content: center;
+    min-height: 544px;
+    padding-left: 48px;
+    border-left: 8px solid var(--deck-accent, #0176d3);
+}
+
+.deck-frame.is-ready .deck-surface .sl-quote p {
+    font-size: 46px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-quote cite {
+    font-style: normal;
+    font-size: 22px;
+    font-weight: 600;
+    color: #3e5c7a;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-quote p {
+    color: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-quote cite {
+    color: #b7c4d6;
+}
+
+/* the timeline */
+.deck-frame.is-ready .deck-surface ol.sl-timeline {
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin: 0;
+    padding: 44px 0 0;
+    list-style: none;
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--deck-accent, #0176d3), rgba(1, 118, 211, 0.25));
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline li {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    margin: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline li::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 5px solid var(--deck-accent, #0176d3);
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline li.is-now::before {
+    background: var(--deck-accent, #0176d3);
+    box-shadow: 0 0 0 8px rgba(1, 118, 211, 0.18);
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline b {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--deck-accent, #0176d3);
+    font-variant-numeric: tabular-nums;
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline strong {
+    font-size: 23px;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-timeline span {
+    font-size: 18px;
+    line-height: 1.4;
+    color: #3e5c7a;
+}
+
+/* boxed cards */
+.deck-frame.is-ready .deck-surface .sl-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards > * {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    padding: 26px 28px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.14);
+    box-shadow: 0 10px 30px rgba(3, 45, 96, 0.08);
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards h3 {
+    font-size: 26px;
+    line-height: 1.2;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards h3::before {
+    display: none;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards p,
+.deck-frame.is-ready .deck-surface .sl-cards li {
+    font-size: 20px;
+    line-height: 1.45;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards .sl-card-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    font-size: 24px;
+    color: #ffffff;
+    background: var(--deck-accent, #0176d3);
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards > .is-accent {
+    background: var(--deck-accent, #0176d3);
+    border-color: transparent;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards > .is-accent h3,
+.deck-frame.is-ready .deck-surface .sl-cards > .is-accent p,
+.deck-frame.is-ready .deck-surface .sl-cards > .is-accent li {
+    color: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface .sl-cards > .is-accent .sl-card-ico {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* copy beside a picture */
+.deck-frame.is-ready .deck-surface .sl-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 56px;
+    align-items: center;
+}
+
+.deck-frame.is-ready .deck-surface .sl-split-media {
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(3, 45, 96, 0.2);
+}
+
+.deck-frame.is-ready .deck-surface .sl-split-media img {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* ticked list */
+.deck-frame.is-ready .deck-surface ul.sl-checklist {
+    list-style: none;
+    display: grid;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-checklist li {
+    position: relative;
+    padding-left: 54px;
+    font-size: 25px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-checklist li + li {
+    margin-top: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-checklist li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    translate: 0 -50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    background: #2e844a;
+}
+
+.deck-frame.is-ready .deck-surface .sl-checklist li.is-todo::before {
+    content: "";
+    background: transparent;
+    border: 3px dashed rgba(3, 45, 96, 0.3);
+}
+
+/* a Salesforce window on the slide */
+.deck-frame.is-ready .deck-surface .sl-window {
+    overflow: hidden;
+    border-radius: 14px;
+    background: #f3f3f3;
+    border: 1px solid rgba(3, 45, 96, 0.16);
+    box-shadow: 0 16px 44px rgba(3, 45, 96, 0.18);
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    color: #ffffff;
+    background: linear-gradient(90deg, #032d60, #0b5cab 70%, var(--deck-accent, #0176d3));
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-bar i {
+    display: inline-grid;
+    grid-template-columns: repeat(3, 5px);
+    gap: 3px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-bar i::before,
+.deck-frame.is-ready .deck-surface .sl-window-bar i::after,
+.deck-frame.is-ready .deck-surface .sl-window-bar b::before {
+    content: "";
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-bar i::before {
+    display: block;
+    width: 21px;
+    height: 21px;
+    background:
+        radial-gradient(circle 2.5px, #fff 98%, transparent) 0 0 / 7px 7px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-bar b {
+    color: #ffffff;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-bar span {
+    margin-left: auto;
+    padding: 5px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 16px;
+    background: #ffffff;
+    border-bottom: 1px solid rgba(3, 45, 96, 0.14);
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-tabs span {
+    position: relative;
+    padding: 12px 14px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #3e5c7a;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-tabs .is-active {
+    color: var(--deck-accent, #0176d3);
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-tabs .is-active::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: -1px;
+    height: 3px;
+    background: var(--deck-accent, #0176d3);
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-body {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-body > * {
+    margin: 0;
+    padding: 14px 18px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.12);
+    border-radius: 8px;
+    font-size: 19px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-body table {
+    padding: 0;
+    overflow: hidden;
+}
+
+.deck-frame.is-ready .deck-surface .sl-window-body th,
+.deck-frame.is-ready .deck-surface .sl-window-body td {
+    font-size: 18px;
+    padding: 10px 16px;
+}
+
+/* the bar chart */
+.deck-frame.is-ready .deck-surface ul.sl-bars {
+    list-style: none;
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-bars li {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 80px;
+    align-items: center;
+    gap: 18px;
+    font-size: 21px;
+    color: #032d60;
+}
+
+.deck-frame.is-ready .deck-surface .sl-bars li + li {
+    margin-top: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-bars span {
+    font-weight: 700;
+    text-align: right;
+}
+
+.deck-frame.is-ready .deck-surface .sl-bars i {
+    display: block;
+    height: 30px;
+    border-radius: 6px;
+    background: rgba(1, 118, 211, 0.12);
+    overflow: hidden;
+}
+
+.deck-frame.is-ready .deck-surface .sl-bars i::before {
+    content: "";
+    display: block;
+    width: calc(var(--v, 50) * 1%);
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--deck-accent, #0176d3), #1b96ff);
+}
+
+.deck-frame.is-ready .deck-surface .sl-bars b {
+    font-weight: 800;
+    color: var(--deck-accent, #0176d3);
+    font-variant-numeric: tabular-nums;
+}
+
+/* the 2×2 numbers */
+.deck-frame.is-ready .deck-surface .sl-kpi {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-kpi > * {
+    display: grid;
+    gap: 6px;
+    padding: 26px 30px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.14);
+    box-shadow: 0 10px 30px rgba(3, 45, 96, 0.08);
+}
+
+.deck-frame.is-ready .deck-surface .sl-kpi b {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--deck-accent, #0176d3);
+    font-variant-numeric: tabular-nums;
+}
+
+.deck-frame.is-ready .deck-surface .sl-kpi span {
+    font-size: 20px;
+    color: #3e5c7a;
+}
+
+/* code with a note beside it */
+.deck-frame.is-ready .deck-surface .sl-code-note {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+}
+
+.deck-frame.is-ready .deck-surface .sl-code-note pre {
+    margin: 0;
+}
+
+.deck-frame.is-ready .deck-surface .sl-code-note aside {
+    display: grid;
+    gap: 12px;
+    padding: 22px 26px;
+    border-radius: 14px;
+    background: rgba(1, 118, 211, 0.08);
+    border-left: 6px solid var(--deck-accent, #0176d3);
+    font-size: 21px;
+    line-height: 1.5;
+}
+
+.deck-frame.is-ready .deck-surface .sl-code-note aside strong {
+    color: #032d60;
+}
+
+/* one big picture */
+.deck-frame.is-ready .deck-surface .sl-figure {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(3, 45, 96, 0.2);
+}
+
+.deck-frame.is-ready .deck-surface .sl-figure img {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* the closing slide */
+.deck-frame.is-ready .deck-surface .sl-end {
+    display: grid;
+    gap: 26px;
+    align-content: center;
+    justify-items: center;
+    min-height: 544px;
+    text-align: center;
+}
+
+.deck-frame.is-ready .deck-surface .sl-end h2 {
+    font-size: 66px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-end h2::before {
+    display: none;
+}
+
+.deck-frame.is-ready .deck-surface .sl-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+}
+
+.deck-frame.is-ready .deck-surface .sl-links a {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 26px;
+    border-radius: 999px;
+    font-size: 21px;
+    font-weight: 700;
+    color: #032d60;
+    background: #ffffff;
+    border: 1px solid rgba(3, 45, 96, 0.16);
+    box-shadow: 0 8px 22px rgba(3, 45, 96, 0.1);
+    text-decoration: none;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-links a,
+.deck-frame.is-ready .deck-surface.sl-theme-accent .sl-links a {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+}
+
+/* the lead paragraph, anywhere */
+.deck-frame.is-ready .deck-surface .sl-lead {
+    font-size: 30px;
+    line-height: 1.45;
+}
+
+/* ink on the coloured surfaces — every text rule above names a
+   navy, so the themed slides re-ink paragraphs, lists and leads */
+.deck-frame.is-ready .deck-surface.sl-theme-navy p,
+.deck-frame.is-ready .deck-surface.sl-theme-navy li,
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-lead,
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-cover-meta,
+.deck-frame.is-ready .deck-surface.sl-theme-navy .sl-foot {
+    color: #b7c4d6;
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-accent p,
+.deck-frame.is-ready .deck-surface.sl-theme-accent li,
+.deck-frame.is-ready .deck-surface.sl-theme-accent .sl-lead,
+.deck-frame.is-ready .deck-surface.sl-theme-accent .sl-cover-meta,
+.deck-frame.is-ready .deck-surface.sl-theme-accent .sl-foot {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.deck-frame.is-ready .deck-surface.sl-theme-paper p,
+.deck-frame.is-ready .deck-surface.sl-theme-paper li,
+.deck-frame.is-ready .deck-surface.sl-theme-paper .sl-quote p {
+    color: #2b2114;
+}
+
+/* a slide that carries a window or a table is tall: tighter
+   margins and a smaller heading keep the whole frame on the canvas */
+.deck-frame.is-ready .deck-surface:has(> .sl-window),
+.deck-frame.is-ready .deck-surface:has(> table),
+.deck-frame.is-ready .deck-surface:has(> .sl-code-note) {
+    padding-top: 52px;
+    padding-bottom: 52px;
+}
+
+.deck-frame.is-ready .deck-surface:has(> .sl-window) > h2:first-child,
+.deck-frame.is-ready .deck-surface:has(> table) > h2:first-child,
+.deck-frame.is-ready .deck-surface:has(> .sl-code-note) > h2:first-child {
+    font-size: 42px;
+}
+
+.deck-frame.is-ready .deck-surface:has(> .sl-window) > h2:first-child::before {
+    margin-bottom: 16px;
 }

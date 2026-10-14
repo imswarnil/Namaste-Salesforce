@@ -357,3 +357,83 @@
         animation: none;
     }
 }
+
+
+/*  The loading panel — between "the article arrived" and "the
+    deck is ready". deck.js adds .is-loading the moment it starts
+    cutting slides and swaps it for .is-ready once every picture
+    has decoded; the raw article is hidden in between, so the
+    reader sees one calm panel and then the finished deck. With
+    JS off neither class exists and the article simply reads. */
+.deck-loading {
+    display: none;
+}
+
+.deck-frame.is-loading {
+    height: 100dvh;
+    min-height: 0;
+}
+
+.deck-frame.is-loading .deck-body {
+    flex: 1;
+    min-height: 0;
+}
+
+.deck-frame.is-loading .deck-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    background: var(--gray-950);
+}
+
+.deck-frame.is-loading .deck-canvas-box,
+.deck-frame.is-loading .deck-rail,
+.deck-frame.is-loading .deck-progress {
+    visibility: hidden;
+    position: absolute;
+}
+
+.deck-frame.is-loading .deck-loading {
+    display: grid;
+    justify-items: center;
+    gap: 1.2rem;
+    color: var(--gray-100);
+    text-align: center;
+}
+
+.deck-loading strong {
+    font-size: 1.7rem;
+    color: #fff;
+}
+
+.deck-loading-meta {
+    font-size: 1.35rem;
+    color: var(--gray-400);
+    font-variant-numeric: tabular-nums;
+}
+
+.deck-loading-meta b {
+    color: var(--brand-300);
+}
+
+.deck-loading-ring {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: 50%;
+    border: 3px solid rgba(124, 190, 255, 0.2);
+    border-top-color: var(--brand-400);
+    animation: deck-spin 0.9s linear infinite;
+}
+
+@keyframes deck-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .deck-loading-ring {
+        animation: none;
+        border-top-color: rgba(124, 190, 255, 0.2);
+    }
+}

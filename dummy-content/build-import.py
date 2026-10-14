@@ -13,7 +13,7 @@ that exercises every feature of the theme with realistic content:
     sidebar), four newsletter issues, six changelog entries
   · six snippets with real Apex/SOQL/Flow/LWC code, four prompts,
     six resources, four shop items
-  · four slide decks at /slides/ — slides end at divider cards;
+  · five slide decks at /slides/ (one of them 52 slides long) — slides end at divider cards;
     one deck is members-only (the locked cover), one is built
     entirely from editor cards (callout, code, image, button),
     one exercises the sl-* teaching kit (steps, do/don't, stats,
@@ -1388,6 +1388,405 @@ deck("The Teaching Kit", "the-teaching-kit",
       "<div class=\"sl-flow\"><span>Sandbox</span><span>Tests</span><span>Validate</span><span>Deploy</span><span>Monitor</span></div>"
       "<p class=\"sl-foot\">Same five boxes, whatever the tooling — the kit's .sl-flow draws the arrows.</p>"],
      394)
+
+# The fifth deck is THE LONG ONE — fifty-two slides, the whole map
+# from Salesforce admin to GTM engineer, using every shape in the
+# kit (the originals AND part two: cover, section dividers, agenda,
+# quote, timeline, cards, split, checklist, Salesforce window, bar
+# chart, KPI grid, code-with-note, figure, closing). Every slide is
+# one html card; the per-slide surface classes (sl-theme-*) ride on
+# the card and deck.js lifts them onto the slide. It exists to prove
+# the player at length: the loading panel waits until all of it is
+# cut, cloned and decoded, then the deck opens at once.
+def _sec(num, title, line):
+    return ('<div class="sl-section"><span class="sl-section-num">%s</span>'
+            '<div><h2>%s</h2><p>%s</p></div></div>' % (num, title, line))
+
+BIG = [
+    # ── 1 · cover
+    '<div class="sl-cover sl-theme-navy">'
+    '<p class="sl-kicker">A personal map, built in public</p>'
+    '<h1>From Salesforce admin to GTM engineer</h1>'
+    '<p class="sl-lead">The system first, then the business process it runs, then the AI layer on top. Fifty slides, one road.</p>'
+    '<div class="sl-cover-meta"><span>Swarnil Singhai</span><span>Namaste Salesforce</span><span>2026</span></div>'
+    '</div>',
+
+    # ── 2 · agenda
+    '<h2>What we will cover</h2>'
+    '<ol class="sl-agenda">'
+    '<li>Why this map<span>Tools change, the business does not</span></li>'
+    '<li>The platform<span>Org, metadata, security, automation</span></li>'
+    '<li>The data model of revenue<span>Lead to cash, object by object</span></li>'
+    '<li>The business underneath<span>Sales cycle, routing, quote-to-cash</span></li>'
+    '<li>Analytics<span>CRM Analytics, SAQL, the dashboards people open</span></li>'
+    '<li>The GTM stack<span>n8n, Clay, 6sense, the outbound side</span></li>'
+    '<li>The AI layer<span>Agentforce, prompts, grounding, guardrails</span></li>'
+    '<li>The plan<span>My road, and what is here for you</span></li>'
+    '</ol>',
+
+    # ── 3 · section 01
+    _sec('01', 'Why this map', 'One person upskilling in public — and the reason the map is drawn around the business, not the tool.'),
+
+    # ── 4 · quote
+    '<figure class="sl-quote"><p>Tools will change. How a business finds, wins and keeps customers will not — and that is what I am really learning.</p>'
+    '<cite>The one idea behind the whole site</cite></figure>',
+
+    # ── 5 · stats
+    '<h2>Where I started</h2>'
+    '<div class="sl-stats">'
+    '<div class="sl-stat"><b>2018</b><span>first Salesforce job, CRM Analytics</span></div>'
+    '<div class="sl-stat"><b>4</b><span>companies on the road so far</span></div>'
+    '<div class="sl-stat"><b>1</b><span>word that changed the plan: GTM</span></div>'
+    '</div>'
+    '<p class="sl-foot">Accenture → Cognizant → Twilio → Education First. The dates are in the journey on the homepage.</p>',
+
+    # ── 6 · the thesis
+    '<div class="sl-center"><p class="sl-kicker">The thesis</p>'
+    '<h2>Salesforce is the way in, not the destination</h2>'
+    '<p class="sl-lead">Learn the system. Then learn the revenue process it runs. Then automate that process with AI. Every lesson on the site sits on one of those three steps.</p>'
+    '<p><span class="sl-badge">System</span><span class="sl-badge">Process</span><span class="sl-badge">AI</span></p></div>',
+
+    # ── 7 · section 02
+    _sec('02', 'The platform', 'The four things every admin touches every week — and the model that makes them make sense.'),
+
+    # ── 8 · the org in three cards
+    '<h2>One org, three ideas</h2>'
+    '<div class="sl-cards">'
+    '<div><span class="sl-card-ico">☁</span><h3>The org</h3><p>One tenant on shared infrastructure. Its own data, metadata and users. A Developer Edition is your free lab.</p></div>'
+    '<div><span class="sl-card-ico">⚙</span><h3>Metadata</h3><p>Objects, fields, layouts, flows, classes. Everything you build is metadata — and metadata moves between orgs.</p></div>'
+    '<div class="is-accent"><span class="sl-card-ico">🔒</span><h3>Security</h3><p>Profiles say what you can do. Sharing says which records you see. FLS says which columns exist for you.</p></div>'
+    '</div>',
+
+    # ── 9 · metadata vs data
+    '<h2>Metadata is the product, data is the cargo</h2>'
+    '<div class="sl-compare">'
+    '<div class="sl-do"><ul><li>Build behaviour as metadata</li><li>Deploy metadata between orgs</li><li>Retrieve it with the CLI to prove it exists</li></ul></div>'
+    '<div class="sl-dont"><ul><li>Hand-click the same change in three orgs</li><li>Ship test data in a deployment</li><li>Trust a change you cannot retrieve</li></ul></div>'
+    '</div>',
+
+    # ── 10 · security steps
+    '<h2>Check security for one user, in order</h2>'
+    '<ol class="sl-steps">'
+    '<li>Profile and permission sets — what can they <strong>do</strong>?</li>'
+    '<li>Org-wide defaults and sharing — which <strong>records</strong> can they see?</li>'
+    '<li>Field-level security — which <strong>columns</strong> exist for them?</li>'
+    '<li>Login as them and open the list view. Believe the screen, not the diagram.</li>'
+    '</ol>',
+
+    # ── 11 · Setup window
+    '<h2>Setup is the whole platform in one search box</h2>'
+    '<div class="sl-window">'
+    '<div class="sl-window-bar"><i></i><b>Setup</b><span>Quick Find: object manager</span></div>'
+    '<div class="sl-window-tabs"><span class="is-active">Object Manager</span><span>Home</span><span>Flows</span><span>Users</span></div>'
+    '<div class="sl-window-body">'
+    '<table><thead><tr><th>Label</th><th>API name</th><th>Type</th><th>Fields</th></tr></thead>'
+    '<tbody><tr><td>Account</td><td>Account</td><td>Standard</td><td>58</td></tr>'
+    '<tr><td>Opportunity</td><td>Opportunity</td><td>Standard</td><td>44</td></tr>'
+    '<tr><td>Lead</td><td>Lead</td><td>Standard</td><td>37</td></tr>'
+    '<tr><td>Enrichment Run</td><td>Enrichment_Run__c</td><td>Custom</td><td>12</td></tr></tbody></table>'
+    '</div></div>',
+
+    # ── 12 · Flow vs Apex
+    '<h2>Flow first, Apex when it earns its keep</h2>'
+    '<div class="sl-compare">'
+    '<div class="sl-do"><ul><li>Record-triggered Flow for field logic</li><li>One trigger per object, logic in a handler</li><li>Bulk-safe from line one</li></ul></div>'
+    '<div class="sl-dont"><ul><li>A Flow with eleven decision elements</li><li>SOQL inside a loop</li><li>Apex because it feels more serious</li></ul></div>'
+    '</div>',
+
+    # ── 13 · governor limits
+    '<h2>The limits that actually stop orgs</h2>'
+    '<div class="sl-kpi">'
+    '<div><b>100</b><span>SOQL queries per transaction</span></div>'
+    '<div><b>150</b><span>DML statements per transaction</span></div>'
+    '<div><b>10 s</b><span>CPU time, summed across every trigger and flow</span></div>'
+    '<div><b>200</b><span>records per trigger batch — design for this number</span></div>'
+    '</div>',
+
+    # ── 14 · quiz
+    '<h2>Check yourself</h2>'
+    '<div class="sl-quiz"><p class="sl-quiz-q">Two users open the same list view and see different rows. Which layer did that?</p>'
+    '<ol><li>Field-level security</li><li>Org-wide defaults and sharing</li><li>The page layout</li></ol></div>',
+
+    # ── 15 · section 03
+    _sec('03', 'The data model of revenue', 'Lead to cash, one object at a time — the shape every GTM tool plugs into.'),
+
+    # ── 16 · the flow
+    '<h2>The path a deal takes</h2>'
+    '<div class="sl-flow"><span>Lead</span><span>Contact + Account</span><span>Opportunity</span><span>Quote</span><span>Order</span><span>Invoice</span></div>'
+    '<p class="sl-foot">Conversion is the hinge: a Lead becomes three records at once, and every downstream tool keys off that moment.</p>',
+
+    # ── 17 · four objects
+    '<h2>Four objects, four jobs</h2>'
+    '<div class="sl-cards sl-cards-4">'
+    '<div><h3>Lead</h3><p>A person who might buy, before we know the company shape.</p></div>'
+    '<div><h3>Account</h3><p>The company. The one record everything else hangs off.</p></div>'
+    '<div><h3>Contact</h3><p>A person at that company, with a role in the deal.</p></div>'
+    '<div><h3>Opportunity</h3><p>The deal: amount, stage, close date, owner.</p></div>'
+    '</div>',
+
+    # ── 18 · vocabulary
+    '<h2>Words the sales team uses</h2>'
+    '<dl class="sl-term">'
+    '<dt>Pipeline</dt><dd>Every open Opportunity, by stage. The number the Monday meeting is about.</dd>'
+    '<dt>Forecast</dt><dd>The pipeline weighted by how likely each stage is to close this quarter.</dd>'
+    '<dt>Velocity</dt><dd>How fast deals move between stages — the metric that exposes a stuck process.</dd>'
+    '</dl>',
+
+    # ── 19 · bars
+    '<h2>Where deals die</h2>'
+    '<ul class="sl-bars">'
+    '<li style="--v: 88"><span>Prospecting</span><i></i><b>88%</b></li>'
+    '<li style="--v: 61"><span>Qualification</span><i></i><b>61%</b></li>'
+    '<li style="--v: 38"><span>Proposal</span><i></i><b>38%</b></li>'
+    '<li style="--v: 24"><span>Negotiation</span><i></i><b>24%</b></li>'
+    '<li style="--v: 19"><span>Closed won</span><i></i><b>19%</b></li>'
+    '</ul>'
+    '<p class="sl-foot">Illustrative stage-to-stage conversion. The point is the shape: the biggest drop is always qualification.</p>',
+
+    # ── 20 · checklist
+    '<h2>A pipeline people trust</h2>'
+    '<ul class="sl-checklist">'
+    '<li>Every stage has an exit criterion written down</li>'
+    '<li>Close dates move forward, never silently backward</li>'
+    '<li>Amount is required past qualification</li>'
+    '<li class="is-todo">Lost reasons are a picklist, not a text box</li>'
+    '<li class="is-todo">A dashboard shows stale deals by owner</li>'
+    '</ul>',
+
+    # ── 21 · section 04
+    _sec('04', 'The business underneath', 'Sales cycle, lead routing, quote-to-cash — the process the org is a model of.'),
+
+    # ── 22 · timeline of a sale
+    '<h2>One sale, start to finish</h2>'
+    '<ol class="sl-timeline">'
+    '<li><b>Day 0</b><strong>Inbound</strong><span>Form fill, event scan, or an outbound reply</span></li>'
+    '<li><b>Day 1</b><strong>Routed</strong><span>Territory, size, intent → the right rep</span></li>'
+    '<li><b>Day 7</b><strong>Qualified</strong><span>Budget, authority, need, timing</span></li>'
+    '<li class="is-now"><b>Day 30</b><strong>Proposal</strong><span>Quote built from the price book</span></li>'
+    '<li><b>Day 60</b><strong>Closed</strong><span>Order, invoice, hand-off to success</span></li>'
+    '</ol>',
+
+    # ── 23 · routing steps
+    '<h2>Lead routing, as a decision tree</h2>'
+    '<ol class="sl-steps">'
+    '<li>Is the email domain an existing customer? → account team</li>'
+    '<li>Company size from enrichment → enterprise, mid-market or SMB queue</li>'
+    '<li>Territory from country and state → the rep who owns it</li>'
+    '<li>Nobody matched → round robin, and an alert, because something is misconfigured</li>'
+    '</ol>',
+
+    # ── 24 · quote to cash
+    '<h2>Quote-to-cash in five boxes</h2>'
+    '<div class="sl-flow"><span>Price book</span><span>Quote</span><span>Approval</span><span>Contract</span><span>Order</span></div>'
+    '<p class="sl-foot">CPQ is this flow with rules. If you can draw the five boxes, you can learn CPQ.</p>',
+
+    # ── 25 · split with image
+    '<div class="sl-split"><div><p class="sl-kicker">Why an admin should care</p>'
+    '<h2>You own the model of the business</h2>'
+    '<p>Every field you add is a question the company decided to ask. Knowing the process means you stop building fields nobody fills in.</p></div>'
+    '<div class="sl-split-media"><img src="' + THUMB.format('admin-foundations') + '" alt="Course cover" /></div></div>',
+
+    # ── 26 · quiz
+    '<h2>Check yourself</h2>'
+    '<div class="sl-quiz"><p class="sl-quiz-q">A Lead converts. How many records can be created in that one click?</p>'
+    '<ol><li>One — the Contact</li><li>Two — Account and Contact</li><li>Up to three — Account, Contact and Opportunity</li></ol></div>',
+
+    # ── 27 · section 05
+    _sec('05', 'Analytics', 'CRM Analytics, SAQL, and the dashboards people actually open on a Monday.'),
+
+    # ── 28 · CRMA cards
+    '<h2>CRM Analytics in three parts</h2>'
+    '<div class="sl-cards">'
+    '<div><span class="sl-card-ico">▦</span><h3>Datasets</h3><p>Flattened, indexed copies of your objects. Fast because they are not the database.</p></div>'
+    '<div><span class="sl-card-ico">⟲</span><h3>Recipes</h3><p>The pipelines that build datasets — joins, computed fields, filters, on a schedule.</p></div>'
+    '<div><span class="sl-card-ico">▮</span><h3>Dashboards</h3><p>Steps and widgets bound together. The binding is where the real work hides.</p></div>'
+    '</div>',
+
+    # ── 29 · SAQL
+    '<div class="sl-code-note"><pre><code>q = load "Opportunities";\n'
+    'q = filter q by \'StageName\' != "Closed Lost";\n'
+    'q = group q by \'StageName\';\n'
+    'q = foreach q generate \'StageName\' as \'Stage\',\n'
+    '    sum(\'Amount\') as \'Pipeline\';\n'
+    'q = order q by \'Pipeline\' desc;</code></pre>'
+    '<aside><strong>SAQL reads like a pipeline</strong><span>Load, filter, group, generate, order. Every dashboard step is one of these queries — learn to read them and the bindings stop being magic.</span></aside></div>',
+
+    # ── 30 · dashboard window
+    '<h2>The dashboard the VP opens</h2>'
+    '<div class="sl-window">'
+    '<div class="sl-window-bar"><i></i><b>Sales Ops · Pipeline</b><span>This quarter · All regions</span></div>'
+    '<div class="sl-window-tabs"><span class="is-active">Pipeline</span><span>Forecast</span><span>Velocity</span></div>'
+    '<div class="sl-window-body">'
+    '<ul class="sl-bars"><li style="--v: 92"><span>EMEA</span><i></i><b>€4.6m</b></li>'
+    '<li style="--v: 70"><span>AMER</span><i></i><b>€3.5m</b></li>'
+    '<li style="--v: 41"><span>APAC</span><i></i><b>€2.1m</b></li></ul>'
+    '</div></div>',
+
+    # ── 31 · KPI
+    '<h2>Four numbers that run a quarter</h2>'
+    '<div class="sl-kpi">'
+    '<div><b>3.2×</b><span>pipeline coverage of the quarter target</span></div>'
+    '<div><b>41 d</b><span>average sales cycle, qualified to closed</span></div>'
+    '<div><b>27%</b><span>win rate on qualified opportunities</span></div>'
+    '<div><b>€48k</b><span>average deal size, this fiscal year</span></div>'
+    '</div>',
+
+    # ── 32 · section 06
+    _sec('06', 'The GTM stack', 'The tools around the CRM — and how each one feeds the next.'),
+
+    # ── 33 · stack cards
+    '<h2>Five tools, one loop</h2>'
+    '<div class="sl-cards sl-cards-4">'
+    '<div><h3>n8n</h3><p>The workflows between everything. Webhooks in, CRM writes out.</p></div>'
+    '<div><h3>Clay</h3><p>Enrichment and research at scale — company size, tech stack, hiring signals.</p></div>'
+    '<div><h3>6sense</h3><p>Intent: which accounts are researching the problem right now.</p></div>'
+    '<div><h3>HubSpot · Apollo</h3><p>Sequences and outbound — the other half of the funnel.</p></div>'
+    '</div>',
+
+    # ── 34 · n8n flow
+    '<h2>An n8n workflow, in boxes</h2>'
+    '<div class="sl-flow"><span>Webhook</span><span>Clay enrich</span><span>Score</span><span>Route</span><span>Salesforce Lead</span></div>'
+    '<p class="sl-foot">Every box is a node. The CRM is the last box on purpose: it stores the result, it does not do the thinking.</p>',
+
+    # ── 35 · Clay steps
+    '<h2>Enrichment, step by step</h2>'
+    '<ol class="sl-steps">'
+    '<li>Start from the domain — never the free-text company name</li>'
+    '<li>Waterfall the providers: cheap first, expensive only on a miss</li>'
+    '<li>Write back only the fields someone will act on</li>'
+    '<li>Log the run — so a wrong value can be traced to its source</li>'
+    '</ol>',
+
+    # ── 36 · intent stats
+    '<h2>Intent, in numbers</h2>'
+    '<div class="sl-stats">'
+    '<div class="sl-stat"><b>6%</b><span>of your market is actively buying at any time</span></div>'
+    '<div class="sl-stat"><b>3×</b><span>reply rate when outreach follows a signal</span></div>'
+    '<div class="sl-stat"><b>1</b><span>field in Salesforce that should carry the score</span></div>'
+    '</div>'
+    '<p class="sl-foot">Illustrative figures from the usual vendor decks — the lesson is the shape, not the decimals.</p>',
+
+    # ── 37 · automation do/don't
+    '<h2>Automation, judged</h2>'
+    '<div class="sl-compare">'
+    '<div class="sl-do"><ul><li>Idempotent writes — run it twice, same result</li><li>A dead-letter queue for failures</li><li>Humans approve anything that emails a customer</li></ul></div>'
+    '<div class="sl-dont"><ul><li>Workflows that only one person understands</li><li>Writing to the CRM from four tools at once</li><li>Secrets in a node\'s parameters</li></ul></div>'
+    '</div>',
+
+    # ── 38 · section 07
+    _sec('07', 'The AI layer', 'Agentforce, prompts and grounding — agents doing the clicking inside the revenue process.'),
+
+    # ── 39 · Agentforce cards
+    '<h2>Agentforce in three words</h2>'
+    '<div class="sl-cards">'
+    '<div class="is-accent"><h3>Topics</h3><p>What the agent is allowed to talk about. Scope first, cleverness later.</p></div>'
+    '<div><h3>Actions</h3><p>Flows and Apex the agent can call. The agent decides when; your code decides how.</p></div>'
+    '<div><h3>Grounding</h3><p>The records and knowledge it may read. No grounding, no trust.</p></div>'
+    '</div>',
+
+    # ── 40 · prompt window
+    '<h2>A prompt template, as the org sees it</h2>'
+    '<div class="sl-window">'
+    '<div class="sl-window-bar"><i></i><b>Prompt Builder</b><span>Summarise account for QBR</span></div>'
+    '<div class="sl-window-tabs"><span class="is-active">Template</span><span>Resources</span><span>Preview</span></div>'
+    '<div class="sl-window-body">'
+    '<p>You are preparing a quarterly review for {!$Input:Account.Name}. Using the open opportunities and the last five cases, write three bullets: pipeline, risk, next step. Cite record names.</p>'
+    '<p>Resources: Opportunities (related list) · Cases (related list) · Account fields</p>'
+    '</div></div>',
+
+    # ── 41 · grounding steps
+    '<h2>Ground before you generate</h2>'
+    '<ol class="sl-steps">'
+    '<li>Decide which records the answer must cite</li>'
+    '<li>Pass them in as resources, not as pasted text</li>'
+    '<li>Ask for structure — bullets, fields, a table</li>'
+    '<li>Test with a record that has no data. The empty case is where prompts lie.</li>'
+    '</ol>',
+
+    # ── 42 · LLM do/don't
+    '<h2>Prompts that earn their keep</h2>'
+    '<div class="sl-compare">'
+    '<div class="sl-do"><ul><li>One job per prompt</li><li>Examples of the output you want</li><li>A refusal path when data is missing</li></ul></div>'
+    '<div class="sl-dont"><ul><li>"Be helpful" as the whole instruction</li><li>Letting the model invent field values</li><li>Shipping without an eval set</li></ul></div>'
+    '</div>',
+
+    # ── 43 · KPI for AI
+    '<h2>How I know an agent is working</h2>'
+    '<div class="sl-kpi">'
+    '<div><b>94%</b><span>answers that cite a real record</span></div>'
+    '<div><b>0</b><span>customer emails sent without a human approval</span></div>'
+    '<div><b>12 min</b><span>saved per account per week on prep</span></div>'
+    '<div><b>1</b><span>eval set, re-run on every prompt change</span></div>'
+    '</div>'
+    '<p class="sl-foot">Targets, not trophies — the numbers I write down before building.</p>',
+
+    # ── 44 · quiz
+    '<h2>Check yourself</h2>'
+    '<div class="sl-quiz"><p class="sl-quiz-q">An agent confidently reports a renewal date that does not exist on the record. What was missing?</p>'
+    '<ol><li>A longer prompt</li><li>Grounding — the record was never passed in</li><li>A bigger model</li></ol></div>',
+
+    # ── 45 · section 08
+    _sec('08', 'The plan', 'My road from here, and what is already on the site for you.'),
+
+    # ── 46 · my road timeline
+    '<h2>My road</h2>'
+    '<ol class="sl-timeline">'
+    '<li><b>2018</b><strong>Accenture</strong><span>CRM Analytics, SAQL, first Sales Cloud reporting</span></li>'
+    '<li><b>2021</b><strong>Cognizant</strong><span>Consultant, enterprise dashboards</span></li>'
+    '<li><b>2022</b><strong>Twilio</strong><span>Salesforce GTM engineer, Sales Ops</span></li>'
+    '<li class="is-now"><b>2026</b><strong>Education First</strong><span>Qlik to CRM Analytics, writing it all down</span></li>'
+    '<li><b>Next</b><strong>GTM engineer</strong><span>Automation and AI across the stack</span></li>'
+    '</ol>',
+
+    # ── 47 · tools checklist
+    '<h2>The stack, where I am with each</h2>'
+    '<ul class="sl-checklist">'
+    '<li>Salesforce — admin, Flow, Apex, LWC: daily</li>'
+    '<li>CRM Analytics — datasets, SAQL, dashboards: daily</li>'
+    '<li>Agentforce and Data Cloud: learning now</li>'
+    '<li>n8n and LLM APIs: learning now</li>'
+    '<li class="is-todo">Clay, 6sense, HubSpot, Apollo: next</li>'
+    '</ul>',
+
+    # ── 48 · what is here
+    '<h2>What you can learn here today</h2>'
+    '<div class="sl-cards">'
+    '<div><span class="sl-card-ico">🎓</span><h3>Courses</h3><p>Admin Foundations, Apex, Flow — each one built in a real org first, free.</p></div>'
+    '<div><span class="sl-card-ico">🧭</span><h3>The training trail</h3><p>Modules in the order the work arrives. Every section a stop.</p></div>'
+    '<div><span class="sl-card-ico">▶</span><h3>Videos, snippets, prompts</h3><p>The short forms — one idea each, searchable, stealable.</p></div>'
+    '</div>',
+
+    # ── 49 · the trail
+    '<h2>Walk it in this order</h2>'
+    '<ol class="sl-steps">'
+    '<li>Admin Foundations — the system</li>'
+    '<li>The sales process module — the business</li>'
+    '<li>CRM Analytics — the numbers</li>'
+    '<li>The GTM stack and Agentforce — the automation and the AI</li>'
+    '</ol>',
+
+    # ── 50 · closing quote
+    '<figure class="sl-quote sl-theme-paper"><p>Learn the system. Learn the business it runs. Then automate the business, not the clicks.</p>'
+    '<cite>The whole deck, in one line</cite></figure>',
+
+    # ── 51 · figure
+    '<h2>The journey, in one frame</h2>'
+    '<figure class="sl-figure"><img src="' + THUMB.format('the-teaching-kit') + '" alt="" /></figure>'
+    '<p class="sl-foot">The homepage draws the same road, lit stop by stop.</p>',
+
+    # ── 52 · end
+    '<div class="sl-end sl-theme-accent">'
+    '<p class="sl-kicker">Thank you</p>'
+    '<h2>Follow along, learn with me</h2>'
+    '<p class="sl-lead">One email a week with what I learned, what shipped and the release notes that matter.</p>'
+    '<div class="sl-links"><a href="__GHOST_URL__/courses/">Courses</a><a href="__GHOST_URL__/training/">Training trail</a><a href="__GHOST_URL__/newsletter/">Newsletter</a><a href="__GHOST_URL__/about/">About me</a></div>'
+    '</div>',
+]
+
+deck("From Salesforce Admin to GTM Engineer — the whole map", "salesforce-to-gtm-engineer-the-whole-map",
+     ["slides", "admin", "duration-40m"],
+     "Fifty-two slides, one road: the platform, the data model of revenue, the business underneath, analytics, the GTM stack, the AI layer, and the plan. Every shape in the slide kit.",
+     BIG, 396)
 
 # #now — a few in-flight things surface on /now (tag any post with
 # #now in Admin and it appears there; untag when it ships).

@@ -1,0 +1,104 @@
+{{!-- The plan — what I'm learning, where it's going, and what you
+can learn here today. Three boards on one desk:
+
+  1 · The stack — every tool on the road, with where I am on it
+      (daily / learning now / next). Fixed copy: it is MY plan.
+  2 · The road ahead — the role I'm walking toward, as steps,
+      the current one lit.
+  3 · What's here for you — the collections, with LIVE counts
+      from one-item {{#get}} queries, so the board never promises
+      more than the site holds.
+
+The idea in one line: tools change, the business underneath
+doesn't — so the plan is "learn the system, then the business
+process it runs, then the AI layer on top". --}}
+<section class="section section-alt outer home-plan relative">
+    <div class="bg-grid bg-fade-top" aria-hidden="true"></div>
+    <div class="inner relative">
+        <div class="section-head" data-animate>
+            <div>
+                <span class="kicker">{{> "icons/compass"}} {{t "My plan"}}</span>
+                <h2>{{t "What I'm learning, and what you can learn here"}}</h2>
+                <p>{{t "The system first, then the business process it runs, then the AI layer growing on top. Here is the whole plan — the tools, the road, and what is already on the site for you."}}</p>
+            </div>
+            <a class="section-more" href="{{@site.url}}/now/">{{t "What I'm on this week"}} {{> "icons/arrow-right"}}</a>
+        </div>
+
+        <div class="plan-grid" data-animate-stagger>
+
+            {{!-- 1 · The stack --}}
+            <div class="plan-board">
+                <h3 class="plan-board-title">{{> "icons/layers"}} {{t "The stack I'm learning"}}</h3>
+                <p class="plan-board-sub">{{t "Every tool on the road. Where I am with each one today."}}</p>
+                <ul class="plan-tools">
+                    <li class="is-daily"><span class="plan-tool-ico">{{> "icons/cloud"}}</span><span class="plan-tool-name">{{t "Salesforce"}} <small>{{t "Admin · Flow · Apex · LWC"}}</small></span><span class="plan-tool-state">{{t "Daily"}}</span></li>
+                    <li class="is-daily"><span class="plan-tool-ico">{{> "icons/database"}}</span><span class="plan-tool-name">{{t "CRM Analytics"}} <small>{{t "Datasets · SAQL · dashboards"}}</small></span><span class="plan-tool-state">{{t "Daily"}}</span></li>
+                    <li class="is-now"><span class="plan-tool-ico">{{> "icons/sparkles"}}</span><span class="plan-tool-name">{{t "Agentforce & Data Cloud"}} <small>{{t "Agents · prompts · grounding"}}</small></span><span class="plan-tool-state">{{t "Learning now"}}</span></li>
+                    <li class="is-now"><span class="plan-tool-ico">{{> "icons/zap"}}</span><span class="plan-tool-name">n8n <small>{{t "Workflows around the CRM"}}</small></span><span class="plan-tool-state">{{t "Learning now"}}</span></li>
+                    <li class="is-now"><span class="plan-tool-ico">{{> "icons/code"}}</span><span class="plan-tool-name">{{t "LLM APIs"}} <small>{{t "Claude · prompts that do work"}}</small></span><span class="plan-tool-state">{{t "Learning now"}}</span></li>
+                    <li class="is-next"><span class="plan-tool-ico">{{> "icons/signal"}}</span><span class="plan-tool-name">Clay <small>{{t "Enrichment · lead research"}}</small></span><span class="plan-tool-state">{{t "Next"}}</span></li>
+                    <li class="is-next"><span class="plan-tool-ico">{{> "icons/trending-up"}}</span><span class="plan-tool-name">6sense <small>{{t "Intent · account scoring"}}</small></span><span class="plan-tool-state">{{t "Next"}}</span></li>
+                    <li class="is-next"><span class="plan-tool-ico">{{> "icons/rocket"}}</span><span class="plan-tool-name">{{t "HubSpot & Apollo"}} <small>{{t "The outbound side of GTM"}}</small></span><span class="plan-tool-state">{{t "Next"}}</span></li>
+                </ul>
+            </div>
+
+            {{!-- 2 · The road ahead --}}
+            <div class="plan-board is-road">
+                <h3 class="plan-board-title">{{> "icons/map-icon"}} {{t "Where this is going"}}</h3>
+                <p class="plan-board-sub">{{t "The role I'm walking toward, one step at a time."}}</p>
+                <ol class="plan-road">
+                    <li class="is-done">
+                        <span class="plan-road-dot">{{> "icons/check-circle"}}</span>
+                        <span class="plan-road-body"><strong>{{t "Salesforce analytics engineer"}}</strong><span>{{t "CRM Analytics, reporting, the data model — the ground I stand on."}}</span></span>
+                    </li>
+                    <li class="is-now" aria-current="step">
+                        <span class="plan-road-dot">{{> "icons/signal"}}</span>
+                        <span class="plan-road-body"><strong>{{t "Salesforce engineer who understands GTM"}}</strong><span>{{t "Sales cycle, lead routing, quote-to-cash — the process the org actually runs."}}</span></span>
+                    </li>
+                    <li>
+                        <span class="plan-road-dot">{{> "icons/zap"}}</span>
+                        <span class="plan-road-body"><strong>{{t "GTM engineer"}}</strong><span>{{t "Automation across the stack: n8n, Clay, 6sense, enrichment and routing around the CRM."}}</span></span>
+                    </li>
+                    <li>
+                        <span class="plan-road-dot">{{> "icons/sparkles"}}</span>
+                        <span class="plan-road-body"><strong>{{t "AI-native GTM"}}</strong><span>{{t "Agents doing the clicking — Agentforce and LLMs wired into the revenue process."}}</span></span>
+                    </li>
+                </ol>
+            </div>
+
+            {{!-- 3 · What's here for you — live counts --}}
+            <div class="plan-board is-yours">
+                <h3 class="plan-board-title">{{> "icons/graduation-cap"}} {{t "What you can learn here"}}</h3>
+                <p class="plan-board-sub">{{t "Everything is free. Pick a shelf."}}</p>
+                <ul class="plan-shelves">
+                    {{#get "posts" filter="tag:hash-course" limit="1" as |c n|}}
+                        <li><a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} <span>{{t "Courses"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-lesson" limit="1" as |l n|}}
+                        <li><a href="{{@site.url}}/courses/">{{> "icons/play-circle"}} <span>{{t "Lessons"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-module" limit="1" as |m n|}}
+                        <li><a href="{{@site.url}}/training/">{{> "icons/layers"}} <span>{{t "Training modules"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-video" limit="1" as |v n|}}
+                        <li><a href="{{@site.url}}/videos/">{{> "icons/video"}} <span>{{t "Videos"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-slides" limit="1" as |s n|}}
+                        <li><a href="{{@site.url}}/slides/">{{> "icons/presentation"}} <span>{{t "Slide decks"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-snippet" limit="1" as |s n|}}
+                        <li><a href="{{@site.url}}/snippets/">{{> "icons/code"}} <span>{{t "Snippets"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-prompt" limit="1" as |p n|}}
+                        <li><a href="{{@site.url}}/prompts/">{{> "icons/sparkles"}} <span>{{t "Prompts"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                    {{#get "posts" filter="tag:hash-blog" limit="1" as |b n|}}
+                        <li><a href="{{@site.url}}/blog/">{{> "icons/pen"}} <span>{{t "Articles"}}</span><b>{{n.total}}</b></a></li>
+                    {{/get}}
+                </ul>
+                <a class="btn btn-sm plan-cta" href="{{@site.url}}/training/">{{> "icons/play-circle"}} {{t "Start the trail"}}</a>
+            </div>
+
+        </div>
+    </div>
+</section>

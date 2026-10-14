@@ -210,6 +210,66 @@ it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/
   nodes with `isPartOf`; `../url` as a helper call inside a block
   throws a 400 — read `primary_tag.slug` by path instead.
 
+## Conventions added 14 Oct 2026 (second pass)
+
+- **The changelog opens in place.** `/changelog/{slug}/` is NOT a
+  reader: `partials/post-changelog.hbs` renders the changelog page
+  again (same hero, view switch, timeline — the listing's query
+  repeated, filter identical to routes.yaml) with that one entry
+  `.is-open` (notes inside the card, `.changelog-entry-close` back to
+  `/changelog/`). One partial, `changelog-entry.hbs`, draws every
+  entry on both pages and gives each card a `view-transition-name`;
+  `@view-transition { navigation: auto }` in `_animations.css` morphs
+  the card between the two documents. `changelog.js` only scrolls the
+  open card into view. Timeline = full-width cards, thumb right;
+  board = grid, thumb top (board media needs `width:100%; flex:none`
+  or the aspect-ratio box collapses in the column flexbox).
+- **Newsletter issues are envelopes** (`partials/card-issue.hbs`,
+  `.mail-card`): flap, pocket, the cover as the letter, a stamp with
+  the date, a postmark — clip-paths and borders, no images, hover
+  opens the flap. The issue page (`post-issue.hbs`) is `.letter` on
+  `.letter-desk`: address block (from/to/sent/subject) under the same
+  marks, the body on paper, the author's sign-off, prev/next issue in
+  the sent card. Paper tokens `--mail-paper*` are the one warm colour.
+- **Homepage order**: hero → scroll quote → **plan** (`partials/plan.hbs`:
+  the stack with daily/now/next states, the road ahead, what's here
+  with live counts) → **audience stack** (`partials/audience.hbs`:
+  three sticky-stacked full-width cards, Unsplash faces hotlinked —
+  swap for real readers' photos; sticky off below 640px) → activity →
+  journey (each stop now has a `.story-media` slot holding the branded
+  placeholder until the owner's photos arrive, and `.story-chips`).
+  The hero sub-line carries the "tools change, the business doesn't"
+  sentence; keep the hero inside the viewport (checked at 1440×772).
+- **Training trail = Salesforce windows** (`training-trail.hbs`,
+  `.sf-window` in `_training.css`): Lightning app bar (waffle, app
+  name, search, utilities — decorative, aria-hidden), tab row, body on
+  Lightning grey with the module as highlights panel and sections as
+  the related list (`.trail-step-num` column). The module landing's
+  section list wears the same chrome. `assets/js/trail.js` plays the
+  windows in on load with **anime.js** (`assets/js/anime.js`, vendored
+  3.2.2, MIT — the only animation library; it concatenates ahead of
+  trail.js by name). Hidden state lives behind `html.anim [data-trail]`
+  and the script removes the attribute if anime is missing or motion
+  is reduced; a 6 s safety shows everything regardless.
+- **Slides**: the kit has a part two in `slides/_surface.css`
+  (`sl-cover`, `sl-section`, `sl-agenda`, `sl-quote`, `sl-timeline`,
+  `sl-cards`, `sl-split`, `sl-checklist`, `sl-window`, `sl-bars`,
+  `sl-kpi`, `sl-code-note`, `sl-figure`, `sl-end`) and per-slide
+  surfaces `sl-theme-navy / -accent / -paper` — put the class on the
+  html card's root and deck.js lifts it onto the slide. Every accent
+  reads `--deck-accent`, set on `.deck-frame` from the primary tag's
+  colour. deck.js now adds `.is-loading`, waits for every picture
+  (decode, 6 s cap) and only then `.is-ready` — the loading panel in
+  post-slides.hbs is what the reader sees meanwhile. The 52-slide
+  "whole map" deck in `dummy-content/build-import.py` exercises all of
+  it (pushed to the local Ghost by hand; it is not on the live site).
+- **Design system sync**: `_mail.scss`, `_sfwindow.scss` (components),
+  the changelog entry states in `_changelog.scss`, the audience stack
+  and plan boards in `_sections.scss`; specimens in components.html
+  (Envelope & letter, Salesforce window, Changelog entry) and
+  sections.html (Stack, Plan boards). `color-mod()` must become
+  `rgba()` on the way over.
+
 - **Responsive layer** (`5-utilities/_responsive.css`, loaded last):
   every rule came from a measured audit of all 35 page types at 360,
   768 and 1024px — no sideways scroll (`overflow-x: clip` on the

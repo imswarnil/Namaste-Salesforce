@@ -27,7 +27,10 @@ Member gating is Ghost's own post access — outside the audience
 {{access}} is false and the stage shows the locked cover
 instead. Context: post. --}}
 
-<main id="site-main" class="deck-frame {{post_class}}" data-deck>
+{{!-- The deck wears its topic's colour: the primary tag's accent
+(Admin → Tags → colour) becomes --deck-accent, which the slide
+kit reads for bars, numbers and the chapter dividers. --}}
+<main id="site-main" class="deck-frame {{post_class}}" data-deck{{#if primary_tag.accent_color}} style="--deck-accent: {{primary_tag.accent_color}};"{{/if}}>
 
     <header class="deck-topbar">
         <a class="deck-topbar-close" href="{{@site.url}}/slides/" data-deck-close aria-label="{{t "Close the deck"}}">
@@ -62,6 +65,14 @@ instead. Context: post. --}}
             </aside>
 
             <div class="deck-stage" data-deck-stage>
+                {{!-- The loading panel: shown while deck.js cuts the
+                slides, clones the filmstrip and waits for every
+                picture. The deck opens once, fully rendered. --}}
+                <div class="deck-loading" data-deck-loading aria-live="polite">
+                    <span class="deck-loading-ring" aria-hidden="true"></span>
+                    <strong>{{t "Rendering the deck"}}</strong>
+                    <span class="deck-loading-meta"><b data-deck-loading-count>…</b> {{t "slides"}} · <span data-deck-loading-pics>…</span> {{t "pictures"}}</span>
+                </div>
                 <div class="deck-canvas-box" data-deck-box>
                     <div class="deck-canvas" data-deck-canvas>
                         <section class="gh-content deck-source" data-deck-source>

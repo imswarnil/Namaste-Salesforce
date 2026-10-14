@@ -1,0 +1,73 @@
+{{!-- One changelog entry — the SAME markup on /changelog and on
+/changelog/{slug}. Param: open (true on the entry whose page this
+is). Context: a #changelog post.
+
+Closed: a full-width card — the thumbnail, the badge, the date,
+the title, the excerpt. Open: the same card, grown — the cover
+spans it, the notes render inside, and the close control leads
+back to /changelog/. The two states share one element and one
+view-transition-name, so the browser morphs the card between the
+two documents instead of cutting to a new page (cross-document
+view transitions, _animations.css). No script fetches anything:
+both pages are rendered by Ghost, the transition is CSS. --}}
+<article class="changelog-entry{{#if open}} is-open{{/if}}" id="entry-{{slug}}" style="view-transition-name: cl-{{slug}};"{{#if open}} aria-current="page"{{/if}}>
+    <span class="changelog-dot" aria-hidden="true"></span>
+
+    {{#if open}}
+        <a class="changelog-entry-close" href="{{@site.url}}/changelog/" aria-label="{{t "Close and return to the changelog"}}">
+            {{> "icons/close"}} <span>{{t "Close"}}</span>
+        </a>
+    {{/if}}
+
+    <a class="changelog-entry-media" href="{{url}}" tabindex="-1" aria-hidden="true">
+        {{#if feature_image}}
+            <img src="{{img_url feature_image size="m"}}"
+                srcset="{{img_url feature_image size="s"}} 300w, {{img_url feature_image size="m"}} 600w, {{img_url feature_image size="l"}} 1000w"
+                sizes="{{#if open}}(max-width: 700px) 92vw, 780px{{else}}(max-width: 700px) 92vw, 280px{{/if}}"
+                alt="" loading="{{#if open}}eager{{else}}lazy{{/if}}" />
+        {{else}}
+            {{> "thumb-placeholder" icon="history"}}
+        {{/if}}
+    </a>
+
+    <div class="changelog-entry-body">
+        <div class="changelog-entry-meta">
+            {{> "changelog-badge"}}
+            <time datetime="{{date format="YYYY-MM-DD"}}">{{> "icons/calendar"}} {{date format="DD MMM YYYY"}}</time>
+            {{#primary_tag}}
+                <span class="chip chip-type">
+                    {{#if feature_image}}
+                        <img class="card-tag-icon" src="{{img_url feature_image size="xs"}}" alt="" loading="lazy" />
+                    {{else}}
+                        {{> "icons/tag-icon"}}
+                    {{/if}}
+                    {{name}}
+                </span>
+            {{/primary_tag}}
+        </div>
+
+        {{#if open}}
+            <h1 class="changelog-entry-title">{{title}}</h1>
+        {{else}}
+            <h2 class="changelog-entry-title"><a class="card-link" href="{{url}}">{{title}}</a></h2>
+        {{/if}}
+
+        {{#if custom_excerpt}}
+            <p class="changelog-entry-excerpt">{{custom_excerpt}}</p>
+        {{else if excerpt}}
+            <p class="changelog-entry-excerpt">{{excerpt words="26"}}</p>
+        {{/if}}
+
+        {{#if open}}
+            <section class="gh-content changelog-entry-content">
+                {{content}}
+            </section>
+            <footer class="changelog-entry-foot">
+                <a class="btn btn-ghost btn-sm" href="{{@site.url}}/changelog/">{{> "icons/arrow-left"}} {{t "Back to the changelog"}}</a>
+                {{> "widgets/share-compact"}}
+            </footer>
+        {{else}}
+            <span class="changelog-entry-more">{{t "Read the notes"}} {{> "icons/arrow-right"}}</span>
+        {{/if}}
+    </div>
+</article>

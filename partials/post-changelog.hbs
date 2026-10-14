@@ -1,0 +1,82 @@
+{{!-- A changelog entry — /changelog/{slug}/ IS the changelog page.
+
+There is no separate "entry reader" any more. This renders the
+same hero, the same view switch and the same timeline as
+changelog.hbs, with ONE difference: the entry whose URL this is
+renders open (its notes inside the card, a close control back to
+/changelog/) while every other entry stays closed around it. The
+URL changes, the page morphs (view transitions on the card's
+view-transition-name), and closing lands on the listing with the
+card folded back into place.
+
+Handlebars does all of it: the listing's query is repeated here
+(filter identical to routes.yaml), and the loop compares each
+entry's slug with this post's slug carried in through with-this.
+Context: a #changelog post (dispatched by post.hbs). --}}
+
+{{#> "with-this" currentSlug=slug}}
+
+<section class="changelog-hero outer">
+    <div class="inner">
+        <span class="kicker">{{> "icons/history"}} {{t "Changelog"}}</span>
+        {{#get "pages" filter="slug:changelog" limit="1" as |clpage|}}
+            {{#if clpage.[0]}}
+                <h1>{{clpage.[0].title}}</h1>
+                {{#if clpage.[0].custom_excerpt}}<p>{{clpage.[0].custom_excerpt}}</p>{{/if}}
+            {{else}}
+                <h1>{{t "Changelog"}}</h1>
+            {{/if}}
+        {{/get}}
+    </div>
+</section>
+
+<main id="site-main" class="section outer">
+    <div class="inner">
+
+        <input class="clv-box" type="radio" name="clv" id="clv-timeline" checked>
+        <input class="clv-box" type="radio" name="clv" id="clv-board">
+
+        <div class="changelog-toolbar">
+            <span class="changelog-toolbar-label">{{> "icons/filter-icon"}} {{t "View"}}</span>
+            <div class="view-switch" role="group" aria-label="{{t "Change view"}}">
+                <label for="clv-timeline">{{> "icons/list-icon"}} {{t "Timeline"}}</label>
+                <label for="clv-board">{{> "icons/layers"}} {{t "Board"}}</label>
+            </div>
+        </div>
+
+        <div class="changelog-layout">
+
+            <div class="changelog-entries">
+                {{#get "posts" filter="tag:hash-changelog" include="tags" limit="40" as |entries|}}
+                    {{#foreach entries}}
+                        {{#match slug ../../currentSlug}}
+                            {{> "changelog-entry" open=true}}
+                        {{else}}
+                            {{> "changelog-entry"}}
+                        {{/match}}
+                    {{/foreach}}
+                {{/get}}
+            </div>
+
+            <aside class="changelog-side">
+                <div class="changelog-side-sticky">
+                    {{> "widgets/toc"}}
+                    {{> "widgets/newsletter"}}
+                    <div class="widget">
+                        <h4 class="widget-title">{{> "icons/rss"}} {{t "Follow along"}}</h4>
+                        <p>{{t "Every release note, the moment it ships."}}</p>
+                        <a class="btn btn-sm btn-ghost" href="{{@site.url}}/changelog/rss/">{{> "icons/rss"}} {{t "RSS feed"}}</a>
+                    </div>
+                    {{> "widgets/share-ask"}}
+                </div>
+            </aside>
+
+        </div>
+
+        <nav class="changelog-all" aria-label="{{t "All entries"}}">
+            <a class="btn btn-ghost" href="{{@site.url}}/changelog/">{{> "icons/history"}} {{t "All entries"}}</a>
+        </nav>
+    </div>
+</main>
+
+{{/with-this}}

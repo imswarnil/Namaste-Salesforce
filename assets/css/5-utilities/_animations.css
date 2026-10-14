@@ -122,3 +122,37 @@ html.anim .marquee:hover .marquee-track { animation-play-state: paused; }
 html:not(.anim) .marquee-dup { display: none; }
 html:not(.anim) .marquee-reverse { display: none; }
 html:not(.anim) .marquee-track { white-space: normal; flex-wrap: wrap; width: auto; }
+
+/*  Cross-document view transitions
+    ------------------------------------------------------------
+    Both documents opt in, so an ordinary link click becomes a
+    short cross-fade instead of a white flash — and any element
+    carrying the same view-transition-name on both pages MORPHS
+    between its two layouts. The changelog uses it: the closed
+    card on /changelog and the open card on /changelog/{slug}
+    share one name (partials/changelog-entry.hbs), so opening and
+    closing an entry is the card growing and folding in place.
+    Browsers without it (or readers who prefer reduced motion)
+    get a plain navigation. */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.22s;
+    animation-timing-function: var(--ease);
+}
+
+::view-transition-group(*) {
+    animation-duration: 0.42s;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}

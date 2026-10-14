@@ -308,3 +308,551 @@ html[data-theme="dark"] .band-dark { background: #030d1c; }
     .spotlight { grid-template-columns: minmax(0, 1fr); }
     .spotlight:nth-child(even) .spotlight-media { order: 0; }
 }
+
+/*  Who this is for — partials/audience.hbs — THE STACK
+    ------------------------------------------------------------
+    Three full-width cards that pile up as the reader scrolls:
+    each is position: sticky with a top offset that grows by its
+    index (--i, set in the markup), so card 2 slides over card 1
+    and parks a little lower, card 3 over both. No script — the
+    stacking is the browser's. The cards are opaque surfaces with
+    a shadow so the pile reads as paper. Below 1024px the photo
+    stacks above the copy and the sticky stack still works; below
+    640px it switches off (a phone screen is too short to show a
+    pile, and sticky cards would hide the one being read). */
+
+.audience-stack {
+    display: grid;
+    gap: 2.4rem;
+    padding-bottom: 2.4rem;
+}
+
+.audience-card {
+    position: sticky;
+    top: calc(var(--header-height) + 2.4rem + var(--i, 0) * 1.8rem);
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 0;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.audience-card:hover {
+    border-color: rgba(1, 118, 211, 0.45);
+}
+
+.audience-card.is-featured {
+    border-color: rgba(1, 118, 211, 0.35);
+}
+
+.audience-card.is-featured .audience-copy {
+    background:
+        radial-gradient(600px 260px at 100% 0%, var(--accent-soft), transparent 70%),
+        var(--surface);
+}
+
+/* the face */
+.audience-photo {
+    position: relative;
+    display: block;
+    min-height: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--bg-alt);
+}
+
+.audience-photo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease);
+}
+
+.audience-card:hover .audience-photo img {
+    transform: scale(1.05);
+}
+
+.audience-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 18, 34, 0) 50%, rgba(5, 18, 34, 0.55));
+    pointer-events: none;
+}
+
+.audience-num {
+    position: absolute;
+    top: 1.6rem;
+    left: 1.6rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.4rem;
+    height: 3.4rem;
+    padding: 0 1rem;
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--gray-900);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow);
+}
+
+.audience-ico {
+    position: absolute;
+    bottom: 1.6rem;
+    left: 1.6rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.2rem;
+    height: 5.2rem;
+    color: var(--accent-contrast);
+    background: linear-gradient(160deg, var(--brand-500), var(--brand-700));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+}
+
+.audience-ico svg {
+    width: 2.4rem;
+    height: 2.4rem;
+}
+
+/* the copy */
+.audience-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 3.2rem 3.2rem 2.8rem;
+    min-width: 0;
+}
+
+.audience-top {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.audience-kicker {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+/* the "now" pill on the door I am walking through myself */
+.audience-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    padding: 0.4rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius-full);
+}
+
+.audience-flag svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.audience-card h3 {
+    font-size: clamp(2.2rem, 2.6vw, 2.8rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.audience-gap {
+    font-size: 1.55rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.audience-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.45rem;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.audience-list li {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+}
+
+.audience-list svg {
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-top: 0.2rem;
+    color: var(--success);
+}
+
+.audience-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.6rem;
+    margin-top: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-faint);
+}
+
+.audience-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.audience-meta svg {
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.audience-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: auto;
+    padding-top: 1.6rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.audience-go svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    transition: transform 0.15s ease;
+}
+
+.audience-card:hover .audience-go svg {
+    transform: translateX(4px);
+}
+
+@media (max-width: 1023px) {
+    .audience-card {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .audience-photo {
+        aspect-ratio: 16 / 9;
+        min-height: 0;
+    }
+
+    .audience-copy {
+        padding: 2.4rem 2.4rem 2.4rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .audience-card {
+        position: relative;
+        top: auto;
+    }
+}
+
+
+
+/*  The plan — partials/plan.hbs
+    ------------------------------------------------------------
+    Three boards on one desk: the stack (tools, with where I am
+    on each), the road ahead (steps, the current one lit) and
+    what's here for the reader (live counts). */
+
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.4rem;
+    align-items: start;
+}
+
+.plan-board {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 2.4rem 2.4rem 2.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.plan-board.is-road {
+    background:
+        linear-gradient(170deg, var(--accent-soft), transparent 60%),
+        var(--surface);
+}
+
+.plan-board.is-yours {
+    border-color: rgba(1, 118, 211, 0.35);
+}
+
+.plan-board-title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.7rem;
+}
+
+.plan-board-title svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--accent);
+}
+
+.plan-board-sub {
+    margin-top: 0.4rem;
+    font-size: 1.35rem;
+    color: var(--text-muted);
+}
+
+/* 1 · the stack */
+.plan-tools {
+    display: grid;
+    gap: 0.6rem;
+    margin: 1.8rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-tools li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    background: var(--bg);
+}
+
+.plan-tool-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius-sm);
+}
+
+.plan-tool-ico svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+.plan-tool-name {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--heading);
+}
+
+.plan-tool-name small {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-faint);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.plan-tool-state {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+}
+
+.plan-tools .is-daily .plan-tool-state {
+    color: var(--success-ink);
+    background: rgba(46, 132, 74, 0.12);
+}
+
+.plan-tools .is-now .plan-tool-state {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.plan-tools .is-now .plan-tool-ico {
+    color: var(--accent-contrast);
+    background: var(--accent);
+}
+
+.plan-tools .is-next .plan-tool-state {
+    color: var(--text-faint);
+    background: var(--bg-alt);
+}
+
+.plan-tools .is-next .plan-tool-ico {
+    color: var(--text-faint);
+    background: var(--bg-alt);
+}
+
+/* 2 · the road ahead */
+.plan-road {
+    position: relative;
+    display: grid;
+    gap: 1.6rem;
+    margin: 1.8rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-road::before {
+    content: "";
+    position: absolute;
+    top: 1.8rem;
+    bottom: 1.8rem;
+    left: 1.7rem;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, var(--border) 0 6px, transparent 6px 12px);
+}
+
+.plan-road li {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1.2rem;
+    align-items: start;
+}
+
+.plan-road-dot {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 50%;
+    color: var(--text-faint);
+    background: var(--surface);
+    border: 2px solid var(--border);
+}
+
+.plan-road-dot svg {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+.plan-road .is-done .plan-road-dot {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.plan-road .is-now .plan-road-dot {
+    color: var(--accent-contrast);
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 6px var(--accent-soft);
+}
+
+.plan-road-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding-top: 0.5rem;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.plan-road-body strong {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    color: var(--heading);
+}
+
+.plan-road .is-now .plan-road-body strong {
+    color: var(--accent);
+}
+
+/* 3 · what's here */
+.plan-shelves {
+    display: grid;
+    gap: 0.4rem;
+    margin: 1.8rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-shelves a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1rem;
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--text);
+    border-radius: var(--radius);
+    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.plan-shelves a:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.plan-shelves svg {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--accent);
+}
+
+.plan-shelves b {
+    min-width: 3.2rem;
+    padding: 0.2rem 0.8rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--heading);
+    background: var(--bg-alt);
+    border-radius: var(--radius-full);
+}
+
+.plan-cta {
+    margin-top: auto;
+    padding-top: 0;
+    align-self: flex-start;
+    margin-top: 1.8rem;
+}
+
+@media (max-width: 1023px) {
+    .plan-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+

@@ -1,15 +1,15 @@
 {{!-- Who this is for — the three readers the site is written for,
-each with the gap they are closing and the door to walk through
-first. Fixed copy on purpose: it is the positioning, not content
-that should drift with the post list.
+as a STACK: three full-width cards that pile up as you scroll
+(position: sticky with a growing top offset, no script), each a
+face, the gap they are closing, the two things that help, and
+the door to walk through first. Fixed copy on purpose: it is the
+positioning, not content that should drift with the post list.
 
-What DOES drift is the number under each door: how many training
-sections, courses, lessons and videos are behind it today. Those
-are live {{#get}} counts — the pagination total of a one-item
-query — so the doors never promise more than the site holds, and
-never need a script to say so. The three cards sit on one dashed
-path (.audience-path) because they are three entrances to the
-same trail, not three products. --}}
+The faces are Unsplash photos (free licence, hotlinked at card
+size) standing in for real readers — swap the URLs for your own
+when you have them. What DOES drift is the number under each
+door: live {{#get}} counts, the pagination total of a one-item
+query, so the doors never promise more than the site holds. --}}
 <section class="section outer home-audience relative">
     <div class="bg-rings" aria-hidden="true"></div>
     <div class="inner relative">
@@ -22,63 +22,81 @@ same trail, not three products. --}}
             <a class="section-more" href="{{@site.url}}/training/">{{t "See the whole trail"}} {{> "icons/arrow-right"}}</a>
         </div>
 
-        <div class="audience-grid" data-animate-stagger>
-            <span class="audience-path" aria-hidden="true"></span>
+        <div class="audience-stack" data-animate-stagger>
 
-            <a class="audience-card" href="{{@site.url}}/training/">
-                <span class="audience-top">
-                    <span class="audience-num" aria-hidden="true">01</span>
-                    <span class="audience-ico" aria-hidden="true">{{> "icons/cloud"}}</span>
+            <a class="audience-card" href="{{@site.url}}/training/" style="--i: 0;">
+                <span class="audience-photo" aria-hidden="true">
+                    <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&amp;fit=crop&amp;w=720&amp;q=80" alt="" loading="lazy" width="720" height="540" />
+                    <span class="audience-num">01</span>
+                    <span class="audience-ico">{{> "icons/cloud"}}</span>
                 </span>
-                <h3>{{t "The Salesforce admin or developer"}}</h3>
-                <p class="audience-gap">{{t "You can build the org. You want to understand the revenue process it runs — and stop being the last to hear why a deal moved."}}</p>
-                <ul class="audience-list">
-                    <li>{{> "icons/check-circle"}} {{t "Sales cycle, lead routing, quote-to-cash — explained before the objects"}}</li>
-                    <li>{{> "icons/check-circle"}} {{t "Flow and Apex patterns that survive production"}}</li>
-                </ul>
-                <span class="audience-meta">
-                    {{#get "posts" filter="tag:hash-module" limit="1" as |m mods|}}<span>{{> "icons/layers"}} {{mods.total}} {{t "modules"}}</span>{{/get}}
-                    {{#get "posts" filter="tag:hash-training" limit="1" as |s secs|}}<span>{{> "icons/file-text"}} {{secs.total}} {{t "sections"}}</span>{{/get}}
+                <span class="audience-copy">
+                    <span class="audience-top">
+                        <span class="audience-kicker">{{t "The builder"}}</span>
+                    </span>
+                    <h3>{{t "The Salesforce admin or developer"}}</h3>
+                    <p class="audience-gap">{{t "You can build the org. You want to understand the revenue process it runs — and stop being the last to hear why a deal moved."}}</p>
+                    <ul class="audience-list">
+                        <li>{{> "icons/check-circle"}} {{t "Sales cycle, lead routing, quote-to-cash — explained before the objects"}}</li>
+                        <li>{{> "icons/check-circle"}} {{t "Flow and Apex patterns that survive production"}}</li>
+                    </ul>
+                    <span class="audience-meta">
+                        {{#get "posts" filter="tag:hash-module" limit="1" as |m mods|}}<span>{{> "icons/layers"}} {{mods.total}} {{t "modules"}}</span>{{/get}}
+                        {{#get "posts" filter="tag:hash-training" limit="1" as |s secs|}}<span>{{> "icons/file-text"}} {{secs.total}} {{t "sections"}}</span>{{/get}}
+                    </span>
+                    <span class="audience-go">{{t "Start the training trail"}} {{> "icons/arrow-right"}}</span>
                 </span>
-                <span class="audience-go">{{t "Start the training trail"}} {{> "icons/arrow-right"}}</span>
             </a>
 
-            <a class="audience-card is-featured" href="{{@site.url}}/courses/">
-                <span class="audience-top">
-                    <span class="audience-num" aria-hidden="true">02</span>
-                    <span class="audience-ico" aria-hidden="true">{{> "icons/sparkles"}}</span>
-                    <span class="audience-flag">{{> "icons/signal"}} {{t "Where I am now"}}</span>
+            <a class="audience-card is-featured" href="{{@site.url}}/courses/" style="--i: 1;">
+                <span class="audience-photo" aria-hidden="true">
+                    <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&amp;fit=crop&amp;w=720&amp;q=80" alt="" loading="lazy" width="720" height="540" />
+                    <span class="audience-num">02</span>
+                    <span class="audience-ico">{{> "icons/sparkles"}}</span>
                 </span>
-                <h3>{{t "Moving into an AI or GTM engineering role"}}</h3>
-                <p class="audience-gap">{{t "You have the CRM. The next job wants n8n, Clay, 6sense, Agentforce and an LLM doing the clicking. This is the stack, learned in the open."}}</p>
-                <ul class="audience-list">
-                    <li>{{> "icons/check-circle"}} {{t "Agentforce end to end, prompts that earn their keep"}}</li>
-                    <li>{{> "icons/check-circle"}} {{t "The GTM tooling around Salesforce, piece by piece"}}</li>
-                </ul>
-                <span class="audience-meta">
-                    {{#get "posts" filter="tag:hash-course" limit="1" as |c courses|}}<span>{{> "icons/graduation-cap"}} {{courses.total}} {{t "courses"}}</span>{{/get}}
-                    {{#get "posts" filter="tag:hash-prompt" limit="1" as |p prompts|}}<span>{{> "icons/sparkles"}} {{prompts.total}} {{t "prompts"}}</span>{{/get}}
+                <span class="audience-copy">
+                    <span class="audience-top">
+                        <span class="audience-kicker">{{t "The mover"}}</span>
+                        <span class="audience-flag">{{> "icons/signal"}} {{t "Where I am now"}}</span>
+                    </span>
+                    <h3>{{t "Moving into an AI or GTM engineering role"}}</h3>
+                    <p class="audience-gap">{{t "You have the CRM. The next job wants n8n, Clay, 6sense, Agentforce and an LLM doing the clicking. This is the stack, learned in the open."}}</p>
+                    <ul class="audience-list">
+                        <li>{{> "icons/check-circle"}} {{t "Agentforce end to end, prompts that earn their keep"}}</li>
+                        <li>{{> "icons/check-circle"}} {{t "The GTM tooling around Salesforce, piece by piece"}}</li>
+                    </ul>
+                    <span class="audience-meta">
+                        {{#get "posts" filter="tag:hash-course" limit="1" as |c courses|}}<span>{{> "icons/graduation-cap"}} {{courses.total}} {{t "courses"}}</span>{{/get}}
+                        {{#get "posts" filter="tag:hash-prompt" limit="1" as |p prompts|}}<span>{{> "icons/sparkles"}} {{prompts.total}} {{t "prompts"}}</span>{{/get}}
+                    </span>
+                    <span class="audience-go">{{t "Browse the courses"}} {{> "icons/arrow-right"}}</span>
                 </span>
-                <span class="audience-go">{{t "Browse the courses"}} {{> "icons/arrow-right"}}</span>
             </a>
 
-            <a class="audience-card" href="{{@site.url}}/courses/">
-                <span class="audience-top">
-                    <span class="audience-num" aria-hidden="true">03</span>
-                    <span class="audience-ico" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+            <a class="audience-card" href="{{@site.url}}/courses/" style="--i: 2;">
+                <span class="audience-photo" aria-hidden="true">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&amp;fit=crop&amp;w=720&amp;q=80" alt="" loading="lazy" width="720" height="540" />
+                    <span class="audience-num">03</span>
+                    <span class="audience-ico">{{> "icons/graduation-cap"}}</span>
                 </span>
-                <h3>{{t "New to the ecosystem"}}</h3>
-                <p class="audience-gap">{{t "You know a spreadsheet and you want a step-by-step way in that does not cost anything and does not skip the why."}}</p>
-                <ul class="audience-list">
-                    <li>{{> "icons/check-circle"}} {{t "Admin Foundations, free, in a Developer Edition org"}}</li>
-                    <li>{{> "icons/check-circle"}} {{t "Every lesson ends with something running in your org"}}</li>
-                </ul>
-                <span class="audience-meta">
-                    {{#get "posts" filter="tag:hash-lesson" limit="1" as |l lessons|}}<span>{{> "icons/play-circle"}} {{lessons.total}} {{t "lessons"}}</span>{{/get}}
-                    {{#get "posts" filter="tag:hash-video" limit="1" as |v vids|}}<span>{{> "icons/video"}} {{vids.total}} {{t "videos"}}</span>{{/get}}
+                <span class="audience-copy">
+                    <span class="audience-top">
+                        <span class="audience-kicker">{{t "The newcomer"}}</span>
+                    </span>
+                    <h3>{{t "New to the ecosystem"}}</h3>
+                    <p class="audience-gap">{{t "You know a spreadsheet and you want a step-by-step way in that does not cost anything and does not skip the why."}}</p>
+                    <ul class="audience-list">
+                        <li>{{> "icons/check-circle"}} {{t "Admin Foundations, free, in a Developer Edition org"}}</li>
+                        <li>{{> "icons/check-circle"}} {{t "Every lesson ends with something running in your org"}}</li>
+                    </ul>
+                    <span class="audience-meta">
+                        {{#get "posts" filter="tag:hash-lesson" limit="1" as |l lessons|}}<span>{{> "icons/play-circle"}} {{lessons.total}} {{t "lessons"}}</span>{{/get}}
+                        {{#get "posts" filter="tag:hash-video" limit="1" as |v vids|}}<span>{{> "icons/video"}} {{vids.total}} {{t "videos"}}</span>{{/get}}
+                    </span>
+                    <span class="audience-go">{{t "Open lesson one"}} {{> "icons/arrow-right"}}</span>
                 </span>
-                <span class="audience-go">{{t "Open lesson one"}} {{> "icons/arrow-right"}}</span>
             </a>
+
         </div>
     </div>
 </section>

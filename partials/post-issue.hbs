@@ -1,89 +1,148 @@
-{{!-- A newsletter issue — the email, framed as a page.
+{{!-- A newsletter issue — THE LETTER, opened.
 
-Main: the issue. Right rail: when it was sent (the calendar
-card), the TOC (site rule: sidebar present → TOC lives there),
-and the pitch to get the next one by mail. Context: the post. --}}
+The page is the email itself laid on the desk: the envelope's
+back peeks out from behind a sheet of paper, the sheet opens with
+the address block (from, to, subject, sent) under the stamp and
+postmark — the same furniture the envelope card wears on
+/newsletter — and the issue reads on the paper below. The
+signature at the foot is the author, live. Right rail: when it
+was sent, the TOC (site rule: a sidebar exists, so the TOC lives
+in it), the ask, share. Context: the post. --}}
 
 <main id="site-main" class="section outer">
 <div class="inner">
-<div class="video-grid {{post_class}}">
 
-    <article class="video-main">
-        <nav class="crumbs" aria-label="Breadcrumb">
-            <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
-            {{> "icons/chevron-right"}}
-            <a href="{{@site.url}}/newsletter/">{{t "Newsletter"}}</a>
-            {{> "icons/chevron-right"}}
-            <span aria-current="page">{{title}}</span>
-        </nav>
+    <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="{{@site.url}}">{{> "icons/home"}} {{t "Home"}}</a>
+        {{> "icons/chevron-right"}}
+        <a href="{{@site.url}}/newsletter/">{{t "Newsletter"}}</a>
+        {{> "icons/chevron-right"}}
+        <span aria-current="page">{{title}}</span>
+    </nav>
 
-        <header class="post-header">
-            <div class="chips">
-                <span class="chip chip-accent">{{> "icons/newspaper"}} {{t "Issue"}}</span>
-                {{#if reading_time}}<span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>{{/if}}
-            </div>
-            <h1 class="post-title">{{title}}</h1>
-            {{#if custom_excerpt}}<p class="post-excerpt">{{custom_excerpt}}</p>{{/if}}
-        </header>
+    <div class="letter-layout {{post_class}}">
 
-        {{#if feature_image}}
-            <figure class="entry-figure">
-                <img src="{{img_url feature_image size="l"}}"
-                    alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
-                    loading="eager" fetchpriority="high" />
-                {{#if feature_image_caption}}<figcaption>{{{feature_image_caption}}}</figcaption>{{/if}}
-            </figure>
-        {{/if}}
+        <div class="letter-desk">
+            <span class="letter-env" aria-hidden="true"></span>
 
-        <section class="gh-content">
-            {{content}}
-        </section>
+            <article class="letter">
+                <header class="letter-head">
+                    <div class="letter-marks" aria-hidden="true">
+                        <span class="mail-postmark"><i>{{t "Sent"}}</i><em>{{date format="YYYY"}}</em></span>
+                        <span class="mail-stamp">
+                            <b>{{date format="DD"}}</b>
+                            <i>{{date format="MMM"}}</i>
+                        </span>
+                    </div>
 
-        <footer class="post-footer">
-            {{#if tags}}
-                <ul class="tag-cloud">
-                    {{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}
-                </ul>
-            {{/if}}
-            {{> "widgets/share-links"}}
-        </footer>
-    </article>
+                    <dl class="letter-meta">
+                        <div>
+                            <dt>{{t "From"}}</dt>
+                            <dd>{{@site.title}}{{#foreach authors limit="1"}} · {{name}}{{/foreach}}</dd>
+                        </div>
+                        <div>
+                            <dt>{{t "To"}}</dt>
+                            <dd>{{t "everyone on the list"}}</dd>
+                        </div>
+                        <div>
+                            <dt>{{t "Sent"}}</dt>
+                            <dd><time datetime="{{date format="YYYY-MM-DD"}}">{{date format="dddd, DD MMMM YYYY"}}</time></dd>
+                        </div>
+                        <div class="letter-meta-subject">
+                            <dt>{{t "Subject"}}</dt>
+                            <dd><h1 class="letter-subject">{{title}}</h1></dd>
+                        </div>
+                    </dl>
 
-    <aside class="video-aside">
+                    <div class="chips letter-chips">
+                        <span class="chip chip-accent">{{> "icons/newspaper"}} {{t "Issue"}}</span>
+                        {{#if reading_time}}<span class="chip">{{> "icons/clock"}} {{reading_time minute=(t "1 min read") minutes=(t "% min read")}}</span>{{/if}}
+                        {{#if primary_tag}}<a class="chip" href="{{primary_tag.url}}">{{> "icons/tag-icon"}} {{primary_tag.name}}</a>{{/if}}
+                    </div>
 
-        <div class="widget issue-sent">
-            <h4 class="widget-title">{{> "icons/calendar"}} {{t "Sent"}}</h4>
-            <div class="issue-sent-date">
-                <span class="issue-sent-day">{{date format="DD"}}</span>
-                <span class="issue-sent-rest">
-                    <strong>{{date format="MMMM YYYY"}}</strong>
-                    {{date format="dddd"}}
-                </span>
-            </div>
-            <dl class="detail-list">
-                {{#foreach authors limit="1"}}
-                    <div><dt>{{t "From"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
-                {{/foreach}}
-                <div><dt>{{t "Delivered to"}}</dt><dd>{{t "the whole list"}}</dd></div>
-            </dl>
+                    {{#if custom_excerpt}}<p class="letter-lead">{{custom_excerpt}}</p>{{/if}}
+                </header>
+
+                {{#if feature_image}}
+                    <figure class="letter-figure">
+                        <img src="{{img_url feature_image size="l"}}"
+                            alt="{{#if feature_image_alt}}{{feature_image_alt}}{{else}}{{title}}{{/if}}"
+                            loading="eager" fetchpriority="high" />
+                        {{#if feature_image_caption}}<figcaption>{{{feature_image_caption}}}</figcaption>{{/if}}
+                    </figure>
+                {{/if}}
+
+                <section class="gh-content letter-body">
+                    {{content}}
+                </section>
+
+                <footer class="letter-foot">
+                    {{#foreach authors limit="1"}}
+                        <a class="letter-sign" href="{{url}}">
+                            {{#if profile_image}}
+                                <img src="{{img_url profile_image size="xs"}}" alt="" width="44" height="44" loading="lazy" />
+                            {{else}}
+                                <span class="avatar-fallback" aria-hidden="true">{{> "icons/avatar"}}</span>
+                            {{/if}}
+                            <span>
+                                <em>{{t "Until next week,"}}</em>
+                                <strong>{{name}}</strong>
+                            </span>
+                        </a>
+                    {{/foreach}}
+                    {{#if tags}}
+                        <ul class="tag-cloud">
+                            {{#foreach tags}}<li><a href="{{url}}">{{name}}</a></li>{{/foreach}}
+                        </ul>
+                    {{/if}}
+                    {{> "widgets/share-links"}}
+                </footer>
+            </article>
         </div>
 
-        {{> "widgets/toc"}}
+        <aside class="letter-side">
+            <div class="letter-side-sticky">
 
-        {{#if @site.members_enabled}}
-            {{^if @member}}
-                <div class="widget widget-newsletter">
-                    <h4 class="widget-title">{{> "icons/mail"}} {{t "Next one, in your inbox"}}</h4>
-                    <p>{{t "Read this on the site — or get the next issue delivered the moment it's sent."}}</p>
-                    <a class="btn" href="{{@site.url}}/signup/">{{t "Subscribe free"}}</a>
+                <div class="widget issue-sent">
+                    <h4 class="widget-title">{{> "icons/calendar"}} {{t "Sent"}}</h4>
+                    <div class="issue-sent-date">
+                        <span class="issue-sent-day">{{date format="DD"}}</span>
+                        <span class="issue-sent-rest">
+                            <strong>{{date format="MMMM YYYY"}}</strong>
+                            {{date format="dddd"}}
+                        </span>
+                    </div>
+                    <dl class="detail-list">
+                        {{#foreach authors limit="1"}}
+                            <div><dt>{{t "From"}}</dt><dd><a href="{{url}}">{{name}}</a></dd></div>
+                        {{/foreach}}
+                        <div><dt>{{t "Delivered to"}}</dt><dd>{{t "the whole list"}}</dd></div>
+                    </dl>
+                    {{#prev_post}}
+                        <a class="issue-walk" href="{{url}}">{{> "icons/arrow-left"}} <span>{{t "Previous issue"}}</span></a>
+                    {{/prev_post}}
+                    {{#next_post}}
+                        <a class="issue-walk" href="{{url}}"><span>{{t "Next issue"}}</span> {{> "icons/arrow-right"}}</a>
+                    {{/next_post}}
                 </div>
-            {{/if}}
-        {{/if}}
 
-        {{> "widgets/share-ask"}}
+                {{> "widgets/toc"}}
 
-    </aside>
+                {{#if @site.members_enabled}}
+                    {{^if @member}}
+                        <div class="widget widget-newsletter">
+                            <h4 class="widget-title">{{> "icons/mail"}} {{t "Next one, in your inbox"}}</h4>
+                            <p>{{t "Read this on the site — or get the next issue delivered the moment it's sent."}}</p>
+                            <a class="btn" href="{{@site.url}}/signup/">{{t "Subscribe free"}}</a>
+                        </div>
+                    {{/if}}
+                {{/if}}
 
-</div>
+                {{> "widgets/share-ask"}}
+
+            </div>
+        </aside>
+
+    </div>
 </div>
 </main>

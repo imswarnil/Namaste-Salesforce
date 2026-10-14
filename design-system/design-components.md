@@ -1,6 +1,6 @@
 # NS Design System — design-components.md
 
-> 42 components, grouped by workflow. Tokens: [DESIGN.md](./DESIGN.md). Rules: [design-guidelines.md](./design-guidelines.md). Live specimens with copy-paste markup: [components.html](./components.html) · page-level bands: [sections.html](./sections.html).
+> 45 components, grouped by workflow. Tokens: [DESIGN.md](./DESIGN.md). Rules: [design-guidelines.md](./design-guidelines.md). Live specimens with copy-paste markup: [components.html](./components.html) · page-level bands: [sections.html](./sections.html).
 
 Measurements assume the 10px rem base (`1.6rem` = 16px).
 
@@ -108,6 +108,12 @@ Sidebar box with `.widget-title`. Family: author, recent posts, newsletter, shar
 ### Frame — `.frame`
 16:9 media well (`.frame-4x3`, `.frame-square`, `.frame-cinema`), `.frame-play`, `.frame-badge`, `.frame-caption`.
 
+### Envelope — `.mail-card` / Letter — `.letter`
+An issue as the envelope it arrived in: `.mail-env` (back, letter, pocket, flap — clip-paths), `.mail-stamp` (day over month, perforated), `.mail-postmark`; hover lifts the flap. `.letter` is the issue opened: `.letter-desk` with the envelope behind, `.letter-head` address block (`.letter-meta`, `.letter-subject`), `.letter-body`, `.letter-foot` with `.letter-sign`.
+
+### Salesforce window — `.sf-window`
+Lightning app chrome: `.sf-bar` (waffle, `.sf-app`, `.sf-search`, `.sf-utils`), `.sf-tabs` with `.sf-tab.is-active`, `.sf-body` on Lightning grey holding `.sf-highlights` and a `.sf-related` list of `.sf-row` rows. Chrome is `aria-hidden`; rows and buttons are the controls.
+
 ### Browser — `.browser`
 Window chrome with dots and URL; `.browser-dark` for code. Device — `.device` phone bezel.
 
@@ -146,7 +152,10 @@ Ticked, iconed, term/description grid, big-numbered.
 Numbered lesson rows in one bordered box; `.curriculum-side` holds type icon + duration chip.
 
 ### Timeline — `.timeline`
-Dot, date, title, excerpt — the changelog list.
+Dot, date, title, excerpt — the compact changelog list.
+
+### Changelog entry — `.changelog-entry`
+One markup, three states: timeline (full-width card, thumb right), board (grid card, thumb top — `#clv-board:checked ~ .changelog-layout`) and `.is-open` (the notes inside the card, `.changelog-entry-close` back to the list). Give the card a `view-transition-name` so the closed and open pages morph.
 
 ### Testimonial — `.quote-card` / `.pull-quote`
 Mark, stars, words, `.person`; `.quote-grid` columns.
@@ -171,4 +180,4 @@ Accent-tinted takeaways box at the end of a lesson; `.lesson-resources` strip of
 
 ## Sections (page bands)
 
-`.hero` (+ `.hero-split`, `.hero-center`, `.hero-cinema`), `.marquee`, `.logo-strip`, `.props` (+ `.props-flush`), `.split` (+ `.split-reverse`), `.spotlight`, `.cta-band` (+ `.cta-band-split`, `.cta-band-full`), `.band-newsletter`, `.band-dark.on-dark`, `.template-bar`. Each is documented live in [sections.html](./sections.html).
+`.hero` (+ `.hero-split`, `.hero-center`, `.hero-cinema`), `.marquee`, `.logo-strip`, `.props` (+ `.props-flush`), `.split` (+ `.split-reverse`), `.spotlight`, `.cta-band` (+ `.cta-band-split`, `.cta-band-full`), `.band-newsletter`, `.band-dark.on-dark`, `.template-bar`, `.audience-stack` (sticky-stacked persona cards), `.plan-grid` (three `.plan-board`s). Each is documented live in [sections.html](./sections.html).
