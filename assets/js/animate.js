@@ -247,33 +247,6 @@ window.Prism.manual = true;
         heroGate.observe(stack);
     }
 
-    /* The story timeline ------------------------------------------
-       [data-story] scrolls sideways; the rail fill chases the
-       reader's position and each stop lights up as the fill edge
-       passes its node. */
-
-    document.querySelectorAll('[data-story]').forEach(function (strip) {
-        var fill = strip.querySelector('[data-story-fill]');
-        var stops = strip.querySelectorAll('.story-stop');
-        if (!fill) {
-            return;
-        }
-
-        function paintStory() {
-            var head = strip.scrollLeft + strip.clientWidth * 0.62;
-            fill.style.width = Math.min(head, strip.scrollWidth) + 'px';
-            Array.prototype.forEach.call(stops, function (stop) {
-                stop.classList.toggle('is-lit', stop.offsetLeft + stop.offsetWidth * 0.4 < head);
-            });
-        }
-
-        strip.addEventListener('scroll', function () {
-            requestAnimationFrame(paintStory);
-        }, {passive: true});
-        window.addEventListener('resize', paintStory);
-        paintStory();
-    });
-
     if (!drawn.length && !floaters.length) {
         return;
     }

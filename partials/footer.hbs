@@ -23,8 +23,10 @@ default.hbs, where `post` is in scope. --}}
     <div class="bg-blueprint bg-fade-bottom" aria-hidden="true"></div>
     <div class="site-foot-inner inner">
 
-        <div class="site-foot-grid">
-
+        {{!-- Top row: who this is, and the one ask. The form is Ghost's
+        native members form (it stamps loading / success / error on the
+        <form>), the same markup the hero uses, dressed for navy. --}}
+        <div class="site-foot-top">
             <div class="site-foot-brand">
                 <a class="site-head-logo" href="{{@site.url}}">
                     {{#if @site.logo}}
@@ -64,24 +66,90 @@ default.hbs, where `post` is in scope. --}}
                 </div>
             </div>
 
-            <nav class="site-foot-nav" aria-label="{{t "Explore"}}">
-                <h4>{{t "Explore"}}</h4>
-                {{!-- The flat primary nav runs long (dropdown children
-                included) — cap the column at the first five links. --}}
-                {{navigation isFooter=true linkLimit="5"}}
+            <div class="site-foot-ask">
+                <span class="kicker">{{> "icons/mail"}} {{t "The weekly letter"}}</span>
+                <h3>{{t "Follow the trail, one email a week"}}</h3>
+                <p>{{t "New lessons, the GTM tools I'm learning, and the release notes that matter — written as I go."}}</p>
+                {{#if @site.members_enabled}}
+                    {{#unless @member}}
+                        <form class="signup-form foot-signup" data-members-form="signup">
+                            <div class="signup-row">
+                                <input class="signup-input" data-members-email type="email" required
+                                    placeholder="{{t "you@work-email.com"}}" aria-label="{{t "Your email"}}" />
+                                <button class="btn signup-btn" type="submit">
+                                    {{> "icons/mail"}} {{t "Join free"}}
+                                </button>
+                            </div>
+                            <p class="signup-note">{{t "Free forever · unsubscribe in one click"}}</p>
+                            <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox and click the magic link."}}</p>
+                            <p class="signup-error" data-members-error></p>
+                        </form>
+                    {{else}}
+                        <p class="members-note">{{> "icons/check-circle"}} {{t "You're on the list — the next issue is coming to you."}}</p>
+                    {{/unless}}
+                {{else}}
+                    <a class="btn" href="{{@site.url}}/newsletter/">{{> "icons/mail"}} {{t "Browse the issues"}}</a>
+                {{/if}}
+            </div>
+        </div>
+
+        {{!-- Link columns. Learn / Read / Build are the collections
+        from routes.yaml — fixed on purpose, that is the URL model.
+        The fourth column is Ghost's secondary navigation (Admin →
+        Settings → Navigation), so the pages the owner lists there
+        appear without a template edit. Icons match per slug in
+        partials/nav-icon.hbs. --}}
+        <div class="site-foot-grid">
+
+            <nav class="site-foot-nav" aria-label="{{t "Learn"}}">
+                <h4>{{> "icons/graduation-cap"}} {{t "Learn"}}</h4>
+                <ul>
+                    <li><a href="{{@site.url}}/courses/">{{> "nav-icon" slug="courses"}} {{t "Courses"}}</a></li>
+                    <li><a href="{{@site.url}}/training/">{{> "nav-icon" slug="training"}} {{t "Training trail"}}</a></li>
+                    <li><a href="{{@site.url}}/videos/">{{> "nav-icon" slug="videos"}} {{t "Videos"}}</a></li>
+                    <li><a href="{{@site.url}}/slides/">{{> "nav-icon" slug="slides"}} {{t "Slides"}}</a></li>
+                    <li><a href="{{@site.url}}/resources/">{{> "nav-icon" slug="resources"}} {{t "Resources"}}</a></li>
+                </ul>
             </nav>
 
-            <nav class="site-foot-nav" aria-label="{{t "More"}}">
-                <h4>{{t "More"}}</h4>
+            <nav class="site-foot-nav" aria-label="{{t "Read"}}">
+                <h4>{{> "icons/pen"}} {{t "Read"}}</h4>
+                <ul>
+                    <li><a href="{{@site.url}}/blog/">{{> "nav-icon" slug="blog"}} {{t "Blog"}}</a></li>
+                    <li><a href="{{@site.url}}/newsletter/">{{> "nav-icon" slug="newsletter"}} {{t "Newsletter"}}</a></li>
+                    <li><a href="{{@site.url}}/changelog/">{{> "nav-icon" slug="changelog"}} {{t "Changelog"}}</a></li>
+                    <li><a href="{{@site.url}}/snippets/">{{> "nav-icon" slug="snippets"}} {{t "Snippets"}}</a></li>
+                    <li><a href="{{@site.url}}/prompts/">{{> "nav-icon" slug="prompts"}} {{t "Prompts"}}</a></li>
+                </ul>
+            </nav>
+
+            <nav class="site-foot-nav" aria-label="{{t "Build"}}">
+                <h4>{{> "icons/code"}} {{t "Build"}}</h4>
+                <ul>
+                    <li><a href="{{@site.url}}/projects/">{{> "nav-icon" slug="projects"}} {{t "Projects"}}</a></li>
+                    <li><a href="{{@site.url}}/products-i-use/">{{> "nav-icon" slug="products-i-use"}} {{t "Products I use"}}</a></li>
+                    <li><a href="{{@site.url}}/shop/">{{> "nav-icon" slug="shop"}} {{t "Shop"}}</a></li>
+                    <li><a href="{{@site.url}}/llms/">{{> "icons/file-text"}} llms.txt</a></li>
+                    {{#if @custom.social_github}}
+                        <li><a href="{{@custom.social_github}}" target="_blank" rel="noopener">{{> "icons/github"}} {{t "Source on GitHub"}}</a></li>
+                    {{/if}}
+                </ul>
+            </nav>
+
+            <nav class="site-foot-nav" aria-label="{{t "Site"}}">
+                <h4>{{> "icons/compass"}} {{t "Site"}}</h4>
                 {{navigation type="secondary" isFooter=true}}
-                <ul><li><a href="{{@site.url}}/llms/">llms.txt</a></li></ul>
             </nav>
 
         </div>
 
         <div class="site-foot-legal">
             <span>&copy; {{date format="YYYY"}} <a href="{{@site.url}}">{{@site.title}}</a>. {{t "All rights reserved."}}</span>
-            <a href="https://ghost.org/" target="_blank" rel="noopener">{{t "Powered by Ghost"}}</a>
+            <span class="site-foot-legal-right">
+                <span>{{t "Built in the open, in a real org."}}</span>
+                <a href="https://ghost.org/" target="_blank" rel="noopener">{{t "Powered by Ghost"}}</a>
+                <a class="site-foot-top-link" href="#top">{{t "Back to top"}} {{> "icons/chevron-down"}}</a>
+            </span>
         </div>
 
     </div>

@@ -367,118 +367,27 @@
     each stop as the fill edge passes its node. Stops wave in via
     nth-of-type delays once the strip reveals ([data-animate]). */
 
-/*  The journey band.
-
-    It runs dark so the film behind it reads. Nothing inside is
-    restyled for that: the section RE-POINTS the semantic colour
-    tokens at their dark values, and the cards, rail, nodes and type
-    follow, because they were painted with tokens rather than
-    literals. One block here instead of a parallel dark stylesheet. */
+/*  The journey band — light, on the alternating ground, with a
+    blueprint grid that dissolves toward the corners. Everything
+    inside paints with the ordinary semantic tokens. */
 .home-story {
     position: relative;
     overflow: hidden;
     isolation: isolate;
-
-    --bg:          var(--gray-950);
-    --bg-alt:      #081a33;
-    --surface:     rgba(255, 255, 255, 0.055);
-    --surface-alt: rgba(255, 255, 255, 0.03);
-    --border:      rgba(152, 166, 184, 0.2);
-    --border-soft: rgba(152, 166, 184, 0.12);
-
-    --text:        var(--gray-300);
-    --text-muted:  #93a7bd;
-    --text-faint:  #6f8299;
-    --heading:     var(--gray-50);
-
-    --accent:       var(--brand-400);
-    --accent-soft:  rgba(27, 150, 255, 0.16);
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 0 0 1px rgba(152, 166, 184, 0.1), 0 12px 40px rgba(0, 0, 0, 0.55);
-
-    color: var(--text);
-    background: var(--gray-950);
+    background: var(--bg-alt);
 }
 
-.home-story .section-head h2,
-.home-story .kicker {
-    color: var(--heading);
-}
-
-.home-story .kicker {
-    color: var(--accent);
-}
-
-.home-story .section-head p {
-    color: var(--text-muted);
-}
-
-/*  Backdrop — film, blend, grid ------------------------------- */
-
-.story-bg {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.story-video {
-    position: absolute;
-    inset: 0;
-}
-
-.story-video iframe {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    /* 16:9 kept while covering the band, so the frame never letterboxes */
-    width: 178vh;
-    min-width: 100%;
-    height: 56.25vw;
-    min-height: 100%;
-    translate: -50% -50%;
-    border: 0;
-}
-
-/*  Multiply darkens the footage INTO brand navy while keeping its
-    contrast; a flat overlay would just grey it. The second, normal
-    layer then buys the text a readable ground. */
-.story-video::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(115deg, #032d60 0%, #001a3e 100%);
-    mix-blend-mode: multiply;
-}
-
-.story-shade {
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(180deg, rgba(0, 12, 26, 0.93) 0%, rgba(0, 12, 26, 0.8) 45%, rgba(0, 12, 26, 0.94) 100%),
-        radial-gradient(900px 400px at 15% 0%, rgba(27, 150, 255, 0.22), transparent 70%);
-}
-
-/*  The blueprint grid, masked so it dissolves at the corners
-    rather than stopping at a hard edge. */
 .story-grid {
     position: absolute;
     inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image:
-        linear-gradient(to right, rgba(124, 190, 255, 0.16) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(124, 190, 255, 0.16) 1px, transparent 1px);
+        linear-gradient(to right, var(--border-soft) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border-soft) 1px, transparent 1px);
     background-size: 5.6rem 5.6rem;
-    opacity: 0.5;
     mask-image: radial-gradient(120% 100% at 50% 40%, #000 30%, rgba(0, 0, 0, 0.45) 62%, transparent 92%);
     -webkit-mask-image: radial-gradient(120% 100% at 50% 40%, #000 30%, rgba(0, 0, 0, 0.45) 62%, transparent 92%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .story-video {
-        display: none;
-    }
 }
 
 /*  The heading's CTA, opposite the copy. .section-head is already a
@@ -532,99 +441,92 @@
     transform: translateX(3px);
 }
 
-.story-strip {
-    margin-top: 4rem;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.4rem 0.4rem 1.2rem;
-}
-
-.story-strip::-webkit-scrollbar {
-    display: none;
-}
-
-.story-track {
+/*  The frame — six stops on one road, no sideways scroll
+    ------------------------------------------------------------
+    The road is one dashed line through every node's centre; the
+    accent fill travels it to "Now" once the frame is in view. The
+    first and last nodes sit half a column in from the edges, which
+    is where the road starts and stops — the offsets below are that
+    half column, gaps accounted for. Everything animates from the
+    stop's own --i (set in the markup), so adding a chapter is one
+    more <li>, nothing else. */
+.story-frame {
+    --story-cols: 6;
+    --story-gap: 1.6rem;
+    --story-node: 4.4rem;
+    --story-reach: 0.8; /* the fill stops at "Now": stop 5 of 6 */
     position: relative;
-    display: flex;
-    gap: 2.4rem;
-    min-width: max-content;
-    padding-top: 8rem;
+    display: grid;
+    grid-template-columns: repeat(var(--story-cols), minmax(0, 1fr));
+    gap: var(--story-gap);
+    margin: 4.4rem 0 0;
+    padding: 0;
+    list-style: none;
 }
 
-/* the rail: the road itself, plus the accent fill chasing you */
-.story-rail {
+.story-road {
     position: absolute;
-    top: 2.4rem;
-    left: 0.6rem;
-    right: 0.6rem;
+    top: calc(var(--story-node) / 2 - 1.5px);
+    left: calc((100% - (var(--story-cols) - 1) * var(--story-gap)) / var(--story-cols) / 2);
+    right: calc((100% - (var(--story-cols) - 1) * var(--story-gap)) / var(--story-cols) / 2);
     height: 3px;
     border-radius: 2px;
     background: repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 16px);
+    pointer-events: none;
 }
 
-.story-rail i {
+.story-road i {
     display: block;
+    width: 100%;
     height: 100%;
-    width: 0;
     border-radius: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--brand-400));
-    box-shadow: 0 0 10px var(--accent-soft);
-    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    background: linear-gradient(90deg, var(--accent), var(--brand-300));
+    box-shadow: 0 0 12px var(--accent-soft);
+    transform: scaleX(var(--story-reach));
+    transform-origin: left center;
 }
 
 .story-stop {
     position: relative;
-    flex: 0 0 auto;
-    width: clamp(240px, 24vw, 300px);
-    scroll-snap-align: center;
-    padding: 2rem 2.2rem 2.2rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
-}
-
-.story-stop:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: color-mod(#0176d3 a(35%));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    text-align: center;
 }
 
 /* the stub threading the node down into its card */
 .story-stop::before {
     content: "";
     position: absolute;
-    top: -3.4rem;
-    left: 4.2rem;
+    top: var(--story-node);
+    left: 50%;
     width: 2px;
-    height: 3.4rem;
+    height: 1.6rem;
+    margin-left: -1px;
+    background: repeating-linear-gradient(to bottom, var(--accent) 0 5px, transparent 5px 10px);
+}
+
+.story-stop.is-next::before {
     background: repeating-linear-gradient(to bottom, var(--border) 0 5px, transparent 5px 10px);
 }
 
-/* the station node, sitting ON the rail — an OPAQUE solid, not
-   --surface: .home-story redefines --surface as translucent glass
-   (rgba(255,255,255,.055)) for the cards, which is the right look
-   for them but left the node see-through, so the dashed rail and
-   its stub visibly ran straight through the icon instead of
-   stopping at its edge. */
+/* the station node, sitting ON the road — opaque, so the dashes
+   stop at its edge instead of running through the icon */
 .story-node {
-    position: absolute;
-    top: -7.9rem;
-    left: 2rem;
+    position: relative;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4.6rem;
-    height: 4.6rem;
+    flex-shrink: 0;
+    width: var(--story-node);
+    height: var(--story-node);
     border-radius: 50%;
-    background: var(--bg-alt);
-    border: 2px solid var(--border);
-    color: var(--text-faint);
-    box-shadow: var(--shadow-sm);
-    transition: border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 6px var(--accent-soft);
 }
 
 .story-node svg {
@@ -632,21 +534,34 @@
     height: 2rem;
 }
 
-/* lit: the fill has reached this stop */
-.story-stop.is-lit .story-node {
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: 0 0 0 6px var(--accent-soft);
-    transform: scale(1.08);
+.story-stop.is-next .story-node {
+    border-style: dashed;
+    border-color: var(--border);
+    color: var(--text-faint);
+    box-shadow: none;
 }
 
-.story-stop.is-lit::before {
-    background: repeating-linear-gradient(to bottom, var(--accent) 0 5px, transparent 5px 10px);
+.story-card {
+    flex: 1;
+    width: 100%;
+    margin-top: 1.6rem;
+    padding: 1.6rem 1.4rem 1.8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.story-stop:hover .story-card {
+    box-shadow: var(--shadow-lg);
+    border-color: color-mod(#0176d3 a(35%));
 }
 
 .story-tag {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.6rem;
     font-size: 1.1rem;
     font-weight: 800;
@@ -655,19 +570,20 @@
     color: var(--accent);
 }
 
-.story-stop h3 {
-    margin: 0.6rem 0 0.6rem;
-    font-size: 1.9rem;
+.story-card h3 {
+    margin: 0.2rem 0 0.5rem;
+    font-size: 1.6rem;
+    line-height: 1.25;
 }
 
-.story-stop p {
-    font-size: 1.4rem;
-    line-height: 1.6;
+.story-card p {
+    font-size: 1.3rem;
+    line-height: 1.55;
     color: var(--text-muted);
 }
 
 /* the "Now" stop: today's chapter, gently highlighted */
-.story-stop.is-now {
+.story-stop.is-now .story-card {
     border-color: color-mod(#0176d3 a(40%));
     background:
         radial-gradient(320px 160px at 85% -10%, var(--accent-soft), transparent 70%),
@@ -691,8 +607,8 @@
     animation: shipped-ping 2s ease-out infinite;
 }
 
-/* the handoff card: dashed, pointing the reader at the courses */
-.story-stop.is-next {
+/* the handoff card: dashed, pointing the reader at the trail */
+.story-stop.is-next .story-card {
     border-style: dashed;
     background:
         linear-gradient(160deg, var(--accent-soft), transparent 75%),
@@ -700,7 +616,7 @@
 }
 
 .story-cta {
-    margin-top: 1.4rem;
+    margin-top: 1.2rem;
 }
 
 .story-cta svg {
@@ -708,53 +624,122 @@
     height: 1.5rem;
 }
 
-.story-hint {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.6rem;
-    margin-top: 1rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+/*  Entrance — armed by html.anim, fired by .is-in. The road fills
+    to "Now", each station lights as the fill reaches it, each card
+    rises a beat after its station. With reduced motion (no
+    html.anim) the frame is simply lit. */
+html.anim .story-frame .story-road i {
+    transform: scaleX(0);
+    transition: transform 1.7s var(--ease) 0.25s;
+}
+
+html.anim .story-frame.is-in .story-road i {
+    transform: scaleX(var(--story-reach));
+}
+
+html.anim .story-frame .story-stop:not(.is-next) .story-node {
+    border-color: var(--border);
     color: var(--text-faint);
+    box-shadow: none;
 }
 
-.story-hint svg {
-    width: 1.4rem;
-    height: 1.4rem;
-    animation: cue-nudge 2s ease-in-out infinite;
+html.anim .story-frame.is-in .story-stop:not(.is-next) .story-node {
+    animation: story-light 0.55s var(--ease) both;
+    animation-delay: calc(0.25s + var(--i, 0) * 0.33s);
 }
 
-@keyframes cue-nudge {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(5px); }
-}
-
-/* entrance: the strip reveals, each stop a beat behind the last */
-html.anim .story-strip .story-stop {
+html.anim .story-frame .story-stop::before,
+html.anim .story-frame .story-card {
     opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    transition-delay: calc(0.45s + var(--i, 0) * 0.33s);
 }
 
-html.anim .story-strip .story-stop:nth-of-type(2) { transition-delay: 90ms; }
-html.anim .story-strip .story-stop:nth-of-type(3) { transition-delay: 180ms; }
-html.anim .story-strip .story-stop:nth-of-type(4) { transition-delay: 270ms; }
-html.anim .story-strip .story-stop:nth-of-type(5) { transition-delay: 360ms; }
-html.anim .story-strip .story-stop:nth-of-type(6) { transition-delay: 450ms; }
-html.anim .story-strip .story-stop:nth-of-type(7) { transition-delay: 540ms; }
+html.anim .story-frame .story-card {
+    transform: translateY(18px);
+}
 
-html.anim .story-strip.is-in .story-stop {
+html.anim .story-frame.is-in .story-stop::before,
+html.anim .story-frame.is-in .story-card {
     opacity: 1;
     transform: none;
 }
 
+@keyframes story-light {
+    from {
+        border-color: var(--border);
+        color: var(--text-faint);
+        box-shadow: none;
+        transform: scale(1);
+    }
+    55% {
+        transform: scale(1.16);
+    }
+    to {
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 0 0 6px var(--accent-soft);
+        transform: scale(1);
+    }
+}
+
+/*  Below the desktop width the road turns vertical down the left
+    edge and the stops become rows: node, then the card beside it.
+    One column keeps the whole story in reading order on a phone. */
+@media (max-width: 1023px) {
+    .story-frame {
+        --story-cols: 1;
+        gap: 1.2rem;
+        margin-top: 3.2rem;
+    }
+
+    .story-road {
+        top: calc(var(--story-node) / 2);
+        bottom: calc(var(--story-node) / 2);
+        left: calc(var(--story-node) / 2 - 1.5px);
+        right: auto;
+        width: 3px;
+        height: auto;
+        background: repeating-linear-gradient(to bottom, var(--border) 0 8px, transparent 8px 16px);
+    }
+
+    .story-road i {
+        background: linear-gradient(to bottom, var(--accent), var(--brand-300));
+        transform: scaleY(var(--story-reach));
+        transform-origin: center top;
+    }
+
+    html.anim .story-frame .story-road i {
+        transform: scaleY(0);
+    }
+
+    html.anim .story-frame.is-in .story-road i {
+        transform: scaleY(var(--story-reach));
+    }
+
+    .story-stop {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 1.6rem;
+        text-align: left;
+    }
+
+    .story-stop::before {
+        display: none;
+    }
+
+    .story-card {
+        margin-top: 0;
+        padding: 1.4rem 1.6rem 1.6rem;
+    }
+
+    .story-tag {
+        justify-content: flex-start;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .story-now-ping::after,
-    .story-hint svg {
+    .story-now-ping::after {
         animation: none;
     }
 }
@@ -3048,7 +3033,7 @@ html[data-theme="dark"] .home-hero-pattern {
 
 .scroll-quote {
     position: relative;
-    min-height: 88vh;
+    min-height: 72vh;
     display: flex;
     align-items: center;
     padding: clamp(8rem, 16vmin, 18rem) 0;
@@ -3204,9 +3189,46 @@ html:not(.anim) .scroll-quote-fill.is-split .rq-w { color: var(--heading); opaci
     ------------------------------------------------------------ */
 
 .audience-grid {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2.4rem;
+}
+
+/* one dashed path behind all three doors, at the height of the
+   number badges — it shows only in the gaps between the cards,
+   which is the point: three entrances, one trail */
+.audience-path {
+    position: absolute;
+    top: 4.8rem;
+    left: 3rem;
+    right: 3rem;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 14px);
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.audience-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.6rem;
+    margin-top: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-faint);
+}
+
+.audience-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.audience-meta svg {
+    width: 1.4rem;
+    height: 1.4rem;
 }
 
 .audience-card {
@@ -3235,16 +3257,48 @@ html:not(.anim) .scroll-quote-fill.is-split .rq-w { color: var(--heading); opaci
     border-color: rgba(1, 118, 211, 0.35);
 }
 
+.audience-top {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
 .audience-num {
-    position: absolute;
-    top: 1.6rem;
-    right: 2rem;
-    font-size: 4.8rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    color: var(--accent-soft);
-    -webkit-text-stroke: 1px rgba(1, 118, 211, 0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.2rem;
+    height: 3.2rem;
+    padding: 0 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    background: var(--bg);
+    border: 1px solid color-mod(#0176d3 a(35%));
+    border-radius: var(--radius-full);
+}
+
+/* the "now" pill on the door I am walking through myself */
+.audience-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    padding: 0.4rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: var(--radius-full);
+}
+
+.audience-flag svg {
+    width: 1.3rem;
+    height: 1.3rem;
 }
 
 .audience-ico {
@@ -3322,6 +3376,7 @@ html:not(.anim) .scroll-quote-fill.is-split .rq-w { color: var(--heading); opaci
 
 @media (max-width: 1023px) {
     .audience-grid { grid-template-columns: minmax(0, 1fr); }
+    .audience-path { display: none; }
 }
 
 /* Hero points — three ticks under the sub-line */
@@ -3349,9 +3404,277 @@ html:not(.anim) .scroll-quote-fill.is-split .rq-w { color: var(--heading); opaci
     color: var(--success);
 }
 
+.home-hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
 .home-hero-kicker svg {
     width: 1.4rem;
     height: 1.4rem;
-    vertical-align: -0.2em;
-    margin-right: 0.3rem;
+    flex-shrink: 0;
+}
+
+
+/*  Start here — four quiet doors under the ask (partials/hero.hbs)
+    ------------------------------------------------------------ */
+.hero-follow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.6rem;
+    margin-top: 2rem;
+    font-size: 1.4rem;
+}
+
+.hero-follow-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.hero-follow a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: color var(--dur-fast) var(--ease);
+}
+
+.hero-follow a svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--accent);
+}
+
+.hero-follow a:hover {
+    color: var(--accent);
+}
+
+/*  The person under the square — avatar, name, one line, a link to
+    the About page. Centred under the card, inside the gutter. */
+.hero-feature-caption {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    width: 100%;
+    max-width: min(42rem, 56vh);
+    margin: 3.6rem auto 0;
+    padding: 0.8rem 1.2rem 0.8rem 0.9rem;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.hero-feature-caption:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+
+.hero-feature-caption img,
+.hero-feature-caption .avatar-fallback {
+    flex-shrink: 0;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.hero-feature-caption > span {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.3;
+}
+
+.hero-feature-caption strong {
+    font-size: 1.4rem;
+    color: var(--heading);
+}
+
+.hero-feature-caption > span > span {
+    font-size: 1.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hero-feature-caption > svg {
+    flex-shrink: 0;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-left: auto;
+    color: var(--accent);
+    transition: transform var(--dur-fast) var(--ease);
+}
+
+.hero-feature-caption:hover > svg {
+    transform: translateX(3px);
+}
+
+/* the square now has a caption under it, so its own bottom gutter
+   (which held the toggle's overhang) shrinks and the caption carries
+   the space */
+.hero-feature {
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 991px) {
+    .hero-follow {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-feature-caption {
+        max-width: 100%;
+        margin-top: 3.2rem;
+    }
+}
+
+/*  Hero polish — kicker pill, joined ask, halo behind the square
+    ------------------------------------------------------------ */
+.home-hero-kicker {
+    padding: 0.6rem 1.2rem 0.6rem 0.9rem;
+    font-size: 1.15rem;
+    background: var(--accent-soft);
+    border: 1px solid color-mod(#0176d3 a(22%));
+    border-radius: var(--radius-full);
+}
+
+/* the ask as one pill: the field and the button share a surface */
+.hero-signup.is-compact .signup-row {
+    gap: 0.4rem;
+    padding: 0.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow);
+    transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.hero-signup.is-compact .signup-row:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow);
+}
+
+.hero-signup.is-compact .signup-input {
+    padding-left: 1.8rem;
+    background: transparent;
+    border-color: transparent;
+    border-radius: var(--radius-full);
+}
+
+.hero-signup.is-compact .signup-input:focus {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.hero-signup.is-compact .signup-btn {
+    border-radius: var(--radius-full);
+}
+
+/* a soft accent halo and the slow conic ring behind the square */
+.hero-feature::before {
+    content: "";
+    position: absolute;
+    inset: 10% 15%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mod(#0176d3 a(22%)), transparent 72%);
+    filter: blur(24px);
+    pointer-events: none;
+}
+
+.hero-feature .home-hero-ring {
+    width: 108%;
+    z-index: -1;
+}
+
+html:not(.anim) .hero-feature .home-hero-ring {
+    animation: none;
+}
+
+.hero-feature-card {
+    outline: 1px solid color-mod(#ffffff a(60%));
+    outline-offset: -1px;
+}
+
+html[data-theme="dark"] .hero-feature-card {
+    outline-color: rgba(152, 166, 184, 0.18);
+}
+
+@media (max-width: 600px) {
+    .hero-signup.is-compact .signup-row {
+        padding: 0;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+
+    .hero-signup.is-compact .signup-input {
+        background: var(--surface);
+        border-color: var(--border);
+    }
+
+    .hero-signup.is-compact .signup-row:focus-within {
+        box-shadow: none;
+    }
+}
+
+/*  Scroll quote polish — a kicker over it, the opening mark as a
+    faint glyph behind the first line, a link out of the caption */
+.scroll-quote-kicker {
+    display: inline-flex;
+    margin-bottom: clamp(2rem, 3vmin, 3.2rem);
+}
+
+.scroll-quote blockquote {
+    position: relative;
+}
+
+.scroll-quote-mark {
+    position: absolute;
+    top: -0.35em;
+    left: -0.1em;
+    z-index: -1;
+    font-size: clamp(9rem, 18vw, 22rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.1;
+    pointer-events: none;
+    user-select: none;
+}
+
+.scroll-quote .inner {
+    z-index: 1;
+}
+
+.scroll-quote-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: 0.6rem;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+}
+
+.scroll-quote-link svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: transform var(--dur-fast) var(--ease);
+}
+
+.scroll-quote-link:hover svg {
+    transform: translateX(3px);
 }

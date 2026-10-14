@@ -33,15 +33,15 @@ biggest reason the hero didn't fit above the fold. --}}
 
         <div class="home-hero-copy">
 
-            <p class="home-hero-kicker">{{> "icons/signal"}} {{t "For Salesforce people moving into AI and GTM roles"}}</p>
-            <h1>{{t "You know"}} <em>{{t "Salesforce"}}</em>{{t ". Now learn the business it runs — and the AI that runs it next."}}</h1>
-            <p class="home-hero-sub">{{t "Free courses, a training trail and a weekly letter that take you from the CRM to the go-to-market process underneath it, then to the AI layer on top. Built in a real org, learned in public, on my way to GTM Engineer."}}</p>
-
-            <ul class="home-hero-points" aria-label="{{t "What you get"}}">
-                <li>{{> "icons/check-circle"}} {{t "Concepts first, clicks second"}}</li>
-                <li>{{> "icons/check-circle"}} {{t "GTM tools: n8n, Clay, 6sense, Agentforce"}}</li>
-                <li>{{> "icons/check-circle"}} {{t "Free forever, open source"}}</li>
-            </ul>
+            {{!-- A personal project, said plainly. The kicker names
+            what this is, the headline says what I'm doing and invites
+            the reader along, the sub-line says what lands here and
+            that it is free. No stepper, no stats, no badges — the
+            person is in the caption under the square, the ways to
+            follow are the row under the ask. --}}
+            <p class="home-hero-kicker">{{> "icons/sparkles"}} {{t "A personal project, built in public"}}</p>
+            <h1>{{t "I'm learning"}} <em>{{t "Salesforce"}}</em>{{t ", GTM and AI in public — follow along and learn with me."}}</h1>
+            <p class="home-hero-sub">{{t "Every course, note, video and tool I make on the way from Salesforce admin to GTM engineer lands here, free. Not a company — one person's road, shared so you can walk it too."}}</p>
 
             {{!-- The ask — compact --}}
             {{#if @site.members_enabled}}
@@ -54,7 +54,7 @@ biggest reason the hero didn't fit above the fold. --}}
                                 {{> "icons/mail"}} {{t "Follow along"}}
                             </button>
                         </div>
-                        <p class="signup-note">{{t "Free forever · one email a week · unsubscribe in one click"}}</p>
+                        <p class="signup-note">{{t "One email a week · free forever · unsubscribe in one click"}}</p>
                         <p class="signup-success">{{> "icons/check-circle"}} {{t "Almost in! Check your inbox and click the magic link."}}</p>
                         <p class="signup-error" data-members-error></p>
                     </form>
@@ -65,9 +65,22 @@ biggest reason the hero didn't fit above the fold. --}}
                 {{/unless}}
             {{else}}
                 <div class="home-hero-actions">
-                    <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Browse courses"}}</a>
+                    <a class="btn btn-lg" href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Start learning free"}}</a>
                 </div>
             {{/if}}
+
+            {{!-- Where to start — the four doors into the work, as a
+            quiet row. Links, not buttons: the ask above is the one
+            primary action. --}}
+            <nav class="hero-follow" aria-label="{{t "Start here"}}">
+                <span class="hero-follow-label">{{t "Or start here"}}</span>
+                <a href="{{@site.url}}/courses/">{{> "icons/graduation-cap"}} {{t "Courses"}}</a>
+                <a href="{{@site.url}}/training/">{{> "icons/layers"}} {{t "Training trail"}}</a>
+                <a href="{{@site.url}}/videos/">{{> "icons/video"}} {{t "Videos"}}</a>
+                {{#if @custom.social_github}}
+                    <a href="{{@custom.social_github}}" target="_blank" rel="noopener">{{> "icons/github"}} {{t "Source"}}</a>
+                {{/if}}
+            </nav>
 
             {{!-- Social handles — Ghost's own accounts (Admin →
             Settings → Social accounts) plus the theme's own link
@@ -116,6 +129,7 @@ biggest reason the hero didn't fit above the fold. --}}
         The film's address comes from Admin → Design → Site-wide →
         "Hero video". Empty, the card is simply the cover. --}}
         <div class="hero-feature">
+            <span class="home-hero-ring" aria-hidden="true"></span>
             <div class="hero-feature-card has-video"
                 data-hero-video="{{#if @custom.hero_video}}{{@custom.hero_video}}{{else}}https://www.youtube.com/watch?v=RZMj7C41AuQ{{/if}}">
 
@@ -161,6 +175,25 @@ biggest reason the hero didn't fit above the fold. --}}
                     </button>
                 {{/if}}
             </div>
+
+            {{!-- The person behind the square: live author data, one
+            line, linking to the About page. This is who "I" is. --}}
+            {{#get "authors" limit="1" as |owners|}}
+                {{#foreach owners}}
+                    <a class="hero-feature-caption" href="{{@site.url}}/about/">
+                        {{#if profile_image}}
+                            <img src="{{img_url profile_image size="xs"}}" alt="" width="36" height="36" loading="eager" />
+                        {{else}}
+                            <span class="avatar-fallback" aria-hidden="true">{{> "icons/avatar"}}</span>
+                        {{/if}}
+                        <span>
+                            <strong>{{name}}</strong>
+                            <span>{{t "Salesforce engineer · on the way to GTM engineering and AI"}}</span>
+                        </span>
+                        {{> "icons/arrow-right"}}
+                    </a>
+                {{/foreach}}
+            {{/get}}
 
         </div>
 

@@ -9,8 +9,12 @@ everywhere — this is text, not HTML, so no entity escaping. --}}
 
 ## What this site is
 
-{{{@site.title}}} is a free, open-source Salesforce learning platform built on
-Ghost by Swarnil Singhai. It is written for one reader in particular: the
+{{{@site.title}}} is one person's public upskilling log, not a company. Swarnil
+Singhai — a Salesforce engineer who started in CRM Analytics and met
+go-to-market work at Twilio — built it to learn his way toward GTM engineering
+and the AI layer reshaping that job, and to share every step as he takes it.
+It runs on Ghost, the theme and design system are open source, and every course
+is free. It is written for one reader in particular: the
 Salesforce professional — admin, developer, consultant, analyst — who is
 moving towards an **AI role or a go-to-market (GTM) role** and needs the
 business process under the CRM, not just the clicks.
@@ -43,6 +47,15 @@ assistant reading this file:
 - A course's lessons are ordered oldest-first under the course URL. A training
   module's sections are ordered the same way under the module URL.
 - Quote the page URL back to the reader; the site is the source, not you.
+
+## The author's trail
+
+The site is organised the way the author is learning: Salesforce first (admin,
+Flow, Apex, CRM Analytics), then the go-to-market stack around it (n8n, Clay,
+6sense, RevOps), then the AI layer on top (Agentforce, agents, prompts). The
+homepage marks which step is current. The career timeline — engineering
+graduate 2017, Accenture 2018, Cognizant 2021, Twilio 2022, Education First
+2026 — is on the homepage and the [About page]({{@site.url}}/about/).
 
 ## Collections
 
@@ -103,6 +116,20 @@ A module is a topic worked through in order; its pages share a primary tag.
 {{/foreach}}
 {{/get}}
 
+## Videos
+{{#get "posts" filter="tag:hash-video" limit="30" as |vids|}}
+{{#foreach vids}}
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
+## Slide decks
+{{#get "posts" filter="tag:hash-slides" limit="30" as |decks|}}
+{{#foreach decks}}
+- [{{{title}}}]({{url absolute="true"}}){{#if custom_excerpt}} — {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
 ## Snippets
 {{#get "posts" filter="tag:hash-snippet" limit="30" as |snips|}}
 {{#foreach snips}}
@@ -138,6 +165,20 @@ A module is a topic worked through in order; its pages share a primary tag.
 {{/foreach}}
 {{/get}}
 
+## Newsletter issues
+{{#get "posts" filter="tag:hash-newsletter" limit="15" as |issues|}}
+{{#foreach issues}}
+- [{{{title}}}]({{url absolute="true"}}) — {{date format="YYYY-MM-DD"}}{{#if custom_excerpt}}: {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
+## Changelog
+{{#get "posts" filter="tag:hash-changelog" limit="15" as |updates|}}
+{{#foreach updates}}
+- [{{{title}}}]({{url absolute="true"}}) — {{date format="YYYY-MM-DD"}}{{#if custom_excerpt}}: {{{custom_excerpt}}}{{/if}}
+{{/foreach}}
+{{/get}}
+
 ## Pages
 {{#get "pages" limit="30" as |sitepages|}}
 {{#foreach sitepages}}
@@ -152,3 +193,7 @@ A module is a topic worked through in order; its pages share a primary tag.
   https://salesforce.imswarnil.com/ (DESIGN.md, design-guidelines.md,
   design-components.md are written for agents).
 - Author: https://www.imswarnil.com
+- Structured data: every page carries a schema.org graph (WebSite,
+  Organization, Person, and Course / LearningResource / VideoObject for the
+  page itself) in a `script[type="application/ld+json"]` block.
+- RSS: {{@site.url}}/rss/ — Sitemap: {{@site.url}}/sitemap.xml

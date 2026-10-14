@@ -52,44 +52,25 @@ One markup shape; the class on .player is all that changes. --}}
         {{> "rail-toggle"}}
 
         <div class="player-rail-scroll">
+            {{!-- The rail head: a back arrow and the course name, one
+            link to the course page — and under it where you are in
+            it. No cover, no facts, no label: the course page has
+            those, and the rail is for the list. Progress is
+            Handlebars (partials/lesson-progress.hbs), not a script. --}}
             {{#primary_tag}}
                 {{#get "posts" filter="tag:hash-course+slug:{{slug}}" limit="1" as |courseposts|}}
                     {{#foreach courseposts}}
-                        {{!-- The course card: cover on top, then the
-                        name, then what the course is (lessons · length ·
-                        level) and how far along this reader is. rail.js
-                        fills the progress bar from the list below —
-                        current row ÷ rows. --}}
-                        <a class="player-rail-course" href="{{url}}">
-                            <span class="player-rail-course-art">
-                                {{#if feature_image}}
-                                    <img src="{{img_url feature_image size="m"}}" alt="" loading="lazy" />
-                                {{else}}
-                                    {{> "thumb-placeholder" icon="graduation-cap"}}
-                                {{/if}}
-                            </span>
+                        <a class="player-rail-course" href="{{url}}" title="{{t "Back to the course"}}">
+                            <span class="player-rail-course-ico" aria-hidden="true">{{> "icons/arrow-left"}}</span>
                             <span class="player-rail-course-copy">
-                                <span class="kicker">{{> "icons/graduation-cap"}} {{t "Course"}}</span>
                                 <h2>{{title}}</h2>
-                                <span class="player-rail-course-meta">
-                                    {{#get "posts" filter="tag:hash-lesson+tag:{{slug}}" limit="1" as |l total|}}
-                                        <span>{{> "icons/play-circle"}} {{total.total}} {{t "lessons"}}</span>
-                                    {{/get}}
-                                    {{#foreach tags visibility="internal"}}
-                                        {{#match slug "~^" "hash-course-duration-"}}{{#if description}}<span>{{> "icons/clock"}} {{description}}</span>{{/if}}{{/match}}
-                                        {{#match slug "~^" "hash-duration-"}}{{#if description}}<span>{{> "icons/clock"}} {{description}}</span>{{/if}}{{/match}}
-                                        {{#match slug "~^" "hash-course-level-"}}{{#if description}}<span>{{> "icons/signal"}} {{description}}</span>{{/if}}{{/match}}
-                                    {{/foreach}}
-                                </span>
-                                <span class="player-rail-progress" data-rail-progress>
-                                    <span class="player-rail-progress-bar"><i></i></span>
-                                    <span class="player-rail-progress-label" data-rail-progress-label></span>
-                                </span>
                             </span>
                         </a>
                     {{/foreach}}
                 {{/get}}
             {{/primary_tag}}
+
+            {{> "lesson-progress" currentSlug=slug}}
 
             {{!-- Mobile: same list inside a collapsible --}}
             <details class="player-rail-toggle">
@@ -178,16 +159,10 @@ One markup shape; the class on .player is all that changes. --}}
 
             <nav class="post-nav" aria-label="{{t "Lesson navigation"}}">
                 {{#prev_post in="primary_tag"}}
-                    <a class="post-nav-link post-nav-prev" href="{{url}}">
-                        <span class="post-nav-label">{{> "icons/arrow-left"}} {{t "Previous lesson"}}</span>
-                        <span class="post-nav-title">{{title}}</span>
-                    </a>
+                    {{> "post-nav-card" dir="prev" label=(t "Previous lesson")}}
                 {{/prev_post}}
                 {{#next_post in="primary_tag"}}
-                    <a class="post-nav-link post-nav-next" href="{{url}}">
-                        <span class="post-nav-label">{{t "Next lesson"}} {{> "icons/arrow-right"}}</span>
-                        <span class="post-nav-title">{{title}}</span>
-                    </a>
+                    {{> "post-nav-card" dir="next" label=(t "Next lesson")}}
                 {{/next_post}}
             </nav>
 

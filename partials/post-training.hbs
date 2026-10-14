@@ -114,16 +114,10 @@ Context: a training post. --}}
 
                             <nav class="post-nav" aria-label="{{t "Module navigation"}}">
                         {{#prev_post in="primary_tag"}}
-                            <a class="post-nav-link post-nav-prev" href="{{url}}">
-                                <span class="post-nav-label">{{> "icons/arrow-left"}} {{t "Previous"}}</span>
-                                <span class="post-nav-title">{{title}}</span>
-                            </a>
+                            {{> "post-nav-card" dir="prev" label=(t "Previous section")}}
                         {{/prev_post}}
                         {{#next_post in="primary_tag"}}
-                            <a class="post-nav-link post-nav-next" href="{{url}}">
-                                <span class="post-nav-label">{{t "Next"}} {{> "icons/arrow-right"}}</span>
-                                <span class="post-nav-title">{{title}}</span>
-                            </a>
+                            {{> "post-nav-card" dir="next" label=(t "Next section")}}
                         {{else}}
                             {{!-- Last page of this module: cross into the next
                             one. Modules order by tag slug — the same walk
@@ -137,10 +131,9 @@ Context: a training post. --}}
                                     {{#> "with-this" moduleTag=.}}
                                         {{#get "posts" filter="tag:{{moduleTag.slug}}+tag:hash-training" order="published_at asc" limit="1" as |firstpage|}}
                                             {{#foreach firstpage}}
-                                                <a class="post-nav-link post-nav-next post-nav-module" href="{{url}}">
-                                                    <span class="post-nav-label">{{t "Next module"}} {{> "icons/arrow-right"}}</span>
-                                                    <span class="post-nav-title">{{../../moduleTag.name}} — {{title}}</span>
-                                                </a>
+                                                <span class="post-nav-module">
+                                                    {{> "post-nav-card" dir="next" label=(concat (t "Next module") " · " ../../moduleTag.name) icon="graduation-cap"}}
+                                                </span>
                                             {{/foreach}}
                                         {{/get}}
                                     {{/with-this}}

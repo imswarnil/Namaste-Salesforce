@@ -1,106 +1,107 @@
-{{!-- The journey — MY story, told as a horizontal timeline. One
-rail along the x-axis, a stop per chapter: graduate, Accenture,
-Cognizant, Twilio, Education First. The strip scroll-
-snaps sideways; animate.js fills the rail and lights each node as
-it passes ([data-story]). The last card hands the road to the
-reader.
+{{!-- The journey — MY story, in one frame. Six stops on one road:
+graduate, Accenture, Cognizant, Twilio, Education First, and the
+reader's own turn. No sideways scroll any more — the road runs the
+width of the content column, the stops share it in a grid, and the
+whole chapter reads at a glance. On a tablet the grid folds to
+three, on a phone the road turns vertical down the left edge.
 
-The band runs DARK so the film behind it reads. Nothing is
-restyled for it: .home-story re-points the semantic colour tokens
-at their dark values and the cards, rail and nodes follow, because
-they were painted with tokens rather than literals.
+The animation is CSS, armed by the reveal observer (data-animate
+→ .is-in from animate.js): the road fills from the first stop to
+"Now", each station lights as the fill reaches it, each card rises
+a beat after its station. No scroll coupling, nothing to measure;
+with reduced motion or no script the frame is simply lit.
 
 The dates come from the resume (Accenture 03/2018, Cognizant 08/2021,
 Twilio 07/2022, Education First 05/2026, B.E. 2013–2017). Keep
 journey-stacked.hbs in step when a chapter changes. --}}
 <section class="section outer home-story">
-    {{!-- The backdrop, three layers deep: the film, a navy blend that
-    darkens it into brand colour without greying it, and a blueprint
-    grid masked so it fades out at the corners. All decorative, all
-    behind the content, none of it interactive. --}}
-    <div class="story-bg" aria-hidden="true">
-        <div class="story-video">
-            <iframe src="https://www.youtube-nocookie.com/embed/RZMj7C41AuQ?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=RZMj7C41AuQ&amp;controls=0&amp;rel=0&amp;playsinline=1&amp;modestbranding=1&amp;iv_load_policy=3&amp;disablekb=1"
-                title="" loading="lazy" tabindex="-1"
-                allow="autoplay; encrypted-media"
-                referrerpolicy="strict-origin-when-cross-origin"></iframe>
-        </div>
-        <div class="story-shade"></div>
-        <div class="story-grid"></div>
-    </div>
+    {{!-- A quiet blueprint grid behind the road — the band is light,
+    the same alternating ground every other section uses, so the
+    timeline reads as part of the page rather than a poster. --}}
+    <div class="story-grid" aria-hidden="true"></div>
 
     <div class="inner relative">
         <div class="section-head" data-animate>
             <div>
                 <span class="kicker">{{> "icons/map-icon"}} {{t "The journey"}}</span>
                 <h2>{{t "From graduate to Salesforce GTM engineer"}}</h2>
-                <p>{{t "The road so far — every stop taught something you'll find on this site."}}</p>
+                <p>{{t "The road so far — every stop taught something that ended up as a lesson here."}}</p>
             </div>
             {{#get "pages" filter="slug:about" limit="1" as |about|}}
                 {{#if about.[0]}}
-                    <a class="btn btn-inverse story-head-cta" href="{{about.[0].url}}">
+                    <a class="btn story-head-cta" href="{{about.[0].url}}">
                         {{t "Read my story"}} {{> "icons/arrow-right"}}
                     </a>
                 {{/if}}
             {{/get}}
         </div>
-    </div>
 
-    <div class="inner">
-        <div class="story-strip" data-story data-animate>
-            <div class="story-track">
-                <span class="story-rail" aria-hidden="true"><i data-story-fill></i></span>
+        <ol class="story-frame" data-animate>
+            {{!-- The road, and the accent fill that travels it up to
+            "Now" — the fifth of six stops, so --story-reach is 4/5 of
+            the way from the first node to the last. --}}
+            <span class="story-road" aria-hidden="true"><i></i></span>
 
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+            <li class="story-stop" style="--i: 0;">
+                <span class="story-node" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+                <div class="story-card">
                     <span class="story-tag">{{t "The start"}}</span>
                     <time class="story-year" datetime="2017">2017</time>
                     <h3>{{t "Engineering graduate"}}</h3>
-                    <p>{{t "B.E. Computer Science, LNCT Bhopal. Degree in hand, inbox full of applications — the only real asset was the will to learn anything."}}</p>
-                </article>
+                    <p>{{t "B.E. Computer Science, LNCT Bhopal. A degree, an inbox full of applications, and the will to learn anything."}}</p>
+                </div>
+            </li>
 
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/zap"}}</span>
+            <li class="story-stop" style="--i: 1;">
+                <span class="story-node" aria-hidden="true">{{> "icons/zap"}}</span>
+                <div class="story-card">
                     <span class="story-tag">{{t "First break"}}</span>
                     <time class="story-year" datetime="2018-03">2018</time>
                     <h3>Accenture</h3>
-                    <p>{{t "Salesforce Engineer. CRM Analytics for consumer-goods trade promotion and telecom — datasets, SAQL, bindings, and my first Sales Cloud reporting."}}</p>
-                </article>
+                    <p>{{t "Salesforce Engineer. CRM Analytics for trade promotion and telecom — datasets, SAQL, bindings, first Sales Cloud reporting."}}</p>
+                </div>
+            </li>
 
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/layers"}}</span>
+            <li class="story-stop" style="--i: 2;">
+                <span class="story-node" aria-hidden="true">{{> "icons/layers"}}</span>
+                <div class="story-card">
                     <span class="story-tag">{{t "Scale"}}</span>
                     <time class="story-year" datetime="2021-08">2021</time>
                     <h3>Cognizant</h3>
-                    <p>{{t "CRM Analytics Consultant. Enterprise clients, dashboards redesigned for speed and usability — owning delivery end to end."}}</p>
-                </article>
+                    <p>{{t "CRM Analytics Consultant. Enterprise clients, dashboards rebuilt for speed — owning delivery end to end."}}</p>
+                </div>
+            </li>
 
-                <article class="story-stop">
-                    <span class="story-node" aria-hidden="true">{{> "icons/signal"}}</span>
+            <li class="story-stop" style="--i: 3;">
+                <span class="story-node" aria-hidden="true">{{> "icons/signal"}}</span>
+                <div class="story-card">
                     <span class="story-tag">{{t "GTM era"}}</span>
                     <time class="story-year" datetime="2022-07">2022</time>
                     <h3>Twilio</h3>
-                    <p>{{t "Salesforce GTM Engineer. The CRM Analytics owner for Sales Ops — pipeline, funnel, forecast and CPQ, and the first time I met the word GTM."}}</p>
-                </article>
+                    <p>{{t "Salesforce GTM Engineer. CRM Analytics for Sales Ops — pipeline, funnel, forecast, CPQ — and the first time I met the word GTM."}}</p>
+                </div>
+            </li>
 
-                <article class="story-stop is-now">
-                    <span class="story-node" aria-hidden="true">{{> "icons/cloud"}}</span>
+            <li class="story-stop is-now" style="--i: 4;" aria-current="step">
+                <span class="story-node" aria-hidden="true">{{> "icons/cloud"}}</span>
+                <div class="story-card">
                     <span class="story-tag"><i class="story-now-ping" aria-hidden="true"></i> {{t "Now"}}</span>
                     <time class="story-year" datetime="2026-05">2026</time>
                     <h3>Education First</h3>
                     <p>{{t "Salesforce Engineer in Budapest, moving reporting from Qlik to CRM Analytics — and writing every lesson down here."}}</p>
-                </article>
+                </div>
+            </li>
 
-                <article class="story-stop is-next">
-                    <span class="story-node" aria-hidden="true">{{> "icons/avatar"}}</span>
+            <li class="story-stop is-next" style="--i: 5;">
+                <span class="story-node" aria-hidden="true">{{> "icons/avatar"}}</span>
+                <div class="story-card">
                     <span class="story-tag">{{t "Your turn"}}</span>
                     <time class="story-year is-open">{{t "Next"}}</time>
                     <h3>{{t "You?"}}</h3>
                     <p>{{t "Start your own Salesforce chapter — the courses are free and the path is mapped."}}</p>
-                    <a class="btn btn-sm story-cta" href="{{@site.url}}/courses/">{{t "Start here"}} {{> "icons/arrow-right"}}</a>
-                </article>
-            </div>
-        </div>
-        <p class="story-hint" aria-hidden="true">{{> "icons/arrow-right"}} {{t "drag or scroll sideways"}}</p>
+                    <a class="btn btn-sm story-cta" href="{{@site.url}}/training/">{{t "Start here"}} {{> "icons/arrow-right"}}</a>
+                </div>
+            </li>
+        </ol>
     </div>
 </section>

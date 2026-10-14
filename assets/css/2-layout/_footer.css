@@ -17,10 +17,12 @@ html[data-theme="dark"] .site-foot {
     padding-bottom: 3.2rem;
 }
 
-.site-foot-grid {
+/*  Top row: brand on the left, the ask on the right ------------- */
+.site-foot-top {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
-    gap: 4rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 4rem 6.4rem;
+    align-items: start;
     padding-bottom: 4rem;
     border-bottom: 1px solid rgba(152, 166, 184, 0.15);
 }
@@ -31,18 +33,100 @@ html[data-theme="dark"] .site-foot {
 
 .site-foot-tagline {
     margin-top: 1.4rem;
-    max-width: 38ch;
+    max-width: 44ch;
     font-size: 1.45rem;
     line-height: 1.65;
 }
 
+.site-foot-ask .kicker {
+    color: var(--brand-300);
+}
+
+.site-foot-ask h3 {
+    margin-top: 0.8rem;
+    font-size: 2rem;
+    line-height: 1.25;
+    color: #fff;
+}
+
+.site-foot-ask p {
+    margin-top: 0.8rem;
+    max-width: 44ch;
+    font-size: 1.4rem;
+    line-height: 1.6;
+}
+
+.site-foot-ask .btn {
+    margin-top: 1.6rem;
+}
+
+/*  The signup form on navy — same markup as the hero, so only the
+    colours change: a translucent field on the dark ground, white
+    ink, the button as it is. */
+.foot-signup {
+    margin-top: 1.6rem;
+    max-width: 44rem;
+}
+
+.foot-signup .signup-input {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(152, 166, 184, 0.3);
+}
+
+.foot-signup .signup-input::placeholder {
+    color: var(--gray-400);
+}
+
+.foot-signup .signup-input:focus {
+    border-color: var(--brand-400);
+    box-shadow: 0 0 0 3px rgba(27, 150, 255, 0.25);
+}
+
+.foot-signup .signup-note {
+    color: var(--gray-400);
+}
+
+.site-foot .members-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.6rem;
+    font-size: 1.4rem;
+    color: var(--gray-300);
+}
+
+.site-foot .members-note svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--success);
+}
+
+/*  Link columns ------------------------------------------------- */
+.site-foot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 3.2rem;
+    padding: 4rem 0;
+    border-bottom: 1px solid rgba(152, 166, 184, 0.15);
+}
+
 .site-foot h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
     margin-bottom: 1.6rem;
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--gray-300);
+}
+
+.site-foot h4 svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    color: var(--brand-400);
 }
 
 .site-foot-nav ul {
@@ -53,16 +137,32 @@ html[data-theme="dark"] .site-foot {
 }
 
 .site-foot-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
     font-size: 1.45rem;
-    transition: color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
+}
+
+.site-foot-nav a svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    color: var(--gray-600);
+    transition: color var(--dur-fast) var(--ease);
 }
 
 .site-foot-nav a:hover {
     color: #fff;
 }
 
+.site-foot-nav a:hover svg {
+    color: var(--brand-400);
+}
+
 .site-foot-social {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.8rem;
     margin-top: 2rem;
 }
@@ -75,7 +175,7 @@ html[data-theme="dark"] .site-foot {
     height: 3.6rem;
     border: 1px solid rgba(152, 166, 184, 0.25);
     border-radius: var(--radius-sm);
-    transition: color 0.15s ease, border-color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
 
 .site-foot-social a:hover {
@@ -88,6 +188,7 @@ html[data-theme="dark"] .site-foot {
     height: 1.6rem;
 }
 
+/*  Legal line ---------------------------------------------------- */
 .site-foot-legal {
     display: flex;
     flex-wrap: wrap;
@@ -98,18 +199,54 @@ html[data-theme="dark"] .site-foot {
     font-size: 1.3rem;
 }
 
+.site-foot-legal-right {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem 2rem;
+}
+
 .site-foot-legal a {
-    transition: color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
 }
 
 .site-foot-legal a:hover {
     color: #fff;
 }
 
-@media (max-width: 767px) {
+.site-foot-top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.site-foot-top-link svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    transform: rotate(180deg);
+}
+
+@media (max-width: 1023px) {
     .site-foot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .site-foot-top {
         grid-template-columns: minmax(0, 1fr);
         gap: 3.2rem;
+    }
+
+    .site-foot-legal-right {
+        gap: 1rem 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-foot-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2.8rem;
     }
 }
 

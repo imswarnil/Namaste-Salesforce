@@ -118,12 +118,17 @@ it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/
   AI and GTM roles. Hero copy, `partials/audience.hbs` (three doors under
   the quote), `llms.hbs`, page excerpts and the site description all say
   so. Keep new copy on that line.
-- **Lesson rail head** (`partials/post-lesson.hbs`): cover · course ·
-  meta row (lessons · length · level) · progress bar filled by
-  `rail.js` from the list (current row ÷ rows). No separate lesson-count
-  label. `.player.lesson-layout-right .player-main` needs that
-  specificity — a lower one lost to `.player:not(.lesson-layout-focus)`
-  and the article rendered under the fixed rail.
+- **Lesson rail head** (`partials/post-lesson.hbs`): one row — a back
+  arrow and the course title — linking to the course page, then
+  `partials/lesson-progress.hbs`: "Lesson n / m" and a bar, computed in
+  Handlebars (the matching row's `@number` over the query total, written
+  to `--p`/`--n`; CSS does the width). No cover, no facts, no script.
+  rail.js still fills the mobile lesson bar and the training reader.
+  `.player.lesson-layout-right .player-main` needs that specificity — a
+  lower one lost to `.player:not(.lesson-layout-focus)` and the article
+  rendered under the fixed rail. On video lessons the lifted stage
+  must span the reading grid (`.player-columns > .is-video-stage`), or
+  the article drops into the 260px outline track.
 - **Locked readers.** `partials/reader-locked.hbs` renders on lessons and
   training sections when `{{access}}` is false: blurred excerpt + lock
   panel + join/sign-in. Same idea as the slides' locked cover.
@@ -167,6 +172,43 @@ it. The theme's `assets/css/` is a hand-kept sibling of `design-system/src/scss/
 - **Mobile lesson bar** (`partials/lesson-bar.hbs`) sits under the
   lesson player and the training reader below 1024px; rail.js fills
   it from the rail list.
+
+## Conventions added 14 Oct 2026
+
+- **Hero is a personal project** (`partials/hero.hbs`): kicker "A
+  personal project, built in public", a first-person headline that
+  invites the reader along, the ask, then `.hero-follow` (Courses ·
+  Training trail · Videos · Source) and the social row. Under the
+  square, `.hero-feature-caption` is the author (live `{{#get
+  "authors"}}`: avatar, name, one line) linking to /about. A three-step
+  "trail" stepper was tried in the hero and rejected the same day — do
+  not bring it back.
+- **The journey is one frame** (`partials/journey.hbs`, `.story-frame`):
+  six stops in a six-column grid on a LIGHT band (`--bg-alt` + blueprint
+  grid), no sideways scroll, no film. The road fills to "Now" and each
+  station lights in sequence — CSS keyframes keyed off the stop's `--i`,
+  armed by `html.anim` and fired by the reveal observer's `.is-in`.
+  Below 1024px the road runs vertical down the left. The owner asked for
+  it light and in one frame; keep it that way.
+- **Audience doors** (`partials/audience.hbs`) carry live counts
+  (modules · sections, courses · prompts, lessons · videos) from
+  one-item `{{#get}}` queries' pagination totals — no numbers in copy.
+- **Prev/next cards** are `partials/post-nav-card.hbs` (params `dir`,
+  `label`, optional `icon`), rendered inside `prev_post`/`next_post`:
+  the target's feature image (or the branded placeholder) on the outer
+  edge, label, title. Used by lessons, training sections, module
+  landings. Blog singles deliberately have none — a chronological or
+  primary-tag walk would cross collections.
+- **Footer** (`partials/footer.hbs`): brand + the ask (members form on
+  navy, `.foot-signup`) on top, then Learn / Read / Build (fixed, from
+  routes.yaml, icons via `nav-icon` with `slug=`) and Site (Ghost's
+  secondary navigation). The reader strip is unchanged.
+- **Copy voice**: one person upskilling in public, not a company.
+  Section heads and the mission band say "I" and "me"; llms.txt and the
+  JSON-LD `Person` node (`partials/json-ld.hbs`, author with `sameAs`)
+  say the same. Lessons and training sections emit `LearningResource`
+  nodes with `isPartOf`; `../url` as a helper call inside a block
+  throws a 400 — read `primary_tag.slug` by path instead.
 
 - **Responsive layer** (`5-utilities/_responsive.css`, loaded last):
   every rule came from a measured audit of all 35 page types at 360,

@@ -1,52 +1,82 @@
 {{!-- Who this is for — the three readers the site is written for,
 each with the gap they are closing and the door to walk through
 first. Fixed copy on purpose: it is the positioning, not content
-that should drift with the post list. --}}
+that should drift with the post list.
+
+What DOES drift is the number under each door: how many training
+sections, courses, lessons and videos are behind it today. Those
+are live {{#get}} counts — the pagination total of a one-item
+query — so the doors never promise more than the site holds, and
+never need a script to say so. The three cards sit on one dashed
+path (.audience-path) because they are three entrances to the
+same trail, not three products. --}}
 <section class="section outer home-audience relative">
     <div class="bg-rings" aria-hidden="true"></div>
     <div class="inner relative">
         <div class="section-head" data-animate>
             <div>
                 <span class="kicker">{{> "icons/avatar"}} {{t "Who this is for"}}</span>
-                <h2>{{t "Three readers, one path"}}</h2>
-                <p>{{t "Salesforce is the way in, not the destination. Pick the door that sounds like you and the trail does the rest."}}</p>
+                <h2>{{t "Three readers, one trail"}}</h2>
+                <p>{{t "Salesforce is the way in, not the destination. Pick the door that sounds like you — every one of them joins the same path."}}</p>
             </div>
+            <a class="section-more" href="{{@site.url}}/training/">{{t "See the whole trail"}} {{> "icons/arrow-right"}}</a>
         </div>
 
         <div class="audience-grid" data-animate-stagger>
+            <span class="audience-path" aria-hidden="true"></span>
+
             <a class="audience-card" href="{{@site.url}}/training/">
-                <span class="audience-num" aria-hidden="true">01</span>
-                <span class="audience-ico" aria-hidden="true">{{> "icons/cloud"}}</span>
+                <span class="audience-top">
+                    <span class="audience-num" aria-hidden="true">01</span>
+                    <span class="audience-ico" aria-hidden="true">{{> "icons/cloud"}}</span>
+                </span>
                 <h3>{{t "The Salesforce admin or developer"}}</h3>
                 <p class="audience-gap">{{t "You can build the org. You want to understand the revenue process it runs — and stop being the last to hear why a deal moved."}}</p>
                 <ul class="audience-list">
                     <li>{{> "icons/check-circle"}} {{t "Sales cycle, lead routing, quote-to-cash — explained before the objects"}}</li>
                     <li>{{> "icons/check-circle"}} {{t "Flow and Apex patterns that survive production"}}</li>
                 </ul>
+                <span class="audience-meta">
+                    {{#get "posts" filter="tag:hash-module" limit="1" as |m mods|}}<span>{{> "icons/layers"}} {{mods.total}} {{t "modules"}}</span>{{/get}}
+                    {{#get "posts" filter="tag:hash-training" limit="1" as |s secs|}}<span>{{> "icons/file-text"}} {{secs.total}} {{t "sections"}}</span>{{/get}}
+                </span>
                 <span class="audience-go">{{t "Start the training trail"}} {{> "icons/arrow-right"}}</span>
             </a>
 
             <a class="audience-card is-featured" href="{{@site.url}}/courses/">
-                <span class="audience-num" aria-hidden="true">02</span>
-                <span class="audience-ico" aria-hidden="true">{{> "icons/sparkles"}}</span>
+                <span class="audience-top">
+                    <span class="audience-num" aria-hidden="true">02</span>
+                    <span class="audience-ico" aria-hidden="true">{{> "icons/sparkles"}}</span>
+                    <span class="audience-flag">{{> "icons/signal"}} {{t "Where I am now"}}</span>
+                </span>
                 <h3>{{t "Moving into an AI or GTM engineering role"}}</h3>
                 <p class="audience-gap">{{t "You have the CRM. The next job wants n8n, Clay, 6sense, Agentforce and an LLM doing the clicking. This is the stack, learned in the open."}}</p>
                 <ul class="audience-list">
                     <li>{{> "icons/check-circle"}} {{t "Agentforce end to end, prompts that earn their keep"}}</li>
                     <li>{{> "icons/check-circle"}} {{t "The GTM tooling around Salesforce, piece by piece"}}</li>
                 </ul>
+                <span class="audience-meta">
+                    {{#get "posts" filter="tag:hash-course" limit="1" as |c courses|}}<span>{{> "icons/graduation-cap"}} {{courses.total}} {{t "courses"}}</span>{{/get}}
+                    {{#get "posts" filter="tag:hash-prompt" limit="1" as |p prompts|}}<span>{{> "icons/sparkles"}} {{prompts.total}} {{t "prompts"}}</span>{{/get}}
+                </span>
                 <span class="audience-go">{{t "Browse the courses"}} {{> "icons/arrow-right"}}</span>
             </a>
 
             <a class="audience-card" href="{{@site.url}}/courses/">
-                <span class="audience-num" aria-hidden="true">03</span>
-                <span class="audience-ico" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+                <span class="audience-top">
+                    <span class="audience-num" aria-hidden="true">03</span>
+                    <span class="audience-ico" aria-hidden="true">{{> "icons/graduation-cap"}}</span>
+                </span>
                 <h3>{{t "New to the ecosystem"}}</h3>
                 <p class="audience-gap">{{t "You know a spreadsheet and you want a step-by-step way in that does not cost anything and does not skip the why."}}</p>
                 <ul class="audience-list">
                     <li>{{> "icons/check-circle"}} {{t "Admin Foundations, free, in a Developer Edition org"}}</li>
                     <li>{{> "icons/check-circle"}} {{t "Every lesson ends with something running in your org"}}</li>
                 </ul>
+                <span class="audience-meta">
+                    {{#get "posts" filter="tag:hash-lesson" limit="1" as |l lessons|}}<span>{{> "icons/play-circle"}} {{lessons.total}} {{t "lessons"}}</span>{{/get}}
+                    {{#get "posts" filter="tag:hash-video" limit="1" as |v vids|}}<span>{{> "icons/video"}} {{vids.total}} {{t "videos"}}</span>{{/get}}
+                </span>
                 <span class="audience-go">{{t "Open lesson one"}} {{> "icons/arrow-right"}}</span>
             </a>
         </div>

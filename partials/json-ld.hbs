@@ -14,18 +14,60 @@ templates that own those pages. --}}
             "url": "{{@site.url}}/",
             "name": "{{@site.title}}",
             "description": "{{@site.description}}",
-            "publisher": { "@id": "{{@site.url}}/#organization" }
+            "inLanguage": "{{@site.locale}}",
+            "publisher": { "@id": "{{@site.url}}/#organization" },
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": { "@type": "EntryPoint", "urlTemplate": "{{@site.url}}/?s={search_term_string}" },
+                "query-input": "required name=search_term_string"
+            }
         },
         {
             "@type": "Organization",
             "@id": "{{@site.url}}/#organization",
             "name": "{{@site.title}}",
-            "url": "{{@site.url}}/"{{#if @site.logo}},
+            "url": "{{@site.url}}/",
+            "description": "{{@site.description}}",
+            "founder": { "@id": "{{@site.url}}/#person" }{{#if @site.logo}},
             "logo": {
                 "@type": "ImageObject",
                 "url": "{{@site.logo}}"
-            }{{/if}}
+            }{{/if}}{{#if @site.icon}},
+            "image": "{{@site.icon}}"{{/if}},
+            "sameAs": [
+                {{#if @site.twitter}}"{{social_url type="twitter"}}",{{/if}}
+                {{#if @site.facebook}}"{{social_url type="facebook"}}",{{/if}}
+                {{#if @custom.social_youtube}}"{{@custom.social_youtube}}",{{/if}}
+                {{#if @custom.social_linkedin}}"{{@custom.social_linkedin}}",{{/if}}
+                {{#if @custom.social_instagram}}"{{@custom.social_instagram}}",{{/if}}
+                {{#if @custom.social_github}}"{{@custom.social_github}}",{{/if}}
+                "{{@site.url}}/"
+            ]
         },
+        {{!-- The person behind the site — one author, the owner. The
+        whole publication is their upskilling log, so every page-level
+        node below names them as its author. --}}
+        {{#get "authors" limit="1" as |owners|}}{{#foreach owners}}
+        {
+            "@type": "Person",
+            "@id": "{{@site.url}}/#person",
+            "name": "{{name}}",
+            "url": "{{url absolute="true"}}"{{#if bio}},
+            "description": "{{bio}}"{{/if}}{{#if profile_image}},
+            "image": "{{img_url profile_image size="m" absolute="true"}}"{{/if}},
+            "jobTitle": "Salesforce Engineer",
+            "knowsAbout": ["Salesforce", "CRM Analytics", "Go-to-market engineering", "RevOps", "Agentforce", "Apex", "Flow"],
+            "worksFor": { "@id": "{{@site.url}}/#organization" },
+            "sameAs": [
+                {{#if twitter}}"{{social_url type="twitter"}}",{{/if}}
+                {{#if facebook}}"{{social_url type="facebook"}}",{{/if}}
+                {{#if @custom.social_linkedin}}"{{@custom.social_linkedin}}",{{/if}}
+                {{#if @custom.social_github}}"{{@custom.social_github}}",{{/if}}
+                {{#if website}}"{{website}}",{{/if}}
+                "{{url absolute="true"}}"
+            ]
+        },
+        {{/foreach}}{{/get}}
         {
             "@type": "ItemList",
             "@id": "{{@site.url}}/#navigation",
@@ -45,7 +87,20 @@ templates that own those pages. --}}
         tag picks the type; lessons and module sections are listed
         WITH positions, so the numbering is machine-readable. --}}
         {{#post}}
-        {{#match (post_class) "~" "tag-hash-course"}},
+        {{#match (post_class) "~" "tag-hash-lesson"}},
+        {
+            "@type": "LearningResource",
+            "@id": "{{url absolute="true"}}#lesson",
+            "name": "{{title}}",
+            "description": "{{custom_excerpt}}",
+            "url": "{{url absolute="true"}}",
+            "learningResourceType": "Lesson",
+            "isAccessibleForFree": {{#match visibility "public"}}true{{else}}false{{/match}},
+            "author": { "@id": "{{@site.url}}/#person" },
+            "isPartOf": { "@type": "Course", "@id": "{{@site.url}}/courses/{{primary_tag.slug}}/#course", "name": "{{primary_tag.name}}", "url": "{{@site.url}}/courses/{{primary_tag.slug}}/" },
+            "datePublished": "{{date published_at format="YYYY-MM-DD"}}"
+        }
+        {{else match (post_class) "~" "tag-hash-course"}},
         {
             "@type": "Course",
             "@id": "{{url absolute="true"}}#course",
@@ -53,6 +108,7 @@ templates that own those pages. --}}
             "description": "{{custom_excerpt}}",
             "url": "{{url absolute="true"}}",
             "provider": { "@id": "{{@site.url}}/#organization" },
+            "author": { "@id": "{{@site.url}}/#person" },
             "isAccessibleForFree": true,
             "hasPart": [
                 {{#get "posts" filter="tag:{{slug}}+tag:hash-lesson" order="published_at asc" limit="50" as |lessons|}}
@@ -67,7 +123,17 @@ templates that own those pages. --}}
                 {{/get}}
             ]
         }
-        {{else match (post_class) "~" "tag-hash-training"}}{{#primary_tag}},
+        {{else match (post_class) "~" "tag-hash-training"}},
+        {
+            "@type": "LearningResource",
+            "@id": "{{url absolute="true"}}#section",
+            "name": "{{title}}",
+            "description": "{{custom_excerpt}}",
+            "url": "{{url absolute="true"}}",
+            "learningResourceType": "Training section",
+            "author": { "@id": "{{@site.url}}/#person" },
+            "isPartOf": { "@id": "{{@site.url}}/training/{{primary_tag.slug}}/#module" }
+        }{{#primary_tag}},
         {
             "@type": "Course",
             "@id": "{{@site.url}}/training/{{slug}}/#module",

@@ -1,0 +1,21 @@
+{{!-- Where this lesson sits in its course — "Lesson 3 / 8" and a
+bar — computed in Handlebars, not read off the DOM. Same query as
+lesson-list (so the two can never disagree): walk the course's
+lessons, and the row whose slug matches the current one gives its
+number. The number lands in --p and the pagination total in --n;
+the bar's width is calc(--p / --n) in CSS. Params: currentSlug.
+Context: the lesson post (primary_tag is the course). --}}
+{{#primary_tag}}
+    {{#> "with-this" courseTag=. currentSlug=../currentSlug}}
+        {{#get "posts" filter="tag:hash-lesson+tag:{{courseTag.slug}}" order="published_at asc" limit="100" as |lessons total|}}
+            <div class="player-rail-progress" role="progressbar"
+                aria-valuemin="0" aria-valuemax="{{total.total}}"
+                aria-valuenow="{{#foreach lessons}}{{#match slug ../../currentSlug}}{{@number}}{{/match}}{{/foreach}}"
+                aria-label="{{t "Course progress"}}"
+                style="--p: {{#foreach lessons}}{{#match slug ../../currentSlug}}{{@number}}{{/match}}{{/foreach}}; --n: {{total.total}};">
+                <span class="player-rail-progress-bar"><i></i></span>
+                <span class="player-rail-progress-label">{{t "Lesson"}} <b>{{#foreach lessons}}{{#match slug ../../currentSlug}}{{@number}}{{/match}}{{/foreach}}</b> / {{total.total}}</span>
+            </div>
+        {{/get}}
+    {{/with-this}}
+{{/primary_tag}}

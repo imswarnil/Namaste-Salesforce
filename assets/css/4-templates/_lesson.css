@@ -93,89 +93,72 @@
     border-radius: 999px;
 }
 
-/*  The course card: cover, name, facts, progress. The one thing in
-    the rail that says where you are — so it looks like a course,
-    not a row. The old 4.4rem thumb beside a title read as a list
-    item; the "6 lessons" label that used to float under it now
-    lives inside the card as a meta row. */
+/*  The rail head: a back arrow and the course name — one quiet row
+    linking to the course page. The cover and the facts (lessons ·
+    length · level) live on that page; the rail is for the list, and
+    a poster above it pushed the first lesson a screen down. Progress
+    sits under it on its own line. */
 .player-rail-course {
-    display: block;
-    margin-bottom: 1.6rem;
-    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.4rem;
+    border-radius: var(--radius);
+    transition: color var(--dur-fast) var(--ease);
+}
+
+.player-rail-course-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 3.2rem;
+    height: 3.2rem;
+    color: var(--text-muted);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 50%;
+    background: var(--surface);
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
 
-.player-rail-course:hover {
-    border-color: rgba(1, 118, 211, 0.45);
-    box-shadow: var(--shadow);
+.player-rail-course-ico svg {
+    width: 1.6rem;
+    height: 1.6rem;
 }
 
-.player-rail-course-art {
-    position: relative;
-    display: block;
-    aspect-ratio: 16 / 9;
-    background: var(--bg-alt);
-    border-bottom: 1px solid var(--border-soft);
-}
-
-.player-rail-course-art img,
-.player-rail-course-art svg.thumb-ph-bg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.player-rail-course:hover .player-rail-course-ico {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateX(-2px);
 }
 
 .player-rail-course-copy {
     display: block;
+    flex: 1;
     min-width: 0;
-    padding: 1.4rem 1.6rem 1.6rem;
-}
-
-.player-rail-course .kicker {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
 }
 
 .player-rail-course h2 {
-    font-size: 1.65rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 1.45rem;
     line-height: 1.3;
-    transition: color 0.15s ease;
+    transition: color var(--dur-fast) var(--ease);
 }
 
 .player-rail-course:hover h2 {
     color: var(--accent);
 }
 
-.player-rail-course-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1.2rem;
-    margin-top: 0.9rem;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: var(--text-muted);
-}
-
-.player-rail-course-meta > span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.player-rail-course-meta svg {
-    width: 1.35rem;
-    height: 1.35rem;
-    color: var(--text-faint);
-}
-
 .player-rail-progress {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-top: 1.2rem;
+    margin: 0 0 1.6rem;
+    padding: 0 0.2rem;
 }
 
 .player-rail-progress-bar {
@@ -187,10 +170,12 @@
     overflow: hidden;
 }
 
+/* the fill: lesson number over lesson count, both written into the
+   element's style by partials/lesson-progress.hbs */
 .player-rail-progress-bar i {
     display: block;
     height: 100%;
-    width: 0;
+    width: calc(var(--p, 0) / var(--n, 1) * 100%);
     background: linear-gradient(90deg, var(--brand-500), var(--brand-400));
     border-radius: inherit;
     transition: width 0.4s ease;
@@ -198,10 +183,14 @@
 
 .player-rail-progress-label {
     font-size: 1.2rem;
-    font-weight: 700;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--text-muted);
     white-space: nowrap;
+}
+
+.player-rail-progress-label b {
+    color: var(--heading);
 }
 
 /*  The curriculum rows — the piece of furniture a reader spends the
@@ -599,6 +588,13 @@
         grid-template-columns: minmax(0, 1fr) 260px;
     }
 
+    /* the video stage (lifted in by reader-video.js) is the first
+       grid item: it has to span the row, or it takes the article's
+       column and the article drops into the 260px outline track */
+    .player-columns > .is-video-stage {
+        grid-column: 1 / -1;
+    }
+
     .player-article {
         max-width: var(--measure);
         width: 100%;
@@ -713,9 +709,11 @@
 }
 
 .lesson-layout-focus .player-rail-course {
-    padding: 2rem max(4vmin, 20px) 0;
-    margin-bottom: 0;
-    border-bottom: none;
+    margin: 2rem max(4vmin, 20px) 0;
+}
+
+.lesson-layout-focus .player-rail-progress {
+    margin: 1rem max(4vmin, 20px) 0;
 }
 
 .lesson-layout-focus .player-rail-list {
@@ -958,12 +956,16 @@ html[data-rail="collapsed"] .trainer2-nav-scroll {
 }
 
 html[data-rail="collapsed"] .player-rail-course {
-    padding: 0.7rem;
+    padding: 0.5rem;
     justify-content: center;
 }
 
-html[data-rail="collapsed"] .player-rail-course-art {
+html[data-rail="collapsed"] .player-rail-progress-label {
     display: none;
+}
+
+html[data-rail="collapsed"] .player-rail-progress {
+    padding: 0;
 }
 
 html[data-rail="collapsed"] .player-rail-course-copy,
